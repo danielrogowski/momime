@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.ndg.momime</groupId>
+	<artifactId>editors</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>momimeEditors</name>
+	<description>MoM IME Editors</description>
+
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>com.ndg.common</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.ndg.common</groupId>
+			<artifactId>xmleditor</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>serverdatabase</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>client</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+</project>

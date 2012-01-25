@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.ndg.momime</groupId>
+	<artifactId>client</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>momimeClient</name>
+	<description>MoM IME Client</description>
+
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>com.ndg.common</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-xjc-plugin</artifactId>
+                <version>2.3.2</version>
+				<executions>
+					<execution>
+						<id>main-xjc-generate</id>
+						<phase>generate-sources</phase>
+						<goals><goal>xsdtojava</goal></goals>
+						<configuration>
+							<sourceRoot>${basedir}/target/generated-sources/xjc</sourceRoot>
+							<xsdOptions>
+								<xsdOption>
+									<xsd>/src/main/resources/momime.client.language.database/MoMIMELanguageDatabase.xsd</xsd>
+									<deleteDirs>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/common</deleteDir>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/server</deleteDir>
+									</deleteDirs>
+								</xsdOption>
+							</xsdOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>serverdatabase</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+</project>

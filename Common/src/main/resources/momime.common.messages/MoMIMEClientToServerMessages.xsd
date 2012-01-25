@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase"
+	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
+	xmlns:momimemsgs="http://momime/common/messages/v0_9_4"
+	xmlns:momimectos="http://momime/common/messages/clienttoserver/v0_9_4" targetNamespace="http://momime/common/messages/clienttoserver/v0_9_4"
+	jaxb:version="2.0">
+
+    <xsd:import namespace="http://www.ndg.com/multiplayer/base" schemaLocation="../../../../../NdgMultiplayerBase/src/main/resources/com.ndg.multiplayer.messages/Multiplayer.xsd"/>
+    <xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../../NdgMultiplayerSessionBase/src/main/resources/com.ndg.multiplayer.messages/MultiplayerSession.xsd"/>
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="../momime.common.database/MoMIMENewGameDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../momime.common.database/MoMIMECommonDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/messages/v0_9_4" schemaLocation="MoMIMEMessages.xsd" />
+    
+    <xsd:annotation>
+    	<xsd:documentation>Defines all the messages sent from the MoM IME client to the server.</xsd:documentation>
+	</xsd:annotation>
+
+<!-- General -->
+
+	<xsd:element name="chatMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends to server to send a chat message to other players</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="text" type="xsd:normalizedString"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+<!-- Join game process of picking wizard, photo, picks and so on -->	
+
+	<xsd:element name="chooseWizardMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message we send to the server when we choose which wizard we want to be</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="wizardID" type="momimecommon:wizardID"/>		<!-- blank or missing = custom wizard -->
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="chooseStandardPhotoMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message we send to the server when we've chosen a custom wizard and then which standard (wizard) photo we want</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="photoID" type="momimecommon:wizardID"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="uploadCustomPhotoMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message clients send to the server when they choose a custom photo</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="ndgBmpImage" type="xsd:base64Binary"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="chooseCustomFlagColourMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message client sends to server to give the server the custom colour of their flag</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="flagColour" type="momimecommon:colour"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="chooseCustomPicksMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client telling Server about all the custom picks they've chosen</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:wizardPick"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="chooseInitialSpellsMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Tells server which spell choices we made, e.g. that 11 books grants 1 free rare spell.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="pickID" type="momimecommon:pickID"/>
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimecommon:spellID"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="chooseRaceMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message we send to the server when we choose which race we want to be</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="raceID" type="momimecommon:raceID"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+<!-- Turn system -->
+
+	<xsd:element name="nextTurnButtonMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message clients send out when the next turn button is clicked.
+Server figures out the effect, based on the type of game (one-at-a-time or simultaneous).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage"/>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+<!-- City placing and building -->
+
+	<xsd:element name="chooseCityNameMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message client sends to server to tell them what name we chose for a city</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityName" type="momimecommon:description"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="changeCityConstructionMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Clients send this to set what they want to build in a city</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="buildingOrUnitID" type="momimecommon:unitID"/>		<!-- In future should split this into an xsd:choice -->
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="changeOptionalFarmersMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Clients send this when player wants to change how many farmers/workers are in this city.
+Server uses standard updateCity to reply.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="optionalFarmers" type="momimenewgame:cityPopulationDiv1000"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="rushBuyMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message client sends to server when they want to rush buy the current construction project in a particular city</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="sellBuildingMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Clients send this when they want to sell a building from a city, or cancel a pending sale</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+<!-- Global economy -->
+
+	<xsd:element name="changeTaxRateMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Clients send this to the server to request a change in their global tax rate</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="taxRateID" type="momimecommon:taxRateID"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+<!-- Units -->
+
+	<xsd:element name="dismissUnitMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client can send this to request that a unit of theirs be killed off</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="cancelPendingMovementAndSpecialOrdersMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to server if they decide to cancel a pending movement and/or special orders</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="requestOverlandMovementDistancesMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to server to request coordinates where this unit stack can move to</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="requestMoveOverlandUnitStackMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to server to request a unit stack be moved on the overland map</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="requestUpdateUnitNameMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message client sends to server to tell them what name we want to rename a hero to</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="unitName" type="momimecommon:description"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="specialOrderButtonMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to server when a special order button is clicked with a particular unit stack</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="specialOrder" type="momimemsgs:unitSpecialOrder"/>
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+<!-- Combat -->
+
+	<xsd:element name="attackNodeLairTowerMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client has clicked Yes, they want to attack those Sky Drakes :)
+These will be the actual cells containing the units, so if either side is in a tower, then their plane will say 0.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="requestMoveCombatUnitMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to server to request a unit be moved in combat</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="momimemsgs:combatMapCoordinates"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="endCombatTurnMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message client sends to server when all units have been moved in combat</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="combatAutoControlMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message client sends to server when they want the server to use its AI to move their combat units for this combat turn.
+Client re-sends this each combat turn - the server has no persistent memory of whether a client has
+Auto switched on or not - this makes it easier to allow the player to switch Auto back off again.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="captureCityDecisionMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to tell the server whether they want to raze or capture a city they just took.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="defendingPlayerID" type="mps:playerID"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="captureCityDecision" type="momimemsgs:captureCityDecisionID"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+<!--  Scheduled combats -->
+	
+	<xsd:element name="requestStartScheduledCombatMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to request to play a particular scheduled combat</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="unrequestStartScheduledCombatMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this if they've requested to play a particular scheduled combat against another human player,
+and they've got fed up waiting and want to cancel the request</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="choseNotToDoScheduledCombatMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this if they've initiated a scheduled combat in the movement phase, but now decided they don't want to play it after all.
+Since you can't choose not to do a combat that you initiated, the only circumstance this happens in is when you've scouted a node/lair/tower and
+have second thoughts about attacking those sky drakes :)</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+<!-- Magic -->
+
+	<xsd:element name="updateMagicPowerDistributionMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends updated slider bar positions when clicking OK from the magic screen</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="distribution" type="momimemsgs:magicPowerDistribution"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="alchemyMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to server when they want to convert Gold to Mana or vice versa</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="fromProductionTypeID" type="momimecommon:productionTypeID">
+						    <xsd:annotation>
+    							<xsd:documentation>toProductionTypeID is implied; if from=Gold then to=Mana, and if from=Mana then to=Gold</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element minOccurs="1" maxOccurs="1" name="fromValue" type="momimenewgame:undoubledProductionValue"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="requestResearchSpellMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this when they want to pick which spell they want to research</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+<!-- Spells -->
+	
+	<xsd:element name="requestCastSpellMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to request a spell being cast, in combat or overland.
+If overland, all the combat elements are ommitted.  In this case we don't send which unit/location we're targetting it at just yet, since it might take multiple turns to cast.
+If in combat, and casting at a unit, then combatTargetUnitURN willspecify which unit (overland spells, even unit enchantments, work differently via NTMs).
+If in combat, and casting at a location (e.g. summoning), combatTargetLocation will specify the target location.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetLocation" type="momimemsgs:combatMapCoordinates"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetUnitURN" type="momimemsgs:unitURN"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="requestSwitchOffMaintainedSpellMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this when they want to switch off a maintained spell (overland, unit or city).
+Note because spells don't get allocated any kind of spellURN, we basically have to pass the full details of the spell to the server to make sure that it can find it.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+		        		<!-- Could import most of this from momimemsgs:maintainedSpell; decided not to because of castInCombat element, and expect might add spellURNs later -->
+						<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
+			
+						<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID"/>
+			
+						<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectID" type="momimecommon:citySpellEffectID"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="targetSpellMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to specify where they want to cast a spell they've completed casting overland.
+(combat spells' targets are sent in the original requestCastSpellMessage).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="cancelTargetSpellMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this to specify that, after bothering to finish casting an overland spell, they don't want to pick a target for it after all.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+</xsd:schema>

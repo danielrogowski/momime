@@ -1,0 +1,90 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.ndg.momime</groupId>
+	<artifactId>common</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>momimeCommon</name>
+	<description>MoM IME common database definitions and classes needed both by client and server</description>
+
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>com.ndg.common</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-xjc-plugin</artifactId>
+                <version>2.3.2</version>
+				<executions>
+					<execution>
+						<id>main-xjc-generate</id>
+						<phase>generate-sources</phase>
+						<goals><goal>xsdtojava</goal></goals>
+						<configuration>
+							<sourceRoot>${basedir}/target/generated-sources/xjc</sourceRoot>
+							<xsdOptions>
+								<xsdOption>
+									<xsd>/src/main/resources/momime.common.messages/MoMIMEClientToServerMessages.xsd</xsd>
+									<deleteDirs>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/common/database</deleteDir>
+										<deleteDir>${basedir}/target/generated-sources/xjc/com</deleteDir>
+									</deleteDirs>
+								</xsdOption>
+								<xsdOption>
+									<xsd>/src/main/resources/momime.common.messages/MoMIMEServerToClientMessages.xsd</xsd>
+									<deleteDirs>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/common/database</deleteDir>
+										<deleteDir>${basedir}/target/generated-sources/xjc/com</deleteDir>
+									</deleteDirs>
+								</xsdOption>
+
+					<!-- Generating from the client and messaging XSDs above also generates all the new game and common XSDs, but in doing so it
+						   generates all the @XmlSeeAlso tags which we don't want the server to see on the common classes, otherwise the
+						   JAXB contexts for sending and receiving messages would know about the server-side only versions.
+						   
+						   So we generate the client classes first, delete the generated common classes, then regenerate
+						   them soley from the common XSD. -->
+
+								<xsdOption>
+									<xsd>/src/main/resources/momime.common.database/MoMIMECommonDatabase.xsd</xsd>
+									<deleteDirs>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/common/database/newgame</deleteDir>
+										<deleteDir>${basedir}/target/generated-sources/xjc/com</deleteDir>
+									</deleteDirs>
+								</xsdOption>
+								<xsdOption>
+									<xsd>/src/main/resources/momime.common.database/MoMIMENewGameDatabase.xsd</xsd>
+									<deleteDirs>
+										<deleteDir>${basedir}/target/generated-sources/xjc/com</deleteDir>
+									</deleteDirs>
+								</xsdOption>
+							</xsdOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.ndg.multiplayer</groupId>
+			<artifactId>sessionbase</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.map</groupId>
+			<artifactId>base</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

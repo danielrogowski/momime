@@ -1,0 +1,17 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
+	xmlns:momimedummy="http://momime/dummycommon/database/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4" targetNamespace="http://momime/dummycommon/database/v0_9_4">
+	
+	<xsd:import namespace="http://momime/common/database/v0_9_4"/>
+
+	<!-- Dummy XSD containing at least one reference to the common XSD, just enough to prove that the import gets resolved -->
+	
+	<xsd:element name="dummyDatabase">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="raceID" type="momimecommon:raceID"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+</xsd:schema>
+

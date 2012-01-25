@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config:momImeServerConfig xmlns:config="http://momime/server/config/v0_9_4">
+	<portNumber>12345</portNumber>
+	<userRegistryFilename>C:\Some\Path\MoM IME server user registry.xml</userRegistryFilename>
+	<pathToServerXmlDatabases>C:\Some\Path\Server XML files\</pathToServerXmlDatabases>
+</config:momImeServerConfig>

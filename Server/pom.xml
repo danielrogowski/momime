@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.ndg.momime</groupId>
+	<artifactId>server</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>momimeServer</name>
+	<description>MoM IME Server</description>
+
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>com.ndg.common</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-xjc-plugin</artifactId>
+                <version>2.3.2</version>
+				<executions>
+					<execution>
+						<id>main-xjc-generate</id>
+						<phase>generate-sources</phase>
+						<goals><goal>xsdtojava</goal></goals>
+						<configuration>
+							<sourceRoot>${basedir}/target/generated-sources/xjc</sourceRoot>
+							<xsdOptions>
+								<xsdOption>
+									<xsd>/src/main/resources/momime.server.config/MoMIMEServerConfig.xsd</xsd>
+								</xsdOption>
+								<xsdOption>
+									<xsd>/src/main/resources/momime.server.messages/MoMIMEServerMessages.xsd</xsd>
+									<deleteDirs>
+										<deleteDir>${basedir}/target/generated-sources/xjc/com</deleteDir>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/common</deleteDir>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/client</deleteDir>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/server/database</deleteDir>
+									</deleteDirs>
+								</xsdOption>
+							</xsdOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>serverdatabase</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.multiplayer</groupId>
+			<artifactId>sessionserver</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

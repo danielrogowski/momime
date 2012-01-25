@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:momimesvrconfig="http://momime/server/config/v0_9_4" targetNamespace="http://momime/server/config/v0_9_4">
+
+	<xsd:annotation>
+		<xsd:documentation>minOccurs = maxOccurs = number of defined values of pathid, to force than a location for all paths to be included and only once each</xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:element name="momImeServerConfig">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="1" maxOccurs="1" name="portNumber" type="momimesvrconfig:portNumber" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="userRegistryFilename" type="momimesvrconfig:filename" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="pathToServerXmlDatabases" type="momimesvrconfig:path" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="path">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="filename">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="portNumber">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+</xsd:schema>

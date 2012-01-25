@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
+	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
+	xmlns:momimesvr="http://momime/server/database/v0_9_4" xmlns:momimemsgs="http://momime/common/messages/v0_9_4"
+	xmlns:momimesvrmsgs="http://momime/server/messages/v0_9_4" targetNamespace="http://momime/server/messages/v0_9_4"
+	jaxb:version="2.0">
+
+	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../../NdgMap/src/main/resources/com.ndg.map/Map.xsd" />
+    <xsd:import namespace="http://www.ndg.com/multiplayer/base" schemaLocation="../../../../../NdgMultiplayerBase/src/main/resources/com.ndg.multiplayer.messages/Multiplayer.xsd"/>
+    <xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../../NdgMultiplayerSessionBase/src/main/resources/com.ndg.multiplayer.messages/MultiplayerSession.xsd"/>
+	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../../../../../MoMIMECommon/src/main/resources/momime.common.database/MoMIMECommonDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="../../../../../MoMIMECommon/src/main/resources/momime.common.database/MoMIMENewGameDatabase.xsd" />
+	<xsd:import namespace="http://momime/server/database/v0_9_4" schemaLocation="../../../../../MoMIMEServerDatabase/src/main/resources/momime.server.database/MoMIMEServerDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/messages/v0_9_4" schemaLocation="../../../../../MoMIMECommon/src/main/resources/momime.common.messages/MoMIMEMessages.xsd" />
+    
+	<xsd:complexType name="momGeneralServerKnowledge">
+	    <xsd:annotation>
+    		<xsd:documentation>Holds private server only knowledge that is not known to any players.  momimemsgs:memoryGridCell</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="mps:generalServerKnowledge">
+		        <xsd:sequence>
+					<xsd:element ref="momimesvr:serverDatabase"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="trueMap" type="momimemsgs:fogOfWarMemory">
+					    <xsd:annotation>
+    						<xsd:documentation>Server's copy of the true values of all map, unit, building and spell data.  Note the grid cells stored at each location are
+    														of server-specific type serverGridCell.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeUnitURN" type="momimemsgs:unitURN"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="usedCityName" type="xsd:normalizedString"/>
+		        </xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="serverGridCell">
+	    <xsd:annotation>
+    		<xsd:documentation>Server needs a handful of extra properties stored at each map cell, used by the map generator.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:memoryGridCell">
+		        <xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="auraFromNode" type="momimemsgs:overlandMapCoordinates">
+					    <xsd:annotation>
+    						<xsd:documentation>Links a squad of node aura back to the node that it eminates from - this relationship is only known by the server,
+    														the client only sees who owns each square of node aura but cannot tell which node it comes from.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="lairWeak" type="xsd:boolean"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="nodeLairTowerPowerProportion" type="xsd:double"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="raiderCityAdditionalPopulationCap" type="xsd:int">
+					    <xsd:annotation>
+    						<xsd:documentation>Raiders have a special population cap that prevents cities expanding by more than a certain value, see strategy guide p426.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+		        </xsd:sequence>
+	        </xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+</xsd:schema>

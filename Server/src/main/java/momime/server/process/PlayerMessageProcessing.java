@@ -913,6 +913,7 @@ public final class PlayerMessageProcessing
 				}
 
 				// Default each player's farmers to just enough to feed their initial units
+				CityAI.setOptionalFarmersInAllCities (gsk.getTrueMap (), players, thisPlayer, db, sd, debugLogger);
 			}
 
 			// Calculate and send initial production values - This is especially important in one-at-a-time games with more

@@ -29,6 +29,7 @@ import momime.common.messages.servertoclient.v0_9_4.FogOfWarVisibleAreaChangedMe
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitMessageData;
 import momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessageData;
+import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessageData;
 import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
@@ -241,16 +242,79 @@ public final class FogOfWarProcessing
 			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 			if (MomFogOfWarCalculations.canSeeMidTurn (state, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ()))
-
+			{
 				// Update player's memory on server
-				if (copyTerrainAndNodeAura (tc, priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ())))
+				final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+				if (copyTerrainAndNodeAura (tc, mc))
 
 					// Update player's memory on client
 					if (thisPlayer.getPlayerDescription ().isHuman ())
 						thisPlayer.getConnection ().sendMessageToClient (terrainMsgContainer);
+			}
 		}
 
 		debugLogger.exiting (FogOfWarProcessing.class.getName (), "updatePlayerMemoryOfTerrain");
+	}
+
+	/**
+	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
+	 * i.e. the caller must update the True Map value themselves before calling this
+	 *
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param coords Location of the city that has been updated
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public final static void updatePlayerMemoryOfCity (final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords, final MomSessionDescription sd, final Logger debugLogger)
+		throws JAXBException, XMLStreamException
+	{
+		debugLogger.entering (FogOfWarProcessing.class.getName (), "updatePlayerMemoryOfCity", CoordinatesUtils.overlandMapCoordinatesToString (coords));
+
+		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+
+		// First build the message
+		final UpdateCityMessageData cityMsg = new UpdateCityMessageData ();
+		cityMsg.setMapLocation (coords);
+
+		final UpdateCityMessage cityMsgContainer = new UpdateCityMessage ();
+		cityMsgContainer.setData (cityMsg);
+
+		// Check which players can see the city
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+
+			if (MomFogOfWarCalculations.canSeeMidTurn (state, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ()))
+			{
+				// Update player's memory on server
+				final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+
+				final boolean includeCurrentlyConstructing;
+				if (tc.getCityData () == null)
+					includeCurrentlyConstructing = false;
+				else
+					includeCurrentlyConstructing = (thisPlayer.getPlayerDescription ().getPlayerID () == tc.getCityData ().getCityOwnerID ()) ||
+						(sd.getFogOfWarSetting ().isSeeEnemyCityConstruction ());
+
+				if (copyCityData (tc, mc, includeCurrentlyConstructing))
+
+					// Update player's memory on client
+					if (thisPlayer.getPlayerDescription ().isHuman ())
+					{
+						// Note unlike the terrain msg which we can build once and send to each applicable player, the data for the city msg
+						// needs to be reset for each player, since their visibility of the currentlyConstructing value may be different
+						cityMsg.setCityData (mc.getCityData ());
+						thisPlayer.getConnection ().sendMessageToClient (cityMsgContainer);
+					}
+			}
+		}
+
+		debugLogger.exiting (FogOfWarProcessing.class.getName (), "updatePlayerMemoryOfCity");
 	}
 
 	/**

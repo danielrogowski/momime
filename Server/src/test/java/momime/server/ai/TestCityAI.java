@@ -2,6 +2,7 @@ package momime.server.ai;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.logging.Logger;
 
@@ -9,12 +10,15 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
@@ -25,6 +29,9 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the CityAI class
@@ -148,5 +155,86 @@ public final class TestCityAI
 		assertEquals (21, coal.getX ());
 		assertEquals (11, coal.getY ());
 		assertEquals (0, coal.getPlane ());
+	}
+
+	/**
+	 * Tests the findWorkersToConvertToFarmers method
+	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws RecordNotFoundException If there is a building that cannot be found in the DB
+	 * @throws MomException If a city's race has no farmers defined or those farmers have no ration production defined
+	 */
+	@Test
+	public final void testFindWorkersToConvertToFarmers () throws JAXBException, RecordNotFoundException, MomException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		// Map
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
+
+		// If we want trade goods cities and there are none, no updates will take place
+		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+		{
+			final OverlandMapCityData cityData = new OverlandMapCityData ();
+			cityData.setCityOwnerID (2);
+			cityData.setCityPopulation (4000);
+			cityData.setMinimumFarmers (1);
+			cityData.setNumberOfRebels (1);
+			cityData.setOptionalFarmers (0);
+			cityData.setCityRaceID ("RC05");		// High men (standard ration production)
+			cityData.setCurrentlyConstructingBuildingOrUnitID (CommonDatabaseConstants.VALUE_BUILDING_HOUSING);
+			trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).setCityData (cityData);
+		}
+
+		assertEquals (10, CityAI.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd, debugLogger));
+
+		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ().intValue ());
+
+		// In the situation where we have 62 cities - 2 building trade goods and 60 building something else - and we need 5 rations, there are
+		// only 2 possible outcomes - use 2 farmers in city A and 1 in city B, or use 1 in city A and 2 in city B
+		// Those 3 farmers will then produce 6 rations, so 1 leftover, hence -2 result
+		for (int x = 0; x < 2; x++)
+		{
+			final OverlandMapCityData cityData = new OverlandMapCityData ();
+			cityData.setCityOwnerID (2);
+			cityData.setCityPopulation (4000);
+			cityData.setMinimumFarmers (1);
+			cityData.setNumberOfRebels (1);
+			cityData.setOptionalFarmers (0);
+			cityData.setCityRaceID ("RC05");		// High men (standard ration production)
+			cityData.setCurrentlyConstructingBuildingOrUnitID (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS);
+			trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x).setCityData (cityData);
+		}
+
+		assertEquals (-2, CityAI.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd, debugLogger));
+
+		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ().intValue ());
+
+		switch (trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (0).getCityData ().getOptionalFarmers ())
+		{
+			case 1:
+				assertEquals (2, trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (1).getCityData ().getOptionalFarmers ().intValue ());
+				break;
+
+			case 2:
+				assertEquals (1, trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (1).getCityData ().getOptionalFarmers ().intValue ());
+				break;
+
+			default:
+				fail ("Optional farmers in city A must be 1 or 2");
+		}
 	}
 }

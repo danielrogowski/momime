@@ -9,18 +9,30 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.database.v0_9_4.AvailableDatabase;
+import momime.common.messages.CoordinatesUtils;
+import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessage;
+import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessage;
+import momime.common.messages.servertoclient.v0_9_4.AddUnitMessage;
+import momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowRank;
 import momime.common.messages.servertoclient.v0_9_4.ChooseYourRaceNowMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChosenCustomPhotoMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChosenStandardPhotoMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChosenWizardMessage;
+import momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_4.FogOfWarVisibleAreaChangedMessage;
 import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
+import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage;
+import momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage;
 import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
@@ -252,6 +264,61 @@ public final class DummyMomClientThread extends MultiplayerBaseClientThread
 		{
 			final ChosenCustomPhotoMessage chosen = (ChosenCustomPhotoMessage) msg;
 			client.addToTextArea ("Player " + chosen.getPlayerID () + " chose custom photo of size " + chosen.getNdgBmpImage ().length + " bytes and flag colour " + chosen.getFlagColour ());
+		}
+		else if (msg instanceof UpdateTerrainMessage)
+		{
+			final UpdateTerrainMessage terrain = (UpdateTerrainMessage) msg;
+			client.addToTextArea ("Knowledge of terrain at " + CoordinatesUtils.overlandMapCoordinatesToString (terrain.getData ().getMapLocation ()) + " updated");
+		}
+		else if (msg instanceof UpdateCityMessage)
+		{
+			final UpdateCityMessage city = (UpdateCityMessage) msg;
+			client.addToTextArea ("Knowledge of city at " + CoordinatesUtils.overlandMapCoordinatesToString (city.getData ().getMapLocation ()) + " updated");
+		}
+		else if (msg instanceof AddBuildingMessage)
+		{
+			final AddBuildingMessage building = (AddBuildingMessage) msg;
+			client.addToTextArea ("Building " + building.getData ().getFirstBuildingID () + " added to city at " + CoordinatesUtils.overlandMapCoordinatesToString (building.getData ().getCityLocation ()) + " updated");
+		}
+		else if (msg instanceof DestroyBuildingMessage)
+		{
+			final DestroyBuildingMessage building = (DestroyBuildingMessage) msg;
+			client.addToTextArea ("Building " + building.getData ().getBuildingID () + " destroyed or gone out of sight from city at " + CoordinatesUtils.overlandMapCoordinatesToString (building.getData ().getCityLocation ()) + " updated");
+		}
+		else if (msg instanceof AddUnitMessage)
+		{
+			final AddUnitMessage unit = (AddUnitMessage) msg;
+			client.addToTextArea ("Unit" + unit.getData ().getUnitURN () + " added of type " + unit.getData ().getUnitID ());
+		}
+		else if (msg instanceof KillUnitMessage)
+		{
+			final KillUnitMessage unit = (KillUnitMessage) msg;
+			client.addToTextArea ("Unit" + unit.getData ().getUnitURN () + " killed or gone out of sight");
+		}
+		else if (msg instanceof UpdateNodeLairTowerUnitIDMessage)
+		{
+			final UpdateNodeLairTowerUnitIDMessage update = (UpdateNodeLairTowerUnitIDMessage) msg;
+			client.addToTextArea ("Node/Lair/Tower at " + CoordinatesUtils.overlandMapCoordinatesToString (update.getData ().getNodeLairTowerLocation ()) + " known to contain unit ID " + update.getData ().getMonsterUnitID ());
+		}
+		else if (msg instanceof AddMaintainedSpellMessage)
+		{
+			final AddMaintainedSpellMessage spell = (AddMaintainedSpellMessage) msg;
+			client.addToTextArea ("Spell of type " + spell.getData ().getSpellID () + " added");
+		}
+		else if (msg instanceof SwitchOffMaintainedSpellMessage)
+		{
+			final SwitchOffMaintainedSpellMessage spell = (SwitchOffMaintainedSpellMessage) msg;
+			client.addToTextArea ("Spell of type " + spell.getData ().getSpellID () + " switched off or gone out of sight");
+		}
+		else if (msg instanceof AddCombatAreaEffectMessage)
+		{
+			final AddCombatAreaEffectMessage cae = (AddCombatAreaEffectMessage) msg;
+			client.addToTextArea ("CAE of type " + cae.getData ().getCombatAreaEffectID () + " added");
+		}
+		else if (msg instanceof CancelCombatAreaEffectMessage)
+		{
+			final CancelCombatAreaEffectMessage cae = (CancelCombatAreaEffectMessage) msg;
+			client.addToTextArea ("CAE of type " + cae.getData ().getCombatAreaEffectID () + " cancelled off or gone out of sight");
 		}
 		else if (msg instanceof FogOfWarVisibleAreaChangedMessage)
 		{

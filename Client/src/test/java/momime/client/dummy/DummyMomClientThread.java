@@ -27,16 +27,19 @@ import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage;
+import momime.common.messages.servertoclient.v0_9_4.StartGameMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage;
 import momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage;
 import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_4.MomResourceValue;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
@@ -337,6 +340,18 @@ public final class DummyMomClientThread extends MultiplayerBaseClientThread
 			if (fow.getCancelCombaAreaEffect ().size () > 0)			client.addToTextArea ("  " + fow.getCancelCombaAreaEffect ().size () +			" combat area effects cancelled");
 			if (fow.getFogOfWarUpdate ().size () > 0)					client.addToTextArea ("  " + fow.getFogOfWarUpdate ().size () +					" visible area changes");
 			client.addToTextArea ("End of Fog of War visible area changes");
+		}
+		else if (msg instanceof UpdateGlobalEconomyMessage)
+		{
+			final UpdateGlobalEconomyMessage econ = (UpdateGlobalEconomyMessage) msg;
+			client.addToTextArea ("Received updated resource values:");
+			for (final MomResourceValue resource : econ.getResourceValue ())
+				client.addToTextArea ("  " + resource.getProductionTypeID () + " producing " + resource.getAmountPerTurn () + " per turn, have " + resource.getAmountStored () + " stored");
+			client.addToTextArea ("End of list of resource values");
+		}
+		else if (msg instanceof StartGameMessage)
+		{
+			client.addToTextArea ("Starting game (switches client to map view)");
 		}
 		else
 			throw new IOException ("DemoSessionClientThread received a message of type " + msg.getClass ().getName () + " which it does not know how to process");

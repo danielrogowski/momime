@@ -3,6 +3,8 @@ package momime.server.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.server.ServerTestData;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseLookup;
@@ -338,5 +341,16 @@ public final class TestUnitServerUtils
 
 		assertEquals ("HS03", skillIDs.get (0));
 		assertEquals ("HS04", skillIDs.get (1));
+	}
+
+	/**
+	 * Tests the doesUnitSpecialOrderResultInDeath method
+	 */
+	@Test
+	public final void testDoesUnitSpecialOrderResultInDeath ()
+	{
+		assertFalse (UnitServerUtils.doesUnitSpecialOrderResultInDeath (null));
+		assertFalse (UnitServerUtils.doesUnitSpecialOrderResultInDeath (UnitSpecialOrder.BUILD_ROAD));
+		assertTrue (UnitServerUtils.doesUnitSpecialOrderResultInDeath (UnitSpecialOrder.BUILD_CITY));
 	}
 }

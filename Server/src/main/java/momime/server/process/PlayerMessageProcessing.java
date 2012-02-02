@@ -30,6 +30,7 @@ import momime.common.messages.servertoclient.v0_9_4.ChosenStandardPhotoMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChosenWizardMessage;
 import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage;
+import momime.common.messages.servertoclient.v0_9_4.StartGameMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameProgressStageID;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
@@ -50,6 +51,7 @@ import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.MomSessionThread;
 import momime.server.ai.CityAI;
 import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.calculations.MomServerSpellCalculations;
 import momime.server.database.ServerDatabaseLookup;
 import momime.server.database.ServerDatabaseValues;
@@ -740,7 +742,7 @@ public final class PlayerMessageProcessing
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending any messages to the clients
 	 * @throws XMLStreamException If there is a problem sending any messages to the clients
-	 * @throws MomException If the AI players can't find spare wizard IDs to use
+	 * @throws MomException If there is a problem in any game logic or data
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
 	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
 	 */
@@ -919,9 +921,11 @@ public final class PlayerMessageProcessing
 			// Calculate and send initial production values - This is especially important in one-at-a-time games with more
 			// than one human player, since e.g. player 2 won't otherwise be sent their power base figure until player 1 hits 'next turn'
 			thread.getSessionLogger ().info ("Calculating initial production values...");
+			MomServerResourceCalculations.recalculateGlobalProductionValues (0, false, players, gsk.getTrueMap (), sd, db, debugLogger);
 
 			// Kick off the game - this shows the map screen for the first time
 			thread.getSessionLogger ().info ("Starting game...");
+			MultiplayerServerUtils.sendMessageToAllClients (players, new StartGameMessage (), debugLogger);
 
 			// Kick off the first turn
 			thread.getSessionLogger ().info ("Kicking off first turn...");

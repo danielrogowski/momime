@@ -15,6 +15,7 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
+import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.database.ServerDatabaseLookup;
 import momime.server.database.v0_9_4.Unit;
@@ -263,6 +264,15 @@ public final class UnitServerUtils
 		unit.setStatus (UnitStatusID.GENERATED);
 
 		debugLogger.exiting (UnitServerUtils.class.getName (), "generateHeroNameAndRandomSkills");
+	}
+
+	/**
+	 * @param order Special order that a unit has
+	 * @return True if this special order results in the unit dying/being removed from play
+	 */
+	public static final boolean doesUnitSpecialOrderResultInDeath (final UnitSpecialOrder order)
+	{
+		return (order == UnitSpecialOrder.BUILD_CITY) || (order == UnitSpecialOrder.MELD_WITH_NODE) || (order == UnitSpecialOrder.DISMISS);
 	}
 
 	/**

@@ -64,6 +64,15 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	}
 
 	/**
+	 * @return Iterator allowing scanning over all the production results
+	 */
+	@Override
+	public final Iterator<CalculateCityProductionResult> iterator ()
+	{
+		return results.iterator ();
+	}
+
+	/**
 	 * @param productionTypeID Production type to search for
 	 * @return Requested production type - if not already in the list, it will be added
 	 */

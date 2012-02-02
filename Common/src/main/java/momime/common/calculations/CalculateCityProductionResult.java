@@ -260,7 +260,7 @@ public class CalculateCityProductionResult implements Comparable<CalculateCityPr
 			0, 0, 0, 0,
 			doubleUnmodifiedProductionAmount,
 			0, 0,
-			0, doubleProductionAmount,
+			0, aDoubleProductionAmount,
 			0, 0, 0, roundingDirection);
 	}
 

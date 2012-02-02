@@ -26,7 +26,7 @@ public final class ResourceValueUtils
 	 * @param productionTypeID Production type ID to search for
 	 * @return The resource value for the specified production type, or null if the player has none of this production type
 	 */
-	public static final MomResourceValue findResourceValue (final List<MomResourceValue> resourceList, final String productionTypeID)
+	static final MomResourceValue findResourceValue (final List<MomResourceValue> resourceList, final String productionTypeID)
 	{
 		MomResourceValue result = null;
 
@@ -43,7 +43,29 @@ public final class ResourceValueUtils
 
 	/**
 	 * @param resourceList List of resources to search through
-     * @param productionTypeID Type of production to calculate
+     * @param productionTypeID Type of production to look up
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+     * @return How much of this production type that this player generates per turn
+     */
+	public static final int findAmountPerTurnForProductionType (final List<MomResourceValue> resourceList, final String productionTypeID, final Logger debugLogger)
+	{
+		debugLogger.entering (ResourceValueUtils.class.getName (), "findAmountPerTurnForProductionType", productionTypeID);
+
+		final MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
+
+		final int result;
+		if (playerResourceValue == null)
+			result = 0;
+		else
+			result = playerResourceValue.getAmountPerTurn ();
+
+		debugLogger.exiting (ResourceValueUtils.class.getName (), "findAmountPerTurnForProductionType", result);
+		return result;
+	}
+
+	/**
+	 * @param resourceList List of resources to search through
+     * @param productionTypeID Type of production to look up
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
      * @return How much of this production type that this player has stored
      */

@@ -63,6 +63,42 @@ public final class TestResourceValueUtils
 	}
 
 	/**
+	 * Tests the findAmountPerTurnForProductionType method where the resource value does exist
+	 */
+	@Test
+	public final void testFindAmountPerTurnForProductionType_Exists ()
+	{
+		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MomResourceValue newValue = new MomResourceValue ();
+			newValue.setProductionTypeID ("RE0" + n);
+			newValue.setAmountPerTurn (n * 10);
+			resourceValues.add (newValue);
+		}
+
+		assertEquals (20, ResourceValueUtils.findAmountPerTurnForProductionType (resourceValues, "RE02", debugLogger));
+	}
+
+	/**
+	 * Tests the findAmountPerTurnForProductionType method where the resource value doesn't exist
+	 */
+	@Test
+	public final void testFindAmountPerTurnForProductionType_NotExists ()
+	{
+		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MomResourceValue newValue = new MomResourceValue ();
+			newValue.setProductionTypeID ("RE0" + n);
+			newValue.setAmountPerTurn (n * 10);
+			resourceValues.add (newValue);
+		}
+
+		assertEquals (0, ResourceValueUtils.findAmountPerTurnForProductionType (resourceValues, "RE04", debugLogger));
+	}
+
+	/**
 	 * Tests the findAmountStoredForProductionType method where the resource value does exist
 	 */
 	@Test

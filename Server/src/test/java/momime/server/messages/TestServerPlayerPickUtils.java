@@ -2,6 +2,7 @@ package momime.server.messages;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -28,14 +29,15 @@ public final class TestServerPlayerPickUtils
 
 	/**
 	 * Tests the getTotalInitialSkill method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Test
-	public final void testGetTotalInitialSkill () throws JAXBException, RecordNotFoundException
+	public final void testGetTotalInitialSkill () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Add 1x Book 1, 2x Book 2, 3x Book 3, 4x Book 4 and 5x Book 5 = 15 books x2 skill per book = 30

@@ -300,7 +300,7 @@ public final class MomServer extends MultiplayerSessionServer
 				// Build the new game XML, which lets connecting clients know which XML files are available on the server and what new game settings they can choose
 				final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
 				final NewGameDatabaseMessage newGameDatabaseMessage = ServerDatabaseConverters.buildNewGameDatabase
-					(config.getPathToServerXmlDatabases (), serverDatabaseXSD, serverDatabaseContext, debugLogger);
+					(new File (config.getPathToServerXmlDatabases ()), serverDatabaseXSD, serverDatabaseContext, debugLogger);
 
 				// User registry
 				final MultiplayerSessionUserRegistry userRegistry = new MultiplayerSessionUserRegistryImpl (new File (config.getUserRegistryFilename ()), createUserRegistry, debugLogger);

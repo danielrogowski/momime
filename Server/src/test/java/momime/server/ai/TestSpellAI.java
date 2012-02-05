@@ -3,6 +3,7 @@ package momime.server.ai;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -32,14 +33,15 @@ public final class TestSpellAI
 
 	/**
 	 * Tests the chooseSpellToResearchAI method with a valid spell list
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If the list was empty
 	 */
 	@Test
-	public final void testChooseSpellToResearchAI_Valid () throws JAXBException, MomException
+	public final void testChooseSpellToResearchAI_Valid () throws IOException, JAXBException, MomException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 
 		// List the 2nd 10 earth spells, two of these have research order 1, so the routine should pick either of them
 		final List<Spell> spells = new ArrayList<Spell> ();
@@ -62,15 +64,16 @@ public final class TestSpellAI
 
 	/**
 	 * Tests the chooseFreeSpellAI method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If no eligible spells are available (e.g. player has them all researched already)
 	 * @throws RecordNotFoundException If the spell chosen couldn't be found in the player's spell list
 	 */
 	@Test
-	public final void testChooseFreeSpellAI () throws JAXBException, MomException, RecordNotFoundException
+	public final void testChooseFreeSpellAI () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Player knows no spells yet

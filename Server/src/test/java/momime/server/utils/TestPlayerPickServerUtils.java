@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -130,13 +131,14 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the validateCustomPicks method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 */
 	@Test
-	public final void testValidateCustomPicks () throws JAXBException
+	public final void testValidateCustomPicks () throws IOException, JAXBException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Set up session description
@@ -205,7 +207,7 @@ public final class TestPlayerPickServerUtils
 	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_Human () throws Exception
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Set up player
@@ -286,7 +288,7 @@ public final class TestPlayerPickServerUtils
 	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_AI () throws Exception
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Set up player
@@ -349,14 +351,15 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the validateInitialSpellSelection method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
 	@Test
-	public final void testValidateInitialSpellSelection () throws JAXBException, RecordNotFoundException
+	public final void testValidateInitialSpellSelection () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Set up player
@@ -409,14 +412,15 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the validateRaceChoice method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If we choose a race whose native plane can't be found
 	 */
 	@Test
-	public final void testValidateRaceChoice () throws JAXBException, RecordNotFoundException
+	public final void testValidateRaceChoice () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Set up player
@@ -542,13 +546,14 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the listWizardsForAIPlayers method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 */
 	@Test
-	public final void testListWizardsForAIPlayers () throws JAXBException
+	public final void testListWizardsForAIPlayers () throws IOException, JAXBException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Quick check on DB
@@ -588,13 +593,14 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the startingPlaneForWizard method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 */
 	@Test
-	public final void testStartingPlaneForWizard () throws JAXBException
+	public final void testStartingPlaneForWizard () throws IOException, JAXBException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
@@ -621,14 +627,15 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the chooseRandomRaceForPlane method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If there are no races defined in the database that inhabit this plane
 	 */
 	@Test
-	public final void testChooseRandomRaceForPlane () throws JAXBException, MomException
+	public final void testChooseRandomRaceForPlane () throws IOException, JAXBException, MomException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final int arcanusRaceID = Integer.parseInt (PlayerPickServerUtils.chooseRandomRaceForPlane (0, db, debugLogger).substring (2));

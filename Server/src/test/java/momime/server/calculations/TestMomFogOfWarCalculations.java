@@ -3,6 +3,8 @@ package momime.server.calculations;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
@@ -49,13 +51,14 @@ public final class TestMomFogOfWarCalculations
 
 	/**
 	 * Tests the canSeeMidTurnOnAnyPlaneIfTower method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 */
 	@Test
-	public final void testCanSeeMidTurnOnAnyPlaneIfTower () throws JAXBException
+	public final void testCanSeeMidTurnOnAnyPlaneIfTower () throws IOException, JAXBException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();

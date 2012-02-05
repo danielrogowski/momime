@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -52,7 +54,9 @@ public final class TestServerDatabaseConverters
 		final Validator xsd = schemaFactory.newSchema (xsdResource).newValidator ();
 
 		// Build it
-		final NewGameDatabaseMessage msg = ServerDatabaseConverters.buildNewGameDatabase (ServerTestData.SERVER_XML_LOCATION, xsd, JAXBContextCreator.createServerDatabaseContext (), debugLogger);
+		// Locate the server XML file, then go one level up to the folder that it is in
+		final NewGameDatabaseMessage msg = ServerDatabaseConverters.buildNewGameDatabase
+			(new File (ServerTestData.locateServerXmlFile (), "..").getCanonicalFile (), xsd, JAXBContextCreator.createServerDatabaseContext (), debugLogger);
 		assertEquals (1, msg.getNewGameDatabase ().getMomimeXmlDatabase ().size ());
 
 		final AvailableDatabase db = msg.getNewGameDatabase ().getMomimeXmlDatabase ().get (0);
@@ -77,14 +81,15 @@ public final class TestServerDatabaseConverters
 
 	/**
 	 * Tests the buildClientDatabase method on valid numbers of spell picks
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem loading the server XML file
 	 * @throws RecordNotFoundException If one of the wizards does not have picks for the specified number of human picks defined
 	 */
 	@Test
-	public final void testBuildClientDatabase_Valid () throws JAXBException, RecordNotFoundException
+	public final void testBuildClientDatabase_Valid () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 
 		for (int humanSpellPicks = 0; humanSpellPicks <= 20; humanSpellPicks++)
 		{
@@ -100,14 +105,15 @@ public final class TestServerDatabaseConverters
 
 	/**
 	 * Tests the buildClientDatabase method on a number of spell picks that doesn't exist
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem loading the server XML file
 	 * @throws RecordNotFoundException If one of the wizards does not have picks for the specified number of human picks defined
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testBuildClientDatabase_PickCountDoesntExist () throws JAXBException, RecordNotFoundException
+	public final void testBuildClientDatabase_PickCountDoesntExist () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 
 		ServerDatabaseConverters.buildClientDatabase (serverDB, 21, debugLogger);
 	}

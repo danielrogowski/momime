@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -47,15 +48,16 @@ public class TestOverlandMapServerUtils
 
 	/**
 	 * Tests the chooseRandomRaceForPlane method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
  	 * @throws MomException If no races are defined with the requested plane
  	 * @throws RecordNotFoundException If we can't find the returned race ID in the database
 	 */
 	@Test
-	public final void testChooseRandomRaceForPlane () throws JAXBException, MomException, RecordNotFoundException
+	public final void testChooseRandomRaceForPlane () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Pick a random race for each plane
@@ -70,14 +72,15 @@ public class TestOverlandMapServerUtils
 
 	/**
 	 * Tests the setContinentalRace method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
 	 */
 	@Test
-	public final void testSetContinentalRace () throws JAXBException, RecordNotFoundException
+	public final void testSetContinentalRace () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -119,15 +122,16 @@ public class TestOverlandMapServerUtils
 
 	/**
 	 * Tests the decideAllContinentalRaces method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
  	 * @throws MomException If no races are defined for a particular plane
 	 */
 	@Test
-	public final void testDecideAllContinentalRaces () throws JAXBException, RecordNotFoundException, MomException
+	public final void testDecideAllContinentalRaces () throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();

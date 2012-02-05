@@ -99,7 +99,7 @@ public final class ServerDatabaseConverters
 
 	/**
 	 * Finds all the compatible (i.e. correct namespace) XML databases on the server and extracts a small portion of each needed for setting up new games
-	 * @param xmlFolderName Folder name, including trailing backslash, in which to look for server XML files, e.g. F:\Workspaces\Delphi\Master of Magic\XML Files\Server\
+	 * @param xmlFolder Folder in which to look for server XML files, e.g. F:\Workspaces\Delphi\Master of Magic\XML Files\Server\
 	 * @param xsdValidator XSD validator created for the server XSD file
 	 * @param serverDatabaseContext JAXB Context for loading server XML files
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
@@ -107,17 +107,17 @@ public final class ServerDatabaseConverters
 	 * @throws JAXBException If there is a problem creating the server XML unmarshaller
 	 * @throws MomException If there are no compatible server XML databases
 	 */
-	public final static NewGameDatabaseMessage buildNewGameDatabase (final String xmlFolderName, final Validator xsdValidator, final JAXBContext serverDatabaseContext, final Logger debugLogger)
+	public final static NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Validator xsdValidator, final JAXBContext serverDatabaseContext, final Logger debugLogger)
 		throws JAXBException, MomException
 	{
 		debugLogger.entering (ServerDatabaseConverters.class.getName (), "buildNewGameDatabase");
 
 		// First put the list of all compatibly named XML databases in a string list, so we can sort it before we start trying to load them in and check them
 		// Strip the suffix off each one as we add it
-		debugLogger.finest ("buildNewGameDatabase searching for XML files in \"" + xmlFolderName + "\"");
+		debugLogger.finest ("buildNewGameDatabase searching for XML files in \"" + xmlFolder + "\"");
 
 		final List<String> xmlFilenames = new ArrayList<String> ();
-		for (final File thisFile : new File (xmlFolderName).listFiles (new SuffixFilenameFilter (SERVER_XML_FILE_EXTENSION)))
+		for (final File thisFile : xmlFolder.listFiles (new SuffixFilenameFilter (SERVER_XML_FILE_EXTENSION)))
 		{
 			String thisFilename = thisFile.getName ();
 			thisFilename = thisFilename.substring (0, thisFilename.length () - SERVER_XML_FILE_EXTENSION.length ());
@@ -136,7 +136,7 @@ public final class ServerDatabaseConverters
 
 		for (final String thisFilename : xmlFilenames)
 		{
-			final File fullFilename = new File (xmlFolderName + thisFilename + SERVER_XML_FILE_EXTENSION);
+			final File fullFilename = new File (xmlFolder, thisFilename + SERVER_XML_FILE_EXTENSION);
 
 			try
 			{

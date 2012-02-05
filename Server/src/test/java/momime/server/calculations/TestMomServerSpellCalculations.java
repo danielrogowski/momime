@@ -3,6 +3,7 @@ package momime.server.calculations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -32,14 +33,15 @@ public final class TestMomServerSpellCalculations
 
 	/**
 	 * Tests the randomizeResearchableSpells method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If we encounter a pick or other item that we can't find in the cache
 	 */
 	@Test
-	public final void testRandomizeResearchableSpells () throws JAXBException, RecordNotFoundException
+	public final void testRandomizeResearchableSpells () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Every spell is initially unavailbale
@@ -156,14 +158,15 @@ public final class TestMomServerSpellCalculations
 
 	/**
 	 * Tests the randomizeSpellsResearchableNow method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	@Test
-	public final void testRandomizeSpellsResearchableNow () throws JAXBException, RecordNotFoundException
+	public final void testRandomizeSpellsResearchableNow () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Every spell is initially unavailbale

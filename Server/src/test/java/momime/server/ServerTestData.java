@@ -1,6 +1,8 @@
 package momime.server;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.DifficultyLevelNodeStrength;
@@ -13,6 +15,7 @@ import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.server.config.ServerConfigConstants;
 import momime.server.database.v0_9_4.DifficultyLevel;
 import momime.server.database.v0_9_4.LandProportion;
 import momime.server.database.v0_9_4.MapSize;
@@ -27,11 +30,27 @@ import com.ndg.map.CoordinateSystemType;
  */
 public final class ServerTestData
 {
-	/** Location of XML file to test with */
-	public static final String SERVER_XML_LOCATION = "F:\\Workspaces\\Eclipse\\MoMIMEServer\\src\\external\\resources\\momime.server.database\\";
+	/**
+	 * @return Location of Original Master of Magic 1.31 rules.Master of Magic Server.xml to test with
+	 * @throws IOException If we are unable to locate the server XML file
+	 */
+	public final static File locateServerXmlFile () throws IOException
+	{
+		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 
-	/** Location of XML file to test with */
-	public static final File SERVER_XML_FILE = new File ("F:\\Workspaces\\Eclipse\\MoMIMEServer\\src\\external\\resources\\momime.server.database\\Original Master of Magic 1.31 rules.Master of Magic Server.xml");
+		// Moreover, if we search for something that is on the classpath of the MoMIMEServerDatabase project, and run this test as part of
+		// a maven command line build, we get a URL back of the form jar:file:<maven repository>MoMIMEServerDatabase.jar!/momime.server.database/MoMIMEServerDatabase.xsd
+
+		// We can't alter that URL to locate the server XML file within the JAR, simply because the server XML is intentionally not in the JAR or anywhere in Maven at all
+
+		// So only way to do this is locate some resource in *this* project, and modify the location from there
+		// This makes the assumption that the MoMIMEServerDatabase project is called as such and hasn't been checked out under a different name
+		final URL configXsd = new Object ().getClass ().getResource (ServerConfigConstants.CONFIG_XSD_LOCATION);
+		final File configXsdFile = new File (configXsd.getFile ());
+		final File serverXmlFile = new File (configXsdFile, "../../../../../MoMIMEServerDatabase/src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
+
+		return serverXmlFile.getCanonicalFile ();
+	}
 
 	/**
 	 * This is duplicated from the dummy test client

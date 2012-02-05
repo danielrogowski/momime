@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,15 +40,16 @@ public final class TestUnitServerUtils
 
 	/**
 	 * Tests the generateHeroNameAndRandomSkills method on a hero who gets no random rolled skills
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	@Test
-	public final void testGenerateHeroNameAndRandomSkills_NoExtras () throws JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateHeroNameAndRandomSkills_NoExtras () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Dwarf hero
@@ -71,15 +73,16 @@ public final class TestUnitServerUtils
 
 	/**
 	 * Tests the generateHeroNameAndRandomSkills method on a hero who only has one viable skill to pick (all others are "only if have already")
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	@Test
-	public final void testGenerateHeroNameAndRandomSkills_SingleChoice () throws JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateHeroNameAndRandomSkills_SingleChoice () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
@@ -110,15 +113,16 @@ public final class TestUnitServerUtils
 
 	/**
 	 * Tests the generateHeroNameAndRandomSkills method on a hero who only has one viable skill to pick (it is "only if have already" and we do have the skill)
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	@Test
-	public final void testGenerateHeroNameAndRandomSkills_SingleChoiceHaveAlready () throws JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateHeroNameAndRandomSkills_SingleChoiceHaveAlready () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Healer hero - gets 1 mage pick
@@ -147,15 +151,16 @@ public final class TestUnitServerUtils
 
 	/**
 	 * Tests the generateHeroNameAndRandomSkills method on a hero who only has no viable skills to pick (they are all "only if have already" and we have none of them)
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	@Test(expected=MomException.class)
-	public final void testGenerateHeroNameAndRandomSkills_NoChoices () throws JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateHeroNameAndRandomSkills_NoChoices () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
@@ -173,15 +178,16 @@ public final class TestUnitServerUtils
 
 	/**
 	 * Tests the generateHeroNameAndRandomSkills method, providing that heroes with a defined hero random pick type can get skills with a blank hero random pick type
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	@Test
-	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_SkillNotTypeSpecific () throws JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_SkillNotTypeSpecific () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
@@ -213,15 +219,16 @@ public final class TestUnitServerUtils
 
 	/**
 	 * Tests the generateHeroNameAndRandomSkills method, providing that heroes without a defined hero random pick type can get skills even if they do specify a hero random pick type
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	@Test
-	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_HeroNotTypeSpecific () throws JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_HeroNotTypeSpecific () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Warrior Mage - gets 1 pick of any type, and has HS05
@@ -249,15 +256,16 @@ public final class TestUnitServerUtils
 
 	/**
 	 * Tests the generateHeroNameAndRandomSkills method where we add lots of adds into a single skill to prove it isn't capped
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	@Test
-	public final void testGenerateHeroNameAndRandomSkills_Uncapped () throws JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateHeroNameAndRandomSkills_Uncapped () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Unknown hero - gets 5 picks of any type, and has HS05
@@ -284,15 +292,16 @@ public final class TestUnitServerUtils
 
 	/**
 	 * Tests the generateHeroNameAndRandomSkills method where we run out of skills to add to because they're all capped with a maxOccurrences value
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	@Test
-	public final void testGenerateHeroNameAndRandomSkills_Capped () throws JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateHeroNameAndRandomSkills_Capped () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Unknown hero - gets 5 picks of any type

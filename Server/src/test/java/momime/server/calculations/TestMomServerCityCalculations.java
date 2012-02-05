@@ -2,6 +2,7 @@ package momime.server.calculations;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -42,14 +43,15 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the calculateTotalFoodBonusFromBuildings method with the default XML database
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If the food production values from the XML database aren't multiples of 2
 	 */
 	@Test
-	public final void testCalculateTotalFoodBonusFromBuildings_Valid () throws JAXBException, MomException
+	public final void testCalculateTotalFoodBonusFromBuildings_Valid () throws IOException, JAXBException, MomException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		assertEquals (5, MomServerCityCalculations.calculateTotalFoodBonusFromBuildings (db, debugLogger));
@@ -57,15 +59,16 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the calculateTotalFoodBonusFromBuildings method with an edited XML database in order to cause an error
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If the food production values from the XML database aren't multiples of 2
 	 * @throws RecordNotFoundException If we can't find the value we want to update
 	 */
 	@Test(expected=MomException.class)
-	public final void testCalculateTotalFoodBonusFromBuildings_Invalid () throws JAXBException, MomException, RecordNotFoundException
+	public final void testCalculateTotalFoodBonusFromBuildings_Invalid () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Change production to be an odd value, which is invalid
@@ -78,15 +81,16 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the calculateDoubleFarmingRate method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 * @throws MomException If the city's race has no farmers defined or those farmers have no ration production defined
 	 */
 	@Test
-	public final void testCalculateDoubleFarmingRate () throws JAXBException, MomException, RecordNotFoundException
+	public final void testCalculateDoubleFarmingRate () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -154,16 +158,17 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the calculateCitySizeIDAndMinimumFarmers method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If we can't find the player who owns the city
 	 * @throws MomException If any of a number of expected items aren't found in the database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 */
 	@Test
-	public final void testCalculateCitySizeIDAndMinimumFarmers () throws JAXBException, RecordNotFoundException, MomException, PlayerNotFoundException
+	public final void testCalculateCitySizeIDAndMinimumFarmers () throws IOException, JAXBException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
@@ -282,14 +287,15 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the calculateCityScoutingRange cmethod
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	@Test
-	public final void testCalculateCityScoutingRange () throws JAXBException, RecordNotFoundException
+	public final void testCalculateCityScoutingRange () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();

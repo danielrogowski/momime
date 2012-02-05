@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
@@ -43,15 +44,16 @@ public final class TestCityAI
 
 	/**
 	 * Tests the chooseCityLocation method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
 	 * @throws MomException If the food production values from the XML database aren't multiples of 2
 	 */
 	@Test
-	public final void testChooseCityLocation () throws JAXBException, RecordNotFoundException, MomException
+	public final void testChooseCityLocation () throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
@@ -159,15 +161,16 @@ public final class TestCityAI
 
 	/**
 	 * Tests the findWorkersToConvertToFarmers method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If there is a building that cannot be found in the DB
 	 * @throws MomException If a city's race has no farmers defined or those farmers have no ration production defined
 	 */
 	@Test
-	public final void testFindWorkersToConvertToFarmers () throws JAXBException, RecordNotFoundException, MomException
+	public final void testFindWorkersToConvertToFarmers () throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Map

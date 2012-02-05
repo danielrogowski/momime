@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
@@ -39,15 +40,16 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the setAllToWater method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If there is a problem building the session description
 	 */
 	@Test
-	public final void testSetAllToWater () throws JAXBException, MomException, RecordNotFoundException
+	public final void testSetAllToWater () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
@@ -74,15 +76,16 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the setHighestTiles method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If there is a problem building the session description
 	 */
 	@Test
-	public final void testSetHighestTiles () throws JAXBException, MomException, RecordNotFoundException
+	public final void testSetHighestTiles () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
@@ -166,15 +169,16 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the checkAllDirectionsLeadToGrass method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If there is a problem building the session description
 	 */
 	@Test
-	public final void testCheckAllDirectionsLeadToGrass () throws JAXBException, MomException, RecordNotFoundException
+	public final void testCheckAllDirectionsLeadToGrass () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
@@ -220,15 +224,16 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the chooseRandomNodeTileTypeID method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If we can't find the returned tile type in the DB
 	 */
 	@Test
-	public final void testChooseRandomNodeTileTypeID () throws JAXBException, MomException, RecordNotFoundException
+	public final void testChooseRandomNodeTileTypeID () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
@@ -244,15 +249,16 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the chooseRandomLairFeatureID method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If we can't find the returned map feature in the DB
 	 */
 	@Test
-	public final void testChooseRandomLairFeatureID () throws JAXBException, MomException, RecordNotFoundException
+	public final void testChooseRandomLairFeatureID () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
@@ -268,13 +274,14 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the findMostExpensiveMonster method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 */
 	@Test
-	public final void testFindMostExpensiveMonster () throws JAXBException
+	public final void testFindMostExpensiveMonster () throws IOException, JAXBException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		assertEquals ("UN179", OverlandMapGenerator.findMostExpensiveMonster ("LT01", 1000, db).getUnitID ());	// Arch angel
@@ -326,15 +333,16 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the generateOverlandTerrain method
+	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If some entry isn't found in the db during map generation, or one of the smoothing borders isn't found in the fixed arrays
 	 */
 	@Test
-	public final void testGenerateOverlandTerrain () throws JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateOverlandTerrain () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.SERVER_XML_FILE);
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");

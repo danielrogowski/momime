@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,6 +17,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import momime.client.database.GenerateTestData;
 import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerXsdResourceResolver;
 
@@ -35,12 +35,6 @@ public final class TestLanguageDatabase
 {
 	/** Dummy logger to use during unit tests */
 	private final Logger debugLogger = Logger.getLogger ("MoMIMEClientUnitTests");
-
-	/** Location of server XML file to test with */
-	private static final File SERVER_XML_LOCATION = new File ("F:\\Workspaces\\Eclipse\\MoMIMEServer\\src\\external\\resources\\momime.server.database\\Original Master of Magic 1.31 rules.Master of Magic Server.xml");
-
-	/** Location of language XML file to test with */
-	private static final File LANGUAGE_XML_LOCATION = new File ("F:\\Workspaces\\Eclipse\\MoMIMEClient\\src\\external\\resources\\momime.client.language.database\\English.Master of Magic Language.xml");
 
 	/** Prefix that we expect all keyrefs in the language XSD to begin with */
 	private static final String KEYREF_NAMESPACE_PREFIX = "momimesvr:";
@@ -69,8 +63,8 @@ public final class TestLanguageDatabase
 
 		final DocumentBuilder builder = builderFactory.newDocumentBuilder ();
 
-		final Document serverXml = builder.parse (SERVER_XML_LOCATION);
-		final Document languageXml = builder.parse (LANGUAGE_XML_LOCATION);
+		final Document serverXml = builder.parse (GenerateTestData.locateServerXmlFile ());
+		final Document languageXml = builder.parse (GenerateTestData.locateEnglishXmlFile ());
 
 		// Insert the server XML into the appropriate place in the language XML
 		// You can't transfer nodes from one document to another, so we have to make a copy (import) of the entire server XML
@@ -119,8 +113,8 @@ public final class TestLanguageDatabase
 
 		final DocumentBuilder builder = builderFactory.newDocumentBuilder ();
 
-		final Document serverXml = builder.parse (SERVER_XML_LOCATION);
-		final Document languageXml = builder.parse (LANGUAGE_XML_LOCATION);
+		final Document serverXml = builder.parse (GenerateTestData.locateServerXmlFile ());
+		final Document languageXml = builder.parse (GenerateTestData.locateEnglishXmlFile ());
 		final Document serverXsd = builder.parse (getClass ().getResourceAsStream (ServerDatabaseConstants.SERVER_XSD_LOCATION));
 		final Document languageXsd = builder.parse (getClass ().getResourceAsStream (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION));
 

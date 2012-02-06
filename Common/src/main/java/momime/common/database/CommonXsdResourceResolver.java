@@ -3,14 +3,14 @@ package momime.common.database;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
-import momime.common.database.CommonDatabaseConstants;
-
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 
 import com.ndg.map.MapConstants;
+import com.ndg.multiplayer.base.MultiplayerBaseConstants;
+import com.ndg.multiplayer.session.MultiplayerSessionBaseConstants;
 
 /**
  * Resolver to allow finding Server IME XSD file when it is referenced as an xsd:import statement from other XSDs
@@ -55,8 +55,22 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 
 		final InputStream result;
 
+		// Multiplayer XSD
+		if ((type.equals (XSD_URI)) && (namespaceURI.equals (MultiplayerBaseConstants.MULTIPLAYER_BASE_XSD_NAMESPACE_URI)))
+		{
+			debugLogger.finest ("Namespace matches multiplayer XSD");
+			result = getClass ().getResourceAsStream (MultiplayerBaseConstants.MULTIPLAYER_BASE_XSD_LOCATION);
+		}
+
+		// Multiplayer session XSD
+		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (MultiplayerSessionBaseConstants.MULTIPLAYER_SESSION_BASE_XSD_NAMESPACE_URI)))
+		{
+			debugLogger.finest ("Namespace matches multiplayer session XSD");
+			result = getClass ().getResourceAsStream (MultiplayerSessionBaseConstants.MULTIPLAYER_SESSION_BASE_XSD_LOCATION);
+		}
+
 		// Map XSD
-		if ((type.equals (XSD_URI)) && (namespaceURI.equals (MapConstants.MAP_XSD_NAMESPACE_URI)))
+		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (MapConstants.MAP_XSD_NAMESPACE_URI)))
 		{
 			debugLogger.finest ("Namespace matches map XSD");
 			result = getClass ().getResourceAsStream (MapConstants.MAP_XSD_LOCATION);

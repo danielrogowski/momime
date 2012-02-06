@@ -612,7 +612,7 @@ public final class DummyMomClient
 		topSection.add (Box.createRigidArea (new Dimension (SPACE_BETWEEN_CONTROLS, 0)));
 
 		hostname = createTextField ("localhost");
-		port = createTextField ("12345");
+		port = createTextField ("18250");
 
 		connectSection.add (createLabel ("Host name/IP:"));
 		connectSection.add (hostname);

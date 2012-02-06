@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <momimelang:languageDatabase xmlns:momimelang="http://momime/client/language/database/v0_9_4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<joinFailedReason joinFailedReasonID="JFR001">
+	<createAccountFailedReason createAccountFailedReasonID="E">
+		<createAccountFailedReasonDescription>That player name is already in use on this server, please try another.</createAccountFailedReasonDescription>
+	</createAccountFailedReason>
+	<loginFailedReason loginFailedReasonID="K">
+		<loginFailedReasonDescription>Your player name is already logged into this server from another client, or perhaps you were disconnected so the server has an idle connection.  Use a different name, or try again and tick 'Kick existing connection' to boot the other client.</loginFailedReasonDescription>
+	</loginFailedReason>
+	<loginFailedReason loginFailedReasonID="P">
+		<loginFailedReasonDescription>Your player name or password is not recognized.</loginFailedReasonDescription>
+	</loginFailedReason>
+	<loginFailedReason loginFailedReasonID="L">
+		<loginFailedReasonDescription>You are already logged in.  Log out before attempting to log in again.</loginFailedReasonDescription>
+	</loginFailedReason>
+	<logoutFailedReason logoutFailedReasonID="L">
+		<logoutFailedReasonDescription>You can't log out since you were not logged in.</logoutFailedReasonDescription>
+	</logoutFailedReason>
+	<requestSessionListFailedReason requestSessionListFailedReasonID="L">
+		<requestSessionListFailedReasonDescription>You must log in before you can request a list of sessions that you could join.</requestSessionListFailedReasonDescription>
+	</requestSessionListFailedReason>
+	<joinFailedReason joinFailedReasonID="L">
+		<joinFailedReasonDescription>You must log into the server before you can create or join a game.</joinFailedReasonDescription>
+	</joinFailedReason>
+	<joinFailedReason joinFailedReasonID="A">
 		<joinFailedReasonDescription>You are already in a game and cannot create or join another one.</joinFailedReasonDescription>
 	</joinFailedReason>
-	<joinFailedReason joinFailedReasonID="JFR002">
+	<joinFailedReason joinFailedReasonID="N">
 		<joinFailedReasonDescription>The game you tried to join could not be found (it likely ended since the list of running games was retrieved from the server).</joinFailedReasonDescription>
 	</joinFailedReason>
-	<joinFailedReason joinFailedReasonID="JFR003">
+	<joinFailedReason joinFailedReasonID="F">
 		<joinFailedReasonDescription>The game you are trying to join is already full.</joinFailedReasonDescription>
 	</joinFailedReason>
 	<plane planeNumber="0">
@@ -4381,7 +4402,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<knownServerIP>localhost</knownServerIP>
 	</knownServer>
 	<knownServer knownServerID="SVR02">
-		<knownServerDescription>Official MoM IME Server</knownServerDescription>
+		<knownServerDescription>Implode's MoM IME Server</knownServerDescription>
 		<knownServerIP>momime.no-ip.org</knownServerIP>
 	</knownServer>
 	<languageCategory languageCategoryID="XsdBoolean">
@@ -5111,7 +5132,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Full screen resolution</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ResolutionDescription">
-			<languageEntryText>You can switch between windowed and full screen mode by pressing Alt-Tab.  Select here the resolution to use when in full screen mode:</languageEntryText>
+			<languageEntryText>You can switch between windowed and full screen mode by pressing Alt-Enter.  Select here the resolution to use when in full screen mode:</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSurveyor">

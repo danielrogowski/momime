@@ -28,6 +28,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
+import com.ndg.multiplayer.session.MultiplayerSessionBaseConstants;
+
 /**
  * Tests reading the language XSD and XML files
  */
@@ -37,7 +39,10 @@ public final class TestLanguageDatabase
 	private final Logger debugLogger = Logger.getLogger ("MoMIMEClientUnitTests");
 
 	/** Prefix that we expect all keyrefs in the language XSD to begin with */
-	private static final String KEYREF_NAMESPACE_PREFIX = "momimesvr:";
+	private static final String SERVER_NAMESPACE_PREFIX = "momimesvr:";
+
+	/** Prefix for references to the multiplayer session XSD */
+	private static final String MULTIPLAYER_SESSION_NAMESPACE_PREFIX = "mps:";
 
 	/** Fudge prefix identifying 2nd/3rd level references */
 	private static final String MULTI_LEVEL_REFERENCE_PREFIX = "multilevelFKtosecondaryDB/";
@@ -95,10 +100,11 @@ public final class TestLanguageDatabase
 
 	/**
 	 * Checking the English XML file against the langauge XSD proves that
-	 * 1) Every entry defined in the English XML has a corresponding entry in the server XML
+	 * 1) Every entry defined in the English XML has a corresponding entry in the server XML (or is a correct enum value from the MPSession XSD)
 	 * 2) That there are no duplicates
 	 *
-	 * What it doesn't prove is that all the entries in the server XML are covered, i.e. that we didn't miss any, so that is what this test checks
+	 * What it doesn't prove is that all the entries in the server XML and all possible enum values are covered, i.e. that we didn't miss any, so that is what this test checks
+	 *
 	 * Every type of entity present in the server XML isn't in the language XML, and we can't assume that all types that should be present in the language XML are,
 	 * so the only way to do this properly is to look at all the xsd:keyrefs in the language XSD to get a definitive list of what entities should be present
 	 *
@@ -115,8 +121,10 @@ public final class TestLanguageDatabase
 
 		final Document serverXml = builder.parse (GenerateTestData.locateServerXmlFile ());
 		final Document languageXml = builder.parse (GenerateTestData.locateEnglishXmlFile ());
+
 		final Document serverXsd = builder.parse (getClass ().getResourceAsStream (ServerDatabaseConstants.SERVER_XSD_LOCATION));
 		final Document languageXsd = builder.parse (getClass ().getResourceAsStream (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION));
+		final Document multiplayerSessionXsd = builder.parse (getClass ().getResourceAsStream (MultiplayerSessionBaseConstants.MULTIPLAYER_SESSION_BASE_XSD_LOCATION));
 
 		// Find all the PKs defined in the server XSD
 		final List<Element> serverElementList = listElements (serverXsd.getDocumentElement ().getChildNodes (), "xsd:element");
@@ -140,20 +148,20 @@ public final class TestLanguageDatabase
 		assertEquals ("Language XSD should contain exactly one top level element", 1, languageElementList.size ());
 		final Element languageElement = languageElementList.get (0);
 
-		final List<Element> keyRefs = listElements (languageElement.getChildNodes (), "xsd:keyref");
-		if (keyRefs.size () == 0)
+		final List<Element> languageXsdKeyRefs = listElements (languageElement.getChildNodes (), "xsd:keyref");
+		if (languageXsdKeyRefs.size () == 0)
 			fail ("Could not find keyrefs in Language XSD");
 
-		for (final Element thisKeyRef : keyRefs)
+		for (final Element thisKeyRef : languageXsdKeyRefs)
 		{
 			// Pull all the necessary details out of the language XSD keyref
 			assertEquals ("KeyRefs all expected to contain 2 attributes", 2, thisKeyRef.getAttributes ().getLength ());
 			String pkName = thisKeyRef.getAttribute ("refer");
 
-			if (!pkName.startsWith (KEYREF_NAMESPACE_PREFIX))
-				fail ("All keyrefs are expected to start with \"" + KEYREF_NAMESPACE_PREFIX + "\"");
+			if (!pkName.startsWith (SERVER_NAMESPACE_PREFIX))
+				fail ("All keyrefs are expected to start with \"" + SERVER_NAMESPACE_PREFIX + "\"");
 
-			pkName = pkName.substring (KEYREF_NAMESPACE_PREFIX.length ());
+			pkName = pkName.substring (SERVER_NAMESPACE_PREFIX.length ());
 
 			final List<Element> languageSelectorList = listElements (thisKeyRef.getChildNodes (), "xsd:selector");
 			assertEquals ("KeyRef expected to have exactly 1 selector", 1, languageSelectorList.size ());
@@ -214,6 +222,74 @@ public final class TestLanguageDatabase
 					languageEntity.length () - serverEntity.length ());
 
 				checkMultilevelReferences (serverXml.getDocumentElement (), languageXml.getDocumentElement (), higherLevelEntities, serverEntity, serverField, null);
+			}
+		}
+
+		// Get list of complex types
+		final List<Element> complexTypeList = listElements (languageXsd.getDocumentElement ().getChildNodes (), "xsd:complexType");
+		final List<Element> multiplayerSessionSimpleTypes = listElements (multiplayerSessionXsd.getDocumentElement ().getChildNodes (), "xsd:simpleType");
+
+		// Find all the PKs in the langauge XSD to find those which are keyed by enums
+		final List<Element> languageXsdKeys = listElements (languageElement.getChildNodes (), "xsd:key");
+		if (languageXsdKeys.size () == 0)
+			fail ("Could not find keys in Language XSD");
+
+		for (final Element thisKey : languageXsdKeys)
+		{
+			final List<Element> languageSelectorList = listElements (thisKey.getChildNodes (), "xsd:selector");
+			assertEquals ("Key expected to have exactly 1 selector", 1, languageSelectorList.size ());
+			assertEquals ("Key selector expected to have exactly 1 attribute", 1, languageSelectorList.get (0).getAttributes ().getLength ());
+			final String languageEntity = languageSelectorList.get (0).getAttribute ("xpath");
+
+			final List<Element> languageFieldList = listElements (thisKey.getChildNodes (), "xsd:field");
+			assertEquals ("Key expected to have exactly 1 field", 1, languageFieldList.size ());
+			assertEquals ("Key field expected to have exactly 1 attribute", 1, languageFieldList.get (0).getAttributes ().getLength ());
+			final String languageField = languageFieldList.get (0).getAttribute ("xpath");
+
+			if (!languageField.startsWith ("@"))
+				fail ("Key field expected to be an attribute, prefixed with @");
+
+			// Find the complex type for this entity
+			Element thisComplexType = null;
+			final Iterator<Element> complexTypeIter = complexTypeList.iterator ();
+			while ((thisComplexType == null) && (complexTypeIter.hasNext ()))
+			{
+				final Element searchComplexType = complexTypeIter.next ();
+				if (searchComplexType.getAttribute ("name").equals (languageEntity))
+					thisComplexType = searchComplexType;
+			}
+
+			assertNotNull ("Could not find definition of complex type \"" + languageEntity + "\" in language XSD", thisComplexType);
+
+			// Expect all entries in langauge XSD to have exactly one attribute, and should match what we expect
+			final List<Element> attributeList = listElements (thisComplexType.getChildNodes (), "xsd:attribute");
+			assertEquals ("Complex types expected to have exactly 1 attribute", 1, attributeList.size ());
+			final Element pkAttribute = attributeList.get (0);
+			assertEquals ("Expected PK of complex type " + languageEntity + " to be " + languageField, languageField, "@" + pkAttribute.getAttribute ("name"));
+
+			final String pkType = pkAttribute.getAttribute ("type");
+
+			// This is a bit of a hack to find the entities we're interested in, it assumes that anything we're pulling from the multiplayer XSD is an enum
+			// So this doesn't account for a) if we referenced something from the multiplayer XSD that isn't an enum or b) if we references enums from the server XSD
+			// But, it works for now
+			if (pkType.startsWith (MULTIPLAYER_SESSION_NAMESPACE_PREFIX))
+			{
+				// Find the definition in the multiplayer session XSD for the simple type
+				Element thisSimpleType = null;
+				final Iterator<Element> SimpleTypeIter = multiplayerSessionSimpleTypes.iterator ();
+				while ((thisSimpleType == null) && (SimpleTypeIter.hasNext ()))
+				{
+					final Element searchSimpleType = SimpleTypeIter.next ();
+					if (searchSimpleType.getAttribute ("name").equals (pkType.substring (MULTIPLAYER_SESSION_NAMESPACE_PREFIX.length ())))
+						thisSimpleType = searchSimpleType;
+				}
+
+				assertNotNull ("Could not find definition of enum \"" + pkType + "\" in multiplayer session XSD", thisSimpleType);
+
+				// Restriction node contains all the enum values
+				final List<Element> restrictionsList = listElements (thisSimpleType.getChildNodes (), "xsd:restriction");
+				assertEquals ("Enums types expected to have exactly 1 restriction", 1, restrictionsList.size ());
+				checkEnums (restrictionsList.get (0), languageXml.getDocumentElement (), languageEntity, languageField);
 			}
 		}
 	}
@@ -320,5 +396,47 @@ public final class TestLanguageDatabase
 			else
 				checkMultilevelReferences (thisServerRecord, thisLanguageRecord, remainingHigherLevelEntities, finalEntityName, finalFieldName, parentValuesIncludingThisOne);
 		}
+	}
+
+	/**
+	 * Checks all defined values for an enum, ensuring every possible value has a corresponding record under the language container
+	 * @param enumValuesContainer Element in the multiplayer session XML that contains the enum values we want to check
+	 * @param languageContainer Element in the language XML that contains the records we want to check
+	 * @param entityName Tag identifying the types of record we want to check
+	 * @param fieldName Attribute that identifies each record
+	 */
+	private final void checkEnums (final Element enumValuesContainer, final Element languageContainer, final String entityName, final String fieldName)
+	{
+		System.out.println ("Checking English XML includes all references for enum " + entityName + ", field " + fieldName);
+
+		final List<Element> enumEntries = listElements (enumValuesContainer.getChildNodes (), "xsd:enumeration");
+		final List<Element> languageEntries = listElements (languageContainer.getChildNodes (), entityName);
+
+		String missingRecords = null;
+		for (final Element thisEnumRecord : enumEntries)
+		{
+			final String enumValue = thisEnumRecord.getAttribute ("value");
+			assertNotNull ("Multiplayer session XSD has a null enum value for \"" + entityName + "\"", enumValue);
+
+			boolean found = false;
+			final Iterator<Element> iter = languageEntries.iterator ();
+			while ((!found) && (iter.hasNext ()))
+			{
+				if (iter.next ().getAttribute (fieldName.substring (1)).equals (enumValue))
+					found = true;
+			}
+
+			if (!found)
+				missingRecords = (missingRecords == null) ? enumValue : missingRecords + "," + enumValue;
+		}
+
+		if (missingRecords != null)
+			fail ("Language XML is missing " + entityName + " records for the following " + fieldName.substring (1) + "s: " +  missingRecords);
+
+		// So, we proved that all server entries exist in the langauge XML
+		// That doesn't yet prove that the language XML contains no spurious additional entries
+		// For top level entities, the XSD will have checked that, but do it here for the benefit of 2nd/3rd level entities
+		assertEquals ("Server and language XML files expected to contain same number of " + entityName + " records",
+			enumEntries.size (), languageEntries.size ());
 	}
 }

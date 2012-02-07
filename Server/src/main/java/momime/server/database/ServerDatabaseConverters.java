@@ -115,9 +115,12 @@ public final class ServerDatabaseConverters
 		// First put the list of all compatibly named XML databases in a string list, so we can sort it before we start trying to load them in and check them
 		// Strip the suffix off each one as we add it
 		debugLogger.finest ("buildNewGameDatabase searching for XML files in \"" + xmlFolder + "\"");
+		final File [] xmlFiles = xmlFolder.listFiles (new SuffixFilenameFilter (SERVER_XML_FILE_EXTENSION));
+		if (xmlFiles == null)
+			throw new MomException ("Unable to search folder \"" + xmlFolder + "\" for server XML files - check path specified in config file is valid");
 
 		final List<String> xmlFilenames = new ArrayList<String> ();
-		for (final File thisFile : xmlFolder.listFiles (new SuffixFilenameFilter (SERVER_XML_FILE_EXTENSION)))
+		for (final File thisFile : xmlFiles)
 		{
 			String thisFilename = thisFile.getName ();
 			thisFilename = thisFilename.substring (0, thisFilename.length () - SERVER_XML_FILE_EXTENSION.length ());

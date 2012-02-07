@@ -55,7 +55,7 @@ public abstract class MoMLanguageEditorGridWithImport extends XmlEditorGridWithI
 						importFromLbx (lbxChooser.getSelectedFile ().getAbsolutePath ());
 						getTableModel ().fireTableDataChanged ();
 					}
-					catch (final IOException e)
+					catch (final Exception e)
 					{
 						JOptionPane.showMessageDialog (null, e.toString (), "MoM IME Language Editor Import", JOptionPane.ERROR_MESSAGE);
 					}
@@ -75,7 +75,8 @@ public abstract class MoMLanguageEditorGridWithImport extends XmlEditorGridWithI
 	 * Descendant classes must override this to implement the import functionality
 	 * @param lbxFilename The lbx filename chosen in the file open dialog
 	 * @throws IOException If there is a problem reading the LBX file
+	 * @throws XmlEditorException If there is a problem using helper methods from the XML editor
 	 */
 	protected abstract void importFromLbx (String lbxFilename)
-		throws IOException;
+		throws IOException, XmlEditorException;
 }

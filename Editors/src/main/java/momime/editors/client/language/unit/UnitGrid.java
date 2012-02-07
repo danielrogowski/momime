@@ -157,10 +157,11 @@ public class UnitGrid extends MoMLanguageEditorGridWithImport
 	 * Imports unit names descriptions from WIZARDS.EXE
 	 * @param exeFilename The EXE filename chosen in the file open dialog
 	 * @throws IOException If there is a problem reading the EXE file
+	 * @throws XmlEditorException If there is a problem using helper methods from the XML editor
 	 */
 	@Override
 	protected void importFromLbx (final String exeFilename)
-		throws IOException
+		throws IOException, XmlEditorException
 	{
 		// Read the two offsets from the form
 		final int dataOffset = readValueFromComboBox (dataOffsetCombo.getSelectedItem ());

@@ -143,10 +143,11 @@ public class HeroNameGrid extends MoMLanguageEditorGridWithImport
 	 * Imports hero names descriptions from NAMES.LBX
 	 * @param lbxFilename The lbx filename chosen in the file open dialog
 	 * @throws IOException If there is a problem reading the LBX file
+	 * @throws XmlEditorException If there is a problem with one of the XML editor helper methods
 	 */
 	@Override
 	protected void importFromLbx (final String lbxFilename)
-		throws IOException
+		throws IOException, XmlEditorException
 	{
 		// NAMES.LBX only has a single subfile in it
 		final InputStream lbxStream = LbxArchiveReader.getSubFileInputStream (lbxFilename, 0);

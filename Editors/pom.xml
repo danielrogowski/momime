@@ -21,12 +21,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
-			<artifactId>serverdatabase</artifactId>
+			<artifactId>client</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
-			<artifactId>client</artifactId>
+			<artifactId>utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

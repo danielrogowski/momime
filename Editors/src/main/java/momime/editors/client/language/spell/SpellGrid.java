@@ -69,9 +69,10 @@ public class SpellGrid extends MoMLanguageEditorGridWithImport
 	 * Imports spell names and descriptions from 3 different LBX files
 	 * @param lbxFilename The lbx filename chosen in the file open dialog
 	 * @throws IOException If there is a problem reading one of the LBX file
+	 * @throws XmlEditorException If there is a problem with one of the XML editor helper methods
 	 */
 	@Override
-	protected void importFromLbx (final String lbxFilename) throws IOException
+	protected void importFromLbx (final String lbxFilename) throws IOException, XmlEditorException
 	{
 		// Need to ask for 2 other LBXes first
 		final JFileChooser descriptionsLbxChooser = new JFileChooser ();

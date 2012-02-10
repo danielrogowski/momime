@@ -1,1205 +1,1209 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <momimegfx:graphicsDatabase xmlns:momimegfx="http://momime/client/graphics/database/v0_9_4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<wizard wizardid="RAIDERS">
-		<flagcolour>442404</flagcolour>
+	<wizard wizardID="RAIDERS">
+		<flagColour>442404</flagColour>
 	</wizard>
-	<wizard wizardid="WZ01">
-		<portraitnumber>0</portraitnumber>
-		<flagcolour>B2AAA6</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ01">
+		<flagColour>B2AAA6</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>0</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ02">
-		<portraitnumber>1</portraitnumber>
-		<flagcolour>545D10</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ02">
+		<flagColour>545D10</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>1</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ03">
-		<portraitnumber>2</portraitnumber>
-		<flagcolour>A86E4E</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ03">
+		<flagColour>A86E4E</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>2</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ04">
-		<portraitnumber>3</portraitnumber>
-		<flagcolour>3C398C</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ04">
+		<flagColour>3C398C</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>3</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ05">
-		<portraitnumber>4</portraitnumber>
-		<flagcolour>65483D</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ05">
+		<flagColour>65483D</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>4</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ06">
-		<portraitnumber>5</portraitnumber>
-		<flagcolour>D0CA7D</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ06">
+		<flagColour>D0CA7D</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>5</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ07">
-		<portraitnumber>6</portraitnumber>
-		<flagcolour>571D56</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ07">
+		<flagColour>571D56</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>6</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ08">
-		<portraitnumber>7</portraitnumber>
-		<flagcolour>436243</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ08">
+		<flagColour>436243</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>7</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ09">
-		<portraitnumber>8</portraitnumber>
-		<flagcolour>520101</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ09">
+		<flagColour>520101</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>8</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ10">
-		<portraitnumber>9</portraitnumber>
-		<flagcolour>FBE270</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ10">
+		<flagColour>FBE270</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>9</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ11">
-		<portraitnumber>10</portraitnumber>
-		<flagcolour>D48F1C</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ11">
+		<flagColour>D48F1C</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>10</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ12">
-		<portraitnumber>11</portraitnumber>
-		<flagcolour>E9BEA2</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ12">
+		<flagColour>E9BEA2</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>11</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ13">
-		<portraitnumber>12</portraitnumber>
-		<flagcolour>900000</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ13">
+		<flagColour>900000</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>12</portraitNumber>
 	</wizard>
-	<wizard wizardid="WZ14">
-		<portraitnumber>13</portraitnumber>
-		<flagcolour>042444</flagcolour>
-		<portraitfile>WIZARDS.LBX</portraitfile>
+	<wizard wizardID="WZ14">
+		<flagColour>042444</flagColour>
+		<portraitFile>WIZARDS.LBX</portraitFile>
+		<portraitNumber>13</portraitNumber>
 	</wizard>
-	<productiontype productiontypeid="RE01">
-		<productiontypeimage productionvalue="1">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>78</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="10">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>84</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="-1">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>90</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="-10">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>91</productionimagenumber>
-		</productiontypeimage>
-	</productiontype>
-	<productiontype productiontypeid="RE02">
-		<productiontypeimage productionvalue="1">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>79</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="10">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>85</productionimagenumber>
-		</productiontypeimage>
-	</productiontype>
-	<productiontype productiontypeid="RE03">
-		<productiontypeimage productionvalue="1">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>80</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="10">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>86</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="-1">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>83</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="-10">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>89</productionimagenumber>
-		</productiontypeimage>
-	</productiontype>
-	<productiontype productiontypeid="RE04">
-		<productiontypeimage productionvalue="1">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>81</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="10">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>87</productionimagenumber>
-		</productiontypeimage>
-	</productiontype>
-	<productiontype productiontypeid="RE05">
-		<productiontypeimage productionvalue="1">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>82</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="10">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>88</productionimagenumber>
-		</productiontypeimage>
-	</productiontype>
-	<productiontype productiontypeid="RE09">
-		<productiontypedescription>Mana</productiontypedescription>
-		<productiontypeimage productionvalue="1">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>81</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="10">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>87</productionimagenumber>
-		</productiontypeimage>
-		<productiontypeimage productionvalue="½">
-			<productionimagefile>MOMADDITIONALGRAPHICS.NDGARC</productionimagefile>
-			<productionimagenumber>238</productionimagenumber>
+	<productionType productionTypeID="RE01">
+		<productionTypeImage productionValue="1">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>78</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="10">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>84</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="-1">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>90</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="-10">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>91</productionImageNumber>
+		</productionTypeImage>
+	</productionType>
+	<productionType productionTypeID="RE02">
+		<productionTypeImage productionValue="1">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>79</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="10">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>85</productionImageNumber>
+		</productionTypeImage>
+	</productionType>
+	<productionType productionTypeID="RE03">
+		<productionTypeImage productionValue="1">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>80</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="10">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>86</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="-1">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>83</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="-10">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>89</productionImageNumber>
+		</productionTypeImage>
+	</productionType>
+	<productionType productionTypeID="RE04">
+		<productionTypeImage productionValue="1">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>81</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="10">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>87</productionImageNumber>
+		</productionTypeImage>
+	</productionType>
+	<productionType productionTypeID="RE05">
+		<productionTypeImage productionValue="1">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>82</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="10">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>88</productionImageNumber>
+		</productionTypeImage>
+	</productionType>
+	<productionType productionTypeID="RE09">
+		<productionTypeImage productionValue="1">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>81</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="10">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>87</productionImageNumber>
+		</productionTypeImage>
+		<productionTypeImage productionValue="½">
+			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
+			<productionImageNumber>238</productionImageNumber>
 			
-		</productiontypeimage>
-	</productiontype>
-	<race raceid="RC01">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>56</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>42</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>71</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+		</productionTypeImage>
+	</productionType>
+	<race raceID="RC01">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>56</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>42</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>71</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC02">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>61</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>47</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>76</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC02">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>61</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>47</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>76</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC03">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>62</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>48</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>77</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC03">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>62</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>48</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>77</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC04">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>63</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>49</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>78</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC04">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>63</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>49</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>78</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC05">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>64</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>50</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>79</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC05">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>64</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>50</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>79</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC06">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>65</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>51</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>80</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC06">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>65</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>51</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>80</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC07">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>66</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>52</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>81</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC07">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>66</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>52</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>81</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC08">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>67</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>53</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>82</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC08">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>67</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>53</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>82</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC09">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>68</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>54</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>83</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC09">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>68</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>54</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>83</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC10">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>57</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>43</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>72</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC10">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>57</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>43</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>72</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC11">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>58</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>44</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>73</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC11">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>58</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>44</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>73</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC12">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>59</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>45</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>74</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC12">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>59</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>45</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>74</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC13">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>60</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>46</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>75</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC13">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>60</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>46</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>75</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<race raceid="RC14">
-		<racepopulationtask populationtaskid="PT01">
-			<civilianimagenumber>69</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT02">
-			<civilianimagenumber>55</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
-		<racepopulationtask populationtaskid="PT03">
-			<civilianimagenumber>84</civilianimagenumber>
-			<civilianimagefile>BACKGRND.LBX</civilianimagefile>
-		</racepopulationtask>
+	<race raceID="RC14">
+		<racePopulationTask populationTaskID="PT01">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>69</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT02">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>55</civilianImageNumber>
+		</racePopulationTask>
+		<racePopulationTask populationTaskID="PT03">
+			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
+			<civilianImageNumber>84</civilianImageNumber>
+		</racePopulationTask>
 	</race>
-	<pick pickid="MB01">
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>24</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>25</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>26</bookimagenumber>
-		</bookimage>
-		<pickbookshelftitlecolour>$FFFFFF</pickbookshelftitlecolour>
+	<pick pickID="MB01">
+		<pickBookshelfTitleColour>FFFFFF</pickBookshelfTitleColour>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>24</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>25</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>26</bookImageNumber>
+		</bookImage>
 	</pick>
-	<pick pickid="MB02">
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>33</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>34</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>35</bookimagenumber>
-		</bookimage>
-		<pickbookshelftitlecolour>$B485CB</pickbookshelftitlecolour>
+	<pick pickID="MB02">
+		<pickBookshelfTitleColour>B485CB</pickBookshelfTitleColour>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>33</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>34</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>35</bookImageNumber>
+		</bookImage>
 	</pick>
-	<pick pickid="MB03">
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>36</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>37</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>38</bookimagenumber>
-		</bookimage>
-		<pickbookshelftitlecolour>$FF0009</pickbookshelftitlecolour>
+	<pick pickID="MB03">
+		<pickBookshelfTitleColour>FF0009</pickBookshelfTitleColour>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>36</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>37</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>38</bookImageNumber>
+		</bookImage>
 	</pick>
-	<pick pickid="MB04">
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>30</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>31</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>32</bookimagenumber>
-		</bookimage>
-		<pickbookshelftitlecolour>$00BE00</pickbookshelftitlecolour>
+	<pick pickID="MB04">
+		<pickBookshelfTitleColour>00BE00</pickBookshelfTitleColour>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>30</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>31</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>32</bookImageNumber>
+		</bookImage>
 	</pick>
-	<pick pickid="MB05">
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>27</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>28</bookimagenumber>
-		</bookimage>
-		<bookimage>
-			<bookimagefile>NEWGAME.LBX</bookimagefile>
-			<bookimagenumber>29</bookimagenumber>
-		</bookimage>
-		<pickbookshelftitlecolour>$128EFF</pickbookshelftitlecolour>
+	<pick pickID="MB05">
+		<pickBookshelfTitleColour>128EFF</pickBookshelfTitleColour>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>27</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>28</bookImageNumber>
+		</bookImage>
+		<bookImage>
+			<bookImageFile>NEWGAME.LBX</bookImageFile>
+			<bookImageNumber>29</bookImageNumber>
+		</bookImage>
 	</pick>
-	<unitattribute unitattributeid="UA01">
-		<attributeimagenumber>52</attributeimagenumber>
-		<attributeimagefile>MOMADDITIONALGRAPHICS.NDGARC</attributeimagefile>
-		<mithrilandadamantiumversions>Y</mithrilandadamantiumversions>
-	</unitattribute>
-	<unitattribute unitattributeid="UA02">
-		<attributeimagenumber>128</attributeimagenumber>
-		<attributeimagefile>MOMADDITIONALGRAPHICS.NDGARC</attributeimagefile>
-		<mithrilandadamantiumversions>Y</mithrilandadamantiumversions>
-	</unitattribute>
-	<unitattribute unitattributeid="UA03">
-		<attributeimagenumber>127</attributeimagenumber>
-		<attributeimagefile>MOMADDITIONALGRAPHICS.NDGARC</attributeimagefile>
-		<mithrilandadamantiumversions>N</mithrilandadamantiumversions>
-	</unitattribute>
-	<unitattribute unitattributeid="UA04">
-		<attributeimagenumber>136</attributeimagenumber>
-		<attributeimagefile>MOMADDITIONALGRAPHICS.NDGARC</attributeimagefile>
-		<mithrilandadamantiumversions>Y</mithrilandadamantiumversions>
-	</unitattribute>
-	<unitattribute unitattributeid="UA05">
-		<attributeimagenumber>58</attributeimagenumber>
-		<attributeimagefile>MOMADDITIONALGRAPHICS.NDGARC</attributeimagefile>
-		<mithrilandadamantiumversions>N</mithrilandadamantiumversions>
-	</unitattribute>
-	<unitattribute unitattributeid="UA06">
-		<attributeimagenumber>57</attributeimagenumber>
-		<attributeimagefile>MOMADDITIONALGRAPHICS.NDGARC</attributeimagefile>
-		<mithrilandadamantiumversions>N</mithrilandadamantiumversions>
-	</unitattribute>
-	<rangedattacktype rangedattacktypeid="RAT0A">
-		<unitdisplayrangedimagenumber>132</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT0A_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT0A_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT0A_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT0A_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT0A_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT0A_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT0A_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT0A_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>131</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>135</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>139</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>143</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>147</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>151</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>155</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>159</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>8</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT14">
-		<unitdisplayrangedimagenumber>128</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT14_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT14_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT14_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT14_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT14_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT14_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT14_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT14_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>35</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>39</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>43</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>47</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>51</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>55</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>59</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>63</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>9</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT15">
-		<unitdisplayrangedimagenumber>132</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT15_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT15_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT15_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT15_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT15_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT15_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT15_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT15_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>163</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>167</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>171</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>175</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>179</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>183</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>187</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>191</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>10</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT20">
-		<unitdisplayrangedimagenumber>62</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT20_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT20_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT20_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT20_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT20_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT20_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT20_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT20_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>99</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>103</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>107</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>111</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>115</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>119</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>123</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>127</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>13</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT26">
-		<unitdisplayrangedimagenumber>63</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT26_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT26_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT26_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT26_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT26_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT26_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT26_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT26_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>419</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>423</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>427</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>431</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>435</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>439</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>443</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>447</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>18</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT25">
-		<unitdisplayrangedimagenumber>63</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT25_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT25_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT25_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT25_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT25_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT25_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT25_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT25_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>355</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>359</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>363</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>367</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>371</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>375</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>379</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>383</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>18</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT22">
-		<unitdisplayrangedimagenumber>63</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT22_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT22_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT22_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT22_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT22_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT22_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT22_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT22_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>227</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>231</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>235</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>239</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>243</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>247</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>251</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>255</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>15</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT21">
-		<unitdisplayrangedimagenumber>61</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT21_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT21_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT21_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT21_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT21_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT21_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT21_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT21_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>195</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>199</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>203</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>207</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>211</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>215</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>219</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>223</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>14</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT1E">
-		<unitdisplayrangedimagenumber>61</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT1E_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT1E_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT1E_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT1E_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT1E_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT1E_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT1E_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT1E_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>3</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>7</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>11</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>15</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>19</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>23</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>27</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>31</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>11</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT24">
-		<unitdisplayrangedimagenumber>61</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT24_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT24_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT24_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT24_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT24_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT24_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT24_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT24_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>323</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>327</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>331</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>335</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>339</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>343</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>347</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>351</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>17</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT23">
-		<unitdisplayrangedimagenumber>63</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT23_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT23_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT23_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT23_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT23_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT23_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT23_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT23_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>291</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>295</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>299</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>303</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>307</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>311</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>315</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>319</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>16</rangedattacksoundnumber>
-	</rangedattacktype>
-	<rangedattacktype rangedattacktypeid="RAT1F">
-		<unitdisplayrangedimagenumber>61</unitdisplayrangedimagenumber>
-		<unitdisplayrangedimagefile>MOMADDITIONALGRAPHICS.NDGARC</unitdisplayrangedimagefile>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="1">
-			<rangedattacktypecombatanimation>RAT1F_D1_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="2">
-			<rangedattacktypecombatanimation>RAT1F_D2_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="3">
-			<rangedattacktypecombatanimation>RAT1F_D3_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="4">
-			<rangedattacktypecombatanimation>RAT1F_D4_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="5">
-			<rangedattacktypecombatanimation>RAT1F_D5_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="6">
-			<rangedattacktypecombatanimation>RAT1F_D6_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="7">
-			<rangedattacktypecombatanimation>RAT1F_D7_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="FLY" direction="8">
-			<rangedattacktypecombatanimation>RAT1F_D8_FLY</rangedattacktypecombatanimation>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="1">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>67</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="2">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>71</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="3">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>75</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="4">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>79</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="5">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>83</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="6">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>87</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="7">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>91</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacktypecombatimage rangedattacktypeactionid="STRIKE" direction="8">
-			<rangedattacktypecombatimagefile>CMBMAGIC.LBX</rangedattacktypecombatimagefile>
-			<rangedattacktypecombatimagenumber>95</rangedattacktypecombatimagenumber>
-		</rangedattacktypecombatimage>
-		<rangedattacksoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedattacksoundfile>
-		<rangedattacksoundnumber>12</rangedattacksoundnumber>
-	</rangedattacktype>
+	<unitAttribute unitAttributeID="UA01">
+		<attributeImageFile>MOMADDITIONALGRAPHICS.NDGARC</attributeImageFile>
+		<attributeImageNumber>52</attributeImageNumber>
+		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
+	</unitAttribute>
+	<unitAttribute unitAttributeID="UA02">
+		<attributeImageFile>MOMADDITIONALGRAPHICS.NDGARC</attributeImageFile>
+		<attributeImageNumber>128</attributeImageNumber>
+		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
+	</unitAttribute>
+	<unitAttribute unitAttributeID="UA03">
+		<attributeImageFile>MOMADDITIONALGRAPHICS.NDGARC</attributeImageFile>
+		<attributeImageNumber>127</attributeImageNumber>
+		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
+	</unitAttribute>
+	<unitAttribute unitAttributeID="UA04">
+		<attributeImageFile>MOMADDITIONALGRAPHICS.NDGARC</attributeImageFile>
+		<attributeImageNumber>136</attributeImageNumber>
+		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
+	</unitAttribute>
+	<unitAttribute unitAttributeID="UA05">
+		<attributeImageFile>MOMADDITIONALGRAPHICS.NDGARC</attributeImageFile>
+		<attributeImageNumber>58</attributeImageNumber>
+		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
+	</unitAttribute>
+	<unitAttribute unitAttributeID="UA06">
+		<attributeImageFile>MOMADDITIONALGRAPHICS.NDGARC</attributeImageFile>
+		<attributeImageNumber>57</attributeImageNumber>
+		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
+	</unitAttribute>
+	<unitAttribute unitAttributeID="UA07">
+		<attributeImageFile>MOMADDITIONALGRAPHICS.NDGARC</attributeImageFile>
+		<attributeImageNumber>244</attributeImageNumber>
+		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
+	</unitAttribute>
+	<rangedAttackType rangedAttackTypeID="RAT0A">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>132</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>8</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT0A_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT0A_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT0A_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT0A_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT0A_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT0A_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT0A_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT0A_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>131</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>135</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>139</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>143</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>147</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>151</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>155</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>159</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT14">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>128</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>9</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT14_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT14_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT14_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT14_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT14_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT14_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT14_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT14_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>35</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>39</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>43</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>47</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>51</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>55</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>59</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>63</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT15">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>132</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>10</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT15_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT15_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT15_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT15_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT15_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT15_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT15_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT15_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>163</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>167</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>171</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>175</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>179</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>183</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>187</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>191</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT20">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>62</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>13</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT20_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT20_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT20_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT20_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT20_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT20_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT20_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT20_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>99</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>103</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>107</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>111</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>115</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>119</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>123</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>127</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT26">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>63</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>18</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT26_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT26_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT26_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT26_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT26_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT26_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT26_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT26_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>419</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>423</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>427</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>431</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>435</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>439</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>443</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>447</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT25">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>63</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>18</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT25_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT25_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT25_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT25_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT25_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT25_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT25_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT25_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>355</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>359</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>363</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>367</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>371</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>375</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>379</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>383</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT22">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>63</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>15</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT22_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT22_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT22_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT22_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT22_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT22_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT22_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT22_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>227</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>231</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>235</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>239</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>243</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>247</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>251</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>255</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT21">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>61</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>14</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT21_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT21_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT21_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT21_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT21_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT21_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT21_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT21_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>195</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>199</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>203</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>207</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>211</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>215</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>219</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>223</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT1E">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>61</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>11</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT1E_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT1E_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT1E_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT1E_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT1E_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT1E_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT1E_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT1E_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>3</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>7</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>11</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>15</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>19</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>23</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>27</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>31</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT24">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>61</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>17</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT24_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT24_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT24_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT24_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT24_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT24_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT24_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT24_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>323</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>327</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>331</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>335</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>339</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>343</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>347</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>351</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT23">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>63</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>16</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT23_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT23_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT23_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT23_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT23_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT23_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT23_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT23_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>291</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>295</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>299</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>303</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>307</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>311</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>315</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>319</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
+	<rangedAttackType rangedAttackTypeID="RAT1F">
+		<unitDisplayRangedImageFile>MOMADDITIONALGRAPHICS.NDGARC</unitDisplayRangedImageFile>
+		<unitDisplayRangedImageNumber>61</unitDisplayRangedImageNumber>
+		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
+		<rangedAttackSoundNumber>12</rangedAttackSoundNumber>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
+			<rangedAttackTypeCombatAnimation>RAT1F_D1_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="2">
+			<rangedAttackTypeCombatAnimation>RAT1F_D2_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="3">
+			<rangedAttackTypeCombatAnimation>RAT1F_D3_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="4">
+			<rangedAttackTypeCombatAnimation>RAT1F_D4_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="5">
+			<rangedAttackTypeCombatAnimation>RAT1F_D5_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="6">
+			<rangedAttackTypeCombatAnimation>RAT1F_D6_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="7">
+			<rangedAttackTypeCombatAnimation>RAT1F_D7_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="8">
+			<rangedAttackTypeCombatAnimation>RAT1F_D8_FLY</rangedAttackTypeCombatAnimation>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="1">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>67</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="2">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>71</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="3">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>75</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="4">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>79</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="5">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>83</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="6">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>87</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="7">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>91</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+		<rangedAttackTypeCombatImage rangedAttackTypeActionID="STRIKE" direction="8">
+			<rangedAttackTypeCombatImageFile>CMBMAGIC.LBX</rangedAttackTypeCombatImageFile>
+			<rangedAttackTypeCombatImageNumber>95</rangedAttackTypeCombatImageNumber>
+		</rangedAttackTypeCombatImage>
+	</rangedAttackType>
 	<spell spellid="SP002">
 		<combatcastanimation>NATURE_SPARKLY_RING</combatcastanimation>
 		<spellsoundfile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellsoundfile>
@@ -98856,11 +98860,6 @@
 		<combatareaeffectimagenumber>57</combatareaeffectimagenumber>
 		
 	</combatareaeffect>
-	<unitattribute unitattributeid="UA07">
-		<attributeimagefile>MOMADDITIONALGRAPHICS.NDGARC</attributeimagefile>
-		<attributeimagenumber>244</attributeimagenumber>
-		<mithrilandadamantiumversions>N</mithrilandadamantiumversions>
-	</unitattribute>
 	<animation animationid="LIFE_RAYS">
 		<animationdescription>'Rays' anim, like when casting Healing</animationdescription>
 		<animationspeed>6</animationspeed>

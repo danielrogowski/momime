@@ -30,6 +30,15 @@
 								<xsdOption>
 									<xsd>/src/main/resources/momime.client.language.database/MoMIMELanguageDatabase.xsd</xsd>
 									<deleteDirs>
+										<deleteDir>${basedir}/target/generated-sources/xjc/com</deleteDir>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/common</deleteDir>
+										<deleteDir>${basedir}/target/generated-sources/xjc/momime/server</deleteDir>
+									</deleteDirs>
+								</xsdOption>
+								<xsdOption>
+									<xsd>/src/main/resources/momime.client.graphics.database/MoMIMEGraphicsDatabase.xsd</xsd>
+									<deleteDirs>
+										<deleteDir>${basedir}/target/generated-sources/xjc/com</deleteDir>
 										<deleteDir>${basedir}/target/generated-sources/xjc/momime/common</deleteDir>
 										<deleteDir>${basedir}/target/generated-sources/xjc/momime/server</deleteDir>
 									</deleteDirs>

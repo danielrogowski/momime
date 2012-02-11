@@ -4435,11 +4435,8 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="LanguageFileAuthor">
 			<languageEntryText>£</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="ConnectedWaitingForNewGameDB">
-			<languageEntryText>Connected to server SERVER_NAME, waiting to receive new game options</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="ReceivedNewGameDB">
-			<languageEntryText>Connected to server SERVER_NAME</languageEntryText>
+		<languageEntry languageEntryID="Connected">
+			<languageEntryText>Logged on to server SERVER_NAME as PLAYER_NAME</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmChooseLanguage">
@@ -4462,6 +4459,18 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="EnterServer">
 			<languageEntryText>or enter a server IP address below</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PlayerName">
+			<languageEntryText>Player name:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Password">
+			<languageEntryText>Password:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CreateAccount">
+			<languageEntryText>This is a new account</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="KickExistingConnection">
+			<languageEntryText>Kick existing connection using my account</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="KnownServersColumn0">
 			<languageEntryText>IP Address</languageEntryText>

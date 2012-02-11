@@ -360,7 +360,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateModifier" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Modifier" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="mineralBonusMultiplier" type="momimecommon:mineralBonusMultiplier" nxe:label="Mineral Bonus Multipler" nxe:gridwidth="130" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="racePopulationTask" type="momimecommon:racePopulationTask">
-				<xsd:key name="racePopulationtaskProductionPK">
+				<xsd:key name="racePopulationTaskProductionPK">
 					<xsd:selector xpath="racePopulationTaskProduction" />
 					<xsd:field xpath="@productionTypeID" />
 				</xsd:key>
@@ -1310,7 +1310,9 @@ However we still need to record negative skill modification values, e.g. True Li
         <xsd:annotation>
         	<xsd:documentation>Colour value, stored as 6 hex characters RRGGBB.</xsd:documentation>
         </xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString" />
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:length value="6"/>
+		</xsd:restriction>
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="experienceLevelRingCount">
@@ -1348,6 +1350,13 @@ However we still need to record negative skill modification values, e.g. True Li
 	
 	<xsd:simpleType name="spellCount">
 		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="directions">
+	    <xsd:annotation>
+    		<xsd:documentation>List of directions from 0..8 in length, of numbers 1..8.  Ideally should change this to a 0..unbounded of type map:mapDirection.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 	
 </xsd:schema>

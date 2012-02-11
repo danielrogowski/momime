@@ -262,7 +262,7 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
         <xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimenewgame:tileTypeID"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="mapFeatureID" type="momimecommon:mapFeatureID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="riverDirections" type="momimemsgs:directions"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="riverDirections" type="momimecommon:directions"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="nodeOwnerID" type="mps:playerID">
 	    		<xsd:annotation>
     				<xsd:documentation>This *does* resolve out across the full area of the aura, so will be set for all squares covered by the aura, not just the actual node tile.</xsd:documentation>
@@ -382,7 +382,7 @@ Spell Ward is SP072, but it provides one of the effects SE072C,D,L,N,S (player's
 		</xsd:annotation>
         <xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="offMapEdge" type="xsd:boolean"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="borderDirections" type="momimemsgs:directions"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="borderDirections" type="momimecommon:directions"/>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="borderID" type="momimecommon:combatTileBorderID"/>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileLayer" type="momimemsgs:momCombatTileLayer"/>
         </xsd:sequence>
@@ -802,13 +802,6 @@ Not used for one-player-at-a-time games since combats in those all happen instan
 		<xsd:restriction base="xsd:double" />
 	</xsd:simpleType>
 
-	<xsd:simpleType name="directions">
-	    <xsd:annotation>
-    		<xsd:documentation>List of directions from 0..8 in length, of numbers 1..8.  Later should really change this to a 0..unbounded of type momimemsgs:direction.'</xsd:documentation>
-		</xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString" />
-	</xsd:simpleType>
-	
 	<xsd:simpleType name="turnNumber">
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>

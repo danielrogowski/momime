@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCustomFlagColourMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCustomPicksMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage;
@@ -368,6 +369,10 @@ public final class MomSessionThread extends MultiplayerSessionThread
 
 			else if (msg instanceof ChooseRaceMessage)
 				PlayerMessageProcessing.chooseRace (this, sender.getPlayer (), getPlayers (), (ChooseRaceMessage) msg, getGeneralServerKnowledge (), getSessionDescription (), db, debugLogger);
+
+			// Cities
+			else if (msg instanceof ChooseCityNameMessage)
+				PlayerMessageProcessing.chooseCityName (sender.getPlayer (), getPlayers (), (ChooseCityNameMessage) msg, getGeneralServerKnowledge ().getTrueMap ().getMap (), getSessionDescription (), debugLogger);
 
 			else
 				super.processSessionMessageFromClient (msg, sender);

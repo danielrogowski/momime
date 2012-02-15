@@ -17,6 +17,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.WizardPick;
 import momime.common.messages.PlayerKnowledgeUtils;
 import momime.common.messages.ResourceValueUtils;
+import momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCustomFlagColourMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCustomPicksMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage;
@@ -36,7 +37,9 @@ import momime.common.messages.servertoclient.v0_9_4.StartGameProgressStageID;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage;
+import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
+import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
@@ -932,6 +935,42 @@ public final class PlayerMessageProcessing
 		}
 
 		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "checkIfCanStartGame");
+	}
+
+	/**
+	 * @param player Player who is changing their city name
+	 * @param players List of players in the session
+	 * @param msg Message sent from client
+	 * @param trueTerrain True terrain held on server
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public final static void chooseCityName (final PlayerServerDetails player, final List<PlayerServerDetails> players, final ChooseCityNameMessage msg,
+		final MapVolumeOfMemoryGridCells trueTerrain, final MomSessionDescription sd, final Logger debugLogger) throws JAXBException, XMLStreamException
+	{
+		debugLogger.entering (PlayerMessageProcessing.class.getName (), "chooseCityName", player.getPlayerDescription ().getPlayerID ());
+
+		// Check and update true map cell
+		final MemoryGridCell tc = trueTerrain.getPlane ().get (msg.getCityLocation ().getPlane ()).getRow ().get (msg.getCityLocation ().getY ()).getCell ().get (msg.getCityLocation ().getX ());
+		if (player.getPlayerDescription ().getPlayerID ().equals (tc.getCityData ().getCityOwnerID ()))
+		{
+			tc.getCityData ().setCityName (msg.getCityName ());
+
+			// Then send the change to all players who can see the city
+			FogOfWarProcessing.updatePlayerMemoryOfCity (trueTerrain, players, msg.getCityLocation (), sd, debugLogger);
+		}
+		else
+		{
+			debugLogger.warning ("Received City Name message from " + player.getPlayerDescription ().getPlayerName () + " who isn't the city owner");
+
+			final TextPopupMessage reply = new TextPopupMessage ();
+			reply.setText ("You tried to name a city which isn''t yours - change ignored.");
+			player.getConnection ().sendMessageToClient (reply);
+		}
+
+		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "chooseCityName");
 	}
 
 	/**

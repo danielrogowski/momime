@@ -292,7 +292,7 @@ client can't predict how many of what spell ranks and magic realms they need to 
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="turnNumber" type="momimemsgs:turnNumber"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="currentPlayerID" type="mps:playerID"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="expireMessages" type="xsd:boolean"/>
 						<xsd:element minOccurs="1" maxOccurs="unbounded" name="message" type="momimestoc:newTurnMessageData"/>
 					</xsd:sequence>

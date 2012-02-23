@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 import momime.common.MomException;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.GenerateTestData;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.v0_9_4.AvailableUnit;
@@ -1193,5 +1193,73 @@ public final class TestUnitUtils
 		assertEquals (0, UnitUtils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB (), debugLogger));
 		assertEquals (0, UnitUtils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, players, GenerateTestData.createDB (), debugLogger));
 		assertEquals (7, UnitUtils.getModifiedUpkeepValue (stoneGiant, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, GenerateTestData.createDB (), debugLogger));
+	}
+
+	/**
+	 * Tests the resetUnitOverlandMovement method for all players
+	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 */
+	@Test
+	public final void testResetUnitOverlandMovement_AllPlayers ()
+		throws RecordNotFoundException
+	{
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		// Create units owned by 3 players
+		for (int playerID = 1; playerID <= 3; playerID++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
+			spearmen.setOwningPlayerID (playerID);
+			units.add (spearmen);
+
+			final MemoryUnit hellHounds = new MemoryUnit ();
+			hellHounds.setUnitID (GenerateTestData.HELL_HOUNDS_UNIT);
+			hellHounds.setOwningPlayerID (playerID);
+			units.add (hellHounds);
+		}
+
+		UnitUtils.resetUnitOverlandMovement (units, 0, GenerateTestData.createDB (), debugLogger);
+
+		assertEquals (2, units.get (0).getDoubleOverlandMovesLeft ());
+		assertEquals (4, units.get (1).getDoubleOverlandMovesLeft ());
+		assertEquals (2, units.get (2).getDoubleOverlandMovesLeft ());
+		assertEquals (4, units.get (3).getDoubleOverlandMovesLeft ());
+		assertEquals (2, units.get (4).getDoubleOverlandMovesLeft ());
+		assertEquals (4, units.get (5).getDoubleOverlandMovesLeft ());
+	}
+
+	/**
+	 * Tests the resetUnitOverlandMovement method for a single players
+	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 */
+	@Test
+	public final void testResetUnitOverlandMovement_OnePlayer ()
+		throws RecordNotFoundException
+	{
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		// Create units owned by 3 players
+		for (int playerID = 1; playerID <= 3; playerID++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
+			spearmen.setOwningPlayerID (playerID);
+			units.add (spearmen);
+
+			final MemoryUnit hellHounds = new MemoryUnit ();
+			hellHounds.setUnitID (GenerateTestData.HELL_HOUNDS_UNIT);
+			hellHounds.setOwningPlayerID (playerID);
+			units.add (hellHounds);
+		}
+
+		UnitUtils.resetUnitOverlandMovement (units, 2, GenerateTestData.createDB (), debugLogger);
+
+		assertEquals (0, units.get (0).getDoubleOverlandMovesLeft ());
+		assertEquals (0, units.get (1).getDoubleOverlandMovesLeft ());
+		assertEquals (2, units.get (2).getDoubleOverlandMovesLeft ());
+		assertEquals (4, units.get (3).getDoubleOverlandMovesLeft ());
+		assertEquals (0, units.get (4).getDoubleOverlandMovesLeft ());
+		assertEquals (0, units.get (5).getDoubleOverlandMovesLeft ());
 	}
 }

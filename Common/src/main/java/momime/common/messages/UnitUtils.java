@@ -638,6 +638,27 @@ public final class UnitUtils
 	}
 
 	/**
+	 * Gives all units full movement back again
+	 *
+	 * @param units List of units to update
+	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 */
+	public final static void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final CommonDatabaseLookup db, final Logger debugLogger)
+		throws RecordNotFoundException
+	{
+		debugLogger.entering (UnitUtils.class.getName (), "resetUnitOverlandMovement", onlyOnePlayerID);
+
+		for (final MemoryUnit thisUnit : units)
+			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
+				thisUnit.setDoubleOverlandMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitOverlandMovement").getDoubleMovement ());
+
+		debugLogger.exiting (UnitUtils.class.getName (), "resetUnitOverlandMovement");
+	}
+
+	/**
 	 * Prevent instantiation
 	 */
 	private UnitUtils ()

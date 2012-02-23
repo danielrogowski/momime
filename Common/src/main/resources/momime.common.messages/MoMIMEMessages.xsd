@@ -218,6 +218,11 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		        <xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="clientDatabase" type="momimeclient:clientDatabase"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="turnNumber" type="momimemsgs:turnNumber"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="currentPlayerID" type="mps:playerID">
+					    <xsd:annotation>
+    						<xsd:documentation>Optional because it will be null in simultaneous turns games.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 		        </xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

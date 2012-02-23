@@ -1,6 +1,12 @@
 package momime.common.messages;
 
+import java.util.logging.Logger;
+
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MemoryGridCell;
 
 /**
  * Helper methods for dealing with MemoryGridCell objects
@@ -37,6 +43,23 @@ public final class MemoryGridCellUtils
 		return ((mapFeatureID != null) &&
 			((mapFeatureID.equals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)) ||
 			 (mapFeatureID.equals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY))));
+	}
+
+	/**
+	 * Nulls out the building sold this turn value in every map cell
+	 * @param map Map to wipe buildings sold from
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 */
+	public final static void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map, final Logger debugLogger)
+	{
+		debugLogger.entering (MemoryGridCellUtils.class.getName (), "blankBuildingsSoldThisTurn");
+
+		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
+			for (final MapRowOfMemoryGridCells row : plane.getRow ())
+				for (final MemoryGridCell cell : row.getCell ())
+					cell.setBuildingIdSoldThisTurn (null);
+
+		debugLogger.exiting (MemoryGridCellUtils.class.getName (), "blankBuildingsSoldThisTurn");
 	}
 
 	/**

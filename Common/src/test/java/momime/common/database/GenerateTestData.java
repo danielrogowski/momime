@@ -576,6 +576,7 @@ public final class GenerateTestData
 		final Unit spearmen = new Unit ();
 		spearmen.setUnitID (BARBARIAN_SPEARMEN);
 		spearmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		spearmen.setDoubleMovement (2);
 		units.add (spearmen);
 
 		final Unit warlocks = new Unit ();
@@ -621,6 +622,7 @@ public final class GenerateTestData
 		final Unit hellHounds = new Unit ();
 		hellHounds.setUnitID (HELL_HOUNDS_UNIT);
 		hellHounds.setUnitMagicRealm (LIFEFORM_TYPE_CHAOS);
+		hellHounds.setDoubleMovement (4);
 		units.add (hellHounds);
 
 		final Unit hero = new Unit ();

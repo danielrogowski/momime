@@ -1,9 +1,11 @@
 package momime.common.database;
 
+import java.io.IOException;
+
 /**
  * Type of exception thrown when we look for a particular record that we expect to be present in the XML file and we can't find it
  */
-public final class RecordNotFoundException extends Exception
+public final class RecordNotFoundException extends IOException
 {
 	/** Unique value for serialization */
 	private static final long serialVersionUID = -955521547372783138L;

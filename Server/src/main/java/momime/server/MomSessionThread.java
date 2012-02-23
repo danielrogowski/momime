@@ -1,22 +1,12 @@
 package momime.server;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage;
-import momime.common.messages.clienttoserver.v0_9_4.ChooseCustomFlagColourMessage;
-import momime.common.messages.clienttoserver.v0_9_4.ChooseCustomPicksMessage;
-import momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage;
-import momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage;
-import momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage;
-import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
-import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapAreaOfFogOfWarStates;
@@ -46,15 +36,11 @@ import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.process.PlayerMessageProcessing;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.SessionWindow;
 
-import com.ndg.multiplayer.base.ClientToServerMessage;
 import com.ndg.multiplayer.server.IMultiplayerServerMessageProcesser;
-import com.ndg.multiplayer.server.MultiplayerClientConnection;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.GeneralPublicKnowledge;
 import com.ndg.multiplayer.sessionbase.GeneralServerKnowledge;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
@@ -171,7 +157,7 @@ public final class MomSessionThread extends MultiplayerSessionThread
 	 * @return Server general knowledge, typecasted to MoM specific type
 	 */
 	@Override
-	protected final MomGeneralServerKnowledge getGeneralServerKnowledge ()
+	public final MomGeneralServerKnowledge getGeneralServerKnowledge ()
 	{
 		return (MomGeneralServerKnowledge) super.getGeneralServerKnowledge ();
 	}
@@ -182,6 +168,14 @@ public final class MomSessionThread extends MultiplayerSessionThread
 	public final ServerDatabase getServerDB ()
 	{
 		return getGeneralServerKnowledge ().getServerDatabase ();
+	}
+
+	/**
+	 * @return Lookup lists built over the XML database
+	 */
+	public final ServerDatabaseLookup getServerDBLookup ()
+	{
+		return db;
 	}
 
 	/**
@@ -330,71 +324,5 @@ public final class MomSessionThread extends MultiplayerSessionThread
 	protected final TransientPlayerPrivateKnowledge createTransientPlayerPrivateKnowledge ()
 	{
 		return new MomTransientPlayerPrivateKnowledge ();
-	}
-
-	/**
-	 * Processes XML message received from client
-	 * @param msg Message received from client that needs to be processed
-	 * @param sender Player who sent the message
-	 * @throws IOException If we are unable to process the message
-	 * @throws JAXBException Typically used if there is a problem sending a reply back to the client
-	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the client
-	 */
-	@Override
-	protected final void processSessionMessageFromClient (final ClientToServerMessage msg, final MultiplayerClientConnection sender)
-		throws IOException, JAXBException, XMLStreamException
-	{
-		debugLogger.entering (MomSessionThread.class.getName (), "processSessionMessageFromClient", msg.getClass ().getName ());
-
-		try
-		{
-			// Pre-game wizard and race selections
-			if (msg instanceof ChooseWizardMessage)
-				PlayerMessageProcessing.chooseWizard (((ChooseWizardMessage) msg).getWizardID (), sender.getPlayer (), getPlayers (), getSessionDescription (), db, debugLogger);
-
-			else if (msg instanceof ChooseStandardPhotoMessage)
-				PlayerMessageProcessing.chooseStandardPhoto (sender.getPlayer (), (ChooseStandardPhotoMessage) msg, db, debugLogger);
-
-			else if (msg instanceof UploadCustomPhotoMessage)
-				PlayerMessageProcessing.chooseCustomPhoto (sender.getPlayer (), (UploadCustomPhotoMessage) msg, debugLogger);
-
-			else if (msg instanceof ChooseCustomPicksMessage)
-				PlayerMessageProcessing.chooseCustomPicks (sender.getPlayer (), getPlayers (), (ChooseCustomPicksMessage) msg, getSessionDescription (), db, debugLogger);
-
-			else if (msg instanceof ChooseCustomFlagColourMessage)
-				PlayerMessageProcessing.chooseCustomFlagColour (sender.getPlayer (), (ChooseCustomFlagColourMessage) msg, debugLogger);
-
-			else if (msg instanceof ChooseInitialSpellsMessage)
-				PlayerMessageProcessing.chooseInitialSpells (sender.getPlayer (), (ChooseInitialSpellsMessage) msg, db, debugLogger);
-
-			else if (msg instanceof ChooseRaceMessage)
-				PlayerMessageProcessing.chooseRace (this, sender.getPlayer (), getPlayers (), (ChooseRaceMessage) msg, getGeneralServerKnowledge (), getSessionDescription (), db, debugLogger);
-
-			// Cities
-			else if (msg instanceof ChooseCityNameMessage)
-				PlayerMessageProcessing.chooseCityName (sender.getPlayer (), getPlayers (), (ChooseCityNameMessage) msg, getGeneralServerKnowledge ().getTrueMap ().getMap (), getSessionDescription (), debugLogger);
-
-			else
-				super.processSessionMessageFromClient (msg, sender);
-		}
-
-		// Convert MoM-specific exceptions into ones that fit the allowed thrown exceptions from the method
-		catch (final RecordNotFoundException e)
-		{
-			e.printStackTrace ();
-			throw new IOException (e.getMessage ());
-		}
-		catch (final PlayerNotFoundException e)
-		{
-			e.printStackTrace ();
-			throw new IOException (e.getMessage ());
-		}
-		catch (final MomException e)
-		{
-			e.printStackTrace ();
-			throw new IOException (e.getMessage ());
-		}
-
-		debugLogger.exiting (MomSessionThread.class.getName (), "processSessionMessageFromClient");
 	}
 }

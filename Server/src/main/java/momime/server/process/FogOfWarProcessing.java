@@ -31,6 +31,7 @@ import momime.common.messages.servertoclient.v0_9_4.KillUnitMessageData;
 import momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessageData;
+import momime.common.messages.servertoclient.v0_9_4.UpdateDamageTakenAndExperienceMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessageData;
@@ -318,6 +319,55 @@ public final class FogOfWarProcessing
 	}
 
 	/**
+	 * Informs clients who can see this unit of its damage taken & experience
+	 *
+	 * @param tu True unit details
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	public final static void updatePlayerMemoryOfUnit_DamageTakenAndExperience (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		debugLogger.entering (FogOfWarProcessing.class.getName (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience", tu.getUnitURN ());
+
+		// First build the message
+		final UpdateDamageTakenAndExperienceMessage msg = new UpdateDamageTakenAndExperienceMessage ();
+		msg.setUnitURN (tu.getUnitURN ());
+		msg.setDamageTaken (tu.getDamageTaken ());
+		msg.setExperience (UnitUtils.getBasicSkillValue (tu.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE));
+
+		// Check which players can see the unit
+		// Note it isn't enough to say "Is the Unit URN in the player's memory" - maybe they've seen the unit before and are remembering
+		// what they saw, but cannot see it now - in that case they shouldn't receive any updates about the unit
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			if (canSeeUnitMidTurn (tu, players, trueTerrain, priv.getFogOfWar (), db, sd))
+			{
+				// Update player's memory on server
+				final MemoryUnit mu = UnitUtils.findUnitURN (tu.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience", debugLogger);
+				mu.setDamageTaken (msg.getDamageTaken ());
+				UnitUtils.setBasicSkillValue (mu, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, msg.getExperience (), debugLogger);
+
+				// Update player's memory on client
+				if (thisPlayer.getPlayerDescription ().isHuman ())
+					thisPlayer.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		debugLogger.exiting (FogOfWarProcessing.class.getName (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience");
+	}
+
+	/**
 	 * Marks that we can see a particular cell
 	 * @param fogOfWarArea Player's fog of war area
 	 * @param x X coordinate of map cell to update
@@ -427,6 +477,70 @@ public final class FogOfWarProcessing
 			action = FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NONE;
 
 		return action;
+	}
+
+	/**
+	 * @param unit True unit to test
+	 * @param players List of players in the session
+	 * @param trueTerrain True terrain map
+	 * @param fogOfWarArea Area the player can/can't see, outside of FOW recalc
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @return True if player can see this unit
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 */
+	static final boolean canSeeUnitMidTurn (final MemoryUnit unit, final List<PlayerServerDetails> players,
+		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea,
+		final ServerDatabaseLookup db, final MomSessionDescription sd)
+		throws RecordNotFoundException, PlayerNotFoundException
+	{
+		final boolean canSee;
+
+		// Firstly we only know abouts that are alive
+		if (unit.getStatus () != UnitStatusID.ALIVE)
+			canSee = false;
+		else
+		{
+			final OverlandMapTerrainData unitLocationTerrain = trueTerrain.getPlane ().get (unit.getUnitLocation ().getPlane ()).getRow ().get
+				(unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ();
+
+			/*
+			 * For regular (i.e. player/raider) units in cities or walking around the map, this is basically
+			 * canSee = (fogOfWarArea.get (unit.getCurrentLocation ()) == FogOfWarStateID.CAN_SEE)
+			 *
+			 * Towers of Wizardry add one complication - if the unit is standing in a Tower of Wizardry then they'll be on plane 0, but perhaps we can see the
+			 * tower on plane 1... so what this breaks down to is that we'll know about the unit providing we can see it on ANY plane
+			 *
+			 * Second complication is monsters in nodes/lairs/towers - we have to specifically 'attack' the node/lair/tower in order to scout it - simply
+			 * seeing the map cell isn't enough - so if the player attacks the node/lair/tower, we send them the details of the units
+			 * there as we start the combat, and it loses reference to those units as soon as the combat is over - during the combat, CombatLocation
+			 * will be passed in, to allow this routine to return True
+			 *
+			 * So first, see whether this unit belongs to the 'monster' player
+			 */
+			final PlayerServerDetails unitOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, unit.getOwningPlayerID (), "canSeeUnitMidTurn");
+			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
+			if (ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
+			{
+				if (ServerMemoryGridCellUtils.isNodeLairTower (unitLocationTerrain, db))
+				{
+					// Monster in a node/lair/tower - the only way we can see it is if we're in combat with it
+					throw new UnsupportedOperationException ("canSeeUnitMidTurn doesn't know how to handle monsters in nodes/lairs/towers yet");
+				}
+				else
+					// Rampaging monsters walking around the map - treat just like regular units
+					canSee = MomFogOfWarCalculations.canSeeMidTurn (fogOfWarArea.getPlane ().get (unit.getUnitLocation ().getPlane ()).getRow ().get
+						(unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()), sd.getFogOfWarSetting ().getUnits ());
+			}
+			else
+			{
+				// Regular unit - is it in a tower of wizardy?
+				canSee = MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (unit.getUnitLocation (), sd.getFogOfWarSetting ().getUnits (), trueTerrain, fogOfWarArea, db);
+			}
+		}
+
+		return canSee;
 	}
 
 	/**

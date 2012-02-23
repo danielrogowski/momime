@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import momime.common.MomException;
 import momime.common.calculations.MomUnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.CombatMapCoordinates;
+import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
@@ -21,8 +26,10 @@ import momime.server.database.ServerDatabaseLookup;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.UnitSkill;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.process.FogOfWarProcessing;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Server side only helper methods for dealing with units
@@ -273,6 +280,55 @@ public final class UnitServerUtils
 	public static final boolean doesUnitSpecialOrderResultInDeath (final UnitSpecialOrder order)
 	{
 		return (order == UnitSpecialOrder.BUILD_CITY) || (order == UnitSpecialOrder.MELD_WITH_NODE) || (order == UnitSpecialOrder.DISMISS);
+	}
+
+	/**
+	 *
+	 * @param trueUnits True list of units to heal/gain experience
+	 * @param onlyOnePlayerID If zero, will heal/exp units belonging to all players; if specified will heal/exp only units belonging to the specified player
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	public final static void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		debugLogger.entering (UnitServerUtils.class.getName (), "healUnitsAndGainExperience", onlyOnePlayerID);
+
+		for (final MemoryUnit thisUnit : trueUnits)
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
+			{
+				boolean sendMsg = false;
+
+				// Heal?
+				if (thisUnit.getDamageTaken () > 0)
+				{
+					thisUnit.setDamageTaken (thisUnit.getDamageTaken () - 1);
+					sendMsg = true;
+				}
+
+				// Experience?
+				final int exp = UnitUtils.getBasicSkillValue (thisUnit.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+				if (exp >= 0)
+				{
+					UnitUtils.setBasicSkillValue (thisUnit, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, exp + 1, debugLogger);
+					sendMsg = true;
+				}
+
+				// Inform any clients who know about this unit
+				if (sendMsg)
+					FogOfWarProcessing.updatePlayerMemoryOfUnit_DamageTakenAndExperience (thisUnit, trueTerrain, players, db, sd, debugLogger);
+			}
+
+		debugLogger.exiting (UnitServerUtils.class.getName (), "healUnitsAndGainExperience");
 	}
 
 	/**

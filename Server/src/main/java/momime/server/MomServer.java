@@ -29,6 +29,7 @@ import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.logging.SingleLineFormatter;
 import momime.server.logging.WriteToOtherLogHandler;
+import momime.server.messages.process.ObjectFactoryClientToServerMessages;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.OneWindowPerGameUI;
 
@@ -81,7 +82,8 @@ public final class MomServer extends MultiplayerSessionServer
 		throws JAXBException, DatatypeConfigurationException
 	{
 		super (aUserRegistry, aConfig.getPortNumber (), "MomServer",
-			JAXBContextCreator.createClientToServerMessageContext (), JAXBContextCreator.createServerToClientMessageContext (),
+			JAXBContextCreator.createClientToServerMessageContext (), new Object [] {new ObjectFactoryClientToServerMessages ()},
+			JAXBContextCreator.createServerToClientMessageContext (),
 			null, false, aDebugLogger);
 
 		newGameDatabaseMessage = aNewGameDatabaseMessage;
@@ -102,7 +104,8 @@ public final class MomServer extends MultiplayerSessionServer
 	protected final MultiplayerBaseServerThread createAndStartClientThread (final Socket socket) throws InterruptedException, JAXBException, XMLStreamException
 	{
 		final Object readyForMessagesMonitor = new Object ();
-		final MultiplayerClientConnection conn = new MultiplayerClientConnection (this, getMessageProcesser (), socket, clientToServerContext, serverToClientContext, readyForMessagesMonitor, debugLogger);
+		final MultiplayerClientConnection conn = new MultiplayerClientConnection (this, getMessageProcesser (), socket,
+			clientToServerContext, clientToServerContextFactoryArray, serverToClientContext, readyForMessagesMonitor, debugLogger);
 		conn.start ();
 
 		// Wait until thread has started up properly, then send new game database to the client
@@ -309,6 +312,11 @@ public final class MomServer extends MultiplayerSessionServer
 				new MomServer (userRegistry, newGameDatabaseMessage, config, ui, fileLogger, debugLogger).start ();
 				debugLogger.exiting (MomServer.class.getName (), "main (proceed section)");
 			}
+			catch (final MomException e)
+			{
+				debugLogger.severe ("MomException during post-logging server startup: " + e.getMessage ());
+				e.printStackTrace ();
+			}
 			catch (final IOException e)
 			{
 				debugLogger.severe ("IOException during post-logging server startup: " + e.getMessage ());
@@ -342,11 +350,6 @@ public final class MomServer extends MultiplayerSessionServer
 			catch (final DatatypeConfigurationException e)
 			{
 				debugLogger.severe ("DatatypeConfigurationException during post-logging server startup: " + e.getMessage ());
-				e.printStackTrace ();
-			}
-			catch (final MomException e)
-			{
-				debugLogger.severe ("MomException during post-logging server startup: " + e.getMessage ());
 				e.printStackTrace ();
 			}
 		}

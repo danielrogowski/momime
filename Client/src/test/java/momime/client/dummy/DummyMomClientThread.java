@@ -82,7 +82,7 @@ public final class DummyMomClientThread extends MultiplayerBaseClientThread
 	public DummyMomClientThread (final Socket aSocket, final Object aReadyForMessagesMonitor, final DummyMomClient aClient, final Logger aDebugLogger)
 		throws JAXBException
 	{
-		super (aSocket, JAXBContextCreator.createClientToServerMessageContext (), JAXBContextCreator.createServerToClientMessageContext (),
+		super (aSocket, JAXBContextCreator.createClientToServerMessageContext (), JAXBContextCreator.createServerToClientMessageContext (), null,
 			aReadyForMessagesMonitor, aDebugLogger);
 
 		client = aClient;

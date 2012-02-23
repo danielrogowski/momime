@@ -554,8 +554,16 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewImageFile" type="momimegfx:imageFilename" nxe:label="Image file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewImageNumber" type="momimecommon:imageNumber" nxe:label="Image number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewElementSetID" type="momimegfx:cityViewElementSetID" nxe:label="Element Set" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="locationX" type="momimegfx:pixelCoordinate" nxe:label="Location X" nxe:gridwidth="100" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="locationY" type="momimegfx:pixelCoordinate" nxe:label="Location Y" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="locationX" type="momimegfx:pixelCoordinate" nxe:label="Location X" nxe:gridwidth="100">
+		        <xsd:annotation>
+        			<xsd:documentation>Location is optional; this is for Trade Goods + Housing special settings that have an image defined but don't appear on the actual city scape image.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="locationY" type="momimegfx:pixelCoordinate" nxe:label="Location Y" nxe:gridwidth="100">
+		        <xsd:annotation>
+        			<xsd:documentation>Location is optional; this is for Trade Goods + Housing special settings that have an image defined but don't appear on the actual city scape image.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="planeNumber" type="momimenewgame:planeNumber" nxe:label="Plane Number" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectID" type="momimecommon:citySpellEffectID" nxe:label="City Spell Effect" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="sizeMultiplier" type="momimegfx:sizeMultiplier" nxe:label="Size Multiplier" nxe:gridwidth="100" />

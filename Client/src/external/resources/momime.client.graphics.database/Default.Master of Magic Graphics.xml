@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <momimegfx:graphicsDatabase xmlns:momimegfx="http://momime/client/graphics/database/v0_9_4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<wizard wizardID="MONSTERS"/>
+	<wizard wizardID="MONSTERS" />
 	<wizard wizardID="RAIDERS">
 		<flagColour>442404</flagColour>
 	</wizard>
@@ -140,9 +140,9 @@
 			<productionImageNumber>88</productionImageNumber>
 		</productionTypeImage>
 	</productionType>
-	<productionType productionTypeID="RE06"/>
-	<productionType productionTypeID="RE07"/>
-	<productionType productionTypeID="RE08"/>
+	<productionType productionTypeID="RE06" />
+	<productionType productionTypeID="RE07" />
+	<productionType productionTypeID="RE08" />
 	<productionType productionTypeID="RE09">
 		<productionTypeImage productionValue="1">
 			<productionImageFile>MOMADDITIONALGRAPHICS.NDGARC</productionImageFile>
@@ -157,9 +157,9 @@
 			<productionImageNumber>238</productionImageNumber>
 		</productionTypeImage>
 	</productionType>
-	<productionType productionTypeID="RE10"/>
-	<productionType productionTypeID="RE11"/>
-	<productionType productionTypeID="RE12"/>
+	<productionType productionTypeID="RE10" />
+	<productionType productionTypeID="RE11" />
+	<productionType productionTypeID="RE12" />
 	<race raceID="RC01">
 		<racePopulationTask populationTaskID="PT01">
 			<civilianImageFile>BACKGRND.LBX</civilianImageFile>
@@ -431,24 +431,24 @@
 			<bookImageNumber>29</bookImageNumber>
 		</bookImage>
 	</pick>
-	<pick pickID="RT01"/>
-	<pick pickID="RT02"/>
-	<pick pickID="RT03"/>
-	<pick pickID="RT04"/>
-	<pick pickID="RT05"/>
-	<pick pickID="RT06"/>
-	<pick pickID="RT07"/>
-	<pick pickID="RT08"/>
-	<pick pickID="RT09"/>
-	<pick pickID="RT10"/>
-	<pick pickID="RT11"/>
-	<pick pickID="RT12"/>
-	<pick pickID="RT13"/>
-	<pick pickID="RT14"/>
-	<pick pickID="RT15"/>
-	<pick pickID="RT16"/>
-	<pick pickID="RT17"/>
-	<pick pickID="RT18"/>
+	<pick pickID="RT01" />
+	<pick pickID="RT02" />
+	<pick pickID="RT03" />
+	<pick pickID="RT04" />
+	<pick pickID="RT05" />
+	<pick pickID="RT06" />
+	<pick pickID="RT07" />
+	<pick pickID="RT08" />
+	<pick pickID="RT09" />
+	<pick pickID="RT10" />
+	<pick pickID="RT11" />
+	<pick pickID="RT12" />
+	<pick pickID="RT13" />
+	<pick pickID="RT14" />
+	<pick pickID="RT15" />
+	<pick pickID="RT16" />
+	<pick pickID="RT17" />
+	<pick pickID="RT18" />
 	<unitAttribute unitAttributeID="UA01">
 		<attributeImageFile>MOMADDITIONALGRAPHICS.NDGARC</attributeImageFile>
 		<attributeImageNumber>52</attributeImageNumber>
@@ -1228,7 +1228,7 @@
 			<rangedAttackTypeCombatImageNumber>95</rangedAttackTypeCombatImageNumber>
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
-	<spell spellID="SP001"/>
+	<spell spellID="SP001" />
 	<spell spellID="SP002">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1250,8 +1250,8 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
-	<spell spellID="SP005"/>
-	<spell spellID="SP006"/>
+	<spell spellID="SP005" />
+	<spell spellID="SP006" />
 	<spell spellID="SP007">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1259,10 +1259,10 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
-	<spell spellID="SP008"/>
-	<spell spellID="SP009"/>
-	<spell spellID="SP010"/>
-	<spell spellID="SP011"/>
+	<spell spellID="SP008" />
+	<spell spellID="SP009" />
+	<spell spellID="SP010" />
+	<spell spellID="SP011" />
 	<spell spellID="SP012">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>4</spellMusicNumber>
@@ -1270,14 +1270,14 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
-	<spell spellID="SP013"/>
-	<spell spellID="SP014"/>
-	<spell spellID="SP015"/>
-	<spell spellID="SP016"/>
-	<spell spellID="SP017"/>
-	<spell spellID="SP018"/>
-	<spell spellID="SP019"/>
-	<spell spellID="SP020"/>
+	<spell spellID="SP013" />
+	<spell spellID="SP014" />
+	<spell spellID="SP015" />
+	<spell spellID="SP016" />
+	<spell spellID="SP017" />
+	<spell spellID="SP018" />
+	<spell spellID="SP019" />
+	<spell spellID="SP020" />
 	<spell spellID="SP021">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1285,8 +1285,8 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
-	<spell spellID="SP022"/>
-	<spell spellID="SP023"/>
+	<spell spellID="SP022" />
+	<spell spellID="SP023" />
 	<spell spellID="SP024">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1294,9 +1294,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
-	<spell spellID="SP025"/>
-	<spell spellID="SP026"/>
-	<spell spellID="SP027"/>
+	<spell spellID="SP025" />
+	<spell spellID="SP026" />
+	<spell spellID="SP027" />
 	<spell spellID="SP028">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>4</spellMusicNumber>
@@ -1325,14 +1325,14 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
-	<spell spellID="SP032"/>
-	<spell spellID="SP033"/>
+	<spell spellID="SP032" />
+	<spell spellID="SP033" />
 	<spell spellID="SP034">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>295</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP035"/>
-	<spell spellID="SP036"/>
+	<spell spellID="SP035" />
+	<spell spellID="SP036" />
 	<spell spellID="SP037">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>4</spellMusicNumber>
@@ -1344,7 +1344,7 @@
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>297</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP039"/>
+	<spell spellID="SP039" />
 	<spell spellID="SP040">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>296</overlandEnchantmentImageNumber>
@@ -1356,8 +1356,8 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>4</spellSoundNumber>
 	</spell>
-	<spell spellID="SP042"/>
-	<spell spellID="SP043"/>
+	<spell spellID="SP042" />
+	<spell spellID="SP043" />
 	<spell spellID="SP044">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1379,12 +1379,12 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>36</spellSoundNumber>
 	</spell>
-	<spell spellID="SP047"/>
-	<spell spellID="SP048"/>
-	<spell spellID="SP049"/>
-	<spell spellID="SP050"/>
-	<spell spellID="SP051"/>
-	<spell spellID="SP052"/>
+	<spell spellID="SP047" />
+	<spell spellID="SP048" />
+	<spell spellID="SP049" />
+	<spell spellID="SP050" />
+	<spell spellID="SP051" />
+	<spell spellID="SP052" />
 	<spell spellID="SP053">
 		<combatCastAnimation>VERTIGO</combatCastAnimation>
 		<combatCastOffsetX>1</combatCastOffsetX>
@@ -1399,7 +1399,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>4</spellSoundNumber>
 	</spell>
-	<spell spellID="SP055"/>
+	<spell spellID="SP055" />
 	<spell spellID="SP056">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1411,7 +1411,7 @@
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>292</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP058"/>
+	<spell spellID="SP058" />
 	<spell spellID="SP059">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>291</overlandEnchantmentImageNumber>
@@ -1423,7 +1423,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>40</spellSoundNumber>
 	</spell>
-	<spell spellID="SP061"/>
+	<spell spellID="SP061" />
 	<spell spellID="SP062">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1438,8 +1438,8 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>4</spellSoundNumber>
 	</spell>
-	<spell spellID="SP064"/>
-	<spell spellID="SP065"/>
+	<spell spellID="SP064" />
+	<spell spellID="SP065" />
 	<spell spellID="SP066">
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
 		<combatCastOffsetX>1</combatCastOffsetX>
@@ -1454,7 +1454,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>37</spellSoundNumber>
 	</spell>
-	<spell spellID="SP068"/>
+	<spell spellID="SP068" />
 	<spell spellID="SP069">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1469,7 +1469,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>4</spellSoundNumber>
 	</spell>
-	<spell spellID="SP071"/>
+	<spell spellID="SP071" />
 	<spell spellID="SP072">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>5</spellMusicNumber>
@@ -1477,12 +1477,12 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>4</spellSoundNumber>
 	</spell>
-	<spell spellID="SP073"/>
-	<spell spellID="SP074"/>
-	<spell spellID="SP075"/>
-	<spell spellID="SP076"/>
-	<spell spellID="SP077"/>
-	<spell spellID="SP078"/>
+	<spell spellID="SP073" />
+	<spell spellID="SP074" />
+	<spell spellID="SP075" />
+	<spell spellID="SP076" />
+	<spell spellID="SP077" />
+	<spell spellID="SP078" />
 	<spell spellID="SP079">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>293</overlandEnchantmentImageNumber>
@@ -1491,11 +1491,11 @@
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>294</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP081"/>
-	<spell spellID="SP082"/>
-	<spell spellID="SP083"/>
-	<spell spellID="SP084"/>
-	<spell spellID="SP085"/>
+	<spell spellID="SP081" />
+	<spell spellID="SP082" />
+	<spell spellID="SP083" />
+	<spell spellID="SP084" />
+	<spell spellID="SP085" />
 	<spell spellID="SP086">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1531,9 +1531,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>40</spellSoundNumber>
 	</spell>
-	<spell spellID="SP091"/>
-	<spell spellID="SP092"/>
-	<spell spellID="SP093"/>
+	<spell spellID="SP091" />
+	<spell spellID="SP092" />
+	<spell spellID="SP093" />
 	<spell spellID="SP094">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1541,10 +1541,10 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>5</spellSoundNumber>
 	</spell>
-	<spell spellID="SP095"/>
-	<spell spellID="SP096"/>
-	<spell spellID="SP097"/>
-	<spell spellID="SP098"/>
+	<spell spellID="SP095" />
+	<spell spellID="SP096" />
+	<spell spellID="SP097" />
+	<spell spellID="SP098" />
 	<spell spellID="SP099">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1552,16 +1552,16 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>5</spellSoundNumber>
 	</spell>
-	<spell spellID="SP100"/>
-	<spell spellID="SP101"/>
-	<spell spellID="SP102"/>
-	<spell spellID="SP103"/>
-	<spell spellID="SP104"/>
-	<spell spellID="SP105"/>
-	<spell spellID="SP106"/>
-	<spell spellID="SP107"/>
-	<spell spellID="SP108"/>
-	<spell spellID="SP109"/>
+	<spell spellID="SP100" />
+	<spell spellID="SP101" />
+	<spell spellID="SP102" />
+	<spell spellID="SP103" />
+	<spell spellID="SP104" />
+	<spell spellID="SP105" />
+	<spell spellID="SP106" />
+	<spell spellID="SP107" />
+	<spell spellID="SP108" />
+	<spell spellID="SP109" />
 	<spell spellID="SP110">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>7</spellMusicNumber>
@@ -1569,8 +1569,8 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>5</spellSoundNumber>
 	</spell>
-	<spell spellID="SP111"/>
-	<spell spellID="SP112"/>
+	<spell spellID="SP111" />
+	<spell spellID="SP112" />
 	<spell spellID="SP113">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>301</overlandEnchantmentImageNumber>
@@ -1579,7 +1579,7 @@
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>300</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP115"/>
+	<spell spellID="SP115" />
 	<spell spellID="SP116">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>298</overlandEnchantmentImageNumber>
@@ -1588,8 +1588,8 @@
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>299</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP118"/>
-	<spell spellID="SP119"/>
+	<spell spellID="SP118" />
+	<spell spellID="SP119" />
 	<spell spellID="SP120">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>302</overlandEnchantmentImageNumber>
@@ -1601,8 +1601,8 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>3</spellSoundNumber>
 	</spell>
-	<spell spellID="SP122"/>
-	<spell spellID="SP123"/>
+	<spell spellID="SP122" />
+	<spell spellID="SP123" />
 	<spell spellID="SP124">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1610,7 +1610,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>3</spellSoundNumber>
 	</spell>
-	<spell spellID="SP125"/>
+	<spell spellID="SP125" />
 	<spell spellID="SP126">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1622,8 +1622,8 @@
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>306</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP128"/>
-	<spell spellID="SP129"/>
+	<spell spellID="SP128" />
+	<spell spellID="SP129" />
 	<spell spellID="SP130">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1638,16 +1638,16 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>3</spellSoundNumber>
 	</spell>
-	<spell spellID="SP132"/>
-	<spell spellID="SP133"/>
-	<spell spellID="SP134"/>
+	<spell spellID="SP132" />
+	<spell spellID="SP133" />
+	<spell spellID="SP134" />
 	<spell spellID="SP135">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>308</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP136"/>
-	<spell spellID="SP137"/>
-	<spell spellID="SP138"/>
+	<spell spellID="SP136" />
+	<spell spellID="SP137" />
+	<spell spellID="SP138" />
 	<spell spellID="SP139">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>3</spellMusicNumber>
@@ -1655,7 +1655,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>3</spellSoundNumber>
 	</spell>
-	<spell spellID="SP140"/>
+	<spell spellID="SP140" />
 	<spell spellID="SP141">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1663,7 +1663,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>3</spellSoundNumber>
 	</spell>
-	<spell spellID="SP142"/>
+	<spell spellID="SP142" />
 	<spell spellID="SP143">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1692,7 +1692,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>3</spellSoundNumber>
 	</spell>
-	<spell spellID="SP147"/>
+	<spell spellID="SP147" />
 	<spell spellID="SP148">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>3</spellMusicNumber>
@@ -1700,9 +1700,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>3</spellSoundNumber>
 	</spell>
-	<spell spellID="SP149"/>
-	<spell spellID="SP150"/>
-	<spell spellID="SP151"/>
+	<spell spellID="SP149" />
+	<spell spellID="SP150" />
+	<spell spellID="SP151" />
 	<spell spellID="SP152">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>3</spellMusicNumber>
@@ -1740,12 +1740,12 @@
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>305</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP159"/>
+	<spell spellID="SP159" />
 	<spell spellID="SP160">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>309</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP161"/>
+	<spell spellID="SP161" />
 	<spell spellID="SP162">
 		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1774,18 +1774,18 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>39</spellSoundNumber>
 	</spell>
-	<spell spellID="SP166"/>
-	<spell spellID="SP167"/>
-	<spell spellID="SP168"/>
-	<spell spellID="SP169"/>
-	<spell spellID="SP170"/>
-	<spell spellID="SP171"/>
-	<spell spellID="SP172"/>
-	<spell spellID="SP173"/>
-	<spell spellID="SP174"/>
-	<spell spellID="SP175"/>
-	<spell spellID="SP176"/>
-	<spell spellID="SP177"/>
+	<spell spellID="SP166" />
+	<spell spellID="SP167" />
+	<spell spellID="SP168" />
+	<spell spellID="SP169" />
+	<spell spellID="SP170" />
+	<spell spellID="SP171" />
+	<spell spellID="SP172" />
+	<spell spellID="SP173" />
+	<spell spellID="SP174" />
+	<spell spellID="SP175" />
+	<spell spellID="SP176" />
+	<spell spellID="SP177" />
 	<spell spellID="SP178">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>2</spellMusicNumber>
@@ -1800,7 +1800,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>6</spellSoundNumber>
 	</spell>
-	<spell spellID="SP180"/>
+	<spell spellID="SP180" />
 	<spell spellID="SP181">
 		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1808,7 +1808,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>6</spellSoundNumber>
 	</spell>
-	<spell spellID="SP182"/>
+	<spell spellID="SP182" />
 	<spell spellID="SP183">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>8</spellMusicNumber>
@@ -1816,7 +1816,7 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>6</spellSoundNumber>
 	</spell>
-	<spell spellID="SP184"/>
+	<spell spellID="SP184" />
 	<spell spellID="SP185">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>2</spellMusicNumber>
@@ -1824,8 +1824,8 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>6</spellSoundNumber>
 	</spell>
-	<spell spellID="SP186"/>
-	<spell spellID="SP187"/>
+	<spell spellID="SP186" />
+	<spell spellID="SP187" />
 	<spell spellID="SP188">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>290</overlandEnchantmentImageNumber>
@@ -1844,11 +1844,11 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>2</spellSoundNumber>
 	</spell>
-	<spell spellID="SP191"/>
-	<spell spellID="SP192"/>
-	<spell spellID="SP193"/>
-	<spell spellID="SP194"/>
-	<spell spellID="SP195"/>
+	<spell spellID="SP191" />
+	<spell spellID="SP192" />
+	<spell spellID="SP193" />
+	<spell spellID="SP194" />
+	<spell spellID="SP195" />
 	<spell spellID="SP196">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>8</spellMusicNumber>
@@ -1864,10 +1864,10 @@
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>289</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP199"/>
-	<spell spellID="SP200"/>
-	<spell spellID="SP201"/>
-	<spell spellID="SP202"/>
+	<spell spellID="SP199" />
+	<spell spellID="SP200" />
+	<spell spellID="SP201" />
+	<spell spellID="SP202" />
 	<spell spellID="SP203">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>0</spellMusicNumber>
@@ -1875,23 +1875,23 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>7</spellSoundNumber>
 	</spell>
-	<spell spellID="SP204"/>
-	<spell spellID="SP205"/>
+	<spell spellID="SP204" />
+	<spell spellID="SP205" />
 	<spell spellID="SP206">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>310</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP207"/>
-	<spell spellID="SP208"/>
+	<spell spellID="SP207" />
+	<spell spellID="SP208" />
 	<spell spellID="SP209">
 		<overlandEnchantmentImageFile>SPECFX.LBX</overlandEnchantmentImageFile>
 		<overlandEnchantmentImageNumber>502</overlandEnchantmentImageNumber>
 	</spell>
-	<spell spellID="SP210"/>
-	<spell spellID="SP211"/>
-	<spell spellID="SP212"/>
-	<spell spellID="SP213"/>
-	<spell spellID="SP214"/>
+	<spell spellID="SP210" />
+	<spell spellID="SP211" />
+	<spell spellID="SP212" />
+	<spell spellID="SP213" />
+	<spell spellID="SP214" />
 	<combatAction combatActionID="STAND">
 		<combatActionDescription>Image of unit standing still</combatActionDescription>
 	</combatAction>
@@ -47376,17 +47376,17 @@
 		<combatAreaEffectImageFile>COMPIX.LBX</combatAreaEffectImageFile>
 		<combatAreaEffectImageNumber>57</combatAreaEffectImageNumber>
 	</combatAreaEffect>
-	<tileType tileTypeID="TT01"/>
-	<tileType tileTypeID="TT02"/>
-	<tileType tileTypeID="TT03"/>
-	<tileType tileTypeID="TT04"/>
-	<tileType tileTypeID="TT05"/>
-	<tileType tileTypeID="TT06"/>
-	<tileType tileTypeID="TT07"/>
-	<tileType tileTypeID="TT08"/>
-	<tileType tileTypeID="TT09"/>
-	<tileType tileTypeID="TT10"/>
-	<tileType tileTypeID="TT11"/>
+	<tileType tileTypeID="TT01" />
+	<tileType tileTypeID="TT02" />
+	<tileType tileTypeID="TT03" />
+	<tileType tileTypeID="TT04" />
+	<tileType tileTypeID="TT05" />
+	<tileType tileTypeID="TT06" />
+	<tileType tileTypeID="TT07" />
+	<tileType tileTypeID="TT08" />
+	<tileType tileTypeID="TT09" />
+	<tileType tileTypeID="TT10" />
+	<tileType tileTypeID="TT11" />
 	<tileType tileTypeID="TT12">
 		<monsterFoundImageFile>MOMADDITIONALGRAPHICS.NDGARC</monsterFoundImageFile>
 		<monsterFoundImageNumber>114</monsterFoundImageNumber>
@@ -47399,11 +47399,11 @@
 		<monsterFoundImageFile>MOMADDITIONALGRAPHICS.NDGARC</monsterFoundImageFile>
 		<monsterFoundImageNumber>112</monsterFoundImageNumber>
 	</tileType>
-	<tileType tileTypeID="TT15"/>
-	<tileType tileTypeID="TT98"/>
-	<tileType tileTypeID="TT99"/>
-	<tileType tileTypeID="FOW"/>
-	<tileType tileTypeID="FOWPARTIAL"/>
+	<tileType tileTypeID="TT15" />
+	<tileType tileTypeID="TT98" />
+	<tileType tileTypeID="TT99" />
+	<tileType tileTypeID="FOW" />
+	<tileType tileTypeID="FOWPARTIAL" />
 	<mapFeature mapFeatureID="MF01">
 		<overlandMapImageFile>MAPBACK.LBX</overlandMapImageFile>
 		<overlandMapImageNumber>142</overlandMapImageNumber>
@@ -48875,6 +48875,18 @@
 		<locationY>169</locationY>
 		<citySpellEffectID>SE072S</citySpellEffectID>
 		<sizeMultiplier>1</sizeMultiplier>
+	</cityViewElement>
+	<cityViewElement>
+		<cityViewImageFile>CITYSCAP.LBX</cityViewImageFile>
+		<cityViewImageNumber>95</cityViewImageNumber>
+		<sizeMultiplier>1</sizeMultiplier>
+		<buildingID>BL01</buildingID>
+	</cityViewElement>
+	<cityViewElement>
+		<cityViewImageFile>CITYSCAP.LBX</cityViewImageFile>
+		<cityViewImageNumber>96</cityViewImageNumber>
+		<sizeMultiplier>1</sizeMultiplier>
+		<buildingID>BL02</buildingID>
 	</cityViewElement>
 	<animation animationID="UN001_D1_WALKFLY">
 		<animationDescription>Dwarf walking/flying up</animationDescription>

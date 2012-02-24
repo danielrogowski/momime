@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
-	<artifactId>common</artifactId>
+	<artifactId>momime-common</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>momimeCommon</name>
 	<description>MoM IME common database definitions and classes needed both by client and server</description>
@@ -73,12 +73,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
-			<artifactId>sessionbase</artifactId>
+			<artifactId>ndgmultiplayer-sessionbase</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.map</groupId>
-			<artifactId>base</artifactId>
+			<artifactId>ndgmap</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

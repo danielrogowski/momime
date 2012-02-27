@@ -8,8 +8,8 @@
 	<description>MoM IME Editors</description>
 
 	<parent>
-		<artifactId>parent</artifactId>
 		<groupId>com.ndg.common</groupId>
+		<artifactId>parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 

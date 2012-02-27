@@ -34,7 +34,7 @@ public final class GenerateTestData
 		// This makes the assumption that the MoMIMEServerDatabase project is called as such and hasn't been checked out under a different name
 		final URL languageXsd = new Object ().getClass ().getResource (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION);
 		final File languageXsdFile = new File (languageXsd.getFile ());
-		final File serverXmlFile = new File (languageXsdFile, "../../../../../MoMIMEServerDatabase/src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
+		final File serverXmlFile = new File (languageXsdFile, "../../../../MoMIMEServerDatabase/src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
 
 		return serverXmlFile.getCanonicalFile ();
 	}
@@ -49,7 +49,7 @@ public final class GenerateTestData
 		// So instead find something that is on the classpath of the MoMIMEClient project, then modify that location
 		final URL languageXSD = new Object ().getClass ().getResource (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION);
 		final File languageFile = new File (languageXSD.getFile ());
-		final File englishXmlFile = new File (languageFile, "../../../../src/external/resources/momime.client.language.database/English.Master of Magic Language.xml");
+		final File englishXmlFile = new File (languageFile, "../../../src/external/resources/momime.client.language.database/English.Master of Magic Language.xml");
 
 		return englishXmlFile.getCanonicalFile ();
 	}
@@ -64,7 +64,7 @@ public final class GenerateTestData
 		// So instead find something that is on the classpath of the MoMIMEClient project, then modify that location
 		final URL graphicsXSD = new Object ().getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION);
 		final File graphicsFile = new File (graphicsXSD.getFile ());
-		final File graphicsXmlFile = new File (graphicsFile, "../../../../src/external/resources/momime.client.graphics.database/Default.Master of Magic Graphics.xml");
+		final File graphicsXmlFile = new File (graphicsFile, "../../../src/external/resources/momime.client.graphics.database/Default.Master of Magic Graphics.xml");
 
 		return graphicsXmlFile.getCanonicalFile ();
 	}

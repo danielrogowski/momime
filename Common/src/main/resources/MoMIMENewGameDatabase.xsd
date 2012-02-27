@@ -3,7 +3,7 @@
 	xmlns:map="http://www.ndg.com/map" xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" targetNamespace="http://momime/common/database/newgame/v0_9_4"
 	jaxb:version="2.0">
 	
-	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../../NdgMap/src/main/resources/com.ndg.map/Map.xsd" />
+	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../NdgMap/src/main/resources/Map.xsd" />
 	
     <xsd:annotation>
     	<xsd:documentation>Stores elements that are included in the session description.  The reason this is held outside of the common XSD is that

@@ -8,7 +8,7 @@ public class GraphicsDatabaseConstants
 	/**
 	 * Path and name to locate the graphics XSD file
 	 */
-	public static final String GRAPHICS_XSD_LOCATION = "/momime.client.graphics.database/MoMIMEGraphicsDatabase.xsd";
+	public static final String GRAPHICS_XSD_LOCATION = "/MoMIMEGraphicsDatabase.xsd";
 
 	/**
 	 * Prevent instatiation of this class

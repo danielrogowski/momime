@@ -9,13 +9,13 @@ public final class CommonDatabaseConstants
 	public static final String MOM_IME_VERSION = "v0_9_4";
 
 	/** Path and name to locate the common XSD file on the classpath */
-	public static final String NEW_GAME_XSD_LOCATION = "/momime.common.database/MoMIMENewGameDatabase.xsd";
+	public static final String NEW_GAME_XSD_LOCATION = "/MoMIMENewGameDatabase.xsd";
 
 	/** Namespace of the common XSD */
 	public static final String NEW_GAME_XSD_NAMESPACE_URI = "http://momime/common/database/newgame/" + MOM_IME_VERSION;
 
 	/** Path and name to locate the common XSD file on the classpath */
-	public static final String COMMON_XSD_LOCATION = "/momime.common.database/MoMIMECommonDatabase.xsd";
+	public static final String COMMON_XSD_LOCATION = "/MoMIMECommonDatabase.xsd";
 
 	/** Namespace of the common XSD */
 	public static final String COMMON_XSD_NAMESPACE_URI = "http://momime/common/database/" + MOM_IME_VERSION;

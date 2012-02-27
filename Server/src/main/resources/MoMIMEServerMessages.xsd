@@ -6,17 +6,17 @@
 	xmlns:momimesvrmsgs="http://momime/server/messages/v0_9_4" targetNamespace="http://momime/server/messages/v0_9_4"
 	jaxb:version="2.0">
 
-	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../../NdgMap/src/main/resources/com.ndg.map/Map.xsd" />
-    <xsd:import namespace="http://www.ndg.com/multiplayer/base" schemaLocation="../../../../../NdgMultiplayerBase/src/main/resources/com.ndg.multiplayer.messages/Multiplayer.xsd"/>
-    <xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../../NdgMultiplayerSessionBase/src/main/resources/com.ndg.multiplayer.messages/MultiplayerSession.xsd"/>
-	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../../../../../MoMIMECommon/src/main/resources/momime.common.database/MoMIMECommonDatabase.xsd" />
-	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="../../../../../MoMIMECommon/src/main/resources/momime.common.database/MoMIMENewGameDatabase.xsd" />
-	<xsd:import namespace="http://momime/server/database/v0_9_4" schemaLocation="../../../../../MoMIMEServerDatabase/src/main/resources/momime.server.database/MoMIMEServerDatabase.xsd" />
-	<xsd:import namespace="http://momime/common/messages/v0_9_4" schemaLocation="../../../../../MoMIMECommon/src/main/resources/momime.common.messages/MoMIMEMessages.xsd" />
+	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../NdgMap/src/main/resources/Map.xsd" />
+	<xsd:import namespace="http://www.ndg.com/multiplayer/base" schemaLocation="../../../../NdgMultiplayerBase/src/main/resources/Multiplayer.xsd"/>
+	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../NdgMultiplayerSessionBase/src/main/resources/MultiplayerSession.xsd"/>
+	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../../../../MoMIMECommon/src/main/resources/MoMIMECommonDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="../../../../MoMIMECommon/src/main/resources/MoMIMENewGameDatabase.xsd" />
+	<xsd:import namespace="http://momime/server/database/v0_9_4" schemaLocation="../../../../MoMIMEServerDatabase/src/main/resources/MoMIMEServerDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/messages/v0_9_4" schemaLocation="../../../../MoMIMECommon/src/main/resources/MoMIMEMessages.xsd" />
     
 	<xsd:complexType name="momGeneralServerKnowledge">
 	    <xsd:annotation>
-    		<xsd:documentation>Holds private server only knowledge that is not known to any players.  momimemsgs:memoryGridCell</xsd:documentation>
+    		<xsd:documentation>Holds private server only knowledge that is not known to any players.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="mps:generalServerKnowledge">

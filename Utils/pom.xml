@@ -8,8 +8,8 @@
 	<description>Helper classes for dealing with original MoM and MoM IME file formats like .lbx and .ndgarc</description>
 
 	<parent>
-		<artifactId>parent</artifactId>
 		<groupId>com.ndg.common</groupId>
+		<artifactId>parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 

@@ -37,9 +37,9 @@ only way to prevent this is to declare the session description elements in a sep
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfMapIsLand" type="momimenewgame:percentage" nxe:label="% of map which is land" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfLandIsHills" type="momimenewgame:percentage" nxe:label="% of land which is hills" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfHillsAreMountains" type="momimenewgame:percentage" nxe:label="% of hills which are mountains" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="tundraRowCount" type="momimenewgame:mapTileCount" nxe:label="Nbr. rows from map edge where tundra can appear" nxe:gridwidth="250" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="riverCount" type="momimenewgame:mapTileCount" nxe:label="Nbr. Rivers on each plane" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfHillsAreMountains" type="momimenewgame:percentage" nxe:label="% of hills which are mountains" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="tundraRowCount" type="momimenewgame:mapTileCount" nxe:label="Nbr. rows from map edge where tundra can appear" nxe:gridwidth="270" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="riverCount" type="momimenewgame:mapTileCount" nxe:label="Nbr. Rivers on each plane" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionTileType" type="momimenewgame:landProportionTileType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionPlane" type="momimenewgame:landProportionPlane" />
 		</xsd:sequence>
@@ -50,8 +50,8 @@ only way to prevent this is to declare the session description elements in a sep
         	<xsd:documentation>Defines charactistics of terrain which is generated in blobs (trees, desert and swamp).</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfLand" type="momimenewgame:percentage" nxe:label="% of land which is this terrain" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="eachAreaTileCount" type="momimenewgame:mapTileCount" nxe:label="Approx. size of each area of this terrain" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfLand" type="momimenewgame:percentage" nxe:label="% of land which is this terrain" nxe:gridwidth="180" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eachAreaTileCount" type="momimenewgame:mapTileCount" nxe:label="Approx. size of each area of this terrain" nxe:gridwidth="220" />
 		</xsd:sequence>
 		<xsd:attribute name="tileTypeID" type="momimenewgame:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -111,22 +111,22 @@ only way to prevent this is to declare the session description elements in a sep
         	<xsd:documentation>Defines difficulty level details that must be supplied when creating a new game.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="humanSpellPicks" type="momimenewgame:pickCount" nxe:label="Human spell picks" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="aiSpellPicks" type="momimenewgame:pickCount" nxe:label="AI spell picks" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="humanStartingGold" type="momimenewgame:undoubledProductionValue" nxe:label="Human starting gold" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="aiStartingGold" type="momimenewgame:undoubledProductionValue" nxe:label="AI starting gold" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="humanSpellPicks" type="momimenewgame:pickCount" nxe:label="Human spell picks" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiSpellPicks" type="momimenewgame:pickCount" nxe:label="AI spell picks" nxe:gridwidth="90" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="humanStartingGold" type="momimenewgame:undoubledProductionValue" nxe:label="Human starting gold" nxe:gridwidth="110" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiStartingGold" type="momimenewgame:undoubledProductionValue" nxe:label="AI starting gold" nxe:gridwidth="100" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="customWizards" type="xsd:boolean" nxe:label="Custom wizards?" nxe:gridwidth="100" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="eachWizardOnlyOnce" type="xsd:boolean" nxe:label="Each wizard only once?" nxe:gridwidth="120" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eachWizardOnlyOnce" type="xsd:boolean" nxe:label="Each wizard only once?" nxe:gridwidth="130" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="normalLairCount" type="momimenewgame:lairCount" nxe:label="Nbr. normal lairs" nxe:gridwidth="100" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="weakLairCount" type="momimenewgame:lairCount" nxe:label="Nbr. weak lairs" nxe:gridwidth="100" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMinimum" type="momimenewgame:monsterStrength" nxe:label="Tower Min. monster strength" nxe:gridwidth="200" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMaximum" type="momimenewgame:monsterStrength" nxe:label="Tower Max. monster strength" nxe:gridwidth="200" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMinimum" type="momimenewgame:treasureValue" nxe:label="Tower Min. treasure value" nxe:gridwidth="200" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMaximum" type="momimenewgame:treasureValue" nxe:label="Tower Max. treasure value" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMinimum" type="momimenewgame:monsterStrength" nxe:label="Tower Min. monster strength" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMaximum" type="momimenewgame:monsterStrength" nxe:label="Tower Max. monster strength" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMinimum" type="momimenewgame:treasureValue" nxe:label="Tower Min. treasure value" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMaximum" type="momimenewgame:treasureValue" nxe:label="Tower Max. treasure value" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityCount" type="momimenewgame:cityCount" nxe:label="Nbr. raider cities" nxe:gridwidth="100" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMin" type="momimenewgame:cityPopulationDiv1000" nxe:label="Min. starting size of raider cities" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMax" type="momimenewgame:cityPopulationDiv1000" nxe:label="Max. starting size of raider cities" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityGrowthCap" type="momimenewgame:cityPopulationDiv1000" nxe:label="Amount raider cities are allowed to grow" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMin" type="momimenewgame:cityPopulationDiv1000" nxe:label="Min. starting size of raider cities" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMax" type="momimenewgame:cityPopulationDiv1000" nxe:label="Max. starting size of raider cities" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityGrowthCap" type="momimenewgame:cityPopulationDiv1000" nxe:label="Amount raider cities are allowed to grow" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="wizardCityStartSize" type="momimenewgame:cityPopulationDiv1000" nxe:label="Starting size of wizard cities" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="cityMaxSize" type="momimenewgame:cityPopulationDiv1000" nxe:label="Max. city size" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelPlane" type="momimenewgame:difficultyLevelPlane" />
@@ -180,9 +180,9 @@ only way to prevent this is to declare the session description elements in a sep
         	<xsd:documentation>Defines fog of war settings that must be supplied when creating a new game.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="terrainAndNodeAuras" type="momimenewgame:fogOfWarValue" nxe:label="Terrain and Node Auras" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="citiesSpellsAndCombatAreaEffects" type="momimenewgame:fogOfWarValue" nxe:label="Cities, Combat Spells and CAEs" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="units" type="momimenewgame:fogOfWarValue" nxe:label="Units" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="terrainAndNodeAuras" type="momimenewgame:fogOfWarValue" nxe:label="Terrain and Node Auras" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="citiesSpellsAndCombatAreaEffects" type="momimenewgame:fogOfWarValue" nxe:label="Cities, Combat Spells and CAEs" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="units" type="momimenewgame:fogOfWarValue" nxe:label="Units" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="seeEnemyCityConstruction" type="xsd:boolean" nxe:label="See what enemy cities are constructing?" nxe:gridwidth="200" />
 		</xsd:sequence>
 	</xsd:complexType>
@@ -195,7 +195,7 @@ only way to prevent this is to declare the session description elements in a sep
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitsPerMapCell" type="momimenewgame:unitCount" nxe:label="Max. units in a map cell" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="canExceedMaximumUnitsDuringCombat" type="xsd:boolean" nxe:label="Exceed limit during combat?" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="maxHeroes" type="momimenewgame:unitCount" nxe:label="Max. heroes hired at once" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="rollHeroSkillsAtStartOfGame" type="xsd:boolean" nxe:label="Roll hero skills at start of game?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="rollHeroSkillsAtStartOfGame" type="xsd:boolean" nxe:label="Roll hero skills at start of game?" nxe:gridwidth="170" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -204,14 +204,14 @@ only way to prevent this is to declare the session description elements in a sep
         	<xsd:documentation>Defines standard spell settings choosable on the new game form, i.e. original/recommended.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="switchResearch" type="momimenewgame:switchResearch" nxe:label="Switch spell research?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="switchResearch" type="momimenewgame:switchResearch" nxe:label="Switch spell research?" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksToObtainFirstReduction" type="momimenewgame:spellBookCount" nxe:label="Spell books to obtain first reduction" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksCastingReduction" type="momimenewgame:percentage" nxe:label="% casting reduction from each book" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksCastingReductionCap" type="momimenewgame:castingReductionCap" nxe:label="% casting reduction cap" nxe:gridwidth="200" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksCastingReductionCombination" type="momimenewgame:castingReductionCombination" nxe:label="Casting reduction combination rule" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksCastingReductionCombination" type="momimenewgame:castingReductionCombination" nxe:label="Casting reduction combination rule" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonus" type="momimenewgame:percentage" nxe:label="% research bonus from each book" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonusCap" type="momimenewgame:castingReductionCap" nxe:label="% research bonus cap" nxe:gridwidth="200" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonusCombination" type="momimenewgame:castingReductionCombination" nxe:label="Research bonus combination rule" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonusCombination" type="momimenewgame:castingReductionCombination" nxe:label="Research bonus combination rule" nxe:showmaincolumn="false" />
 		</xsd:sequence>
 	</xsd:complexType>
 

@@ -55,7 +55,7 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 				<xsd:sequence>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelNodeStrength" type="momimecommon:difficultyLevelNodeStrength" />
 				</xsd:sequence>
-				<xsd:attribute name="difficultyLevelID" type="momimecommon:difficultyLevelID" use="required" nxe:label="Difficulty Level ID" nxe:gridwidth="150" />
+				<xsd:attribute name="difficultyLevelID" type="momimecommon:difficultyLevelID" use="required" nxe:label="Difficulty Level ID" nxe:gridwidth="100" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -88,7 +88,7 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
         </xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="momimenewgame:unitSettingData">
-				<xsd:attribute name="unitSettingID" type="momimecommon:unitSettingID" use="required" nxe:label="Unit Setting ID" nxe:gridwidth="120" />
+				<xsd:attribute name="unitSettingID" type="momimecommon:unitSettingID" use="required" nxe:label="Unit Setting ID" nxe:gridwidth="100" />
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -111,7 +111,7 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
         	<xsd:documentation>Defines the multiple planes/worlds.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="prerequisitePickToChooseNativeRace" type="momimecommon:pickID" nxe:label="Pre-requisite Pick to choose native race from this Plane" nxe:gridwidth="250">
+			<xsd:element minOccurs="0" maxOccurs="1" name="prerequisitePickToChooseNativeRace" type="momimecommon:pickID" nxe:label="Pre-requisite Pick to choose native race from this Plane" nxe:gridwidth="300">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
@@ -130,7 +130,7 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="doubleAmount" type="momimenewgame:doubledProductionValue" nxe:label="2x Amount" nxe:gridwidth="80" />
 		</xsd:sequence>
-		<xsd:attribute name="fortressProductionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Fortress Production Type" nxe:showmaincolumn="false">
+		<xsd:attribute name="fortressProductionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Fortress Production Type" nxe:showmaincolumn="false" nxe:gridwidth="200">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
@@ -145,8 +145,8 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 e.g. we can have negative Gold per turn as long as the accumulated amount stays above zero, but we Rations per turn must stay above zero.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="roundingDirectionID" type="momimecommon:roundingDirectionID" nxe:label="Rounding Direction for production from Cities" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="isPercentage" type="xsd:boolean" nxe:label="Percentage?" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="roundingDirectionID" type="momimecommon:roundingDirectionID" nxe:label="Rounding Direction for production from Cities" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="isPercentage" type="xsd:boolean" nxe:label="Percentage?" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="enforceProduction" type="momimecommon:enforceProductionID" nxe:label="Enforce?" nxe:showmaincolumn="false" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:gridwidth="110" />
@@ -157,19 +157,19 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines features that can appear on the map on top of the regular terrain, e.g. Gems, Coal, Adamantium, Wild Game, Towers of Wizardry and Monster Lairs.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="canBuildCity" type="xsd:boolean" nxe:label="Can Build City on this Feature?" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="featureSpellProtection" type="xsd:boolean" nxe:label="Protects from Spells?" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="featureMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="1" maxOccurs="1" name="canBuildCity" type="xsd:boolean" nxe:label="Can Build City on this Feature?" nxe:gridwidth="180" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="featureSpellProtection" type="xsd:boolean" nxe:label="Protects from Spells?" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="featureMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>weaponGradeDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="raceMineralMultiplerApplies" type="xsd:boolean" nxe:label="Race Mineral Multipler Applies?" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="raceMineralMultiplerApplies" type="xsd:boolean" nxe:label="Race Mineral Multipler Applies?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureProduction" type="momimecommon:mapFeatureProduction" />
 		</xsd:sequence>
-		<xsd:attribute name="mapFeatureID" type="momimecommon:mapFeatureID" use="required" nxe:label="Map Feature ID" nxe:gridwidth="120" />
+		<xsd:attribute name="mapFeatureID" type="momimecommon:mapFeatureID" use="required" nxe:label="Map Feature ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 
 	<xsd:complexType name="mapFeatureProduction" nxe:singular="Production from Map Feature" nxe:plural="Production from Map Feature">
@@ -195,9 +195,9 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="productionBonus" type="momimenewgame:percentage" nxe:label="Production Bonus %" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonus" type="momimenewgame:percentage" nxe:label="Gold Bonus %" nxe:gridwidth="90" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonusSurroundingTiles" type="xsd:boolean" nxe:label="Gold Bonus from Surrounding Tiles?" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonusSurroundingTiles" type="xsd:boolean" nxe:label="Gold Bonus from Surrounding Tiles?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="doubleFood" type="momimenewgame:doubledProductionValue" nxe:label="2x Food Harvest from Tile" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="canBuildCity" type="xsd:boolean" nxe:label="Can Build City on this Terrain?" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="canBuildCity" type="xsd:boolean" nxe:label="Can Build City on this Terrain?" nxe:gridwidth="180" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmID" type="momimecommon:unitMagicRealmID" nxe:label="Fill with Monsters" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -429,7 +429,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		</xsd:attribute>
 	</xsd:complexType>
 	
-	<xsd:complexType name="taxRate" nxe:singular="Tax Rate" nxe:plural="Tax Rate" nxe:submenu="Cities">
+	<xsd:complexType name="taxRate" nxe:singular="Tax Rate" nxe:plural="Tax Rates" nxe:submenu="Cities">
         <xsd:annotation>
         	<xsd:documentation>Lists the tax rates players can choose in the game, and how much gold and unrest is generated by each setting.</xsd:documentation>
         </xsd:annotation>
@@ -446,9 +446,9 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReduction" type="momimecommon:buildingUnrestReduction" nxe:label="Unrest Reduction" nxe:gridwidth="50" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReductionImprovedByRetorts" type="xsd:boolean" nxe:label="Unrest reduction improved by DivP/InfP?" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateBonus" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Bonus" nxe:gridwidth="80" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="buildingExperience" type="momimecommon:experiencePoints" nxe:label="Experience Granted" nxe:gridwidth="70" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReductionImprovedByRetorts" type="xsd:boolean" nxe:label="Unrest reduction improved by DivP/InfP?" nxe:gridwidth="220" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateBonus" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Bonus" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="buildingExperience" type="momimecommon:experiencePoints" nxe:label="Experience Granted" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -470,7 +470,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 Animsts' Guilds increasing farmers' ration production, production boost from Sawmills, and the magic power and research produced by Alchemists' and Sages' Guilds.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="doubleAmount" type="momimenewgame:doubledProductionValue" nxe:label="2x Modifier Amount" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="doubleAmount" type="momimenewgame:doubledProductionValue" nxe:label="2x Modifier Amount" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="percentageBonus" type="momimenewgame:percentage" nxe:label="Percentage Bonus" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="populationTaskID" type="momimecommon:populationTaskID" use="optional" nxe:label="Population Task ID" nxe:showmaincolumn="false">
@@ -690,7 +690,7 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="includeRaceInUnitName" type="xsd:boolean" nxe:label="Race in Unit Name?" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="includeRaceInUnitName" type="xsd:boolean" nxe:label="Race in Unit Name?" nxe:gridwidth="110" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="doubleMovement" type="momimecommon:doubleMovement" nxe:label="2x Movement" nxe:gridwidth="80" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="figureCount" type="momimecommon:figureCount" nxe:label="Figure Count" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="productionCost" type="momimecommon:productionCost" nxe:label="Cost" nxe:gridwidth="50">
@@ -977,7 +977,7 @@ Zero value indicates the terrain in this layer has no effect on movement (e.g. h
 To keep things simple, the graphics XML file has a quite simple mapping which combines the border type with the directions the border runs in to produce a list of possible images - there is no smoothing.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="blocksMovement" type="momimecommon:combatTileBorderBlocksMovementID" nxe:label="Blocks movement?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="blocksMovement" type="momimecommon:combatTileBorderBlocksMovementID" nxe:label="Blocks movement?" nxe:showmaincolumn="false" />
 		</xsd:sequence>
 		<xsd:attribute name="combatTileBorderID" type="momimecommon:combatTileBorderID" use="required" nxe:label="Combat Tile Border ID" nxe:gridwidth="150" />
 	</xsd:complexType>

@@ -382,42 +382,42 @@
 		
 <!-- Complex types -->
 	
-	<xsd:complexType name="createAccountFailedReason" nxe:singular="Create Account Failed Reason" nxe:plural="Create Account Failed Reasons" nxe:submenu="Basic text strings">
+	<xsd:complexType name="createAccountFailedReason" nxe:singular="Create Account Failed Reason" nxe:plural="Create Account Failed Reasons" nxe:submenu="Multiplayer engine messages">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="createAccountFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
 		</xsd:sequence>
 		<xsd:attribute name="createAccountFailedReasonID" type="mps:createAccountFailedReason" use="required" nxe:label="Create Account Failed Reason ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="loginFailedReason" nxe:singular="Login Failed Reason" nxe:plural="Login Failed Reasons" nxe:submenu="Basic text strings">
+	<xsd:complexType name="loginFailedReason" nxe:singular="Login Failed Reason" nxe:plural="Login Failed Reasons" nxe:submenu="Multiplayer engine messages">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="loginFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
 		</xsd:sequence>
 		<xsd:attribute name="loginFailedReasonID" type="mps:loginFailedReason" use="required" nxe:label="Login Failed Reason ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="logoutFailedReason" nxe:singular="Logout Failed Reason" nxe:plural="Logout Failed Reasons" nxe:submenu="Basic text strings">
+	<xsd:complexType name="logoutFailedReason" nxe:singular="Logout Failed Reason" nxe:plural="Logout Failed Reasons" nxe:submenu="Multiplayer engine messages">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="logoutFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
 		</xsd:sequence>
 		<xsd:attribute name="logoutFailedReasonID" type="mps:logoutFailedReason" use="required" nxe:label="Logout Failed Reason ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="requestSessionListFailedReason" nxe:singular="Request Session List Failed Reason" nxe:plural="Request Session List Failed Reasons" nxe:submenu="Basic text strings">
+	<xsd:complexType name="requestSessionListFailedReason" nxe:singular="Request Session List Failed Reason" nxe:plural="Request Session List Failed Reasons" nxe:submenu="Multiplayer engine messages">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="requestSessionListFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
 		</xsd:sequence>
 		<xsd:attribute name="requestSessionListFailedReasonID" type="mps:requestSessionListFailedReason" use="required" nxe:label="Request Session List Failed Reason ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="joinFailedReason" nxe:singular="Join Failed Reason" nxe:plural="Join Failed Reasons" nxe:submenu="Basic text strings">
+	<xsd:complexType name="joinFailedReason" nxe:singular="Join Failed Reason" nxe:plural="Join Failed Reasons" nxe:submenu="Multiplayer engine messages">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="joinFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
 		</xsd:sequence>
 		<xsd:attribute name="joinFailedReasonID" type="mps:joinFailedReason" use="required" nxe:label="Join Failed Reason ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="plane" nxe:singular="Plane" nxe:plural="Planes" nxe:submenu="Map">
+	<xsd:complexType name="plane" nxe:singular="Plane" nxe:plural="Planes" nxe:submenu="Overland Map">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="planeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="100" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="planeRacesTitle" type="momimecommon:description" nxe:label="Category on Choose Race screen" nxe:gridwidth="200" />
@@ -448,7 +448,7 @@
 		</xsd:attribute>
 	</xsd:complexType>
 	
-	<xsd:complexType name="mapFeature" nxe:singular="Map Feature" nxe:plural="Map Features" nxe:submenu="Map">
+	<xsd:complexType name="mapFeature" nxe:singular="Map Feature" nxe:plural="Map Features" nxe:submenu="Overland Map">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="mapFeatureDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="mapFeatureCannotBuildCityDescription" type="momimecommon:description" nxe:label="Description when saying City cannot be built here" nxe:gridwidth="250" />
@@ -463,7 +463,7 @@
 		</xsd:attribute>
 	</xsd:complexType>
 	
-	<xsd:complexType name="tileType" nxe:singular="Tile Type" nxe:plural="Tile Types" nxe:submenu="Map">
+	<xsd:complexType name="tileType" nxe:singular="Tile Type" nxe:plural="Tile Types" nxe:submenu="Overland Map">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="tileTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="tileTypeCannotBuildCityDescription" type="momimecommon:description" nxe:label="Description when saying City cannot be built here" nxe:gridwidth="250" />

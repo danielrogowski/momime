@@ -51,7 +51,9 @@ public class LanguageEditorMain extends XmlEditorMain
 			{
 				try
 				{
-					String valuesAdded = form.checkNode (getXmlDocuments ().get (1).getXml (),
+					final XmlDocument serverXml = XmlEditorUtils.findDocumentWithNamespacePrefix (getXmlDocuments (), "momimesvr");
+
+					String valuesAdded = form.checkNode (serverXml.getXml (),
 						getXmlDocuments ().get (0).getXml (), getXmlDocuments ().get (0).getTopLevelTypeDefinition ());
 
 					if (valuesAdded.equals (""))
@@ -120,7 +122,7 @@ public class LanguageEditorMain extends XmlEditorMain
 
 				// Nested loop to deal with experience levels, which are  stored under each unit type
 				// and language entries which are also two tier
-				if ((entityName.equals ("unittype")) || (entityName.equals ("languagecategory")))
+				if ((entityName.equals ("unitType")) || (entityName.equals ("languageCategory")))
 					result = result + checkNode (serverNode, languageNode, entityDefinition);
 			}
 		}

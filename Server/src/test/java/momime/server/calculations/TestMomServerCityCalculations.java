@@ -171,7 +171,7 @@ public final class TestMomServerCityCalculations
 		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();

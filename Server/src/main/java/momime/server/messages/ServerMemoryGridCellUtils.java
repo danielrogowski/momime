@@ -18,12 +18,16 @@ public final class ServerMemoryGridCellUtils
 	public final static boolean isNodeLairTower (final OverlandMapTerrainData terrainData, final ServerDatabaseLookup db)
 		throws RecordNotFoundException
 	{
-		return
-			// Nodes
-			((terrainData.getTileTypeID () != null) && (db.findTileType (terrainData.getTileTypeID (), "isNodeLairTower").getMagicRealmID () != null)) ||
+		final boolean result;
+		if (terrainData == null)
+			result = false;
+		else
+			result = ((terrainData.getTileTypeID () != null) && (db.findTileType (terrainData.getTileTypeID (), "isNodeLairTower").getMagicRealmID () != null)) ||
 
 			// Lairs & Towers
 			((terrainData.getMapFeatureID () != null) && (db.findMapFeature (terrainData.getMapFeatureID (), "isNodeLairTower").getMapFeatureMagicRealm ().size () > 0));
+
+		return result;
 	}
 
 	/**

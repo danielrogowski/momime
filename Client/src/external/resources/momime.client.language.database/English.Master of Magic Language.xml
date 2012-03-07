@@ -831,11 +831,11 @@ Also this means they cannot build Alchemists' Guilds and so cannot use Mithril o
 	</unitSkill>
 	<unitSkill unitSkillID="US001">
 		<unitSkillDescription>Forester</unitSkillDescription>
-		<unitSkillHelpText>Forester allows all units stacked to pass through forest at a cost of one movement point per square.</unitSkillHelpText>
+		<unitSkillHelpText>Forester allows the unit and any other land units stacked with it to pass through forest at a cost of one movement point per square.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US002">
 		<unitSkillDescription>Mountaineer</unitSkillDescription>
-		<unitSkillHelpText>Mountaineer allows all units stacked to cross mountains and hills at a cost of one movement point per square.</unitSkillHelpText>
+		<unitSkillHelpText>Mountaineer allows the unit and any other land units stacked with it to cross mountains and hills at a cost of one movement point per square.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US004">
 		<unitSkillDescription>Plane Shift</unitSkillDescription>
@@ -899,7 +899,7 @@ Also this means they cannot build Alchemists' Guilds and so cannot use Mithril o
 	</unitSkill>
 	<unitSkill unitSkillID="US020">
 		<unitSkillDescription>Path Finding</unitSkillDescription>
-		<unitSkillHelpText>Pathfinding allows the unit and all stacked with it to move across any land square at the cost of ½ movement point, as if they were on a road.</unitSkillHelpText>
+		<unitSkillHelpText>Pathfinding allows the unit and other land units stacked with it to move across any land square at the cost of ½ movement point, as if they were on a road.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US022">
 		<unitSkillDescription>Non-corporeal</unitSkillDescription>
@@ -1111,7 +1111,7 @@ Also this means they cannot build Alchemists' Guilds and so cannot use Mithril o
 	</unitSkill>
 	<unitSkill unitSkillID="SS016">
 		<unitSkillDescription>Path Finding</unitSkillDescription>
-		<unitSkillHelpText>Endows the target unit (and any units currently stacked with that unit) with the ability to travel over all land terrain as if it were traveling on roads (at ½ movement point per square).</unitSkillHelpText>
+		<unitSkillHelpText>Endows the target unit (and any other land units units currently stacked with it) with the ability to travel over all land terrain as if it were traveling on roads (at ½ movement point per square).</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="SS021">
 		<unitSkillDescription>Elemental Armour</unitSkillDescription>
@@ -2873,7 +2873,7 @@ Terrain not listed is not a valid target.</spellHelpText>
 	<spell spellID="SP016">
 		<spellName>Path Finding</spellName>
 		<spellDescription>Gives a non-flying unit the ability to cross any land terrain at a cost of ½ movement point.</spellDescription>
-		<spellHelpText>Endows a target unit (and any units stacked with it) with the ability to travel over all land terrain as if it were traveling over roads (at ½ movement point per square).</spellHelpText>
+		<spellHelpText>Endows a target unit (and any other land units stacked with it) with the ability to travel over all land terrain as if it were traveling over roads (at ½ movement point per square).</spellHelpText>
 	</spell>
 	<spell spellID="SP017">
 		<spellName>Cockatrices</spellName>

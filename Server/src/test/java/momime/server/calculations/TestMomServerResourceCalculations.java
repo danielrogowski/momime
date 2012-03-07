@@ -61,7 +61,7 @@ public final class TestMomServerResourceCalculations
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();

@@ -7,6 +7,7 @@ import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
+import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 
 /**
  * Helper methods for dealing with MemoryGridCell objects
@@ -26,12 +27,20 @@ public final class MemoryGridCellUtils
 	 *
 	 * The Delphi code has a separate property on a MemoryGridCell called TileTypeID_FOWforBlank for this
 	 *
-	 * @param tileTypeID Tile type ID
+	 * @param terrainData Terrain data to check
 	 * @return Tile type ID input, with null converted to FOW
 	 */
-	public final static String convertNullTileTypeToFOW (final String tileTypeID)
+	public final static String convertNullTileTypeToFOW (final OverlandMapTerrainData terrainData)
 	{
-		return (tileTypeID == null) ? CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR : tileTypeID;
+		final String tileTypeID;
+		if (terrainData == null)
+			tileTypeID = CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR;
+		else if (terrainData.getTileTypeID () == null)
+			tileTypeID = CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR;
+		else
+			tileTypeID = terrainData.getTileTypeID ();
+
+		return tileTypeID;
 	}
 
 	/**

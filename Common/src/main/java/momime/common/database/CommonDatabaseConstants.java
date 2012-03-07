@@ -100,6 +100,9 @@ public final class CommonDatabaseConstants
 	/** Areas of the map we've never seen */
 	public static final String VALUE_TILE_TYPE_FOG_OF_WAR = "FOW";
 
+	/** Areas of the map we've previously seen, and are remembering the last state that we saw them in */
+	public static final String VALUE_TILE_TYPE_FOG_OF_WAR_HAVE_SEEN = "FOWPARTIAL";
+
 	// map features
 
 	/** Uncleared Tower of Wizardry */
@@ -159,43 +162,6 @@ public final class CommonDatabaseConstants
 	/** Crusade */
 	public static final String COMBAT_AREA_EFFECT_CRUSADE = "CSE158";
 
-	/* the below added by KDL */
-
-	/** Namespace */
-	//public static final String TAG_ATTRIBUTE_MOMIMESVR_NAMESPACE = "xmlns:momimesvr";
-
-	/* Feature */
-	//public static final String TAG_VALUE_FEATURE_ANY_MAGIC_REALMS_DEFINED = "anymagicrealmsdefined"; /* derived from child entity in server DB, i.e. can only be used on client */
-
-	/* Spell pick */
-	//public static final String TAG_VALUE_PICK_RELIGUOUS_BUILDING_BONUS = "pickreligiousbuildingbonus";
-	//public static final String TAG_VALUE_PICK_INITIAL_SKILL = "pickinitialskill";
-
-	//public static final String TAG_ATTRIBUTE_PICK_EXLUSIVE_FROM_ID = "pickexlusivefromid";
-
-	/* Wizard */
-	//public static final String TAG_VALUE_WIZARD_NAME = "wizardname"; /* Here because server needs it for AI player names */
-
-	//public static final String TAG_CHILD_ENTITY_WIZARD_PICK = "wizardpick";
-
-	/* Cities */
-	//public static final String TAG_ENTITY_CITY_SIZE = "citysize"; /* Client needs this to look up size names in the Language XML file, e.g. "Hamlet" */
-	//public static final String TAG_ATTRIBUTE_CITY_SIZE_ID = "citysizeid";
-
-	/* Spell ranks (Common, Uncommon, Rare, Very Rare) */
-	//public static final String TAG_ENTITY_SPELL_RANK = "spellrank";
-	//public static final String TAG_ATTRIBUTE_SPELL_RANK_ID = "spellrankid";
-
-	/* City spell effects */
-	//public static final String TAG_ENTITY_CITY_SPELL_EFFECT = "cityspelleffect";
-	//public static final String TAG_ATTRIBUTE_CITY_SPELL_EFFECT_ID = "cityspelleffectid";
-
-	//public static final String VALUE_ROUNDING_DOWN                           = "D";
-	//public static final String VALUE_ROUNDING_UP                             = "U";
-	//public static final String VALUE_ROUNDING_MUST_BE_EXACT                  = "M";
-
-	//public static final String VALUE_TILE_TYPE_FOG_OF_WAR_HAVE_SEEN          = "FOWPARTIAL";
-
 	//public static final String VALUE_BUILDING_SUMMONING_CIRCLE               = "BL98";
 
 	//public static final String VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK          = "UA01";
@@ -213,23 +179,12 @@ public final class CommonDatabaseConstants
 
 	//public static final String VALUE_UNIT_SKILL_ID_CASTER_HERO               = "HS05";
 
-	//public static final String VALUE_ENFORCE_PRODUCTION_PER_TURN             = "EP01";
-	//public static final String VALUE_ENFORCE_PRODUCTION_STORED               = "EP02";
-
-	//public static final String VALUE_AFFECTS_PLAYERS_ALL                     = "A";
-	//public static final String VALUE_AFFECTS_PLAYERS_BOTH_IN_COMBAT          = "B";
-	//public static final String VALUE_AFFECTS_PLAYERS_CASTER                  = "C";
-	//public static final String VALUE_AFFECTS_PLAYERS_CASTERS_OPPONENT        = "O";
-
 	//public static final String SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS      = "SC02";
 	//public static final String SPELL_BOOK_SECTION_CITY_ENCHANTMENTS          = "SC03";
 	//public static final String SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS          = "SC04";
 	//public static final String SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS        = "SC05";
 	//public static final String SPELL_BOOK_SECTION_CITY_CURSES                = "SC06";
 	//public static final String SPELL_BOOK_SECTION_UNIT_CURSES                = "SC07";
-
-	//public static final String VALUE_COMBAT_BORDER_BLOCKS_MOVEMENT_TOTALLY       = "T";
-	//public static final String VALUE_COMBAT_BORDER_BLOCKS_MOVEMENT_ACROSS_BORDER = "B";
 
 	/**
 	 * Prevent instatiation of this class

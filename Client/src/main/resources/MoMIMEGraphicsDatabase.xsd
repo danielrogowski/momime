@@ -500,7 +500,7 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="setValue1" type="momimegfx:bit" nxe:label="(a) to this value" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="setDirection2" type="map:mapDirection" nxe:label="and (b) set direction" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="setValue2" type="momimegfx:bit" nxe:label="(b) to this value" nxe:gridwidth="100" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
 		</xsd:sequence>
 	</xsd:complexType>
 

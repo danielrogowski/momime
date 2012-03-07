@@ -1,9 +1,9 @@
 package momime.common.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Logger;
 
@@ -13,6 +13,7 @@ import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
+import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 
 import org.junit.Test;
 
@@ -32,14 +33,26 @@ public final class TestMemoryGridCellUtils
 	@Test
 	public final void testConvertNullTileTypeToFOW_NonNull ()
 	{
-		assertEquals ("A", MemoryGridCellUtils.convertNullTileTypeToFOW ("A"));
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("A");
+
+		assertEquals ("A", MemoryGridCellUtils.convertNullTileTypeToFOW (terrainData));
 	}
 
 	/**
-	 * Tests the convertNullTileTypeToFOW method with a null value
+	 * Tests the convertNullTileTypeToFOW method with a null tile type
 	 */
 	@Test
-	public final void testConvertNullTileTypeToFOW_Null ()
+	public final void testConvertNullTileTypeToFOW_NullTileTypeID ()
+	{
+		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, MemoryGridCellUtils.convertNullTileTypeToFOW (new OverlandMapTerrainData ()));
+	}
+
+	/**
+	 * Tests the convertNullTileTypeToFOW method with the whole terrain data structure null
+	 */
+	@Test
+	public final void testConvertNullTileTypeToFOW_NullTerrainData ()
 	{
 		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, MemoryGridCellUtils.convertNullTileTypeToFOW (null));
 	}

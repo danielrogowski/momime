@@ -9,6 +9,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CitySize;
 import momime.server.database.v0_9_4.MapFeature;
+import momime.server.database.v0_9_4.MovementRateRule;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
 import momime.server.database.v0_9_4.Plane;
@@ -31,6 +32,9 @@ public final class ServerDatabaseLookup extends CommonDatabaseLookup
 	/** Map of city size IDs to city size XML objects */
 	private final Map<String, CitySize> citySizes;
 
+	/** List of movement rate rules */
+	private final List<MovementRateRule> movementRateRules;
+
 	/**
 	 * @param db Client DB structure coverted from server XML
 	 */
@@ -47,6 +51,9 @@ public final class ServerDatabaseLookup extends CommonDatabaseLookup
 		if (citySizesList != null)
 			for (final CitySize thisCitySize : citySizesList)
 				citySizes.put (thisCitySize.getCitySizeID (), thisCitySize);
+
+		// Store list of movement rate rules, no need for a map since there'd never be a reason to want a single rule, only to iterate through them
+		movementRateRules = db.getMovementRateRule ();
 	}
 
 	/**
@@ -70,6 +77,14 @@ public final class ServerDatabaseLookup extends CommonDatabaseLookup
 			throw new RecordNotFoundException (CitySize.class.getName (), citySizeID, caller);
 
 		return citySize;
+	}
+
+	/**
+	 * @return List of movement rate rules
+	 */
+	public final List<MovementRateRule> getMovementRateRules ()
+	{
+		return movementRateRules;
 	}
 
 	/**

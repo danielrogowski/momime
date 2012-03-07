@@ -659,6 +659,56 @@ public final class UnitUtils
 	}
 
 	/**
+	 * @param units Unit stack
+	 * @return Comma delimited list of their unit URNs, for debug messages
+	 */
+	public final static String listUnitURNs (final List<MemoryUnit> units)
+	{
+		String list = null;
+		if (units != null)
+		{
+			list = "";
+			for (final MemoryUnit thisUnit : units)
+			{
+				if (!list.equals (""))
+					list = list + ", ";
+
+				list = list + thisUnit.getUnitURN ();
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * @param units List of units to check (usually movingPlayer's memory)
+	 * @param x X coordinate of location to check
+	 * @param y Y coordinate of location to check
+	 * @param plane Plane to check
+	 * @param movingPlayerID Player who is moving
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return Whether there are any alive units at this location belonging to someone other than movingPlayer
+	 */
+	public final static boolean anyAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int movingPlayerID, final Logger debugLogger)
+	{
+		debugLogger.entering (UnitUtils.class.getName (), "anyAliveEnemiesAtLocation", new Integer [] {x, y, plane, movingPlayerID});
+
+		boolean found = false;
+		final Iterator<MemoryUnit> iter = units.iterator ();
+		while ((!found) && (iter.hasNext ()))
+		{
+			final MemoryUnit thisUnit = iter.next ();
+
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () != movingPlayerID) && (thisUnit.getUnitLocation () != null) &&
+				(thisUnit.getUnitLocation ().getX () == x) && (thisUnit.getUnitLocation ().getY () == y) && (thisUnit.getUnitLocation ().getPlane () == plane))
+
+				found = true;
+		}
+
+		debugLogger.exiting (UnitUtils.class.getName (), "anyAliveEnemiesAtLocation", found);
+		return found;
+	}
+
+	/**
 	 * Prevent instantiation
 	 */
 	private UnitUtils ()

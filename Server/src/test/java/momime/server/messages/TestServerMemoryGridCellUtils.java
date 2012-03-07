@@ -23,7 +23,23 @@ import org.junit.Test;
 public final class TestServerMemoryGridCellUtils
 {
 	/**
-	 * Tests the isNodeLairTower method when both the tile type and map feature are both null
+	 * Tests the isNodeLairTower method when both the whole terrain data is null
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws RecordNotFoundException If we find a map feature or tile type that isn't in the database
+	 */
+	@Test
+	public final void testIsNodeLairTower_TerrainDataNull () throws IOException, JAXBException, RecordNotFoundException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		assertFalse (ServerMemoryGridCellUtils.isNodeLairTower (null, db));
+	}
+
+	/**
+	 * Tests the isNodeLairTower method when both the terrain data exists, but has tile type and map feature both null
 	 * @throws IOException If we are unable to locate the server XML file
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws RecordNotFoundException If we find a map feature or tile type that isn't in the database

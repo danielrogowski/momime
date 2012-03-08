@@ -13,6 +13,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ObjectFactory;
+import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
 
@@ -128,5 +129,14 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	public final AlchemyMessage createAlchemyMessage ()
 	{
 		return new AlchemyMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created RequestOverlandMovementDistancesMessage
+	 */
+	@Override
+	public final RequestOverlandMovementDistancesMessage createRequestOverlandMovementDistancesMessage ()
+	{
+		return new RequestOverlandMovementDistancesMessageImpl ();
 	}
 }

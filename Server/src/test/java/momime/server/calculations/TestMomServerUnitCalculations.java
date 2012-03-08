@@ -282,7 +282,9 @@ public final class TestMomServerUnitCalculations
 		assertEquals (MoveResultsInAttackTypeID.SCOUT, MomServerUnitCalculations.willMovingHereResultInAnAttack
 			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db, debugLogger));
 
-		// Lair that we've previously cleared
+		// You can't have a lair that we've previously cleared, it would have been removed from the map when we cleared it
+		// If the lair was empty at the start of the game, then we'd have removed it when we scouted it - you can't choose NOT to enter empty lairs
+		// So keeping this here, but really it isn't a valid test scenario
 		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, "");
 
 		assertEquals (MoveResultsInAttackTypeID.NO, MomServerUnitCalculations.willMovingHereResultInAnAttack
@@ -740,7 +742,7 @@ public final class TestMomServerUnitCalculations
 	}
 
 	/**
-	 * Tests the calculateOverlandMovementDistances method when we aren't standing on a tower
+	 * Tests the calculateOverlandMovementDistances method when we aren't standing on a tower and there is nothing in our way
 	 * @throws Exception If there if a problem
 	 */
 	@Test
@@ -865,5 +867,196 @@ public final class TestMomServerUnitCalculations
 		assertEquals (0, countMovingHereResultsInAttack);
 		assertEquals ((60*40)-3, accessibleTilesDistances);		// 3 ocean tiles - for distances the cell we start from has a valid value of 0
 		assertEquals ((60*40)-4, accessibleTilesDirections);		// 3 ocean tiles plus start position - for directions the cell we start from has invalid value 0
+	}
+
+	/**
+	 * Tests the calculateOverlandMovementDistances method when we are standing on a tower and there are various obstacles on both planes
+	 * @throws Exception If there if a problem
+	 */
+	@Test
+	public final void testCalculateOverlandMovementDistances_Tower () throws Exception
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		// Create map
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+
+		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx"));
+		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getMapSize (), workbook);
+
+		final FogOfWarMemory map = new FogOfWarMemory ();
+		map.setMap (terrain);
+
+		// Add tower
+		for (final Plane plane : db.getPlanes ())
+			terrain.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (10).getCell ().get (20).getTerrainData ().setMapFeatureID
+				(CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
+
+		// Put 3 nodes on Arcanus - one we haven't scouted, one we have scouted and know its contents, and the last we already cleared
+		// The one that we previously cleared we can walk right through and out the other side; the other two we can move onto but not past
+		// Nature nodes, so forest, same as there before so we don't alter movement rates - all we alter is that we can't move through them
+		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsArea (sd.getMapSize ());
+		for (int y = 9; y <= 11; y++)
+			terrain.getPlane ().get (0).getRow ().get (y).getCell ().get (18).getTerrainData ().setTileTypeID ("TT13");
+
+		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (9).getCell ().set (18, null);
+		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (18, "UN165");
+		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (11).getCell ().set (18, "");
+
+		// Create other areas
+		final int [] [] [] doubleMovementDistances	= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] movementDirections			= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn	= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+
+		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack =
+			new MoveResultsInAttackTypeID [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+
+		// Units that are moving - two units of high men spearmen
+		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+		int nextUnitURN = 0;
+
+		for (int n = 1; n <= 2; n++)
+		{
+			final OverlandMapCoordinates spearmenLocation = new OverlandMapCoordinates ();
+			spearmenLocation.setX (20);
+			spearmenLocation.setY (10);
+			spearmenLocation.setPlane (1);
+
+			nextUnitURN++;
+			final MemoryUnit spearmen = UnitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db, debugLogger);
+			spearmen.setOwningPlayerID (2);
+			spearmen.setUnitLocation (spearmenLocation);
+
+			unitStack.add (spearmen);
+		}
+		map.getUnit ().addAll (unitStack);
+
+		// Add 8 of our units in one location, and 8 enemy units in another location, both on Myrror
+		// Our units become impassable terrain because we can't fit that many in one map cell; enemy units we can walk onto the tile but not through it
+		for (int n = 1; n <= 8; n++)
+		{
+			final OverlandMapCoordinates ourLocation = new OverlandMapCoordinates ();
+			ourLocation.setX (19);
+			ourLocation.setY (9);
+			ourLocation.setPlane (1);
+
+			nextUnitURN++;
+			final MemoryUnit our = UnitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db, debugLogger);
+			our.setOwningPlayerID (2);
+			our.setUnitLocation (ourLocation);
+
+			map.getUnit ().add (our);
+
+			final OverlandMapCoordinates theirLocation = new OverlandMapCoordinates ();
+			theirLocation.setX (20);
+			theirLocation.setY (9);
+			theirLocation.setPlane (1);
+
+			nextUnitURN++;
+			final MemoryUnit their = UnitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db, debugLogger);
+			their.setOwningPlayerID (1);
+			their.setUnitLocation (theirLocation);
+
+			map.getUnit ().add (their);
+		}
+
+		// Run method
+		MomServerUnitCalculations.calculateOverlandMovementDistances (20, 10, 1, 2, map, nodeLairTowerKnownUnitIDs, unitStack,
+			2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db, debugLogger);
+
+		// Check canMoveToInOneTurn (see the red marked area on the Excel sheet)
+		assertTrue (canMoveToInOneTurn [0] [8] [20]);
+		assertTrue (canMoveToInOneTurn [0] [8] [21]);
+		assertTrue (canMoveToInOneTurn [0] [8] [22]);
+		assertTrue (canMoveToInOneTurn [0] [9] [19]);
+		assertTrue (canMoveToInOneTurn [0] [9] [20]);
+		assertTrue (canMoveToInOneTurn [0] [9] [21]);
+		assertTrue (canMoveToInOneTurn [0] [9] [22]);
+		assertTrue (canMoveToInOneTurn [0] [10] [19]);
+		assertTrue (canMoveToInOneTurn [0] [10] [20]);
+		assertTrue (canMoveToInOneTurn [0] [10] [21]);
+		assertTrue (canMoveToInOneTurn [0] [10] [22]);
+		assertTrue (canMoveToInOneTurn [0] [11] [21]);
+		assertTrue (canMoveToInOneTurn [0] [11] [22]);
+		assertTrue (canMoveToInOneTurn [0] [11] [23]);
+		assertTrue (canMoveToInOneTurn [0] [12] [21]);
+		assertTrue (canMoveToInOneTurn [0] [12] [22]);
+		assertTrue (canMoveToInOneTurn [0] [12] [23]);
+		assertTrue (canMoveToInOneTurn [0] [13] [20]);
+		assertTrue (canMoveToInOneTurn [0] [13] [21]);
+		assertTrue (canMoveToInOneTurn [0] [13] [22]);
+		assertTrue (canMoveToInOneTurn [0] [13] [23]);
+
+		assertTrue (canMoveToInOneTurn [1] [8] [20]);
+		assertTrue (canMoveToInOneTurn [1] [8] [21]);
+		assertTrue (canMoveToInOneTurn [1] [8] [22]);
+		// assertTrue (canMoveToInOneTurn [1] [9] [19]);	<-- where stack of 8 units is so we can't move there
+		assertTrue (canMoveToInOneTurn [1] [9] [20]);
+		assertTrue (canMoveToInOneTurn [1] [9] [21]);
+		assertTrue (canMoveToInOneTurn [1] [9] [22]);
+		assertTrue (canMoveToInOneTurn [1] [10] [19]);
+		assertTrue (canMoveToInOneTurn [1] [10] [20]);
+		assertTrue (canMoveToInOneTurn [1] [10] [21]);
+		assertTrue (canMoveToInOneTurn [1] [10] [22]);
+		assertTrue (canMoveToInOneTurn [1] [11] [21]);
+		assertTrue (canMoveToInOneTurn [1] [11] [22]);
+		assertTrue (canMoveToInOneTurn [1] [11] [23]);
+		assertTrue (canMoveToInOneTurn [1] [12] [21]);
+		assertTrue (canMoveToInOneTurn [1] [12] [22]);
+		assertTrue (canMoveToInOneTurn [1] [12] [23]);
+		assertTrue (canMoveToInOneTurn [1] [13] [20]);
+		assertTrue (canMoveToInOneTurn [1] [13] [21]);
+		assertTrue (canMoveToInOneTurn [1] [13] [22]);
+		assertTrue (canMoveToInOneTurn [1] [13] [23]);
+
+		// Check all the movement distances on both planes
+		for (final Plane plane : db.getPlanes ())
+			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+				{
+					// Distances
+					final Cell distanceCell = workbook.getSheetAt (4 + plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
+					if (distanceCell != null)
+					{
+						// Impassable
+						if (distanceCell.getCellType () == Cell.CELL_TYPE_BLANK)
+							assertEquals (x + "," + y, -2, doubleMovementDistances [plane.getPlaneNumber ()] [y] [x]);
+						else
+						{
+							final int doubleMovementDistance = (int) distanceCell.getNumericCellValue ();
+							assertEquals ("Distance to " + x + "," + y + "," + plane.getPlaneNumber (), doubleMovementDistance, doubleMovementDistances [plane.getPlaneNumber ()] [y] [x]);
+						}
+					}
+				}
+
+		// Perform counts on all the areas to make sure no additional values other than the ones checked above
+		int countCanMoveToInOneTurn = 0;
+		int countMovingHereResultsInAttack = 0;
+		int accessibleTilesDistances = 0;
+		int accessibleTilesDirections = 0;
+
+		for (final Plane plane : db.getPlanes ())
+			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
+				{
+					if (canMoveToInOneTurn [plane.getPlaneNumber ()] [y] [x])
+						countCanMoveToInOneTurn++;
+
+					if (movingHereResultsInAttack [plane.getPlaneNumber ()] [y] [x] != MoveResultsInAttackTypeID.NO)
+						countMovingHereResultsInAttack++;
+
+					if (doubleMovementDistances [plane.getPlaneNumber ()] [y] [x] >= 0)
+						accessibleTilesDistances++;
+
+					if (movementDirections [plane.getPlaneNumber ()] [y] [x] > 0)
+						accessibleTilesDirections++;
+				}
+
+		assertEquals (41, countCanMoveToInOneTurn);
+		assertEquals (3, countMovingHereResultsInAttack);
+		assertEquals ((60*40*2)-7, accessibleTilesDistances);		// 3 ocean tiles - for distances the cell we start from has a valid value of 0
+		assertEquals ((60*40*2)-9, accessibleTilesDirections);		// 3 ocean tiles plus start position - for directions the cell we start from has invalid value 0
 	}
 }

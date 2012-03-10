@@ -3,7 +3,9 @@ package com.ndg.graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
@@ -14,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import com.ndg.graphics.ImageCache;
 import com.ndg.graphics.lbx.LbxImageReaderSpi;
 import com.ndg.graphics.ndgbmp.NdgBmpReaderSpi;
 import com.ndg.graphics.ndgbmp.NdgBmpWriterSpi;
@@ -55,7 +56,22 @@ public class ImageCacheAndFormatsDemo
 		// Load in some images
 		try
 		{
-			final ImageCache cache = new ImageCache ();
+			final ImageCache cache = new ImageCache () {
+
+				@Override
+				public final InputStream getFileAsInputStream (final String fileName) throws IOException
+				{
+					final InputStream stream;
+					if (fileName.endsWith (".ndgarc"))
+						stream = new FileInputStream ("F:\\Workspaces\\Delphi\\Master of Magic\\New Graphics\\" + fileName);
+					else if (fileName.endsWith (".LBX"))
+						stream = new FileInputStream ("C:\\32 bit Program Files\\DosBox - Master of Magic\\Magic\\" + fileName);
+					else
+						throw new IOException ("getFileAsInputStream doesn't know how to locate file \"" + fileName + "\"");
+
+					return stream;
+				}
+			};
 
 			// Show them on a frame
 			final JFrame frame = new JFrame ();
@@ -71,17 +87,17 @@ public class ImageCacheAndFormatsDemo
 			 */
 
 			// ndgbmp image inside a .ndgarc file, with transparency (have to do this first so it appears in front)
-			final BufferedImage sampleImageWithTransparency = addImage (cache, "F:\\Workspaces\\Delphi\\Master of Magic\\New Graphics\\MomAdditionalGraphics.ndgarc", 274, 0, 310, 100, contentPane);
+			final BufferedImage sampleImageWithTransparency = addImage (cache, "MomAdditionalGraphics.ndgarc", 274, 0, 310, 100, contentPane);
 
 			// ndgbmp image inside a .ndgarc file, with no transparency
-			final BufferedImage sampleImageNoTransparency = addImage (cache, "F:\\Workspaces\\Delphi\\Master of Magic\\New Graphics\\MomAdditionalGraphics.ndgarc", 18, 0, 10, 10, contentPane);
+			final BufferedImage sampleImageNoTransparency = addImage (cache, "MomAdditionalGraphics.ndgarc", 18, 0, 10, 10, contentPane);
 
 			// .lbx image
-			addImage (cache, "C:\\32 bit Program Files\\DosBox - Master of Magic\\Magic\\BACKGRND.LBX", 6, 0, 350, 10, contentPane);
+			addImage (cache, "BACKGRND.LBX", 6, 0, 350, 10, contentPane);
 
 			// Image showing the blackness/transparency in later frames bug
 			for (int frameNumber = 0; frameNumber < 8; frameNumber++)
-				addImage (cache, "C:\\32 bit Program Files\\DosBox - Master of Magic\\Magic\\CITYSCAP.LBX", 48, frameNumber, 350 + (frameNumber * 50), 300, contentPane);
+				addImage (cache, "CITYSCAP.LBX", 48, frameNumber, 350 + (frameNumber * 50), 300, contentPane);
 
 			/*
 			 * ENCODING TESTS

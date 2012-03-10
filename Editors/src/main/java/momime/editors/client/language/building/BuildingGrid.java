@@ -1,5 +1,7 @@
 package momime.editors.client.language.building;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
@@ -61,11 +63,11 @@ public class BuildingGrid extends MoMLanguageEditorGridWithImport
 	 * @throws XmlEditorException If there is a problem with one of the XML editor helper methods
 	 */
 	@Override
-	protected void importFromLbx (final String lbxFilename)
+	protected void importFromLbx (final File lbxFilename)
 		throws IOException, XmlEditorException
 	{
 		// BUILDESC.LBX only has a single subfile in it
-		final InputStream lbxStream = LbxArchiveReader.getSubFileInputStream (lbxFilename, 0);
+		final InputStream lbxStream = LbxArchiveReader.getSubFileInputStream (new FileInputStream (lbxFilename), 0);
 
 		// Read number and size of records
 		final int numberOfRecords = StreamUtils.readUnsigned2ByteIntFromStream (lbxStream, ByteOrder.LITTLE_ENDIAN, "Number of Records");

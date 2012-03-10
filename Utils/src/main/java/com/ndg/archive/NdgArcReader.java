@@ -33,19 +33,17 @@ public final class NdgArcReader
 	 * Creates a stream object positioned to a particular subfile in a .ndgarc file
 	 * This is a basic InputStream, so contains no length information, so there's nothing to stop the calling
 	 * routine reading off the end of the returned stream and into the next file in the archive
-	 * @param archiveName Filename of the .ndgarc file
+	 * @param stream Input stream of the .ndgarc file
 	 * @param fileIdentifier The file identiier encoded into the .ndgarc file
 	 * @param subFileNumber Entry number within the .ndgarc file, with the first sub file being 0
 	 * @return Stream positioned to the start of the requested subfile
 	 * @throws IOException if there is a problem reading the archive, or the file identifier doesn't match
 	 */
-	public final static BufferedInputStream getSubFileInputStream (final String archiveName, final String fileIdentifier, final int subFileNumber)
+	public final static InputStream getSubFileInputStream (final InputStream stream, final String fileIdentifier, final int subFileNumber)
 		throws IOException
 	{
 		if (subFileNumber < 0)
 			throw new ArchiveException ("Requested a negative sub file number from a .ndgarc file");
-
-		final BufferedInputStream stream = new BufferedInputStream (new FileInputStream (archiveName));
 
 		// File identifier
 		final String actualIdentifier = StreamUtils.readLengthAndStringFromStream (stream, ".ndgarc file identifier");
@@ -55,7 +53,7 @@ public final class NdgArcReader
 		// Number of files
 		final long subFileCount = StreamUtils.readUnsigned4ByteLongFromStream (stream, ByteOrder.LITTLE_ENDIAN, ".ndgarc sub file count");
 		if (subFileNumber >= subFileCount)
-			throw new ArchiveException ("Requested sub file " + subFileNumber + " of file '" + archiveName + "' which only contains " + subFileCount + " sub files");
+			throw new ArchiveException ("Requested sub file " + subFileNumber + " of file '" + stream + "' which only contains " + subFileCount + " sub files");
 
 		// Keep track of how many bytes we've read from the stream, because the offsets are based from the start of the file
 		long bytesRead = actualIdentifier.length () + 8;
@@ -144,14 +142,14 @@ public final class NdgArcReader
 
 	/**
 	 * Extracts a file back out of an archive and saves it out to disk
-	 * @param archiveName Name of the archive file
+	 * @param stream Stream of the archive file
 	 * @param archivedFile File to extract (previously obtained by readContents)
 	 * @throws IOException If there is a problem reading the archive or writing the file
 	 */
-	public final static void extractFromArchiveToFile (final String archiveName, final ArchivedFile archivedFile)
+	public final static void extractFromArchiveToFile (final InputStream stream, final ArchivedFile archivedFile)
 		throws IOException
 	{
-		final BufferedInputStream in = getSubFileInputStream (archiveName, null, archivedFile.getSubFileNumber ());
+		final InputStream in = getSubFileInputStream (stream, null, archivedFile.getSubFileNumber ());
 		try
 		{
 			final BufferedOutputStream out = new BufferedOutputStream (new FileOutputStream (archivedFile.getFullPath ()));
@@ -169,10 +167,10 @@ public final class NdgArcReader
 					// Decode and re-encode the image
 					final BufferedImage image = ImageIO.read (in);
 					if (image == null)
-    					throw new IOException ("Failed to load image from sub file number " + archivedFile.getSubFileNumber () + " from file '" + archiveName + "' (no image readers claim to be able to decode the stream)");
+    					throw new IOException ("Failed to load image from sub file number " + archivedFile.getSubFileNumber () + " from file '" + stream + "' (no image readers claim to be able to decode the stream)");
 
    					if (!ImageIO.write (image, "png", out))
-   						throw new IOException ("Failed to write .png image created from .ndgbmp image in sub file number " + archivedFile.getSubFileNumber () + " of \"" + archiveName + "\"");
+   						throw new IOException ("Failed to write .png image created from .ndgbmp image in sub file number " + archivedFile.getSubFileNumber () + " of \"" + stream + "\"");
 				}
 				else
 				{
@@ -220,7 +218,7 @@ public final class NdgArcReader
 				for (final ArchivedFile thisFile : contents)
 				{
 					System.out.println (thisFile.getFileName () + "...");
-					extractFromArchiveToFile (archiveName, thisFile);
+					extractFromArchiveToFile (new FileInputStream (archiveName), thisFile);
 				}
 
 				System.out.println ("Done!");

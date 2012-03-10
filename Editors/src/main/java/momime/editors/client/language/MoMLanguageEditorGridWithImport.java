@@ -1,6 +1,7 @@
 package momime.editors.client.language;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
@@ -52,7 +53,7 @@ public abstract class MoMLanguageEditorGridWithImport extends XmlEditorGridWithI
 				if (lbxChooser.showOpenDialog (null) == JFileChooser.APPROVE_OPTION)
 					try
 					{
-						importFromLbx (lbxChooser.getSelectedFile ().getAbsolutePath ());
+						importFromLbx (lbxChooser.getSelectedFile ());
 						getTableModel ().fireTableDataChanged ();
 					}
 					catch (final Exception e)
@@ -77,6 +78,6 @@ public abstract class MoMLanguageEditorGridWithImport extends XmlEditorGridWithI
 	 * @throws IOException If there is a problem reading the LBX file
 	 * @throws XmlEditorException If there is a problem using helper methods from the XML editor
 	 */
-	protected abstract void importFromLbx (String lbxFilename)
+	protected abstract void importFromLbx (final File lbxFilename)
 		throws IOException, XmlEditorException;
 }

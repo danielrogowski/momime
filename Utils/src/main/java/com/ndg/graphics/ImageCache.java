@@ -1,8 +1,8 @@
 package com.ndg.graphics;
 
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -17,9 +17,9 @@ import com.ndg.utils.FileNameUtils;
 /**
  * Loads, caches and finds images, to ensure they only have to be loaded in once
  * Also deals with pulling images out of archive type files such as .ndgarc or .lbx, which the basic ImageIO does not do
- * Typically subclassed in order to override the determineFullPathToFileName method
+ * Typically subclassed in order to override the getFileAsInputStream method
  */
-public class ImageCache
+public abstract class ImageCache
 {
 	/**
 	 * The cache of all the images
@@ -37,14 +37,14 @@ public class ImageCache
 	}
 
     /**
+     * Subclasses must override this to specify how to locate files; can either figure out a full path and
+     * return a FileInputStream, or use getResourceAsStream or similar
+     *
      * @param fileName The filename to locate
-     * @return Full path to the specified filename
+     * @return Input stream of the requested filename
+     * @throws IOException If the file can't be read
      */
-    public String determineFullPathToFileName (final String fileName)
-    {
-    	// By default, hope the file is on the system path!  Typically applications will override this to specify an actual location
-    	return fileName;
-    }
+    public abstract InputStream getFileAsInputStream (final String fileName) throws IOException;
 
     /**
      * Retrieves an image from the cache, or loads it and adds it to the cache
@@ -80,16 +80,16 @@ public class ImageCache
     			ImageInputStream stream;
     			final String extension = FileNameUtils.extractFileExt (fileName).toLowerCase ();
     			if (extension.equals (NdgArcReader.NDGARC_EXTENSION))
-    				stream = ImageIO.createImageInputStream (NdgArcReader.getSubFileInputStream (determineFullPathToFileName (fileName), null, subFileNumber));	// This will handle any image type contained within the .ndgarc file
+    				stream = ImageIO.createImageInputStream (NdgArcReader.getSubFileInputStream (getFileAsInputStream (fileName), null, subFileNumber));	// This will handle any image type contained within the .ndgarc file
 
     			else if (extension.equals (LbxArchiveReader.LBX_EXTENSION))
-    				stream = LbxArchiveReader.getSubFileImageInputStream (determineFullPathToFileName (fileName), subFileNumber);	// This will handle any image type contained within the .lbx file
+    				stream = LbxArchiveReader.getSubFileImageInputStream (getFileAsInputStream (fileName), subFileNumber);	// This will handle any image type contained within the .lbx file
 
     			else if (subFileNumber != 0)
     				throw new IOException ("com.ndg.graphics.ImageCache: Only archives can use a sub file number other than 0, but requested sub file" + subFileNumber);
 
     			else
-    				stream = ImageIO.createImageInputStream (new FileInputStream (determineFullPathToFileName (fileName)));
+    				stream = ImageIO.createImageInputStream (getFileAsInputStream (fileName));
 
     			if (stream == null)
     				throw new IOException ("Failed to load image from sub file number " + subFileNumber + " from file '" + fileName + "' (got a null stream)");

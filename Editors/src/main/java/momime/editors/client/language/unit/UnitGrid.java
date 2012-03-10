@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -160,7 +161,7 @@ public class UnitGrid extends MoMLanguageEditorGridWithImport
 	 * @throws XmlEditorException If there is a problem using helper methods from the XML editor
 	 */
 	@Override
-	protected void importFromLbx (final String exeFilename)
+	protected void importFromLbx (final File exeFilename)
 		throws IOException, XmlEditorException
 	{
 		// Read the two offsets from the form

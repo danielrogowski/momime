@@ -1,5 +1,7 @@
 package momime.editors.client.language.spell;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
@@ -72,7 +74,7 @@ public class SpellGrid extends MoMLanguageEditorGridWithImport
 	 * @throws XmlEditorException If there is a problem with one of the XML editor helper methods
 	 */
 	@Override
-	protected void importFromLbx (final String lbxFilename) throws IOException, XmlEditorException
+	protected void importFromLbx (final File lbxFilename) throws IOException, XmlEditorException
 	{
 		// Need to ask for 2 other LBXes first
 		final JFileChooser descriptionsLbxChooser = new JFileChooser ();
@@ -87,18 +89,18 @@ public class SpellGrid extends MoMLanguageEditorGridWithImport
 		{
 			// Open all 3 files
 			// SPELLDAT.LBX only has a single subfile in it
-			final InputStream namesStream = LbxArchiveReader.getSubFileInputStream (lbxFilename, 0);
+			final InputStream namesStream = LbxArchiveReader.getSubFileInputStream (new FileInputStream (lbxFilename), 0);
 			final int numberOfNames = StreamUtils.readUnsigned2ByteIntFromStream (namesStream, ByteOrder.LITTLE_ENDIAN, "Number of Records (Names)");
 			final int namesRecordSize = StreamUtils.readUnsigned2ByteIntFromStream (namesStream, ByteOrder.LITTLE_ENDIAN, "Record Size (Names)");
 			final int nameLength = namesRecordSize - SPELL_DATA_LENGTH;
 
 			// DESC.LBX only has a single subfile in it
-			final InputStream descriptionsStream = LbxArchiveReader.getSubFileInputStream (descriptionsLbxChooser.getSelectedFile ().getAbsolutePath (), 0);
+			final InputStream descriptionsStream = LbxArchiveReader.getSubFileInputStream (new FileInputStream (descriptionsLbxChooser.getSelectedFile ()), 0);
 			StreamUtils.readUnsigned2ByteIntFromStream (descriptionsStream, ByteOrder.LITTLE_ENDIAN, "Number of Records (Descriptions)");
 			final int descriptionsRecordSize = StreamUtils.readUnsigned2ByteIntFromStream (descriptionsStream, ByteOrder.LITTLE_ENDIAN, "Record Size (Descriptions)");
 
 			// HELP.LBX has 3 subfiles in it, and we need the 3rd one
-			final InputStream helpTextStream = LbxArchiveReader.getSubFileInputStream (helpTextLbxChooser.getSelectedFile ().getAbsolutePath (), 2);
+			final InputStream helpTextStream = LbxArchiveReader.getSubFileInputStream (new FileInputStream (helpTextLbxChooser.getSelectedFile ()), 2);
 			StreamUtils.readUnsigned2ByteIntFromStream (helpTextStream, ByteOrder.LITTLE_ENDIAN, "Number of Records (Help Text)");
 			final int helpTextRecordSize = StreamUtils.readUnsigned2ByteIntFromStream (helpTextStream, ByteOrder.LITTLE_ENDIAN, "Record Size (Help Text)");
 

@@ -17,26 +17,24 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 	 * Name of the vendor of the .lbx format
 	 */
 	private static final String vendorName = "Nigel Gay";
-	
+
 	/**
 	 * Version of the .lbx file structure
 	 */
 	private static final String version = "1.0";
-	
+
 	/**
 	 * Class responsible for decoding .lbx streams
 	 */
 	private static final String readerClassName = "com.ndg.graphics.lbx.LbxReader";
-	
+
 	/**
 	 * Encoding .lbx streams currently not supported in Java
 	 */
 	private static final String [] writerSpiNames = null;
-	
-	/**
-	 * Accepts ImageInputStream only
-	 */
-	@SuppressWarnings ("unchecked")
+
+	/** Accepts ImageInputStream only */
+	@SuppressWarnings ("rawtypes")
 	private static final Class [] inputTypes = STANDARD_INPUT_TYPE;
 
 	/**
@@ -53,57 +51,57 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 	 * List of the MIME type(s) supported by this reader
 	 */
 	private static final String [] MIMETypes = { "image/lbx" };
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final boolean supportsStandardStreamMetadataFormat = false;
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final String nativeStreamMetadataFormatName = null;
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final String nativeStreamMetadataFormatClassName = null;
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final String [] extraStreamMetadataFormatNames = null;
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final String [] extraStreamMetadataFormatClassNames = null;
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final boolean supportsStandardImageMetadataFormat = false;
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final String nativeImageMetadataFormatName = null;
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final String nativeImageMetadataFormatClassName = null;
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final String [] extraImageMetadataFormatNames = null;
-	
+
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
 	private static final String [] extraImageMetadataFormatClassNames = null;
-	
+
 	/**
 	 * Fills in all the details about the .lbx format
 	 */
@@ -121,7 +119,7 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 	 * @return Appropriate class for decoding .ndgbmp streams
 	 */
 	@Override
-	public ImageReader createReaderInstance (Object extension)
+	public ImageReader createReaderInstance (final Object extension)
 	{
 		return new LbxImageReader (this);
 	}
@@ -131,7 +129,7 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 	 * @return Description of this SPI
 	 */
 	@Override
-	public String getDescription (Locale locale)
+	public String getDescription (final Locale locale)
 	{
 		return "LBX Reader SPI";
 	}
@@ -142,18 +140,18 @@ public class LbxImageReaderSpi extends ImageReaderSpi
      * @throws IOException If there is an error reading from the stream
      */
 	@Override
-	public boolean canDecodeInput (Object source)
+	public boolean canDecodeInput (final Object source)
 		throws IOException
 	{
 		boolean result = false;
-		
+
 		if (source instanceof ImageInputStream)
 		{
-			ImageInputStream stream = (ImageInputStream) source;
+			final ImageInputStream stream = (ImageInputStream) source;
 
 			// Check the image file has enough space to hold at least the graphics header and an ending offset
 			if (stream.length () >= LbxImageReader.LBX_IMAGE_HEADER_SIZE + 4)
-			{               
+			{
 				// Note this is testing one lbx image - not the whole lbx archive
 				// so this isn't as simple as looking for the LBX signature at the front of the archive
 				// We actually need to read and parse the LBX image header and check its validity
@@ -161,13 +159,13 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 
 				// Read the header
 				stream.setByteOrder (ByteOrder.LITTLE_ENDIAN);
-				
+
 				// Skip width, height, junk value
 				for (int skip = 0; skip < 3; skip++)
 					stream.readUnsignedShort ();
 
-				int frameCount = stream.readUnsignedShort ();
-			
+				final int frameCount = stream.readUnsignedShort ();
+
 				// Skip 3 junk values, palette info offset, plus the final junk value
 				for (int skip = 0; skip < 5; skip++)
 					stream.readUnsignedShort ();
@@ -180,15 +178,15 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 					long offset = 0;
 					for (int frameNo = 0; frameNo <= frameCount; frameNo++)
 						offset = stream.readUnsignedInt ();
-					
+
 					// This should exactly equal the length of the stream
 					result = (offset == stream.length ());
 				}
-				
+
 				stream.reset ();
 			}
 		}
-			
+
 		return result;
 	}
 }

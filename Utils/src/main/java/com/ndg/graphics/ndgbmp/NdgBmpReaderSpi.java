@@ -25,7 +25,7 @@ public final class NdgBmpReaderSpi extends ImageReaderSpi
 	private static final String [] writerSpiNames = { "com.ndg.graphics.ndgbmp.NdgBmpWriterSpi" };
 
 	/** Accepts ImageInputStream only */
-	@SuppressWarnings ("unchecked")
+	@SuppressWarnings ("rawtypes")
 	private static final Class [] inputTypes = STANDARD_INPUT_TYPE;
 
 	/** Descriptive list of the format(s) supported by this reader */

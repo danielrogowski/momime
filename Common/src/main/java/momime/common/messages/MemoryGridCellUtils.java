@@ -44,14 +44,21 @@ public final class MemoryGridCellUtils
 	}
 
 	/**
-	 * @param mapFeatureID Map feature ID
+	 * @param terrainData Terrain data to check
 	 * @return True if this map feature represents a Tower of Wizardy (cleared or uncleared)
 	 */
-	public final static boolean isFeatureTowerOfWizardry (final String mapFeatureID)
+	public final static boolean isTerrainTowerOfWizardry (final OverlandMapTerrainData terrainData)
 	{
-		return ((mapFeatureID != null) &&
-			((mapFeatureID.equals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)) ||
-			 (mapFeatureID.equals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY))));
+		final boolean tower;
+		if (terrainData == null)
+			tower = false;
+		else if (terrainData.getMapFeatureID () == null)
+			tower = false;
+		else
+			tower = (terrainData.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)) ||
+			 	(terrainData.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY));
+
+		return tower;
 	}
 
 	/**

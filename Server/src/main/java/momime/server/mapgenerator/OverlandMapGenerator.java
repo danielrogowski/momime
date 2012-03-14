@@ -32,10 +32,10 @@ import momime.server.database.v0_9_4.TileType;
 import momime.server.database.v0_9_4.TileTypeAreaEffect;
 import momime.server.database.v0_9_4.TileTypeFeatureChance;
 import momime.server.database.v0_9_4.Unit;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
 import momime.server.utils.RandomUtils;
-import momime.server.utils.UnitServerUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.MapCoordinates;
@@ -759,7 +759,7 @@ public final class OverlandMapGenerator
 				// Deselect any tiles close to towers already placed
 				for (int x = 0; x <  sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y <  sd.getMapSize ().getHeight (); y++)
-						if (MemoryGridCellUtils.isFeatureTowerOfWizardry (trueTerrain.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().getMapFeatureID ()))
+						if (MemoryGridCellUtils.isTerrainTowerOfWizardry (trueTerrain.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ()))
 							possibleLocations.deselectRadius (x, y, towersOfWizardrySeparation);
 
 				// Pick a location to put the wizardry tile at
@@ -1495,7 +1495,10 @@ public final class OverlandMapGenerator
 		// List all candidates
 		final List<String> lairMapFeatureIDs = new ArrayList<String> ();
 		for (final MapFeature thisFeature : db.getMapFeatures ())
-			if ((thisFeature.getMapFeatureMagicRealm ().size () > 0) && (!MemoryGridCellUtils.isFeatureTowerOfWizardry (thisFeature.getMapFeatureID ())))
+			if ((thisFeature.getMapFeatureMagicRealm ().size () > 0) &&
+				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY)) &&
+				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)))
+
 				lairMapFeatureIDs.add (thisFeature.getMapFeatureID ());
 
 		if (lairMapFeatureIDs.size () == 0)
@@ -1680,7 +1683,7 @@ public final class OverlandMapGenerator
 			// Actually add them
 			for (int monsterNo = 0; monsterNo < mainMonsterCount; monsterNo++)
 			{
-				UnitServerUtils.addUnitOnServerAndClients (gsk, mainMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
+				FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, mainMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
 				monstersStrength = monstersStrength - mainMonster.getProductionCost ();
 			}
 		}
@@ -1695,7 +1698,7 @@ public final class OverlandMapGenerator
 
 			// Actually add them
 			for (int monsterNo = 0; monsterNo < secondaryMonsterCount; monsterNo++)
-				UnitServerUtils.addUnitOnServerAndClients (gsk, secondaryMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
+				FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, secondaryMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
 		}
 
 		debugLogger.exiting (OverlandMapGenerator.class.getName (), "fillSingleLairOrTowerWithMonsters");
@@ -1750,7 +1753,7 @@ public final class OverlandMapGenerator
 					// This covers lairs and towers of wizardry
 					// Make sure for Towers we only populate them on the first plane
 					if ((thisCell.getTerrainData ().getMapFeatureID () != null) &&
-						((!MemoryGridCellUtils.isFeatureTowerOfWizardry (thisCell.getTerrainData ().getMapFeatureID ())) || (plane.getPlaneNumber () == 0)))
+						((!MemoryGridCellUtils.isTerrainTowerOfWizardry (thisCell.getTerrainData ())) || (plane.getPlaneNumber () == 0)))
 					{
 						final MapFeature feature = db.findMapFeature (thisCell.getTerrainData ().getMapFeatureID (), "fillNodesLairsAndTowersWithMonsters");
 
@@ -1788,7 +1791,7 @@ public final class OverlandMapGenerator
 								lairLocation.setY (y);
 								lairLocation.setPlane (plane.getPlaneNumber ());
 
-								if (MemoryGridCellUtils.isFeatureTowerOfWizardry (thisCell.getTerrainData ().getMapFeatureID ()))
+								if (MemoryGridCellUtils.isTerrainTowerOfWizardry (thisCell.getTerrainData ()))
 									fillSingleLairOrTowerWithMonsters (sd, lairLocation, magicRealmID,
 										sd.getDifficultyLevel ().getTowerMonstersMinimum (), sd.getDifficultyLevel ().getTowerMonstersMaximum (),
 										thisCell.getNodeLairTowerPowerProportion (), gsk, db, monsterPlayer, debugLogger);

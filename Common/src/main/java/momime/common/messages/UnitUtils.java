@@ -399,12 +399,12 @@ public final class UnitUtils
 		else if (combatLocation != null)
 		{
 			// If unit is in combat, then the effect must be located at the combat
-			locationOk = CoordinatesUtils.overlandMapCoordinatesEqual (effect.getMapLocation (), combatLocation);
+			locationOk = CoordinatesUtils.overlandMapCoordinatesEqual (effect.getMapLocation (), combatLocation, true);
 		}
 		else
 		{
 			// Area effect in one map location only, so we have to be in the right place
-			locationOk = CoordinatesUtils.overlandMapCoordinatesEqual (effect.getMapLocation (), unit.getUnitLocation ());
+			locationOk = CoordinatesUtils.overlandMapCoordinatesEqual (effect.getMapLocation (), unit.getUnitLocation (), true);
 		}
 
 		// Check which player(s) this CAE affects

@@ -249,7 +249,7 @@ public final class MomServerCityCalculations
 		// Check all buildings at this location
 		int result = -1;
 		for (final MemoryBuilding thisBuilding : buildings)
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisBuilding.getCityLocation ()))
+			if (CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisBuilding.getCityLocation (), true))
 			{
 				final Integer scoutingRange = db.findBuilding (thisBuilding.getBuildingID (), "calculateCityScoutingRange").getBuildingScoutingRange ();
 

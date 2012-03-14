@@ -58,6 +58,8 @@ import momime.server.database.v0_9_4.PickFreeSpell;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.Wizard;
 import momime.server.database.v0_9_4.WizardPickCount;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.ServerPlayerPickUtils;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
@@ -329,7 +331,7 @@ public final class PlayerMessageProcessing
 				{
 					final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 					if (!ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
-						UnitServerUtils.addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), null, null, null, thisPlayer, UnitStatusID.NOT_GENERATED, null, sd, db, debugLogger);
+						FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), null, null, null, thisPlayer, UnitStatusID.NOT_GENERATED, null, sd, db, debugLogger);
 				}
 
 		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "createHeroes");
@@ -493,7 +495,7 @@ public final class PlayerMessageProcessing
 							unitCoords.setY (cityLocation.getY ());
 							unitCoords.setPlane (cityLocation.getPlane ());
 
-							UnitServerUtils.addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
+							FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
 						}
 			}
 		}
@@ -740,7 +742,7 @@ public final class PlayerMessageProcessing
 		UnitUtils.resetUnitOverlandMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID, mom.getServerDBLookup (), debugLogger);
 
 		// Heal hurt units 1pt and gain 1exp
-		UnitServerUtils.healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
+		FogOfWarMidTurnChanges.healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDBLookup (), mom.getSessionDescription (), debugLogger);
 
 		// Allow another building to be sold

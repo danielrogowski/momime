@@ -21,6 +21,7 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
+import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.MomSessionThread;
 import momime.server.calculations.MomServerUnitCalculations;
 
@@ -69,7 +70,9 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 				error = "Some of the units you are trying to move could not be found";
 			else if (thisUnit.getOwningPlayerID () != sender.getPlayerDescription ().getPlayerID ())
 				error = "Some of the units you are trying to move belong to another player";
-			else if (!CoordinatesUtils.overlandMapCoordinatesEqual (thisUnit.getUnitLocation (), getMoveFrom ()))
+			else if (thisUnit.getStatus () != UnitStatusID.ALIVE)
+				error = "Some of the units you are trying to move are dead/dismissed.";
+			else if (!CoordinatesUtils.overlandMapCoordinatesEqual (thisUnit.getUnitLocation (), getMoveFrom (), false))
 				error = "Some of the units you are trying to move are not at the starting location";
 			else
 			{

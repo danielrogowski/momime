@@ -1,0 +1,956 @@
+package momime.server.fogofwar;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+import momime.common.MomException;
+import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomUnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.CoordinatesUtils;
+import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.MemoryGridCellUtils;
+import momime.common.messages.UnitUtils;
+import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessage;
+import momime.common.messages.servertoclient.v0_9_4.AddUnitMessage;
+import momime.common.messages.servertoclient.v0_9_4.MoveUnitStackOverlandMessage;
+import momime.common.messages.servertoclient.v0_9_4.PendingMovementMessage;
+import momime.common.messages.servertoclient.v0_9_4.SelectNextUnitToMoveOverlandMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessageData;
+import momime.common.messages.servertoclient.v0_9_4.UpdateDamageTakenAndExperienceMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessageData;
+import momime.common.messages.servertoclient.v0_9_4.UpdateOverlandMovementRemainingMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateOverlandMovementRemainingUnit;
+import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessageData;
+import momime.common.messages.v0_9_4.FogOfWarMemory;
+import momime.common.messages.v0_9_4.FogOfWarStateID;
+import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
+import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MemoryGridCell;
+import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
+import momime.common.messages.v0_9_4.OverlandMapCityData;
+import momime.common.messages.v0_9_4.OverlandMapCoordinates;
+import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_4.PendingMovement;
+import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.server.calculations.MomFogOfWarCalculations;
+import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.database.ServerDatabaseLookup;
+import momime.server.messages.ServerMemoryGridCellUtils;
+import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.utils.CompareUtils;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+/**
+ * This contains all methods that allow changes in the server's true memory to be replicated into each player's memory and send update messages to each client
+ * i.e. methods for when the true values change (or are added or removed) but the visible area that each player can see does not change
+ */
+public final class FogOfWarMidTurnChanges
+{
+	/**
+	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
+	 * i.e. the caller must update the True Map value themselves before calling this
+	 *
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param coords Location of the terrain that has been updated
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public final static void updatePlayerMemoryOfTerrain (final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords, final MomSessionDescription sd, final Logger debugLogger)
+		throws JAXBException, XMLStreamException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfTerrain", CoordinatesUtils.overlandMapCoordinatesToString (coords));
+
+		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+
+		// First build the message
+		final UpdateTerrainMessageData terrainMsg = new UpdateTerrainMessageData ();
+		terrainMsg.setMapLocation (coords);
+		terrainMsg.setTerrainData (tc.getTerrainData ());
+
+		final UpdateTerrainMessage terrainMsgContainer = new UpdateTerrainMessage ();
+		terrainMsgContainer.setData (terrainMsg);
+
+		// Check which players can see the terrain
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+
+			if (MomFogOfWarCalculations.canSeeMidTurn (state, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ()))
+			{
+				// Update player's memory on server
+				final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+				if (FogOfWarDuplication.copyTerrainAndNodeAura (tc, mc))
+
+					// Update player's memory on client
+					if (thisPlayer.getPlayerDescription ().isHuman ())
+						thisPlayer.getConnection ().sendMessageToClient (terrainMsgContainer);
+			}
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfTerrain");
+	}
+
+	/**
+	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
+	 * i.e. the caller must update the True Map value themselves before calling this
+	 *
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param coords Location of the city that has been updated
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public final static void updatePlayerMemoryOfCity (final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords, final MomSessionDescription sd, final Logger debugLogger)
+		throws JAXBException, XMLStreamException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfCity", CoordinatesUtils.overlandMapCoordinatesToString (coords));
+
+		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+
+		// First build the message
+		final UpdateCityMessageData cityMsg = new UpdateCityMessageData ();
+		cityMsg.setMapLocation (coords);
+
+		final UpdateCityMessage cityMsgContainer = new UpdateCityMessage ();
+		cityMsgContainer.setData (cityMsg);
+
+		// Check which players can see the city
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+
+			if (MomFogOfWarCalculations.canSeeMidTurn (state, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ()))
+			{
+				// Update player's memory on server
+				final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+
+				final boolean includeCurrentlyConstructing;
+				if (tc.getCityData () == null)
+					includeCurrentlyConstructing = false;
+				else
+					includeCurrentlyConstructing = (thisPlayer.getPlayerDescription ().getPlayerID () == tc.getCityData ().getCityOwnerID ()) ||
+						(sd.getFogOfWarSetting ().isSeeEnemyCityConstruction ());
+
+				if (FogOfWarDuplication.copyCityData (tc, mc, includeCurrentlyConstructing))
+
+					// Update player's memory on client
+					if (thisPlayer.getPlayerDescription ().isHuman ())
+					{
+						// Note unlike the terrain msg which we can build once and send to each applicable player, the data for the city msg
+						// needs to be reset for each player, since their visibility of the currentlyConstructing value may be different
+						cityMsg.setCityData (mc.getCityData ());
+						thisPlayer.getConnection ().sendMessageToClient (cityMsgContainer);
+					}
+			}
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfCity");
+	}
+
+	/**
+	 * @param unit True unit to test
+	 * @param players List of players in the session
+	 * @param trueTerrain True terrain map
+	 * @param fogOfWarArea Area the player can/can't see, outside of FOW recalc
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @return True if player can see this unit
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 */
+	static final boolean canSeeUnitMidTurn (final MemoryUnit unit, final List<PlayerServerDetails> players,
+		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea,
+		final ServerDatabaseLookup db, final MomSessionDescription sd)
+		throws RecordNotFoundException, PlayerNotFoundException
+	{
+		final boolean canSee;
+
+		// Firstly we only know abouts that are alive
+		if (unit.getStatus () != UnitStatusID.ALIVE)
+			canSee = false;
+		else
+		{
+			final OverlandMapTerrainData unitLocationTerrain = trueTerrain.getPlane ().get (unit.getUnitLocation ().getPlane ()).getRow ().get
+				(unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ();
+
+			/*
+			 * For regular (i.e. player/raider) units in cities or walking around the map, this is basically
+			 * canSee = (fogOfWarArea.get (unit.getCurrentLocation ()) == FogOfWarStateID.CAN_SEE)
+			 *
+			 * Towers of Wizardry add one complication - if the unit is standing in a Tower of Wizardry then they'll be on plane 0, but perhaps we can see the
+			 * tower on plane 1... so what this breaks down to is that we'll know about the unit providing we can see it on ANY plane
+			 *
+			 * Second complication is monsters in nodes/lairs/towers - we have to specifically 'attack' the node/lair/tower in order to scout it - simply
+			 * seeing the map cell isn't enough - so if the player attacks the node/lair/tower, we send them the details of the units
+			 * there as we start the combat, and it loses reference to those units as soon as the combat is over - during the combat, CombatLocation
+			 * will be passed in, to allow this routine to return True
+			 *
+			 * So first, see whether this unit belongs to the 'monster' player
+			 */
+			final PlayerServerDetails unitOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, unit.getOwningPlayerID (), "canSeeUnitMidTurn");
+			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
+			if (ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
+			{
+				if (ServerMemoryGridCellUtils.isNodeLairTower (unitLocationTerrain, db))
+				{
+					// Monster in a node/lair/tower - the only way we can see it is if we're in combat with it
+					throw new UnsupportedOperationException ("canSeeUnitMidTurn doesn't know how to handle monsters in nodes/lairs/towers yet");
+				}
+				else
+					// Rampaging monsters walking around the map - treat just like regular units
+					canSee = MomFogOfWarCalculations.canSeeMidTurn (fogOfWarArea.getPlane ().get (unit.getUnitLocation ().getPlane ()).getRow ().get
+						(unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()), sd.getFogOfWarSetting ().getUnits ());
+			}
+			else
+			{
+				// Regular unit - is it in a tower of wizardy?
+				canSee = MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (unit.getUnitLocation (), sd.getFogOfWarSetting ().getUnits (), trueTerrain, fogOfWarArea, db);
+			}
+		}
+
+		return canSee;
+	}
+
+	/**
+	 * Adds a unit to the server's true memory, and checks who can see it - sending a message to update the client of any human players who can see it
+	 *
+	 * Heroes are added using this method during game startup - at which point they're added only on the server and they're off
+	 * the map (null location) - so heroes are NEVER sent to the client using this method, meaning that we don't need to worry about sending skill lists with this method
+	 *
+	 * @param gsk Server knowledge structure to add the unit to
+	 * @param unitID Type of unit to create
+	 * @param locationToAddUnit Location to add the new unit; can be null for adding heroes that haven't been summoned yet
+	 * @param buildingsLocation Location the unit was built - might be different from locationToAddUnit if the city is full and the unit got bumped to an adjacent tile; passed as null for units not built in cities such as summons
+	 * @param combatLocation The location of the combat that this unit is being summoned into; null for anything other than combat summons
+	 * @param unitOwner Player who will own the new unit
+	 * @param initialStatus Initial status of the unit, typically ALIVE
+	 * @param session Dummy flag to control FOW updates until this is written properly
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return Newly created unit
+	 * @throws MomException If initialStatus is an inappropriate value
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 */
+	public final static MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
+		final String unitID, final OverlandMapCoordinates locationToAddUnit, final OverlandMapCoordinates buildingsLocation, final OverlandMapCoordinates combatLocation,
+		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus,
+		final Integer session,
+		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws MomException, RecordNotFoundException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addUnitOnServerAndClients", unitID);
+
+		// There's a bunch of other unit statuses that don't make sense to use here - so worth checking this
+		if ((initialStatus != UnitStatusID.NOT_GENERATED) && (initialStatus != UnitStatusID.ALIVE))
+			throw new MomException ("addUnitOnServerAndClients: Invalid initial status of " + initialStatus);
+
+		final MomPersistentPlayerPublicKnowledge unitOwnerPPK = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
+
+		// Check how much experience this unit should have
+		// Note the reason we pass in buildingsLocation separately from locationToAddUnit is in case a city is full and a unit gets bumped
+		// to the outside - it still needs to get the bonus from the buildings back in the city
+		final int startingExperience;
+		final Integer weaponGrade;
+		if (buildingsLocation != null)
+		{
+			startingExperience = MemoryBuildingUtils.experienceFromBuildings (gsk.getTrueMap ().getBuilding (), buildingsLocation, db, debugLogger);
+			weaponGrade = MomUnitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
+				(gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMap (), buildingsLocation, unitOwnerPPK.getPick (), sd.getMapSize (), db, debugLogger);
+		}
+		else
+		{
+			startingExperience = 0;
+			weaponGrade = null;
+		}
+
+		// Add on server
+		// Even for heroes, we load in their default skill list - this is how heroes default skills are loaded during game startup
+		final MemoryUnit newUnit = UnitUtils.createMemoryUnit (unitID, gsk.getNextFreeUnitURN (), weaponGrade, startingExperience, true, db, debugLogger);
+
+		gsk.setNextFreeUnitURN (gsk.getNextFreeUnitURN () + 1);
+
+		newUnit.setOwningPlayerID (unitOwner.getPlayerDescription ().getPlayerID ());
+		newUnit.setStatus (initialStatus);
+
+		if (locationToAddUnit != null)
+		{
+			final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+			unitLocation.setX (locationToAddUnit.getX ());
+			unitLocation.setY (locationToAddUnit.getY ());
+			unitLocation.setPlane (locationToAddUnit.getPlane ());
+
+			newUnit.setUnitLocation (unitLocation);
+		}
+
+		gsk.getTrueMap ().getUnit ().add (newUnit);
+
+		// What can the new unit see? (it may expand the unit owner's vision to see things that they couldn't previously)
+		if ((session != null) && (initialStatus.equals (UnitStatusID.ALIVE)) && (combatLocation == null))
+			throw new MomException ("addUnitOnServerAndClients: Functionality to check area new unit can see not yet written");
+
+		// Tell clients?
+		// Player list can be null, we use this for pre-adding units to the map before the fog of war has even been set up
+		if ((session != null) && (initialStatus.equals (UnitStatusID.ALIVE)))
+			throw new MomException ("addUnitOnServerAndClients: Functionality to check which players can see the new unit not yet written");
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "addUnitOnServerAndClients", newUnit.getUnitURN ());
+		return newUnit;
+	}
+
+	/**
+	 * Informs clients who can see this unit of its damage taken & experience
+	 *
+	 * @param tu True unit details
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	private final static void updatePlayerMemoryOfUnit_DamageTakenAndExperience (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience", tu.getUnitURN ());
+
+		// First build the message
+		final UpdateDamageTakenAndExperienceMessage msg = new UpdateDamageTakenAndExperienceMessage ();
+		msg.setUnitURN (tu.getUnitURN ());
+		msg.setDamageTaken (tu.getDamageTaken ());
+		msg.setExperience (UnitUtils.getBasicSkillValue (tu.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE));
+
+		// Check which players can see the unit
+		// Note it isn't enough to say "Is the Unit URN in the player's memory" - maybe they've seen the unit before and are remembering
+		// what they saw, but cannot see it now - in that case they shouldn't receive any updates about the unit
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			if (canSeeUnitMidTurn (tu, players, trueTerrain, priv.getFogOfWar (), db, sd))
+			{
+				// Update player's memory on server
+				final MemoryUnit mu = UnitUtils.findUnitURN (tu.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience", debugLogger);
+				mu.setDamageTaken (msg.getDamageTaken ());
+				UnitUtils.setBasicSkillValue (mu, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, msg.getExperience (), debugLogger);
+
+				// Update player's memory on client
+				if (thisPlayer.getPlayerDescription ().isHuman ())
+					thisPlayer.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience");
+	}
+
+	/**
+	 * @param trueUnits True list of units to heal/gain experience
+	 * @param onlyOnePlayerID If zero, will heal/exp units belonging to all players; if specified will heal/exp only units belonging to the specified player
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	public final static void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "healUnitsAndGainExperience", onlyOnePlayerID);
+
+		for (final MemoryUnit thisUnit : trueUnits)
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
+			{
+				boolean sendMsg = false;
+
+				// Heal?
+				if (thisUnit.getDamageTaken () > 0)
+				{
+					thisUnit.setDamageTaken (thisUnit.getDamageTaken () - 1);
+					sendMsg = true;
+				}
+
+				// Experience?
+				final int exp = UnitUtils.getBasicSkillValue (thisUnit.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+				if (exp >= 0)
+				{
+					UnitUtils.setBasicSkillValue (thisUnit, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, exp + 1, debugLogger);
+					sendMsg = true;
+				}
+
+				// Inform any clients who know about this unit
+				if (sendMsg)
+					updatePlayerMemoryOfUnit_DamageTakenAndExperience (thisUnit, trueTerrain, players, db, sd, debugLogger);
+			}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "healUnitsAndGainExperience");
+	}
+
+	/**
+	 * Copies all of the listed units from source to destination, along with any unit spells (enchantments like Flame Blade or curses like Weakness)
+	 * and then sends them to the client; this is used when a unit stack comes into view when it is moving
+
+	 * @param unitStack List of units to copy
+	 * @param trueSpells True spell details held on server
+	 * @param player Player to copy details into
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If unit with requested URN is not found
+	 * @throws JAXBException If there is a problem sending a message to the client
+	 * @throws XMLStreamException If there is a problem sending a message to the client
+	 */
+	private final static void addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (final List<MemoryUnit> unitStack,
+		final List<MemoryMaintainedSpell> trueSpells, final PlayerServerDetails player, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient",
+			new String [] {unitStack.toString (), player.getPlayerDescription ().getPlayerID ().toString ()});
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
+		// Units
+		final List<Integer> unitURNs = new ArrayList<Integer> ();
+		for (final MemoryUnit tu : unitStack)
+		{
+			unitURNs.add (tu.getUnitURN ());
+
+			if (FogOfWarDuplication.copyUnit (tu, priv.getFogOfWarMemory ().getUnit (), debugLogger))
+				if (player.getPlayerDescription ().isHuman ())
+				{
+					final AddUnitMessage msg = new AddUnitMessage ();
+					msg.setData (FogOfWarDuplication.createAddUnitMessage (tu, db));
+					player.getConnection ().sendMessageToClient (msg);
+				}
+		}
+
+		// Spells cast on those units
+		for (final MemoryMaintainedSpell trueSpell : trueSpells)
+			if (trueSpell.getUnitURN () != null)
+				if (unitURNs.contains (trueSpell.getUnitURN ()))
+					if (FogOfWarDuplication.copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell (), debugLogger))
+						if (player.getPlayerDescription ().isHuman ())
+						{
+							final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
+							msg.setData (FogOfWarDuplication.createAddSpellMessage (trueSpell));
+							player.getConnection ().sendMessageToClient (msg);
+						}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient");
+	}
+
+	/**
+	 * Similar to the above routine, this removed all the listed units from the player's memory on the server, along with any unit spells
+	 * Unlike the above routine, it sends no messages to inform the client
+	 *
+	 * @param unitStack List of unit URNs to remove
+	 * @param player Player to remove them from
+	 * @param debugLogger
+	 */
+	private final static void freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (final List<Integer> unitStack, final PlayerServerDetails player, final Logger debugLogger)
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly",
+			new String [] {unitStack.toString (), player.getPlayerDescription ().getPlayerID ().toString ()});
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
+		// Units
+		final Iterator<MemoryUnit> units = priv.getFogOfWarMemory ().getUnit ().iterator ();
+		while (units.hasNext ())
+		{
+			final MemoryUnit thisUnit = units.next ();
+			if (unitStack.contains (thisUnit.getUnitURN ()))
+				units.remove ();
+		}
+
+		// Spells
+		final Iterator<MemoryMaintainedSpell> spells = priv.getFogOfWarMemory ().getMaintainedSpell ().iterator ();
+		while (spells.hasNext ())
+		{
+			final MemoryMaintainedSpell thisSpell = spells.next ();
+			if (thisSpell.getUnitURN () != null)
+				if (unitStack.contains (thisSpell.getUnitURN ()))
+					spells.remove ();
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly");
+	}
+
+	/**
+	 * Moves a unit stack from one location to another; the two locations are assumed to be adjacent map cells.
+	 * It deals with all the resulting knock on effects, namely:
+	 * 1) Checking if the units come into view for any players, if so adds the units into the player's memory and sends them to the client
+	 * 2) Checking if the units go out of sight for any players, if so removes the units from the player's memory and removes them from the client
+	 * 3) Checking what the units can see from their new location
+	 * 4) Updating any cities the units are moving out of or into - normal units calm rebels in cities, so by moving the number of rebels may change
+	 *
+	 * @param unitStack The units we want to move (true unit versions)
+	 * @param unitStackOwner The player who owns the units
+	 * @param moveFrom Location to move from
+	 *
+	 * @param moveTo Location to move to
+	 * 		moveTo.getPlane () needs some special discussion.  The calling routine must have set moveTo.getPlane () correctly, i.e. so if we're on Myrror
+	 *			moving onto a tower, moveTo.getPlane () = 0 - you can't just assume moveTo.getPlane () = moveFrom.getPlane ().
+	 *			Also moveTo.getPlane () cannot be calculated simply from checking if the map cell at moveTo is a tower - we might be
+	 *			in a tower (on plane 0) moving to a map cell on Myrror - in this case the only way to know the correct value
+	 *			of moveTo.getPlane () is by what map cell the player clicked on in the UI.
+	 *
+	 * @param players List of players in the session
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+		final OverlandMapCoordinates moveFrom, final OverlandMapCoordinates moveTo, final List<PlayerServerDetails> players,
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "moveUnitStackOneCellOnServerAndClients", new String [] {unitStack.toString (),
+			unitStackOwner.getPlayerDescription ().getPlayerID ().toString (), CoordinatesUtils.overlandMapCoordinatesToString (moveFrom), CoordinatesUtils.overlandMapCoordinatesToString (moveTo)});
+
+		// Fill out bulk of the messages
+		final MoveUnitStackOverlandMessage movementUnitMessage = new MoveUnitStackOverlandMessage ();
+		movementUnitMessage.setMoveFrom (moveFrom);
+		movementUnitMessage.setMoveTo (moveTo);
+
+		for (final MemoryUnit tu : unitStack)
+			movementUnitMessage.getUnitURN ().add (tu.getUnitURN ());
+
+		final UpdateNodeLairTowerUnitIDMessageData clearNodeLairTowerMessageData = new UpdateNodeLairTowerUnitIDMessageData ();
+		clearNodeLairTowerMessageData.setMonsterUnitID ("");	// Known empty
+		clearNodeLairTowerMessageData.setNodeLairTowerLocation (moveTo);
+
+		final UpdateNodeLairTowerUnitIDMessage clearNodeLairTowerMessage = new UpdateNodeLairTowerUnitIDMessage ();
+		clearNodeLairTowerMessage.setData (clearNodeLairTowerMessageData);
+
+		// Need this lower down
+		final MemoryGridCell trueMoveToCell = trueMap.getMap ().getPlane ().get (moveTo.getPlane ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
+
+		// Check each player in turn
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			final boolean thisPlayerCanSee;
+
+			// If this is the player who owns the units, then obviously he can see them!
+			if (thisPlayer == unitStackOwner)
+			{
+				thisPlayerCanSee = true;
+				movementUnitMessage.setFreeAfterMoving (false);
+			}
+			else
+			{
+				// It isn't enough to check whether the unit URNs moving are in the player's memory - they may be
+				// remembering a location that they previously saw the units at, but can't see where they're moving from/to now
+				final boolean couldSeeBeforeMove = MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower
+					(moveFrom, sd.getFogOfWarSetting ().getUnits (), trueMap.getMap (), priv.getFogOfWar (), db);
+				final boolean canSeeAfterMove = MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower
+					(moveTo, sd.getFogOfWarSetting ().getUnits (), trueMap.getMap (), priv.getFogOfWar (), db);
+
+				// Deal with clients who could not see this unit stack before this move, but now can
+				if ((!couldSeeBeforeMove) && (canSeeAfterMove))
+				{
+					// The unit stack doesn't exist yet in the player's memory or on the client, so before they can move, we have to send all the unit details
+					addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), thisPlayer, db, debugLogger);
+					thisPlayerCanSee = true;
+					movementUnitMessage.setFreeAfterMoving (false);
+				}
+
+				// Can this player see the units in their current location?
+				else if (couldSeeBeforeMove)
+				{
+					// If we're losing sight of the unit stack, then we need to forget the units and any spells they have cast on them in the player's memory on the server
+					// Unlike the add above, we *don't* have to do this on the client, it does it itself via the freeAfterMoving flag after it finishes displaying the animation
+					thisPlayerCanSee = true;
+					movementUnitMessage.setFreeAfterMoving (!canSeeAfterMove);
+
+					if (!canSeeAfterMove)
+						freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (movementUnitMessage.getUnitURN (), thisPlayer, debugLogger);
+				}
+
+				// This player can't see the units before, during or after their move
+				else
+					thisPlayerCanSee = false;
+
+				// If we see someone else moving onto a node/lair/tower, then we know it must be empty
+				// NB. If they move onto a tower, moveTo.getPlane () by definition must be 0 so don't need to worry about that here
+				if ((canSeeAfterMove) && (ServerMemoryGridCellUtils.isNodeLairTower (trueMoveToCell.getTerrainData (), db)) &&
+					(!CompareUtils.safeStringCompare (priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (moveTo.getPlane ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ()), "")))
+				{
+					// Set on server
+					priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (moveTo.getPlane ()).getRow ().get (moveTo.getY ()).getCell ().set (moveTo.getX (), "");
+
+					// Set on client
+					if (thisPlayer.getPlayerDescription ().isHuman ())
+						thisPlayer.getConnection ().sendMessageToClient (clearNodeLairTowerMessage);
+				}
+			}
+
+			// Move units on client
+			if ((thisPlayerCanSee) && (thisPlayer.getPlayerDescription ().isHuman ()))
+				thisPlayer.getConnection ().sendMessageToClient (movementUnitMessage);
+		}
+
+		// Move units on true map
+		for (final MemoryUnit thisUnit : unitStack)
+		{
+			final OverlandMapCoordinates newLocation = new OverlandMapCoordinates ();
+			newLocation.setX (moveTo.getX ());
+			newLocation.setY (moveTo.getY ());
+			newLocation.setPlane (moveTo.getPlane ());
+
+			thisUnit.setUnitLocation (newLocation);
+		}
+
+		// See what the units can see from their new location
+		FogOfWarProcessing.updateAndSendFogOfWar (trueMap, unitStackOwner, players, false, "moveUnitStackOneCellOnServerAndClients", sd, db, debugLogger);
+
+		// If we moved out of or into a city, then need to recalc rebels, production, etc.
+		final OverlandMapCoordinates [] cityLocations = new OverlandMapCoordinates [] {moveFrom, moveTo};
+		for (final OverlandMapCoordinates cityLocation : cityLocations)
+		{
+			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () > 0))
+			{
+				final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "moveUnitStackOneCellOnServerAndClients");
+				final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+
+				cityData.setNumberOfRebels (MomCityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (),
+					cityLocation, cityOwnerPriv.getTaxRateID (), db, debugLogger).getFinalTotal ());
+
+				MomServerCityCalculations.ensureNotTooManyOptionalFarmers (cityData, debugLogger);
+
+				updatePlayerMemoryOfTerrain (trueMap.getMap (), players, cityLocation, sd, debugLogger);
+			}
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "moveUnitStackOneCellOnServerAndClients");
+	}
+
+	/**
+	 * Finds the direction to make a one cell move in, when trying to get from moveFrom to moveTo
+	 * This is based on the directions calculated by the movement routine so will take into account everything known about the terrain, so the direction
+	 * chosen will try to make use of roads etc. and take into account the types of units moving rather than just being in a straight line
+	 *
+	 * @param moveFrom Location to move from
+	 * @param moveTo Location to determine direction to
+	 * @param movementDirections Movement directions from moveFrom to every location on the map
+	 * @param sys Overland map coordinate system
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return Direction to make one cell move in
+	 * @throws MomException If we can't find a route from moveFrom to moveTo
+	 */
+	final static int determineMovementDirection (final OverlandMapCoordinates moveFrom, final OverlandMapCoordinates moveTo,
+		final int [] [] [] movementDirections, final CoordinateSystem sys, final Logger debugLogger) throws MomException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "determineMovementDirection",
+			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (moveFrom), CoordinatesUtils.overlandMapCoordinatesToString (moveTo)});
+
+		// The value at each cell of the directions grid is the direction we need to have come FROM to get there
+		// So we need to start at the destinationand follow backwards down the movement path until we
+		// get back to the From location, and the direction we want is the one that led us to the From location
+		final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+		coords.setX (moveTo.getX ());
+		coords.setY (moveTo.getY ());
+		coords.setPlane (moveTo.getPlane ());
+
+		int direction = -1;
+		while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
+		{
+			direction = movementDirections [coords.getPlane ()] [coords.getY ()] [coords.getX ()];
+			if (!CoordinateSystemUtils.moveCoordinates (sys, coords, CoordinateSystemUtils.normalizeDirection (sys.getCoordinateSystemType (), direction + 4)))
+				throw new MomException ("determineMovementDirection: Server map tracing moved to a cell off the map");
+		}
+
+		if (direction < 0)
+			throw new MomException ("determineMovementDirection: Failed to trace a route from the movement target back to the movement origin");
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "determineMovementDirection", direction);
+		return direction;
+	}
+
+	/**
+	 * Reduces the amount of remaining movement that all units in this stack have left by the amount that it costs them to enter a grid cell of the specified type
+	 *
+	 * @param unitStack The unit stack that is moving
+	 * @param unitStackSkills All the skills that any units in the stack have
+	 * @param tileTypeID Tile type being moved onto
+	 * @param spells Known spells
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 */
+	final static void reduceMovementRemaining (final List<MemoryUnit> unitStack, final List<String> unitStackSkills, final String tileTypeID,
+		final List<MemoryMaintainedSpell> spells, final ServerDatabaseLookup db, final Logger debugLogger)
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "reduceMovementRemaining", new String [] {unitStack.toString (), tileTypeID});
+
+		for (final MemoryUnit thisUnit : unitStack)
+		{
+			// Don't just work out the distance it took for the whole stack to get here - if e.g. one unit can fly it might be able to
+			// move into mountains taking only 1 MP whereas another unit in the same stack might take 3 MP
+			final int doubleMovementCost = MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileTypeID, spells, db, debugLogger);
+
+			// Entirely valid for doubleMovementCost to be > doubleOverlandMovesLeft, if e.g. a spearmen with 1 MP is moving onto mountains which cost 3 MP
+			if (doubleMovementCost > thisUnit.getDoubleOverlandMovesLeft ())
+				thisUnit.setDoubleOverlandMovesLeft (0);
+			else
+				thisUnit.setDoubleOverlandMovesLeft (thisUnit.getDoubleOverlandMovesLeft () - doubleMovementCost);
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "reduceMovementRemaining");
+	}
+
+	/**
+	 * Client has requested that we try move a stack of their units to a certain location - that location may be on the other
+	 * end of the map, and we may not have seen it or the intervening terrain yet, so we basically move one tile at a time
+	 * and re-evaluate *everthing* based on the knowledge we learn of the terrain from our new location before we make the next move
+	 *
+	 * @param unitStack The units we want to move (true unit versions)
+	 * @param unitStackOwner The player who owns the units
+	 * @param originalMoveFrom Location to move from
+	 *
+	 * @param moveTo Location to move to
+	 * 		Note about moveTo.getPlane () - the same comment as moveUnitStackOneCellOnServerAndClients *doesn't apply*, moveTo.getPlane ()
+	 *			will be whatever the player clicked on - if they click on a tower on Myrror, moveTo.getPlane () will be set to 1; the routine
+	 *			sorts the correct destination plane out for each cell that the unit stack moves
+	 *
+	 * @param forceAsPendingMovement If true, forces all generated moves to be added as pending movements rather than occurring immediately (used for simultaneous turns games)
+	 * @param players List of players in the session
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void moveUnitStack (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
+		final OverlandMapCoordinates originalMoveFrom, final OverlandMapCoordinates moveTo,
+		final boolean forceAsPendingMovement, final List<PlayerServerDetails> players,
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "moveUnitStack", new String [] {unitStack.toString (),
+			unitStackOwner.getPlayerDescription ().getPlayerID ().toString (), CoordinatesUtils.overlandMapCoordinatesToString (originalMoveFrom), CoordinatesUtils.overlandMapCoordinatesToString (moveTo)});
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
+		final List<String> unitStackSkills = MomServerUnitCalculations.listAllSkillsInUnitStack (unitStack, priv.getFogOfWarMemory ().getMaintainedSpell (), db, debugLogger);
+
+		// Have to define a lot of these out here so they can be used after the loop
+		boolean keepGoing = true;
+		boolean validMoveFound = false;
+		int doubleMovementRemaining = 0;
+		int [] [] [] movementDirections = null;
+
+		OverlandMapCoordinates moveFrom = originalMoveFrom;
+		MoveResultsInAttackTypeID typeOfCombatInitiated = MoveResultsInAttackTypeID.NO;
+
+		while (keepGoing)
+		{
+			// What's the lowest movement remaining of any unit in the stack
+			doubleMovementRemaining = Integer.MAX_VALUE;
+			for (final MemoryUnit thisUnit : unitStack)
+				if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
+					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
+
+			// Find distances and route from our start point to every location on the map
+			final int [] [] [] doubleMovementDistances										= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			movementDirections																		= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			final boolean [] [] [] canMoveToInOneTurn										= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+
+			MomServerUnitCalculations.calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getPlane (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+				priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (), unitStack, doubleMovementRemaining,
+				doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db, debugLogger);
+
+			// Is there a route to where we want to go?
+			validMoveFound = (doubleMovementDistances [moveTo.getPlane ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
+
+			// Make 1 move as long as there is a valid move, and we're not allocating movement in a simultaneous turns game
+			if ((validMoveFound) && (!forceAsPendingMovement))
+			{
+				// Get the direction to make our 1 move in
+				final int movementDirection = determineMovementDirection (moveFrom, moveTo, movementDirections, sd.getMapSize (), debugLogger);
+
+				// Work out where this moves us to
+				final OverlandMapCoordinates oneStep = new OverlandMapCoordinates ();
+				oneStep.setX (moveFrom.getX ());
+				oneStep.setY (moveFrom.getY ());
+				oneStep.setPlane (moveFrom.getPlane ());
+				CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), oneStep, movementDirection);
+
+				final MemoryGridCell oneStepTrueTile = trueMap.getMap ().getPlane ().get (oneStep.getPlane ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
+
+				// Does this initiate a combat?
+				typeOfCombatInitiated = movingHereResultsInAttack [oneStep.getPlane ()] [oneStep.getY ()] [oneStep.getX ()];
+
+				// Update the movement remaining for each unit
+				if (typeOfCombatInitiated == MoveResultsInAttackTypeID.NO)
+					reduceMovementRemaining (unitStack, unitStackSkills, oneStepTrueTile.getTerrainData ().getTileTypeID (), priv.getFogOfWarMemory ().getMaintainedSpell (), db, debugLogger);
+				else
+				{
+					// Even if attacking a node/lair/tower and click 'No' to abort the attack, still uses up their full movement
+					// Otherwise cavalary end up being able to make 2 attacks per turn
+					// (The original MoM actually lets you do this - scout multiple lairs in one turn - so maybe change this later
+					// I think the original MoM lets you keep going until you play an actual combat - so as long as you keep hitting 'No' or finding empty lairs, you can keep going)
+					for (final MemoryUnit thisUnit : unitStack)
+						thisUnit.setDoubleOverlandMovesLeft (0);
+				}
+
+				// Tell the client how much movement each unit has left, while we're at it recheck the lowest movement remaining of anyone in the stack
+				final UpdateOverlandMovementRemainingMessage movementRemainingMsg = new UpdateOverlandMovementRemainingMessage ();
+				doubleMovementRemaining = Integer.MAX_VALUE;
+
+				for (final MemoryUnit thisUnit : unitStack)
+				{
+					final UpdateOverlandMovementRemainingUnit msgUnit = new UpdateOverlandMovementRemainingUnit ();
+					msgUnit.setUnitURN (thisUnit.getUnitURN ());
+					msgUnit.setDoubleMovesLeft (thisUnit.getDoubleOverlandMovesLeft ());
+					movementRemainingMsg.getUnit ().add (msgUnit);
+
+					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
+						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
+				}
+				unitStackOwner.getConnection ().sendMessageToClient (movementRemainingMsg);
+
+				// Make our 1 movement?
+				if (typeOfCombatInitiated == MoveResultsInAttackTypeID.NO)
+				{
+					// Adjust move to plane if moving onto a tower
+					if (MemoryGridCellUtils.isTerrainTowerOfWizardry (oneStepTrueTile.getTerrainData ()))
+						oneStep.setPlane (0);
+
+					// Actually move the units
+					moveUnitStackOneCellOnServerAndClients (unitStack, unitStackOwner, moveFrom, oneStep, players, trueMap, sd, db, debugLogger);
+
+					// Prepare for next loop
+					moveFrom = oneStep;
+				}
+			}
+
+			// Check whether to loop again
+			keepGoing = (!forceAsPendingMovement) && (validMoveFound) && (typeOfCombatInitiated == MoveResultsInAttackTypeID.NO) && (doubleMovementRemaining > 0) &&
+				((moveFrom.getX () != moveTo.getX ()) || (moveFrom.getY () != moveTo.getY ()));
+		}
+
+		// If the unit stack failed to reach its destination this turn, create a pending movement object so they'll continue their movement next turn
+		if ((typeOfCombatInitiated == MoveResultsInAttackTypeID.NO) && ((moveFrom.getX () != moveTo.getX ()) || (moveFrom.getY () != moveTo.getY ())))
+		{
+			// Unless ForceAsPendingMovement is on, we'll have made at least one move so should recalc the
+			// best path again based on what else we learned about the terrain in our last move
+			if (!forceAsPendingMovement)
+			{
+				final int [] [] [] doubleMovementDistances										= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+				movementDirections																		= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+				final boolean [] [] [] canMoveToInOneTurn										= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+				final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+
+				MomServerUnitCalculations.calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getPlane (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+					priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (), unitStack, doubleMovementRemaining,
+					doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db, debugLogger);
+
+				validMoveFound = (doubleMovementDistances [moveTo.getPlane ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
+			}
+
+			if (validMoveFound)
+			{
+				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) unitStackOwner.getTransientPlayerPrivateKnowledge ();
+				final PendingMovement pending = new PendingMovement ();
+				pending.setMoveFrom (moveFrom);
+				pending.setMoveTo (moveTo);
+
+				for (final MemoryUnit thisUnit : unitStack)
+					pending.getUnitURN ().add (thisUnit.getUnitURN ());
+
+				// Record the movement path
+				final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+				coords.setX (moveTo.getX ());
+				coords.setY (moveTo.getY ());
+				coords.setPlane (moveTo.getPlane ());
+
+				while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
+				{
+					final int direction = movementDirections [coords.getPlane ()] [coords.getY ()] [coords.getX ()];
+
+					pending.getPath ().add (direction);
+
+					if (!CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), coords, CoordinateSystemUtils.normalizeDirection (sd.getMapSize ().getCoordinateSystemType (), direction + 4)))
+						throw new MomException ("moveUnitStack: Server map tracing moved to a cell off the map");
+				}
+
+				trans.getPendingMovement ().add (pending);
+
+				// Send the pending movement to the client
+				final PendingMovementMessage pendingMsg = new PendingMovementMessage ();
+				pendingMsg.setPendingMovement (pending);
+			}
+		}
+
+		// Deal with any combat initiated
+		if (typeOfCombatInitiated == MoveResultsInAttackTypeID.NO)
+		{
+			// No combat, so tell the client to ask for the next unit to move
+			unitStackOwner.getConnection ().sendMessageToClient (new SelectNextUnitToMoveOverlandMessage ());
+		}
+		else
+		{
+			throw new UnsupportedOperationException ("moveUnitStack doesn't include code for initiating combats yet");
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "moveUnitStack");
+	}
+
+	/**
+	 * Prevent instantiation
+	 */
+	private FogOfWarMidTurnChanges ()
+	{
+	}
+}

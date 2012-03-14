@@ -58,39 +58,57 @@ public final class TestMemoryGridCellUtils
 	}
 
 	/**
-	 * Tests the isFeatureTowerOfWizardry method on an uncleared tower
+	 * Tests the isTerrainTowerOfWizardry method on an uncleared tower
 	 */
 	@Test
-	public final void testIsFeatureTowerOfWizardry_Uncleared ()
+	public final void testIsTerrainTowerOfWizardry_Uncleared ()
 	{
-		assertTrue (MemoryGridCellUtils.isFeatureTowerOfWizardry (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY));
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+
+		assertTrue (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData));
 	}
 
 	/**
-	 * Tests the isFeatureTowerOfWizardry method on a cleared tower
+	 * Tests the isTerrainTowerOfWizardry method on a cleared tower
 	 */
 	@Test
-	public final void testIsFeatureTowerOfWizardry_Cleared ()
+	public final void testIsTerrainTowerOfWizardry_Cleared ()
 	{
-		assertTrue (MemoryGridCellUtils.isFeatureTowerOfWizardry (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY));
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
+
+		assertTrue (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData));
 	}
 
 	/**
-	 * Tests the isFeatureTowerOfWizardry method on some other map feature
+	 * Tests the isTerrainTowerOfWizardry method on some other map feature
 	 */
 	@Test
-	public final void testIsFeatureTowerOfWizardry_OtherValue ()
+	public final void testIsTerrainTowerOfWizardry_OtherValue ()
 	{
-		assertFalse (MemoryGridCellUtils.isFeatureTowerOfWizardry ("A"));
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setMapFeatureID ("A");
+
+		assertFalse (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData));
 	}
 
 	/**
-	 * Tests the isFeatureTowerOfWizardry method on a null map feature (we can't see there, or we can see that there is no feature there)
+	 * Tests the isTerrainTowerOfWizardry method on a null map feature (we can see that there is no feature there)
 	 */
 	@Test
-	public final void testIsFeatureTowerOfWizardry_Null ()
+	public final void testIsTerrainTowerOfWizardry_NullMapFeature ()
 	{
-		assertFalse (MemoryGridCellUtils.isFeatureTowerOfWizardry (null));
+		assertFalse (MemoryGridCellUtils.isTerrainTowerOfWizardry (new OverlandMapTerrainData ()));
+	}
+
+	/**
+	 * Tests the isTerrainTowerOfWizardry method on a null map feature (we can't see there)
+	 */
+	@Test
+	public final void testIsTerrainTowerOfWizardry_NullTerrainData ()
+	{
+		assertFalse (MemoryGridCellUtils.isTerrainTowerOfWizardry (null));
 	}
 
 	/**

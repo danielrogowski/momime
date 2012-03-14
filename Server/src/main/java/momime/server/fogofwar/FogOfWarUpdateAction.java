@@ -1,4 +1,4 @@
-package momime.server.process;
+package momime.server.fogofwar;
 
 /**
  * Lists actions the server may need to take to update a players' memory when the area the player can see changes
@@ -7,7 +7,7 @@ package momime.server.process;
  */
 enum FogOfWarUpdateAction
 {
-	/** No update necessary */
+	/** No update necessary because we can't see the location */
 	FOG_OF_WAR_ACTION_NONE,
 
 	/** Need to forget players' knowledge of this location */
@@ -16,6 +16,6 @@ enum FogOfWarUpdateAction
 	/** Need to update players' knowledge of this location */
 	FOG_OF_WAR_ACTION_UPDATE,
 
-	/** Could see location last turn and can still see it now, so our knowledge of it must already be accurate so no update required - however MomTrueMap.needToAddUnitOnClient () needs this */
-	FOG_OF_WAR_ACTION_ALREADY_VISIBLE;
+	/** No update necessary because we never lost sight of the location, therefore our information on it must already be up to date */
+	FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF;
 }

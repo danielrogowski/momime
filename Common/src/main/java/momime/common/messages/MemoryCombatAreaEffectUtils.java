@@ -13,7 +13,7 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 public final class MemoryCombatAreaEffectUtils
 {
 	/**
-	 * Checks to see if the specified building exists
+	 * Checks to see if the specified CAE exists
 	 * @param CAEs List of CAEs to search through
 	 * @param mapLocation Location of the effect to look for
 	 * @param combatAreaEffectID Effect to look for
@@ -33,7 +33,7 @@ public final class MemoryCombatAreaEffectUtils
 		{
 			final MemoryCombatAreaEffect thisCAE = iter.next ();
 
-			if ((((mapLocation == null) && (thisCAE.getMapLocation () == null)) || ((mapLocation != null) && (CoordinatesUtils.overlandMapCoordinatesEqual (mapLocation, thisCAE.getMapLocation ())))) &&
+			if ((CoordinatesUtils.overlandMapCoordinatesEqual (mapLocation, thisCAE.getMapLocation (), true)) &&
 				(combatAreaEffectID.equals (thisCAE.getCombatAreaEffectID ())) && (castingPlayerID == thisCAE.getCastingPlayerID ()))
 
 				found = true;

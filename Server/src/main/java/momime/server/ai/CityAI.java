@@ -25,7 +25,7 @@ import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseLookup;
 import momime.server.database.v0_9_4.Plane;
-import momime.server.process.FogOfWarProcessing;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.RandomUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
@@ -283,7 +283,7 @@ public final class CityAI
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
 
-						FogOfWarProcessing.updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd, debugLogger);
+						FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd, debugLogger);
 					}
 				}
 

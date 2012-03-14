@@ -11,7 +11,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessag
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.server.MomSessionThread;
-import momime.server.process.FogOfWarProcessing;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
@@ -60,7 +60,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 			cityData.setCurrentlyConstructingBuildingOrUnitID (getBuildingOrUnitID ());
 
 			// Send update to clients
-			FogOfWarProcessing.updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), getCityLocation (), mom.getSessionDescription (), debugLogger);
 		}
 

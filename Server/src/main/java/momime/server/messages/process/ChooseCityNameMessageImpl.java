@@ -9,7 +9,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.server.MomSessionThread;
-import momime.server.process.FogOfWarProcessing;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -42,7 +42,7 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 			tc.getCityData ().setCityName (getCityName ());
 
 			// Then send the change to all players who can see the city
-			FogOfWarProcessing.updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), getCityLocation (), mom.getSessionDescription (), debugLogger);
+			FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), getCityLocation (), mom.getSessionDescription (), debugLogger);
 		}
 		else
 		{

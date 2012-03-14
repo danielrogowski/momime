@@ -650,21 +650,22 @@ Units with special orders won't be asked for movement orders and look visibly di
 	<xsd:simpleType name="fogOfWarStateID">
 	    <xsd:annotation>
     		<xsd:documentation>Defines how well we can see a particular map cell.
-Only the first 3 are real values.  The last 2 special values are used on the server when re-generating the fog of war state so it
+Only the first 3 are real values.  The last 3 special values are used on the server when re-generating the fog of war state so it
 can determine changes in the fog of war, and only send the changes to each player rather than having to resend the whole area every time.
 
 At start of fog of war routine, possible 3 values are
-fowNeverSeen, fowHaveSeen, fowCanSee
+NEVER_SEEN, HAVE_SEEN, CAN_SEE
 
 For each map cell that we find we can see, it changes:
-fowNeverSeen -> fowCanNowSee
-fowHaveSeen  -> fowCanNowSee
-fowCanSee    -> fowCanStillSee
+NEVER_SEEN	-> TEMP_SEEING_IT_FOR_FIRST_TIME
+HAVE_SEEN	-> TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT
+CAN_SEE		-> TEMP_CAN_STILL_SEE
 
 After sending the changes to the client, then replaces:
-fowCanSee      -> fowHaveSeen, and send to client
-fowCanNowSee   -> fowCanSee, and send to client
-fowCanStillSee -> fowCanSee</xsd:documentation>
+CAN_SEE													-> HAVE_SEEN, and send to client
+TEMP_SEEING_IT_FOR_FIRST_TIME			-> CAN_SEE, and send to client
+TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT	-> CAN_SEE, and send to client
+TEMP_CAN_STILL_SEE								-> CAN_SEE</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="N"><xsd:annotation>
@@ -679,12 +680,16 @@ fowCanStillSee -> fowCanSee</xsd:documentation>
 				<xsd:documentation>Can seen</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="CAN_SEE"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="X"><xsd:annotation>
+				<xsd:documentation>(Special temporary value) Seeing it for the first time</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="TEMP_SEEING_IT_FOR_FIRST_TIME"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="Y"><xsd:annotation>
-				<xsd:documentation>(Special temporary value) Can now see</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="TEMP_CAN_NOW_SEE"/></xsd:appinfo>
+				<xsd:documentation>(Special temporary value) Seeing after lost sight of it - we saw it once before, lost sight of it for a while, and it just came back into view again</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="Z"><xsd:annotation>
-				<xsd:documentation>(Special temporary value) Can still see</xsd:documentation>
+				<xsd:documentation>(Special temporary value) Can still see - could see it last turn, and still can</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="TEMP_CAN_STILL_SEE"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>

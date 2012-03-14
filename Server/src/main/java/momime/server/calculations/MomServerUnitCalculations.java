@@ -134,9 +134,7 @@ public final class MomServerUnitCalculations
 		// Work out what plane to look for units on
 		final MemoryGridCell mc = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
 		final int towerPlane;
-		if (mc.getTerrainData () == null)
-			towerPlane = plane;
-		else if (MemoryGridCellUtils.isFeatureTowerOfWizardry (mc.getTerrainData ().getMapFeatureID ()))
+		if (MemoryGridCellUtils.isTerrainTowerOfWizardry (mc.getTerrainData ()))
 			towerPlane = 0;
 		else
 			towerPlane = plane;
@@ -483,7 +481,7 @@ public final class MomServerUnitCalculations
 
 		// If at a tower of wizardry, we can move on all planes
 		final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (startPlane).getRow ().get (startY).getCell ().get (startX).getTerrainData ();
-		if ((terrainData != null) && (MemoryGridCellUtils.isFeatureTowerOfWizardry (terrainData.getMapFeatureID ())))
+		if (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData))
 		{
 			for (final Plane plane : db.getPlanes ())
 				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID, map.getMap (), map.getUnit (), nodeLairTowerKnownUnitIDs,

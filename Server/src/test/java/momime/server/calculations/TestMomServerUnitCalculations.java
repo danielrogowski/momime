@@ -914,6 +914,7 @@ public final class TestMomServerUnitCalculations
 			new MoveResultsInAttackTypeID [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		// Units that are moving - two units of high men spearmen
+		// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
 		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 		int nextUnitURN = 0;
 

@@ -367,7 +367,7 @@ public final class MomCityCalculations
 			// Bonuses from buildings
 			final List<CalculateCityGrowthRateBreakdown_Building> buildingsModifyingGrowthRate = new ArrayList<CalculateCityGrowthRateBreakdown_Building> ();
 			for (final MemoryBuilding thisBuilding : buildings)
-				if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation))
+				if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true))
 				{
 					final Integer buildingGrowthRateBonus = db.findBuilding (thisBuilding.getBuildingID (), "calculateCityGrowthRate").getGrowthRateBonus ();
 					if (buildingGrowthRateBonus != null)
@@ -524,7 +524,7 @@ public final class MomCityCalculations
 		for (final MemoryBuilding thisBuilding : buildings)
 
 			// Make sure its in the right location, and don't count buildings being sold this turn
-			if ((CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation)) && (!thisBuilding.getBuildingID ().equals (mc.getBuildingIdSoldThisTurn ())))
+			if ((CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true)) && (!thisBuilding.getBuildingID ().equals (mc.getBuildingIdSoldThisTurn ())))
 			{
 				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "calculateCityRebels");
 				if (building.getBuildingUnrestReduction () != null)
@@ -585,7 +585,7 @@ public final class MomCityCalculations
 		// Subtract pacifying effects of non-summoned units
 		int unitCount = 0;
 		for (final MemoryUnit thisUnit : units)
-			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (CoordinatesUtils.overlandMapCoordinatesEqual (thisUnit.getUnitLocation (), cityLocation)))
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (CoordinatesUtils.overlandMapCoordinatesEqual (thisUnit.getUnitLocation (), cityLocation, true)))
 			{
 				final String unitMagicRealmID = db.findUnit (thisUnit.getUnitID (), "calculateCityRebels").getUnitMagicRealm ();
 				if (!db.findUnitMagicRealm (unitMagicRealmID, "calculateCityRebels").getUnitTypeID ().equals (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED))
@@ -740,7 +740,7 @@ public final class MomCityCalculations
 
 		// Production from and Maintenance of buildings
 		for (final MemoryBuilding thisBuilding : buildings)
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation))
+			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true))
 			{
 				if (thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
 				{

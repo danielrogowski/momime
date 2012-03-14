@@ -66,8 +66,8 @@ public final class MomFogOfWarCalculations
 	{
 		boolean canSee;
 
-		if (MemoryGridCellUtils.isFeatureTowerOfWizardry
-			(trueTerrain.getPlane ().get (location.getPlane ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()).getTerrainData ().getMapFeatureID ()))
+		if (MemoryGridCellUtils.isTerrainTowerOfWizardry
+			(trueTerrain.getPlane ().get (location.getPlane ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()).getTerrainData ()))
 		{
 			canSee = false;
 			final Iterator<Plane> planeIter = db.getPlanes ().iterator ();

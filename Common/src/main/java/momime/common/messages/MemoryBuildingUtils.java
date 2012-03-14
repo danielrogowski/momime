@@ -39,7 +39,7 @@ public final class MemoryBuildingUtils
 		while ((!found) && (iter.hasNext ()))
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
-			if ((CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisBuilding.getCityLocation ())) && (thisBuilding.getBuildingID ().equals (buildingID)))
+			if ((CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisBuilding.getCityLocation (), true)) && (thisBuilding.getBuildingID ().equals (buildingID)))
 				found = true;
 		}
 
@@ -149,7 +149,7 @@ public final class MemoryBuildingUtils
 		while ((result == null) && (iter.hasNext ()))
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation))
+			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true))
 			{
 				// This building is at the same location as the one we're tryign to sell - does it have as
 				// a prerequisite the building we are trying to sell?
@@ -181,7 +181,7 @@ public final class MemoryBuildingUtils
 		// Check all buildings at this location
 		int result = 0;
 		for (final MemoryBuilding thisBuilding : buildingsList)
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation))
+			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true))
 			{
 				final Integer exp = db.findBuilding (thisBuilding.getBuildingID (), "experienceFromBuildings").getBuildingExperience ();
 				if (exp != null)
@@ -213,7 +213,7 @@ public final class MemoryBuildingUtils
 		// Check all buildings at this location
 		int doubleAmount = 0;
 		for (final MemoryBuilding thisBuilding : buildingsList)
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation))
+			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true))
 
 				// Although it would be weird, theoretically you could have multiple entries for the same population task & production type, the XSD doesn't (can't) enforce there being only one
 				// The Delphi code searches the full list so we'd better do the same

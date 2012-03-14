@@ -48,7 +48,7 @@ public final class MemoryMaintainedSpellUtils
 				((spellID == null) || (spellID.equals (thisSpell.getSpellID ()))) &&
 				(((unitURN == null) && (thisSpell.getUnitURN () == null)) || ((unitURN != null) && (unitURN.equals (thisSpell.getUnitURN ())))) &&
 				((unitSkillID == null) || (unitSkillID.equals (thisSpell.getUnitSkillID ()))) &&
-				(((cityLocation == null) && (thisSpell.getCityLocation () == null)) || ((cityLocation != null) && (CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisSpell.getCityLocation ())))) &&
+				(CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisSpell.getCityLocation (), true)) &&
 				((citySpellEffectID == null) || (citySpellEffectID.equals (thisSpell.getCitySpellEffectID ()))))
 
 				match = thisSpell;

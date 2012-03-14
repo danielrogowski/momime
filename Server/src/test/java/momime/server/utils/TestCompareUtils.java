@@ -6,7 +6,7 @@ import static org.junit.Assert.assertFalse;
 import org.junit.Test;
 
 /**
- * Tests the StringUtils class
+ * Tests the CompareUtils class
  */
 public final class TestCompareUtils
 {

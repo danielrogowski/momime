@@ -47,6 +47,48 @@ public final class TestSpellUtils
 	// Methods dealing with a single spell
 
 	/**
+	 * Tests the findSpellResearchStatus method on a spell that exists
+	 * @throws RecordNotFoundException If the research status for this spell can't be found
+	 */
+	@Test
+	public final void testFindSpellResearchStatus_Exists () throws RecordNotFoundException
+	{
+		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+
+		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
+		for (final Spell thisSpell : db.getSpells ())
+		{
+			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
+			thisStatus.setSpellID (thisSpell.getSpellID ());
+			thisStatus.setStatus (SpellResearchStatusID.UNAVAILABLE);
+			statuses.add (thisStatus);
+		}
+
+		assertEquals (GenerateTestData.MAGIC_SPIRIT_SPELL, SpellUtils.findSpellResearchStatus (statuses, GenerateTestData.MAGIC_SPIRIT_SPELL, debugLogger).getSpellID ());
+	}
+
+	/**
+	 * Tests the findSpellResearchStatus method on a spell that doesn't exist
+	 * @throws RecordNotFoundException If the research status for this spell can't be found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindSpellResearchStatus_NotExists () throws RecordNotFoundException
+	{
+		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+
+		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
+		for (final Spell thisSpell : db.getSpells ())
+		{
+			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
+			thisStatus.setSpellID (thisSpell.getSpellID ());
+			thisStatus.setStatus (SpellResearchStatusID.UNAVAILABLE);
+			statuses.add (thisStatus);
+		}
+
+		SpellUtils.findSpellResearchStatus (statuses, "X", debugLogger);
+	}
+
+	/**
 	 * Tests the spellSummonsUnitTypeID method
 	 * @throws MomException If there is a problem
 	 * @throws RecordNotFoundException If we encounter a record that can't be found in the DB

@@ -39,6 +39,29 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 public final class PlayerPickServerUtils
 {
 	/**
+	 * @param picks Player's picks to count up
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger
+	 * @return Initial skill wizard will start game with - 2 per book +10 if they chose Archmage
+	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
+	 */
+	public final static int getTotalInitialSkill (final List<PlayerPick> picks, final ServerDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+	{
+		debugLogger.entering (PlayerPickServerUtils.class.getName (), "getTotalInitialSkill", picks.size ());
+
+		int total = 0;
+		for (final PlayerPick thisPick : picks)
+		{
+			final Pick thisPickRecord = db.findPick (thisPick.getPickID (), "getTotalInitialSkill");
+			if (thisPickRecord.getPickInitialSkill () != null)
+				total = total + (thisPickRecord.getPickInitialSkill () * thisPick.getQuantity ());
+		}
+
+		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "getTotalInitialSkill", total);
+		return total;
+	}
+
+	/**
 	 * @param players List of players
 	 * @param wizardID Wizard ID we want to pick
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled

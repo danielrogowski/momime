@@ -48,6 +48,48 @@ public final class TestPlayerPickServerUtils
 	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
 
 	/**
+	 * Tests the getTotalInitialSkill method
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
+	 */
+	@Test
+	public final void testGetTotalInitialSkill () throws IOException, JAXBException, RecordNotFoundException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		// Add 1x Book 1, 2x Book 2, 3x Book 3, 4x Book 4 and 5x Book 5 = 15 books x2 skill per book = 30
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		for (int n = 1; n <= 5; n++)
+		{
+			final PlayerPick pick = new PlayerPick ();
+			pick.setPickID ("MB0" + n);
+			pick.setQuantity (n);
+			picks.add (pick);
+		}
+
+		assertEquals (30, PlayerPickServerUtils.getTotalInitialSkill (picks, db, debugLogger));
+
+		// Archmage adds +10
+		final PlayerPick archmage = new PlayerPick ();
+		archmage.setPickID ("RT04");
+		archmage.setQuantity (1);
+		picks.add (archmage);
+
+		assertEquals (40, PlayerPickServerUtils.getTotalInitialSkill (picks, db, debugLogger));
+
+		// Some other irrelevant retort adds nothing
+		final PlayerPick somethingElse = new PlayerPick ();
+		somethingElse.setPickID ("RT05");
+		somethingElse.setQuantity (1);
+		picks.add (somethingElse);
+
+		assertEquals (40, PlayerPickServerUtils.getTotalInitialSkill (picks, db, debugLogger));
+	}
+
+	/**
 	 * Tests the findPlayerUsingWizard method on a wizard who is in the list
 	 */
 	@Test

@@ -15,6 +15,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ObjectFactory;
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
+import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
 
@@ -148,5 +149,14 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	public final RequestMoveOverlandUnitStackMessage createRequestMoveOverlandUnitStackMessage ()
 	{
 		return new RequestMoveOverlandUnitStackMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created RequestResearchSpellMessage
+	 */
+	@Override
+	public final RequestResearchSpellMessage createRequestResearchSpellMessage ()
+	{
+		return new RequestResearchSpellMessageImpl ();
 	}
 }

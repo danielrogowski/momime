@@ -61,7 +61,6 @@ import momime.server.database.v0_9_4.WizardPickCount;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.mapgenerator.OverlandMapGenerator;
-import momime.server.messages.ServerPlayerPickUtils;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
 import momime.server.utils.OverlandMapServerUtils;
@@ -670,7 +669,7 @@ public final class PlayerMessageProcessing
 					// Calculate each wizard's initial starting casting skills
 					// This effectively gives each wizard some starting stored skill in RE10, which will then be sent to the client by RecalculateGlobalProductionValues below
 					ResourceValueUtils.addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT,
-						MomSkillCalculations.getSkillPointsRequiredForCastingSkill (ServerPlayerPickUtils.getTotalInitialSkill
+						MomSkillCalculations.getSkillPointsRequiredForCastingSkill (PlayerPickServerUtils.getTotalInitialSkill
 							(ppk.getPick (), mom.getServerDBLookup (), debugLogger), debugLogger), debugLogger);
 
 					// Give each wizard their starting gold

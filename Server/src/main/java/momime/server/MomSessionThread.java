@@ -227,7 +227,10 @@ public final class MomSessionThread extends MultiplayerSessionThread
 
 			// Regular spells must be leared
 			if (spell.getSpellRealm () != null)
+			{
 				status.setStatus (SpellResearchStatusID.UNAVAILABLE);
+				status.setRemainingResearchCost (spell.getResearchCost ());
+			}
 
 			// Some arcane spells are free
 			else if (spell.getResearchCost () == null)
@@ -235,7 +238,10 @@ public final class MomSessionThread extends MultiplayerSessionThread
 
 			// But all arcane spells are at least researchable
 			else
+			{
 				status.setStatus (SpellResearchStatusID.RESEARCHABLE);
+				status.setRemainingResearchCost (spell.getResearchCost ());
+			}
 
 			priv.getSpellResearchStatus ().add (status);
 		}

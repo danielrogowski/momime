@@ -1,7 +1,6 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -98,18 +97,8 @@ public final class SpellAI
 		// Choose a spell
 		final Spell chosenSpell = chooseSpellToResearchAI (spellList, aiPlayerName, debugLogger);
 
-		// Grant chosen spell
-		SpellResearchStatus chosenSpellStatus = null;
-		final Iterator<SpellResearchStatus> iter = spells.iterator ();
-		while ((chosenSpellStatus == null) && (iter.hasNext ()))
-		{
-			final SpellResearchStatus thisSpell = iter.next ();
-			if (thisSpell.getSpellID ().equals (chosenSpell.getSpellID ()))
-				chosenSpellStatus = thisSpell;
-		}
-
-		if (chosenSpellStatus == null)
-			throw new RecordNotFoundException ("SpellResearchStatus", chosenSpell.getSpellID (), "chooseFreeSpellAI");
+		// Return spell research status; calling routine sets it to available
+		final SpellResearchStatus chosenSpellStatus = SpellUtils.findSpellResearchStatus (spells, chosenSpell.getSpellID (), debugLogger);
 
 		debugLogger.exiting (SpellAI.class.getName (), "chooseFreeSpellAI", chosenSpellStatus.getSpellID ());
 		return chosenSpellStatus;

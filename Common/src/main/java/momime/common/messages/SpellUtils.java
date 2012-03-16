@@ -2,6 +2,7 @@ package momime.common.messages;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -25,6 +26,34 @@ import momime.common.player.MomSpellCastType;
 public final class SpellUtils
 {
 	// Methods dealing with a single spell
+
+	/**
+	 * @param spells List of spell research statuses to search
+	 * @param spellID Spell ID to search for
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return Requested spell research status
+	 * @throws RecordNotFoundException If the research status for this spell can't be found
+	 */
+	public static final SpellResearchStatus findSpellResearchStatus (final List<SpellResearchStatus> spells, final String spellID, final Logger debugLogger)
+		throws RecordNotFoundException
+	{
+		debugLogger.entering (SpellUtils.class.getName (), "findSpellResearchStatus", spellID);
+
+		SpellResearchStatus chosenSpellStatus = null;
+		final Iterator<SpellResearchStatus> iter = spells.iterator ();
+		while ((chosenSpellStatus == null) && (iter.hasNext ()))
+		{
+			final SpellResearchStatus thisSpell = iter.next ();
+			if (thisSpell.getSpellID ().equals (spellID))
+				chosenSpellStatus = thisSpell;
+		}
+
+		if (chosenSpellStatus == null)
+			throw new RecordNotFoundException ("SpellResearchStatus", spellID, "findSpellResearchStatus");
+
+		debugLogger.exiting (SpellUtils.class.getName (), "findSpellResearchStatus");
+		return chosenSpellStatus;
+	}
 
 	/**
 	 * @param spell Spell we want to check

@@ -210,7 +210,7 @@ public final class SpellServerUtils
 							if (newUnit.getStatus () == UnitStatusID.NOT_GENERATED)
 								UnitServerUtils.generateHeroNameAndRandomSkills (newUnit, db, debugLogger);
 
-							FogOfWarMidTurnChanges.updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), players, gsk.getTrueMap (), sd, db, debugLogger);
+							FogOfWarMidTurnChanges.updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, players, gsk.getTrueMap (), sd, db, debugLogger);
 						}
 						else
 							// For non-heroes, create a new unit

@@ -203,6 +203,15 @@ public final class MomSessionThread extends MultiplayerSessionThread
 	}
 
 	/**
+	 * @return Public knowledge structure, typecasted to MoM specific type
+	 */
+	@Override
+	public final MomGeneralPublicKnowledge getGeneralPublicKnowledge ()
+	{
+		return (MomGeneralPublicKnowledge) super.getGeneralPublicKnowledge ();
+	}
+
+	/**
 	 * @return Descendant of PersistentPlayerPublicKnowledge, or can be left as null if not required
 	 */
 	@Override

@@ -118,6 +118,25 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<xsd:complexType name="newTurnMessageData">
+	    <xsd:annotation>
+    		<xsd:documentation>Class used to each new turn message from the server to the client</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="msgType" type="momimemsgs:newTurnMessageTypeID"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="otherPlayerID" type="mps:playerID"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="oldPopulation" type="momimenewgame:cityPopulation"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="newPopulation" type="momimenewgame:cityPopulation"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="location" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="buildingOrUnitID" type="momimecommon:unitID"/>		<!-- Tied in to that constructing stores both in single field - should fix this -->
+			<xsd:element minOccurs="0" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="productionTypeID" type="momimecommon:productionTypeID"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="otherUnitID" type="momimecommon:unitID"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitAddBumpType" type="momimemsgs:unitAddBumpTypeID"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
 	<xsd:complexType name="momTransientPlayerPrivateKnowledge">
 	    <xsd:annotation>
     		<xsd:documentation>Holds all private knowledge that a player only knows about themselves, they can't see the values for other players,
@@ -129,6 +148,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 					<xsd:element minOccurs="1" maxOccurs="1" name="overlandCastingSkillRemainingThisTurn" type="momimecommon:spellCastingCost"/>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="scheduledCombat" type="momimemsgs:momScheduledCombat"/>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pendingMovement" type="momimemsgs:pendingMovement"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="newTurnMessage" type="momimemsgs:newTurnMessageData"/>
 
 					<!-- These are only needed on the server during game startup - maybe worth creating a server side-only player knowledge structure in future -->
 		        	<xsd:element minOccurs="0" maxOccurs="1" name="firstCityRaceID" type="momimecommon:raceID"/>
@@ -783,6 +803,80 @@ through lack of production, we can still look up their name to show it on the ne
 			<xsd:enumeration value="A"><xsd:annotation>
 				<xsd:documentation>Attacker</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACKER"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="newTurnMessageTypeID">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Population change</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="POPULATION_CHANGE"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Completed building</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="COMPLETED_BUILDING"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="U"><xsd:annotation>
+				<xsd:documentation>Completed unit</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="COMPLETED_UNIT"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Summoned unit</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SUMMONED_UNIT"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="R"><xsd:annotation>
+				<xsd:documentation>Researched spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHED_SPELL"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="O"><xsd:annotation>
+				<xsd:documentation>Overland enchantment</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OVERLAND_ENCHANTMENT"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="T"><xsd:annotation>
+				<xsd:documentation>Target spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="TARGET_SPELL"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>Node captured</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NODE_CAPTURED"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="L"><xsd:annotation>
+				<xsd:documentation>Node lost</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NODE_LOST"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="X"><xsd:annotation>
+				<xsd:documentation>Unit lack of production</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_LACK_OF_PRODUCTION"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="Y"><xsd:annotation>
+				<xsd:documentation>Building lack of production</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BUILDING_LACK_OF_PRODUCTION"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="Z"><xsd:annotation>
+				<xsd:documentation>Spell lack of production</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SPELL_LACK_OF_PRODUCTION"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="unitAddBumpTypeID">
+	    <xsd:annotation>
+    		<xsd:documentation>When we try to add a unit, we can either add it in the city where it was
+constructed/summoned, bump it to the outlying squares, or we could fail to place it at all.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="C"><xsd:annotation>
+				<xsd:documentation>Added in constructing City</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CITY"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Bumped to outside city</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BUMPED"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>No room, unit lost</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NO_ROOM"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

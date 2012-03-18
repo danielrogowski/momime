@@ -92,7 +92,7 @@ public final class UnitUtils
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 * @return Unit definition
 	 */
-	final static Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
+	public final static Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
 		final CommonDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "initializeUnitSkills", unit.getUnitID ());
@@ -664,10 +664,8 @@ public final class UnitUtils
 	 */
 	public final static String listUnitURNs (final List<MemoryUnit> units)
 	{
-		String list = null;
+		String list = "";
 		if (units != null)
-		{
-			list = "";
 			for (final MemoryUnit thisUnit : units)
 			{
 				if (!list.equals (""))
@@ -675,8 +673,8 @@ public final class UnitUtils
 
 				list = list + thisUnit.getUnitURN ();
 			}
-		}
-		return list;
+
+		return "(" + list + ")";
 	}
 
 	/**
@@ -684,28 +682,57 @@ public final class UnitUtils
 	 * @param x X coordinate of location to check
 	 * @param y Y coordinate of location to check
 	 * @param plane Plane to check
-	 * @param movingPlayerID Player who is moving
+	 * @param exceptPlayerID Player who's units to not consider (can pass in 0 to test if there are units *at all* at this location)
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
-	 * @return Whether there are any alive units at this location belonging to someone other than movingPlayer
+	 * @return First unit we find at the requested location who belongs to someone other than the specified player
 	 */
-	public final static boolean anyAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int movingPlayerID, final Logger debugLogger)
+	public final static MemoryUnit findFirstAliveEnemyAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID, final Logger debugLogger)
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "anyAliveEnemiesAtLocation", new Integer [] {x, y, plane, movingPlayerID});
+		debugLogger.entering (UnitUtils.class.getName (), "findFirstAliveEnemyAtLocation", new Integer [] {x, y, plane, exceptPlayerID});
 
-		boolean found = false;
+		// The reason this is done separately from countAliveEnemiesAtLocation is because this routine can exit as
+		// soon as it finds the first matching unit, whereas countAliveEnemiesAtLocation always has to run over the entire list
+
+		MemoryUnit found = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
-		while ((!found) && (iter.hasNext ()))
+		while ((found == null) && (iter.hasNext ()))
 		{
 			final MemoryUnit thisUnit = iter.next ();
 
-			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () != movingPlayerID) && (thisUnit.getUnitLocation () != null) &&
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () != exceptPlayerID) && (thisUnit.getUnitLocation () != null) &&
 				(thisUnit.getUnitLocation ().getX () == x) && (thisUnit.getUnitLocation ().getY () == y) && (thisUnit.getUnitLocation ().getPlane () == plane))
 
-				found = true;
+				found = thisUnit;
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "anyAliveEnemiesAtLocation", found);
+		debugLogger.exiting (UnitUtils.class.getName (), "findFirstAliveEnemyAtLocation", found);
 		return found;
+	}
+
+	/**
+	 * @param units List of units to check
+	 * @param x X coordinate of location to check
+	 * @param y Y coordinate of location to check
+	 * @param plane Plane to check
+	 * @param exceptPlayerID Player who's units to not consider (can pass in 0 to count *all* units at this location)
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return Number of units that we find at the requested location who belongs to someone other than the specified player
+	 */
+	public final static int countAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID, final Logger debugLogger)
+	{
+		debugLogger.entering (UnitUtils.class.getName (), "countAliveEnemiesAtLocation", new Integer [] {x, y, plane, exceptPlayerID});
+
+		int count = 0;
+		for (final MemoryUnit thisUnit : units)
+		{
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () != exceptPlayerID) && (thisUnit.getUnitLocation () != null) &&
+				(thisUnit.getUnitLocation ().getX () == x) && (thisUnit.getUnitLocation ().getY () == y) && (thisUnit.getUnitLocation ().getPlane () == plane))
+
+				count++;
+		}
+
+		debugLogger.exiting (UnitUtils.class.getName (), "countAliveEnemiesAtLocation", count);
+		return count;
 	}
 
 	/**

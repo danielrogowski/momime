@@ -35,7 +35,6 @@ import momime.common.messages.servertoclient.v0_9_4.StartGameProgressStageID;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
@@ -66,6 +65,7 @@ import momime.server.messages.v0_9_4.ServerGridCell;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.RandomUtils;
+import momime.server.utils.SpellServerUtils;
 import momime.server.utils.UnitServerUtils;
 
 import com.ndg.map.areas.StringMapArea2DArray;
@@ -315,9 +315,13 @@ public final class PlayerMessageProcessing
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If initialStatus is an inappropriate value
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws PlayerNotFoundException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
+	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
+	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	private final static void createHeroes (final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger) throws MomException, RecordNotFoundException
+		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "createHeroes");
 
@@ -350,10 +354,12 @@ public final class PlayerMessageProcessing
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
  	 * @throws MomException If no races are defined for a particular plane
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	private final static void createStartingCities (final List<PlayerServerDetails> players,
 		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "createStartingCities");
 
@@ -719,22 +725,21 @@ public final class PlayerMessageProcessing
 	 * @param mom Thread running this session
 	 * @param onlyOnePlayerID If zero, will process start phase for all players; if specified will process start phase only for the specified player
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
-	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
-	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If an expected element cannot be found
-	 * @throws PlayerNotFoundException If the player who owns the unit or the onlyOnePlayerID cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	private final static void startPhase (final MomSessionThread mom, final int onlyOnePlayerID, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "startPhase", onlyOnePlayerID);
 
-		final MomGeneralPublicKnowledge gpk = (MomGeneralPublicKnowledge) mom.getGeneralPublicKnowledge ();
 		if (onlyOnePlayerID == 0)
-			mom.getSessionLogger ().info ("Start phase for everyone turn " + gpk.getTurnNumber () + "...");
+			mom.getSessionLogger ().info ("Start phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
 		else
-			mom.getSessionLogger ().info ("Start phase for turn " + gpk.getTurnNumber () + " - " + MultiplayerSessionServerUtils.findPlayerWithID
+			mom.getSessionLogger ().info ("Start phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + MultiplayerSessionServerUtils.findPlayerWithID
 				(mom.getPlayers (), onlyOnePlayerID, "startPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Give units their full movement back again
@@ -748,7 +753,7 @@ public final class PlayerMessageProcessing
 		MemoryGridCellUtils.blankBuildingsSoldThisTurn (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), debugLogger);
 
 		// Global production - only need to do a simple recalc on turn 1, with no accumulation and no city growth
-		if (gpk.getTurnNumber () > 1)
+		if (mom.getGeneralPublicKnowledge ().getTurnNumber () > 1)
 		{
 			throw new UnsupportedOperationException ("Start phase for turn >1 not yet written");
 		}
@@ -777,36 +782,36 @@ public final class PlayerMessageProcessing
 	public final static void switchToNextPlayer (final MomSessionThread mom, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final MomGeneralPublicKnowledge gpk = (MomGeneralPublicKnowledge) mom.getGeneralPublicKnowledge ();
-		debugLogger.entering (PlayerMessageProcessing.class.getName (), "switchToNextPlayer", new Integer [] {gpk.getTurnNumber (), gpk.getCurrentPlayerID ()});
+		debugLogger.entering (PlayerMessageProcessing.class.getName (), "switchToNextPlayer",
+			new Integer [] {mom.getGeneralPublicKnowledge ().getTurnNumber (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID ()});
 
 		// Find the current player
 		int playerIndex;
-		if (gpk.getCurrentPlayerID () == null)	// First turn
+		if (mom.getGeneralPublicKnowledge ().getCurrentPlayerID () == null)	// First turn
 			playerIndex = mom.getPlayers ().size () - 1;		// So we make sure we trip the turn number over
 		else
-			playerIndex = MultiplayerSessionUtils.indexOfPlayerWithID (mom.getPlayers (), gpk.getCurrentPlayerID (), "switchToNextPlayer");
+			playerIndex = MultiplayerSessionUtils.indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
 
 		// Find the next player
 		if (playerIndex >= mom.getPlayers ().size () - 1)
 		{
 			playerIndex = 0;
-			gpk.setTurnNumber (gpk.getTurnNumber () + 1);
+			mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
 		}
 		else
 			playerIndex++;
 
 		final PlayerServerDetails currentPlayer = mom.getPlayers ().get (playerIndex);
-		gpk.setCurrentPlayerID (currentPlayer.getPlayerDescription ().getPlayerID ());
+		mom.getGeneralPublicKnowledge ().setCurrentPlayerID (currentPlayer.getPlayerDescription ().getPlayerID ());
 
 		// Start phase for the new player
-		startPhase (mom, gpk.getCurrentPlayerID (), debugLogger);
+		startPhase (mom, mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), debugLogger);
 
 		// Tell everyone who the new current player is, and send each of them their New Turn Messages in the process
 		// NB. No NTMs yet because start phase after turn 1 not yet written, so this is a hack for now because we know there are no NTMs
 		final SetCurrentPlayerMessage msg = new SetCurrentPlayerMessage ();
-		msg.setTurnNumber (gpk.getTurnNumber ());
-		msg.setCurrentPlayerID (gpk.getCurrentPlayerID ());
+		msg.setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber ());
+		msg.setCurrentPlayerID (mom.getGeneralPublicKnowledge ().getCurrentPlayerID ());
 
 		for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 			if (thisPlayer.getPlayerDescription ().isHuman ())
@@ -824,7 +829,7 @@ public final class PlayerMessageProcessing
 
 		if (currentPlayer.getPlayerDescription ().isHuman ())
 		{
-			mom.getSessionLogger ().info ("Human turn " + gpk.getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
+			mom.getSessionLogger ().info ("Human turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
 			currentPlayer.getConnection ().sendMessageToClient (new EndOfContinuedMovementMessage ());
 		}
 		else
@@ -832,7 +837,90 @@ public final class PlayerMessageProcessing
 			throw new UnsupportedOperationException ("switchToNextPlayer for AI players not yet written");
 		}
 
-		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "switchToNextPlayer", new Integer [] {gpk.getTurnNumber (), gpk.getCurrentPlayerID ()});
+		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "switchToNextPlayer",
+			new Integer [] {mom.getGeneralPublicKnowledge ().getTurnNumber (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID ()});
+	}
+
+	/**
+	 * Processes the 'end phase' (for want of something better to call it), which happens at the end of each player's turn
+	 *
+	 * @param mom Thread running this session
+	 * @param onlyOnePlayerID If zero, will process start phase for all players; if specified will process start phase only for the specified player
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	private final static void endPhase (final MomSessionThread mom, final int onlyOnePlayerID, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		debugLogger.entering (PlayerMessageProcessing.class.getName (), "endPhase", onlyOnePlayerID);
+
+		if (onlyOnePlayerID == 0)
+			mom.getSessionLogger ().info ("End phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
+		else
+			mom.getSessionLogger ().info ("End phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + MultiplayerSessionServerUtils.findPlayerWithID
+				(mom.getPlayers (), onlyOnePlayerID, "endPhase").getPlayerDescription ().getPlayerName () + "...");
+
+		// Put mana into casting spells
+		for (final PlayerServerDetails player : mom.getPlayers ())
+			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
+				SpellServerUtils.progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+
+		// Kick off the next turn
+		mom.getSessionLogger ().info ("Kicking off next turn...");
+		switch (mom.getSessionDescription ().getTurnSystem ())
+		{
+			case ONE_PLAYER_AT_A_TIME:
+				switchToNextPlayer (mom, debugLogger);
+				break;
+
+			default:
+				throw new MomException ("endPhase encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
+		}
+
+		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "endPhase");
+	}
+
+	/**
+	 * Human player has clicked the next turn button, or AI player's turn has finished
+	 * @param mom Thread running this session
+	 * @param player Player who hit the next turn button
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void nextTurnButton (final MomSessionThread mom, final PlayerServerDetails player, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		debugLogger.entering (PlayerMessageProcessing.class.getName (), "nextTurnButton", player.getPlayerDescription ().getPlayerID ());
+
+		switch (mom.getSessionDescription ().getTurnSystem ())
+		{
+			case ONE_PLAYER_AT_A_TIME:
+				// In a one-player-at-a-time game, we need to verify that the correct player clicked Next Turn, and if all OK run their end phase and then switch to the next player
+				if (mom.getGeneralPublicKnowledge ().getCurrentPlayerID ().equals (player.getPlayerDescription ().getPlayerID ()))
+					endPhase (mom, player.getPlayerDescription ().getPlayerID (), debugLogger);
+				else
+				{
+					debugLogger.warning (player.getPlayerDescription ().getPlayerName () + " clicked Next Turn in one-at-a-time game when wasn't their turn");
+
+					final TextPopupMessage reply = new TextPopupMessage ();
+					reply.setText ("You clicked the Next Turn button when it wasn't your turn");
+					player.getConnection ().sendMessageToClient (reply);
+				}
+				break;
+
+			default:
+				throw new MomException ("nextTurnButton encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
+		}
+
+		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "nextTurnButton");
 	}
 
 	/**

@@ -31,6 +31,7 @@ import momime.common.messages.servertoclient.v0_9_4.UpdateOverlandMovementRemain
 import momime.common.messages.servertoclient.v0_9_4.UpdateOverlandMovementRemainingUnit;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessageData;
+import momime.common.messages.servertoclient.v0_9_4.UpdateUnitToAliveMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
@@ -243,6 +244,45 @@ public final class FogOfWarMidTurnChanges
 	}
 
 	/**
+	 * @param spell True spell to test
+	 * @param players List of players in the session
+	 * @param trueTerrain True terrain map
+	 * @param trueUnits True list of units
+	 * @param fogOfWarArea Area the player can/can't see, outside of FOW recalc
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return True if player can see this spell
+	 * @throws RecordNotFoundException If the unit that the spell is cast on, or tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 */
+	static final boolean canSeeSpellMidTurn (final MemoryMaintainedSpell spell, final List<PlayerServerDetails> players,
+		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final MapVolumeOfFogOfWarStates fogOfWarArea,
+		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws RecordNotFoundException, PlayerNotFoundException
+	{
+		final boolean canSee;
+
+		// Unit spell?
+		if (spell.getUnitURN () != null)
+		{
+			final MemoryUnit unit = UnitUtils.findUnitURN (spell.getUnitURN (), trueUnits, "canSeeSpellMidTurn", debugLogger);
+			canSee = canSeeUnitMidTurn (unit, players, trueTerrain, fogOfWarArea, db, sd);
+		}
+
+		// City spell?
+		else if (spell.getCityLocation () != null)
+			canSee = MomFogOfWarCalculations.canSeeMidTurn (fogOfWarArea.getPlane ().get (spell.getCityLocation ().getPlane ()).getRow ().get
+				(spell.getCityLocation ().getY ()).getCell ().get (spell.getCityLocation ().getX ()), sd.getFogOfWarSetting ().getUnits ());
+
+		// Overland enchantment
+		else
+			canSee = true;
+
+		return canSee;
+	}
+
+	/**
 	 * Adds a unit to the server's true memory, and checks who can see it - sending a message to update the client of any human players who can see it
 	 *
 	 * Heroes are added using this method during game startup - at which point they're added only on the server and they're off
@@ -255,22 +295,25 @@ public final class FogOfWarMidTurnChanges
 	 * @param combatLocation The location of the combat that this unit is being summoned into; null for anything other than combat summons
 	 * @param unitOwner Player who will own the new unit
 	 * @param initialStatus Initial status of the unit, typically ALIVE
-	 * @param session Dummy flag to control FOW updates until this is written properly
+	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Newly created unit
-	 * @throws MomException If initialStatus is an inappropriate value
+	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public final static MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final String unitID, final OverlandMapCoordinates locationToAddUnit, final OverlandMapCoordinates buildingsLocation, final OverlandMapCoordinates combatLocation,
-		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus,
-		final Integer session,
+		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
-		throws MomException, RecordNotFoundException
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addUnitOnServerAndClients", unitID);
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addUnitOnServerAndClients",
+			new String [] {unitOwner.getPlayerDescription ().getPlayerID ().toString (), unitID});
 
 		// There's a bunch of other unit statuses that don't make sense to use here - so worth checking this
 		if ((initialStatus != UnitStatusID.NOT_GENERATED) && (initialStatus != UnitStatusID.ALIVE))
@@ -298,35 +341,190 @@ public final class FogOfWarMidTurnChanges
 		// Add on server
 		// Even for heroes, we load in their default skill list - this is how heroes default skills are loaded during game startup
 		final MemoryUnit newUnit = UnitUtils.createMemoryUnit (unitID, gsk.getNextFreeUnitURN (), weaponGrade, startingExperience, true, db, debugLogger);
+		newUnit.setOwningPlayerID (unitOwner.getPlayerDescription ().getPlayerID ());
 
 		gsk.setNextFreeUnitURN (gsk.getNextFreeUnitURN () + 1);
-
-		newUnit.setOwningPlayerID (unitOwner.getPlayerDescription ().getPlayerID ());
-		newUnit.setStatus (initialStatus);
-
-		if (locationToAddUnit != null)
-		{
-			final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
-			unitLocation.setX (locationToAddUnit.getX ());
-			unitLocation.setY (locationToAddUnit.getY ());
-			unitLocation.setPlane (locationToAddUnit.getPlane ());
-
-			newUnit.setUnitLocation (unitLocation);
-		}
-
 		gsk.getTrueMap ().getUnit ().add (newUnit);
 
-		// What can the new unit see? (it may expand the unit owner's vision to see things that they couldn't previously)
-		if ((session != null) && (initialStatus.equals (UnitStatusID.ALIVE)) && (combatLocation == null))
-			throw new MomException ("addUnitOnServerAndClients: Functionality to check area new unit can see not yet written");
-
-		// Tell clients?
-		// Player list can be null, we use this for pre-adding units to the map before the fog of war has even been set up
-		if ((session != null) && (initialStatus.equals (UnitStatusID.ALIVE)))
-			throw new MomException ("addUnitOnServerAndClients: Functionality to check which players can see the new unit not yet written");
+		if (initialStatus == UnitStatusID.ALIVE)
+			updateUnitStatusToAliveOnServerAndClients (newUnit, locationToAddUnit, unitOwner, players, gsk.getTrueMap (), sd, db, debugLogger);
 
 		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "addUnitOnServerAndClients", newUnit.getUnitURN ());
 		return newUnit;
+	}
+
+	/**
+	 * When we summon a hero, we don't 'add' it, the unit object already exists - but we still need to perform similar updates
+	 * to addUnitOnServerAndClients to set the unit's location, see the area it can see, status and tell clients to update the same
+	 *
+	 * Although not written yet, this will also be used for bringing dead regular units back to life with the Raise Dead spell
+	 *
+	 * @param trueUnit The unit to set to alive
+	 * @param locationToAddUnit Location to add the new unit, must be filled in
+	 * @param unitOwner Player who will own the new unit, note the reason this has to be passed in separately is because the players list is allowed to be null
+	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final OverlandMapCoordinates locationToAddUnit,
+		final PlayerServerDetails unitOwner, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
+		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "updateUnitStatusToAliveOnServerAndClients", trueUnit.getUnitURN ());
+
+		// Update on server
+		final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+		unitLocation.setX (locationToAddUnit.getX ());
+		unitLocation.setY (locationToAddUnit.getY ());
+		unitLocation.setPlane (locationToAddUnit.getPlane ());
+
+		trueUnit.setUnitLocation (unitLocation);
+		trueUnit.setStatus (UnitStatusID.ALIVE);
+
+		// What can the new unit see? (it may expand the unit owner's vision to see things that they couldn't previously)
+		if ((players != null) && (trueUnit.getCombatLocation () == null))
+			FogOfWarProcessing.updateAndSendFogOfWar (trueMap, unitOwner, players, false, "updateUnitStatusToAliveOnServerAndClients", sd, db, debugLogger);
+
+		// Tell clients?
+		// Player list can be null, we use this for pre-adding units to the map before the fog of war has even been set up
+		if (players != null)
+		{
+			final AddUnitMessage addMsg = new AddUnitMessage ();
+			addMsg.setData (FogOfWarDuplication.createAddUnitMessage (trueUnit, db));
+
+			final UpdateUnitToAliveMessage updateMsg = new UpdateUnitToAliveMessage ();
+			updateMsg.setUnitLocation (unitLocation);
+			updateMsg.setUnitURN (trueUnit.getUnitURN ());
+
+			for (final PlayerServerDetails player : players)
+			{
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				if (canSeeUnitMidTurn (trueUnit, players, trueMap.getMap (), priv.getFogOfWar (), db, sd))
+				{
+					// Does the player already have the unit in their memory?
+					if (UnitUtils.findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), debugLogger) == null)
+					{
+						// Player doesn't know about unit, so add it
+						if (FogOfWarDuplication.copyUnit (trueUnit, priv.getFogOfWarMemory ().getUnit (), debugLogger))
+							if (player.getPlayerDescription ().isHuman ())
+								player.getConnection ().sendMessageToClient (addMsg);
+					}
+					else
+					{
+						// Player already knows about unit, so just update it to alive
+						if (FogOfWarDuplication.copyUnit (trueUnit, priv.getFogOfWarMemory ().getUnit (), debugLogger))
+							if (player.getPlayerDescription ().isHuman ())
+								player.getConnection ().sendMessageToClient (updateMsg);
+					}
+				}
+			}
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "updateUnitStatusToAliveOnServerAndClients");
+	}
+
+	/**
+	 * Checks who can see a maintained spell that already exists on the server, adding it into the memory
+	 * of anyone who can see it and also sending a message to update the client
+	 *
+	 * The reason we need this separate from addMaintainedSpellOnServerAndClients is for casting
+	 * overland city/unit spells for which we have to pick a target before the casting of the spell is "complete"
+	 *
+	 * Spells in this "cast-but-not-targetted" state exist on the server but not in player's memory or on clients, so when their target has been set, this method is then called
+	 *
+	 * @param trueSpell True spell to add
+	 * @param players List of players in the session
+	 * @param trueTerrain True terrain map
+	 * @param trueUnits True list of units
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If the unit that the spell is cast on, or tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public final static void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
+		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits,
+		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addExistingTrueMaintainedSpellToClients",
+			new String [] {new Integer (trueSpell.getCastingPlayerID ()).toString (), trueSpell.getSpellID ()});
+
+		// Build the message ready to send it to whoever can see the spell
+		final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
+		msg.setData (FogOfWarDuplication.createAddSpellMessage (trueSpell));
+
+		// Check which players can see the spell
+		for (final PlayerServerDetails player : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			if (canSeeSpellMidTurn (trueSpell, players, trueTerrain, trueUnits, priv.getFogOfWar (), db, sd, debugLogger))
+			{
+				// Update player's memory on server
+				if (FogOfWarDuplication.copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell (), debugLogger))
+
+					// Update on client
+					if (player.getPlayerDescription ().isHuman ())
+						player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "addExistingTrueMaintainedSpellToClients");
+	}
+
+	/**
+	 * @param gsk Server knowledge structure to add the spell to
+	 * @param castingPlayerID Player who cast the spell
+	 * @param spellID Which spell it is
+	 * @param unitURN Indicates which unit the spell is cast on; null for spells not cast on units
+	 * @param unitSkillID If a spell cast on a unit, indicates the specific skill that this spell grants the unit
+	 * @param castInCombat Whether this spell was cast in combat or not
+	 * @param cityLocation Indicates which city the spell is cast on; null foe spells not cast on cities
+	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If the unit that the spell is cast on, or tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public final static void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
+		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
+		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addMaintainedSpellOnServerAndClients",
+			new String [] {new Integer (castingPlayerID).toString (), spellID});
+
+		// First add on server
+		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
+		trueSpell.setCastingPlayerID (castingPlayerID);
+		trueSpell.setSpellID (spellID);
+		trueSpell.setUnitURN (unitURN);
+		trueSpell.setUnitSkillID (unitSkillID);
+		trueSpell.setCastInCombat (castInCombat);
+		trueSpell.setCityLocation (cityLocation);
+		trueSpell.setCitySpellEffectID (citySpellEffectID);
+
+		gsk.getTrueMap ().getMaintainedSpell ().add (trueSpell);
+
+		// Then let the other routine deal with updating player memory and the clients
+		addExistingTrueMaintainedSpellToClients (trueSpell, players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), db, sd, debugLogger);
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "addMaintainedSpellOnServerAndClients");
 	}
 
 	/**

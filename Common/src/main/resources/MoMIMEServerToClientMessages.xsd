@@ -230,25 +230,6 @@ client can't predict how many of what spell ranks and magic realms they need to 
 	
 <!-- Turn system -->
 
-	<xsd:complexType name="newTurnMessageData">
-	    <xsd:annotation>
-    		<xsd:documentation>Class used to each new turn message from the server to the client</xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="msgType" type="momimestoc:newTurnMessageTypeID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="otherPlayerID" type="mps:playerID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="oldPopulation" type="momimenewgame:cityPopulation"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="newPopulation" type="momimenewgame:cityPopulation"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="location" type="momimemsgs:overlandMapCoordinates"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="buildingOrUnitID" type="momimecommon:unitID"/>		<!-- Tied in to that constructing stores both in single field - should fix this -->
-			<xsd:element minOccurs="0" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="productionTypeID" type="momimecommon:productionTypeID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="otherUnitID" type="momimecommon:unitID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitAddBumpType" type="momimestoc:unitAddBumpTypeID"/>
-		</xsd:sequence>
-	</xsd:complexType>
-
 	<xsd:element name="addNewTurnMessagesMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this if additional messages are generated during a turn
@@ -259,7 +240,7 @@ client can't predict how many of what spell ranks and magic realms they need to 
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="expireMessages" type="xsd:boolean"/>
-						<xsd:element minOccurs="1" maxOccurs="unbounded" name="message" type="momimestoc:newTurnMessageData"/>
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="message" type="momimemsgs:newTurnMessageData"/>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -276,7 +257,7 @@ client can't predict how many of what spell ranks and magic realms they need to 
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="turnNumber" type="momimemsgs:turnNumber"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="expireMessages" type="xsd:boolean"/>
-						<xsd:element minOccurs="1" maxOccurs="unbounded" name="message" type="momimestoc:newTurnMessageData"/>
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="message" type="momimemsgs:newTurnMessageData"/>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -294,7 +275,7 @@ client can't predict how many of what spell ranks and magic realms they need to 
 						<xsd:element minOccurs="1" maxOccurs="1" name="turnNumber" type="momimemsgs:turnNumber"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="currentPlayerID" type="mps:playerID"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="expireMessages" type="xsd:boolean"/>
-						<xsd:element minOccurs="1" maxOccurs="unbounded" name="message" type="momimestoc:newTurnMessageData"/>
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="message" type="momimemsgs:newTurnMessageData"/>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -1355,80 +1336,6 @@ Used when units heal and gain experience at the start of a turn, and when units 
 			<xsd:enumeration value="FogOfWar"><xsd:annotation>
 				<xsd:documentation>Generating initial fog of war</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="GENERATING_INITIAL_FOG_OF_WAR"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="newTurnMessageTypeID">
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="P"><xsd:annotation>
-				<xsd:documentation>Population change</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="POPULATION_CHANGE"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="B"><xsd:annotation>
-				<xsd:documentation>Completed building</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="COMPLETED_BUILDING"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="U"><xsd:annotation>
-				<xsd:documentation>Completed unit</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="COMPLETED_UNIT"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="S"><xsd:annotation>
-				<xsd:documentation>Summoned unit</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="SUMMONED_UNIT"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="R"><xsd:annotation>
-				<xsd:documentation>Researched spell</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHED_SPELL"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="O"><xsd:annotation>
-				<xsd:documentation>Overland enchantment</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="OVERLAND_ENCHANTMENT"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="T"><xsd:annotation>
-				<xsd:documentation>Target spell</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="TARGET_SPELL"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="N"><xsd:annotation>
-				<xsd:documentation>Node captured</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="NODE_CAPTURED"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="L"><xsd:annotation>
-				<xsd:documentation>Node lost</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="NODE_LOST"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="X"><xsd:annotation>
-				<xsd:documentation>Unit lack of production</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_LACK_OF_PRODUCTION"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="Y"><xsd:annotation>
-				<xsd:documentation>Building lack of production</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BUILDING_LACK_OF_PRODUCTION"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="Z"><xsd:annotation>
-				<xsd:documentation>Spell lack of production</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="SPELL_LACK_OF_PRODUCTION"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="unitAddBumpTypeID">
-	    <xsd:annotation>
-    		<xsd:documentation>When we try to add a unit, we can either add it in the city where it was
-constructed/summoned, bump it to the outlying squares, or we could fail to place it at all.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="C"><xsd:annotation>
-				<xsd:documentation>Added in constructing City</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="CITY"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="B"><xsd:annotation>
-				<xsd:documentation>Bumped to outside city</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="BUMPED"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="N"><xsd:annotation>
-				<xsd:documentation>No room, unit lost</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="NO_ROOM"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

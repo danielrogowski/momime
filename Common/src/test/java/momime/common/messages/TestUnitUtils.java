@@ -1270,7 +1270,7 @@ public final class TestUnitUtils
 	public final void testListUnitURNs ()
 	{
 		// Test on null list
-		assertNull (UnitUtils.listUnitURNs (null));
+		assertEquals ("()", UnitUtils.listUnitURNs (null));
 
 		// Test on list with single unit
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -1278,7 +1278,7 @@ public final class TestUnitUtils
 		one.setUnitURN (1);
 		units.add (one);
 
-		assertEquals ("1", UnitUtils.listUnitURNs (units));
+		assertEquals ("(1)", UnitUtils.listUnitURNs (units));
 
 		// Test on list with multiple units
 		final MemoryUnit five = new MemoryUnit ();
@@ -1289,14 +1289,14 @@ public final class TestUnitUtils
 		three.setUnitURN (3);
 		units.add (three);
 
-		assertEquals ("1, 5, 3", UnitUtils.listUnitURNs (units));
+		assertEquals ("(1, 5, 3)", UnitUtils.listUnitURNs (units));
 	}
 
 	/**
-	 * Tests the anyAliveEnemiesAtLocation method
+	 * Tests the findFirstAliveEnemyAtLocation method
 	 */
 	@Test
-	public final void testAnyAliveEnemiesAtLocation ()
+	public final void testFindFirstAliveEnemyAtLocation ()
 	{
 		// Put into a list units that meet every criteria except one
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -1354,7 +1354,7 @@ public final class TestUnitUtils
 		u5.setUnitLocation (u5location);
 		units.add (u5);
 
-		assertFalse (UnitUtils.anyAliveEnemiesAtLocation (units, 2, 3, 1, 4, debugLogger));
+		assertNull (UnitUtils.findFirstAliveEnemyAtLocation (units, 2, 3, 1, 4, debugLogger));
 
 		// Now add one that actually matches
 		final OverlandMapCoordinates u6location = new OverlandMapCoordinates ();
@@ -1368,6 +1368,99 @@ public final class TestUnitUtils
 		u6.setUnitLocation (u6location);
 		units.add (u6);
 
-		assertTrue (UnitUtils.anyAliveEnemiesAtLocation (units, 2, 3, 1, 4, debugLogger));
+		assertEquals (u6, UnitUtils.findFirstAliveEnemyAtLocation (units, 2, 3, 1, 4, debugLogger));
+	}
+
+	/**
+	 * Tests the countAliveEnemiesAtLocation method
+	 */
+	@Test
+	public final void testCountAliveEnemiesAtLocation ()
+	{
+		// Put into a list units that meet every criteria except one
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		// Null location
+		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setOwningPlayerID (5);
+		u1.setStatus (UnitStatusID.ALIVE);
+		units.add (u1);
+
+		// Wrong location
+		final OverlandMapCoordinates u2location = new OverlandMapCoordinates ();
+		u2location.setX (2);
+		u2location.setY (3);
+		u2location.setPlane (0);
+
+		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setOwningPlayerID (5);
+		u2.setStatus (UnitStatusID.ALIVE);
+		u2.setUnitLocation (u2location);
+		units.add (u2);
+
+		// Wrong player (i.e. player matches)
+		final OverlandMapCoordinates u3location = new OverlandMapCoordinates ();
+		u3location.setX (2);
+		u3location.setY (3);
+		u3location.setPlane (1);
+
+		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setOwningPlayerID (4);
+		u3.setStatus (UnitStatusID.ALIVE);
+		u3.setUnitLocation (u3location);
+		units.add (u3);
+
+		// Null status
+		final OverlandMapCoordinates u4location = new OverlandMapCoordinates ();
+		u4location.setX (2);
+		u4location.setY (3);
+		u4location.setPlane (1);
+
+		final MemoryUnit u4 = new MemoryUnit ();
+		u4.setOwningPlayerID (5);
+		u4.setUnitLocation (u4location);
+		units.add (u4);
+
+		// Unit is dead
+		final OverlandMapCoordinates u5location = new OverlandMapCoordinates ();
+		u5location.setX (2);
+		u5location.setY (3);
+		u5location.setPlane (1);
+
+		final MemoryUnit u5 = new MemoryUnit ();
+		u5.setOwningPlayerID (5);
+		u5.setStatus (UnitStatusID.DEAD);
+		u5.setUnitLocation (u5location);
+		units.add (u5);
+
+		assertEquals (0, UnitUtils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4, debugLogger));
+
+		// Now add one that actually matches
+		final OverlandMapCoordinates u6location = new OverlandMapCoordinates ();
+		u6location.setX (2);
+		u6location.setY (3);
+		u6location.setPlane (1);
+
+		final MemoryUnit u6 = new MemoryUnit ();
+		u6.setOwningPlayerID (5);
+		u6.setStatus (UnitStatusID.ALIVE);
+		u6.setUnitLocation (u6location);
+		units.add (u6);
+
+		assertEquals (1, UnitUtils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4, debugLogger));
+
+		// Add second matching unit
+		final OverlandMapCoordinates u7location = new OverlandMapCoordinates ();
+		u7location.setX (2);
+		u7location.setY (3);
+		u7location.setPlane (1);
+
+		final MemoryUnit u7 = new MemoryUnit ();
+		u7.setOwningPlayerID (5);
+		u7.setStatus (UnitStatusID.ALIVE);
+		u7.setUnitLocation (u7location);
+		units.add (u7);
+
+		assertEquals (2, UnitUtils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4, debugLogger));
 	}
 }

@@ -130,6 +130,9 @@ public final class CommonDatabaseConstants
 	/** Special Housing setting */
 	public static final String VALUE_BUILDING_HOUSING = "BL02";
 
+	/** Marks the city where newly summoned units will appear */
+	public static final String VALUE_BUILDING_SUMMONING_CIRCLE = "BL98";
+
 	/** Wizard's fortress */
 	public static final String VALUE_BUILDING_FORTRESS = "BL99";
 
@@ -157,12 +160,25 @@ public final class CommonDatabaseConstants
 	/** Spells in the summoning section of the spell book */
 	public static final String SPELL_BOOK_SECTION_SUMMONING = "SC01";
 
+	/** Spells in the overland section of the spell book */
+	public static final String SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS = "SC02";
+
+	/** Spells in the city enchantments section of the spell book */
+	public static final String SPELL_BOOK_SECTION_CITY_ENCHANTMENTS = "SC03";
+
+	/** Spells in the unit enchantments section of the spell book */
+	public static final String SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS = "SC04";
+
+	/** Spells in the city curses section of the spell book */
+	public static final String SPELL_BOOK_SECTION_CITY_CURSES = "SC06";
+
+	/** Spells in the unit curses section of the spell book */
+	public static final String SPELL_BOOK_SECTION_UNIT_CURSES = "SC07";
+
 	// combat area effects
 
 	/** Crusade */
 	public static final String COMBAT_AREA_EFFECT_CRUSADE = "CSE158";
-
-	//public static final String VALUE_BUILDING_SUMMONING_CIRCLE               = "BL98";
 
 	//public static final String VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK          = "UA01";
 	//public static final String VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK         = "UA02";
@@ -179,12 +195,7 @@ public final class CommonDatabaseConstants
 
 	//public static final String VALUE_UNIT_SKILL_ID_CASTER_HERO               = "HS05";
 
-	//public static final String SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS      = "SC02";
-	//public static final String SPELL_BOOK_SECTION_CITY_ENCHANTMENTS          = "SC03";
-	//public static final String SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS          = "SC04";
 	//public static final String SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS        = "SC05";
-	//public static final String SPELL_BOOK_SECTION_CITY_CURSES                = "SC06";
-	//public static final String SPELL_BOOK_SECTION_UNIT_CURSES                = "SC07";
 
 	/**
 	 * Prevent instatiation of this class

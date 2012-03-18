@@ -2,9 +2,9 @@
 package momime.server.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -20,7 +20,15 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.UnitUtils;
+import momime.common.messages.v0_9_4.AvailableUnit;
+import momime.common.messages.v0_9_4.FogOfWarMemory;
+import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.OverlandMapCityData;
+import momime.common.messages.v0_9_4.OverlandMapCoordinates;
+import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.server.ServerTestData;
 import momime.server.database.JAXBContextCreator;
@@ -361,5 +369,230 @@ public final class TestUnitServerUtils
 		assertFalse (UnitServerUtils.doesUnitSpecialOrderResultInDeath (null));
 		assertFalse (UnitServerUtils.doesUnitSpecialOrderResultInDeath (UnitSpecialOrder.BUILD_ROAD));
 		assertTrue (UnitServerUtils.doesUnitSpecialOrderResultInDeath (UnitSpecialOrder.BUILD_CITY));
+	}
+
+	/**
+	 * Tests the findUnitURN method on a unit that does exist
+	 * @throws RecordNotFoundException If unit with requested URN is not found
+	 */
+	@Test
+	public final void testFindUnitURN () throws RecordNotFoundException
+	{
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryUnit unit = new MemoryUnit ();
+			unit.setOwningPlayerID (n);
+			unit.setUnitID ("UN00" + new Integer (n+1).toString ());
+			units.add (unit);
+		}
+
+		assertEquals (2, UnitServerUtils.findUnitWithPlayerAndID (units, 2, "UN003", debugLogger).getOwningPlayerID ());
+		assertNull (UnitServerUtils.findUnitWithPlayerAndID (units, 2, "UN002", debugLogger));
+	}
+
+	/**
+	 * Tests the canUnitBeAddedHere method
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 */
+	@Test
+	public final void testCanUnitBeAddedHere () throws IOException, JAXBException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		final List<String> emptySkillList = new ArrayList<String> ();
+
+		// Map
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+
+		// Lair here
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST);
+		terrainData.setMapFeatureID ("MF13");
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+
+		final AvailableUnit spearmen = new AvailableUnit ();
+		spearmen.setOwningPlayerID (2);
+		spearmen.setUnitID ("UN105");
+		UnitUtils.initializeUnitSkills (spearmen,  0, true, db, debugLogger);
+
+		final OverlandMapCoordinates addLocation = new OverlandMapCoordinates ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setPlane (1);
+
+		assertFalse (UnitServerUtils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger));
+
+		// Nothing here
+		terrainData.setMapFeatureID (null);
+		assertTrue (UnitServerUtils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger));
+
+		// Enemy city here
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (1);
+		cityData.setCityOwnerID (3);
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		assertFalse (UnitServerUtils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger));
+
+		// Our city here
+		cityData.setCityOwnerID (2);
+		assertTrue (UnitServerUtils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger));
+
+		// Enemy unit here
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (null);
+
+		final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+		unitLocation.setX (20);
+		unitLocation.setY (10);
+		unitLocation.setPlane (1);
+
+		final MemoryUnit unitInTheWay = UnitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db, debugLogger);
+		unitInTheWay.setOwningPlayerID (3);
+		unitInTheWay.setUnitLocation (unitLocation);
+
+		trueMap.getUnit ().add (unitInTheWay);
+
+		assertFalse (UnitServerUtils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger));
+
+		// Our units here, but space left
+		unitInTheWay.setOwningPlayerID (2);
+		assertTrue (UnitServerUtils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger));
+
+		// Our units here, space left, but cell is impassable to the type of unit we're trying to add
+		final AvailableUnit trireme = new AvailableUnit ();
+		trireme.setOwningPlayerID (2);
+		trireme.setUnitID ("UN016");
+		UnitUtils.initializeUnitSkills (trireme,  0, true, db, debugLogger);
+
+		assertFalse (UnitServerUtils.canUnitBeAddedHere (addLocation, trireme, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger));
+
+		// Our units have the cell full already
+		for (int n = 2; n <= sd.getUnitSetting ().getUnitsPerMapCell (); n++)
+		{
+			final OverlandMapCoordinates anotherUnitLocation = new OverlandMapCoordinates ();
+			anotherUnitLocation.setX (20);
+			anotherUnitLocation.setY (10);
+			anotherUnitLocation.setPlane (1);
+
+			final MemoryUnit anotherUnitInTheWay = UnitUtils.createMemoryUnit ("UN105", n, 0, 0, true, db, debugLogger);
+			anotherUnitInTheWay.setOwningPlayerID (2);
+			anotherUnitInTheWay.setUnitLocation (anotherUnitLocation);
+
+			trueMap.getUnit ().add (anotherUnitInTheWay);
+
+			if (n < sd.getUnitSetting ().getUnitsPerMapCell ())
+				assertTrue (UnitServerUtils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger));
+			else
+				assertFalse (UnitServerUtils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger));
+		}
+	}
+
+	/**
+	 * Tests the findNearestLocationWhereUnitCanBeAdded method
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 */
+	@Test
+	public final void testFindNearestLocationWhereUnitCanBeAdded () throws IOException, JAXBException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		// Map
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+
+		// Put regular tiles in a 1 radius (3x3 pattern)
+		for (int x = 19; x <= 21; x++)
+			for (int y = 9; y <= 11; y++)
+			{
+				final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+				terrainData.setTileTypeID (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST);
+				trueTerrain.getPlane ().get (1).getRow ().get (y).getCell ().get (x).setTerrainData (terrainData);
+			}
+
+		// Put 8 of our units in the middle
+		for (int n = 1; n < sd.getUnitSetting ().getUnitsPerMapCell (); n++)
+		{
+			final OverlandMapCoordinates anotherUnitLocation = new OverlandMapCoordinates ();
+			anotherUnitLocation.setX (20);
+			anotherUnitLocation.setY (10);
+			anotherUnitLocation.setPlane (1);
+
+			final MemoryUnit anotherUnitInTheWay = UnitUtils.createMemoryUnit ("UN105", n, 0, 0, true, db, debugLogger);
+			anotherUnitInTheWay.setOwningPlayerID (2);
+			anotherUnitInTheWay.setUnitLocation (anotherUnitLocation);
+
+			trueMap.getUnit ().add (anotherUnitInTheWay);
+		}
+
+		// Run test
+		final OverlandMapCoordinates desiredLocation = new OverlandMapCoordinates ();
+		desiredLocation.setX (20);
+		desiredLocation.setY (10);
+		desiredLocation.setPlane (1);
+
+		final UnitAddLocation centre = UnitServerUtils.findNearestLocationWhereUnitCanBeAdded (desiredLocation, "UN105", 2, trueMap, sd, db, debugLogger);
+		assertEquals (desiredLocation, centre.getUnitLocation ());
+		assertEquals (UnitAddBumpTypeID.CITY, centre.getBumpType ());
+
+		// Add a 9th unit in the middle
+		final OverlandMapCoordinates anotherUnitLocation = new OverlandMapCoordinates ();
+		anotherUnitLocation.setX (20);
+		anotherUnitLocation.setY (10);
+		anotherUnitLocation.setPlane (1);
+
+		final MemoryUnit anotherUnitInTheWay = UnitUtils.createMemoryUnit ("UN105", 9, 0, 0, true, db, debugLogger);
+		anotherUnitInTheWay.setOwningPlayerID (2);
+		anotherUnitInTheWay.setUnitLocation (anotherUnitLocation);
+
+		trueMap.getUnit ().add (anotherUnitInTheWay);
+
+		// Add an enemy unit above us
+		final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+		unitLocation.setX (20);
+		unitLocation.setY (9);
+		unitLocation.setPlane (1);
+
+		final MemoryUnit unitInTheWay = UnitUtils.createMemoryUnit ("UN105", 9, 0, 0, true, db, debugLogger);
+		unitInTheWay.setOwningPlayerID (3);
+		unitInTheWay.setUnitLocation (unitLocation);
+
+		trueMap.getUnit ().add (unitInTheWay);
+
+		// Add an enemy city above-right of us
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (1);
+		cityData.setCityOwnerID (3);
+		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setCityData (cityData);
+
+		// So now we should get bumped to the right...
+		final UnitAddLocation right = UnitServerUtils.findNearestLocationWhereUnitCanBeAdded (desiredLocation, "UN105", 2, trueMap, sd, db, debugLogger);
+		assertEquals (21, right.getUnitLocation ().getX ());
+		assertEquals (10, right.getUnitLocation ().getY ());
+		assertEquals (1, right.getUnitLocation ().getPlane ());
+		assertEquals (UnitAddBumpTypeID.BUMPED, right.getBumpType ());
+
+		// Set every tile in the 3x3 area to be a lair!
+		for (int x = 19; x <= 21; x++)
+			for (int y = 9; y <= 11; y++)
+				trueTerrain.getPlane ().get (1).getRow ().get (y).getCell ().get (x).getTerrainData ().setMapFeatureID ("MF13");
+
+		// Now we won't fit anywhere
+		final UnitAddLocation wontFit = UnitServerUtils.findNearestLocationWhereUnitCanBeAdded (desiredLocation, "UN105", 2, trueMap, sd, db, debugLogger);
+		assertNull (wontFit.getUnitLocation ());
+		assertEquals (UnitAddBumpTypeID.NO_ROOM, wontFit.getBumpType ());
 	}
 }

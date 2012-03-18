@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -41,6 +44,7 @@ import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.MapCoordinates;
 import com.ndg.map.areas.BooleanMapArea2DArray;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Server only class which contains all the code for generating a random overland map
@@ -1658,11 +1662,14 @@ public final class OverlandMapGenerator
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we encounter any records that can't be found in the cache
 	 * @throws MomException If the unit's skill list ends up containing the same skill twice
+	 * @throws PlayerNotFoundException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
+	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
+	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	private static final void fillSingleLairOrTowerWithMonsters (final MomSessionDescription sd, final OverlandMapCoordinates lairLocation, final String magicRealmLifeformTypeID,
 		final int monsterStrengthMin, final int monsterStrengthMax, final double powerProportion, final MomGeneralServerKnowledge gsk, final ServerDatabaseLookup db,
 		final PlayerServerDetails monsterPlayer, final Logger debugLogger)
-		throws RecordNotFoundException, MomException
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (OverlandMapGenerator.class.getName (), "fillSingleLairOrTowerWithMonsters", new String []
 			{CoordinatesUtils.overlandMapCoordinatesToString (lairLocation), magicRealmLifeformTypeID, new Integer (monsterStrengthMin).toString (), new Integer (monsterStrengthMax).toString (), new DecimalFormat ("0.000").format (powerProportion)});
@@ -1716,10 +1723,13 @@ public final class OverlandMapGenerator
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we encounter any records that can't be found in the cache
 	 * @throws MomException If the unit's skill list ends up containing the same skill twice
+	 * @throws PlayerNotFoundException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
+	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
+	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	public static final void fillNodesLairsAndTowersWithMonsters (final MomSessionDescription sd,
 		final MomGeneralServerKnowledge gsk, final ServerDatabaseLookup db, final PlayerServerDetails monsterPlayer, final Logger debugLogger)
-		throws RecordNotFoundException, MomException
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (OverlandMapGenerator.class.getName (), "fillNodesLairsAndTowersWithMonsters");
 

@@ -156,7 +156,7 @@ public final class MomServerUnitCalculations
 			resultsInAttack = MoveResultsInAttackTypeID.SCOUT;
 
 		// Lastly check for enemy units
-		else if (UnitUtils.anyAliveEnemiesAtLocation (units, x, y, towerPlane, movingPlayerID, debugLogger))
+		else if (UnitUtils.findFirstAliveEnemyAtLocation (units, x, y, towerPlane, movingPlayerID, debugLogger) != null)
 			resultsInAttack = MoveResultsInAttackTypeID.YES;
 		else
 			resultsInAttack = MoveResultsInAttackTypeID.NO;

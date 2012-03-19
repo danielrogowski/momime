@@ -1,6 +1,7 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -11,10 +12,14 @@ import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_4.BuildingPrerequisite;
+import momime.common.database.v0_9_4.RaceCannotBuild;
 import momime.common.messages.CoordinatesUtils;
+import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
@@ -24,7 +29,10 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.v0_9_4.AiBuildingTypeID;
+import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
+import momime.server.database.v0_9_4.Race;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.RandomUtils;
 
@@ -288,6 +296,109 @@ public final class CityAI
 				}
 
 		debugLogger.exiting (CityAI.class.getName (), "setOptionalFarmersInAllCities");
+	}
+
+	/**
+	 * AI player decides what to build in this city
+	 *
+	 * @param cityLocation Location of the city
+	 * @param cityData Info on the city
+	 * @param trueTerrain True overland terrain
+	 * @param trueBuildings True list of buildings
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
+	 */
+	static final void decideWhatToBuild (final OverlandMapCoordinates cityLocation, final OverlandMapCityData cityData,
+		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryBuilding> trueBuildings,
+		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws RecordNotFoundException
+	{
+		debugLogger.entering (CityAI.class.getName (), "decideWhatToBuild", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+
+		// Convert list of buildings that our race can't build into a string list, so its easier to search
+		final Race race = db.findRace (cityData.getCityRaceID (), "decideWhatToBuild");
+		final List<String> raceCannotBuild = new ArrayList<String> ();
+		for (final RaceCannotBuild cannotBuild : race.getRaceCannotBuild ())
+			raceCannotBuild.add (cannotBuild.getCannotBuildBuildingID ());
+
+		// Currently we can't build units or expand, so there's basically nothing to do other than build the buildings in the most logical order
+
+		// Once there are decisions to be made about 'does this city have enough defence' and 'do we need more gold' then the code
+		// will be able to make some intelligent choices about the types of buildings it needs more urgently
+
+		// Also this string is likely to be derived partially from the database e.g. an Expansionist AI player
+		// will have different build preferences than a Perfectionist AI player
+		final List<AiBuildingTypeID> buildingTypes = new ArrayList<AiBuildingTypeID> ();
+		buildingTypes.add (AiBuildingTypeID.GROWTH);
+		buildingTypes.add (AiBuildingTypeID.PRODUCTION);
+		buildingTypes.add (AiBuildingTypeID.RESEARCH);
+		buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
+		buildingTypes.add (AiBuildingTypeID.GOLD);
+		buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
+		buildingTypes.add (AiBuildingTypeID.UNITS);
+
+		boolean decided = false;
+
+		final Iterator<AiBuildingTypeID> buildingTypesIter = buildingTypes.iterator ();
+		while ((!decided) && (buildingTypesIter.hasNext ()))
+		{
+			final AiBuildingTypeID buildingType = buildingTypesIter.next ();
+
+			// List out all buildings, except those that:
+			// a) are of the wrong type
+			// b) we already have, or
+			// c) our race cannot build
+			// Keep buildings in the list even if we don't yet have the pre-requisites necessary to build them
+			final List<Building> buildingOptions = new ArrayList<Building> ();
+			for (final Building building : db.getBuildings ())
+				if ((building.getAiBuildingTypeID () == buildingType) && (!MemoryBuildingUtils.findBuilding (trueBuildings, cityLocation, building.getBuildingID (), debugLogger)) &&
+					(MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, trueBuildings, cityLocation, building, sd.getMapSize (), db, debugLogger)))
+
+					buildingOptions.add (building);
+
+			// Now step through the list of possible buildings until we find one we have all the pre-requisites for
+			// If we find one that we DON'T have all the pre-requisites for, then add the pre-requisites that we don't have but can build onto the end of the list
+			// In this way we can decide that we want e.g. a Wizards' Guild and this repeating loop will work out all the buildings that we need to build first in order to get it
+
+			// Use an index so we can add to the tail of the list as we go along
+			int buildingIndex = 0;
+			while ((!decided) && (buildingIndex < buildingOptions.size ()))
+			{
+				final Building thisBuilding = buildingOptions.get (buildingIndex);
+
+				if (MemoryBuildingUtils.meetsBuildingRequirements (trueBuildings, cityLocation, thisBuilding, debugLogger))
+				{
+					// Got one we can decide upon
+					cityData.setCurrentlyConstructingBuildingOrUnitID (thisBuilding.getBuildingID ());
+					decided = true;
+				}
+				else
+				{
+					// We want this, but we need to build something else first - find out what
+					// Note we don't need to check whether each prerequisite can itself be constructed, or for the right tile types, because
+					// canEventuallyConstructBuilding () above already checked all this over the entire prerequisite tree, so all we need to do is add them
+					for (final BuildingPrerequisite prereq : thisBuilding.getBuildingPrerequisite ())
+					{
+						final Building buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
+						if ((!buildingOptions.contains (buildingPrereq)) && (!MemoryBuildingUtils.findBuilding (trueBuildings, cityLocation, buildingPrereq.getBuildingID (), debugLogger)))
+							buildingOptions.add (buildingPrereq);
+					}
+
+					buildingIndex++;
+				}
+			}
+		}
+
+		// If no appropriate buildings at all then resort to Trade Gooods
+		if (!decided)
+			cityData.setCurrentlyConstructingBuildingOrUnitID (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS);
+
+		// Put this into the calling method, just to make this easier to test
+		// FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd, debugLogger);
+
+		debugLogger.exiting (CityAI.class.getName (), "decideWhatToBuild", cityData.getCurrentlyConstructingBuildingOrUnitID ());
 	}
 
 	/**

@@ -21,6 +21,7 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
@@ -104,15 +105,15 @@ public final class TestCityServerUtils
 
 		final OverlandMapTerrainData distance1terrain = new OverlandMapTerrainData ();
 		trueTerrain.getPlane ().get (0).getRow ().get (3).getCell ().get (2).setTerrainData (distance1terrain);
-		distance1terrain.setTileTypeID ("TT01");
+		distance1terrain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 		assertNotNull (CityServerUtils.validateCityConstruction (player, trueMap, cityLocation, "BL12", sd, db, debugLogger));
 
 		final OverlandMapTerrainData distance2terrain = new OverlandMapTerrainData ();
 		trueTerrain.getPlane ().get (0).getRow ().get (4).getCell ().get (2).setTerrainData (distance2terrain);
-		distance2terrain.setTileTypeID ("TT09");
+		distance2terrain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
 		assertNotNull (CityServerUtils.validateCityConstruction (player, trueMap, cityLocation, "BL12", sd, db, debugLogger));
 
-		distance1terrain.setTileTypeID ("TT09");
+		distance1terrain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
 		assertNull (CityServerUtils.validateCityConstruction (player, trueMap, cityLocation, "BL12", sd, db, debugLogger));
 
 		// Lizardmen can't build shipwrights' guilds

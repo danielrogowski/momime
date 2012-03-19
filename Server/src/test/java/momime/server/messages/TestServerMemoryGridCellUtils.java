@@ -8,11 +8,13 @@ import java.io.IOException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
@@ -70,7 +72,7 @@ public final class TestServerMemoryGridCellUtils
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID ("TT01");
+		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 
 		assertFalse (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
@@ -146,8 +148,8 @@ public final class TestServerMemoryGridCellUtils
 		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID ("TT01");
-		terrainData.setMapFeatureID ("MF12A");
+		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 
 		assertTrue (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}

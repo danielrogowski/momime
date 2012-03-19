@@ -7,10 +7,14 @@ import java.util.logging.Logger;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.SpellUtils;
+import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
+import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.database.ServerDatabaseLookup;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.utils.RandomUtils;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Methods for AI players making decisions about spells
@@ -28,7 +32,7 @@ public final class SpellAI
 	final static Spell chooseSpellToResearchAI (final List<Spell> spells, final String aiPlayerName, final Logger debugLogger)
 		throws MomException
 	{
-		debugLogger.entering (SpellAI.class.getName (), "chooseSpellToResearchAI", spells.size ());
+		debugLogger.entering (SpellAI.class.getName (), "chooseSpellToResearchAI", aiPlayerName);
 
 		String debugLogMessage = null;
 
@@ -64,10 +68,38 @@ public final class SpellAI
 		// Pick one at random
 		final Spell chosenSpell = spellsWithBestResearchOrder.get (RandomUtils.getGenerator ().nextInt (spellsWithBestResearchOrder.size ()));
 
-		debugLogger.finest ("MOMAI: " + aiPlayerName + " choosing which spell to research from " + debugLogMessage + ": Chose " + chosenSpell.getSpellID ());
-
 		debugLogger.exiting (SpellAI.class.getName (), "chooseSpellToResearchAI", chosenSpell.getSpellID ());
 		return chosenSpell;
+	}
+
+	/**
+	 * @param player AI player who needs to choose what to research
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
+	 * @throws MomException If there is an error in the logic
+	 */
+	final static void decideWhatToResearch (final PlayerServerDetails player, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws RecordNotFoundException, MomException
+	{
+		debugLogger.entering (SpellAI.class.getName (), "decideWhatToResearch", player.getPlayerDescription ().getPlayerName ());
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
+		final List<momime.common.database.v0_9_4.Spell> researchableSpells = SpellUtils.getSpellsForStatus
+			(priv.getSpellResearchStatus (), SpellResearchStatusID.RESEARCHABLE_NOW, db, debugLogger);
+
+		if (researchableSpells.size () >= 0)
+		{
+			final List<Spell> researchableServerSpells = new ArrayList<Spell> ();
+			for (final momime.common.database.v0_9_4.Spell spell : researchableSpells)
+				researchableServerSpells.add ((Spell) spell);
+
+			final Spell chosenSpell = chooseSpellToResearchAI (researchableServerSpells, player.getPlayerDescription ().getPlayerName (), debugLogger);
+			priv.setSpellIDBeingResearched (chosenSpell.getSpellID ());
+		}
+
+		debugLogger.exiting (SpellAI.class.getName (), "decideWhatToResearch", priv.getSpellIDBeingResearched ());
 	}
 
 	/**

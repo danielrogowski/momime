@@ -171,7 +171,8 @@ public final class MomCityCalculations
 	public static final boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation, final Building building,
 		final CoordinateSystem overlandMapCoordinateSystem, final Logger debugLogger)
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "buildingPassesTileTypeRequirements", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		debugLogger.entering (MomCityCalculations.class.getName (), "buildingPassesTileTypeRequirements",
+			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), building.getBuildingID ()});
 
 		// If there are no requirements then we're automatically fine
 		final boolean passes;

@@ -47,6 +47,7 @@ import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.MomSessionThread;
 import momime.server.ai.CityAI;
+import momime.server.ai.MomAI;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.calculations.MomServerSpellCalculations;
@@ -834,7 +835,9 @@ public final class PlayerMessageProcessing
 		}
 		else
 		{
-			throw new UnsupportedOperationException ("switchToNextPlayer for AI players not yet written");
+			mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
+			MomAI.aiPlayerTurn (currentPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			nextTurnButton (mom, currentPlayer, debugLogger);
 		}
 
 		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "switchToNextPlayer",

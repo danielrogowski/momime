@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
@@ -17,6 +19,7 @@ import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
@@ -239,5 +242,145 @@ public final class TestCityAI
 			default:
 				fail ("Optional farmers in city A must be 1 or 2");
 		}
+	}
+
+	/**
+	 * Tests the decideWhatToBuild method
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 */
+	@Test
+	public final void testDecideWhatToBuild () throws IOException, JAXBException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		// Map
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final List<MemoryBuilding> trueBuildings = new ArrayList<MemoryBuilding> ();
+
+		// Need certain types of terrain in order to be able to construct all building types
+		final OverlandMapTerrainData forest = new OverlandMapTerrainData ();
+		forest.setTileTypeID (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST);
+		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (19).setTerrainData (forest);
+
+		final OverlandMapTerrainData mountain = new OverlandMapTerrainData ();
+		mountain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (20).setTerrainData (mountain);
+
+		final OverlandMapTerrainData ocean = new OverlandMapTerrainData ();
+		ocean.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
+
+		// Set up city
+		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		cityLocation.setX (20);
+		cityLocation.setY (10);
+		cityLocation.setPlane (1);
+
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Orcs can build absolutely everything
+		// Sit in a loop adding every building that it decides upon until we get trade goods
+		// Then check everything was built in the right order afterwards
+		cityData.setCityRaceID ("RC09");
+		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
+		{
+			CityAI.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db, debugLogger);
+			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
+			{
+				final OverlandMapCoordinates buildingLocation = new OverlandMapCoordinates ();
+				buildingLocation.setX (20);
+				buildingLocation.setY (10);
+				buildingLocation.setPlane (1);
+
+				final MemoryBuilding building = new MemoryBuilding ();
+				building.setCityLocation (buildingLocation);
+				building.setBuildingID (cityData.getCurrentlyConstructingBuildingOrUnitID ());
+
+				trueBuildings.add (building);
+			}
+		}
+
+		assertEquals (31, trueBuildings.size ());
+		assertEquals ("BL32", trueBuildings.get (0).getBuildingID ());		// Growth - Try to build a Granary but can't, Builders' Hall is a prerequisite of it
+		assertEquals ("BL29", trueBuildings.get (1).getBuildingID ());		// Growth - Granary
+		assertEquals ("BL08", trueBuildings.get (2).getBuildingID ());		// Growth - Try to build a Farmers' Market but can't, Marketplace is a prerequisite of it, and Blacksmith is a prerequisite of that
+		assertEquals ("BL26", trueBuildings.get (3).getBuildingID ());		// Growth - Try to build a Farmers' Market but can't, Marketplace is a prerequisite of it
+		assertEquals ("BL30", trueBuildings.get (4).getBuildingID ());		// Growth - Farmer's Market
+		assertEquals ("BL15", trueBuildings.get (5).getBuildingID ());		// Production - Sawmill
+		assertEquals ("BL31", trueBuildings.get (6).getBuildingID ());		// Production - Foresters' Guild
+		assertEquals ("BL34", trueBuildings.get (7).getBuildingID ());		// Production - Miners' Guild
+		assertEquals ("BL09", trueBuildings.get (8).getBuildingID ());		// Production - Try to build an Animsts' Guild but can't, Stables is a prerequisite of it
+		assertEquals ("BL22", trueBuildings.get (9).getBuildingID ());		// Production - Try to build an Animsts' Guild but can't, Temple is a prerequisite of it, and Shrine is a prerequisite of that
+		assertEquals ("BL23", trueBuildings.get (10).getBuildingID ());		// Production - Try to build an Animsts' Guild but can't, Temple is a prerequisite of it
+		assertEquals ("BL10", trueBuildings.get (11).getBuildingID ());		// Production - Animsts' Guild
+		assertEquals ("BL16", trueBuildings.get (12).getBuildingID ());		// Production - Try to build a Mechanicians' Guild but can't, Library - Sages' Guild - University is a prerequisite of it
+		assertEquals ("BL17", trueBuildings.get (13).getBuildingID ());		// Production - Try to build a Mechanicians' Guild but can't, Sages' Guild - University is a prerequisite of it
+		assertEquals ("BL20", trueBuildings.get (14).getBuildingID ());		// Production - Try to build a Mechanicians' Guild but can't, University is a prerequisite of it
+		assertEquals ("BL33", trueBuildings.get (15).getBuildingID ());		// Production - Mechanicians' Guild
+		assertEquals ("BL19", trueBuildings.get (16).getBuildingID ());		// Research - Try to build an Wizards' Guild but can't, Alchemists' Guild is a prerequisite of it
+		assertEquals ("BL21", trueBuildings.get (17).getBuildingID ());		// Research - Wizards' Guild
+		assertEquals ("BL24", trueBuildings.get (18).getBuildingID ());		// Unrest+Magic Power - Parthenon
+		assertEquals ("BL25", trueBuildings.get (19).getBuildingID ());		// Unrest+Magic Power - Cathedral
+		assertEquals ("BL27", trueBuildings.get (20).getBuildingID ());		// Gold - Bank
+		assertEquals ("BL12", trueBuildings.get (21).getBuildingID ());		// Gold - Try to build an Merchants' Guild but can't, Ship Yard is a prerequisite of it, and Ship Wrights' Guild is a prerequisite of that
+		assertEquals ("BL13", trueBuildings.get (22).getBuildingID ());		// Gold - Try to build an Merchants' Guild but can't, Ship Yard is a prerequisite of it
+		assertEquals ("BL28", trueBuildings.get (23).getBuildingID ());		// Gold - Merchants' Guild
+		assertEquals ("BL18", trueBuildings.get (24).getBuildingID ());		// Unrest without Magic Power - Oracle
+		assertEquals ("BL03", trueBuildings.get (25).getBuildingID ());		// Units - Barracks
+		assertEquals ("BL04", trueBuildings.get (26).getBuildingID ());		// Units - Armoury
+		assertEquals ("BL05", trueBuildings.get (27).getBuildingID ());		// Units - Fighters' Guild
+		assertEquals ("BL06", trueBuildings.get (28).getBuildingID ());		// Units - Armourers' Guild
+		assertEquals ("BL07", trueBuildings.get (29).getBuildingID ());		// Units - War College
+		assertEquals ("BL11", trueBuildings.get (30).getBuildingID ());		// Units - Fantastic Stables
+
+		// Try again with Barbarians, who can't build Animsts' Guilds, Universities or Cathedrals
+		trueBuildings.clear ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCurrentlyConstructingBuildingOrUnitID (null);
+		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
+		{
+			CityAI.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db, debugLogger);
+			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
+			{
+				final OverlandMapCoordinates buildingLocation = new OverlandMapCoordinates ();
+				buildingLocation.setX (20);
+				buildingLocation.setY (10);
+				buildingLocation.setPlane (1);
+
+				final MemoryBuilding building = new MemoryBuilding ();
+				building.setCityLocation (buildingLocation);
+				building.setBuildingID (cityData.getCurrentlyConstructingBuildingOrUnitID ());
+
+				trueBuildings.add (building);
+			}
+		}
+
+		// The test here isn't so much *what* we now can't build, but rather the order we now choose to build them in and why, e.g.
+		// We now construct a Shrine+Temple later on, based on their own merits as producers of magic power+unrest - Orcs built them just so that they could get an Animists' Guild
+		// Even though we could build a Ship Wrights' Guild, there's no point in doing so, because we can't eventually get a Merchants' Guild from it because of the missing University+Bank
+		assertEquals (18, trueBuildings.size ());
+		assertEquals ("BL32", trueBuildings.get (0).getBuildingID ());		// Growth - Try to build a Granary but can't, Builders' Hall is a prerequisite of it
+		assertEquals ("BL29", trueBuildings.get (1).getBuildingID ());		// Growth - Granary
+		assertEquals ("BL08", trueBuildings.get (2).getBuildingID ());		// Growth - Try to build a Farmers' Market but can't, Marketplace is a prerequisite of it, and Blacksmith is a prerequisite of that
+		assertEquals ("BL26", trueBuildings.get (3).getBuildingID ());		// Growth - Try to build a Farmers' Market but can't, Marketplace is a prerequisite of it
+		assertEquals ("BL30", trueBuildings.get (4).getBuildingID ());		// Growth - Farmer's Market
+		assertEquals ("BL15", trueBuildings.get (5).getBuildingID ());		// Production - Sawmill
+		assertEquals ("BL31", trueBuildings.get (6).getBuildingID ());		// Production - Foresters' Guild
+		assertEquals ("BL34", trueBuildings.get (7).getBuildingID ());		// Production - Miners' Guild
+		assertEquals ("BL16", trueBuildings.get (8).getBuildingID ());		// Research - Library
+		assertEquals ("BL17", trueBuildings.get (9).getBuildingID ());		// Research - Sages' Guild
+		assertEquals ("BL22", trueBuildings.get (10).getBuildingID ());		// Unrest+Magic Power - Shrine
+		assertEquals ("BL23", trueBuildings.get (11).getBuildingID ());		// Unrest+Magic Power - Temple
+		assertEquals ("BL24", trueBuildings.get (12).getBuildingID ());		// Unrest+Magic Power - Parthenon
+		assertEquals ("BL03", trueBuildings.get (13).getBuildingID ());		// Units - Barracks
+		assertEquals ("BL04", trueBuildings.get (14).getBuildingID ());		// Units - Armoury
+		assertEquals ("BL05", trueBuildings.get (15).getBuildingID ());		// Units - Fighters' Guild
+		assertEquals ("BL06", trueBuildings.get (16).getBuildingID ());		// Units - Armourers' Guild
+		assertEquals ("BL19", trueBuildings.get (17).getBuildingID ());		// Units - Alchemists' Guild
 	}
 }

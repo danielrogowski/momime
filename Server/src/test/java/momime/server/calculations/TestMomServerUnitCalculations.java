@@ -33,6 +33,7 @@ import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.ServerTestData;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ServerDatabase;
 
@@ -239,7 +240,7 @@ public final class TestMomServerUnitCalculations
 			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db, debugLogger));
 
 		// Regular tile type
-		terrainData.setTileTypeID ("TT01");
+		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 
 		assertEquals (MoveResultsInAttackTypeID.NO, MomServerUnitCalculations.willMovingHereResultInAnAttack
 			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db, debugLogger));
@@ -264,7 +265,7 @@ public final class TestMomServerUnitCalculations
 
 		// Regular map feature
 		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, null);
-		terrainData.setTileTypeID ("TT01");
+		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 		terrainData.setMapFeatureID ("MF01");
 
 		assertEquals (MoveResultsInAttackTypeID.NO, MomServerUnitCalculations.willMovingHereResultInAnAttack
@@ -518,33 +519,33 @@ public final class TestMomServerUnitCalculations
 		final List<String> unitStackSkills = new ArrayList<String> ();
 
 		final MemoryUnit spearmen = UnitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db, debugLogger);
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (4, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (6, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT09", spells, db, debugLogger));
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (4, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (6, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger));
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (0, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (4, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
 
 		// Boat by itself
 		final MemoryUnit trireme = UnitUtils.createMemoryUnit ("UN036", 2, 0, 0, true, db, debugLogger);
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT06", spells, db, debugLogger));
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT03", spells, db, debugLogger));
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT02", spells, db, debugLogger));
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT06", spells, db, debugLogger));
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger));
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger));
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger));
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger));
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT98", spells, db, debugLogger));
 		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT99", spells, db, debugLogger));
 		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
 
 		// Non-corporeal unit by itself (can't use enchanted road)
 		final MemoryUnit magicSpirit = UnitUtils.createMemoryUnit ("UN155", 3, 0, 0, true, db, debugLogger);
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
@@ -552,29 +553,29 @@ public final class TestMomServerUnitCalculations
 		// Put a unit with path finding in the same stack - doesn't help boats or non-corporeal units
 		unitStackSkills.add ("US020");
 
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT09", spells, db, debugLogger));
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger));
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (0, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
 
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT06", spells, db, debugLogger));
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT03", spells, db, debugLogger));
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT02", spells, db, debugLogger));
-		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT06", spells, db, debugLogger));
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger));
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger));
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger));
+		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger));
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT98", spells, db, debugLogger));
 		assertNull (MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT99", spells, db, debugLogger));
 		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
 
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
@@ -583,30 +584,30 @@ public final class TestMomServerUnitCalculations
 		// Also this makes land units worse - they're now flying, so can't use the routes located by the path finder
 		unitStackSkills.add ("US023");
 
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (0, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
 
 		// Flying boat!  Flying boats become like any other flying unit and so CAN use enchanted road - tested that in the original MoM too
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (0, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
 
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
@@ -617,29 +618,29 @@ public final class TestMomServerUnitCalculations
 		wraithForm.setUnitSkillID ("SS181");
 		spells.add (wraithForm);
 
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
 
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (0, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (2, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
 
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT03", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT02", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT06", spells, db, debugLogger).intValue ());
-		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT09", spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db, debugLogger).intValue ());
+		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT98", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT99", spells, db, debugLogger).intValue ());
 		assertEquals (1, MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "FOW", spells, db, debugLogger).intValue ());
@@ -666,41 +667,41 @@ public final class TestMomServerUnitCalculations
 
 		final Map<String, Integer> spearmen = MomServerUnitCalculations.calculateDoubleMovementRatesForUnitStack (units, spells, db, debugLogger);
 		assertEquals (15, spearmen.size ());
-		assertEquals (6, spearmen.get ("TT01").intValue ());
-		assertEquals (6, spearmen.get ("TT02").intValue ());
-		assertEquals (4, spearmen.get ("TT03").intValue ());
-		assertEquals (2, spearmen.get ("TT04").intValue ());
-		assertEquals (6, spearmen.get ("TT05").intValue ());
-		assertEquals (2, spearmen.get ("TT06").intValue ());
-		assertEquals (4, spearmen.get ("TT07").intValue ());
-		assertEquals (4, spearmen.get ("TT10").intValue ());
+		assertEquals (6, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN).intValue ());
+		assertEquals (6, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_HILLS).intValue ());
+		assertEquals (4, spearmen.get (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST).intValue ());
+		assertEquals (2, spearmen.get (CommonDatabaseConstants.VALUE_TILE_TYPE_DESERT).intValue ());
+		assertEquals (6, spearmen.get (CommonDatabaseConstants.VALUE_TILE_TYPE_SWAMP).intValue ());
+		assertEquals (2, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS).intValue ());
+		assertEquals (4, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA).intValue ());
+		assertEquals (4, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER).intValue ());
 		assertEquals (2, spearmen.get ("TT12").intValue ());
 		assertEquals (4, spearmen.get ("TT13").intValue ());
 		assertEquals (6, spearmen.get ("TT14").intValue ());
-		assertEquals (4, spearmen.get ("TT15").intValue ());
+		assertEquals (4, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_LANDSIDE_RIVER_MOUTH).intValue ());
 		assertEquals (1, spearmen.get ("TT98").intValue ());
 		assertEquals (0, spearmen.get ("TT99").intValue ());
 		assertEquals (4, spearmen.get ("FOW").intValue ());
 
-		assertNull (spearmen.get ("TT08"));	// Just to prove that Map.get returns null for values not in the map
+		assertNull (spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_SHORE));	// Just to prove that Map.get returns null for values not in the map
 
 		// Put a mountaineer (any normal dwarven unit) in the stack, then whole stack gets benefit of the skill
 		units.add (UnitUtils.createMemoryUnit ("UN077", 2, 0, 0, true, db, debugLogger));
 
 		final Map<String, Integer> mountaineer = MomServerUnitCalculations.calculateDoubleMovementRatesForUnitStack (units, spells, db, debugLogger);
 		assertEquals (15, mountaineer.size ());
-		assertEquals (2, mountaineer.get ("TT01").intValue ());
-		assertEquals (2, mountaineer.get ("TT02").intValue ());
-		assertEquals (4, mountaineer.get ("TT03").intValue ());
-		assertEquals (2, mountaineer.get ("TT04").intValue ());
-		assertEquals (6, mountaineer.get ("TT05").intValue ());
-		assertEquals (2, mountaineer.get ("TT06").intValue ());
-		assertEquals (4, mountaineer.get ("TT07").intValue ());
-		assertEquals (4, mountaineer.get ("TT10").intValue ());
+		assertEquals (2, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN).intValue ());
+		assertEquals (2, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_HILLS).intValue ());
+		assertEquals (4, mountaineer.get (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST).intValue ());
+		assertEquals (2, mountaineer.get (CommonDatabaseConstants.VALUE_TILE_TYPE_DESERT).intValue ());
+		assertEquals (6, mountaineer.get (CommonDatabaseConstants.VALUE_TILE_TYPE_SWAMP).intValue ());
+		assertEquals (2, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS).intValue ());
+		assertEquals (4, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA).intValue ());
+		assertEquals (4, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER).intValue ());
 		assertEquals (2, mountaineer.get ("TT12").intValue ());
 		assertEquals (4, mountaineer.get ("TT13").intValue ());
 		assertEquals (2, mountaineer.get ("TT14").intValue ());
-		assertEquals (4, mountaineer.get ("TT15").intValue ());
+		assertEquals (4, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_LANDSIDE_RIVER_MOUTH).intValue ());
 		assertEquals (1, mountaineer.get ("TT98").intValue ());
 		assertEquals (0, mountaineer.get ("TT99").intValue ());
 		assertEquals (4, mountaineer.get ("FOW").intValue ());
@@ -721,21 +722,21 @@ public final class TestMomServerUnitCalculations
 
 		final Map<String, Integer> windWalking = MomServerUnitCalculations.calculateDoubleMovementRatesForUnitStack (units, spells, db, debugLogger);
 		assertEquals (18, windWalking.size ());
-		assertEquals (2, windWalking.get ("TT01").intValue ());
-		assertEquals (2, windWalking.get ("TT02").intValue ());
-		assertEquals (2, windWalking.get ("TT03").intValue ());
-		assertEquals (2, windWalking.get ("TT04").intValue ());
-		assertEquals (2, windWalking.get ("TT05").intValue ());
-		assertEquals (2, windWalking.get ("TT06").intValue ());
-		assertEquals (2, windWalking.get ("TT07").intValue ());
-		assertEquals (2, windWalking.get ("TT08").intValue ());
-		assertEquals (2, windWalking.get ("TT09").intValue ());
-		assertEquals (2, windWalking.get ("TT10").intValue ());
-		assertEquals (2, windWalking.get ("TT11").intValue ());
+		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN).intValue ());
+		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_HILLS).intValue ());
+		assertEquals (2, windWalking.get (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST).intValue ());
+		assertEquals (2, windWalking.get (CommonDatabaseConstants.VALUE_TILE_TYPE_DESERT).intValue ());
+		assertEquals (2, windWalking.get (CommonDatabaseConstants.VALUE_TILE_TYPE_SWAMP).intValue ());
+		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS).intValue ());
+		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA).intValue ());
+		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_SHORE).intValue ());
+		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN).intValue ());
+		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER).intValue ());
+		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_OCEANSIDE_RIVER_MOUTH).intValue ());
 		assertEquals (2, windWalking.get ("TT12").intValue ());
 		assertEquals (2, windWalking.get ("TT13").intValue ());
 		assertEquals (2, windWalking.get ("TT14").intValue ());
-		assertEquals (2, windWalking.get ("TT15").intValue ());
+		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_LANDSIDE_RIVER_MOUTH).intValue ());
 		assertEquals (2, windWalking.get ("TT98").intValue ());
 		assertEquals (0, windWalking.get ("TT99").intValue ());
 		assertEquals (2, windWalking.get ("FOW").intValue ());

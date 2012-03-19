@@ -1,6 +1,8 @@
 package momime.server.calculations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,9 +23,12 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
+import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseValues;
+import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
@@ -360,5 +365,98 @@ public final class TestMomServerCityCalculations
 
 		buildings.add (oracle);
 		assertEquals (4, MomServerCityCalculations.calculateCityScoutingRange (buildings, cityLocation, db, debugLogger));
+	}
+
+	/**
+	 * Tests the canEventuallyConstructBuilding method
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 */
+	@Test
+	public final void testCanEventuallyConstructBuilding () throws IOException, JAXBException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+
+		// Need certain types of terrain in order to be able to construct all building types
+		final OverlandMapTerrainData forest = new OverlandMapTerrainData ();
+		forest.setTileTypeID (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST);
+		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (19).setTerrainData (forest);
+
+		final OverlandMapTerrainData mountain = new OverlandMapTerrainData ();
+		mountain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (20).setTerrainData (mountain);
+
+		final OverlandMapTerrainData ocean = new OverlandMapTerrainData ();
+		ocean.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
+
+		// Set up city
+		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		cityLocation.setX (20);
+		cityLocation.setY (10);
+		cityLocation.setPlane (1);
+
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Orcs can build absolutely everything
+		cityData.setCityRaceID ("RC09");
+		for (final Building building : db.getBuildings ())
+			if ((!building.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)) &&
+				(!building.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)))
+
+				assertTrue (building.getBuildingID (), MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation, building, sd.getMapSize (), db, debugLogger));
+
+		// Barbarians can't build Universities
+		cityData.setCityRaceID ("RC01");
+		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL20", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+
+		// Barbarians can't build Banks, because they can't build Universities
+		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL27", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+
+		// Barbarians can't build Merchants' Guilds, because they can't build Banks, because they can't build Universities
+		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+
+		// Orcs can't build Ship Wrights' Guilds if there's no water
+		cityData.setCityRaceID ("RC09");
+		ocean.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL12", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+
+		// Orcs can't build Ship Yards if there's no water, because they can't build a Ship Wrights' Guild
+		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+
+		// Orcs can't build Merchants' Guilds if there's no water, because they can't build a Ship Yard, because they can't build a Ship Wrights' Guild
+		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+
+		// If we got a Ship Wrights' Guild and subsequently the water all dried up then we *can* then construct the other building types
+		// (Ok bad example, but similar with Sawmills + forests disappearing is definitely possible)
+		final OverlandMapCoordinates shipWrightsGuildLocation = new OverlandMapCoordinates ();
+		shipWrightsGuildLocation.setX (20);
+		shipWrightsGuildLocation.setY (10);
+		shipWrightsGuildLocation.setPlane (1);
+
+		final MemoryBuilding shipWrightsGuild = new MemoryBuilding ();
+		shipWrightsGuild.setCityLocation (shipWrightsGuildLocation);
+		shipWrightsGuild.setBuildingID ("BL12");
+
+		buildings.add (shipWrightsGuild);
+
+		assertTrue (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+		assertTrue (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
 	}
 }

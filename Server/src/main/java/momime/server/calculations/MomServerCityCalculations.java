@@ -9,6 +9,8 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
+import momime.common.database.v0_9_4.BuildingPrerequisite;
+import momime.common.database.v0_9_4.RaceCannotBuild;
 import momime.common.database.v0_9_4.RacePopulationTask;
 import momime.common.database.v0_9_4.RacePopulationTaskProduction;
 import momime.common.messages.CoordinatesUtils;
@@ -22,7 +24,9 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.server.database.ServerDatabaseLookup;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CitySize;
+import momime.server.database.v0_9_4.Race;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -242,7 +246,7 @@ public final class MomServerCityCalculations
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	public static final int calculateCityScoutingRange (final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final ServerDatabaseLookup db,  final Logger debugLogger) throws RecordNotFoundException
+		final OverlandMapCoordinates cityLocation, final ServerDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (MomServerCityCalculations.class.getName (), "calculateCityScoutingRange", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
 
@@ -259,6 +263,58 @@ public final class MomServerCityCalculations
 
 		debugLogger.exiting (MomServerCityCalculations.class.getName (), "calculateCityScoutingRange", result);
 		return result;
+	}
+
+	/**
+	 * Checks whether we will eventually (possibly after constructing various other buildings first) be able to construct the specified building
+	 * Human players construct buildings one at a time, but the AI routines look a lot further ahead, and so had issues where they AI would want to construct
+	 * a Merchants' Guild, which requires a Bank, which requires a University, but oops our race can't build Universities
+	 * So this routine is used by the AI to tell it, give up on the idea of ever constructing a Merchants' Guild because you'll never meet one of the lower requirements
+	 *
+	 * @param map Known terrain
+	 * @param buildings List of buildings that have already been constructed
+	 * @param cityLocation Location of the city to check
+	 * @param building Cache for the building that we want to construct
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return True if the surrounding terrain has one of the tile type options that we need to construct this building
+	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or one of the buildings involved
+	 */
+	public static final boolean canEventuallyConstructBuilding (final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
+		final OverlandMapCoordinates cityLocation, final Building building,
+		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws RecordNotFoundException
+	{
+		debugLogger.entering (MomServerCityCalculations.class.getName (), "canEventuallyConstructBuilding",
+			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), building.getBuildingID ()});
+
+		// Need to get the city race
+		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final Race race = db.findRace (cityData.getCityRaceID (), "canEventuallyConstructBuilding");
+
+		// Check any direct blocks to us constructing this building
+		boolean passes = MomCityCalculations.buildingPassesTileTypeRequirements (map, cityLocation, building, overlandMapCoordinateSystem, debugLogger);
+		final Iterator<RaceCannotBuild> iter = race.getRaceCannotBuild ().iterator ();
+		while ((passes) && (iter.hasNext ()))
+			if (iter.next ().getCannotBuildBuildingID ().equals (building.getBuildingID ()))
+				passes = false;
+
+		// Recursively check whether we can meet the requirements of each prerequisite
+		final Iterator<BuildingPrerequisite> recursiveIter = building.getBuildingPrerequisite ().iterator ();
+		while ((passes) && (recursiveIter.hasNext ()))
+		{
+			final Building thisBuilding = db.findBuilding (recursiveIter.next ().getPrerequisiteID (), "canEventuallyConstructBuilding");
+
+			// Don't check it is we've already got it - its possible, for example, for a sawmill to be built and then us lose the only forest tile, so while
+			// we don't have the prerequisites for it anymore, we still have the building
+			if (!MemoryBuildingUtils.findBuilding (buildings, cityLocation, thisBuilding.getBuildingID (), debugLogger))
+				if (!canEventuallyConstructBuilding (map, buildings, cityLocation, thisBuilding, overlandMapCoordinateSystem, db, debugLogger))
+					passes = false;
+		}
+
+		debugLogger.exiting (MomServerCityCalculations.class.getName (), "canEventuallyConstructBuilding", passes);
+		return passes;
 	}
 
 	/**

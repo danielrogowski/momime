@@ -1,4 +1,4 @@
-package momime.server.utils;
+package momime.common.utils;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;

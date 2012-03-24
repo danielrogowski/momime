@@ -1,4 +1,4 @@
-package momime.server.utils;
+package momime.common.utils;
 
 /**
  * Equivalents of my StringUtils unit in Delphi

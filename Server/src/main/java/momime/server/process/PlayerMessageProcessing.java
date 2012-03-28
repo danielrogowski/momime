@@ -10,7 +10,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -33,14 +32,11 @@ import momime.common.messages.servertoclient.v0_9_4.StartGameMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameProgressStageID;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
@@ -48,12 +44,9 @@ import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.MomSessionThread;
 import momime.server.ai.CityAI;
 import momime.server.ai.MomAI;
-import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.calculations.MomServerSpellCalculations;
 import momime.server.database.ServerDatabaseLookup;
-import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.PickFreeSpell;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.Wizard;
@@ -62,14 +55,10 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_4.ServerGridCell;
-import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.RandomUtils;
-import momime.server.utils.SpellServerUtils;
 import momime.server.utils.UnitServerUtils;
 
-import com.ndg.map.areas.StringMapArea2DArray;
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -78,7 +67,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
- * Methods for any significant message processing that isn't done in the message implementations
+ * Methods for any significant message processing to do with game startup and the turn system that isn't done in the message implementations
  */
 public final class PlayerMessageProcessing
 {
@@ -341,173 +330,6 @@ public final class PlayerMessageProcessing
 		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "createHeroes");
 	}
 
-	/**
-	 * Creates the starting cities for each Wizard and Raiders
-	 *
-	 * This happens BEFORE we initialize each players' fog of war (of course... without their cities they wouldn't be able to see much of the map!)
-	 * and so we don't need to send any messages out to anyone here, whether to add the city itself, buildings or units - just add everything to the true map
-	 *
-	 * @param players List of players in the session
-	 * @param gsk Server knowledge data structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
-	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
- 	 * @throws MomException If no races are defined for a particular plane
-	 * @throws PlayerNotFoundException If we can't find the player who owns the city
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 */
-	private final static void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
-	{
-		debugLogger.entering (PlayerMessageProcessing.class.getName (), "createStartingCities");
-
-		final int totalFoodBonusFromBuildings = MomServerCityCalculations.calculateTotalFoodBonusFromBuildings (db, debugLogger);
-
-		// Allocate a race to each continent of land for raider cities
-		final List<StringMapArea2DArray> continentalRace = OverlandMapServerUtils.decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getMapSize (), db, debugLogger);
-
-		// Now create cities for each player
-		for (final PlayerServerDetails thisPlayer : players)
-		{
-			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-
-			// How many cities?
-			final int numberOfCities;
-			if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
-				numberOfCities = 1;
-
-			else if (ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))
-				numberOfCities = sd.getDifficultyLevel ().getRaiderCityCount ();
-
-			else
-				numberOfCities = 0;	// For monsters
-
-			for (int cityNo = 0; cityNo < numberOfCities; cityNo++)
-			{
-				final int plane;
-				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
-					plane = PlayerPickServerUtils.startingPlaneForWizard (ppk.getPick (), db, debugLogger);
-				else
-					// Raiders just pick a random plane
-					plane = db.getPlanes ().get (RandomUtils.getGenerator ().nextInt (db.getPlanes ().size ())).getPlaneNumber ();
-
-				// Pick location
-				final OverlandMapCoordinates cityLocation = CityAI.chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db, debugLogger);
-				if (cityLocation == null)
-					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
-
-				final ServerGridCell cityCell = (ServerGridCell) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-				final OverlandMapCityData city = new OverlandMapCityData ();
-				cityCell.setCityData (city);
-
-				// Set the city race and population
-				city.setCityOwnerID (thisPlayer.getPlayerDescription ().getPlayerID ());
-				city.setOptionalFarmers (0);
-
-				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
-				{
-					final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) thisPlayer.getTransientPlayerPrivateKnowledge ();
-
-					city.setCityPopulation (sd.getDifficultyLevel ().getWizardCityStartSize () * 1000);
-					city.setCityRaceID (priv.getFirstCityRaceID ());
-				}
-				else
-				{
-					// Randomize population of raider cities
-					city.setCityPopulation ((sd.getDifficultyLevel ().getRaiderCityStartSizeMin () +
-						RandomUtils.getGenerator ().nextInt (sd.getDifficultyLevel ().getRaiderCityStartSizeMax () - sd.getDifficultyLevel ().getRaiderCityStartSizeMin () + 1)) * 1000);
-
-					// Raiders have a special population cap that prevents cities expanding by more than a certain value
-					// See strategy guide p426
-					cityCell.setRaiderCityAdditionalPopulationCap (city.getCityPopulation () + (sd.getDifficultyLevel ().getRaiderCityGrowthCap () * 1000));
-
-					// Have a good chance of just picking the continental race ID
-					if (RandomUtils.getGenerator ().nextInt (100) < sd.getMapSize ().getContinentalRaceChance ())
-					{
-						final String raceID = continentalRace.get (plane).get (cityLocation);
-						if (raceID == null)
-							throw new MomException ("createStartingCities: Tried to create Raider city with Continental race, but this tile has no continental race");
-
-						city.setCityRaceID (raceID);
-					}
-					else
-						// Pick totally random race
-						city.setCityRaceID (PlayerPickServerUtils.chooseRandomRaceForPlane (plane, db, debugLogger));
-				}
-
-				// Pick a name for the city
-				city.setCityName (OverlandMapServerUtils.generateCityName (gsk, db.findRace (city.getCityRaceID (), "createStartingCities")));
-
-				// Do initial calculations on the city
-				MomServerCityCalculations.calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db, debugLogger);
-
-				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
-
-				city.setNumberOfRebels (MomCityCalculations.calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (),
-					cityLocation, priv.getTaxRateID (), db, debugLogger).getFinalTotal ());
-
-				MomServerCityCalculations.ensureNotTooManyOptionalFarmers (city, debugLogger);
-
-				// Set default production
-				city.setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-
-				// Add starting buildings
-				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
-				{
-					// Wizards always get the same buildings (this also adds their Fortress & Summoning Circle)
-					for (final Building thisBuilding : db.getBuildings ())
-						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
-						{
-							final OverlandMapCoordinates buildingCoords = new OverlandMapCoordinates ();
-							buildingCoords.setX (cityLocation.getX ());
-							buildingCoords.setY (cityLocation.getY ());
-							buildingCoords.setPlane (cityLocation.getPlane ());
-
-							final MemoryBuilding wizardBuilding = new MemoryBuilding ();
-							wizardBuilding.setBuildingID (thisBuilding.getBuildingID ());
-							wizardBuilding.setCityLocation (buildingCoords);
-							gsk.getTrueMap ().getBuilding ().add (wizardBuilding);
-						}
-				}
-				else
-				{
-					// Raiders buildings' depend on the city size
-					for (final Building thisBuilding : db.getBuildings ())
-						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
-							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
-						{
-							final OverlandMapCoordinates buildingCoords = new OverlandMapCoordinates ();
-							buildingCoords.setX (cityLocation.getX ());
-							buildingCoords.setY (cityLocation.getY ());
-							buildingCoords.setPlane (cityLocation.getPlane ());
-
-							final MemoryBuilding raiderBuilding = new MemoryBuilding ();
-							raiderBuilding.setBuildingID (thisBuilding.getBuildingID ());
-							raiderBuilding.setCityLocation (buildingCoords);
-							gsk.getTrueMap ().getBuilding ().add (raiderBuilding);
-						}
-				}
-
-				// Add starting units
-				for (final Unit thisUnit : db.getUnits ())
-					if ((thisUnit.getUnitRaceID () != null) && (thisUnit.getFreeAtStartCount () != null) && (thisUnit.getUnitRaceID ().equals (city.getCityRaceID ())))
-						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
-						{
-							final OverlandMapCoordinates unitCoords = new OverlandMapCoordinates ();
-							unitCoords.setX (cityLocation.getX ());
-							unitCoords.setY (cityLocation.getY ());
-							unitCoords.setPlane (cityLocation.getPlane ());
-
-							FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
-						}
-			}
-		}
-
-		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "createStartingCities");
-	}
 
 	/**
 	 * If all players have chosen their wizards and, if necessary, custom picks, then sends message to tell everyone to start
@@ -655,7 +477,7 @@ public final class PlayerMessageProcessing
 			// Create cities
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_CITIES, debugLogger);
 			mom.getSessionLogger ().info ("Creating starting cities...");
-			createStartingCities (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			CityProcessing.createStartingCities (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
 
 			// Now we've created starting cities, we can figure out the initial fog of war area that each player can see
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.GENERATING_INITIAL_FOG_OF_WAR, debugLogger);
@@ -756,7 +578,12 @@ public final class PlayerMessageProcessing
 		// Global production - only need to do a simple recalc on turn 1, with no accumulation and no city growth
 		if (mom.getGeneralPublicKnowledge ().getTurnNumber () > 1)
 		{
-			throw new UnsupportedOperationException ("Start phase for turn >1 not yet written");
+			MomServerResourceCalculations.recalculateGlobalProductionValues (onlyOnePlayerID, true, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+				mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+
+			// Do this AFTER calculating and accumulating production, so checking for units dying due to insufficient rations happens before city populations might change
+			CityProcessing.growCitiesAndProgressConstructionProjects (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
+				mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
 		}
 
 		// Now need to do one final recalc to take into account
@@ -870,7 +697,7 @@ public final class PlayerMessageProcessing
 		// Put mana into casting spells
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
-				SpellServerUtils.progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+				SpellProcessing.progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
 
 		// Kick off the next turn
 		mom.getSessionLogger ().info ("Kicking off next turn...");

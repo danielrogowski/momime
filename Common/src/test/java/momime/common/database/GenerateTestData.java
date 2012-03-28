@@ -861,6 +861,7 @@ public final class GenerateTestData
 		final Building animistsGuild = new Building ();
 		animistsGuild.setBuildingID (ANIMISTS_GUILD);
 		animistsGuild.setBuildingUnrestReduction (1);
+		animistsGuild.setProductionCost (300);
 		buildings.add (animistsGuild);
 
 		final Building shipWrightsGuild = new Building ();

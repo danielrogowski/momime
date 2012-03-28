@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabaseLookup;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
@@ -123,6 +125,86 @@ public final class TestMemoryBuildingUtils
 		}
 
 		assertTrue (MemoryBuildingUtils.findBuilding (buildingsList, createCityLocation (0), "BL02", debugLogger));
+	}
+
+	/**
+	 * Tests the destroyBuilding method with an empty list
+	 * @throws RecordNotFoundException If we can't find the requested building
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testDestroyBuilding_EmptyList () throws RecordNotFoundException
+	{
+		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
+
+		MemoryBuildingUtils.destroyBuilding (buildingsList, createCityLocation (0), "BL01", debugLogger);
+	}
+
+	/**
+	 * Tests the destroyBuilding method with the wrong building ID
+	 * @throws RecordNotFoundException If we can't find the requested building
+	 */
+	public final void testDestroyBuilding_WrongBuildingID () throws RecordNotFoundException
+	{
+		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
+		final MemoryBuilding building = new MemoryBuilding ();
+		building.setBuildingID ("BL01");
+		building.setCityLocation (createCityLocation (0));
+		buildingsList.add (building);
+
+		MemoryBuildingUtils.destroyBuilding (buildingsList, createCityLocation (0), "BL02", debugLogger);
+	}
+
+	/**
+	 * Tests the destroyBuilding method with the wrong location
+	 * @throws RecordNotFoundException If we can't find the requested building
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testDestroyBuilding_WrongLocation () throws RecordNotFoundException
+	{
+		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
+		final MemoryBuilding building = new MemoryBuilding ();
+		building.setBuildingID ("BL01");
+		building.setCityLocation (createCityLocation (0));
+		buildingsList.add (building);
+
+		MemoryBuildingUtils.destroyBuilding (buildingsList, createCityLocation (1), "BL01", debugLogger);
+	}
+
+	/**
+	 * Tests the destroyBuilding method with only one entry in the list
+	 * @throws RecordNotFoundException If we can't find the requested building
+	 */
+	@Test
+	public final void testDestroyBuilding_SingleEntry () throws RecordNotFoundException
+	{
+		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
+		final MemoryBuilding building = new MemoryBuilding ();
+		building.setBuildingID ("BL01");
+		building.setCityLocation (createCityLocation (0));
+		buildingsList.add (building);
+
+		MemoryBuildingUtils.destroyBuilding (buildingsList, createCityLocation (0), "BL01", debugLogger);
+	}
+
+	/**
+	 * Tests the destroyBuilding method with two entries in the list
+	 * @throws RecordNotFoundException If we can't find the requested building
+	 */
+	@Test
+	public final void testDestroyBuilding_TwoEntries () throws RecordNotFoundException
+	{
+		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
+		for (int n = 1; n <= 2; n++)
+		{
+			final MemoryBuilding building = new MemoryBuilding ();
+			building.setBuildingID ("BL0" + n);
+			building.setCityLocation (createCityLocation (0));
+			buildingsList.add (building);
+		}
+
+		MemoryBuildingUtils.destroyBuilding (buildingsList, createCityLocation (0), "BL02", debugLogger);
+		assertEquals (1, buildingsList.size ());
+		assertEquals ("BL01", buildingsList.get (0).getBuildingID ());
 	}
 
 	/**
@@ -507,6 +589,52 @@ public final class TestMemoryBuildingUtils
 	}
 
 	/**
+	 * Tests the isBuildingAPrerequisiteFor method
+	 */
+	@Test
+	public final void testIsBuildingAPrerequisiteFor ()
+	{
+		// Set up dummy XML definitions for couple of building types
+		final List<Building> dbBuildings = new ArrayList<Building> ();
+		final Building dbBuildingOne = new Building ();
+		dbBuildingOne.setBuildingID ("BL01");
+		final BuildingPrerequisite prereq = new BuildingPrerequisite ();
+		prereq.setPrerequisiteID ("BL02");
+		dbBuildingOne.getBuildingPrerequisite ().add (prereq);
+		dbBuildings.add (dbBuildingOne);
+
+		final Building dbBuildingTwo = new Building ();
+		dbBuildingTwo.setBuildingID ("BL02");
+		dbBuildings.add (dbBuildingTwo);
+
+		// Set up dummy XML definitions for couple of unit types
+		final List<Unit> dbUnits = new ArrayList<Unit> ();
+		final Unit dbUnitOne = new Unit ();
+		dbUnitOne.setUnitID ("UN001");
+		final UnitPrerequisite prerequ = new UnitPrerequisite ();
+		prerequ.setPrerequisiteID ("BL01");
+		dbUnitOne.getUnitPrerequisite ().add (prerequ);
+		dbUnits.add (dbUnitOne);
+
+		final Unit dbUnitTwo = new Unit ();
+		dbUnitTwo.setUnitID ("UN002");
+		dbUnits.add (dbUnitTwo);
+
+		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, dbUnits, null, null, null, null, dbBuildings, null, null);
+
+		// Building tests
+		assertTrue (MemoryBuildingUtils.isBuildingAPrerequisiteFor ("BL02", "BL01", db, debugLogger));
+		assertFalse (MemoryBuildingUtils.isBuildingAPrerequisiteFor ("BL01", "BL02", db, debugLogger));
+
+		// Unit tests
+		assertTrue (MemoryBuildingUtils.isBuildingAPrerequisiteFor ("BL01", "UN001", db, debugLogger));
+		assertFalse (MemoryBuildingUtils.isBuildingAPrerequisiteFor ("BL01", "UN002", db, debugLogger));
+
+		// Test obscure code that doesn't exist
+		assertFalse (MemoryBuildingUtils.isBuildingAPrerequisiteFor ("X", "Y", db, debugLogger));
+	}
+
+	/**
 	 * Tests the experienceFromBuildings method, where the only buildings present do not grant experience
 	 * @throws RecordNotFoundException If we encounter a building that can't be found in the DB
 	 */
@@ -860,5 +988,80 @@ public final class TestMemoryBuildingUtils
 
 		// Do test
 		assertEquals (10, MemoryBuildingUtils.totalBonusProductionPerPersonFromBuildings (memBuildings, createCityLocation (0), "PT01", "RE01", db, debugLogger));
+	}
+
+	/**
+	 * Tests the findBuildingConsumption method
+	 * @throws MomException If we find a building consumption that isn't a multiple of 2
+	 */
+	@Test
+	public final void testFindBuildingConsumption () throws MomException
+	{
+		final Building building = new Building ();
+
+		final BuildingPopulationProductionModifier production = new BuildingPopulationProductionModifier ();
+		production.setProductionTypeID ("RE01");
+		production.setDoubleAmount (3);
+		building.getBuildingPopulationProductionModifier ().add (production);
+
+		final BuildingPopulationProductionModifier consumption = new BuildingPopulationProductionModifier ();
+		consumption.setProductionTypeID ("RE02");
+		consumption.setDoubleAmount (-4);
+		building.getBuildingPopulationProductionModifier ().add (consumption);
+
+		final BuildingPopulationProductionModifier percentage = new BuildingPopulationProductionModifier ();
+		percentage.setProductionTypeID ("RE03");
+		percentage.setPercentageBonus (50);
+		building.getBuildingPopulationProductionModifier ().add (percentage);
+
+		final BuildingPopulationProductionModifier population = new BuildingPopulationProductionModifier ();
+		population.setProductionTypeID ("RE04");
+		population.setPopulationTaskID ("PT01");
+		population.setDoubleAmount (-4);
+		building.getBuildingPopulationProductionModifier ().add (population);
+
+		// Production that isn't even listed
+		assertEquals (0, MemoryBuildingUtils.findBuildingConsumption (building, "RE05", debugLogger));
+
+		// Production
+		assertEquals (0, MemoryBuildingUtils.findBuildingConsumption (building, "RE01", debugLogger));
+
+		// Percentage bonus
+		assertEquals (0, MemoryBuildingUtils.findBuildingConsumption (building, "RE03", debugLogger));
+
+		// Population consumption
+		assertEquals (0, MemoryBuildingUtils.findBuildingConsumption (building, "RE04", debugLogger));
+
+		// Consumption
+		assertEquals (2, MemoryBuildingUtils.findBuildingConsumption (building, "RE02", debugLogger));
+	}
+
+	/**
+	 * Tests the findBuildingConsumption method on an invalid consumption because it isn't a multiple of 2
+	 * @throws MomException If we find a building consumption that isn't a multiple of 2
+	 */
+	@Test(expected=MomException.class)
+	public final void testFindBuildingConsumption_Invalid () throws MomException
+	{
+		final Building building = new Building ();
+
+		final BuildingPopulationProductionModifier consumption = new BuildingPopulationProductionModifier ();
+		consumption.setProductionTypeID ("RE02");
+		consumption.setDoubleAmount (-5);
+		building.getBuildingPopulationProductionModifier ().add (consumption);
+
+		MemoryBuildingUtils.findBuildingConsumption (building, "RE02", debugLogger);
+	}
+
+	/**
+	 * Tests the goldFromSellingBuilding method
+	 * @throws RecordNotFoundException If one of the buildings we try to test with can't be found in the test data
+	 */
+	@Test
+	public final void testGoldFromSellingBuilding () throws RecordNotFoundException
+	{
+		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		assertEquals (100, MemoryBuildingUtils.goldFromSellingBuilding (db.findBuilding (GenerateTestData.ANIMISTS_GUILD, "testGoldFromSellingBuilding")));
+		assertEquals (0, MemoryBuildingUtils.goldFromSellingBuilding (db.findBuilding (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, "testGoldFromSellingBuilding")));
 	}
 }

@@ -217,6 +217,27 @@ public final class TestCommonDatabaseLookup
 	}
 
 	/**
+	 * Tests the getProductionTypes method
+	 */
+	@Test
+	public final void testGetProductionTypes ()
+	{
+		final List<ProductionType> productionTypes = new ArrayList<ProductionType> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final ProductionType newProductionType = new ProductionType ();
+			newProductionType.setProductionTypeID ("RE0" + n);
+			productionTypes.add (newProductionType);
+		}
+
+		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, productionTypes, null, null, null, null, null, null, null, null, null, null, null, null, null);
+
+		assertEquals (3, db.getProductionTypes ().size ());
+		for (int n = 1; n <= 3; n++)
+			assertEquals ("RE0" + n, db.getProductionTypes ().get (n - 1).getProductionTypeID ());
+	}
+
+	/**
 	 * Tests the findProductionType method to find a productionType ID that does exist
 	 * @throws RecordNotFoundException If we can't find it
 	 */

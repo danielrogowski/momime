@@ -13,6 +13,7 @@ import javax.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -26,13 +27,19 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.ServerTestData;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseLookup;
 import momime.server.database.v0_9_4.ServerDatabase;
+import momime.server.process.resourceconsumer.IMomResourceConsumer;
+import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
+import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
+import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
 
 import org.junit.Test;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -266,5 +273,151 @@ public final class TestMomServerResourceCalculations
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, priv.getResourceValue ().get (5).getProductionTypeID ());
 		assertEquals (6, priv.getResourceValue ().get (5).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (5).getAmountStored ());
+	}
+
+	/**
+	 * Tests the listConsumersOfProductionType method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testListConsumersOfProductionType () throws Exception
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		// Modify wizards' guild type of consumption so we can test all 3 types in one run
+		final BuildingPopulationProductionModifier wizardsGuildConsumption = db.findBuilding ("BL21", "testListConsumersOfProductionType").getBuildingPopulationProductionModifier ().get (1);
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, wizardsGuildConsumption.getProductionTypeID ());
+		wizardsGuildConsumption.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, null, null, null);
+		players.add (player);
+
+		// Cities used below
+		final OverlandMapCityData ourCity = new OverlandMapCityData ();
+		ourCity.setCityOwnerID (2);
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (ourCity);
+
+		final OverlandMapCityData enemyCity = new OverlandMapCityData ();
+		enemyCity.setCityOwnerID (3);
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setCityData (enemyCity);
+
+		// Unit with wrong type of consumption
+		final MemoryUnit warlocks = new MemoryUnit ();
+		warlocks.setUnitID ("UN065");
+		warlocks.setStatus (UnitStatusID.ALIVE);
+		warlocks.setOwningPlayerID (2);
+		trueMap.getUnit ().add (warlocks);
+
+		// Unit with right type of consumption
+		final MemoryUnit gargoyles = new MemoryUnit ();
+		gargoyles.setUnitID ("UN157");
+		gargoyles.setStatus (UnitStatusID.ALIVE);
+		gargoyles.setOwningPlayerID (2);
+		trueMap.getUnit ().add (gargoyles);
+
+		// Unit with wrong owner
+		final MemoryUnit gargoylesOtherPlayer = new MemoryUnit ();
+		gargoylesOtherPlayer.setUnitID ("UN157");
+		gargoylesOtherPlayer.setStatus (UnitStatusID.ALIVE);
+		gargoylesOtherPlayer.setOwningPlayerID (3);
+		trueMap.getUnit ().add (gargoylesOtherPlayer);
+
+		// Unit with wrong status
+		final MemoryUnit gargoylesOtherStatus = new MemoryUnit ();
+		gargoylesOtherStatus.setUnitID ("UN157");
+		gargoylesOtherStatus.setStatus (UnitStatusID.DEAD);
+		gargoylesOtherStatus.setOwningPlayerID (2);
+		trueMap.getUnit ().add (gargoylesOtherStatus);
+
+		// Building with wrong type of consumption
+		final OverlandMapCoordinates parthenonLocation = new OverlandMapCoordinates ();
+		parthenonLocation.setX (20);
+		parthenonLocation.setY (10);
+		parthenonLocation.setPlane (1);
+
+		final MemoryBuilding parthenon = new MemoryBuilding ();
+		parthenon.setBuildingID ("BL24");
+		parthenon.setCityLocation (parthenonLocation);
+		trueMap.getBuilding ().add (parthenon);
+
+		// Building with right type of consumption
+		final OverlandMapCoordinates wizardsGuildLocation = new OverlandMapCoordinates ();
+		wizardsGuildLocation.setX (20);
+		wizardsGuildLocation.setY (10);
+		wizardsGuildLocation.setPlane (1);
+
+		final MemoryBuilding wizardsGuild = new MemoryBuilding ();
+		wizardsGuild.setBuildingID ("BL21");
+		wizardsGuild.setCityLocation (wizardsGuildLocation);
+		trueMap.getBuilding ().add (wizardsGuild);
+
+		// Building with wrong owner
+		final OverlandMapCoordinates wizardsGuildEnemyCityLocation = new OverlandMapCoordinates ();
+		wizardsGuildEnemyCityLocation.setX (21);
+		wizardsGuildEnemyCityLocation.setY (10);
+		wizardsGuildEnemyCityLocation.setPlane (1);
+
+		final MemoryBuilding wizardsGuildEnemyCity = new MemoryBuilding ();
+		wizardsGuildEnemyCity.setBuildingID ("BL21");
+		wizardsGuildEnemyCity.setCityLocation (wizardsGuildEnemyCityLocation);
+		trueMap.getBuilding ().add (wizardsGuildEnemyCity);
+
+		// All spells have same type of consumption, but can test with a spell that doesn't have any consumption at all
+		final MemoryMaintainedSpell entangle = new MemoryMaintainedSpell ();
+		entangle.setSpellID ("SP033");
+		entangle.setCastingPlayerID (2);
+		trueMap.getMaintainedSpell ().add (entangle);
+
+		// Spell with right type of consumption
+		final MemoryMaintainedSpell natureAwareness = new MemoryMaintainedSpell ();
+		natureAwareness.setSpellID ("SP034");
+		natureAwareness.setCastingPlayerID (2);
+		trueMap.getMaintainedSpell ().add (natureAwareness);
+
+		// Spell with wrong owner
+		final MemoryMaintainedSpell natureAwarenessOtherPlayer = new MemoryMaintainedSpell ();
+		natureAwarenessOtherPlayer.setSpellID ("SP034");
+		natureAwarenessOtherPlayer.setCastingPlayerID (3);
+		trueMap.getMaintainedSpell ().add (natureAwarenessOtherPlayer);
+
+		// Run test
+		final List<IMomResourceConsumer> consumptions = MomServerResourceCalculations.listConsumersOfProductionType
+			(player, players, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, trueMap, db, debugLogger);
+
+		assertEquals (3, consumptions.size ());
+
+		assertEquals (MomResourceConsumerUnit.class, consumptions.get (0).getClass ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, consumptions.get (0).getProductionTypeID ());
+		assertEquals (5, consumptions.get (0).getConsumptionAmount ());
+		assertEquals (player, consumptions.get (0).getPlayer ());
+		assertEquals (gargoyles, ((MomResourceConsumerUnit) consumptions.get (0)).getUnit ());
+
+		assertEquals (MomResourceConsumerBuilding.class, consumptions.get (1).getClass ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, consumptions.get (1).getProductionTypeID ());
+		assertEquals (3, consumptions.get (1).getConsumptionAmount ());
+		assertEquals (player, consumptions.get (1).getPlayer ());
+		assertEquals (wizardsGuild, ((MomResourceConsumerBuilding) consumptions.get (1)).getBuilding ());
+
+		assertEquals (MomResourceConsumerSpell.class, consumptions.get (2).getClass ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, consumptions.get (2).getProductionTypeID ());
+		assertEquals (7, consumptions.get (2).getConsumptionAmount ());
+		assertEquals (player, consumptions.get (2).getPlayer ());
+		assertEquals (natureAwareness, ((MomResourceConsumerSpell) consumptions.get (2)).getSpell ());
 	}
 }

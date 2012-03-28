@@ -1,5 +1,7 @@
 package momime.server.calculations;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -11,13 +13,16 @@ import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_4.EnforceProductionID;
 import momime.common.database.v0_9_4.SpellUpkeep;
 import momime.common.database.v0_9_4.UnitUpkeep;
+import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.ResourceValueUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
+import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
@@ -29,9 +34,16 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
+import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
+import momime.server.process.resourceconsumer.IMomResourceConsumer;
+import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
+import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
+import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
+import momime.server.utils.RandomUtils;
 import momime.server.utils.UnitServerUtils;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -181,6 +193,154 @@ public final class MomServerResourceCalculations
 	}
 
 	/**
+	 * Find everything that this player has that uses the specified type of consumption
+	 *
+	 * @param player Player whose productions we need to check
+	 * @param players List of players in the session
+	 * @param productionTypeID Production type to look for
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return List of all things this player has that consume this type of resource
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws RecordNotFoundException If the unitID, buildingID or spellID doesn't exist
+	 * @throws MomException If we find a building consumption that isn't a multiple of 2
+	 */
+	static final List<IMomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+		final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		debugLogger.entering (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething",
+			new String [] {player.getPlayerDescription ().getPlayerID ().toString (), productionTypeID});
+
+		final List<IMomResourceConsumer> consumers = new ArrayList<IMomResourceConsumer> ();
+
+		// Units
+		for (final MemoryUnit thisUnit : trueMap.getUnit ())
+			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+			{
+				final int consumptionAmount = UnitUtils.getModifiedUpkeepValue (thisUnit, productionTypeID, players, db, debugLogger);
+				if (consumptionAmount > 0)
+					consumers.add (new MomResourceConsumerUnit (player, productionTypeID, consumptionAmount, thisUnit));
+			}
+
+		// Buildings
+		for (final MemoryBuilding thisBuilding : trueMap.getBuilding ())
+		{
+			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (thisBuilding.getCityLocation ().getPlane ()).getRow ().get
+				(thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ()).getCityData ();
+
+			if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+			{
+				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
+				final int consumptionAmount = MemoryBuildingUtils.findBuildingConsumption (building, productionTypeID, debugLogger);
+				if (consumptionAmount > 0)
+					consumers.add (new MomResourceConsumerBuilding (player, productionTypeID, consumptionAmount, thisBuilding));
+			}
+		}
+
+		// Spells
+		for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
+			if (thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ())
+			{
+				final Spell spell = db.findSpell (thisSpell.getSpellID (), "listConsumersOfProductionType");
+
+				boolean found = false;
+				final Iterator<SpellUpkeep> upkeepIter = spell.getSpellUpkeep ().iterator ();
+				while ((!found) && (upkeepIter.hasNext ()))
+				{
+					final SpellUpkeep upkeep = upkeepIter.next ();
+					if (upkeep.getProductionTypeID ().equals (productionTypeID))
+					{
+						found = true;
+						if (upkeep.getUpkeepValue () > 0)
+							consumers.add (new MomResourceConsumerSpell (player, productionTypeID, upkeep.getUpkeepValue (), thisSpell));
+					}
+				}
+			}
+
+		debugLogger.exiting (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething");
+		return consumers;
+	}
+
+	/**
+	 * Searches through the production amounts to see if any which aren't allowed to go below zero are - if they are, we have to kill/sell something
+	 *
+	 * @param player Player whose productions we need to check
+	 * @param players List of players in the session
+	 * @param enforceType Type of production enforcement to check
+	 * @param addOnStoredAmount True if OK for the per turn production amount to be negative as long as we have some in reserve (e.g. ok to make -5 gold per turn if we have 1000 gold already); False if per turn must be positive
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return True if had to sell something, false if all production OK
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	private static final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+		final EnforceProductionID enforceType, final boolean addOnStoredAmount,
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		debugLogger.entering (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething",
+			new String [] {player.getPlayerDescription ().getPlayerID ().toString (), enforceType.toString ()});
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
+		// Search through different types of production looking for ones matching the required enforce type
+		boolean found = false;
+		final Iterator<ProductionType> productionTypeIter = db.getProductionTypes ().iterator ();
+		while ((!found) && (productionTypeIter.hasNext ()))
+		{
+			final ProductionType productionType = productionTypeIter.next ();
+			if (enforceType.equals (productionType.getEnforceProduction ()))
+			{
+				// Check how much of this type of production the player has
+				int valueToCheck = ResourceValueUtils.findAmountPerTurnForProductionType (priv.getResourceValue (), productionType.getProductionTypeID (), debugLogger);
+
+				if (addOnStoredAmount)
+					valueToCheck = valueToCheck + ResourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), productionType.getProductionTypeID (), debugLogger);
+
+				if (valueToCheck < 0)
+				{
+					final List<IMomResourceConsumer> consumers = listConsumersOfProductionType (player, players, productionType.getProductionTypeID (), trueMap, db, debugLogger);
+
+					// Want random choice to be weighted, e.g. if something consumes 4 gold then it should be 4x more likely to be chosen than something that only consumes 1 gold
+					int totalConsumption = 0;
+					for (final IMomResourceConsumer consumer : consumers)
+						totalConsumption = totalConsumption + consumer.getConsumptionAmount ();
+
+					int randomConsumption = RandomUtils.getGenerator ().nextInt (totalConsumption);
+					IMomResourceConsumer chosenConsumer = null;
+					final Iterator<IMomResourceConsumer> consumerIter = consumers.iterator ();
+					while ((chosenConsumer == null) && (consumerIter.hasNext ()))
+					{
+						final IMomResourceConsumer thisConsumer = consumerIter.next ();
+						if (randomConsumption < thisConsumer.getConsumptionAmount ())
+							chosenConsumer = thisConsumer;
+						else
+							randomConsumption = randomConsumption - thisConsumer.getConsumptionAmount ();
+					}
+
+					if (chosenConsumer == null)
+						throw new MomException ("findInsufficientProductionAndSellSomething failed to pick random weighted consumer from total consumption " + totalConsumption);
+
+					// Kill off the unit/building/spell and generate a new turn message about it
+					found = true;
+					chosenConsumer.kill (trueMap, players, sd, db, debugLogger);
+				}
+			}
+		}
+
+		debugLogger.exiting (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething", found);
+		return found;
+	}
+
+	/**
 	 * Recalculates the amount of production of all types that we make each turn and sends the updated figures to the player(s)
 	 *
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
@@ -212,9 +372,23 @@ public final class MomServerResourceCalculations
 				// If during the start phase, use these per turn production amounts as the amounts to add to the stored totals
 				if (duringStartPhase)
 				{
-					throw new UnsupportedOperationException ("recalculateGlobalProductionValues with duringStartPhase = true not yet implemented");
+					// Search for a type of per-turn production that we're not producing enough of - currently this is only Rations
+					// However (and to keep this consistent with how we handle insufficient stored Gold) there are too many interdependencies with what
+					// may happen when we sell buildings, e.g. if we sell a Bank we don't only save its maintenance cost, the population then produces less gold
+					// So the only safe way to do this is to recalculate ALL the productions, from scratch, every time we sell something!
+					while (findInsufficientProductionAndSellSomething (player, players, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO, false, trueMap, sd, db, debugLogger));
+
+					// Now do the same for stored production
+					while (findInsufficientProductionAndSellSomething (player, players, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO, true, trueMap, sd, db, debugLogger));
+
+					// Per turn production amounts are now fine, so do the accumulation and effect calculations
+					throw new UnsupportedOperationException ("recalculateGlobalProductionValues for turn > 1 not finished yet");
+
+					// Continue casting spells
 				}
 				else if (player.getPlayerDescription ().isHuman ())
+
+					// No need to send values during start phase, since the start phase calls recalculateGlobalProductionValues () for a second time with DuringStartPhase set to False
 					sendGlobalProductionValues  (player, 0, debugLogger);
 			}
 

@@ -12,6 +12,7 @@ import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.MemoryCombatAreaEffectUtils;
 import momime.common.messages.MemoryMaintainedSpellUtils;
 import momime.common.messages.UnitUtils;
+import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.v0_9_4.AddUnitMessageData;
 import momime.common.messages.v0_9_4.CombatMapCoordinates;
@@ -23,8 +24,8 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.utils.CompareUtils;
 import momime.server.database.ServerDatabaseLookup;
-import momime.server.utils.CompareUtils;
 
 /**
  * Methods for comparing and copying data from one source against a destination container
@@ -462,6 +463,21 @@ final class FogOfWarDuplication
 		destination.setCastInCombat (source.isCastInCombat ());
 		destination.setCityLocation (source.getCityLocation ());
 		destination.setCitySpellEffectID (source.getCitySpellEffectID ());
+
+		return destination;
+	}
+
+	/**
+	 * @param source True CAE details held on server
+	 * @return CAE creation message to send to client
+	 */
+	final static AddCombatAreaEffectMessageData createAddCombatAreaEffectMessage (final MemoryCombatAreaEffect source)
+	{
+		final AddCombatAreaEffectMessageData destination = new AddCombatAreaEffectMessageData ();
+
+		destination.setCastingPlayerID (source.getCastingPlayerID ());
+		destination.setCombatAreaEffectID (source.getCombatAreaEffectID ());
+		destination.setMapLocation (source.getMapLocation ());
 
 		return destination;
 	}

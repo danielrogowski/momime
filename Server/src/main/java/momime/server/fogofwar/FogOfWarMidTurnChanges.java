@@ -13,15 +13,30 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.newgame.v0_9_4.FogOfWarValue;
 import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.MemoryCombatAreaEffectUtils;
 import momime.common.messages.MemoryGridCellUtils;
+import momime.common.messages.MemoryMaintainedSpellUtils;
 import momime.common.messages.UnitUtils;
+import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessageData;
+import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.AddUnitMessage;
+import momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessage;
+import momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessageData;
+import momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessageData;
+import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
+import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
+import momime.common.messages.servertoclient.v0_9_4.KillUnitMessageData;
 import momime.common.messages.servertoclient.v0_9_4.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.v0_9_4.PendingMovementMessage;
 import momime.common.messages.servertoclient.v0_9_4.SelectNextUnitToMoveOverlandMessage;
+import momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessage;
+import momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessageData;
 import momime.common.messages.servertoclient.v0_9_4.UpdateDamageTakenAndExperienceMessage;
@@ -36,6 +51,8 @@ import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MemoryBuilding;
+import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
@@ -49,13 +66,13 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PendingMovement;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.CompareUtils;
 import momime.server.calculations.MomFogOfWarCalculations;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseLookup;
 import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.utils.CompareUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
@@ -273,9 +290,34 @@ public final class FogOfWarMidTurnChanges
 		// City spell?
 		else if (spell.getCityLocation () != null)
 			canSee = MomFogOfWarCalculations.canSeeMidTurn (fogOfWarArea.getPlane ().get (spell.getCityLocation ().getPlane ()).getRow ().get
-				(spell.getCityLocation ().getY ()).getCell ().get (spell.getCityLocation ().getX ()), sd.getFogOfWarSetting ().getUnits ());
+				(spell.getCityLocation ().getY ()).getCell ().get (spell.getCityLocation ().getX ()), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 		// Overland enchantment
+		else
+			canSee = true;
+
+		return canSee;
+	}
+
+	/**
+	 * @param cae True CAE to test
+	 * @param fogOfWarArea Area the player can/can't see, outside of FOW recalc
+	 * @param setting FOW CAE setting, from session description
+	 * @return True if player can see this CAE
+	 */
+	static final boolean canSeeCombatAreaEffectMidTurn (final MemoryCombatAreaEffect cae,
+		final MapVolumeOfFogOfWarStates fogOfWarArea, final FogOfWarValue setting)
+	{
+		final boolean canSee;
+
+		// This is a lot simpler than the spell version, since CAEs can't be targetted on specific units, only on a map cell or globally
+
+		// Localized CAE?
+		if (cae.getMapLocation () != null)
+			canSee = MomFogOfWarCalculations.canSeeMidTurn (fogOfWarArea.getPlane ().get (cae.getMapLocation ().getPlane ()).getRow ().get
+				(cae.getMapLocation ().getY ()).getCell ().get (cae.getMapLocation ().getX ()), setting);
+
+		// Global CAE - so can see it everywhere
 		else
 			canSee = true;
 
@@ -432,6 +474,78 @@ public final class FogOfWarMidTurnChanges
 	}
 
 	/**
+	 * Kills off a unit, on the server and usually also on whichever clients can see the unit
+	 * There are a number of different possibilities for how we need to handle this, depending on how the unit died and whether it is a regular/summoned unit or a hero
+	 *
+	 * @param trueUnit The unit to set to alive
+	 * @param action Method by which the unit is being killed
+	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID action,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
+		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "killUnitOnServerAndClients", trueUnit.getUnitURN ());
+
+		// Build the message ready to send it to whoever could see the unit
+		final KillUnitMessageData msgData = new KillUnitMessageData ();
+		msgData.setUnitURN (trueUnit.getUnitURN ());
+		msgData.setKillUnitActionID (action);
+
+		final KillUnitMessage msg = new KillUnitMessage ();
+		msg.setData (msgData);
+
+		// Check which players could see the unit
+		for (final PlayerServerDetails player : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			if (canSeeUnitMidTurn (trueUnit, players, trueMap.getMap (), priv.getFogOfWar (), db, sd))
+			{
+				// For now this doesn't have all the statuses that the Delphi server had, because there's no "free" status in Java yet
+				// Likely have to change this once I find issues wth it, but for now always remove units from player's memory and client regardless of kill action
+				UnitUtils.removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), debugLogger);
+				if (player.getPlayerDescription ().isHuman ())
+					player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		// Update the true copy of the unit as appropriate
+		switch (action)
+		{
+			// Dismissed heroes go back to Generated
+			// Heroes dismissed by lack of production go back to Generated
+			case DIMISSED_VOLUNTARILY:
+			case HERO_LACK_OF_PRODUCTION:
+				debugLogger.finest ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated");
+				trueUnit.setStatus (UnitStatusID.GENERATED);
+				break;
+
+			// Units killed by lack of production are simply killed off
+			case UNIT_LACK_OF_PRODUCTION:
+				debugLogger.finest ("Permanently removing unit URN " + trueUnit.getUnitURN ());
+				UnitUtils.removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit (), debugLogger);
+
+			// VISIBLE_AREA_CHANGED is only ever used in msgs sent to clients and should never be passed into this method
+
+			default:
+				throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when action = " + action);
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "killUnitOnServerAndClients");
+	}
+
+
+	/**
 	 * Checks who can see a maintained spell that already exists on the server, adding it into the memory
 	 * of anyone who can see it and also sending a message to update the client
 	 *
@@ -442,20 +556,19 @@ public final class FogOfWarMidTurnChanges
 	 *
 	 * @param trueSpell True spell to add
 	 * @param players List of players in the session
-	 * @param trueTerrain True terrain map
-	 * @param trueUnits True list of units
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
-	 * @throws RecordNotFoundException If the unit that the spell is cast on, or tile type or map feature IDs cannot be found
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
-	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public final static void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits,
-		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+		final FogOfWarMemory trueMap, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addExistingTrueMaintainedSpellToClients",
 			new String [] {new Integer (trueSpell.getCastingPlayerID ()).toString (), trueSpell.getSpellID ()});
@@ -468,7 +581,7 @@ public final class FogOfWarMidTurnChanges
 		for (final PlayerServerDetails player : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (canSeeSpellMidTurn (trueSpell, players, trueTerrain, trueUnits, priv.getFogOfWar (), db, sd, debugLogger))
+			if (canSeeSpellMidTurn (trueSpell, players, trueMap.getMap (), trueMap.getUnit (), priv.getFogOfWar (), db, sd, debugLogger))
 			{
 				// Update player's memory on server
 				if (FogOfWarDuplication.copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell (), debugLogger))
@@ -478,6 +591,12 @@ public final class FogOfWarMidTurnChanges
 						player.getConnection ().sendMessageToClient (msg);
 			}
 		}
+
+		// The new spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
+		// While it may seem a bit odd to do this here (since the spell already existed on the server before calling this),
+		// the spell would have been in an untargetted state so we wouldn't know what city to apply it to, so this is definitely the right place to do this
+		final PlayerServerDetails castingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (players, trueSpell.getCastingPlayerID (), "addExistingTrueMaintainedSpellToClients");
+		FogOfWarProcessing.updateAndSendFogOfWar (trueMap, castingPlayer, players, false, "addExistingTrueMaintainedSpellToClients", sd, db, debugLogger);
 
 		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "addExistingTrueMaintainedSpellToClients");
 	}
@@ -489,42 +608,395 @@ public final class FogOfWarMidTurnChanges
 	 * @param unitURN Indicates which unit the spell is cast on; null for spells not cast on units
 	 * @param unitSkillID If a spell cast on a unit, indicates the specific skill that this spell grants the unit
 	 * @param castInCombat Whether this spell was cast in combat or not
-	 * @param cityLocation Indicates which city the spell is cast on; null foe spells not cast on cities
+	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
-	 * @throws RecordNotFoundException If the unit that the spell is cast on, or tile type or map feature IDs cannot be found
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
-	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public final static void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
 		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addMaintainedSpellOnServerAndClients",
 			new String [] {new Integer (castingPlayerID).toString (), spellID});
 
 		// First add on server
+		final OverlandMapCoordinates spellLocation;
+		if (cityLocation == null)
+			spellLocation = null;
+		else
+		{
+			spellLocation = new OverlandMapCoordinates ();
+			spellLocation.setX (cityLocation.getX ());
+			spellLocation.setY (cityLocation.getY ());
+			spellLocation.setPlane (cityLocation.getPlane ());
+		}
+
 		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
 		trueSpell.setCastingPlayerID (castingPlayerID);
 		trueSpell.setSpellID (spellID);
 		trueSpell.setUnitURN (unitURN);
 		trueSpell.setUnitSkillID (unitSkillID);
 		trueSpell.setCastInCombat (castInCombat);
-		trueSpell.setCityLocation (cityLocation);
+		trueSpell.setCityLocation (spellLocation);
 		trueSpell.setCitySpellEffectID (citySpellEffectID);
 
 		gsk.getTrueMap ().getMaintainedSpell ().add (trueSpell);
 
 		// Then let the other routine deal with updating player memory and the clients
-		addExistingTrueMaintainedSpellToClients (trueSpell, players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), db, sd, debugLogger);
+		addExistingTrueMaintainedSpellToClients (trueSpell, players, gsk.getTrueMap (), db, sd, debugLogger);
 
 		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "addMaintainedSpellOnServerAndClients");
+	}
+
+	/**
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param castingPlayerID Player who cast the spell
+	 * @param spellID Which spell it is
+	 * @param unitURN Indicates which unit the spell is cast on; null for spells not cast on units
+	 * @param unitSkillID If a spell cast on a unit, indicates the specific skill that this spell grants the unit
+	 * @param castInCombat Whether this spell was cast in combat or not
+	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
+	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
+		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
+		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "switchOffMaintainedSpellOnServerAndClients",
+			new String [] {new Integer (castingPlayerID).toString (), spellID});
+
+		// First switch off on server
+		MemoryMaintainedSpellUtils.switchOffMaintainedSpell (trueMap.getMaintainedSpell (), castingPlayerID, spellID, unitURN, unitSkillID, cityLocation, citySpellEffectID, debugLogger);
+
+		// Build the message ready to send it to whoever could see the spell
+		final SwitchOffMaintainedSpellMessageData msgData = new SwitchOffMaintainedSpellMessageData ();
+		msgData.setCastingPlayerID (castingPlayerID);
+		msgData.setSpellID (spellID);
+		msgData.setUnitURN (unitURN);
+		msgData.setUnitSkillID (unitSkillID);
+		msgData.setCastInCombat (castInCombat);
+		msgData.setCityLocation (cityLocation);
+		msgData.setCitySpellEffectID (citySpellEffectID);
+
+		final SwitchOffMaintainedSpellMessage msg = new SwitchOffMaintainedSpellMessage ();
+		msg.setData (msgData);
+
+		// Check which players could see the spell
+		for (final PlayerServerDetails player : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			if (canSeeSpellMidTurn (msgData, players, trueMap.getMap (), trueMap.getUnit (), priv.getFogOfWar (), db, sd, debugLogger))		// Cheating a little passing msgData as the spell details, but we know they're correct
+			{
+				// Update player's memory on server
+				MemoryMaintainedSpellUtils.switchOffMaintainedSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), castingPlayerID, spellID, unitURN, unitSkillID, cityLocation, citySpellEffectID, debugLogger);
+
+				// Update on client
+				if (player.getPlayerDescription ().isHuman ())
+					player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		// The removed spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
+		final PlayerServerDetails castingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (players, castingPlayerID, "switchOffMaintainedSpellOnServerAndClients");
+		FogOfWarProcessing.updateAndSendFogOfWar (trueMap, castingPlayer, players, false, "switchOffMaintainedSpellOnServerAndClients", sd, db, debugLogger);
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "switchOffMaintainedSpellOnServerAndClients");
+	}
+
+	/**
+	 * @param gsk Server knowledge structure to add the CAE to
+	 * @param combatAreaEffectID Which CAE is it
+	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
+	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
+		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
+		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addCombatAreaEffectOnServerAndClients", combatAreaEffectID);
+
+		// First add on server
+		final OverlandMapCoordinates caeLocation;
+		if (mapLocation == null)
+			caeLocation = null;
+		else
+		{
+			caeLocation = new OverlandMapCoordinates ();
+			caeLocation.setX (mapLocation.getX ());
+			caeLocation.setY (mapLocation.getY ());
+			caeLocation.setPlane (mapLocation.getPlane ());
+		}
+
+		final MemoryCombatAreaEffect trueCAE = new MemoryCombatAreaEffect ();
+		trueCAE.setCombatAreaEffectID (combatAreaEffectID);
+		trueCAE.setCastingPlayerID (castingPlayerID);
+		trueCAE.setMapLocation (caeLocation);
+
+		gsk.getTrueMap ().getCombatAreaEffect ().add (trueCAE);
+
+		// Build the message ready to send it to whoever can see the CAE
+		final AddCombatAreaEffectMessage msg = new AddCombatAreaEffectMessage ();
+		msg.setData (FogOfWarDuplication.createAddCombatAreaEffectMessage (trueCAE));
+
+		// Check which players can see the CAE
+		for (final PlayerServerDetails player : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			if (canSeeCombatAreaEffectMidTurn (trueCAE, priv.getFogOfWar (), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+			{
+				// Update player's memory on server
+				if (FogOfWarDuplication.copyCombatAreaEffect (trueCAE, priv.getFogOfWarMemory ().getCombatAreaEffect (), debugLogger))
+
+					// Update on client
+					if (player.getPlayerDescription ().isHuman ())
+						player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "addCombatAreaEffectOnServerAndClients");
+	}
+
+	/**
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param combatAreaEffectID Which CAE is it
+	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
+	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
+		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
+		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "removeCombatAreaEffectFromServerAndClients", combatAreaEffectID);
+
+		// First remove on server
+		MemoryCombatAreaEffectUtils.cancelCombatAreaEffect (trueMap.getCombatAreaEffect (), mapLocation, combatAreaEffectID, castingPlayerID, debugLogger);
+
+		// Build the message ready to send it to whoever can see the CAE
+		final CancelCombatAreaEffectMessageData msgData = new CancelCombatAreaEffectMessageData ();
+		msgData.setCastingPlayerID (castingPlayerID);
+		msgData.setCombatAreaEffectID (combatAreaEffectID);
+		msgData.setMapLocation (mapLocation);
+
+		final CancelCombatAreaEffectMessage msg = new CancelCombatAreaEffectMessage ();
+		msg.setData (msgData);
+
+		// Check which players can see the CAE
+		for (final PlayerServerDetails player : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			if (canSeeCombatAreaEffectMidTurn (msgData, priv.getFogOfWar (), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))		// Cheating a little passing msgData as the CAE details, but we know they're correct
+			{
+				// Update player's memory on server
+				MemoryCombatAreaEffectUtils.cancelCombatAreaEffect (priv.getFogOfWarMemory ().getCombatAreaEffect (), mapLocation, combatAreaEffectID, castingPlayerID, debugLogger);
+
+				// Update on client
+				if (player.getPlayerDescription ().isHuman ())
+					player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "removeCombatAreaEffectFromServerAndClients");
+	}
+
+	/**
+	 * @param gsk Server knowledge structure to add the building(s) to
+	 * @param players List of players in the session
+	 * @param cityLocation Location of the city to add the building(s) to
+	 * @param firstBuildingID First building ID to create, or can be null
+	 * @param secondBuildingID Second building ID to create; this is usually null, it is mainly here for casting Move Fortress, which creates both a Fortress + Summoning circle at the same time
+	 * @param buildingCreatedFromSpellID The spell that resulted in the creation of this building (e.g. casting Wall of Stone creates City Walls); null if building was constructed in the normal way
+	 * @param buildingCreationSpellCastByPlayerID The player who cast the spell that resulted in the creation of this building; null if building was constructed in the normal way
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinates cityLocation, final String firstBuildingID, final String secondBuildingID,
+		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
+		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addBuildingOnServerAndClients",
+			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), firstBuildingID, secondBuildingID, buildingCreatedFromSpellID});
+
+		// First add on server
+		final MemoryBuilding firstTrueBuilding;
+		if (firstBuildingID == null)
+			firstTrueBuilding = null;
+		else
+		{
+			final OverlandMapCoordinates firstBuildingLocation = new OverlandMapCoordinates ();
+			firstBuildingLocation.setX (cityLocation.getX ());
+			firstBuildingLocation.setY (cityLocation.getY ());
+			firstBuildingLocation.setPlane (cityLocation.getPlane ());
+
+			firstTrueBuilding = new MemoryBuilding ();
+			firstTrueBuilding.setCityLocation (firstBuildingLocation);
+			firstTrueBuilding.setBuildingID (firstBuildingID);
+			gsk.getTrueMap ().getBuilding ().add (firstTrueBuilding);
+		}
+
+		final MemoryBuilding secondTrueBuilding;
+		if (secondBuildingID == null)
+			secondTrueBuilding = null;
+		else
+		{
+			final OverlandMapCoordinates secondBuildingLocation = new OverlandMapCoordinates ();
+			secondBuildingLocation.setX (cityLocation.getX ());
+			secondBuildingLocation.setY (cityLocation.getY ());
+			secondBuildingLocation.setPlane (cityLocation.getPlane ());
+
+			secondTrueBuilding = new MemoryBuilding ();
+			secondTrueBuilding.setCityLocation (secondBuildingLocation);
+			secondTrueBuilding.setBuildingID (secondBuildingID);
+			gsk.getTrueMap ().getBuilding ().add (secondTrueBuilding);
+		}
+
+		// Build the message ready to send it to whoever can see the building
+		// This is done here rather in a method on FogOfWarDuplication because its a bit weird where we can have two buildings but both are optional
+		final AddBuildingMessageData msgData = new AddBuildingMessageData ();
+		msgData.setFirstBuildingID (firstBuildingID);
+		msgData.setSecondBuildingID (secondBuildingID);
+		msgData.setCityLocation (cityLocation);
+		msgData.setBuildingCreatedFromSpellID (buildingCreatedFromSpellID);
+		msgData.setBuildingCreationSpellCastByPlayerID (buildingCreationSpellCastByPlayerID);
+
+		final AddBuildingMessage msg = new AddBuildingMessage ();
+		msg.setData (msgData);
+
+		// Check which players can see the building
+		for (final PlayerServerDetails player : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+			if (MomFogOfWarCalculations.canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+			{
+				// Add into player's memory on server
+				if (firstTrueBuilding != null)
+					FogOfWarDuplication.copyBuilding (firstTrueBuilding, priv.getFogOfWarMemory ().getBuilding (), debugLogger);
+
+				if (secondTrueBuilding != null)
+					FogOfWarDuplication.copyBuilding (secondTrueBuilding, priv.getFogOfWarMemory ().getBuilding (), debugLogger);
+
+				// Send to client
+				if (player.getPlayerDescription ().isHuman ())
+					player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		// The new building might be an Oracle, so recalculate fog of war
+		// Buildings added at the start of the game are added straight to the TrueMap without using this
+		// routine, so this doesn't cause a bunch of FOW recalculations before the game starts
+		final OverlandMapCityData cityData = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "addBuildingOnServerAndClients");
+		FogOfWarProcessing.updateAndSendFogOfWar (gsk.getTrueMap (), cityOwner, players, false, "addBuildingOnServerAndClients", sd, db, debugLogger);
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "addBuildingOnServerAndClients");
+	}
+
+	/**
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param cityLocation Location of the city to remove the building from
+	 * @param buildingID Which building to remove
+	 * @param updateBuildingSoldThisTurn If true, tells client to update the buildingSoldThisTurn flag, which will prevents this city from selling a 2nd building this turn
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public final static void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID, final boolean updateBuildingSoldThisTurn,
+		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "destroyBuildingOnServerAndClients",
+			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
+
+		// First destroy on server
+		MemoryBuildingUtils.destroyBuilding (trueMap.getBuilding (), cityLocation, buildingID, debugLogger);
+
+		// Build the message ready to send it to whoever can see the building
+		final DestroyBuildingMessageData msgData = new DestroyBuildingMessageData ();
+		msgData.setBuildingID (buildingID);
+		msgData.setCityLocation (cityLocation);
+		msgData.setUpdateBuildingSoldThisTurn (updateBuildingSoldThisTurn);
+
+		final DestroyBuildingMessage msg = new DestroyBuildingMessage ();
+		msg.setData (msgData);
+
+		// Check which players could see the building
+		for (final PlayerServerDetails player : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+			if (MomFogOfWarCalculations.canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+			{
+				// Remove from player's memory on server
+				MemoryBuildingUtils.destroyBuilding (priv.getFogOfWarMemory ().getBuilding (), cityLocation, buildingID, debugLogger);
+
+				// Send to client
+				if (player.getPlayerDescription ().isHuman ())
+					player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		// The destroyed building might be an Oracle, so recalculate fog of war
+		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "destroyBuildingOnServerAndClients");
+		FogOfWarProcessing.updateAndSendFogOfWar (trueMap, cityOwner, players, false, "destroyBuildingOnServerAndClients", sd, db, debugLogger);
+
+		debugLogger.exiting (FogOfWarMidTurnChanges.class.getName (), "destroyBuildingOnServerAndClients");
 	}
 
 	/**

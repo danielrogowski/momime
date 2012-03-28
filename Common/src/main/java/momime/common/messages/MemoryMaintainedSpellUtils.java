@@ -4,8 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
+import momime.common.utils.CompareUtils;
 
 /**
  * Methods for working with list of MemoryMaintainedSpells
@@ -46,7 +48,7 @@ public final class MemoryMaintainedSpellUtils
 
 			if (((castingPlayerID == null) || (castingPlayerID == thisSpell.getCastingPlayerID ())) &&
 				((spellID == null) || (spellID.equals (thisSpell.getSpellID ()))) &&
-				(((unitURN == null) && (thisSpell.getUnitURN () == null)) || ((unitURN != null) && (unitURN.equals (thisSpell.getUnitURN ())))) &&
+				(CompareUtils.safeIntegerCompare (unitURN,  thisSpell.getUnitURN ())) &&
 				((unitSkillID == null) || (unitSkillID.equals (thisSpell.getUnitSkillID ()))) &&
 				(CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisSpell.getCityLocation (), true)) &&
 				((citySpellEffectID == null) || (citySpellEffectID.equals (thisSpell.getCitySpellEffectID ()))))
@@ -56,6 +58,53 @@ public final class MemoryMaintainedSpellUtils
 
 		debugLogger.exiting (MemoryMaintainedSpellUtils.class.getName (), "findMaintainedSpell", match);
 		return match;
+	}
+
+	/**
+	 * Removes a maintained spell from the list
+	 *
+	 * @param spells List of spells to search through
+	 * @param castingPlayerID Player who cast the spell to search for
+	 * @param spellID Unique identifier for the spell to search for
+	 * @param unitURN Which unit the spell is cast on
+	 * @param unitSkillID Which actual unit spell effect was granted
+	 * @param cityLocation Which city the spell is cast on
+	 * @param citySpellEffectID Which actual city spell effect was granted
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If we can't find the requested spell
+	 */
+	public static final void switchOffMaintainedSpell (final List<MemoryMaintainedSpell> spells,
+		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
+		final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final Logger debugLogger)
+		throws RecordNotFoundException
+	{
+		debugLogger.entering (MemoryMaintainedSpellUtils.class.getName (), "switchOffMaintainedSpell", new String []
+			{new Integer (castingPlayerID).toString (), spellID,
+			(unitURN == null) ? "null" : unitURN.toString (), unitSkillID,
+			CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), citySpellEffectID});
+
+		boolean found = false;
+		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
+		while ((!found) && (iter.hasNext ()))
+		{
+			final MemoryMaintainedSpell thisSpell = iter.next ();
+
+			if ((castingPlayerID == thisSpell.getCastingPlayerID ()) &&
+				(spellID.equals (thisSpell.getSpellID ())) &&
+				(CompareUtils.safeIntegerCompare (unitURN,  thisSpell.getUnitURN ())) &&
+				((unitSkillID == null) || (unitSkillID.equals (thisSpell.getUnitSkillID ()))) &&
+				(CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisSpell.getCityLocation (), true)) &&
+				((citySpellEffectID == null) || (citySpellEffectID.equals (thisSpell.getCitySpellEffectID ()))))
+			{
+				iter.remove ();
+				found = true;
+			}
+		}
+
+		if (!found)
+			throw new RecordNotFoundException (MemoryMaintainedSpell.class.getName (), spellID + " - " + castingPlayerID, "switchOffMaintainedSpell");
+
+		debugLogger.exiting (MemoryMaintainedSpellUtils.class.getName (), "switchOffMaintainedSpell");
 	}
 
 	/**

@@ -44,13 +44,13 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.CompareUtils;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseLookup;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.messages.ServerMemoryGridCellUtils;
-import momime.server.utils.CompareUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;

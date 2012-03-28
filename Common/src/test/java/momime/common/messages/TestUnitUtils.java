@@ -79,6 +79,45 @@ public final class TestUnitUtils
 	}
 
 	/**
+	 * Tests the removeUnitURN method on a unit that does exist
+	 * @throws RecordNotFoundException If unit with requested URN is not found
+	 */
+	@Test
+	public final void testRemoveUnitURN_Exists () throws RecordNotFoundException
+	{
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryUnit unit = new MemoryUnit ();
+			unit.setUnitURN (n);
+			units.add (unit);
+		}
+
+		UnitUtils.removeUnitURN (2, units, debugLogger);
+		assertEquals (2, units.size ());
+		assertEquals (1, units.get (0).getUnitURN ());
+		assertEquals (3, units.get (1).getUnitURN ());
+	}
+
+	/**
+	 * Tests the removeUnitURN method on a unit that doesn't exist
+	 * @throws RecordNotFoundException If unit with requested URN is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testRemoveUnitURN_NotExists () throws RecordNotFoundException
+	{
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryUnit unit = new MemoryUnit ();
+			unit.setUnitURN (n);
+			units.add (unit);
+		}
+
+		UnitUtils.removeUnitURN (4, units, debugLogger);
+	}
+
+	/**
 	 * Tests the initializeUnitSkills method with no exp and not reading skills from XML
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */

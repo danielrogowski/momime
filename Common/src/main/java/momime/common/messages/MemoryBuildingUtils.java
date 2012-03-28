@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import momime.common.MomException;
 import momime.common.database.CommonDatabaseLookup;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
@@ -45,6 +46,38 @@ public final class MemoryBuildingUtils
 
 		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "findBuilding", found);
 		return found;
+	}
+
+	/**
+	 * Removes a building from a list
+	 * @param buildingsList List of buildings to remove building from
+	 * @param cityLocation Location of the city
+	 * @param buildingID Building to remove
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If we can't find the requested building
+	 */
+	public static final void destroyBuilding (final List<MemoryBuilding> buildingsList,
+		final OverlandMapCoordinates cityLocation, final String buildingID, final Logger debugLogger)
+		throws RecordNotFoundException
+	{
+		debugLogger.entering (MemoryBuildingUtils.class.getName (), "destroyBuilding", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
+
+		boolean found = false;
+		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
+		while ((!found) && (iter.hasNext ()))
+		{
+			final MemoryBuilding thisBuilding = iter.next ();
+			if ((CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisBuilding.getCityLocation (), true)) && (thisBuilding.getBuildingID ().equals (buildingID)))
+			{
+				iter.remove ();
+				found = true;
+			}
+		}
+
+		if (!found)
+			throw new RecordNotFoundException (MemoryBuilding.class.getName (), CoordinatesUtils.overlandMapCoordinatesToString (cityLocation) + " - " + buildingID, "destroyBuilding");
+
+		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "destroyBuilding");
 	}
 
 	/**
@@ -165,6 +198,51 @@ public final class MemoryBuildingUtils
 	}
 
 	/**
+	 * @param buildingID Building that is being removed from a city
+	 * @param buildingOrUnitID The building or unit that we were trying to build
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return True if buildingID is a prerequisite for buildingOrUnitID
+	 */
+	public static final boolean isBuildingAPrerequisiteFor (final String buildingID, final String buildingOrUnitID,
+		final CommonDatabaseLookup db, final Logger debugLogger)
+	{
+		debugLogger.entering (MemoryBuildingUtils.class.getName (), "isBuildingAPrerequisiteFor", new String [] {buildingID, buildingOrUnitID});
+
+		boolean result = false;
+
+		// We don't know if it is a building or unit, so look for both
+		try
+		{
+			final Building building = db.findBuilding (buildingOrUnitID, "isBuildingAPrerequisiteFor");
+			final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
+			while ((!result) && (iter.hasNext ()))
+				if (iter.next ().getPrerequisiteID ().equals (buildingID))
+					result = true;
+		}
+		catch (final RecordNotFoundException e)
+		{
+			// Ignore, it could be a unit
+		}
+
+		try
+		{
+			final Unit unit = db.findUnit (buildingOrUnitID, "isBuildingAPrerequisiteFor");
+			final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
+			while ((!result) && (iter.hasNext ()))
+				if (iter.next ().getPrerequisiteID ().equals (buildingID))
+					result = true;
+		}
+		catch (final RecordNotFoundException e)
+		{
+			// Ignore, it could be a unit
+		}
+
+		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "isBuildingAPrerequisiteFor", result);
+		return result;
+	}
+
+	/**
 	 * Checks to see if this city contains any buildings that grant free experience to units constructed there (Fighters' Guild or War College)
 	 * @param buildingsList List of buildings to search through
 	 * @param cityLocation Location of the city to test
@@ -223,6 +301,58 @@ public final class MemoryBuildingUtils
 
 		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "totalBonusProductionPerPersonFromBuildings", doubleAmount);
 		return doubleAmount;
+	}
+
+	/**
+	 * @param building Building we want the consumption of
+	 * @param productionTypeID Production type that we want the consumption of
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @return The amount of this production type that this building consumes; these are positive undoubled values
+	 * @throws MomException If we find a building consumption that isn't a multiple of 2
+	 */
+	public static final int findBuildingConsumption (final Building building, final String productionTypeID, final Logger debugLogger)
+		throws MomException
+	{
+		debugLogger.entering (MemoryBuildingUtils.class.getName (), "findBuildingConsumption", new String [] {building.getBuildingID (), productionTypeID});
+
+		// Find the right type of production
+		int consumptionAmount = 0;
+		final Iterator<BuildingPopulationProductionModifier> iter = building.getBuildingPopulationProductionModifier ().iterator ();
+		while ((consumptionAmount == 0) && (iter.hasNext ()))
+		{
+			final BuildingPopulationProductionModifier production = iter.next ();
+
+			if ((production.getProductionTypeID ().equals (productionTypeID)) && (production.getPopulationTaskID () == null) && (production.getDoubleAmount () != null))
+
+				// Also we only want consumptions, not productions
+				if (production.getDoubleAmount () < 0)
+				{
+					// Consumption - must be an exact multiple of 2
+					final int doubleAmount = -production.getDoubleAmount ();
+					if (doubleAmount % 2 == 0)
+						consumptionAmount = doubleAmount / 2;
+					else
+						throw new MomException ("Building " + building.getBuildingID () + " has a consumption value for production type " + productionTypeID + " that is not a multiple of 2");
+				}
+		}
+
+		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "findBuildingConsumption", consumptionAmount);
+		return consumptionAmount;
+	}
+
+	/**
+	 * @param building Building being sold
+	 * @return Gold obtained from selling building; will be 0 for special buildings such as trade goods
+	 */
+	public static final int goldFromSellingBuilding (final Building building)
+	{
+		final int gold;
+		if (building.getProductionCost () == null)
+			gold = 0;
+		else
+			gold = building.getProductionCost () / 3;
+
+		return gold;
 	}
 
 	/**

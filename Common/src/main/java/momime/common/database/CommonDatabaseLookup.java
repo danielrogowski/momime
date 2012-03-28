@@ -49,6 +49,9 @@ public class CommonDatabaseLookup
 	/** Map of tile type IDs to file type XML objects */
 	private final Map<String, TileType> tileTypes;
 
+	/** List of all available production types */
+	private final List<? extends ProductionType> productionTypesList;
+
 	/** Map of production type IDs to production type XML objects */
 	private final Map<String, ProductionType> productionTypes;
 
@@ -116,7 +119,7 @@ public class CommonDatabaseLookup
 	 * @param aPlanesList List of planes loaded from XML
 	 * @param aMapFeaturesList List of map features loaded from XML
 	 * @param aTileTypesList List of tile types loaded from XML
-	 * @param productionTypesList List of production types loaded from XML
+	 * @param aProductionTypesList List of production types loaded from XML
 	 * @param aPickTypesList List of pick types loaded from XML
 	 * @param picksList List of picks loaded from XML
 	 * @param aWizardsList List of wizards loaded from XML
@@ -132,7 +135,7 @@ public class CommonDatabaseLookup
 	 * @param combatAreaEffectsList List of combat area effects loaded from XML
 	 */
 	public CommonDatabaseLookup (final List<? extends Plane> aPlanesList, final List<? extends MapFeature> aMapFeaturesList, final List<? extends TileType> aTileTypesList,
-		final List<? extends ProductionType> productionTypesList, final List<? extends PickType> aPickTypesList, final List<? extends Pick> picksList,
+		final List<? extends ProductionType> aProductionTypesList, final List<? extends PickType> aPickTypesList, final List<? extends Pick> picksList,
 		final List<? extends Wizard> aWizardsList, final List<? extends UnitType> unitTypesList, final List<? extends UnitMagicRealm> unitMagicRealmsList,
 		final List<? extends Unit> aUnitsList, final List<? extends UnitSkill> aUnitSkillsList, final List<? extends WeaponGrade> weaponGradesList,
 		final List<? extends Race> aRacesList, final List<TaxRate> taxRatesList, final List<? extends Building> aBuildingsList,
@@ -162,6 +165,7 @@ public class CommonDatabaseLookup
 				tileTypes.put (thistileType.getTileTypeID (), thistileType);
 
 		// Create production types map
+		productionTypesList = aProductionTypesList;
 		productionTypes = new HashMap<String, ProductionType> ();
 		if (productionTypesList != null)
 			for (final ProductionType thisproductionType : productionTypesList)
@@ -320,6 +324,14 @@ public class CommonDatabaseLookup
 			throw new RecordNotFoundException (TileType.class.getName (), tileTypeID, caller);
 
 		return tileType;
+	}
+
+	/**
+	 * @return Complete list of all production types in game
+	 */
+	public List<? extends ProductionType> getProductionTypes ()
+	{
+		return productionTypesList;
 	}
 
 	/**

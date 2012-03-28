@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 
@@ -313,6 +314,119 @@ public final class TestMemoryMaintainedSpellUtils
 
 		assertEquals ("SP004", MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE034", debugLogger).getSpellID ());
 		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE035", debugLogger));
+	}
+
+	/**
+	 * Tests the switchOffMaintainedSpell method looking for an overland enchantment
+	 * @throws RecordNotFoundException If we can't find the requested spell
+	 */
+	@Test
+	public final void testSwitchOffMaintainedSpell_OverlandEnchantment () throws RecordNotFoundException
+	{
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		for (int n = 1; n <= 5; n++)
+		{
+			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+			spell.setSpellID ("SP00" + n);
+			spell.setCastingPlayerID (10 + n);
+
+			spells.add (spell);
+		}
+
+		MemoryMaintainedSpellUtils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, null, null, debugLogger);
+		assertEquals (4, spells.size ());
+		assertEquals ("SP001", spells.get (0).getSpellID ());
+		assertEquals ("SP002", spells.get (1).getSpellID ());
+		assertEquals ("SP003", spells.get (2).getSpellID ());
+		assertEquals ("SP005", spells.get (3).getSpellID ());
+	}
+
+	/**
+	 * Tests the switchOffMaintainedSpell method looking for a city spell
+	 * @throws RecordNotFoundException If we can't find the requested spell
+	 */
+	@Test
+	public final void testSwitchOffMaintainedSpell_CitySpell () throws RecordNotFoundException
+	{
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		for (int n = 1; n <= 5; n++)
+		{
+			final OverlandMapCoordinates spellLocation = new OverlandMapCoordinates ();
+			spellLocation.setX (20 + n);
+			spellLocation.setY (10 + n);
+			spellLocation.setPlane (n);
+
+			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+			spell.setSpellID ("SP00" + n);
+			spell.setCastingPlayerID (10 + n);
+			spell.setCitySpellEffectID ("CSE00" + n);
+			spell.setCityLocation (spellLocation);
+
+			spells.add (spell);
+		}
+
+		final OverlandMapCoordinates switchOffLocation = new OverlandMapCoordinates ();
+		switchOffLocation.setX (24);
+		switchOffLocation.setY (14);
+		switchOffLocation.setPlane (4);
+
+		MemoryMaintainedSpellUtils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, switchOffLocation, "CSE004", debugLogger);
+		assertEquals (4, spells.size ());
+		assertEquals ("SP001", spells.get (0).getSpellID ());
+		assertEquals ("SP002", spells.get (1).getSpellID ());
+		assertEquals ("SP003", spells.get (2).getSpellID ());
+		assertEquals ("SP005", spells.get (3).getSpellID ());
+	}
+
+	/**
+	 * Tests the switchOffMaintainedSpell method looking for a unit spell
+	 * @throws RecordNotFoundException If we can't find the requested spell
+	 */
+	@Test
+	public final void testSwitchOffMaintainedSpell_UnitSpell () throws RecordNotFoundException
+	{
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		for (int n = 1; n <= 5; n++)
+		{
+			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+			spell.setSpellID ("SP00" + n);
+			spell.setCastingPlayerID (10 + n);
+			spell.setUnitSkillID ("US00" + n);
+			spell.setUnitURN (100 + n);
+
+			spells.add (spell);
+		}
+
+		MemoryMaintainedSpellUtils.switchOffMaintainedSpell (spells, 14, "SP004", 104, "US004", null, null, debugLogger);
+		assertEquals (4, spells.size ());
+		assertEquals ("SP001", spells.get (0).getSpellID ());
+		assertEquals ("SP002", spells.get (1).getSpellID ());
+		assertEquals ("SP003", spells.get (2).getSpellID ());
+		assertEquals ("SP005", spells.get (3).getSpellID ());
+	}
+
+	/**
+	 * Tests the switchOffMaintainedSpell method looking for spell that doesn't exist
+	 * @throws RecordNotFoundException If we can't find the requested spell
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testSwitchOffMaintainedSpell_NotExists () throws RecordNotFoundException
+	{
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		for (int n = 1; n <= 5; n++)
+		{
+			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+			spell.setSpellID ("SP00" + n);
+			spell.setCastingPlayerID (10 + n);
+
+			spells.add (spell);
+		}
+
+		MemoryMaintainedSpellUtils.switchOffMaintainedSpell (spells, 15, "SP004", null, null, null, null, debugLogger);
 	}
 
 	/**

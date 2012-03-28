@@ -76,10 +76,39 @@ public final class UnitUtils
 		final MemoryUnit result = findUnitURN (unitURN, units, debugLogger);
 
 		if (result == null)
-			throw new RecordNotFoundException ("UnitURN", unitURN, caller);
+			throw new RecordNotFoundException (MemoryUnit.class.getName (), unitURN, caller);
 
 		debugLogger.exiting (UnitUtils.class.getName (), "findUnitURN", result);
 		return result;
+	}
+
+	/**
+	 * @param unitURN Unit URN to remove
+	 * @param units List of units to search through
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If unit with requested URN is not found
+	 */
+	public final static void removeUnitURN (final int unitURN, final List<MemoryUnit> units, final Logger debugLogger)
+		throws RecordNotFoundException
+	{
+		debugLogger.entering (UnitUtils.class.getName (), "removeUnitURN", unitURN);
+
+		boolean found = false;
+		final Iterator<MemoryUnit> iter = units.iterator ();
+		while ((!found) && (iter.hasNext ()))
+		{
+			final MemoryUnit thisUnit = iter.next ();
+			if (thisUnit.getUnitURN () == unitURN)
+			{
+				iter.remove ();
+				found = true;
+			}
+		}
+
+		if (!found)
+			throw new RecordNotFoundException (MemoryUnit.class.getName (), unitURN, "removeUnitURN");
+
+		debugLogger.exiting (UnitUtils.class.getName (), "removeUnitURN");
 	}
 
 	/**

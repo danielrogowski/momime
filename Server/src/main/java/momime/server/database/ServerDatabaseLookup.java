@@ -13,6 +13,7 @@ import momime.server.database.v0_9_4.MovementRateRule;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
 import momime.server.database.v0_9_4.Plane;
+import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Race;
 import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.Spell;
@@ -151,6 +152,16 @@ public final class ServerDatabaseLookup extends CommonDatabaseLookup
 	public final TileType findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException
 	{
 		return (TileType) super.findTileType (tileTypeID, caller);
+	}
+
+	/**
+	 * @return Complete list of all production types in game
+	 */
+	@SuppressWarnings ("unchecked")
+	@Override
+	public final List<ProductionType> getProductionTypes ()
+	{
+		return (List<ProductionType>) super.getProductionTypes ();
 	}
 
 	/**

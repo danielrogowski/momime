@@ -42,6 +42,11 @@ public final class ResourceValueUtils
 	}
 
 	/**
+	 * Careful, there is a Delphi method named TMomPlayerResourceValues.FindAmountPerTurnForProductionType, but that does more than
+	 * simply look the value up in the list, see calculateAmountPerTurnForProductionType method below
+	 *
+	 * This method is the equivalent of TMomPlayerResourceValues.FindProductionType, which *only* searches for the value in the list
+	 *
 	 * @param resourceList List of resources to search through
      * @param productionTypeID Type of production to look up
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
@@ -185,6 +190,8 @@ public final class ResourceValueUtils
 
 	/**
      * This does include splitting magic power into mana/research/skill improvement, but does not include selling 2 rations to get 1 gold
+     * Delphi method is TMomPlayerResourceValues.FindAmountPerTurnForProductionType
+     *
      * @param privateInfo Private info of the player whose production amount we are calculating
      * @param picks Picks of the player whose production amount we are calculating
      * @param productionTypeID Type of production to calculate

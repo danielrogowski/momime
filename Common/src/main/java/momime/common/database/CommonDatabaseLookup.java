@@ -340,7 +340,7 @@ public class CommonDatabaseLookup
 	 * @return Production type object
 	 * @throws RecordNotFoundException If the productionTypeID doesn't exist
 	 */
-	public final ProductionType findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
+	public ProductionType findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
 	{
 		final ProductionType productionType = productionTypes.get (productionTypeID);
 		if (productionType == null)

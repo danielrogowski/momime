@@ -26,7 +26,7 @@ public final class NdgBmpReaderSpi extends ImageReaderSpi
 
 	/** Accepts ImageInputStream only */
 	@SuppressWarnings ("rawtypes")
-	private static final Class [] inputTypes = STANDARD_INPUT_TYPE;
+	private static final Class [] inputTypes = {ImageInputStream.class};
 
 	/** Descriptive list of the format(s) supported by this reader */
 	private static final String [] names = { "NDG BMP", "ndg bmp" };

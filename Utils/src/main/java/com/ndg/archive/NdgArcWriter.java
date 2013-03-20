@@ -159,6 +159,7 @@ public final class NdgArcWriter
 						}
 					}
 				}
+				in.close ();
 
 				// Change .bmp and .png files to .ndgbmp
 				for (final ArchivedFile thisFile : contents)

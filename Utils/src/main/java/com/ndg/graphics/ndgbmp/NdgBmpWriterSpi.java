@@ -5,6 +5,7 @@ import java.util.Locale;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.ImageWriterSpi;
+import javax.imageio.stream.ImageOutputStream;
 
 /**
  * Service Provider Interface for writing .ndgbmp format images
@@ -25,7 +26,7 @@ public final class NdgBmpWriterSpi extends ImageWriterSpi
 
 	/** Writes to ImageOutputStream only */
 	@SuppressWarnings ("rawtypes")
-	private static final Class [] outputTypes = STANDARD_OUTPUT_TYPE;
+	private static final Class [] outputTypes = {ImageOutputStream.class};
 
 	/** Descriptive list of the format(s) supported by this writer */
 	private static final String [] names = { "NDG BMP", "ndg bmp" };

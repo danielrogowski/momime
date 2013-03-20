@@ -35,7 +35,7 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 
 	/** Accepts ImageInputStream only */
 	@SuppressWarnings ("rawtypes")
-	private static final Class [] inputTypes = STANDARD_INPUT_TYPE;
+	private static final Class [] inputTypes = {ImageInputStream.class};
 
 	/**
 	 * Descriptive list of the format(s) supported by this reader

@@ -165,6 +165,18 @@ public final class ServerDatabaseLookup extends CommonDatabaseLookup
 	}
 
 	/**
+	 * @param productionTypeID Production type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Production type object
+	 * @throws RecordNotFoundException If the productionTypeID doesn't exist
+	 */
+	@Override
+	public ProductionType findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
+	{
+		return (ProductionType) super.findProductionType (productionTypeID, caller);
+	}
+
+	/**
 	 * @param pickTypeID Pick type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return PickType object

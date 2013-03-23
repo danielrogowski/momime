@@ -27,6 +27,7 @@ import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_4.MomResourceValue;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
@@ -341,6 +342,58 @@ public final class MomServerResourceCalculations
 	}
 
 	/**
+	 * Adds production generated this turn to the permanent values
+	 * @param resourceList List of resources to accumulate
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
+	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
+	 */
+	static final void accumulateGlobalProductionValues (final List<MomResourceValue> resourceList, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws RecordNotFoundException, MomException
+	{
+		debugLogger.entering (MomServerResourceCalculations.class.getName (), "accumulateGlobalProductionValues");
+
+		for (final MomResourceValue thisProduction : resourceList)
+			if (thisProduction.getAmountPerTurn () != 0)
+			{
+				final ProductionType productionType = db.findProductionType (thisProduction.getProductionTypeID (), "accumulateGlobalProductionValues");
+				if (productionType.getAccumulatesInto () != null)
+				{
+					// See if need to halve it
+					int amountToAdd = thisProduction.getAmountPerTurn ();
+					if (productionType.getAccumulationHalved () != null)
+						switch (productionType.getAccumulationHalved ())
+						{
+							case ROUND_DOWN:
+								amountToAdd = amountToAdd / 2;
+								break;
+
+							case ROUND_UP:
+								amountToAdd = (amountToAdd + 1) / 2;
+								break;
+
+							case MUST_BE_EXACT_MULTIPLE:
+								if (amountToAdd % 2 == 0)
+									amountToAdd = amountToAdd / 2;
+								else
+									throw new MomException ("accumulateGlobalProductionValues: Expect value for " + thisProduction.getProductionTypeID () + " being accumulated into " +
+										productionType.getAccumulatesInto () + " to be exact multiple of 2 but was " + amountToAdd);
+								break;
+
+							default:
+								throw new MomException ("accumulateGlobalProductionValues: Unknown rounding direction " + productionType.getAccumulationHalved ());
+						}
+
+					// Add it
+					ResourceValueUtils.addToAmountStored (resourceList, productionType.getAccumulatesInto (), amountToAdd, debugLogger);
+				}
+			}
+
+		debugLogger.exiting (MomServerResourceCalculations.class.getName (), "accumulateGlobalProductionValues");
+	}
+
+	/**
 	 * Recalculates the amount of production of all types that we make each turn and sends the updated figures to the player(s)
 	 *
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
@@ -366,6 +419,8 @@ public final class MomServerResourceCalculations
 		for (final PlayerServerDetails player : players)
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
 			{
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
 				// Calculate base amounts
 				recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
 
@@ -382,9 +437,10 @@ public final class MomServerResourceCalculations
 					while (findInsufficientProductionAndSellSomething (player, players, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO, true, trueMap, sd, db, debugLogger));
 
 					// Per turn production amounts are now fine, so do the accumulation and effect calculations
-					throw new UnsupportedOperationException ("recalculateGlobalProductionValues for turn > 1 not finished yet");
+					accumulateGlobalProductionValues (priv.getResourceValue (), db, debugLogger);
 
 					// Continue casting spells
+					throw new UnsupportedOperationException ("recalculateGlobalProductionValues for turn > 1 not finished yet");
 				}
 				else if (player.getPlayerDescription ().isHuman ())
 

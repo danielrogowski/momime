@@ -14,6 +14,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
+import momime.common.database.v0_9_4.RoundingDirectionID;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -23,6 +24,7 @@ import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_4.MomResourceValue;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
@@ -419,5 +421,147 @@ public final class TestMomServerResourceCalculations
 		assertEquals (7, consumptions.get (2).getConsumptionAmount ());
 		assertEquals (player, consumptions.get (2).getPlayer ());
 		assertEquals (natureAwareness, ((MomResourceConsumerSpell) consumptions.get (2)).getSpell ());
+	}
+
+	/**
+	 * Tests the accumulateGlobalProductionValues method
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
+	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
+	 */
+	@Test
+	public final void testAccumulateGlobalProductionValues ()
+		throws IOException, JAXBException, RecordNotFoundException, MomException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		final List<MomResourceValue> resourceList = new ArrayList<MomResourceValue> ();
+
+		// Research resource has no accumulation defined
+		final MomResourceValue research = new MomResourceValue ();
+		research.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+		research.setAmountPerTurn (10);
+		research.setAmountStored (15);
+		resourceList.add (research);
+
+		// Mana accumulates into itself
+		final MomResourceValue mana = new MomResourceValue ();
+		mana.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		mana.setAmountPerTurn (12);
+		mana.setAmountStored (16);
+		resourceList.add (mana);
+
+		// Gold accumulates into itself
+		final MomResourceValue gold = new MomResourceValue ();
+		gold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		gold.setAmountPerTurn (7);
+		gold.setAmountStored (100);
+		resourceList.add (gold);
+
+		// Rations are accumulates into gold, halved + rounded down
+		final MomResourceValue rations = new MomResourceValue ();
+		rations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		rations.setAmountPerTurn (9);
+		rations.setAmountStored (80);
+		resourceList.add (rations);
+
+		// Call method
+		MomServerResourceCalculations.accumulateGlobalProductionValues (resourceList, db, debugLogger);
+
+		// Check results
+		assertEquals (4, resourceList.size ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, resourceList.get (0).getProductionTypeID ());
+		assertEquals (10, resourceList.get (0).getAmountPerTurn ());
+		assertEquals (15, resourceList.get (0).getAmountStored ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, resourceList.get (1).getProductionTypeID ());
+		assertEquals (12, resourceList.get (1).getAmountPerTurn ());
+		assertEquals (28, resourceList.get (1).getAmountStored ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, resourceList.get (2).getProductionTypeID ());
+		assertEquals (7, resourceList.get (2).getAmountPerTurn ());
+		assertEquals (111, resourceList.get (2).getAmountStored ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, resourceList.get (3).getProductionTypeID ());
+		assertEquals (9, resourceList.get (3).getAmountPerTurn ());
+		assertEquals (80, resourceList.get (3).getAmountStored ());
+
+		// Negate all the per turn amounts and run it again (this is here to prove how the rounding down works on a negative value)
+		for (final MomResourceValue production : resourceList)
+			production.setAmountPerTurn (-production.getAmountPerTurn ());
+
+		MomServerResourceCalculations.accumulateGlobalProductionValues (resourceList, db, debugLogger);
+
+		assertEquals (4, resourceList.size ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, resourceList.get (0).getProductionTypeID ());
+		assertEquals (-10, resourceList.get (0).getAmountPerTurn ());
+		assertEquals (15, resourceList.get (0).getAmountStored ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, resourceList.get (1).getProductionTypeID ());
+		assertEquals (-12, resourceList.get (1).getAmountPerTurn ());
+		assertEquals (16, resourceList.get (1).getAmountStored ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, resourceList.get (2).getProductionTypeID ());
+		assertEquals (-7, resourceList.get (2).getAmountPerTurn ());
+		assertEquals (100, resourceList.get (2).getAmountStored ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, resourceList.get (3).getProductionTypeID ());
+		assertEquals (-9, resourceList.get (3).getAmountPerTurn ());
+		assertEquals (80, resourceList.get (3).getAmountStored ());
+	}
+
+	/**
+	 * Tests the accumulateGlobalProductionValues method when we have a +ve production amount that should be a multiple of 2 but isn't
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
+	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
+	 */
+	@Test(expected=MomException.class)
+	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive ()
+		throws IOException, JAXBException, RecordNotFoundException, MomException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+
+		final List<MomResourceValue> resourceList = new ArrayList<MomResourceValue> ();
+
+		final MomResourceValue rations = new MomResourceValue ();
+		rations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		rations.setAmountPerTurn (9);
+		rations.setAmountStored (80);
+		resourceList.add (rations);
+
+		// Call method
+		MomServerResourceCalculations.accumulateGlobalProductionValues (resourceList, db, debugLogger);
+	}
+
+	/**
+	 * Tests the accumulateGlobalProductionValues method when we have a -ve production amount that should be a multiple of 2 but isn't
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
+	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
+	 */
+	@Test(expected=MomException.class)
+	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative ()
+		throws IOException, JAXBException, RecordNotFoundException, MomException
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+
+		final List<MomResourceValue> resourceList = new ArrayList<MomResourceValue> ();
+
+		final MomResourceValue rations = new MomResourceValue ();
+		rations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		rations.setAmountPerTurn (-9);
+		rations.setAmountStored (80);
+		resourceList.add (rations);
+
+		// Call method
+		MomServerResourceCalculations.accumulateGlobalProductionValues (resourceList, db, debugLogger);
 	}
 }

@@ -11,6 +11,7 @@ import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
 import momime.server.database.v0_9_4.PickTypeCountContainer;
 import momime.server.database.v0_9_4.Plane;
+import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Race;
 import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.Spell;
@@ -172,6 +173,51 @@ public final class TestServerDatabaseLookup
 		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
 
 		lookup.findMapFeature ("MF04", "testFindMapFeatureID_NotExists");
+	}
+
+	/**
+	 * Tests the findProductionTypeID method to find a productionType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindProductionTypeID_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabase db = new ServerDatabase ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final ProductionType newProductionType = new ProductionType ();
+			newProductionType.setProductionTypeID ("RE0" + n);
+			newProductionType.setProductionTypeDescription ("ProductionType " + n);
+
+			db.getProductionType ().add (newProductionType);
+		}
+
+		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+
+		assertEquals ("RE02", lookup.findProductionType ("RE02", "testFindProductionTypeID_Exists").getProductionTypeID ());
+		assertEquals ("ProductionType 2", lookup.findProductionType ("RE02", "testFindProductionTypeID_Exists").getProductionTypeDescription ());
+	}
+
+	/**
+	 * Tests the findProductionTypeID method to find a productionType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindProductionTypeID_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabase db = new ServerDatabase ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final ProductionType newProductionType = new ProductionType ();
+			newProductionType.setProductionTypeID ("RE0" + n);
+			newProductionType.setProductionTypeDescription ("ProductionType " + n);
+
+			db.getProductionType ().add (newProductionType);
+		}
+
+		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+
+		lookup.findProductionType ("RE04", "testFindProductionTypeID_NotExists");
 	}
 
 	/**

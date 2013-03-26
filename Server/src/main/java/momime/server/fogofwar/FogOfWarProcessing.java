@@ -96,6 +96,11 @@ public final class FogOfWarProcessing
 			case CAN_SEE:
 				row.set (x, FogOfWarStateID.TEMP_CAN_STILL_SEE);
 				break;
+				
+			// If its any of the TEMP values, then means we can see that cell more than once, which has no further effect
+			case TEMP_SEEING_IT_FOR_FIRST_TIME:
+			case TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT:
+			case TEMP_CAN_STILL_SEE:
 		}
 	}
 
@@ -376,6 +381,7 @@ public final class FogOfWarProcessing
 					{
 						// Couldn't see this cell before (either we'd never seen it before, or we'd seen it earlier and have been remembering it) - now we can see it
 						case FOG_OF_WAR_ACTION_UPDATE:
+						{
 							if (FogOfWarDuplication.copyTerrainAndNodeAura (tc, mc))
 								if (msg != null)
 								{
@@ -385,9 +391,11 @@ public final class FogOfWarProcessing
 									msg.getTerrainUpdate ().add (terrainMsg);
 								}
 							break;
+						}
 
 						// Could see this cell before but now we need to forget what we saw
 						case FOG_OF_WAR_ACTION_FORGET:
+						{
 							if (FogOfWarDuplication.blankTerrainAndNodeAura (mc))
 								if (msg != null)
 								{
@@ -397,6 +405,19 @@ public final class FogOfWarProcessing
 									msg.getTerrainUpdate ().add (terrainMsg);
 								}
 							break;
+						}
+
+						// No action required, because we could see it before and still can, so our info about it will already be up to date
+						case FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF:
+						{
+							break;
+						}
+
+						// No action required, because we couldn't see it before and still can't
+						case FOG_OF_WAR_ACTION_NONE:
+						{
+							break;
+						}
 					}
 
 					// Check for changes in cities
@@ -404,6 +425,7 @@ public final class FogOfWarProcessing
 					{
 						// Couldn't see this cell before (either we'd never seen it before, or we'd seen it earlier and have been remembering it) - now we can see it
 						case FOG_OF_WAR_ACTION_UPDATE:
+						{
 							// Careful, may not even be a city here and hence tc.getCityData () may be null
 							final int cityOwnerID = (tc.getCityData () == null) ? 0 : tc.getCityData ().getCityOwnerID ();
 
@@ -419,9 +441,11 @@ public final class FogOfWarProcessing
 									msg.getCityUpdate ().add (cityMsg);
 								}
 							break;
+						}
 
 						// Could see this cell before but now we need to forget what we saw
 						case FOG_OF_WAR_ACTION_FORGET:
+						{
 							if (FogOfWarDuplication.blankCityData (mc))
 								if (msg != null)
 								{
@@ -430,7 +454,20 @@ public final class FogOfWarProcessing
 									cityMsg.setCityData (mc.getCityData ());
 									msg.getCityUpdate ().add (cityMsg);
 								}
-						break;
+							break;
+						}
+						
+						// No action required, because we could see it before and still can, so our info about it will already be up to date
+						case FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF:
+						{
+							break;
+						}
+							
+						// No action required, because we couldn't see it before and still can't
+						case FOG_OF_WAR_ACTION_NONE:
+						{
+							break;
+						}
 					}
 				}
 
@@ -836,6 +873,12 @@ public final class FogOfWarProcessing
 						case TEMP_CAN_STILL_SEE:
 							row.set (x, FogOfWarStateID.CAN_SEE);
 							break;
+							
+						// Could see this cell before and it still didn't come back into view - nothing to do
+						case HAVE_SEEN:
+							
+						// Never seen this cell and still haven't - nothing to do
+						case NEVER_SEEN:
 					}
 				}
 

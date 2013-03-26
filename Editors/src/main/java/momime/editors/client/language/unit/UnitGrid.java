@@ -37,12 +37,12 @@ public class UnitGrid extends MoMLanguageEditorGridWithImport
 	/**
 	 * Offset into WIZARDS.EXE of the names table
 	 */
-	private final JComboBox dataOffsetCombo;
+	private final JComboBox<String> dataOffsetCombo;
 
 	/**
 	 * Offset to add to the values read from the names table in order to find the address of the actual name
 	 */
-	private final JComboBox namesOffsetCombo;
+	private final JComboBox<String> namesOffsetCombo;
 
 	/**
 	 * Number of unit names to read
@@ -92,7 +92,7 @@ public class UnitGrid extends MoMLanguageEditorGridWithImport
 		dataOffsetLabel.setAlignmentY (Component.TOP_ALIGNMENT);
 		getButtonPanel ().add (dataOffsetLabel);
 
-		dataOffsetCombo = new JComboBox ();
+		dataOffsetCombo = new JComboBox<String> ();
 		dataOffsetCombo.setPreferredSize (size);
 		dataOffsetCombo.setMinimumSize (size);
 		dataOffsetCombo.setMaximumSize (size);
@@ -113,7 +113,7 @@ public class UnitGrid extends MoMLanguageEditorGridWithImport
 		namesOffsetLabel.setAlignmentY (Component.TOP_ALIGNMENT);
 		getButtonPanel ().add (namesOffsetLabel);
 
-		namesOffsetCombo = new JComboBox ();
+		namesOffsetCombo = new JComboBox<String> ();
 		namesOffsetCombo.setPreferredSize (size);
 		namesOffsetCombo.setMinimumSize (size);
 		namesOffsetCombo.setMaximumSize (size);

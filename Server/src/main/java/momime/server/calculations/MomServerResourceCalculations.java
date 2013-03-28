@@ -19,8 +19,11 @@ import momime.common.database.v0_9_4.UnitUpkeep;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.ResourceValueUtils;
+import momime.common.messages.SpellUtils;
 import momime.common.messages.UnitUtils;
+import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
@@ -30,9 +33,13 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomResourceValue;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_4.NewTurnMessageData;
+import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_4.SpellResearchStatus;
+import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.database.ServerDatabaseLookup;
 import momime.server.database.v0_9_4.Building;
@@ -394,6 +401,83 @@ public final class MomServerResourceCalculations
 	}
 
 	/**
+	 * Checks how much research we generate this turn and puts it towards the current spell
+	 * @param player Player to progress research for
+	 * @param db Lookup lists built over the XML database
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
+	 * @throws JAXBException If there is a problem converting a reply message into XML
+	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
+	 */
+	static final void progressResearch (final PlayerServerDetails player, final ServerDatabaseLookup db, final Logger debugLogger)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		debugLogger.entering (MomServerResourceCalculations.class.getName (), "progressResearch");
+		
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+		
+		if (priv.getSpellIDBeingResearched () != null)
+		{
+			final int researchAmount = ResourceValueUtils.findAmountPerTurnForProductionType
+				(priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, debugLogger);
+			
+			debugLogger.finest ("Player generated " + researchAmount + " RPs this turn in spell research");
+			
+			// Put research points towards current spell
+			if (researchAmount > 0)
+			{
+				final SpellResearchStatus spellBeingResarched = SpellUtils.findSpellResearchStatus
+					(priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched (), debugLogger);
+				
+				// Put some research towards it
+				if (spellBeingResarched.getRemainingResearchCost () < researchAmount)
+					spellBeingResarched.setRemainingResearchCost (0);
+				else
+					spellBeingResarched.setRemainingResearchCost (spellBeingResarched.getRemainingResearchCost () - researchAmount);
+				
+				// If finished, then grant spell and blank out research
+				debugLogger.finest ("Player has " + spellBeingResarched.getRemainingResearchCost () + " RPs left before completing researching spell " + priv.getSpellIDBeingResearched ());
+				if (spellBeingResarched.getRemainingResearchCost () == 0)
+				{
+					// Show on New Turn Messages on the client
+					final NewTurnMessageData researchedSpell = new NewTurnMessageData ();
+					researchedSpell.setMsgType (NewTurnMessageTypeID.RESEARCHED_SPELL);
+					researchedSpell.setSpellID (priv.getSpellIDBeingResearched ());
+					trans.getNewTurnMessage ().add (researchedSpell);
+					
+					// Update on server
+					spellBeingResarched.setStatus (SpellResearchStatusID.AVAILABLE);
+					priv.setSpellIDBeingResearched (null);
+					
+					// Pick another random spell to add to the 8 spells researchable now
+					MomServerSpellCalculations.randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db, debugLogger);
+					
+					// And send this info to the client
+					if (player.getPlayerDescription ().isHuman ())
+					{
+						final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+						spellsMsg.getSpellResearchStatus ().addAll (priv.getSpellResearchStatus ());
+						player.getConnection ().sendMessageToClient (spellsMsg);
+					}
+				}
+				else if (player.getPlayerDescription ().isHuman ())
+				{
+					// Tell the client
+					// NB. we don't bother sending this if we've now finished researching the spell - there's no point, the client
+					// can tell there's zero RP left by the fact that the spell is now mpssAvailable
+					final UpdateRemainingResearchCostMessage remainingMsg = new UpdateRemainingResearchCostMessage ();
+					remainingMsg.setSpellID (priv.getSpellIDBeingResearched ());
+					remainingMsg.setRemainingResearchCost (spellBeingResarched.getRemainingResearchCost ());
+					player.getConnection ().sendMessageToClient (remainingMsg);
+				}
+			}
+		}
+		
+		debugLogger.exiting (MomServerResourceCalculations.class.getName (), "progressResearch");
+	}
+	
+	/**
 	 * Recalculates the amount of production of all types that we make each turn and sends the updated figures to the player(s)
 	 *
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
@@ -419,6 +503,9 @@ public final class MomServerResourceCalculations
 		for (final PlayerServerDetails player : players)
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
 			{
+				debugLogger.finest ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () +
+					" (" + player.getPlayerDescription ().getPlayerName () + ")");
+				
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 				// Calculate base amounts
@@ -438,6 +525,7 @@ public final class MomServerResourceCalculations
 
 					// Per turn production amounts are now fine, so do the accumulation and effect calculations
 					accumulateGlobalProductionValues (priv.getResourceValue (), db, debugLogger);
+					progressResearch (player, db, debugLogger);
 
 					// Continue casting spells
 					throw new UnsupportedOperationException ("recalculateGlobalProductionValues for turn > 1 not finished yet");

@@ -1,6 +1,7 @@
 package momime.server.calculations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -17,6 +19,9 @@ import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.RoundingDirectionID;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.UnitUtils;
+import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
@@ -26,10 +31,14 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomResourceValue;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_4.SpellResearchStatus;
+import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseLookup;
@@ -275,6 +284,59 @@ public final class TestMomServerResourceCalculations
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, priv.getResourceValue ().get (5).getProductionTypeID ());
 		assertEquals (6, priv.getResourceValue ().get (5).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (5).getAmountStored ());
+	}
+
+	/**
+	 * Tests the sendGlobalProductionValues method
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Test
+	public final void testSendGlobalProductionValues () throws JAXBException, XMLStreamException 
+	{
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		
+		final MomResourceValue resource1 = new MomResourceValue ();
+		resource1.setAmountPerTurn (5);
+		resource1.setAmountStored (25);
+		resource1.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		priv.getResourceValue ().add (resource1);
+
+		final MomResourceValue resource2 = new MomResourceValue ();
+		resource2.setAmountPerTurn (7);
+		resource2.setAmountStored (16);
+		resource2.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		priv.getResourceValue ().add (resource2);
+		
+		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
+		trans.setOverlandCastingSkillRemainingThisTurn (25);
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
+		
+		// Connection
+		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
+		player.setConnection (msgs);
+		
+		// Run test
+		MomServerResourceCalculations.sendGlobalProductionValues (player, 17, debugLogger);
+		assertEquals (1, msgs.getMessages ().size ());
+		
+		final UpdateGlobalEconomyMessage msg = (UpdateGlobalEconomyMessage) msgs.getMessages ().get (0);
+		assertEquals (17, msg.getCastingSkillRemainingThisCombat ());
+		assertEquals (25, msg.getOverlandCastingSkillRemainingThisTurn ());
+		assertEquals (2, msg.getResourceValue ().size ());
+		
+		assertEquals (5, msg.getResourceValue ().get (0).getAmountPerTurn ());
+		assertEquals (25, msg.getResourceValue ().get (0).getAmountStored ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, msg.getResourceValue ().get (0).getProductionTypeID ());
+
+		assertEquals (7, msg.getResourceValue ().get (1).getAmountPerTurn ());
+		assertEquals (16, msg.getResourceValue ().get (1).getAmountStored ());
+		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, msg.getResourceValue ().get (1).getProductionTypeID ());
 	}
 
 	/**
@@ -563,5 +625,139 @@ public final class TestMomServerResourceCalculations
 
 		// Call method
 		MomServerResourceCalculations.accumulateGlobalProductionValues (resourceList, db, debugLogger);
+	}
+	
+	/**
+	 * Tests the progressResearch method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressResearch () throws Exception
+	{
+		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+
+		// Player
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
+
+		// Connection
+		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
+		player.setConnection (msgs);
+		
+		// Put in some dummy spells
+		for (int n = 1; n <= 3; n++)
+		{
+			final SpellResearchStatus status = new SpellResearchStatus ();
+			status.setSpellID ("SP00" + n);
+			status.setStatus (SpellResearchStatusID.RESEARCHABLE);
+			status.setRemainingResearchCost (n * 50);
+			priv.getSpellResearchStatus ().add (status);
+		}
+		
+		// Generate 40 research each turn
+		final MomResourceValue researchAmount = new MomResourceValue ();
+		researchAmount.setAmountPerTurn (40);
+		researchAmount.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+		priv.getResourceValue ().add (researchAmount);
+		
+		// No spell being researched
+		MomServerResourceCalculations.progressResearch (player, db, debugLogger);
+		
+		assertNull (priv.getSpellIDBeingResearched ());
+		assertEquals (3, priv.getSpellResearchStatus ().size ());
+		assertEquals ("SP001", priv.getSpellResearchStatus ().get (0).getSpellID ());
+		assertEquals (50, priv.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (0).getStatus ());
+		assertEquals ("SP002", priv.getSpellResearchStatus ().get (1).getSpellID ());
+		assertEquals (100, priv.getSpellResearchStatus ().get (1).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (1).getStatus ());
+		assertEquals ("SP003", priv.getSpellResearchStatus ().get (2).getSpellID ());
+		assertEquals (150, priv.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (2).getStatus ());
+		
+		assertEquals (0, msgs.getMessages ().size ());
+		
+		// Spend 40 research - 60 left
+		priv.setSpellIDBeingResearched ("SP002");
+
+		MomServerResourceCalculations.progressResearch (player, db, debugLogger);
+		
+		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
+		assertEquals (3, priv.getSpellResearchStatus ().size ());
+		assertEquals ("SP001", priv.getSpellResearchStatus ().get (0).getSpellID ());
+		assertEquals (50, priv.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (0).getStatus ());
+		assertEquals ("SP002", priv.getSpellResearchStatus ().get (1).getSpellID ());
+		assertEquals (60, priv.getSpellResearchStatus ().get (1).getRemainingResearchCost ());		// Drops to 60
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (1).getStatus ());
+		assertEquals ("SP003", priv.getSpellResearchStatus ().get (2).getSpellID ());
+		assertEquals (150, priv.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (2).getStatus ());
+
+		assertEquals (1, msgs.getMessages ().size ());
+		
+		final UpdateRemainingResearchCostMessage msg1 = (UpdateRemainingResearchCostMessage) msgs.getMessages ().get (0);
+		assertEquals ("SP002", msg1.getSpellID ());
+		assertEquals (60, msg1.getRemainingResearchCost ());
+
+		// Spend 40 research - 20 left
+		msgs.getMessages ().clear ();
+		MomServerResourceCalculations.progressResearch (player, db, debugLogger);
+		
+		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
+		assertEquals (3, priv.getSpellResearchStatus ().size ());
+		assertEquals ("SP001", priv.getSpellResearchStatus ().get (0).getSpellID ());
+		assertEquals (50, priv.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (0).getStatus ());
+		assertEquals ("SP002", priv.getSpellResearchStatus ().get (1).getSpellID ());
+		assertEquals (20, priv.getSpellResearchStatus ().get (1).getRemainingResearchCost ());		// Drops to 20
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (1).getStatus ());
+		assertEquals ("SP003", priv.getSpellResearchStatus ().get (2).getSpellID ());
+		assertEquals (150, priv.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (2).getStatus ());
+
+		assertEquals (1, msgs.getMessages ().size ());
+		
+		final UpdateRemainingResearchCostMessage msg2 = (UpdateRemainingResearchCostMessage) msgs.getMessages ().get (0);
+		assertEquals ("SP002", msg2.getSpellID ());
+		assertEquals (20, msg2.getRemainingResearchCost ());
+		
+		// Finish research
+		msgs.getMessages ().clear ();
+		MomServerResourceCalculations.progressResearch (player, db, debugLogger);
+		
+		assertNull (priv.getSpellIDBeingResearched ());
+		assertEquals (3, priv.getSpellResearchStatus ().size ());
+		assertEquals ("SP001", priv.getSpellResearchStatus ().get (0).getSpellID ());
+		assertEquals (50, priv.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, priv.getSpellResearchStatus ().get (0).getStatus ());
+		assertEquals ("SP002", priv.getSpellResearchStatus ().get (1).getSpellID ());
+		assertEquals (0, priv.getSpellResearchStatus ().get (1).getRemainingResearchCost ());		// Done
+		assertEquals (SpellResearchStatusID.AVAILABLE, priv.getSpellResearchStatus ().get (1).getStatus ());
+		assertEquals ("SP003", priv.getSpellResearchStatus ().get (2).getSpellID ());
+		assertEquals (150, priv.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, priv.getSpellResearchStatus ().get (2).getStatus ());
+
+		assertEquals (1, msgs.getMessages ().size ());
+		
+		final FullSpellListMessage msg3 = (FullSpellListMessage) msgs.getMessages ().get (0);
+		assertEquals (3, msg3.getSpellResearchStatus ().size ());
+		assertEquals ("SP001", msg3.getSpellResearchStatus ().get (0).getSpellID ());
+		assertEquals (50, msg3.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, msg3.getSpellResearchStatus ().get (0).getStatus ());
+		assertEquals ("SP002", msg3.getSpellResearchStatus ().get (1).getSpellID ());
+		assertEquals (0, msg3.getSpellResearchStatus ().get (1).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.AVAILABLE, msg3.getSpellResearchStatus ().get (1).getStatus ());
+		assertEquals ("SP003", msg3.getSpellResearchStatus ().get (2).getSpellID ());
+		assertEquals (150, msg3.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, msg3.getSpellResearchStatus ().get (2).getStatus ());
 	}
 }

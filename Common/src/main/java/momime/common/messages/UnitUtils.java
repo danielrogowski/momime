@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import momime.common.MomException;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.CombatAreaAffectsPlayersID;
 import momime.common.database.v0_9_4.CombatAreaEffect;
@@ -122,7 +122,7 @@ public final class UnitUtils
 	 * @return Unit definition
 	 */
 	public final static Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
-		final CommonDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "initializeUnitSkills", unit.getUnitID ());
 
@@ -171,7 +171,7 @@ public final class UnitUtils
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	public final static MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final int startingExperience,
-		final boolean loadDefaultSkillsFromXML, final CommonDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final boolean loadDefaultSkillsFromXML, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "createMemoryUnit", new String [] {unitID, new Integer (unitURN).toString ()});
 
@@ -326,7 +326,7 @@ public final class UnitUtils
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public final static ExperienceLevel getExperienceLevel (final AvailableUnit unit, final boolean includeBonuses, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabaseLookup db, final Logger debugLogger)
+		final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "getExperienceLevel", unit.getUnitID ());
@@ -406,7 +406,7 @@ public final class UnitUtils
 	 * @return True if this combat area effect affects this unit
 	 * @throws RecordNotFoundException If we can't find the definition for the CAE
 	 */
-	public final static boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "doesCombatAreaEffectApplyToUnit", new String [] {unit.getUnitID (), effect.getCombatAreaEffectID ()});
@@ -490,7 +490,7 @@ public final class UnitUtils
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
 	public static final String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitHasSkill> skills,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabaseLookup db, final Logger debugLogger)
+		final List<MemoryMaintainedSpell> spells, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "getModifiedUnitMagicRealmLifeformTypeID", unit);
@@ -532,7 +532,7 @@ public final class UnitUtils
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public final static int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabaseLookup db, final Logger debugLogger)
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "getModifiedSkillValue", new String [] {unit.getUnitID (), unitSkillID});
@@ -603,7 +603,7 @@ public final class UnitUtils
 	 * @return Base upkeep value, before any reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
-	public final static int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "getBasicUpkeepValue", new String [] {unit.getUnitID (), productionTypeID});
@@ -632,7 +632,7 @@ public final class UnitUtils
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	public final static int getModifiedUpkeepValue (final AvailableUnit unit, final String productionTypeID, final List<? extends PlayerPublicDetails> players,
-		final CommonDatabaseLookup db, final Logger debugLogger)
+		final ICommonDatabase db, final Logger debugLogger)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "getModifiedUpkeepValue", new String [] {unit.getUnitID (), productionTypeID});
@@ -675,7 +675,7 @@ public final class UnitUtils
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we can't find the definition for one of the units
 	 */
-	public final static void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "resetUnitOverlandMovement", onlyOnePlayerID);

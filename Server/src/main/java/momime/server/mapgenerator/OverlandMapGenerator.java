@@ -27,7 +27,7 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.MapFeatureMagicRealm;
@@ -63,7 +63,7 @@ public final class OverlandMapGenerator
 	private final MomSessionDescription sd;
 
 	/** Server database cache */
-	private final ServerDatabaseLookup db;
+	private final ServerDatabaseEx db;
 
 	/** Blobs expand out only in north/south/east/west directions - no diagonals */
 	private static final int [] BLOB_EXPANSION_DIRECTIONS = new int [] {1, 3, 5, 7};
@@ -446,7 +446,7 @@ public final class OverlandMapGenerator
 	 * @throws MomException If some fatal error happens during map generation
 	 */
 	public OverlandMapGenerator (final FogOfWarMemory aTrueTerrain,
-		final MomSessionDescription sessionDescription, final ServerDatabaseLookup aDB, final Logger aDebugLogger)
+		final MomSessionDescription sessionDescription, final ServerDatabaseEx aDB, final Logger aDebugLogger)
 		throws MomException
 	{
 		super ();
@@ -478,7 +478,7 @@ public final class OverlandMapGenerator
 		setAllToWater ();
 
 		final double landTileCountTimes100 = sd.getMapSize ().getWidth () * sd.getMapSize ().getHeight () * sd.getLandProportion ().getPercentageOfMapIsLand ();
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 		{
 			// Generate height-based scenery
 			final HeightMapGenerator heightMap = new HeightMapGenerator (sd.getMapSize (), sd.getMapSize ().getZoneWidth (), sd.getMapSize ().getZoneHeight (),
@@ -506,7 +506,7 @@ public final class OverlandMapGenerator
 		// Special rules for Towes of Wizardy
 		placeTowersOfWizardry ();
 
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 		{
 			// Generate shore tiles and extend them into rivers
 			final int [] [] shoreTileNumbers = determineShoreTileNumbers (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, ServerDatabaseValues.VALUE_TILE_TYPE_SHORE, plane);
@@ -534,7 +534,7 @@ public final class OverlandMapGenerator
 		trueTerrain.setMap (new MapVolumeOfMemoryGridCells ());
 
 		// Create all the map cells
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 		{
 			final MapAreaOfMemoryGridCells area = new MapAreaOfMemoryGridCells ();
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
@@ -606,7 +606,7 @@ public final class OverlandMapGenerator
 		// If wraps both ways, there'll be no tundra at all
 		if ((!sd.getMapSize ().isWrapsLeftToRight ()) || (!sd.getMapSize ().isWrapsTopToBottom ()))
 		{
-			for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+			for (int plane = 0; plane < db.getPlane ().size (); plane++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 					{
@@ -752,7 +752,7 @@ public final class OverlandMapGenerator
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 					{
 						boolean possibleLocation = true;
-						for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+						for (int plane = 0; plane < db.getPlane ().size (); plane++)
 							if (trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA))
 								possibleLocation = false;
 
@@ -780,7 +780,7 @@ public final class OverlandMapGenerator
 				{
 					// Place tower on all planes
 					placedOk = true;
-					for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+					for (int plane = 0; plane < db.getPlane ().size (); plane++)
 					{
 						final OverlandMapTerrainData terrainData = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 						terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
@@ -1207,7 +1207,7 @@ public final class OverlandMapGenerator
 		debugLogger.entering (OverlandMapGenerator.class.getName (), "placeTerrainFeatures");
 
 		// Validate the right planes are listed in the session description
-		if (sd.getLandProportion ().getLandProportionPlane ().size () != db.getPlanes ().size ())
+		if (sd.getLandProportion ().getLandProportionPlane ().size () != db.getPlane ().size ())
 			throw new MomException ("placeTerrainFeatures: Incorrect number of Land Proportion Planes listed in session description");
 
 		final List<Integer> planeNumbersFound = new ArrayList<Integer> ();
@@ -1395,7 +1395,7 @@ public final class OverlandMapGenerator
 		debugLogger.entering (OverlandMapGenerator.class.getName (), "placeNodes");
 
 		// Validate the right planes are listed in the session description
-		if (sd.getNodeStrength ().getNodeStrengthPlane ().size () != db.getPlanes ().size ())
+		if (sd.getNodeStrength ().getNodeStrengthPlane ().size () != db.getPlane ().size ())
 			throw new MomException ("placeNodes: Incorrect number of Node Strength Planes listed in session description");
 
 		final List<Integer> planeNumbersFound = new ArrayList<Integer> ();
@@ -1474,7 +1474,7 @@ public final class OverlandMapGenerator
 
 		// List all candidates
 		final List<String> nodeTileTypeIDs = new ArrayList<String> ();
-		for (final TileType thisTileType : db.getTileTypes ())
+		for (final TileType thisTileType : db.getTileType ())
 			if (thisTileType.getMagicRealmID () != null)
 				nodeTileTypeIDs.add (thisTileType.getTileTypeID ());
 
@@ -1498,7 +1498,7 @@ public final class OverlandMapGenerator
 
 		// List all candidates
 		final List<String> lairMapFeatureIDs = new ArrayList<String> ();
-		for (final MapFeature thisFeature : db.getMapFeatures ())
+		for (final MapFeature thisFeature : db.getMapFeature ())
 			if ((thisFeature.getMapFeatureMagicRealm ().size () > 0) &&
 				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY)) &&
 				(!thisFeature.getMapFeatureID ().equals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY)))
@@ -1530,7 +1530,7 @@ public final class OverlandMapGenerator
 
 		// Check if possible to place a lair at every cell
 		final List<OverlandMapCoordinates> possibleLocations = new ArrayList<OverlandMapCoordinates> ();
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -1576,7 +1576,7 @@ public final class OverlandMapGenerator
 	{
 		debugLogger.entering (OverlandMapGenerator.class.getName (), "generateInitialCombatAreaEffects");
 
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -1632,11 +1632,11 @@ public final class OverlandMapGenerator
 	 * @param db Server database cache
 	 * @return Most expensive monster of the requested type, or null if the cheapest monster of this type is still more expensive than our budget
 	 */
-	static final Unit findMostExpensiveMonster (final String magicRealmLifeformTypeID, final int monsterBudget, final ServerDatabaseLookup db)
+	static final Unit findMostExpensiveMonster (final String magicRealmLifeformTypeID, final int monsterBudget, final ServerDatabaseEx db)
 	{
 		Unit bestMatch = null;
 
-		for (final Unit thisUnit : db.getUnits ())
+		for (final Unit thisUnit : db.getUnit ())
 			if (thisUnit.getUnitMagicRealm ().equals (magicRealmLifeformTypeID))
 				if ((thisUnit.getProductionCost () != null) && (thisUnit.getProductionCost () <= monsterBudget) && (thisUnit.getProductionCost () > 0) &&
 					((bestMatch == null) || (thisUnit.getProductionCost () > bestMatch.getProductionCost ())))
@@ -1667,7 +1667,7 @@ public final class OverlandMapGenerator
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	private static final void fillSingleLairOrTowerWithMonsters (final MomSessionDescription sd, final OverlandMapCoordinates lairLocation, final String magicRealmLifeformTypeID,
-		final int monsterStrengthMin, final int monsterStrengthMax, final double powerProportion, final MomGeneralServerKnowledge gsk, final ServerDatabaseLookup db,
+		final int monsterStrengthMin, final int monsterStrengthMax, final double powerProportion, final MomGeneralServerKnowledge gsk, final ServerDatabaseEx db,
 		final PlayerServerDetails monsterPlayer, final Logger debugLogger)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -1728,13 +1728,13 @@ public final class OverlandMapGenerator
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	public static final void fillNodesLairsAndTowersWithMonsters (final MomSessionDescription sd,
-		final MomGeneralServerKnowledge gsk, final ServerDatabaseLookup db, final PlayerServerDetails monsterPlayer, final Logger debugLogger)
+		final MomGeneralServerKnowledge gsk, final ServerDatabaseEx db, final PlayerServerDetails monsterPlayer, final Logger debugLogger)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (OverlandMapGenerator.class.getName (), "fillNodesLairsAndTowersWithMonsters");
 
 		// Validate the right planes are listed in the session description
-		if (sd.getDifficultyLevel ().getDifficultyLevelPlane ().size () != db.getPlanes ().size ())
+		if (sd.getDifficultyLevel ().getDifficultyLevelPlane ().size () != db.getPlane ().size ())
 			throw new MomException ("fillNodesLairsAndTowersWithMonsters: Incorrect number of Difficulty Level Planes listed in session description");
 
 		final List<Integer> planeNumbersFound = new ArrayList<Integer> ();

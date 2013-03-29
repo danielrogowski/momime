@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
@@ -28,9 +27,7 @@ import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
-import momime.server.database.v0_9_4.ServerDatabase;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Wizard;
 
@@ -56,9 +53,7 @@ public final class TestPlayerPickServerUtils
 	@Test
 	public final void testGetTotalInitialSkill () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Add 1x Book 1, 2x Book 2, 3x Book 3, 4x Book 4 and 5x Book 5 = 15 books x2 skill per book = 30
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
@@ -179,9 +174,7 @@ public final class TestPlayerPickServerUtils
 	@Test
 	public final void testValidateCustomPicks () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Set up session description
 		final DifficultyLevelData dl = new DifficultyLevelData ();
@@ -248,9 +241,7 @@ public final class TestPlayerPickServerUtils
 	@Test
 	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_Human () throws Exception
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -260,7 +251,7 @@ public final class TestPlayerPickServerUtils
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
-		for (final Spell spell : serverDB.getSpell ())
+		for (final Spell spell : db.getSpell ())
 		{
 			final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 			researchStatus.setSpellID (spell.getSpellID ());
@@ -329,9 +320,7 @@ public final class TestPlayerPickServerUtils
 	@Test
 	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_AI () throws Exception
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -341,7 +330,7 @@ public final class TestPlayerPickServerUtils
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
-		for (final Spell spell : serverDB.getSpell ())
+		for (final Spell spell : db.getSpell ())
 		{
 			final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 			researchStatus.setSpellID (spell.getSpellID ());
@@ -400,9 +389,7 @@ public final class TestPlayerPickServerUtils
 	@Test
 	public final void testValidateInitialSpellSelection () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -461,9 +448,7 @@ public final class TestPlayerPickServerUtils
 	@Test
 	public final void testValidateRaceChoice () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -594,12 +579,10 @@ public final class TestPlayerPickServerUtils
 	@Test
 	public final void testListWizardsForAIPlayers () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Quick check on DB
-		assertEquals (16, db.getWizards ().size ());
+		assertEquals (16, db.getWizard ().size ());
 
 		// Create human players using 2 wizards
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -641,9 +624,7 @@ public final class TestPlayerPickServerUtils
 	@Test
 	public final void testStartingPlaneForWizard () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
@@ -676,9 +657,7 @@ public final class TestPlayerPickServerUtils
 	@Test
 	public final void testChooseRandomRaceForPlane () throws IOException, JAXBException, MomException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final int arcanusRaceID = Integer.parseInt (PlayerPickServerUtils.chooseRandomRaceForPlane (0, db, debugLogger).substring (2));
 		assertTrue ((arcanusRaceID >= 1) && (arcanusRaceID <= 9));

@@ -28,7 +28,7 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.calculations.MomServerCityCalculations;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.AiBuildingTypeID;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
@@ -61,7 +61,7 @@ public final class CityAI
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 */
 	public static final OverlandMapCoordinates chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
-		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (CityAI.class.getName (), "chooseCityLocation", plane);
@@ -152,7 +152,7 @@ public final class CityAI
 	 * @throws MomException If a city's race has no farmers defined or those farmers have no ration production defined
 	 */
 	static final int findWorkersToConvertToFarmers (final int doubleRationsNeeded, final boolean tradeGoods, final FogOfWarMemory trueMap,
-		final PlayerServerDetails player, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, MomException
 	{
 		debugLogger.entering (CityAI.class.getName (), "findWorkersToConvertToFarmers", tradeGoods);
@@ -161,7 +161,7 @@ public final class CityAI
 		// of times for how many workers there are in the city that we could convert to farmers
 		final List<OverlandMapCoordinates> workerCoordinates = new ArrayList<OverlandMapCoordinates> ();
 
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -221,7 +221,7 @@ public final class CityAI
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public static final void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final PlayerServerDetails player, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (CityAI.class.getName (), "setOptionalFarmersInAllCities", player.getPlayerDescription ().getPlayerID ());
@@ -239,7 +239,7 @@ public final class CityAI
 		// Then take off how many rations cities are producing even if they have zero optional farmers set
 		// e.g. a size 1 city with a granary next to a wild game resource will produce +3 rations even with no farmers,
 		// or a size 1 city with no resources must be a farmer, but he only eats 1 of the 2 rations he produces so this also gives +1
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -278,7 +278,7 @@ public final class CityAI
 		debugLogger.finest ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after using up other production cities");
 
 		// Update each player's memorised view of this city with the new number of optional farmers, if they can see it
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -312,7 +312,7 @@ public final class CityAI
 	 */
 	static final void decideWhatToBuild (final OverlandMapCoordinates cityLocation, final OverlandMapCityData cityData,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryBuilding> trueBuildings,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (CityAI.class.getName (), "decideWhatToBuild", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
@@ -352,7 +352,7 @@ public final class CityAI
 			// c) our race cannot build
 			// Keep buildings in the list even if we don't yet have the pre-requisites necessary to build them
 			final List<Building> buildingOptions = new ArrayList<Building> ();
-			for (final Building building : db.getBuildings ())
+			for (final Building building : db.getBuilding ())
 				if ((building.getAiBuildingTypeID () == buildingType) && (!MemoryBuildingUtils.findBuilding (trueBuildings, cityLocation, building.getBuildingID (), debugLogger)) &&
 					(MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, trueBuildings, cityLocation, building, sd.getMapSize (), db, debugLogger)))
 

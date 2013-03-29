@@ -8,7 +8,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Race;
@@ -32,14 +32,14 @@ public final class OverlandMapServerUtils
  	 * @return ID of a random race who inhabits the requested plane
  	 * @throws MomException If no races are defined with the requested plane
 	 */
-	final static String chooseRandomRaceForPlane (final int plane, final ServerDatabaseLookup db, final Logger debugLogger)
+	final static String chooseRandomRaceForPlane (final int plane, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException
 	{
 		debugLogger.exiting (OverlandMapGenerator.class.getName (), "chooseRandomRaceForPlane");
 
 		// List all candidates
 		final List<String> raceIDs = new ArrayList<String> ();
-		for (final Race thisRace : db.getRaces ())
+		for (final Race thisRace : db.getRace ())
 			if (thisRace.getNativePlane () == plane)
 				raceIDs.add (thisRace.getRaceID ());
 
@@ -65,7 +65,7 @@ public final class OverlandMapServerUtils
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	final static void setContinentalRace (final MapVolumeOfMemoryGridCells map, final List<StringMapArea2DArray> continentalRace,
-		final int x, final int y, final int plane, final String raceID, final ServerDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final int x, final int y, final int plane, final String raceID, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (OverlandMapServerUtils.class.getName (), "setContinentalRace",
 			new String [] {new Integer (x).toString (), new Integer (y).toString (), new Integer (plane).toString (), raceID});
@@ -108,16 +108,16 @@ public final class OverlandMapServerUtils
  	 * @throws MomException If no races are defined for a particular plane
 	 */
 	public final static List<StringMapArea2DArray> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
-		final CoordinateSystem sys, final ServerDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException, MomException
+		final CoordinateSystem sys, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException, MomException
 	{
 		debugLogger.entering (OverlandMapServerUtils.class.getName (), "decideAllContinentalRaces");
 
 		// Allocate a race to each continent of land for raider cities
 		final List<StringMapArea2DArray> continentalRace = new ArrayList<StringMapArea2DArray> ();
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 			continentalRace.add (new StringMapArea2DArray (sys, debugLogger));
 
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sys.getWidth (); x++)
 				for (int y = 0; y < sys.getHeight (); y++)
 				{

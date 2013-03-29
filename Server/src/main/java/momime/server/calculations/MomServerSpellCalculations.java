@@ -12,7 +12,7 @@ import momime.common.messages.SpellUtils;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
 import momime.server.database.v0_9_4.PickTypeCountContainer;
@@ -40,7 +40,7 @@ public final class MomServerSpellCalculations
 	 * @throws RecordNotFoundException If we encounter a pick or other item that we can't find in the cache
 	 */
 	public static final void randomizeResearchableSpells (final List<SpellResearchStatus> spells, final List<PlayerPick> picks,
-		final ServerDatabaseLookup db, final Logger debugLogger)
+		final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (MomServerSpellCalculations.class.getName (), "randomizeResearchableSpells");
@@ -118,7 +118,7 @@ public final class MomServerSpellCalculations
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
-	public static final void randomizeSpellsResearchableNow (final List<SpellResearchStatus> spells, final ServerDatabaseLookup db, final Logger debugLogger)
+	public static final void randomizeSpellsResearchableNow (final List<SpellResearchStatus> spells, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (MomServerSpellCalculations.class.getName (), "randomizeSpellsResearchableNow");

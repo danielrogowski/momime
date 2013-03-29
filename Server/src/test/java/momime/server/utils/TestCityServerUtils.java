@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.database.CommonDatabaseConstants;
@@ -19,10 +18,8 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
 
@@ -45,12 +42,10 @@ public final class TestCityServerUtils
 	@Test
 	public final void testValidateCityConstruction_Building () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -129,12 +124,10 @@ public final class TestCityServerUtils
 	@Test
 	public final void testValidateCityConstruction_Unit () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -203,12 +196,10 @@ public final class TestCityServerUtils
 	@Test
 	public final void testValidateCityConstruction_InvalidConstructionProject () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -244,12 +235,10 @@ public final class TestCityServerUtils
 	@Test(expected=RecordNotFoundException.class)
 	public final void testValidateCityConstruction_InvalidRace () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -285,12 +274,10 @@ public final class TestCityServerUtils
 	@Test
 	public final void testValidateOptionalFarmers () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();

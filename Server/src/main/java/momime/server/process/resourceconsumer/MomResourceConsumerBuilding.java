@@ -15,7 +15,7 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.process.CityProcessing;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -105,7 +105,7 @@ public final class MomResourceConsumerBuilding implements IMomResourceConsumer
 	 */
 	@Override
 	public final void kill (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (MomResourceConsumerBuilding.class.getName (), "kill",

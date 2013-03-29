@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
@@ -119,7 +119,7 @@ public final class TestMomCityCalculations
 
 		// Adjacent bonus only applies if adjacent flag is set on the tile type
 		// To test this we fudge the DB after creating it
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 		db.findTileType (GenerateTestData.SHORE_TILE, "testCalculateGoldBonus").setGoldBonusSurroundingTiles (null);
 		assertEquals (0, MomCityCalculations.calculateGoldBonus (map, cityLocation, sys, db, debugLogger));
 	}

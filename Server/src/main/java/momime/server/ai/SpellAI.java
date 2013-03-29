@@ -10,7 +10,7 @@ import momime.common.messages.SpellUtils;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.utils.RandomUtils;
 
@@ -79,7 +79,7 @@ public final class SpellAI
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 * @throws MomException If there is an error in the logic
 	 */
-	final static void decideWhatToResearch (final PlayerServerDetails player, final ServerDatabaseLookup db, final Logger debugLogger)
+	final static void decideWhatToResearch (final PlayerServerDetails player, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, MomException
 	{
 		debugLogger.entering (SpellAI.class.getName (), "decideWhatToResearch", player.getPlayerDescription ().getPlayerName ());
@@ -115,7 +115,7 @@ public final class SpellAI
 	 * @throws RecordNotFoundException If the spell chosen couldn't be found in the player's spell list
 	 */
 	public final static SpellResearchStatus chooseFreeSpellAI (final List<SpellResearchStatus> spells, final String magicRealmID, final String spellRankID,
-		final String aiPlayerName, final ServerDatabaseLookup db, final Logger debugLogger)
+		final String aiPlayerName, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (SpellAI.class.getName (), "chooseFreeSpellAI", new String [] {aiPlayerName, magicRealmID, spellRankID});

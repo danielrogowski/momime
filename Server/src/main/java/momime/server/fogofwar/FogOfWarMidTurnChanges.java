@@ -70,7 +70,7 @@ import momime.common.utils.CompareUtils;
 import momime.server.calculations.MomFogOfWarCalculations;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerUnitCalculations;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
@@ -209,7 +209,7 @@ public final class FogOfWarMidTurnChanges
 	 */
 	static final boolean canSeeUnitMidTurn (final MemoryUnit unit, final List<PlayerServerDetails> players,
 		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea,
-		final ServerDatabaseLookup db, final MomSessionDescription sd)
+		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		final boolean canSee;
@@ -275,7 +275,7 @@ public final class FogOfWarMidTurnChanges
 	 */
 	static final boolean canSeeSpellMidTurn (final MemoryMaintainedSpell spell, final List<PlayerServerDetails> players,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final MapVolumeOfFogOfWarStates fogOfWarArea,
-		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		final boolean canSee;
@@ -351,7 +351,7 @@ public final class FogOfWarMidTurnChanges
 	public final static MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final String unitID, final OverlandMapCoordinates locationToAddUnit, final OverlandMapCoordinates buildingsLocation, final OverlandMapCoordinates combatLocation,
 		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addUnitOnServerAndClients",
@@ -417,7 +417,7 @@ public final class FogOfWarMidTurnChanges
 	 */
 	public final static void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final OverlandMapCoordinates locationToAddUnit,
 		final PlayerServerDetails unitOwner, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "updateUnitStatusToAliveOnServerAndClients", trueUnit.getUnitURN ());
@@ -492,7 +492,7 @@ public final class FogOfWarMidTurnChanges
 	 */
 	public final static void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID action,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "killUnitOnServerAndClients", trueUnit.getUnitURN ());
@@ -567,7 +567,7 @@ public final class FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public final static void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addExistingTrueMaintainedSpellToClients",
@@ -623,7 +623,7 @@ public final class FogOfWarMidTurnChanges
 	public final static void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addMaintainedSpellOnServerAndClients",
@@ -680,7 +680,7 @@ public final class FogOfWarMidTurnChanges
 	public final static void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "switchOffMaintainedSpellOnServerAndClients",
@@ -741,7 +741,7 @@ public final class FogOfWarMidTurnChanges
 	 */
 	public final static void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addCombatAreaEffectOnServerAndClients", combatAreaEffectID);
@@ -804,7 +804,7 @@ public final class FogOfWarMidTurnChanges
 	 */
 	public final static void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
 		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "removeCombatAreaEffectFromServerAndClients", combatAreaEffectID);
@@ -859,7 +859,7 @@ public final class FogOfWarMidTurnChanges
 	public final static void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
 		final OverlandMapCoordinates cityLocation, final String firstBuildingID, final String secondBuildingID,
 		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addBuildingOnServerAndClients",
@@ -957,7 +957,7 @@ public final class FogOfWarMidTurnChanges
 	 */
 	public final static void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID, final boolean updateBuildingSoldThisTurn,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "destroyBuildingOnServerAndClients",
@@ -1015,7 +1015,7 @@ public final class FogOfWarMidTurnChanges
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	private final static void updatePlayerMemoryOfUnit_DamageTakenAndExperience (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience", tu.getUnitURN ());
@@ -1063,7 +1063,7 @@ public final class FogOfWarMidTurnChanges
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	public final static void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "healUnitsAndGainExperience", onlyOnePlayerID);
@@ -1110,7 +1110,7 @@ public final class FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending a message to the client
 	 */
 	private final static void addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> trueSpells, final PlayerServerDetails player, final ServerDatabaseLookup db, final Logger debugLogger)
+		final List<MemoryMaintainedSpell> trueSpells, final PlayerServerDetails player, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient",
@@ -1217,7 +1217,7 @@ public final class FogOfWarMidTurnChanges
 	 */
 	public final static void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final OverlandMapCoordinates moveFrom, final OverlandMapCoordinates moveTo, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "moveUnitStackOneCellOnServerAndClients", new String [] {unitStack.toString (),
@@ -1395,7 +1395,7 @@ public final class FogOfWarMidTurnChanges
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
 	final static void reduceMovementRemaining (final List<MemoryUnit> unitStack, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseLookup db, final Logger debugLogger)
+		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db, final Logger debugLogger)
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "reduceMovementRemaining", new String [] {unitStack.toString (), tileTypeID});
 
@@ -1444,7 +1444,7 @@ public final class FogOfWarMidTurnChanges
 	public final static void moveUnitStack (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final OverlandMapCoordinates originalMoveFrom, final OverlandMapCoordinates moveTo,
 		final boolean forceAsPendingMovement, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (FogOfWarMidTurnChanges.class.getName (), "moveUnitStack", new String [] {unitStack.toString (),
@@ -1471,10 +1471,10 @@ public final class FogOfWarMidTurnChanges
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 
 			// Find distances and route from our start point to every location on the map
-			final int [] [] [] doubleMovementDistances										= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-			movementDirections																		= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-			final boolean [] [] [] canMoveToInOneTurn										= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			final int [] [] [] doubleMovementDistances										= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			movementDirections																		= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			final boolean [] [] [] canMoveToInOneTurn										= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 			MomServerUnitCalculations.calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getPlane (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 				priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (), unitStack, doubleMovementRemaining,
@@ -1557,10 +1557,10 @@ public final class FogOfWarMidTurnChanges
 			// best path again based on what else we learned about the terrain in our last move
 			if (!forceAsPendingMovement)
 			{
-				final int [] [] [] doubleMovementDistances										= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-				movementDirections																		= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-				final boolean [] [] [] canMoveToInOneTurn										= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-				final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+				final int [] [] [] doubleMovementDistances										= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+				movementDirections																		= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+				final boolean [] [] [] canMoveToInOneTurn										= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+				final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 				MomServerUnitCalculations.calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getPlane (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 					priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (), unitStack, doubleMovementRemaining,

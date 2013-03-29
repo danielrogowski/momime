@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.PickProductionBonus;
@@ -34,7 +34,7 @@ public final class MomSpellCalculations
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	public static final double calculateCastingCostReduction (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
-		final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+		final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (MomSpellCalculations.class.getName (), "calculateCastingCostReduction", new String [] {new Integer (bookCount).toString (),
@@ -148,7 +148,7 @@ public final class MomSpellCalculations
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	public static final double calculateResearchBonus (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
-		final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+		final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (MomSpellCalculations.class.getName (), "calculateResearchBonus", new String [] {new Integer (bookCount).toString (),

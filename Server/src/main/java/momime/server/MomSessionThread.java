@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
@@ -30,9 +31,9 @@ import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.config.v0_9_4.MomImeServerConfig;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseConverters;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseFactory;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
@@ -55,7 +56,7 @@ import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
 public final class MomSessionThread extends MultiplayerSessionThread
 {
 	/** Lookup lists built over the XML database */
-	private ServerDatabaseLookup db;
+	private ServerDatabaseEx db;
 
 	/** UI being used by server */
 	private MomServerUI ui;
@@ -116,11 +117,14 @@ public final class MomSessionThread extends MultiplayerSessionThread
 		// Load server XML
 		sessionLogger.info ("Loading server database \"" + getSessionDescription ().getXmlDatabaseName () + "\"...");
 		final File fullFilename = new File (param.getConfig ().getPathToServerXmlDatabases () + getSessionDescription ().getXmlDatabaseName () + ServerDatabaseConverters.SERVER_XML_FILE_EXTENSION);
-		final ServerDatabase serverDB = (ServerDatabase) JAXBContextCreator.createServerDatabaseContext ().createUnmarshaller ().unmarshal (fullFilename);
+		
+		final Unmarshaller unmarshaller = JAXBContextCreator.createServerDatabaseContext ().createUnmarshaller ();		
+		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
+		final ServerDatabaseEx serverDB = (ServerDatabaseEx) unmarshaller.unmarshal (fullFilename);
 
 		// Create hash maps to look up all the values from the DB
 		sessionLogger.info ("Caching lookups into server database...");
-		db = new ServerDatabaseLookup (serverDB);
+		serverDB.buildMaps ();
 
 		// Generate map
 		sessionLogger.info ("Generating overland map...");
@@ -165,15 +169,7 @@ public final class MomSessionThread extends MultiplayerSessionThread
 	/**
 	 * @return Server XML in use for this session
 	 */
-	public final ServerDatabase getServerDB ()
-	{
-		return getGeneralServerKnowledge ().getServerDatabase ();
-	}
-
-	/**
-	 * @return Lookup lists built over the XML database
-	 */
-	public final ServerDatabaseLookup getServerDBLookup ()
+	public final ServerDatabaseEx getServerDB ()
 	{
 		return db;
 	}
@@ -260,7 +256,7 @@ public final class MomSessionThread extends MultiplayerSessionThread
 
 		// Create and initialize fog of war area
 		final MapVolumeOfFogOfWarStates fogOfWar = new MapVolumeOfFogOfWarStates ();
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 		{
 			final MapAreaOfFogOfWarStates fogOfWarPlane = new MapAreaOfFogOfWarStates ();
 			for (int y = 0; y < getSessionDescription ().getMapSize ().getHeight (); y++)
@@ -279,7 +275,7 @@ public final class MomSessionThread extends MultiplayerSessionThread
 
 		// Create and initialize scouted unit IDs in all the nodes/lairs/towers
 		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = new MapVolumeOfStrings ();
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 		{
 			final MapAreaOfStrings nodeLairTowerKnownUnitIDsPlane = new MapAreaOfStrings ();
 			for (int y = 0; y < getSessionDescription ().getMapSize ().getHeight (); y++)
@@ -301,7 +297,7 @@ public final class MomSessionThread extends MultiplayerSessionThread
 		// but the terrain and city data elements will remain null until we actually see it.
 		// This is just because it would make the code overly complex to have null checks everywhere this gets accessed.
 		final MapVolumeOfMemoryGridCells fogOfWarMap = new MapVolumeOfMemoryGridCells ();
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 		{
 			final MapAreaOfMemoryGridCells fogOfWarPlane = new MapAreaOfMemoryGridCells ();
 			for (int y = 0; y < getSessionDescription ().getMapSize ().getHeight (); y++)

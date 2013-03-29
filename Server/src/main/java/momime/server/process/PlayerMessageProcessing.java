@@ -46,7 +46,7 @@ import momime.server.ai.CityAI;
 import momime.server.ai.MomAI;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.calculations.MomServerSpellCalculations;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.PickFreeSpell;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.Wizard;
@@ -87,7 +87,7 @@ public final class PlayerMessageProcessing
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 */
 	public static final void chooseWizard (final String wizardIdFromMessage, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "chooseWizard", wizardIdFromMessage);
@@ -310,12 +310,12 @@ public final class PlayerMessageProcessing
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	private final static void createHeroes (final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "createHeroes");
 
-		for (final Unit thisUnit : db.getUnits ())
+		for (final Unit thisUnit : db.getUnit ())
 			if (thisUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 
 				// Add this hero for all players, even raiders, just not the monsters
@@ -356,7 +356,7 @@ public final class PlayerMessageProcessing
 			if (mom.getSessionDescription ().getAiPlayerCount () > 0)
 			{
 				// Get list of wizard IDs for AI players to choose from
-				final List<Wizard> availableWizards = PlayerPickServerUtils.listWizardsForAIPlayers (mom.getPlayers (), mom.getServerDBLookup (), debugLogger);
+				final List<Wizard> availableWizards = PlayerPickServerUtils.listWizardsForAIPlayers (mom.getPlayers (), mom.getServerDB (), debugLogger);
 				for (int aiPlayerNo = 0; aiPlayerNo < mom.getSessionDescription ().getAiPlayerCount (); aiPlayerNo++)
 				{
 					// Pick a random wizard for this AI player
@@ -370,28 +370,28 @@ public final class PlayerMessageProcessing
 					final PlayerServerDetails aiPlayer = mom.addComputerPlayer (createAiPlayerDescription (chosenWizard));
 
 					// Choose wizard
-					chooseWizard (chosenWizard.getWizardID (), aiPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+					chooseWizard (chosenWizard.getWizardID (), aiPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 					// Choose race
 					final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) aiPlayer.getTransientPlayerPrivateKnowledge ();
 					final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) aiPlayer.getPersistentPlayerPublicKnowledge ();
 
 					priv.setFirstCityRaceID (PlayerPickServerUtils.chooseRandomRaceForPlane
-						(PlayerPickServerUtils.startingPlaneForWizard (ppk.getPick (), mom.getServerDBLookup (), debugLogger), mom.getServerDBLookup (), debugLogger));
+						(PlayerPickServerUtils.startingPlaneForWizard (ppk.getPick (), mom.getServerDB (), debugLogger), mom.getServerDB (), debugLogger));
 				}
 			}
 
 			// Add raiders
 			final PlayerServerDetails raidersPlayer = mom.addComputerPlayer (createAiPlayerDescription
-				(mom.getServerDBLookup ().findWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, "checkIfCanStartGame")));
+				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, "checkIfCanStartGame")));
 
-			chooseWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, raidersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			chooseWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, raidersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Add monsters
 			final PlayerServerDetails monstersPlayer = mom.addComputerPlayer (createAiPlayerDescription
-				(mom.getServerDBLookup ().findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "checkIfCanStartGame")));
+				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "checkIfCanStartGame")));
 
-			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Broadcast player data
 			debugLogger.finest ("checkIfCanStartGame: Broadcasting player picks and determining which spells not chosen for free will be researchable");
@@ -433,7 +433,7 @@ public final class PlayerMessageProcessing
 				// Grant any free spells the player gets from the picks they've chosen (i.e. Enchant Item & Create Artifact from Artificer)
 				final List<String> freeSpellIDs = new ArrayList<String> ();
 				for (final PlayerPick pick : ppk.getPick ())
-					for (final PickFreeSpell freeSpell : mom.getServerDBLookup ().findPick (pick.getPickID (), "checkIfCanStartGame").getPickFreeSpell ())
+					for (final PickFreeSpell freeSpell : mom.getServerDB ().findPick (pick.getPickID (), "checkIfCanStartGame").getPickFreeSpell ())
 						freeSpellIDs.add (freeSpell.getFreeSpellID ());
 
 				if (freeSpellIDs.size () > 0)
@@ -442,10 +442,10 @@ public final class PlayerMessageProcessing
 							thisSpell.setStatus (SpellResearchStatusID.AVAILABLE);
 
 				// For all the spells that we did NOT get for free at the start of the game, decides whether or not they are in our spell book to be available to be researched
-				MomServerSpellCalculations.randomizeResearchableSpells (priv.getSpellResearchStatus (), ppk.getPick (), mom.getServerDBLookup (), debugLogger);
+				MomServerSpellCalculations.randomizeResearchableSpells (priv.getSpellResearchStatus (), ppk.getPick (), mom.getServerDB (), debugLogger);
 
 				// Give player 8 spells to pick from, out of all those we'll eventually be able to research
-				MomServerSpellCalculations.randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), mom.getServerDBLookup (), debugLogger);
+				MomServerSpellCalculations.randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), mom.getServerDB (), debugLogger);
 
 				// Send players' spells to them (and them only)
 				if (thisPlayer.getPlayerDescription ().isHuman ())
@@ -459,32 +459,32 @@ public final class PlayerMessageProcessing
 			// Add monsters in nodes/lairs/towers - can only do this after we've added the players
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_MONSTERS, debugLogger);
 			mom.getSessionLogger ().info ("Filling nodes, lairs & towers with monsters...");
-			OverlandMapGenerator.fillNodesLairsAndTowersWithMonsters (mom.getSessionDescription (), mom.getGeneralServerKnowledge (), mom.getServerDBLookup (), monstersPlayer, debugLogger);
+			OverlandMapGenerator.fillNodesLairsAndTowersWithMonsters (mom.getSessionDescription (), mom.getGeneralServerKnowledge (), mom.getServerDB (), monstersPlayer, debugLogger);
 
 			// Sort out heroes
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_HEROES, debugLogger);
 			mom.getSessionLogger ().info ("Loading list of heroes for each player...");
-			createHeroes (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			createHeroes (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			if (mom.getSessionDescription ().getUnitSetting ().isRollHeroSkillsAtStartOfGame ())
 			{
 				mom.getSessionLogger ().info ("Randomzing hero skills for each player...");
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if (mom.getServerDBLookup ().findUnit (thisUnit.getUnitID (), "checkIfCanStartGame").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-						UnitServerUtils.generateHeroNameAndRandomSkills (thisUnit, mom.getServerDBLookup (), debugLogger);
+					if (mom.getServerDB ().findUnit (thisUnit.getUnitID (), "checkIfCanStartGame").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+						UnitServerUtils.generateHeroNameAndRandomSkills (thisUnit, mom.getServerDB (), debugLogger);
 			}
 
 			// Create cities
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_CITIES, debugLogger);
 			mom.getSessionLogger ().info ("Creating starting cities...");
-			CityProcessing.createStartingCities (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			CityProcessing.createStartingCities (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Now we've created starting cities, we can figure out the initial fog of war area that each player can see
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.GENERATING_INITIAL_FOG_OF_WAR, debugLogger);
 			mom.getSessionLogger ().info ("Generating and sending initial fog of war...");
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				FogOfWarProcessing.updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), thisPlayer,
-					mom.getPlayers (), true, "checkIfCanStartGame", mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+					mom.getPlayers (), true, "checkIfCanStartGame", mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Give each wizard initial skill and gold, and setting optional farmers in all cities
 			mom.getSessionLogger ().info ("Setting wizards' initial skill and gold, and optional farmers in all cities");
@@ -499,7 +499,7 @@ public final class PlayerMessageProcessing
 					// This effectively gives each wizard some starting stored skill in RE10, which will then be sent to the client by RecalculateGlobalProductionValues below
 					ResourceValueUtils.addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT,
 						MomSkillCalculations.getSkillPointsRequiredForCastingSkill (PlayerPickServerUtils.getTotalInitialSkill
-							(ppk.getPick (), mom.getServerDBLookup (), debugLogger), debugLogger), debugLogger);
+							(ppk.getPick (), mom.getServerDB (), debugLogger), debugLogger), debugLogger);
 
 					// Give each wizard their starting gold
 					final int startingGold;
@@ -513,14 +513,14 @@ public final class PlayerMessageProcessing
 
 				// Default each player's farmers to just enough to feed their initial units
 				CityAI.setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), thisPlayer,
-					mom.getServerDBLookup (), mom.getSessionDescription (), debugLogger);
+					mom.getServerDB (), mom.getSessionDescription (), debugLogger);
 			}
 
 			// Calculate and send initial production values - This is especially important in one-at-a-time games with more
 			// than one human player, since e.g. player 2 won't otherwise be sent their power base figure until player 1 hits 'next turn'
 			mom.getSessionLogger ().info ("Calculating initial production values...");
 			MomServerResourceCalculations.recalculateGlobalProductionValues (0, false, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Kick off the game - this shows the map screen for the first time
 			mom.getSessionLogger ().info ("Starting game...");
@@ -566,11 +566,11 @@ public final class PlayerMessageProcessing
 				(mom.getPlayers (), onlyOnePlayerID, "startPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Give units their full movement back again
-		UnitUtils.resetUnitOverlandMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID, mom.getServerDBLookup (), debugLogger);
+		UnitUtils.resetUnitOverlandMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID, mom.getServerDB (), debugLogger);
 
 		// Heal hurt units 1pt and gain 1exp
 		FogOfWarMidTurnChanges.healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
-			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDBLookup (), mom.getSessionDescription (), debugLogger);
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription (), debugLogger);
 
 		// Allow another building to be sold
 		MemoryGridCellUtils.blankBuildingsSoldThisTurn (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), debugLogger);
@@ -579,11 +579,11 @@ public final class PlayerMessageProcessing
 		if (mom.getGeneralPublicKnowledge ().getTurnNumber () > 1)
 		{
 			MomServerResourceCalculations.recalculateGlobalProductionValues (onlyOnePlayerID, true, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-				mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+				mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Do this AFTER calculating and accumulating production, so checking for units dying due to insufficient rations happens before city populations might change
 			CityProcessing.growCitiesAndProgressConstructionProjects (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
-				mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+				mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 		}
 
 		// Now need to do one final recalc to take into account
@@ -591,7 +591,7 @@ public final class PlayerMessageProcessing
 		// 2) Cities eating more food due to increased population
 		// 3) Completed buildings (both bonuses and increased maintenance)
 		MomServerResourceCalculations.recalculateGlobalProductionValues (onlyOnePlayerID, false, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-			mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "startPhase");
 	}
@@ -663,7 +663,7 @@ public final class PlayerMessageProcessing
 		else
 		{
 			mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-			MomAI.aiPlayerTurn (currentPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			MomAI.aiPlayerTurn (currentPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 			nextTurnButton (mom, currentPlayer, debugLogger);
 		}
 
@@ -697,7 +697,7 @@ public final class PlayerMessageProcessing
 		// Put mana into casting spells
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
-				SpellProcessing.progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+				SpellProcessing.progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 		// Kick off the next turn
 		mom.getSessionLogger ().info ("Kicking off next turn...");

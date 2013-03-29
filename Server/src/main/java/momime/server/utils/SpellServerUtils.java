@@ -8,7 +8,7 @@ import momime.common.messages.SpellUtils;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -28,7 +28,7 @@ public final class SpellServerUtils
 	 * @throws RecordNotFoundException If either the spell we want to research now, or the spell previously being researched, can't be found
 	 */
 	public final static String validateResearch (final PlayerServerDetails player, final String spellID,
-		final SwitchResearch switchResearch, final ServerDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final SwitchResearch switchResearch, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (SpellServerUtils.class.getName (), "validateResearch", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), spellID});
 

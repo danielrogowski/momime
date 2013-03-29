@@ -3,7 +3,7 @@ package momime.common.calculations;
 import java.util.List;
 import java.util.logging.Logger;
 
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.PlayerPickUtils;
@@ -35,7 +35,7 @@ public final class MomUnitCalculations
 	 */
 	public static final int calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
-		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (MomUnitCalculations.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", cityLocation);
 

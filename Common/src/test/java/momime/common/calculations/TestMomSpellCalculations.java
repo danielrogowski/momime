@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.CastingReductionCombination;
@@ -87,7 +87,7 @@ public final class TestMomSpellCalculations
 	{
 		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Tests for different spells and whether we pass in the retort list or not
 		assertEquals ("10 books at standard settings should give 3x casting cost reduction", 30, MomSpellCalculations.calculateCastingCostReduction (10, spellSettings, null, null, db, debugLogger), DOUBLE_TOLERANCE);
@@ -144,7 +144,7 @@ public final class TestMomSpellCalculations
 	{
 		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Tests for different spells and whether we pass in the retort list or not
 		assertEquals ("10 books at standard settings should give 3x research bonus", 30, MomSpellCalculations.calculateResearchBonus (10, spellSettings, null, null, db, debugLogger), DOUBLE_TOLERANCE);
@@ -201,7 +201,7 @@ public final class TestMomSpellCalculations
 	{
 		final SpellSettingData spellSettings = GenerateTestData.createRecommendedSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Tests for different spells and whether we pass in the retort list or not
 		assertEquals ("10 books at standard settings should give 3x casting cost reduction", 22.1312, MomSpellCalculations.calculateCastingCostReduction (10, spellSettings, null, null, db, debugLogger), DOUBLE_TOLERANCE);
@@ -258,7 +258,7 @@ public final class TestMomSpellCalculations
 	{
 		final SpellSettingData spellSettings = createSpecialSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Tests for different spells and whether we pass in the retort list or not
 		assertEquals ("10 books at standard settings should give 3x research bonus", 25.9712, MomSpellCalculations.calculateResearchBonus (10, spellSettings, null, null, db, debugLogger), DOUBLE_TOLERANCE);

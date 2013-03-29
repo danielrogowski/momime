@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -40,9 +39,7 @@ import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
-import momime.server.database.v0_9_4.ServerDatabase;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.process.resourceconsumer.IMomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
@@ -74,12 +71,10 @@ public final class TestMomServerResourceCalculations
 	@Test
 	public final void testRecalculateAmountsPerTurn () throws IOException, JAXBException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -346,9 +341,7 @@ public final class TestMomServerResourceCalculations
 	@Test
 	public final void testListConsumersOfProductionType () throws Exception
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Modify wizards' guild type of consumption so we can test all 3 types in one run
 		final BuildingPopulationProductionModifier wizardsGuildConsumption = db.findBuilding ("BL21", "testListConsumersOfProductionType").getBuildingPopulationProductionModifier ().get (1);
@@ -496,9 +489,7 @@ public final class TestMomServerResourceCalculations
 	public final void testAccumulateGlobalProductionValues ()
 		throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final List<MomResourceValue> resourceList = new ArrayList<MomResourceValue> ();
 
@@ -580,9 +571,7 @@ public final class TestMomServerResourceCalculations
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive ()
 		throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
@@ -609,9 +598,7 @@ public final class TestMomServerResourceCalculations
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative ()
 		throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
@@ -634,9 +621,7 @@ public final class TestMomServerResourceCalculations
 	@Test
 	public final void testProgressResearch () throws Exception
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();

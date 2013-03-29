@@ -25,7 +25,7 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.utils.CompareUtils;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 
 /**
  * Methods for comparing and copying data from one source against a destination container
@@ -413,7 +413,7 @@ final class FogOfWarDuplication
 	 * @return Unit creation message to send to client
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
-	final static AddUnitMessageData createAddUnitMessage (final MemoryUnit source, final ServerDatabaseLookup db)
+	final static AddUnitMessageData createAddUnitMessage (final MemoryUnit source, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
 		final AddUnitMessageData destination = new AddUnitMessageData ();

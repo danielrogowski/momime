@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
@@ -31,11 +30,9 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -66,9 +63,7 @@ public final class TestMomServerUnitCalculations
 	@Test
 	public final void testCalculateUnitScoutingRange () throws IOException, JAXBException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
@@ -115,9 +110,7 @@ public final class TestMomServerUnitCalculations
 	@Test
 	public final void testCountOurAliveUnitsAtEveryLocation () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -202,7 +195,7 @@ public final class TestMomServerUnitCalculations
 		// Reset both the locations we already checked to 0, easier to check the whole array then
 		counts [0] [10] [20] = 0;
 		counts [1] [20] [30] = 0;
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
 					assertEquals (0, counts [plane.getPlaneNumber ()] [y] [x]);
@@ -216,9 +209,7 @@ public final class TestMomServerUnitCalculations
 	@Test
 	public final void testWillMovingHereResultInAnAttack () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Remember this is all operating over a player's memory - so it has to also work where we may know nothing about the location at all, i.e. everything is nulls
 		// This is a really key method so there's a ton of test conditions
@@ -418,9 +409,7 @@ public final class TestMomServerUnitCalculations
 	@Test
 	public final void testListAllSkillsInUnitStack () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -508,9 +497,7 @@ public final class TestMomServerUnitCalculations
 	@Test
 	public final void testCalculateDoubleMovementToEnterTileType () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -654,9 +641,7 @@ public final class TestMomServerUnitCalculations
 	@Test
 	public final void testCalculateDoubleMovementRatesForUnitStack () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -749,12 +734,10 @@ public final class TestMomServerUnitCalculations
 	@Test
 	public final void testCalculateOverlandMovementDistances_Basic () throws Exception
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Create map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx"));
 		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getMapSize (), workbook);
@@ -763,12 +746,12 @@ public final class TestMomServerUnitCalculations
 		map.setMap (terrain);
 
 		// Create other areas
-		final int [] [] [] doubleMovementDistances	= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final int [] [] [] movementDirections			= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn	= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] doubleMovementDistances	= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] movementDirections			= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn	= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack =
-			new MoveResultsInAttackTypeID [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			new MoveResultsInAttackTypeID [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsArea (sd.getMapSize ());
 
@@ -847,7 +830,7 @@ public final class TestMomServerUnitCalculations
 		int accessibleTilesDistances = 0;
 		int accessibleTilesDirections = 0;
 
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -877,12 +860,10 @@ public final class TestMomServerUnitCalculations
 	@Test
 	public final void testCalculateOverlandMovementDistances_Tower () throws Exception
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Create map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx"));
 		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getMapSize (), workbook);
@@ -891,7 +872,7 @@ public final class TestMomServerUnitCalculations
 		map.setMap (terrain);
 
 		// Add tower
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			terrain.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (10).getCell ().get (20).getTerrainData ().setMapFeatureID
 				(CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 
@@ -907,12 +888,12 @@ public final class TestMomServerUnitCalculations
 		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (11).getCell ().set (18, "");
 
 		// Create other areas
-		final int [] [] [] doubleMovementDistances	= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final int [] [] [] movementDirections			= new int [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn	= new boolean [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] doubleMovementDistances	= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] movementDirections			= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn	= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack =
-			new MoveResultsInAttackTypeID [db.getPlanes ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			new MoveResultsInAttackTypeID [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		// Units that are moving - two units of high men spearmen
 		// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
@@ -1014,7 +995,7 @@ public final class TestMomServerUnitCalculations
 		assertTrue (canMoveToInOneTurn [1] [13] [23]);
 
 		// Check all the movement distances on both planes
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -1039,7 +1020,7 @@ public final class TestMomServerUnitCalculations
 		int accessibleTilesDistances = 0;
 		int accessibleTilesDirections = 0;
 
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{

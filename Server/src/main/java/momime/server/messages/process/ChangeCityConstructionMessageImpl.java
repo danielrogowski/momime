@@ -41,7 +41,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 		final MomSessionThread mom = (MomSessionThread) thread;
 
 		final String error = CityServerUtils.validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 		if (error != null)
 		{

@@ -21,7 +21,7 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CitySize;
 import momime.server.database.v0_9_4.Race;
@@ -48,13 +48,13 @@ public final class MomServerCityCalculations
 	 * @return Amount of free food we'll get from building all buildings, with the default server database, this gives 5 = 2 from Granary + 3 from Farmers' Market
 	 * @throws MomException If the food production values from the XML database aren't multiples of 2
 	 */
-	public static final int calculateTotalFoodBonusFromBuildings (final ServerDatabaseLookup db, final Logger debugLogger)
+	public static final int calculateTotalFoodBonusFromBuildings (final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException
 	{
 		debugLogger.entering (MomServerCityCalculations.class.getName (), "calculateTotalFoodBonusFromBuildings");
 		int doubleTotalFood = 0;
 
-		for (final Building thisBuilding : db.getBuildings ())
+		for (final Building thisBuilding : db.getBuilding ())
 			for (final BuildingPopulationProductionModifier productionModifier : thisBuilding.getBuildingPopulationProductionModifier ())
 
 				// Only pick out production modifiers which come from the building by itself with no effect from the number of population
@@ -81,7 +81,7 @@ public final class MomServerCityCalculations
 	 * @throws MomException If the city's race has no farmers defined or those farmers have no ration production defined
 	 */
 	public static final int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final ServerDatabaseLookup db, final Logger debugLogger)
+		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (MomServerCityCalculations.class.getName (), "calculateDoubleFarmingRate", cityLocation);
@@ -151,7 +151,7 @@ public final class MomServerCityCalculations
 	 */
 	public static final void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (MomServerCityCalculations.class.getName (), "calculateCitySizeIDAndMinimumFarmers", cityLocation);
@@ -160,7 +160,7 @@ public final class MomServerCityCalculations
 
 		// First work out the Size ID - There should only be one entry in the DB which matches
 		boolean found = false;
-		final Iterator<CitySize> iter = db.getCitySizes ().iterator ();
+		final Iterator<CitySize> iter = db.getCitySize ().iterator ();
 		while ((!found) && (iter.hasNext ()))
 		{
 			final CitySize thisSize = iter.next ();
@@ -246,7 +246,7 @@ public final class MomServerCityCalculations
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	public static final int calculateCityScoutingRange (final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final ServerDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final OverlandMapCoordinates cityLocation, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (MomServerCityCalculations.class.getName (), "calculateCityScoutingRange", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
 
@@ -283,7 +283,7 @@ public final class MomServerCityCalculations
 	 */
 	public static final boolean canEventuallyConstructBuilding (final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinates cityLocation, final Building building,
-		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseLookup db, final Logger debugLogger)
+		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (MomServerCityCalculations.class.getName (), "canEventuallyConstructBuilding",

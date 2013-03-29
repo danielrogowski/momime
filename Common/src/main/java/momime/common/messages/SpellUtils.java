@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import momime.common.MomException;
 import momime.common.calculations.MomSpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.Spell;
@@ -63,7 +63,7 @@ public final class SpellUtils
 	 * @throws MomException If the spell can summon units with different unit types
 	 * @throws RecordNotFoundException If we encounter a unit or unit magic realm that cannot be found
 	 */
-	public static final String spellSummonsUnitTypeID (final Spell spell, final CommonDatabaseLookup db, final Logger debugLogger)
+	public static final String spellSummonsUnitTypeID (final Spell spell, final ICommonDatabase db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "calculateCastingCostReduction", spell.getSpellID ());
@@ -136,7 +136,7 @@ public final class SpellUtils
 	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public final static int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final ICommonDatabase db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		return getReducedCastingCostForCastingType (spell, MomSpellCastType.COMBAT, picks, spellSettings, db, debugLogger);
@@ -152,7 +152,7 @@ public final class SpellUtils
 	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public final static int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final ICommonDatabase db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		return getReducedCastingCostForCastingType (spell, MomSpellCastType.OVERLAND, picks, spellSettings, db, debugLogger);
@@ -170,7 +170,7 @@ public final class SpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	private final static int getReducedCastingCostForCastingType (final Spell spell, final MomSpellCastType castType, final List<PlayerPick> picks,
-		final SpellSettingData spellSettings, final CommonDatabaseLookup db, final Logger debugLogger)
+		final SpellSettingData spellSettings, final ICommonDatabase db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "getReducedCastingCostForCastingType", new String [] {spell.getSpellID (), castType.toString ()});
@@ -319,7 +319,7 @@ public final class SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	private final static List<Spell> getSpellsForRealmRankStatusInternal (final List<SpellResearchStatus> spells,
-		final String desiredMagicRealmID, final String spellRankID, final List<SpellResearchStatusID> statuses, final CommonDatabaseLookup db, final Logger debugLogger)
+		final String desiredMagicRealmID, final String spellRankID, final List<SpellResearchStatusID> statuses, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "getSpellsForRealmRankStatusInternal",
@@ -361,7 +361,7 @@ public final class SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public final static List<Spell> getSpellsForRealmRankStatus (final List<SpellResearchStatus> spells, final String magicRealmID,
-		final String spellRankID, final SpellResearchStatusID status, final CommonDatabaseLookup db, final Logger debugLogger)
+		final String spellRankID, final SpellResearchStatusID status, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "getSpellsForRealmRankStatus",
@@ -389,7 +389,7 @@ public final class SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public final static List<Spell> getSpellsForStatus (final List<SpellResearchStatus> spells,
-		final SpellResearchStatusID status, final CommonDatabaseLookup db, final Logger debugLogger)
+		final SpellResearchStatusID status, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "getSpellsForStatus", status);
@@ -417,7 +417,7 @@ public final class SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public final static List<Spell> getSpellsForRealmAndRank (final List<SpellResearchStatus> spells, final String magicRealmID,
-		final String spellRankID, final CommonDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final String spellRankID, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "getSpellsForRealmAndRank", new String [] {magicRealmID, spellRankID});
 
@@ -440,7 +440,7 @@ public final class SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public final static List<Spell> getSpellsForRankAndStatus (final List<SpellResearchStatus> spells,
-		final String spellRankID, final SpellResearchStatusID status, final CommonDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final String spellRankID, final SpellResearchStatusID status, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "getSpellsForRankAndStatus", new String [] {spellRankID, status.toString ()});
 
@@ -464,7 +464,7 @@ public final class SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public final static List<Spell> getSpellsNotInBookForRealmAndRank (final List<SpellResearchStatus> spells,
-		final String magicRealmID, final String spellRankID, final CommonDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final String magicRealmID, final String spellRankID, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "getSpellsNotInBookForRealmAndRank", new String [] {magicRealmID, spellRankID});
 
@@ -492,7 +492,7 @@ public final class SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public final static List<String> getSpellRanksForStatus (final List<SpellResearchStatus> spells,
-		final SpellResearchStatusID status, final CommonDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final SpellResearchStatusID status, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "getSpellRanksForStatus", status.toString ());
 
@@ -552,7 +552,7 @@ public final class SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public final static List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final String desiredSectionID,
-		final MomSpellCastType castType, final CommonDatabaseLookup db, final Logger debugLogger) throws MomException, RecordNotFoundException
+		final MomSpellCastType castType, final ICommonDatabase db, final Logger debugLogger) throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (SpellUtils.class.getName (), "getSortedSpellsInSection", new String [] {desiredSectionID, castType.toString ()});
 

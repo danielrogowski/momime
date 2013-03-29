@@ -95,7 +95,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 			// Proceed with move
 			FogOfWarMidTurnChanges.moveUnitStack (unitStack, sender, getMoveFrom (), getMoveTo (),
 				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS),
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 		}
 
 		debugLogger.exiting (RequestMoveOverlandUnitStackMessageImpl.class.getName (), "process");

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.database.RecordNotFoundException;
@@ -16,9 +15,7 @@ import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
-import momime.server.database.v0_9_4.ServerDatabase;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 
 import org.junit.Test;
@@ -40,13 +37,11 @@ public final class TestMomServerSpellCalculations
 	@Test
 	public final void testRandomizeResearchableSpells () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Every spell is initially unavailbale
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
-		for (final Spell spell : serverDB.getSpell ())
+		for (final Spell spell : db.getSpell ())
 		{
 			final SpellResearchStatus status = new SpellResearchStatus ();
 			status.setSpellID (spell.getSpellID ());
@@ -165,13 +160,11 @@ public final class TestMomServerSpellCalculations
 	@Test
 	public final void testRandomizeSpellsResearchableNow () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Every spell is initially unavailbale
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
-		for (final Spell spell : serverDB.getSpell ())
+		for (final Spell spell : db.getSpell ())
 		{
 			final SpellResearchStatus status = new SpellResearchStatus ();
 			status.setSpellID (spell.getSpellID ());

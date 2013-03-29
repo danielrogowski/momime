@@ -10,7 +10,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -53,6 +53,6 @@ public interface IMomResourceConsumer
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void kill (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

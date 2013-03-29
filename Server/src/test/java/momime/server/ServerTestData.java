@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.DifficultyLevelNodeStrength;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
@@ -20,12 +23,14 @@ import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.config.ServerConfigConstants;
+import momime.server.database.JAXBContextCreator;
+import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseFactory;
 import momime.server.database.v0_9_4.DifficultyLevel;
 import momime.server.database.v0_9_4.FogOfWarSetting;
 import momime.server.database.v0_9_4.LandProportion;
 import momime.server.database.v0_9_4.MapSize;
 import momime.server.database.v0_9_4.NodeStrength;
-import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.SpellSetting;
 import momime.server.database.v0_9_4.UnitSetting;
 
@@ -64,6 +69,21 @@ public final class ServerTestData
 	}
 
 	/**
+	 * @return Parsed server database with all the hash maps built, needed by most of the tests 
+	 * @throws IOException If we are unable to locate the server XML file
+	 * @throws JAXBException If there is a problem reading the XML file
+	 */
+	public final static ServerDatabaseEx loadServerDatabase () throws IOException, JAXBException
+	{
+		final Unmarshaller unmarshaller = JAXBContextCreator.createServerDatabaseContext ().createUnmarshaller ();		
+		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
+
+		final ServerDatabaseEx serverDB = (ServerDatabaseEx) unmarshaller.unmarshal (locateServerXmlFile ());
+		serverDB.buildMaps ();
+		return serverDB;
+	}
+
+	/**
 	 * @param db Server database loaded from XML
 	 * @param mapSizeID Map size to use
 	 * @param landProportionID Land proportion to use
@@ -75,7 +95,7 @@ public final class ServerTestData
 	 * @return Session description, built from selecting the specified parts from the server database
 	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
 	 */
-	public final static MomSessionDescription createMomSessionDescription (final ServerDatabase db,
+	public final static MomSessionDescription createMomSessionDescription (final ServerDatabaseEx db,
 		final String mapSizeID, final String landProportionID, final String nodeStrengthID, final String difficultyLevelID,
 		final String fogOfWarSettingID, final String unitSettingID, final String spellSettingID)
 		throws RecordNotFoundException

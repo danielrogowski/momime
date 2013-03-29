@@ -1,15 +1,14 @@
 package momime.server.fogofwar;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.database.CommonDatabaseConstants;
@@ -30,11 +29,9 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -142,12 +139,10 @@ public final class TestFogOfWarProcessing
 	@Test
 	public final void testMarkVisibleArea () throws IOException, JAXBException, InvalidFormatException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -274,7 +269,7 @@ public final class TestFogOfWarProcessing
 		trueMap.getUnit ().add (unitThree);
 
 		// Unit in a tower
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 		{
 			final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 			terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
@@ -324,7 +319,7 @@ public final class TestFogOfWarProcessing
 		FogOfWarProcessing.markVisibleArea (trueMap, player, players, sd, db, debugLogger);
 
 		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/markVisibleArea.xlsx"));
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -346,7 +341,7 @@ public final class TestFogOfWarProcessing
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
 		FogOfWarProcessing.markVisibleArea (trueMap, player, players, sd, db, debugLogger);
 
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -363,7 +358,7 @@ public final class TestFogOfWarProcessing
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
 		FogOfWarProcessing.markVisibleArea (trueMap, player, players, sd, db, debugLogger);
 
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));

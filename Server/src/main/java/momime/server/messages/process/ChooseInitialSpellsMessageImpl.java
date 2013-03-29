@@ -43,7 +43,7 @@ public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMes
 
 		final MomSessionThread mom = (MomSessionThread) thread;
 
-		final String error = PlayerPickServerUtils.validateInitialSpellSelection (sender, getPickID (), getSpell (), mom.getServerDBLookup (), debugLogger);
+		final String error = PlayerPickServerUtils.validateInitialSpellSelection (sender, getPickID (), getSpell (), mom.getServerDB (), debugLogger);
 		if (error != null)
 		{
 			// Return error
@@ -64,7 +64,7 @@ public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMes
 			// Does player have to pick any further free spells or are they done
 			debugLogger.finest (ChooseInitialSpellsMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " made valid selections, checking to see if need to choose more free spells");
 
-			final ChooseInitialSpellsNowMessage chooseSpellsMsg = PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDBLookup (), debugLogger);
+			final ChooseInitialSpellsNowMessage chooseSpellsMsg = PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB (), debugLogger);
 			if (chooseSpellsMsg != null)
 				sender.getConnection ().sendMessageToClient (chooseSpellsMsg);
 			else

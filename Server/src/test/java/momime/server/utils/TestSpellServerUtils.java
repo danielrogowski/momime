@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
@@ -16,9 +15,7 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
-import momime.server.database.v0_9_4.ServerDatabase;
+import momime.server.database.ServerDatabaseEx;
 
 import org.junit.Test;
 
@@ -41,9 +38,7 @@ public final class TestSpellServerUtils
 	@Test
 	public final void testValidateResearch () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -53,7 +48,7 @@ public final class TestSpellServerUtils
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 
 		// Initialize spell research
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());

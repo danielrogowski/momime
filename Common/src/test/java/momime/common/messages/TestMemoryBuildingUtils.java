@@ -5,6 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +16,8 @@ import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
 import momime.common.database.GenerateTestData;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
@@ -36,7 +40,7 @@ public final class TestMemoryBuildingUtils
 {
 	/** Dummy logger to use during unit tests */
 	private final Logger debugLogger = Logger.getLogger ("MoMIMECommonUnitTests");
-
+	
 	/**
 	 * Lots of methods need a city location, so this is just a helper method to create one
 	 * This also helps discourage reusing the same object twice, which is dangerous because doesn't trap accidental use of .equals instead of proper comparison method
@@ -488,19 +492,18 @@ public final class TestMemoryBuildingUtils
 	public final void testDoAnyBuildingsDependOn_OkToSell () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
 		final BuildingPrerequisite prereq = new BuildingPrerequisite ();
 		prereq.setPrerequisiteID ("BL02");
 		dbBuildingOne.getBuildingPrerequisite ().add (prereq);
-		dbBuildings.add (dbBuildingOne);
 
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
-		dbBuildings.add (dbBuildingTwo);
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -524,19 +527,18 @@ public final class TestMemoryBuildingUtils
 	public final void testDoAnyBuildingsDependOn_CannotSell () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
 		final BuildingPrerequisite prereq = new BuildingPrerequisite ();
 		prereq.setPrerequisiteID ("BL02");
 		dbBuildingOne.getBuildingPrerequisite ().add (prereq);
-		dbBuildings.add (dbBuildingOne);
 
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
-		dbBuildings.add (dbBuildingTwo);
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -560,19 +562,18 @@ public final class TestMemoryBuildingUtils
 	public final void testDoAnyBuildingsDependOn_SellInOtherLocation () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
 		final BuildingPrerequisite prereq = new BuildingPrerequisite ();
 		prereq.setPrerequisiteID ("BL02");
 		dbBuildingOne.getBuildingPrerequisite ().add (prereq);
-		dbBuildings.add (dbBuildingOne);
 
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
-		dbBuildings.add (dbBuildingTwo);
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -590,37 +591,44 @@ public final class TestMemoryBuildingUtils
 
 	/**
 	 * Tests the isBuildingAPrerequisiteFor method
+	 * @throws RecordNotFoundException If we encounter a building that can't be found in the DB
 	 */
 	@Test
-	public final void testIsBuildingAPrerequisiteFor ()
+	public final void testIsBuildingAPrerequisiteFor () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
 		final BuildingPrerequisite prereq = new BuildingPrerequisite ();
 		prereq.setPrerequisiteID ("BL02");
 		dbBuildingOne.getBuildingPrerequisite ().add (prereq);
-		dbBuildings.add (dbBuildingOne);
 
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
-		dbBuildings.add (dbBuildingTwo);
 
 		// Set up dummy XML definitions for couple of unit types
-		final List<Unit> dbUnits = new ArrayList<Unit> ();
 		final Unit dbUnitOne = new Unit ();
 		dbUnitOne.setUnitID ("UN001");
 		final UnitPrerequisite prerequ = new UnitPrerequisite ();
 		prerequ.setPrerequisiteID ("BL01");
 		dbUnitOne.getUnitPrerequisite ().add (prerequ);
-		dbUnits.add (dbUnitOne);
 
 		final Unit dbUnitTwo = new Unit ();
 		dbUnitTwo.setUnitID ("UN002");
-		dbUnits.add (dbUnitTwo);
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, dbUnits, null, null, null, null, dbBuildings, null, null);
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (dbUnitOne);
+		when (db.findUnit (eq ("UN002"), anyString ())).thenReturn (dbUnitTwo);
+		
+		// Since the DB lookups throw RecordNotFoundException for not founds rather than outputting a null, we have to mock those too
+		when (db.findBuilding (eq ("UN001"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
+		when (db.findBuilding (eq ("UN002"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
+		when (db.findBuilding (eq ("Y"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
+		when (db.findUnit (eq ("BL01"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
+		when (db.findUnit (eq ("BL02"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
+		when (db.findUnit (eq ("Y"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
 
 		// Building tests
 		assertTrue (MemoryBuildingUtils.isBuildingAPrerequisiteFor ("BL02", "BL01", db, debugLogger));
@@ -643,7 +651,7 @@ public final class TestMemoryBuildingUtils
 	{
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants null exp, BL02 grants 0 exp, BL03 grants 10 exp
-		final List<Building> dbBuildings = new ArrayList<Building> ();
+		final ICommonDatabase db = mock (ICommonDatabase.class);
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building dbBuilding = new Building ();
@@ -652,10 +660,8 @@ public final class TestMemoryBuildingUtils
 			if (n > 1)
 				dbBuilding.setBuildingExperience ((n - 2) * 10);
 
-			dbBuildings.add (dbBuilding);
+			when (db.findBuilding (eq (dbBuilding.getBuildingID ()), anyString ())).thenReturn (dbBuilding);
 		}
-
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -680,16 +686,15 @@ public final class TestMemoryBuildingUtils
 	{
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants no exp, BL02 grants 10 exp, BL03 grants 20 exp
-		final List<Building> dbBuildings = new ArrayList<Building> ();
+		final ICommonDatabase db = mock (ICommonDatabase.class);
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building dbBuilding = new Building ();
 			dbBuilding.setBuildingID ("BL0" + n);
 			dbBuilding.setBuildingExperience ((n - 1) * 10);
-			dbBuildings.add (dbBuilding);
-		}
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+			when (db.findBuilding (eq (dbBuilding.getBuildingID ()), anyString ())).thenReturn (dbBuilding);
+		}
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -711,16 +716,15 @@ public final class TestMemoryBuildingUtils
 	{
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants no exp, BL02 grants 10 exp, BL03 grants 20 exp
-		final List<Building> dbBuildings = new ArrayList<Building> ();
+		final ICommonDatabase db = mock (ICommonDatabase.class);
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building dbBuilding = new Building ();
 			dbBuilding.setBuildingID ("BL0" + n);
 			dbBuilding.setBuildingExperience ((n - 1) * 10);
-			dbBuildings.add (dbBuilding);
-		}
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+			when (db.findBuilding (eq (dbBuilding.getBuildingID ()), anyString ())).thenReturn (dbBuilding);
+		}
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -742,16 +746,15 @@ public final class TestMemoryBuildingUtils
 	{
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants no exp, BL02 grants 10 exp, BL03 grants 20 exp
-		final List<Building> dbBuildings = new ArrayList<Building> ();
+		final ICommonDatabase db = mock (ICommonDatabase.class);
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building dbBuilding = new Building ();
 			dbBuilding.setBuildingID ("BL0" + n);
 			dbBuilding.setBuildingExperience ((n - 1) * 10);
-			dbBuildings.add (dbBuilding);
-		}
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+			when (db.findBuilding (eq (dbBuilding.getBuildingID ()), anyString ())).thenReturn (dbBuilding);
+		}
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -775,10 +778,8 @@ public final class TestMemoryBuildingUtils
 	public final void testTotalBonusProductionPerPersonFromBuildings_IrrelevantBuildings () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		dbBuildings.add (dbBuildingOne);
 
 		final BuildingPopulationProductionModifier mod = new BuildingPopulationProductionModifier ();
 		mod.setDoubleAmount (6);
@@ -788,9 +789,10 @@ public final class TestMemoryBuildingUtils
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
-		dbBuildings.add (dbBuildingTwo);
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -811,10 +813,8 @@ public final class TestMemoryBuildingUtils
 	public final void testTotalBonusProductionPerPersonFromBuildings_WrongLocation () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		dbBuildings.add (dbBuildingOne);
 
 		final BuildingPopulationProductionModifier mod = new BuildingPopulationProductionModifier ();
 		mod.setDoubleAmount (6);
@@ -824,9 +824,10 @@ public final class TestMemoryBuildingUtils
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
-		dbBuildings.add (dbBuildingTwo);
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -847,10 +848,8 @@ public final class TestMemoryBuildingUtils
 	public final void testTotalBonusProductionPerPersonFromBuildings_WrongPopTaskType () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		dbBuildings.add (dbBuildingOne);
 
 		final BuildingPopulationProductionModifier mod = new BuildingPopulationProductionModifier ();
 		mod.setDoubleAmount (6);
@@ -860,9 +859,10 @@ public final class TestMemoryBuildingUtils
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
-		dbBuildings.add (dbBuildingTwo);
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -883,10 +883,8 @@ public final class TestMemoryBuildingUtils
 	public final void testTotalBonusProductionPerPersonFromBuildings_WrongProdType () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		dbBuildings.add (dbBuildingOne);
 
 		final BuildingPopulationProductionModifier mod = new BuildingPopulationProductionModifier ();
 		mod.setDoubleAmount (6);
@@ -896,9 +894,10 @@ public final class TestMemoryBuildingUtils
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
-		dbBuildings.add (dbBuildingTwo);
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -919,10 +918,8 @@ public final class TestMemoryBuildingUtils
 	public final void testTotalBonusProductionPerPersonFromBuildings_OneBuilding () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		dbBuildings.add (dbBuildingOne);
 
 		final BuildingPopulationProductionModifier mod = new BuildingPopulationProductionModifier ();
 		mod.setDoubleAmount (6);
@@ -932,9 +929,10 @@ public final class TestMemoryBuildingUtils
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
-		dbBuildings.add (dbBuildingTwo);
 
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -955,11 +953,12 @@ public final class TestMemoryBuildingUtils
 	public final void testTotalBonusProductionPerPersonFromBuildings_TwoBuildings () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		
 		// Building BL02 grants a +4 bonus; building BL03 grants a +6 bonus
-		final List<Building> dbBuildings = new ArrayList<Building> ();
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		dbBuildings.add (dbBuildingOne);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 
 		for (int n = 2; n <= 3; n++)
 		{
@@ -971,10 +970,9 @@ public final class TestMemoryBuildingUtils
 			final Building dbBuildingTwo = new Building ();
 			dbBuildingTwo.setBuildingID ("BL0" + n);
 			dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
-			dbBuildings.add (dbBuildingTwo);
+			
+			when (db.findBuilding (eq (dbBuildingTwo.getBuildingID ()), anyString ())).thenReturn (dbBuildingTwo);
 		}
-
-		final CommonDatabaseLookup db = new CommonDatabaseLookup (null, null, null, null, null, null, null, null, null, null, null, null, null, null, dbBuildings, null, null);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -1060,7 +1058,7 @@ public final class TestMemoryBuildingUtils
 	@Test
 	public final void testGoldFromSellingBuilding () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 		assertEquals (100, MemoryBuildingUtils.goldFromSellingBuilding (db.findBuilding (GenerateTestData.ANIMISTS_GUILD, "testGoldFromSellingBuilding")));
 		assertEquals (0, MemoryBuildingUtils.goldFromSellingBuilding (db.findBuilding (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, "testGoldFromSellingBuilding")));
 	}

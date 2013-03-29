@@ -31,7 +31,7 @@ import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -66,7 +66,7 @@ public final class SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	private static void castOverlandNow (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final Spell spell,
-		final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (SpellProcessing.class.getName (), "castOverlandNow", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), spell.getSpellID ()});
@@ -237,7 +237,7 @@ public final class SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public static boolean progressOverlandCasting (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (SpellProcessing.class.getName (), "progressOverlandCasting", player.getPlayerDescription ().getPlayerID ());
@@ -321,7 +321,7 @@ public final class SpellProcessing
 	public final static void switchOffSpell (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseLookup db, final MomSessionDescription sd, final Logger debugLogger)
+		final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		debugLogger.entering (SpellProcessing.class.getName (), "switchOffSpell",

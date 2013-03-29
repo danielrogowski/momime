@@ -46,7 +46,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 		final MomSessionThread mom = (MomSessionThread) thread;
 
 		final String error = CityServerUtils.validateOptionalFarmers (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			getCityLocation (), getOptionalFarmers (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+			getCityLocation (), getOptionalFarmers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 		if (error != null)
 		{
@@ -70,7 +70,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 
 			// Tell the player how this will affect their global production
 			MomServerResourceCalculations.recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 		}
 
 		debugLogger.exiting (ChangeOptionalFarmersMessageImpl.class.getName (), "process");

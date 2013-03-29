@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
@@ -22,11 +21,9 @@ import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
 
@@ -48,11 +45,9 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testSetAllToWater () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
@@ -84,11 +79,9 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testSetHighestTiles () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
@@ -177,11 +170,9 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testCheckAllDirectionsLeadToGrass () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
@@ -232,11 +223,9 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testChooseRandomNodeTileTypeID () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -257,11 +246,9 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testChooseRandomLairFeatureID () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -280,9 +267,7 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testFindMostExpensiveMonster () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		assertEquals ("UN179", OverlandMapGenerator.findMostExpensiveMonster ("LT01", 1000, db).getUnitID ());	// Arch angel
 		assertEquals ("UN178", OverlandMapGenerator.findMostExpensiveMonster ("LT01", 900, db).getUnitID ());		// Angel
@@ -341,11 +326,9 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testGenerateOverlandTerrain () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
@@ -353,7 +336,7 @@ public final class TestOverlandMapGenerator
 		mapGen.generateOverlandTerrain ();
 
 		// We can't 'test' the output, only that the generation doesn't fail, but interesting to dump the maps to the standard output
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 		{
 			System.out.println (plane.getPlaneDescription () + ":");
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)

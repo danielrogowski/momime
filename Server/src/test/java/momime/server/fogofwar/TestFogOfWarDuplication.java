@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.database.v0_9_4.UnitHasSkill;
@@ -25,9 +24,7 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
-import momime.server.database.v0_9_4.ServerDatabase;
+import momime.server.database.ServerDatabaseEx;
 
 import org.junit.Test;
 
@@ -301,9 +298,7 @@ public final class TestFogOfWarDuplication
 	@Test
 	public final void testCopyUnit () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final List<MemoryUnit> destination = new ArrayList<MemoryUnit> ();
 

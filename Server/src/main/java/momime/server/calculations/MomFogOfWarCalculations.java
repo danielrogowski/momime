@@ -8,7 +8,7 @@ import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Plane;
 
 /**
@@ -62,7 +62,7 @@ public final class MomFogOfWarCalculations
 	 * @return If a tower, returns true if we can see the location on either plane; if not a tower, does a regular check
 	 */
 	public final static boolean canSeeMidTurnOnAnyPlaneIfTower (final OverlandMapCoordinates location, final FogOfWarValue setting,
-		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea, final ServerDatabaseLookup db)
+		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea, final ServerDatabaseEx db)
 	{
 		boolean canSee;
 
@@ -70,7 +70,7 @@ public final class MomFogOfWarCalculations
 			(trueTerrain.getPlane ().get (location.getPlane ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()).getTerrainData ()))
 		{
 			canSee = false;
-			final Iterator<Plane> planeIter = db.getPlanes ().iterator ();
+			final Iterator<Plane> planeIter = db.getPlane ().iterator ();
 			while ((!canSee) && (planeIter.hasNext ()))
 			{
 				final int thisPlane = planeIter.next ().getPlaneNumber ();

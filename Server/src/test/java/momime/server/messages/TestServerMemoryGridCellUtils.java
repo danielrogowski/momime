@@ -5,17 +5,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
 
@@ -33,9 +30,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_TerrainDataNull () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		assertFalse (ServerMemoryGridCellUtils.isNodeLairTower (null, db));
 	}
@@ -49,9 +44,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_BothNull () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 
@@ -67,9 +60,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_TileTypeNo () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
@@ -86,9 +77,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_TileTypeYes () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT12");
@@ -105,9 +94,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_MapFeatureNo () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("MF01");
@@ -124,9 +111,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_MapFeatureYes () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("MF12A");
@@ -143,9 +128,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_MapFeatureYes_WithTileType () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);

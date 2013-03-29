@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
@@ -21,13 +20,11 @@ import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Race;
-import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
 import org.junit.Test;
@@ -56,12 +53,10 @@ public class TestOverlandMapServerUtils
 	@Test
 	public final void testChooseRandomRaceForPlane () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Pick a random race for each plane
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 		{
 			final String raceID = OverlandMapServerUtils.chooseRandomRaceForPlane (plane.getPlaneNumber (), db, debugLogger);
 
@@ -79,9 +74,7 @@ public class TestOverlandMapServerUtils
 	@Test
 	public final void testSetContinentalRace () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
@@ -99,7 +92,7 @@ public class TestOverlandMapServerUtils
 
 		// Create area to output into
 		final List<StringMapArea2DArray> continentalRace = new ArrayList<StringMapArea2DArray> ();
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 			continentalRace.add (new StringMapArea2DArray (sys, debugLogger));
 
 		// One cell of land
@@ -130,9 +123,7 @@ public class TestOverlandMapServerUtils
 	@Test
 	public final void testDecideAllContinentalRaces () throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
@@ -155,7 +146,7 @@ public class TestOverlandMapServerUtils
 		// null at every sea tile
 		// race at every land tile, that inhabits the correct plane
 		// same race at any adjacent land tile
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sys.getWidth (); x++)
 				for (int y = 0; y < sys.getHeight (); y++)
 				{

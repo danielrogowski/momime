@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.database.v0_9_4.Building;
@@ -78,7 +78,7 @@ public final class MomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
 	public static final int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabaseLookup db, final Logger debugLogger)
+		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (MomCityCalculations.class.getName (), "calculateProductionBonus", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
@@ -117,7 +117,7 @@ public final class MomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
 	public static final int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabaseLookup db, final Logger debugLogger)
+		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (MomCityCalculations.class.getName (), "calculateGoldBonus", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
@@ -268,7 +268,7 @@ public final class MomCityCalculations
 	 */
 	public static final int calculateMaxCitySize (final MapVolumeOfMemoryGridCells map,
 		final OverlandMapCoordinates cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
-		final CommonDatabaseLookup db, final Logger debugLogger)
+		final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (MomCityCalculations.class.getName (), "calculateMaxCitySize", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation),
@@ -330,7 +330,7 @@ public final class MomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
 	public static final CalculateCityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final int maxCitySize, final CommonDatabaseLookup db, final Logger debugLogger)
+		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final int maxCitySize, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (MomCityCalculations.class.getName (), "calculateMaxCitySize", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
@@ -463,7 +463,7 @@ public final class MomCityCalculations
 	 */
 	public static final CalculateCityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final String taxRateID, final CommonDatabaseLookup db, final Logger debugLogger)
+		final OverlandMapCoordinates cityLocation, final String taxRateID, final ICommonDatabase db, final Logger debugLogger)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
 		debugLogger.entering (MomCityCalculations.class.getName (), "calculateCityRebels", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
@@ -669,7 +669,7 @@ public final class MomCityCalculations
 	public static final CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinates cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final CommonDatabaseLookup db, final Logger debugLogger)
+		final ICommonDatabase db, final Logger debugLogger)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		debugLogger.entering (MomCityCalculations.class.getName (), "calculateAllCityProductions", cityLocation);
@@ -746,7 +746,7 @@ public final class MomCityCalculations
 				if (thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
 				{
 					// Wizard's fortress produces mana according to how many books were chosen at the start of the game...
-					for (final PickType thisPickType : db.getPickTypes ())
+					for (final PickType thisPickType : db.getPickType ())
 						productionValues.addProductionFromFortressPickType (thisPickType, PlayerPickUtils.countPicksOfType (cityOwnerPicks, thisPickType.getPickTypeID (), true, db, debugLogger));
 
 					// ...and according to which plane it is on
@@ -867,7 +867,7 @@ public final class MomCityCalculations
 	public static final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinates cityLocation, final String taxRateID, final MomSessionDescription sd,
-		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabaseLookup db, final Logger debugLogger, final String productionTypeID)
+		final boolean includeProductionAndConsumptionFromPopulation, final ICommonDatabase db, final Logger debugLogger, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		debugLogger.entering (MomCityCalculations.class.getName (), "calculateSingleCityProduction", cityLocation);

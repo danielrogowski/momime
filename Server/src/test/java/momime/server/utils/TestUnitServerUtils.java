@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
@@ -31,9 +30,7 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
-import momime.server.database.v0_9_4.ServerDatabase;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.UnitSkill;
 
 import org.junit.Test;
@@ -56,9 +53,7 @@ public final class TestUnitServerUtils
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_NoExtras () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Dwarf hero
 		final MemoryUnit unit = UnitUtils.createMemoryUnit ("UN001", 3, 0, 0, true, db, debugLogger);
@@ -89,16 +84,14 @@ public final class TestUnitServerUtils
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_SingleChoice () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
 		final MemoryUnit unit = UnitUtils.createMemoryUnit ("UN007", 3, 0, 0, true, db, debugLogger);
 		assertNull (unit.getHeroNameID ());
 
 		// Set every skill except for HS11 to "only if have already", so HS11 remains the only possible choice
-		for (final UnitSkill thisSkill : serverDB.getUnitSkill ())
+		for (final UnitSkill thisSkill : db.getUnitSkill ())
 			if ((thisSkill.getUnitSkillID ().startsWith ("HS")) && (!thisSkill.getUnitSkillID ().equals ("HS11")))
 				thisSkill.setOnlyIfHaveAlready (true);
 
@@ -129,16 +122,14 @@ public final class TestUnitServerUtils
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_SingleChoiceHaveAlready () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Healer hero - gets 1 mage pick
 		final MemoryUnit unit = UnitUtils.createMemoryUnit ("UN008", 3, 0, 0, true, db, debugLogger);
 		assertNull (unit.getHeroNameID ());
 
 		// Set every skill to "only if have already", so HS05 remains the only possible choice because its the only one we have
-		for (final UnitSkill thisSkill : serverDB.getUnitSkill ())
+		for (final UnitSkill thisSkill : db.getUnitSkill ())
 			if (thisSkill.getUnitSkillID ().startsWith ("HS"))
 				thisSkill.setOnlyIfHaveAlready (true);
 
@@ -167,16 +158,14 @@ public final class TestUnitServerUtils
 	@Test(expected=MomException.class)
 	public final void testGenerateHeroNameAndRandomSkills_NoChoices () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
 		final MemoryUnit unit = UnitUtils.createMemoryUnit ("UN007", 3, 0, 0, true, db, debugLogger);
 		assertNull (unit.getHeroNameID ());
 
 		// Set every skill except to "only if have already", so none are possible choices
-		for (final UnitSkill thisSkill : serverDB.getUnitSkill ())
+		for (final UnitSkill thisSkill : db.getUnitSkill ())
 			if (thisSkill.getUnitSkillID ().startsWith ("HS"))
 				thisSkill.setOnlyIfHaveAlready (true);
 
@@ -194,9 +183,7 @@ public final class TestUnitServerUtils
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_SkillNotTypeSpecific () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
 		final MemoryUnit unit = UnitUtils.createMemoryUnit ("UN007", 3, 0, 0, true, db, debugLogger);
@@ -204,7 +191,7 @@ public final class TestUnitServerUtils
 
 		// Set every skill except for HS10 to "only if have already", so HS10 remains the only possible choice
 		// Note HS10 isn't a fighter skill, it has no hero random pick type defined so can be obtained by anyone
-		for (final UnitSkill thisSkill : serverDB.getUnitSkill ())
+		for (final UnitSkill thisSkill : db.getUnitSkill ())
 			if ((thisSkill.getUnitSkillID ().startsWith ("HS")) && (!thisSkill.getUnitSkillID ().equals ("HS10")))
 				thisSkill.setOnlyIfHaveAlready (true);
 
@@ -235,9 +222,7 @@ public final class TestUnitServerUtils
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_HeroNotTypeSpecific () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Warrior Mage - gets 1 pick of any type, and has HS05
 		final MemoryUnit unit = UnitUtils.createMemoryUnit ("UN013", 3, 0, 0, true, db, debugLogger);
@@ -245,7 +230,7 @@ public final class TestUnitServerUtils
 
 		// Set every skill except to "only if have already", so HS05 remains the only possible choice
 		// Note HS05 is a mage specific skill
-		for (final UnitSkill thisSkill : serverDB.getUnitSkill ())
+		for (final UnitSkill thisSkill : db.getUnitSkill ())
 			if (thisSkill.getUnitSkillID ().startsWith ("HS"))
 				thisSkill.setOnlyIfHaveAlready (true);
 
@@ -272,16 +257,14 @@ public final class TestUnitServerUtils
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_Uncapped () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Unknown hero - gets 5 picks of any type, and has HS05
 		final MemoryUnit unit = UnitUtils.createMemoryUnit ("UN025", 3, 0, 0, true, db, debugLogger);
 		assertNull (unit.getHeroNameID ());
 
 		// Set every skill to "only if have already", so HS05 remains the only possible choice
-		for (final UnitSkill thisSkill : serverDB.getUnitSkill ())
+		for (final UnitSkill thisSkill : db.getUnitSkill ())
 			if (thisSkill.getUnitSkillID ().startsWith ("HS"))
 				thisSkill.setOnlyIfHaveAlready (true);
 
@@ -308,9 +291,7 @@ public final class TestUnitServerUtils
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_Capped () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Unknown hero - gets 5 picks of any type
 		final MemoryUnit unit = UnitUtils.createMemoryUnit ("UN025", 3, 0, 0, true, db, debugLogger);
@@ -320,7 +301,7 @@ public final class TestUnitServerUtils
 		unit.getUnitHasSkill ().get (2).setUnitSkillID ("HS01");
 
 		// Set every skill except HS01,3 and 4 to "only if have already", so these are our only possible choices
-		for (final UnitSkill thisSkill : serverDB.getUnitSkill ())
+		for (final UnitSkill thisSkill : db.getUnitSkill ())
 			if ((thisSkill.getUnitSkillID ().startsWith ("HS")) && (!thisSkill.getUnitSkillID ().equals ("HS01")) && (!thisSkill.getUnitSkillID ().equals ("HS03")) && (!thisSkill.getUnitSkillID ().equals ("HS04")))
 				thisSkill.setOnlyIfHaveAlready (true);
 
@@ -399,14 +380,12 @@ public final class TestUnitServerUtils
 	@Test
 	public final void testCanUnitBeAddedHere () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final List<String> emptySkillList = new ArrayList<String> ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -503,12 +482,10 @@ public final class TestUnitServerUtils
 	@Test
 	public final void testFindNearestLocationWhereUnitCanBeAdded () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();

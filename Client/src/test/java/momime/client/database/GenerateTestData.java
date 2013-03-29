@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import momime.client.database.v0_9_4.ClientDatabase;
 import momime.client.database.v0_9_4.MapFeature;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.database.LanguageDatabaseConstants;
@@ -72,9 +71,9 @@ public final class GenerateTestData
 	/**
 	 * @return Selected data required by the tests
 	 */
-	public final static ClientDatabaseLookup createDB ()
+	public final static ClientDatabaseEx createDB ()
 	{
-		final ClientDatabase db = new ClientDatabase ();
+		final ClientDatabaseEx db = new ClientDatabaseEx ();
 
 		// Tile types
 		final TileType tileTypeWithoutMagicRealm = new TileType ();
@@ -96,7 +95,8 @@ public final class GenerateTestData
 		mapFeatureWithRealm.setAnyMagicRealmsDefined (true);
 		db.getMapFeature ().add (mapFeatureWithRealm);
 
-		return new ClientDatabaseLookup (db);
+		db.buildMaps ();
+		return db;
 	}
 
 	/**

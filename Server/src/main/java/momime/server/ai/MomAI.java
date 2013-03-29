@@ -15,7 +15,7 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
@@ -42,7 +42,7 @@ public final class MomAI
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public final static void aiPlayerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (MomAI.class.getName (), "aiPlayerTurn", player.getPlayerDescription ().getPlayerName ());
@@ -51,7 +51,7 @@ public final class MomAI
 		// Note we do this EVERY TURN - we don't wait for the previous building to complete - this allows the AI player to change their mind
 		// e.g. if a city has minimal defence and has a university almost built and then a
 		// group of halbardiers show up 2 squares away, you're going to want to stuff the university and rush buy the best unit you can afford
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{

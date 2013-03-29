@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
@@ -53,10 +53,10 @@ public final class TestSpellUtils
 	@Test
 	public final void testFindSpellResearchStatus_Exists () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -74,10 +74,10 @@ public final class TestSpellUtils
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindSpellResearchStatus_NotExists () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -96,7 +96,7 @@ public final class TestSpellUtils
 	@Test
 	public final void testSpellSummonsUnitTypeID () throws MomException, RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		assertNull (SpellUtils.spellSummonsUnitTypeID (GenerateTestData.createArcaneNormalSpell (), db, debugLogger));
 		assertEquals ("S", SpellUtils.spellSummonsUnitTypeID (GenerateTestData.createArcaneSummoningSpell (), db, debugLogger));
@@ -158,7 +158,7 @@ public final class TestSpellUtils
 	@Test
 	public final void testGetReducedOverlandCastingCost () throws MomException, RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Recommended spell settings - 8% per book multiplicative, 90% cap
 		// Using this because all overland spell casting costs end in 0 or 5, so with nice round percentage reductions in multiples of 10% we can't get any results ending in anything other than .0 or .5
@@ -189,7 +189,7 @@ public final class TestSpellUtils
 	@Test
 	public final void testGetReducedCombatCastingCost () throws MomException, RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Original spell settings - 10% per book additive, 100% cap
 		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
@@ -388,10 +388,10 @@ public final class TestSpellUtils
 	@Test
 	public final void testGetSpellsForRealmRankStatus () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -425,10 +425,10 @@ public final class TestSpellUtils
 	@Test
 	public final void testGetSpellsForStatus () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -440,7 +440,7 @@ public final class TestSpellUtils
 		statuses.get (3).setStatus (SpellResearchStatusID.AVAILABLE);
 
 		assertEquals (2, SpellUtils.getSpellsForStatus (statuses, SpellResearchStatusID.AVAILABLE, db, debugLogger).size ());
-		assertEquals (db.getSpells ().size () - 2, SpellUtils.getSpellsForStatus (statuses, SpellResearchStatusID.UNAVAILABLE, db, debugLogger).size ());
+		assertEquals (db.getSpell ().size () - 2, SpellUtils.getSpellsForStatus (statuses, SpellResearchStatusID.UNAVAILABLE, db, debugLogger).size ());
 	}
 
 	/**
@@ -450,10 +450,10 @@ public final class TestSpellUtils
 	@Test
 	public final void testGetSpellsForRealmAndRank () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -474,10 +474,10 @@ public final class TestSpellUtils
 	@Test
 	public final void testGetSpellsForRankAndStatus () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -506,10 +506,10 @@ public final class TestSpellUtils
 	@Test
 	public final void testGetSpellsNotInBookForRealmAndRank () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -536,10 +536,10 @@ public final class TestSpellUtils
 	@Test
 	public final void testGetSpellRanksForStatus () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());
@@ -557,15 +557,16 @@ public final class TestSpellUtils
 
 	/**
 	 * Tests the getSpellRanksForMagicRealm method
+	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	@Test
-	public final void testGetSpellRanksForMagicRealm ()
+	public final void testGetSpellRanksForMagicRealm () throws RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
-		assertEquals (2, SpellUtils.getSpellRanksForMagicRealm (db.getSpells (), GenerateTestData.NATURE_BOOK, debugLogger).size ());
-		assertEquals (1, SpellUtils.getSpellRanksForMagicRealm (db.getSpells (), GenerateTestData.CHAOS_BOOK, debugLogger).size ());
-		assertEquals (1, SpellUtils.getSpellRanksForMagicRealm (db.getSpells (), null, debugLogger).size ());
+		assertEquals (2, SpellUtils.getSpellRanksForMagicRealm (db.getSpell (), GenerateTestData.NATURE_BOOK, debugLogger).size ());
+		assertEquals (1, SpellUtils.getSpellRanksForMagicRealm (db.getSpell (), GenerateTestData.CHAOS_BOOK, debugLogger).size ());
+		assertEquals (1, SpellUtils.getSpellRanksForMagicRealm (db.getSpell (), null, debugLogger).size ());
 	}
 
 	/**
@@ -576,10 +577,10 @@ public final class TestSpellUtils
 	@Test
 	public final void testGetSortedSpellsInSection () throws MomException, RecordNotFoundException
 	{
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
-		for (final Spell thisSpell : db.getSpells ())
+		for (final Spell thisSpell : db.getSpell ())
 		{
 			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
 			thisStatus.setSpellID (thisSpell.getSpellID ());

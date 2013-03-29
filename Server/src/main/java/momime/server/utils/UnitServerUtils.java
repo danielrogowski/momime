@@ -23,7 +23,7 @@ import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.calculations.MomServerUnitCalculations;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.UnitSkill;
 import momime.server.messages.ServerMemoryGridCellUtils;
@@ -41,7 +41,7 @@ public final class UnitServerUtils
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the definition for the unit
 	 */
-	public static final void generateHeroNameAndRandomSkills (final MemoryUnit unit, final ServerDatabaseLookup db, final Logger debugLogger)
+	public static final void generateHeroNameAndRandomSkills (final MemoryUnit unit, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (UnitServerUtils.class.getName (), "generateHeroNameAndRandomSkills", unit.getUnitID ());
@@ -64,7 +64,7 @@ public final class UnitServerUtils
 			{
 				// Get a list of all valid choices
 				final List<String> skillChoices = new ArrayList<String> ();
-				for (final UnitSkill thisSkill : db.getUnitSkills ())
+				for (final UnitSkill thisSkill : db.getUnitSkill ())
 				{
 					// We can spot hero skills since they'll have at least one of these values filled in
 					if (((thisSkill.getHeroSkillTypeID () != null) && (!thisSkill.getHeroSkillTypeID ().equals (""))) ||
@@ -157,7 +157,7 @@ public final class UnitServerUtils
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	final static boolean canUnitBeAddedHere (final OverlandMapCoordinates addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
-		final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseLookup db, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "canUnitBeAddedHere", CoordinatesUtils.overlandMapCoordinatesToString (addLocation));
@@ -224,7 +224,7 @@ public final class UnitServerUtils
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	public final static UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final OverlandMapCoordinates desiredLocation, final String unitID, final int playerID,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (UnitUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", new String []

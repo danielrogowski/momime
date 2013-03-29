@@ -46,7 +46,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 
 		// Validate the requested picks
-		final String error = SpellServerUtils.validateResearch (sender, spellID, mom.getSessionDescription ().getSpellSetting ().getSwitchResearch (), mom.getServerDBLookup (), debugLogger);
+		final String error = SpellServerUtils.validateResearch (sender, spellID, mom.getSessionDescription ().getSpellSetting ().getSwitchResearch (), mom.getServerDB (), debugLogger);
 		if (error != null)
 		{
 			// Return error
@@ -62,7 +62,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 			if ((mom.getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH) && (priv.getSpellIDBeingResearched () != null))
 			{
 				// Lose on server
-				final Spell spellPreviouslyBeingResearched = mom.getServerDBLookup ().findSpell (priv.getSpellIDBeingResearched (), "RequestResearchSpellMessageImpl");
+				final Spell spellPreviouslyBeingResearched = mom.getServerDB ().findSpell (priv.getSpellIDBeingResearched (), "RequestResearchSpellMessageImpl");
 				final SpellResearchStatus spellPreviouslyBeingResearchedStatus = SpellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched (), debugLogger);
 
 				spellPreviouslyBeingResearchedStatus.setRemainingResearchCost (spellPreviouslyBeingResearched.getResearchCost ());

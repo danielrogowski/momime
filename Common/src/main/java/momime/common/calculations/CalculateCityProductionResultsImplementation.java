@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
@@ -182,7 +182,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	final void addProductionFromPopulation (final Race race, final String populationTaskID, final int numberDoingTask, final OverlandMapCoordinates cityLocation,
-		final List<MemoryBuilding> buildings, final CommonDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+		final List<MemoryBuilding> buildings, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		if (numberDoingTask > 0)
 
@@ -215,7 +215,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	final void addProductionAndConsumptionFromBuilding (final Building building, final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+	final void addProductionAndConsumptionFromBuilding (final Building building, final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		// Go through each type of production/consumption from this building

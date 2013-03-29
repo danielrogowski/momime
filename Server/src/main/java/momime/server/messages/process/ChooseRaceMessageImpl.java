@@ -43,7 +43,7 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements IP
 
 		final MomSessionThread mom = (MomSessionThread) thread;
 
-		final String error = PlayerPickServerUtils.validateRaceChoice (sender, getRaceID (), mom.getServerDBLookup (), debugLogger);
+		final String error = PlayerPickServerUtils.validateRaceChoice (sender, getRaceID (), mom.getServerDB (), debugLogger);
 		if (error != null)
 		{
 			// Return error

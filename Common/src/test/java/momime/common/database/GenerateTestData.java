@@ -1,7 +1,14 @@
 package momime.common.database;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mockito.Mockito;
 
 import momime.common.database.newgame.v0_9_4.CastingReductionCombination;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
@@ -297,8 +304,9 @@ public final class GenerateTestData
 
 	/**
 	 * @return Selected data required by the tests
+	 * @throws RecordNotFoundException If an entry expected in the database can't be found; though this is here because of the mocking and shouldn't be triggered
 	 */
-	public final static CommonDatabaseLookup createDB ()
+	public final static ICommonDatabase createDB () throws RecordNotFoundException
 	{
 		// Planes
 		final List<Plane> planes = new ArrayList<Plane> ();
@@ -1087,8 +1095,59 @@ public final class GenerateTestData
 		tr07.setTaxUnrestPercentage (75);
 		taxRates.add (tr07);
 
-		return new CommonDatabaseLookup (planes, mapFeatures, tileTypes, productionTypes, pickTypes, picks, null,
-			unitTypes, unitMagicRealms, units, unitSkills, weaponGrades, races, taxRates, buildings, spells, combatAreaEffects);
+		// Now have all the lists, mock the results accordingly
+		final ICommonDatabase db = mock (ICommonDatabase.class);
+		for (final Plane plane : planes)
+			when (db.findPlane (eq (plane.getPlaneNumber ()), anyString ())).thenReturn (plane);
+
+		for (final MapFeature mapFeature : mapFeatures)
+			when (db.findMapFeature (eq (mapFeature.getMapFeatureID ()), anyString ())).thenReturn (mapFeature);
+
+		for (final TileType tileType : tileTypes)
+			when (db.findTileType (eq (tileType.getTileTypeID ()), anyString ())).thenReturn (tileType);
+		
+		for (final ProductionType productionType : productionTypes)
+			when (db.findProductionType (eq (productionType.getProductionTypeID ()), anyString ())).thenReturn (productionType);
+
+		Mockito.doReturn (pickTypes).when (db).getPickType ();
+		for (final PickType pickType : pickTypes)
+			when (db.findPickType (eq (pickType.getPickTypeID ()), anyString ())).thenReturn (pickType);
+
+		for (final Pick pick : picks)
+			when (db.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pick);
+
+		for (final UnitType unitType : unitTypes)
+			when (db.findUnitType (eq (unitType.getUnitTypeID ()), anyString ())).thenReturn (unitType);
+
+		for (final UnitMagicRealm unitMagicRealm : unitMagicRealms)
+			when (db.findUnitMagicRealm (eq (unitMagicRealm.getUnitMagicRealmID ()), anyString ())).thenReturn (unitMagicRealm);
+
+		for (final Unit unit : units)
+			when (db.findUnit (eq (unit.getUnitID ()), anyString ())).thenReturn (unit);
+
+		for (final UnitSkill unitSkill : unitSkills)
+			when (db.findUnitSkill (eq (unitSkill.getUnitSkillID ()), anyString ())).thenReturn (unitSkill);
+
+		for (final WeaponGrade weaponGrade : weaponGrades)
+			when (db.findWeaponGrade (eq (weaponGrade.getWeaponGradeNumber ()), anyString ())).thenReturn (weaponGrade);
+
+		for (final Race race : races)
+			when (db.findRace (eq (race.getRaceID ()), anyString ())).thenReturn (race);
+
+		for (final TaxRate taxRate : taxRates)
+			when (db.findTaxRate (eq (taxRate.getTaxRateID ()), anyString ())).thenReturn (taxRate);
+
+		for (final Building building : buildings)
+			when (db.findBuilding (eq (building.getBuildingID ()), anyString ())).thenReturn (building);
+
+		Mockito.doReturn (spells).when (db).getSpell ();
+		for (final Spell spell : spells)
+			when (db.findSpell (eq (spell.getSpellID ()), anyString ())).thenReturn (spell);
+
+		for (final CombatAreaEffect combatAreaEffect : combatAreaEffects)
+			when (db.findCombatAreaEffect (eq (combatAreaEffect.getCombatAreaEffectID ()), anyString ())).thenReturn (combatAreaEffect);
+		
+		return db;
 	}
 
 	/**

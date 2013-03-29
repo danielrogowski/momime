@@ -12,7 +12,6 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
@@ -25,7 +24,6 @@ import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.server.ServerTestData;
-import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -88,12 +86,11 @@ public final class TestServerDatabaseConverters
 	@Test
 	public final void testBuildClientDatabase_Valid () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		for (int humanSpellPicks = 0; humanSpellPicks <= 20; humanSpellPicks++)
 		{
-			final ClientDatabase clientDB = ServerDatabaseConverters.buildClientDatabase (serverDB, humanSpellPicks, debugLogger);
+			final ClientDatabase clientDB = ServerDatabaseConverters.buildClientDatabase (db, humanSpellPicks, debugLogger);
 
 			assertEquals ("MF01", clientDB.getMapFeature ().get (0).getMapFeatureID ());
 			assertFalse (clientDB.getMapFeature ().get (0).isAnyMagicRealmsDefined ());
@@ -112,9 +109,8 @@ public final class TestServerDatabaseConverters
 	@Test(expected=RecordNotFoundException.class)
 	public final void testBuildClientDatabase_PickCountDoesntExist () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		ServerDatabaseConverters.buildClientDatabase (serverDB, 21, debugLogger);
+		ServerDatabaseConverters.buildClientDatabase (db, 21, debugLogger);
 	}
 }

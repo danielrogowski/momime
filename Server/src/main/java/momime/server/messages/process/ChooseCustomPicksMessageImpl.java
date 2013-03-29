@@ -45,7 +45,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 		final MomSessionThread mom = (MomSessionThread) thread;
 
 		// Validate the requested picks
-		final String error = PlayerPickServerUtils.validateCustomPicks (sender, getPick (), mom.getSessionDescription (), mom.getServerDBLookup (), debugLogger);
+		final String error = PlayerPickServerUtils.validateCustomPicks (sender, getPick (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 		if (error != null)
 		{
 			// Return error
@@ -79,7 +79,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 			// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 			// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
 			debugLogger.finest (ChooseCustomPicksMessageImpl.class.getName () + ".process: About to search for first realm (if any) where human player " + sender.getPlayerDescription ().getPlayerName () + " gets free spells");
-			final ChooseInitialSpellsNowMessage chooseSpellsMsg = PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDBLookup (), debugLogger);
+			final ChooseInitialSpellsNowMessage chooseSpellsMsg = PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB (), debugLogger);
 			if (chooseSpellsMsg != null)
 				sender.getConnection ().sendMessageToClient (chooseSpellsMsg);
 			else

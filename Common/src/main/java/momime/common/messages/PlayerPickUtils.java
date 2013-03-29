@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Pick;
 import momime.common.database.v0_9_4.PickExclusiveFrom;
@@ -46,7 +46,7 @@ public final class PlayerPickUtils
 	 * @return Total cost of all of this player's picks
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static int getTotalPickCost (final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static int getTotalPickCost (final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "getTotalPickCost");
@@ -144,7 +144,7 @@ public final class PlayerPickUtils
 	 * @return Number of picks in list of the requested pick type, e.g. count total number of all spell books
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static int countPicksOfType (final List<PlayerPick> picks, final String pickTypeID, final boolean original, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static int countPicksOfType (final List<PlayerPick> picks, final String pickTypeID, final boolean original, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "countPicksOfType", pickTypeID);
@@ -174,7 +174,7 @@ public final class PlayerPickUtils
 	 * @return Most appropriate pick to use to satisfy pre-requisite, or null if we don't have enough books of any type
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
  	 */
-	private final static String findMostAppropriatePickToSatisfy (final List<PlayerPick> picks, final String desiredPickTypeID, final int desiredCount, final CommonDatabaseLookup db, final Logger debugLogger)
+	private final static String findMostAppropriatePickToSatisfy (final List<PlayerPick> picks, final String desiredPickTypeID, final int desiredCount, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "findMostAppropriatePickToSatisfy", new String [] {desiredPickTypeID, new Integer (desiredCount).toString ()});
@@ -210,7 +210,7 @@ public final class PlayerPickUtils
 	 * @return True if player has the necessary pre-requisites for this pick
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static boolean meetsPickRequirements (final Pick pick, final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static boolean meetsPickRequirements (final Pick pick, final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "meetsPickRequirements", pick.getPickID ());
@@ -272,7 +272,7 @@ public final class PlayerPickUtils
 	 * @return True if requirements of all picks in list are met, e.g. will return False if list includes Divine Power but doesn't include 4 Life Books
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	private final static boolean allRequirementsMet (final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+	private final static boolean allRequirementsMet (final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "allRequirementsMet");
@@ -299,7 +299,7 @@ public final class PlayerPickUtils
 	 * @return True if the player can remove the pick without violating any pre-requisites of remaining picks
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static boolean canSafelyRemove (final String pickID, final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static boolean canSafelyRemove (final String pickID, final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "canSafelyRemove", pickID);
@@ -362,7 +362,7 @@ public final class PlayerPickUtils
 	 * @return Best weapon grade granted by all the picks the player has
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static int getHighestWeaponGradeGrantedByPicks (final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static int getHighestWeaponGradeGrantedByPicks (final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "getHighestWeaponGradeGrantedByPicks");
@@ -388,7 +388,7 @@ public final class PlayerPickUtils
 	 * @return Total percentage bonus that any picks we have increase the effectiveness of religious buildings
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static int totalReligiousBuildingBonus (final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static int totalReligiousBuildingBonus (final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "totalReligiousBuildingBonus");
@@ -414,7 +414,7 @@ public final class PlayerPickUtils
 	 * @return List of pick IDs that provide any percentage bonus to the effectiveness of religious building
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static List<String> pickIdsContributingToReligiousBuildingBonus (final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static List<String> pickIdsContributingToReligiousBuildingBonus (final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "pickIdsContributingToReligiousBuildingBonus");
@@ -444,7 +444,7 @@ public final class PlayerPickUtils
 	 * @throws InvalidParameterException If we request a production type ID whose special bonus can't be calculated by this routine
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static int totalProductionBonus (final String productionTypeID, final String unitTypeID, final List<PlayerPick> picks, final CommonDatabaseLookup db, final Logger debugLogger)
+	public final static int totalProductionBonus (final String productionTypeID, final String unitTypeID, final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickUtils.class.getName (), "totalProductionBonus", new String [] {productionTypeID, unitTypeID});

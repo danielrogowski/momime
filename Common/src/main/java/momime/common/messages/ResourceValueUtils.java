@@ -8,7 +8,7 @@ import momime.common.MomException;
 import momime.common.calculations.MomSkillCalculations;
 import momime.common.calculations.MomSpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.Spell;
@@ -203,7 +203,7 @@ public final class ResourceValueUtils
 	 * @throws RecordNotFoundException If we look for a particular record that we expect to be present in the XML file and we can't find it
      */
 	public static final int calculateAmountPerTurnForProductionType (final MomPersistentPlayerPrivateKnowledge privateInfo, final List<PlayerPick> picks,
-		final String productionTypeID, final SpellSettingData spellSettings, final CommonDatabaseLookup db, final Logger debugLogger)
+		final String productionTypeID, final SpellSettingData spellSettings, final ICommonDatabase db, final Logger debugLogger)
     	throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (ResourceValueUtils.class.getName (), "calculateAmountPerTurnForProductionType", productionTypeID);

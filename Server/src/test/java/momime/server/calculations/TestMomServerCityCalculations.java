@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
@@ -25,11 +24,9 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
 
@@ -55,9 +52,7 @@ public final class TestMomServerCityCalculations
 	@Test
 	public final void testCalculateTotalFoodBonusFromBuildings_Valid () throws IOException, JAXBException, MomException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		assertEquals (5, MomServerCityCalculations.calculateTotalFoodBonusFromBuildings (db, debugLogger));
 	}
@@ -72,9 +67,7 @@ public final class TestMomServerCityCalculations
 	@Test(expected=MomException.class)
 	public final void testCalculateTotalFoodBonusFromBuildings_Invalid () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		// Change production to be an odd value, which is invalid
 		for (final BuildingPopulationProductionModifier mod : db.findBuilding ("BL30", "testCalculateTotalFoodBonusFromBuildings_Invalid").getBuildingPopulationProductionModifier ())
@@ -94,9 +87,7 @@ public final class TestMomServerCityCalculations
 	@Test
 	public final void testCalculateDoubleFarmingRate () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
@@ -172,11 +163,9 @@ public final class TestMomServerCityCalculations
 	@Test
 	public final void testCalculateCitySizeIDAndMinimumFarmers () throws IOException, JAXBException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -299,9 +288,7 @@ public final class TestMomServerCityCalculations
 	@Test
 	public final void testCalculateCityScoutingRange () throws IOException, JAXBException, RecordNotFoundException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
@@ -375,11 +362,9 @@ public final class TestMomServerCityCalculations
 	@Test
 	public final void testCanEventuallyConstructBuilding () throws IOException, JAXBException
 	{
-		final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (ServerTestData.locateServerXmlFile ());
-		final ServerDatabaseLookup db = new ServerDatabaseLookup (serverDB);
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (serverDB, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -408,7 +393,7 @@ public final class TestMomServerCityCalculations
 
 		// Orcs can build absolutely everything
 		cityData.setCityRaceID ("RC09");
-		for (final Building building : db.getBuildings ())
+		for (final Building building : db.getBuilding ())
 			if ((!building.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)) &&
 				(!building.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)))
 

@@ -39,7 +39,7 @@ public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMes
 		// Check is valid - we don't need the record from the DB, we just need to prove that it exists
 		try
 		{
-			mom.getServerDBLookup ().findWizard (getPhotoID (), "ChooseStandardPhotoMessageImpl");
+			mom.getServerDB ().findWizard (getPhotoID (), "ChooseStandardPhotoMessageImpl");
 
 			// Remember choice on server
 			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();

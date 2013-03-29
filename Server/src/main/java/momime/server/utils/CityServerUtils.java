@@ -12,7 +12,7 @@ import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Race;
 import momime.server.database.v0_9_4.Unit;
@@ -38,7 +38,7 @@ public final class CityServerUtils
 	 * @throws RecordNotFoundException If the race inhabiting the city cannot be found
 	 */
 	public static final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinates cityLocation,
-		final String buildingOrUnitID, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final String buildingOrUnitID, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (CityServerUtils.class.getName (), "validateCityConstruction", new String [] {new Integer (player.getPlayerDescription ().getPlayerID ()).toString (), buildingOrUnitID});
@@ -134,7 +134,7 @@ public final class CityServerUtils
 	 * @return null if choice is acceptable; message to send back to client if choices isn't acceptable
 	 */
 	public static final String validateOptionalFarmers (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinates cityLocation,
-		final int optionalFarmers, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final int optionalFarmers, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 	{
 		debugLogger.entering (CityServerUtils.class.getName (), "validateOptionalFarmers", new Integer [] {player.getPlayerDescription ().getPlayerID (), optionalFarmers});
 

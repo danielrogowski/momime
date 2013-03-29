@@ -39,7 +39,6 @@ import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Race;
 import momime.server.database.v0_9_4.RangedAttackType;
-import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.SpellSetting;
 import momime.server.database.v0_9_4.TileType;
@@ -68,7 +67,7 @@ public final class ServerDatabaseConverters
 	 * @param dbName Filename the server XML was read from
 	 * @return Info extracted from server XML
 	 */
-	private final static AvailableDatabase convertServerToAvailableDatabase (final ServerDatabase src, final String dbName)
+	private final static AvailableDatabase convertServerToAvailableDatabase (final ServerDatabaseEx src, final String dbName)
 	{
 		final AvailableDatabase dest = new AvailableDatabase ();
 		dest.setDbName (dbName);
@@ -136,6 +135,7 @@ public final class ServerDatabaseConverters
 		// Now open up each one to check if it is compatible
 		final NewGameDatabase newGameDatabase = new NewGameDatabase ();
 		final Unmarshaller serverDatabaseUnmarshaller = serverDatabaseContext.createUnmarshaller ();
+		serverDatabaseUnmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
 
 		for (final String thisFilename : xmlFilenames)
 		{
@@ -147,7 +147,8 @@ public final class ServerDatabaseConverters
 				xsdValidator.validate (new StreamSource (fullFilename));
 
 				// Looks ok - attempt to load it in
-				final ServerDatabase db = (ServerDatabase) serverDatabaseUnmarshaller.unmarshal (fullFilename);
+				final ServerDatabaseEx db = (ServerDatabaseEx) serverDatabaseUnmarshaller.unmarshal (fullFilename);
+				db.buildMaps ();
 
 				// Loaded ok, add relevant parts to the new game database
 				newGameDatabase.getMomimeXmlDatabase ().add (convertServerToAvailableDatabase (db, thisFilename));
@@ -184,7 +185,7 @@ public final class ServerDatabaseConverters
 	 * @return Info extracted from server XML
 	 * @throws RecordNotFoundException If one of the wizards does not have picks for the specified number of human picks defined
 	 */
-	public final static ClientDatabase buildClientDatabase (final ServerDatabase src, final int humanSpellPicks, final Logger debugLogger) throws RecordNotFoundException
+	public final static ClientDatabase buildClientDatabase (final ServerDatabaseEx src, final int humanSpellPicks, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.exiting (ServerDatabaseConverters.class.getName (), "buildClientDatabase", src);
 

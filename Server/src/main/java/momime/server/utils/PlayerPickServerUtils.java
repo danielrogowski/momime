@@ -21,7 +21,7 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.ai.SpellAI;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
 import momime.server.database.v0_9_4.PickTypeCountContainer;
@@ -45,7 +45,7 @@ public final class PlayerPickServerUtils
 	 * @return Initial skill wizard will start game with - 2 per book +10 if they chose Archmage
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static int getTotalInitialSkill (final List<PlayerPick> picks, final ServerDatabaseLookup db, final Logger debugLogger) throws RecordNotFoundException
+	public final static int getTotalInitialSkill (final List<PlayerPick> picks, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickServerUtils.class.getName (), "getTotalInitialSkill", picks.size ());
 
@@ -121,7 +121,7 @@ public final class PlayerPickServerUtils
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
-	public final static String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+	public final static String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 	{
 		debugLogger.entering (PlayerPickServerUtils.class.getName (), "validateCustomPicks", new Integer [] {player.getPlayerDescription ().getPlayerID (), picks.size ()});
 
@@ -175,7 +175,7 @@ public final class PlayerPickServerUtils
 	 * @return Message containing magic realm and counts of how many spells we need to pick of each rank - can be an empty list; null indicates that the quantity of pick we have doesn't grant any free spells
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
-	private final static ChooseInitialSpellsNowMessage countFreeSpellsLeftToChoose (final PlayerServerDetails player, final PlayerPick pick, final ServerDatabaseLookup db, final Logger debugLogger)
+	private final static ChooseInitialSpellsNowMessage countFreeSpellsLeftToChoose (final PlayerServerDetails player, final PlayerPick pick, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickServerUtils.class.getName (), "countFreeSpellsLeftToChoose", player.getPlayerDescription ().getPlayerID ());
@@ -245,7 +245,7 @@ public final class PlayerPickServerUtils
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 * @throws RecordNotFoundException If the player has picks which we can't find in the cache, or the AI player chooses a spell which we can't then find in their list
 	 */
-	public final static ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final ServerDatabaseLookup db, final Logger debugLogger)
+	public final static ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickServerUtils.class.getName (), "findRealmIDWhereWeNeedToChooseFreeSpells", player.getPlayerDescription ().getPlayerID ());
@@ -298,7 +298,7 @@ public final class PlayerPickServerUtils
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
-	public final static String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final ServerDatabaseLookup db, final Logger debugLogger)
+	public final static String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickServerUtils.class.getName (), "validateInitialSpellSelection",
@@ -368,7 +368,7 @@ public final class PlayerPickServerUtils
 	 * @return null if choice is acceptable; message to send back to client if choice isn't acceptable
 	 * @throws RecordNotFoundException If we choose a race whose native plane can't be found
 	 */
-	public final static String validateRaceChoice (final PlayerServerDetails player, final String raceID, final ServerDatabaseLookup db, final Logger debugLogger)
+	public final static String validateRaceChoice (final PlayerServerDetails player, final String raceID, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
 		debugLogger.entering (PlayerPickServerUtils.class.getName (), "validateRaceChoice",
@@ -459,13 +459,13 @@ public final class PlayerPickServerUtils
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list
 	 */
-	public final static List<Wizard> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseLookup db, final Logger debugLogger)
+	public final static List<Wizard> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db, final Logger debugLogger)
 	{
 		debugLogger.entering (PlayerPickServerUtils.class.getName (), "listWizardsForAIPlayers", players.size ());
 
 		// First get a list of all the available wizards
 		final List<Wizard> availableWizards = new ArrayList<Wizard> ();
-		for (final Wizard thisWizard : db.getWizards ())
+		for (final Wizard thisWizard : db.getWizard ())
 			if ((!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
 				(!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
 				(findPlayerUsingStandardPhoto (players, thisWizard.getWizardID (), debugLogger) == null))
@@ -483,7 +483,7 @@ public final class PlayerPickServerUtils
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Plane the wizard should start on
 	 */
-	public static final int startingPlaneForWizard (final List<PlayerPick> picks, final ServerDatabaseLookup db, final Logger debugLogger)
+	public static final int startingPlaneForWizard (final List<PlayerPick> picks, final ServerDatabaseEx db, final Logger debugLogger)
 	{
 		debugLogger.entering (PlayerPickServerUtils.class.getName (), "startingPlaneForWizard");
 
@@ -491,7 +491,7 @@ public final class PlayerPickServerUtils
 		int bestMatchPrerequisiteCount = 0;
 
 		// Check each plane
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 		{
 			// Meet whatever pre-requisites are defined?
 			if ((plane.getPrerequisitePickToChooseNativeRace () == null) || (PlayerPickUtils.getQuantityOfPick (picks, plane.getPrerequisitePickToChooseNativeRace (), debugLogger) > 0))
@@ -521,14 +521,14 @@ public final class PlayerPickServerUtils
 	 * @return Random race ID that inhabits this plane
 	 * @throws MomException If there are no races defined in the database that inhabit this plane
 	 */
-	public static final String chooseRandomRaceForPlane (final int planeNumber, final ServerDatabaseLookup db, final Logger debugLogger)
+	public static final String chooseRandomRaceForPlane (final int planeNumber, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException
 	{
 		debugLogger.entering (PlayerPickServerUtils.class.getName (), "chooseRandomRaceForPlane", planeNumber);
 
 		final List<String> possibleRaces = new ArrayList<String> ();
 
-		for (final Race thisRace : db.getRaces ())
+		for (final Race thisRace : db.getRace ())
 			if (thisRace.getNativePlane () == planeNumber)
 				possibleRaces.add (thisRace.getRaceID ());
 

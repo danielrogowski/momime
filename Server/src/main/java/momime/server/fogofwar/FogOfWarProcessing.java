@@ -47,7 +47,7 @@ import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.CompareUtils;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerUnitCalculations;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.messages.ServerMemoryGridCellUtils;
@@ -154,7 +154,7 @@ public final class FogOfWarProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	final static void markVisibleArea (final FogOfWarMemory trueMap, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		debugLogger.entering (FogOfWarProcessing.class.getName (), "markVisibleArea", player.getPlayerDescription ().getPlayerID ());
@@ -166,7 +166,7 @@ public final class FogOfWarProcessing
 			MemoryMaintainedSpellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
 				ServerDatabaseValues.VALUE_SPELL_ID_NATURE_AWARENESS, null, null, null, null, debugLogger) != null)
 		{
-			for (final Plane plane : db.getPlanes ())
+			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 						canSee (priv.getFogOfWar (), x, y, plane.getPlaneNumber ());
@@ -178,7 +178,7 @@ public final class FogOfWarProcessing
 				ServerDatabaseValues.VALUE_SPELL_ID_AWARENESS, null, null, null, null, debugLogger) != null);
 
 			// Check what areas we can see because we have cities there
-			for (final Plane plane : db.getPlanes ())
+			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 					{
@@ -226,7 +226,7 @@ public final class FogOfWarProcessing
 					if (MemoryGridCellUtils.isTerrainTowerOfWizardry (trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
 						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ()))
 					{
-						for (final Plane plane : db.getPlanes ())
+						for (final Plane plane : db.getPlane ())
 							canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), plane.getPlaneNumber (), scoutingRange);
 					}
 					else
@@ -345,7 +345,7 @@ public final class FogOfWarProcessing
 	 */
 	public final static void updateAndSendFogOfWar (final FogOfWarMemory trueMap, final PlayerServerDetails player,
 		final List<PlayerServerDetails> players, final boolean nameCitiesAtStartOfGame,
-		final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (FogOfWarProcessing.class.getName (), "updateAndSendFogOfWar", player.getPlayerDescription ().getPlayerID ());
@@ -363,7 +363,7 @@ public final class FogOfWarProcessing
 			msg = null;
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -550,7 +550,7 @@ public final class FogOfWarProcessing
 				if (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData))
 				{
 					// In a tower, consider all planes
-					for (final Plane plane : db.getPlanes ())
+					for (final Plane plane : db.getPlane ())
 						states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
 							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 				}
@@ -627,7 +627,7 @@ public final class FogOfWarProcessing
 				if (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData))
 				{
 					// In a tower, consider all planes
-					for (final Plane plane : db.getPlanes ())
+					for (final Plane plane : db.getPlane ())
 						states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
 							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 				}
@@ -831,7 +831,7 @@ public final class FogOfWarProcessing
 
 		// Lastly send the client details of the changes in the fog of war area itself
 		// Also sets the values on the server back normal
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{

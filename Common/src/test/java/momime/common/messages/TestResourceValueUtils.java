@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.CommonDatabaseLookup;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
@@ -328,7 +328,7 @@ public final class TestResourceValueUtils
 	{
 		final MomPersistentPlayerPrivateKnowledge privateInfo = new MomPersistentPlayerPrivateKnowledge ();
 		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
-		final CommonDatabaseLookup db = GenerateTestData.createDB ();
+		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Add some production
 		ResourceValueUtils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 20, debugLogger);

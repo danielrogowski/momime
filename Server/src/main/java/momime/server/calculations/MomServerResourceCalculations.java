@@ -41,7 +41,7 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ProductionType;
@@ -80,7 +80,7 @@ public final class MomServerResourceCalculations
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	static final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "recalculateAmountsPerTurn", player.getPlayerDescription ().getPlayerID ());
@@ -124,7 +124,7 @@ public final class MomServerResourceCalculations
 		// In practice this is mostly irrelevant since *nothing* actually generates mana directly - it only generates magic power that can be converted into mana
 
 		// Calculates production and consumption from all cities on the map
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -148,7 +148,7 @@ public final class MomServerResourceCalculations
 
 		// Counts up how many node aura squares each player gets
 		int nodeAuraSquares = 0;
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
@@ -215,7 +215,7 @@ public final class MomServerResourceCalculations
 	 * @throws MomException If we find a building consumption that isn't a multiple of 2
 	 */
 	static final List<IMomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseLookup db, final Logger debugLogger)
+		final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseEx db, final Logger debugLogger)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething",
@@ -291,7 +291,7 @@ public final class MomServerResourceCalculations
 	 */
 	private static final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final EnforceProductionID enforceType, final boolean addOnStoredAmount,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething",
@@ -301,7 +301,7 @@ public final class MomServerResourceCalculations
 
 		// Search through different types of production looking for ones matching the required enforce type
 		boolean found = false;
-		final Iterator<ProductionType> productionTypeIter = db.getProductionTypes ().iterator ();
+		final Iterator<ProductionType> productionTypeIter = db.getProductionType ().iterator ();
 		while ((!found) && (productionTypeIter.hasNext ()))
 		{
 			final ProductionType productionType = productionTypeIter.next ();
@@ -356,7 +356,7 @@ public final class MomServerResourceCalculations
 	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
 	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
 	 */
-	static final void accumulateGlobalProductionValues (final List<MomResourceValue> resourceList, final ServerDatabaseLookup db, final Logger debugLogger)
+	static final void accumulateGlobalProductionValues (final List<MomResourceValue> resourceList, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, MomException
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "accumulateGlobalProductionValues");
@@ -409,7 +409,7 @@ public final class MomServerResourceCalculations
 	 * @throws JAXBException If there is a problem converting a reply message into XML
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 */
-	static final void progressResearch (final PlayerServerDetails player, final ServerDatabaseLookup db, final Logger debugLogger)
+	static final void progressResearch (final PlayerServerDetails player, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "progressResearch");
@@ -494,7 +494,7 @@ public final class MomServerResourceCalculations
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 */
 	public static final void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		debugLogger.exiting (MomServerResourceCalculations.class.getName (), "recalculateGlobalProductionValues",

@@ -6,6 +6,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.CitySize;
+import momime.server.database.v0_9_4.CombatAreaEffect;
 import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
@@ -13,42 +14,25 @@ import momime.server.database.v0_9_4.PickTypeCountContainer;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Race;
-import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_4.TileType;
 import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_4.UnitMagicRealm;
 import momime.server.database.v0_9_4.UnitSkill;
+import momime.server.database.v0_9_4.UnitType;
+import momime.server.database.v0_9_4.WeaponGrade;
 import momime.server.database.v0_9_4.Wizard;
 import momime.server.database.v0_9_4.WizardPickCount;
 
 import org.junit.Test;
 
 /**
- * Tests the ServerDatabaseLookup class
- * We've already tested the lookups in TestCommonDatabaseLookup - what we're really checking here is that the return types allow direct access to the server-only properties without typecasting
+ * Tests the ServerDatabaseEx class
+ * Note there's no point testing any of the 'get' methods that return the complete lists, since they're provided by the JAXB-generated code
+ * Only need to test the maps that we coded in the Ex class
  */
-public final class TestServerDatabaseLookup
+public final class TestServerDatabaseEx
 {
-	/**
-	 * Tests the getCitySizes method
-	 */
-	@Test
-	public final void testGetCitySizes ()
-	{
-		final ServerDatabase db = new ServerDatabase ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final CitySize newCitySize = new CitySize ();
-			newCitySize.setCitySizeID ("CS0" + n);
-			db.getCitySize ().add (newCitySize);
-		}
-
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
-
-		assertEquals (3, lookup.getCitySizes ().size ());
-		for (int n = 1; n <= 3; n++)
-			assertEquals ("CS0" + n, lookup.getCitySizes ().get (n - 1).getCitySizeID ());
-	}
-
 	/**
 	 * Tests the findCitySize method to find a citySizeNumber that does exist
 	 * @throws RecordNotFoundException If we can't find it
@@ -56,7 +40,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindCitySize_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CitySize newCitySize = new CitySize ();
@@ -64,9 +48,9 @@ public final class TestServerDatabaseLookup
 			db.getCitySize ().add (newCitySize);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("CS02", lookup.findCitySize ("CS02", "testFindCitySize_Exists").getCitySizeID ());
+		assertEquals ("CS02", db.findCitySize ("CS02", "testFindCitySize_Exists").getCitySizeID ());
 	}
 
 	/**
@@ -76,7 +60,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindCitySize_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CitySize newCitySize = new CitySize ();
@@ -84,9 +68,9 @@ public final class TestServerDatabaseLookup
 			db.getCitySize ().add (newCitySize);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertNull (lookup.findCitySize ("CS04", "testFindCitySize_NotExists"));
+		assertNull (db.findCitySize ("CS04", "testFindCitySize_NotExists"));
 	}
 
 	/**
@@ -96,7 +80,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindPlaneID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 0; n < 2; n++)
 		{
 			final Plane newPlane = new Plane ();
@@ -106,9 +90,9 @@ public final class TestServerDatabaseLookup
 			db.getPlane ().add (newPlane);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("Plane 1", lookup.findPlane (1, "testFindPlaneID_Exists").getPlaneDescription ());
+		assertEquals ("Plane 1", db.findPlane (1, "testFindPlaneID_Exists").getPlaneDescription ());
 	}
 
 	/**
@@ -118,7 +102,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindPlaneID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 0; n < 2; n++)
 		{
 			final Plane newPlane = new Plane ();
@@ -128,9 +112,9 @@ public final class TestServerDatabaseLookup
 			db.getPlane ().add (newPlane);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findPlane (2, "testFindPlaneID_NotExists");
+		db.findPlane (2, "testFindPlaneID_NotExists");
 	}
 
 	/**
@@ -140,7 +124,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindMapFeatureID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final MapFeature newMapFeature = new MapFeature ();
@@ -149,10 +133,10 @@ public final class TestServerDatabaseLookup
 			db.getMapFeature ().add (newMapFeature);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("MF02", lookup.findMapFeature ("MF02", "testFindMapFeatureID_Exists").getMapFeatureID ());
-		assertEquals (20, lookup.findMapFeature ("MF02", "testFindMapFeatureID_Exists").getCityQualityEstimate ().intValue ());
+		assertEquals ("MF02", db.findMapFeature ("MF02", "testFindMapFeatureID_Exists").getMapFeatureID ());
+		assertEquals (20, db.findMapFeature ("MF02", "testFindMapFeatureID_Exists").getCityQualityEstimate ().intValue ());
 	}
 
 	/**
@@ -162,7 +146,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindMapFeatureID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final MapFeature newMapFeature = new MapFeature ();
@@ -170,9 +154,49 @@ public final class TestServerDatabaseLookup
 			db.getMapFeature ().add (newMapFeature);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findMapFeature ("MF04", "testFindMapFeatureID_NotExists");
+		db.findMapFeature ("MF04", "testFindMapFeatureID_NotExists");
+	}
+
+	/**
+	 * Tests the findTileType method to find a tileType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindTileType_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final TileType newTileType = new TileType ();
+			newTileType.setTileTypeID ("TT0" + n);
+			db.getTileType ().add (newTileType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("TT02", db.findTileType ("TT02", "testFindTileType_Exists").getTileTypeID ());
+	}
+
+	/**
+	 * Tests the findTileType method to find a tileType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindTileType_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final TileType newTileType = new TileType ();
+			newTileType.setTileTypeID ("TT0" + n);
+			db.getTileType ().add (newTileType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findTileType ("TT04", "testFindTileType_NotExists"));
 	}
 
 	/**
@@ -182,7 +206,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindProductionTypeID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final ProductionType newProductionType = new ProductionType ();
@@ -192,10 +216,10 @@ public final class TestServerDatabaseLookup
 			db.getProductionType ().add (newProductionType);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("RE02", lookup.findProductionType ("RE02", "testFindProductionTypeID_Exists").getProductionTypeID ());
-		assertEquals ("ProductionType 2", lookup.findProductionType ("RE02", "testFindProductionTypeID_Exists").getProductionTypeDescription ());
+		assertEquals ("RE02", db.findProductionType ("RE02", "testFindProductionTypeID_Exists").getProductionTypeID ());
+		assertEquals ("ProductionType 2", db.findProductionType ("RE02", "testFindProductionTypeID_Exists").getProductionTypeDescription ());
 	}
 
 	/**
@@ -205,7 +229,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindProductionTypeID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final ProductionType newProductionType = new ProductionType ();
@@ -215,9 +239,9 @@ public final class TestServerDatabaseLookup
 			db.getProductionType ().add (newProductionType);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findProductionType ("RE04", "testFindProductionTypeID_NotExists");
+		db.findProductionType ("RE04", "testFindProductionTypeID_NotExists");
 	}
 
 	/**
@@ -227,7 +251,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindPickTypeID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final PickType newPickType = new PickType ();
@@ -240,11 +264,11 @@ public final class TestServerDatabaseLookup
 			db.getPickType ().add (newPickType);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("PT02", lookup.findPickType ("PT02", "testFindPickTypeID_Exists").getPickTypeID ());
-		assertEquals (1, lookup.findPickType ("PT02", "testFindPickTypeID_Exists").getPickTypeCount ().size ());
-		assertEquals (2, lookup.findPickType ("PT02", "testFindPickTypeID_Exists").getPickTypeCount ().get (0).getCount ());
+		assertEquals ("PT02", db.findPickType ("PT02", "testFindPickTypeID_Exists").getPickTypeID ());
+		assertEquals (1, db.findPickType ("PT02", "testFindPickTypeID_Exists").getPickTypeCount ().size ());
+		assertEquals (2, db.findPickType ("PT02", "testFindPickTypeID_Exists").getPickTypeCount ().get (0).getCount ());
 	}
 
 	/**
@@ -254,7 +278,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindPickTypeID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final PickType newPickType = new PickType ();
@@ -262,9 +286,9 @@ public final class TestServerDatabaseLookup
 			db.getPickType ().add (newPickType);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findPickType ("PT04", "testFindPickTypeID_NotExists");
+		db.findPickType ("PT04", "testFindPickTypeID_NotExists");
 	}
 
 	/**
@@ -274,7 +298,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindPickID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Pick newPick = new Pick ();
@@ -283,10 +307,10 @@ public final class TestServerDatabaseLookup
 			db.getPick ().add (newPick);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("MB02", lookup.findPick ("MB02", "testFindPickID_Exists").getPickID ());
-		assertEquals (2, lookup.findPick ("MB02", "testFindPickID_Exists").getPickInitialSkill ().intValue ());
+		assertEquals ("MB02", db.findPick ("MB02", "testFindPickID_Exists").getPickID ());
+		assertEquals (2, db.findPick ("MB02", "testFindPickID_Exists").getPickInitialSkill ().intValue ());
 	}
 
 	/**
@@ -296,7 +320,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindPickID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Pick newPick = new Pick ();
@@ -304,9 +328,9 @@ public final class TestServerDatabaseLookup
 			db.getPick ().add (newPick);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findPick ("MB04", "testFindPickID_NotExists");
+		db.findPick ("MB04", "testFindPickID_NotExists");
 	}
 
 	/**
@@ -316,7 +340,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindWizardID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Wizard newWizard = new Wizard ();
@@ -329,11 +353,11 @@ public final class TestServerDatabaseLookup
 			db.getWizard ().add (newWizard);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("WZ02", lookup.findWizard ("WZ02", "testFindWizardID_Exists").getWizardID ());
-		assertEquals (1, lookup.findWizard ("WZ02", "testFindWizardID_Exists").getWizardPickCount ().size ());
-		assertEquals (12, lookup.findWizard ("WZ02", "testFindWizardID_Exists").getWizardPickCount ().get (0).getPickCount ());
+		assertEquals ("WZ02", db.findWizard ("WZ02", "testFindWizardID_Exists").getWizardID ());
+		assertEquals (1, db.findWizard ("WZ02", "testFindWizardID_Exists").getWizardPickCount ().size ());
+		assertEquals (12, db.findWizard ("WZ02", "testFindWizardID_Exists").getWizardPickCount ().get (0).getPickCount ());
 	}
 
 	/**
@@ -343,7 +367,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindWizardID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Wizard newWizard = new Wizard ();
@@ -351,11 +375,92 @@ public final class TestServerDatabaseLookup
 			db.getWizard ().add (newWizard);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findWizard ("WZ04", "testFindWizardID_NotExists");
+		db.findWizard ("WZ04", "testFindWizardID_NotExists");
 	}
 
+	/**
+	 * Tests the findUnitType method to find a unitType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindUnitType_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitType newUnitType = new UnitType ();
+			newUnitType.setUnitTypeID ("T" + n);		// Real values are N, H, S
+			db.getUnitType ().add (newUnitType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("T2", db.findUnitType ("T2", "testFindUnitType_Exists").getUnitTypeID ());
+	}
+
+	/**
+	 * Tests the findUnitType method to find a unitType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnitType_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitType newUnitType = new UnitType ();
+			newUnitType.setUnitTypeID ("T" + n);		// Real values are N, H, S
+			db.getUnitType ().add (newUnitType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findUnitType ("T4", "testFindUnitType_NotExists"));
+	}
+
+
+	/**
+	 * Tests the findUnitMagicRealm method to find a unitMagicRealm ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindUnitMagicRealm_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitMagicRealm newUnitMagicRealm = new UnitMagicRealm ();
+			newUnitMagicRealm.setUnitMagicRealmID ("LT0" + n);
+			db.getUnitMagicRealm ().add (newUnitMagicRealm);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("LT02", db.findUnitMagicRealm ("LT02", "testFindUnitMagicRealm_Exists").getUnitMagicRealmID ());
+	}
+
+	/**
+	 * Tests the findUnitMagicRealm method to find a unitMagicRealm ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnitMagicRealm_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitMagicRealm newUnitMagicRealm = new UnitMagicRealm ();
+			newUnitMagicRealm.setUnitMagicRealmID ("LT0" + n);
+			db.getUnitMagicRealm ().add (newUnitMagicRealm);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findUnitMagicRealm ("LT04", "testFindUnitMagicRealm_NotExists"));
+	}
+	
 	/**
 	 * Tests the findUnitID method to find a unit ID that does exist
 	 * @throws RecordNotFoundException If we can't find it
@@ -363,7 +468,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindUnitID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Unit newUnit = new Unit ();
@@ -373,10 +478,10 @@ public final class TestServerDatabaseLookup
 			db.getUnit ().add (newUnit);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("UN002", lookup.findUnit ("UN002", "testFindUnitID_Exists").getUnitID ());
-		assertEquals ("Unit name 2", lookup.findUnit ("UN002", "testFindUnitID_Exists").getUnitName ());
+		assertEquals ("UN002", db.findUnit ("UN002", "testFindUnitID_Exists").getUnitID ());
+		assertEquals ("Unit name 2", db.findUnit ("UN002", "testFindUnitID_Exists").getUnitName ());
 	}
 
 	/**
@@ -386,7 +491,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindUnitID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Unit newUnit = new Unit ();
@@ -394,9 +499,9 @@ public final class TestServerDatabaseLookup
 			db.getUnit ().add (newUnit);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findUnit ("UN004", "testFindUnitID_NotExists");
+		db.findUnit ("UN004", "testFindUnitID_NotExists");
 	}
 
 	/**
@@ -406,7 +511,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindUnitSkillID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitSkill newUnitSkill = new UnitSkill ();
@@ -416,9 +521,9 @@ public final class TestServerDatabaseLookup
 			db.getUnitSkill ().add (newUnitSkill);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals (2, lookup.findUnitSkill ("US002", "testFindUnitSkillID_Exists").getUnitSkillScoutingRange ().intValue ());
+		assertEquals (2, db.findUnitSkill ("US002", "testFindUnitSkillID_Exists").getUnitSkillScoutingRange ().intValue ());
 	}
 
 	/**
@@ -428,7 +533,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindUnitSkillID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitSkill newUnitSkill = new UnitSkill ();
@@ -438,11 +543,51 @@ public final class TestServerDatabaseLookup
 			db.getUnitSkill ().add (newUnitSkill);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findUnitSkill ("US004", "testFindUnitSkillID_NotExists");
+		db.findUnitSkill ("US004", "testFindUnitSkillID_NotExists");
 	}
 
+	/**
+	 * Tests the findWeaponGrade method to find a weaponGradeNumber that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindWeaponGrade_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final WeaponGrade newWeaponGrade = new WeaponGrade ();
+			newWeaponGrade.setWeaponGradeNumber (n);
+			db.getWeaponGrade ().add (newWeaponGrade);
+		}
+
+		db.buildMaps ();
+
+		assertEquals (2, db.findWeaponGrade (2, "testFindWeaponGrade_Exists").getWeaponGradeNumber ());
+	}
+
+	/**
+	 * Tests the findWeaponGrade method to find a weaponGradeNumber that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindWeaponGrade_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final WeaponGrade newWeaponGrade = new WeaponGrade ();
+			newWeaponGrade.setWeaponGradeNumber (n);
+			db.getWeaponGrade ().add (newWeaponGrade);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findWeaponGrade (4, "testFindWeaponGrade_NotExists"));
+	}
+	
 	/**
 	 * Tests the findRaceID method to find a race ID that does exist
 	 * @throws RecordNotFoundException If we can't find it
@@ -450,7 +595,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindRaceID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Race newRace = new Race ();
@@ -463,11 +608,11 @@ public final class TestServerDatabaseLookup
 			db.getRace ().add (newRace);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("RC02", lookup.findRace ("RC02", "testFindRaceID_Exists").getRaceID ());
-		assertEquals (1, lookup.findRace ("RC02", "testFindRaceID_Exists").getCityName ().size ());
-		assertEquals ("Blah", lookup.findRace ("RC02", "testFindRaceID_Exists").getCityName ().get (0).getCityName ());
+		assertEquals ("RC02", db.findRace ("RC02", "testFindRaceID_Exists").getRaceID ());
+		assertEquals (1, db.findRace ("RC02", "testFindRaceID_Exists").getCityName ().size ());
+		assertEquals ("Blah", db.findRace ("RC02", "testFindRaceID_Exists").getCityName ().get (0).getCityName ());
 	}
 
 	/**
@@ -477,7 +622,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindRaceID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Race newRace = new Race ();
@@ -485,9 +630,9 @@ public final class TestServerDatabaseLookup
 			db.getRace ().add (newRace);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findRace ("RC04", "testFindRaceID_NotExists");
+		db.findRace ("RC04", "testFindRaceID_NotExists");
 	}
 
 	/**
@@ -497,7 +642,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindBuilding_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building newBuilding = new Building ();
@@ -506,9 +651,9 @@ public final class TestServerDatabaseLookup
 			db.getBuilding ().add (newBuilding);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals (2, lookup.findBuilding ("BL02", "testFindBuilding_Exists").getBuildingScoutingRange ().intValue ());
+		assertEquals (2, db.findBuilding ("BL02", "testFindBuilding_Exists").getBuildingScoutingRange ().intValue ());
 	}
 
 	/**
@@ -518,7 +663,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindBuilding_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building newBuilding = new Building ();
@@ -527,9 +672,9 @@ public final class TestServerDatabaseLookup
 			db.getBuilding ().add (newBuilding);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertNull (lookup.findBuilding ("BL04", "testFindBuilding_NotExists"));
+		assertNull (db.findBuilding ("BL04", "testFindBuilding_NotExists"));
 	}
 
 	/**
@@ -539,7 +684,7 @@ public final class TestServerDatabaseLookup
 	@Test
 	public final void testFindSpellID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Spell newSpell = new Spell ();
@@ -548,10 +693,10 @@ public final class TestServerDatabaseLookup
 			db.getSpell ().add (newSpell);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		assertEquals ("SP002", lookup.findSpell ("SP002", "testFindSpellID_Exists").getSpellID ());
-		assertEquals (2, lookup.findSpell ("SP002", "testFindSpellID_Exists").getAiResearchOrder ().intValue ());
+		assertEquals ("SP002", db.findSpell ("SP002", "testFindSpellID_Exists").getSpellID ());
+		assertEquals (2, db.findSpell ("SP002", "testFindSpellID_Exists").getAiResearchOrder ().intValue ());
 	}
 
 	/**
@@ -561,7 +706,7 @@ public final class TestServerDatabaseLookup
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindSpellID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabase db = new ServerDatabase ();
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Spell newSpell = new Spell ();
@@ -569,8 +714,48 @@ public final class TestServerDatabaseLookup
 			db.getSpell ().add (newSpell);
 		}
 
-		final ServerDatabaseLookup lookup = new ServerDatabaseLookup (db);
+		db.buildMaps ();
 
-		lookup.findSpell ("SP004", "testFindSpellID_NotExists");
+		db.findSpell ("SP004", "testFindSpellID_NotExists");
+	}
+
+	/**
+	 * Tests the findCombatAreaEffect method to find a combatAreaEffect ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindCombatAreaEffect_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
+			newCombatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
+			db.getCombatAreaEffect ().add (newCombatAreaEffect);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("CAE02", db.findCombatAreaEffect ("CAE02", "testFindCombatAreaEffect_Exists").getCombatAreaEffectID ());
+	}
+
+	/**
+	 * Tests the findCombatAreaEffect method to find a combatAreaEffect ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindCombatAreaEffect_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
+			newCombatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
+			db.getCombatAreaEffect ().add (newCombatAreaEffect);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findCombatAreaEffect ("CAE04", "testFindCombatAreaEffect_NotExists"));
 	}
 }

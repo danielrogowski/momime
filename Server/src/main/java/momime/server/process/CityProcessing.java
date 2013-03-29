@@ -32,7 +32,7 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.ai.CityAI;
 import momime.server.calculations.MomServerCityCalculations;
-import momime.server.database.ServerDatabaseLookup;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
@@ -74,7 +74,7 @@ public final class CityProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	final static void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (CityProcessing.class.getName (), "createStartingCities");
@@ -107,7 +107,7 @@ public final class CityProcessing
 					plane = PlayerPickServerUtils.startingPlaneForWizard (ppk.getPick (), db, debugLogger);
 				else
 					// Raiders just pick a random plane
-					plane = db.getPlanes ().get (RandomUtils.getGenerator ().nextInt (db.getPlanes ().size ())).getPlaneNumber ();
+					plane = db.getPlane ().get (RandomUtils.getGenerator ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
 				final OverlandMapCoordinates cityLocation = CityAI.chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db, debugLogger);
@@ -173,7 +173,7 @@ public final class CityProcessing
 				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
 				{
 					// Wizards always get the same buildings (this also adds their Fortress & Summoning Circle)
-					for (final Building thisBuilding : db.getBuildings ())
+					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
 						{
 							final OverlandMapCoordinates buildingCoords = new OverlandMapCoordinates ();
@@ -190,7 +190,7 @@ public final class CityProcessing
 				else
 				{
 					// Raiders buildings' depend on the city size
-					for (final Building thisBuilding : db.getBuildings ())
+					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
 							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
 						{
@@ -207,7 +207,7 @@ public final class CityProcessing
 				}
 
 				// Add starting units
-				for (final Unit thisUnit : db.getUnits ())
+				for (final Unit thisUnit : db.getUnit ())
 					if ((thisUnit.getUnitRaceID () != null) && (thisUnit.getFreeAtStartCount () != null) && (thisUnit.getUnitRaceID ().equals (city.getCityRaceID ())))
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
@@ -241,12 +241,12 @@ public final class CityProcessing
 	 */
 	final static void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (CityProcessing.class.getName (), "growCitiesAndProgressConstructionProjects", onlyOnePlayerID);
 
-		for (final Plane plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				{
@@ -451,7 +451,7 @@ public final class CityProcessing
 	public final static void sellBuilding (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID,
 		final boolean pendingSale, final boolean voluntarySale,
-		final MomSessionDescription sd, final ServerDatabaseLookup db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (CityProcessing.class.getName (), "sellBuilding",

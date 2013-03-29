@@ -478,6 +478,23 @@ public final class MomServerResourceCalculations
 	}
 	
 	/**
+	 * Resets the casting skill the wizard(s) have left to spend this turn back to their full skill
+	 * @param player Player who's overlandCastingSkillRemainingThisTurn to set
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 */
+	static final void resetCastingSkillRemainingThisTurnToFull (final PlayerServerDetails player, final Logger debugLogger)
+	{
+		debugLogger.entering (MomServerResourceCalculations.class.getName (), "resetCastingSkillRemainingThisTurnToFull");
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+		
+		trans.setOverlandCastingSkillRemainingThisTurn (ResourceValueUtils.calculateCastingSkillOfPlayer (priv.getResourceValue (), debugLogger));
+		
+		debugLogger.exiting (MomServerResourceCalculations.class.getName (), "resetCastingSkillRemainingThisTurnToFull");
+	}
+	
+	/**
 	 * Recalculates the amount of production of all types that we make each turn and sends the updated figures to the player(s)
 	 *
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
@@ -526,6 +543,7 @@ public final class MomServerResourceCalculations
 					// Per turn production amounts are now fine, so do the accumulation and effect calculations
 					accumulateGlobalProductionValues (priv.getResourceValue (), db, debugLogger);
 					progressResearch (player, db, debugLogger);
+					resetCastingSkillRemainingThisTurnToFull (player, debugLogger);
 
 					// Continue casting spells
 					throw new UnsupportedOperationException ("recalculateGlobalProductionValues for turn > 1 not finished yet");

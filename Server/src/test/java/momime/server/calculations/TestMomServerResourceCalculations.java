@@ -745,4 +745,27 @@ public final class TestMomServerResourceCalculations
 		assertEquals (150, msg3.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
 		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, msg3.getSpellResearchStatus ().get (2).getStatus ());
 	}
+	
+	/**
+	 * Tests the resetCastingSkillRemainingThisTurnToFull method
+	 */
+	@Test
+	public final void testResetCastingSkillRemainingThisTurnToFull ()
+	{
+		// Player
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, trans);
+		
+		// Set amount of casting skill
+		final MomResourceValue skillImprovement = new MomResourceValue ();
+		skillImprovement.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+		skillImprovement.setAmountStored (10);
+		priv.getResourceValue ().add (skillImprovement);
+		
+		// Run test
+		MomServerResourceCalculations.resetCastingSkillRemainingThisTurnToFull (player, debugLogger);
+		assertEquals (3, trans.getOverlandCastingSkillRemainingThisTurn ());
+	}
 }

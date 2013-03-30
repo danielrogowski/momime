@@ -47,6 +47,8 @@ import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
+import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.process.SpellProcessing;
 import momime.server.process.resourceconsumer.IMomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
@@ -500,7 +502,7 @@ public final class MomServerResourceCalculations
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
 	 * @param duringStartPhase If true does additional work around enforcing that we are producing enough, and progresses city construction, spell research & casting and so on
 	 * @param players List of all players in the session
-	 * @param trueMap Server true knowledge of everything on the map
+	 * @param gsk Server knowledge structure
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
@@ -511,7 +513,7 @@ public final class MomServerResourceCalculations
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 */
 	public static final void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		debugLogger.exiting (MomServerResourceCalculations.class.getName (), "recalculateGlobalProductionValues",
@@ -526,7 +528,7 @@ public final class MomServerResourceCalculations
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 				// Calculate base amounts
-				recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+				recalculateAmountsPerTurn (player, players, gsk.getTrueMap (), sd, db, debugLogger);
 
 				// If during the start phase, use these per turn production amounts as the amounts to add to the stored totals
 				if (duringStartPhase)
@@ -535,10 +537,10 @@ public final class MomServerResourceCalculations
 					// However (and to keep this consistent with how we handle insufficient stored Gold) there are too many interdependencies with what
 					// may happen when we sell buildings, e.g. if we sell a Bank we don't only save its maintenance cost, the population then produces less gold
 					// So the only safe way to do this is to recalculate ALL the productions, from scratch, every time we sell something!
-					while (findInsufficientProductionAndSellSomething (player, players, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO, false, trueMap, sd, db, debugLogger));
+					while (findInsufficientProductionAndSellSomething (player, players, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO, false, gsk.getTrueMap (), sd, db, debugLogger));
 
 					// Now do the same for stored production
-					while (findInsufficientProductionAndSellSomething (player, players, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO, true, trueMap, sd, db, debugLogger));
+					while (findInsufficientProductionAndSellSomething (player, players, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO, true, gsk.getTrueMap (), sd, db, debugLogger));
 
 					// Per turn production amounts are now fine, so do the accumulation and effect calculations
 					accumulateGlobalProductionValues (priv.getResourceValue (), db, debugLogger);
@@ -546,7 +548,9 @@ public final class MomServerResourceCalculations
 					resetCastingSkillRemainingThisTurnToFull (player, debugLogger);
 
 					// Continue casting spells
-					throw new UnsupportedOperationException ("recalculateGlobalProductionValues for turn > 1 not finished yet");
+					// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used
+					if (SpellProcessing.progressOverlandCasting (gsk, player, players, sd, db, debugLogger))
+						recalculateAmountsPerTurn (player, players, gsk.getTrueMap (), sd, db, debugLogger);
 				}
 				else if (player.getPlayerDescription ().isHuman ())
 

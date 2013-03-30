@@ -120,11 +120,11 @@ public final class MomSessionThread extends MultiplayerSessionThread
 		
 		final Unmarshaller unmarshaller = JAXBContextCreator.createServerDatabaseContext ().createUnmarshaller ();		
 		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
-		final ServerDatabaseEx serverDB = (ServerDatabaseEx) unmarshaller.unmarshal (fullFilename);
+		db = (ServerDatabaseEx) unmarshaller.unmarshal (fullFilename);
 
 		// Create hash maps to look up all the values from the DB
 		sessionLogger.info ("Caching lookups into server database...");
-		serverDB.buildMaps ();
+		db.buildMaps ();
 
 		// Generate map
 		sessionLogger.info ("Generating overland map...");
@@ -149,7 +149,7 @@ public final class MomSessionThread extends MultiplayerSessionThread
 		// Put into server knowledge structure
 		sessionLogger.info ("Creating server side knowledge structure...");
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setServerDatabase (serverDB);
+		gsk.setServerDatabase (db);
 		gsk.setTrueMap (trueMap);
 		gsk.setNextFreeUnitURN (1);
 

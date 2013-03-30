@@ -520,7 +520,7 @@ public final class PlayerMessageProcessing
 			// than one human player, since e.g. player 2 won't otherwise be sent their power base figure until player 1 hits 'next turn'
 			mom.getSessionLogger ().info ("Calculating initial production values...");
 			MomServerResourceCalculations.recalculateGlobalProductionValues (0, false, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+				mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Kick off the game - this shows the map screen for the first time
 			mom.getSessionLogger ().info ("Starting game...");
@@ -578,7 +578,7 @@ public final class PlayerMessageProcessing
 		// Global production - only need to do a simple recalc on turn 1, with no accumulation and no city growth
 		if (mom.getGeneralPublicKnowledge ().getTurnNumber () > 1)
 		{
-			MomServerResourceCalculations.recalculateGlobalProductionValues (onlyOnePlayerID, true, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+			MomServerResourceCalculations.recalculateGlobalProductionValues (onlyOnePlayerID, true, mom.getPlayers (), mom.getGeneralServerKnowledge (),
 				mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Do this AFTER calculating and accumulating production, so checking for units dying due to insufficient rations happens before city populations might change
@@ -590,7 +590,7 @@ public final class PlayerMessageProcessing
 		// 1) Cities producing more food/gold due to increased population
 		// 2) Cities eating more food due to increased population
 		// 3) Completed buildings (both bonuses and increased maintenance)
-		MomServerResourceCalculations.recalculateGlobalProductionValues (onlyOnePlayerID, false, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+		MomServerResourceCalculations.recalculateGlobalProductionValues (onlyOnePlayerID, false, mom.getPlayers (), mom.getGeneralServerKnowledge (),
 			mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "startPhase");

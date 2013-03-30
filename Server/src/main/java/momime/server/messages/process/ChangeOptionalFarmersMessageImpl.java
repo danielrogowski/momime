@@ -70,7 +70,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 
 			// Tell the player how this will affect their global production
 			MomServerResourceCalculations.recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+				mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 		}
 
 		debugLogger.exiting (ChangeOptionalFarmersMessageImpl.class.getName (), "process");

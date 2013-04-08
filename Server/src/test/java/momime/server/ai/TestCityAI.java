@@ -69,7 +69,10 @@ public final class TestCityAI
 					cell.setTerrainData (terrain);
 				}
 
-		final OverlandMapCoordinates ocean = CityAI.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
+		// Set up test object
+		final CityAI ai = new CityAI ();
+		
+		final OverlandMapCoordinates ocean = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
 		assertNull (ocean);
 
 		// Fill map with tundra, then we can build a city anywhere but none of them are very good
@@ -78,7 +81,7 @@ public final class TestCityAI
 				for (final MemoryGridCell cell : row.getCell ())
 					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
 
-		final OverlandMapCoordinates tundra = CityAI.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
+		final OverlandMapCoordinates tundra = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
 		assertEquals (0, tundra.getX ());
 		assertEquals (0, tundra.getY ());
 		assertEquals (0, tundra.getPlane ());
@@ -93,7 +96,7 @@ public final class TestCityAI
 			for (final MemoryGridCell cell : row.getCell ())
 				cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
 
-		final OverlandMapCoordinates grass = CityAI.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
+		final OverlandMapCoordinates grass = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
 		assertEquals (22, grass.getX ());
 		assertEquals (12, grass.getY ());
 		assertEquals (0, grass.getPlane ());
@@ -101,7 +104,7 @@ public final class TestCityAI
 		// Putting some gems there is great
 		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF01");
 
-		final OverlandMapCoordinates gems = CityAI.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
+		final OverlandMapCoordinates gems = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
 		assertEquals (22, gems.getX ());
 		assertEquals (12, gems.getY ());
 		assertEquals (0, gems.getPlane ());
@@ -110,7 +113,7 @@ public final class TestCityAI
 		// Note there's no longer a spot where can include all 3 grass tiles, so it picks the first coordinates that it encounters that includes two of the grass tiles
 		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF13");
 
-		final OverlandMapCoordinates lair = CityAI.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
+		final OverlandMapCoordinates lair = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
 		assertEquals (20, lair.getX ());
 		assertEquals (11, lair.getY ());
 		assertEquals (0, lair.getPlane ());
@@ -119,7 +122,7 @@ public final class TestCityAI
 		// But we don't get the 20% gold bonus from it unless we move the city to that location, so this proves that the gold bonus is taken into account
 		map.getPlane ().get (0).getRow ().get (11).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER);
 
-		final OverlandMapCoordinates river = CityAI.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
+		final OverlandMapCoordinates river = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
 		assertEquals (21, river.getX ());
 		assertEquals (11, river.getY ());
 		assertEquals (0, river.getPlane ());
@@ -133,7 +136,7 @@ public final class TestCityAI
 		map.getPlane ().get (0).getRow ().get (14).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 		map.getPlane ().get (0).getRow ().get (13).getCell ().get (23).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 
-		final OverlandMapCoordinates mountain = CityAI.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
+		final OverlandMapCoordinates mountain = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
 		assertEquals (21, mountain.getX ());
 		assertEquals (12, mountain.getY ());
 		assertEquals (0, mountain.getPlane ());
@@ -142,7 +145,7 @@ public final class TestCityAI
 		// the 25% bonus from the mountains rather than the 20% + 4 from the river and iron ore
 		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF04");
 
-		final OverlandMapCoordinates ironOre = CityAI.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
+		final OverlandMapCoordinates ironOre = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
 		assertEquals (21, ironOre.getX ());
 		assertEquals (12, ironOre.getY ());
 		assertEquals (0, ironOre.getPlane ());
@@ -151,7 +154,7 @@ public final class TestCityAI
 		// back to the 20% + 6 from the river and coal rather than the 25% from the mountains
 		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF05");
 
-		final OverlandMapCoordinates coal = CityAI.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
+		final OverlandMapCoordinates coal = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db, debugLogger);
 		assertEquals (21, coal.getX ());
 		assertEquals (11, coal.getY ());
 		assertEquals (0, coal.getPlane ());
@@ -182,6 +185,9 @@ public final class TestCityAI
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
+		// Set up test object
+		final CityAI ai = new CityAI ();
+		
 		// If we want trade goods cities and there are none, no updates will take place
 		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 		{
@@ -196,7 +202,7 @@ public final class TestCityAI
 			trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).setCityData (cityData);
 		}
 
-		assertEquals (10, CityAI.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd, debugLogger));
+		assertEquals (10, ai.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd, debugLogger));
 
 		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ().intValue ());
@@ -217,7 +223,7 @@ public final class TestCityAI
 			trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x).setCityData (cityData);
 		}
 
-		assertEquals (-2, CityAI.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd, debugLogger));
+		assertEquals (-2, ai.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd, debugLogger));
 
 		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ().intValue ());
@@ -274,13 +280,16 @@ public final class TestCityAI
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
+		// Set up test object
+		final CityAI ai = new CityAI ();
+		
 		// Orcs can build absolutely everything
 		// Sit in a loop adding every building that it decides upon until we get trade goods
 		// Then check everything was built in the right order afterwards
 		cityData.setCityRaceID ("RC09");
 		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
 		{
-			CityAI.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db, debugLogger);
+			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db, debugLogger);
 			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
 			{
 				final OverlandMapCoordinates buildingLocation = new OverlandMapCoordinates ();
@@ -335,7 +344,7 @@ public final class TestCityAI
 		cityData.setCurrentlyConstructingBuildingOrUnitID (null);
 		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
 		{
-			CityAI.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db, debugLogger);
+			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db, debugLogger);
 			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
 			{
 				final OverlandMapCoordinates buildingLocation = new OverlandMapCoordinates ();

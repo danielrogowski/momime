@@ -11,9 +11,7 @@ import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeOptionalFarmersMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.server.MomSessionThread;
-import momime.server.calculations.MomServerResourceCalculations;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.IMomSessionVariables;
 import momime.server.utils.CityServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
@@ -43,7 +41,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 		debugLogger.entering (ChangeOptionalFarmersMessageImpl.class.getName (), "process",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (getCityLocation ()), new Integer (getOptionalFarmers ()).toString ()});
 
-		final MomSessionThread mom = (MomSessionThread) thread;
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		final String error = CityServerUtils.validateOptionalFarmers (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
 			getCityLocation (), getOptionalFarmers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
@@ -65,12 +63,11 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 			cityData.setOptionalFarmers (getOptionalFarmers ());
 
 			// Send update to clients
-			FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), getCityLocation (), mom.getSessionDescription (), debugLogger);
+			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), debugLogger);
 
 			// Tell the player how this will affect their global production
-			MomServerResourceCalculations.recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom.getPlayers (),
-				mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+			mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom, debugLogger);
 		}
 
 		debugLogger.exiting (ChangeOptionalFarmersMessageImpl.class.getName (), "process");

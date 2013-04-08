@@ -104,7 +104,14 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 					<xsd:element minOccurs="1" maxOccurs="1" name="magicPowerDistribution" type="momimemsgs:magicPowerDistribution"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="manaSpentOnCastingCurrentSpell" type="momimecommon:spellCastingCost"/>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellResearchStatus" type="momimemsgs:spellResearchStatus"/>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="queuedSpellID" type="momimecommon:spellID"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="queuedSpellID" type="momimecommon:spellID">
+						<xsd:annotation>
+							<xsd:documentation>In simultaneous turns games, spells aren't cast until we hit end turn, but we still need the possibility of casting
+								multiple spells per turn if we have a high skill, so this list stores the spells we've got queued up.
+     							In one-at-a-time games its only used if we're trying to cast an overland (i.e. non-combat) spell
+     							that is taking us more than one turn to cast (instant spells are cast instantly!)</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 
 					<xsd:element minOccurs="1" maxOccurs="1" name="nodeLairTowerKnownUnitIDs" type="momimemsgs:mapVolumeOfStrings">
 				 	   <xsd:annotation>

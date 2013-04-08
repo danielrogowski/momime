@@ -18,6 +18,7 @@ import momime.common.messages.MemoryGridCellUtils;
 import momime.common.messages.PlayerKnowledgeUtils;
 import momime.common.messages.ResourceValueUtils;
 import momime.common.messages.UnitUtils;
+import momime.common.messages.servertoclient.v0_9_4.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChooseYourRaceNowMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChosenCustomPhotoMessage;
@@ -31,8 +32,10 @@ import momime.common.messages.servertoclient.v0_9_4.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameProgressStageID;
+import momime.common.messages.servertoclient.v0_9_4.StartSimultaneousTurnMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
@@ -40,20 +43,21 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
+import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.MomSessionThread;
-import momime.server.ai.CityAI;
-import momime.server.ai.MomAI;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.IMomSessionVariables;
+import momime.server.ai.ICityAI;
+import momime.server.ai.IMomAI;
+import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.calculations.MomServerSpellCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.PickFreeSpell;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.Wizard;
 import momime.server.database.v0_9_4.WizardPickCount;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.fogofwar.FogOfWarProcessing;
-import momime.server.mapgenerator.OverlandMapGenerator;
+import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.IFogOfWarProcessing;
+import momime.server.mapgenerator.IOverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.RandomUtils;
@@ -69,8 +73,32 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 /**
  * Methods for any significant message processing to do with game startup and the turn system that isn't done in the message implementations
  */
-public final class PlayerMessageProcessing
+public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 {
+	/** Methods for updating true map + players' memory */
+	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** City processing methods */
+	private ICityProcessing cityProcessing;
+
+	/** Spell processing methods */
+	private ISpellProcessing spellProcessing;
+	
+	/** Fog of war update methods */
+	private IFogOfWarProcessing fogOfWarProcessing;
+	
+	/** Resource calculations */
+	private IMomServerResourceCalculations serverResourceCalculations;
+	
+	/** AI player turns */
+	private IMomAI momAI;
+	
+	/** AI decisions about cities */
+	private ICityAI cityAI;
+	
+	/** Overland map generator */
+	private IOverlandMapGenerator overlandMapGenerator;
+	
 	/**
 	 * Message we send to the server when we choose which wizard we want to be; AI players also call this to do their wizard, picks and spells setup
 	 * which is why this isn't all just in ChooseWizardMessageImpl
@@ -86,7 +114,8 @@ public final class PlayerMessageProcessing
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 */
-	public static final void chooseWizard (final String wizardIdFromMessage, final PlayerServerDetails player,
+	@Override
+	public final void chooseWizard (final String wizardIdFromMessage, final PlayerServerDetails player,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
@@ -242,7 +271,7 @@ public final class PlayerMessageProcessing
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	private static void broadcastWizardChoice (final List<PlayerServerDetails> players, final PlayerServerDetails player, final Logger debugLogger)
+	private final void broadcastWizardChoice (final List<PlayerServerDetails> players, final PlayerServerDetails player, final Logger debugLogger)
 		throws JAXBException, XMLStreamException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "broadcastWizardChoice", player.getPlayerDescription ().getPlayerID ());
@@ -271,7 +300,7 @@ public final class PlayerMessageProcessing
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	private final static void sendStartGameProgressMessage (final List<PlayerServerDetails> players, final StartGameProgressStageID stage, final Logger debugLogger)
+	private final void sendStartGameProgressMessage (final List<PlayerServerDetails> players, final StartGameProgressStageID stage, final Logger debugLogger)
 		throws JAXBException, XMLStreamException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "sendStartGameProgressMessage", stage);
@@ -288,7 +317,7 @@ public final class PlayerMessageProcessing
 	 * @param wizard Wizard this AI player is playing
 	 * @return Player description created for this AI player
 	 */
-	private final static PlayerDescription createAiPlayerDescription (final Wizard wizard)
+	private final PlayerDescription createAiPlayerDescription (final Wizard wizard)
 	{
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerName (wizard.getWizardID () + "-" + wizard.getWizardName ());
@@ -309,7 +338,7 @@ public final class PlayerMessageProcessing
 	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	private final static void createHeroes (final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
+	private final void createHeroes (final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
 		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -324,7 +353,7 @@ public final class PlayerMessageProcessing
 				{
 					final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 					if (!ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
-						FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), null, null, null, thisPlayer, UnitStatusID.NOT_GENERATED, null, sd, db, debugLogger);
+						getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), null, null, null, thisPlayer, UnitStatusID.NOT_GENERATED, null, sd, db, debugLogger);
 				}
 
 		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "createHeroes");
@@ -333,7 +362,7 @@ public final class PlayerMessageProcessing
 
 	/**
 	 * If all players have chosen their wizards and, if necessary, custom picks, then sends message to tell everyone to start
-	 * @param mom Thread running this session
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending any messages to the clients
 	 * @throws XMLStreamException If there is a problem sending any messages to the clients
@@ -341,7 +370,8 @@ public final class PlayerMessageProcessing
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
 	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
 	 */
-	public final static void checkIfCanStartGame (final MomSessionThread mom, final Logger debugLogger)
+	@Override
+	public final void checkIfCanStartGame (final IMomSessionVariables mom, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "checkIfCanStartGame");
@@ -459,7 +489,7 @@ public final class PlayerMessageProcessing
 			// Add monsters in nodes/lairs/towers - can only do this after we've added the players
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_MONSTERS, debugLogger);
 			mom.getSessionLogger ().info ("Filling nodes, lairs & towers with monsters...");
-			OverlandMapGenerator.fillNodesLairsAndTowersWithMonsters (mom.getSessionDescription (), mom.getGeneralServerKnowledge (), mom.getServerDB (), monstersPlayer, debugLogger);
+			getOverlandMapGenerator ().fillNodesLairsAndTowersWithMonsters (mom.getGeneralServerKnowledge (), monstersPlayer);
 
 			// Sort out heroes
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_HEROES, debugLogger);
@@ -477,13 +507,13 @@ public final class PlayerMessageProcessing
 			// Create cities
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_CITIES, debugLogger);
 			mom.getSessionLogger ().info ("Creating starting cities...");
-			CityProcessing.createStartingCities (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+			getCityProcessing ().createStartingCities (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Now we've created starting cities, we can figure out the initial fog of war area that each player can see
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.GENERATING_INITIAL_FOG_OF_WAR, debugLogger);
 			mom.getSessionLogger ().info ("Generating and sending initial fog of war...");
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
-				FogOfWarProcessing.updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), thisPlayer,
+				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), thisPlayer,
 					mom.getPlayers (), true, "checkIfCanStartGame", mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 			// Give each wizard initial skill and gold, and setting optional farmers in all cities
@@ -512,15 +542,14 @@ public final class PlayerMessageProcessing
 				}
 
 				// Default each player's farmers to just enough to feed their initial units
-				CityAI.setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), thisPlayer,
+				getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), thisPlayer,
 					mom.getServerDB (), mom.getSessionDescription (), debugLogger);
 			}
 
 			// Calculate and send initial production values - This is especially important in one-at-a-time games with more
 			// than one human player, since e.g. player 2 won't otherwise be sent their power base figure until player 1 hits 'next turn'
 			mom.getSessionLogger ().info ("Calculating initial production values...");
-			MomServerResourceCalculations.recalculateGlobalProductionValues (0, false, mom.getPlayers (),
-				mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+			getServerResourceCalculations ().recalculateGlobalProductionValues (0, false, mom, debugLogger);
 
 			// Kick off the game - this shows the map screen for the first time
 			mom.getSessionLogger ().info ("Starting game...");
@@ -545,7 +574,7 @@ public final class PlayerMessageProcessing
 	/**
 	 * Processes the 'start phase' (for want of something better to call it), which happens just at the start of each player's turn
 	 *
-	 * @param mom Thread running this session
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process start phase for all players; if specified will process start phase only for the specified player
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If there is a problem with any of the calculations
@@ -554,7 +583,7 @@ public final class PlayerMessageProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final static void startPhase (final MomSessionThread mom, final int onlyOnePlayerID, final Logger debugLogger)
+	private final void startPhase (final IMomSessionVariables mom, final int onlyOnePlayerID, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "startPhase", onlyOnePlayerID);
@@ -569,7 +598,7 @@ public final class PlayerMessageProcessing
 		UnitUtils.resetUnitOverlandMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID, mom.getServerDB (), debugLogger);
 
 		// Heal hurt units 1pt and gain 1exp
-		FogOfWarMidTurnChanges.healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
+		getFogOfWarMidTurnChanges ().healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription (), debugLogger);
 
 		// Allow another building to be sold
@@ -578,11 +607,10 @@ public final class PlayerMessageProcessing
 		// Global production - only need to do a simple recalc on turn 1, with no accumulation and no city growth
 		if (mom.getGeneralPublicKnowledge ().getTurnNumber () > 1)
 		{
-			MomServerResourceCalculations.recalculateGlobalProductionValues (onlyOnePlayerID, true, mom.getPlayers (), mom.getGeneralServerKnowledge (),
-				mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+			getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, true, mom, debugLogger);
 
 			// Do this AFTER calculating and accumulating production, so checking for units dying due to insufficient rations happens before city populations might change
-			CityProcessing.growCitiesAndProgressConstructionProjects (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
+			getCityProcessing ().growCitiesAndProgressConstructionProjects (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
 				mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 		}
 
@@ -590,8 +618,7 @@ public final class PlayerMessageProcessing
 		// 1) Cities producing more food/gold due to increased population
 		// 2) Cities eating more food due to increased population
 		// 3) Completed buildings (both bonuses and increased maintenance)
-		MomServerResourceCalculations.recalculateGlobalProductionValues (onlyOnePlayerID, false, mom.getPlayers (), mom.getGeneralServerKnowledge (),
-			mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+		getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, false, mom, debugLogger);
 
 		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "startPhase");
 	}
@@ -599,7 +626,7 @@ public final class PlayerMessageProcessing
 	/**
 	 * In a one-player-at-a-time game, this gets called when a player clicks the Next Turn button to tell everyone whose turn it is now
 	 *
-	 * @param mom Thread running this session
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
@@ -607,7 +634,8 @@ public final class PlayerMessageProcessing
 	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public final static void switchToNextPlayer (final MomSessionThread mom, final Logger debugLogger)
+	@Override
+	public final void switchToNextPlayer (final IMomSessionVariables mom, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "switchToNextPlayer",
@@ -636,17 +664,7 @@ public final class PlayerMessageProcessing
 		startPhase (mom, mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), debugLogger);
 
 		// Tell everyone who the new current player is, and send each of them their New Turn Messages in the process
-		// NB. No NTMs yet because start phase after turn 1 not yet written, so this is a hack for now because we know there are no NTMs
-		final SetCurrentPlayerMessage msg = new SetCurrentPlayerMessage ();
-		msg.setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber ());
-		msg.setCurrentPlayerID (mom.getGeneralPublicKnowledge ().getCurrentPlayerID ());
-
-		for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
-			if (thisPlayer.getPlayerDescription ().isHuman ())
-			{
-				msg.setExpireMessages (thisPlayer == currentPlayer);
-				thisPlayer.getConnection ().sendMessageToClient (msg);
-			}
+		sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), mom.getSessionDescription ().getTurnSystem (), debugLogger);
 
 		// Erase all pending movements on the client, since we're about to process movement
 		if (currentPlayer.getPlayerDescription ().isHuman ())
@@ -663,7 +681,7 @@ public final class PlayerMessageProcessing
 		else
 		{
 			mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-			MomAI.aiPlayerTurn (currentPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+			getMomAI ().aiPlayerTurn (currentPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 			nextTurnButton (mom, currentPlayer, debugLogger);
 		}
 
@@ -672,9 +690,77 @@ public final class PlayerMessageProcessing
 	}
 
 	/**
+	 * Sends all new turn messages queued up on the server to each player, then clears them from the server
+	 * This is also used to trigger new turns or when it is a different player's turn
+	 * 
+	 * @param gpk Public knowledge structure; can pass this as null if messageType = null
+	 * @param players List of players in this session
+	 * @param messageType Type of message to send according to the turn system being used; null = just send messages, don't start a new turn
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the value of messageType isn't recognized
+	 */
+	@Override
+	public final void sendNewTurnMessages (final MomGeneralPublicKnowledge gpk, final List<PlayerServerDetails> players,
+		final TurnSystem messageType, final Logger debugLogger) throws JAXBException, XMLStreamException, MomException
+	{
+		debugLogger.entering (PlayerMessageProcessing.class.getName (), "sendNewTurnMessages");
+		
+		for (final PlayerServerDetails player : players)
+			if (player.getPlayerDescription ().isHuman ())
+			{
+				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+				
+				if (messageType == null)
+				{
+					// Sending additional messages in-turn to the player, e.g. someone cast an overland spell
+					if (trans.getNewTurnMessage ().size () > 0)
+					{
+						final AddNewTurnMessagesMessage msg = new AddNewTurnMessagesMessage ();
+						msg.setExpireMessages (false);
+						msg.getMessage ().addAll (trans.getNewTurnMessage ());
+						player.getConnection ().sendMessageToClient (msg);
+						trans.getNewTurnMessage ().clear ();
+					}
+				}
+				else if (messageType == TurnSystem.SIMULTANEOUS)
+				{	
+					// Everyone starts turn together, so everyone gets and expires messages together
+					final StartSimultaneousTurnMessage msg = new StartSimultaneousTurnMessage ();
+					msg.setTurnNumber (gpk.getTurnNumber ());
+					msg.setExpireMessages (true);
+					msg.getMessage ().addAll (trans.getNewTurnMessage ());
+					player.getConnection ().sendMessageToClient (msg);
+					trans.getNewTurnMessage ().clear ();
+				}
+				else if (messageType == TurnSystem.ONE_PLAYER_AT_A_TIME)
+				{
+					// Everyone needs to know whose turn it is, but only the new 'current' player gets and expires messages
+					final SetCurrentPlayerMessage msg = new SetCurrentPlayerMessage ();
+					msg.setTurnNumber (gpk.getTurnNumber ());
+					msg.setCurrentPlayerID (gpk.getCurrentPlayerID ());
+					msg.setExpireMessages (gpk.getCurrentPlayerID () == player.getPlayerDescription ().getPlayerID ());
+					
+					if (msg.isExpireMessages ())
+						msg.getMessage ().addAll (trans.getNewTurnMessage ());
+					
+					player.getConnection ().sendMessageToClient (msg);
+					
+					if (msg.isExpireMessages ())
+						trans.getNewTurnMessage ().clear ();
+				}
+				else
+					throw new MomException (PlayerMessageProcessing.class.getName () + ".sendNewTurnMessages doesn't know how handle messageType of " + messageType);
+			}
+		
+		debugLogger.exiting (PlayerMessageProcessing.class.getName (), "sendNewTurnMessages");
+	}
+	
+	/**
 	 * Processes the 'end phase' (for want of something better to call it), which happens at the end of each player's turn
 	 *
-	 * @param mom Thread running this session
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process start phase for all players; if specified will process start phase only for the specified player
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If there is a problem with any of the calculations
@@ -683,7 +769,7 @@ public final class PlayerMessageProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final static void endPhase (final MomSessionThread mom, final int onlyOnePlayerID, final Logger debugLogger)
+	private final void endPhase (final IMomSessionVariables mom, final int onlyOnePlayerID, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "endPhase", onlyOnePlayerID);
@@ -697,7 +783,7 @@ public final class PlayerMessageProcessing
 		// Put mana into casting spells
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
-				SpellProcessing.progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+				getSpellProcessing ().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 		// Kick off the next turn
 		mom.getSessionLogger ().info ("Kicking off next turn...");
@@ -716,7 +802,7 @@ public final class PlayerMessageProcessing
 
 	/**
 	 * Human player has clicked the next turn button, or AI player's turn has finished
-	 * @param mom Thread running this session
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param player Player who hit the next turn button
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If there is a problem with any of the calculations
@@ -725,7 +811,8 @@ public final class PlayerMessageProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public final static void nextTurnButton (final MomSessionThread mom, final PlayerServerDetails player, final Logger debugLogger)
+	@Override
+	public final void nextTurnButton (final IMomSessionVariables mom, final PlayerServerDetails player, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		debugLogger.entering (PlayerMessageProcessing.class.getName (), "nextTurnButton", player.getPlayerDescription ().getPlayerID ());
@@ -754,9 +841,130 @@ public final class PlayerMessageProcessing
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Methods for updating true map + players' memory
 	 */
-	private PlayerMessageProcessing ()
+	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return City processing methods
+	 */
+	public final ICityProcessing getCityProcessing ()
+	{
+		return cityProcessing;
+	}
+
+	/**
+	 * @param obj City processing methods
+	 */
+	public final void setCityProcessing (final ICityProcessing obj)
+	{
+		cityProcessing = obj;
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final ISpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final ISpellProcessing obj)
+	{
+		spellProcessing = obj;
+	}
+
+	/**
+	 * @return Fog of war update methods
+	 */
+	public final IFogOfWarProcessing getFogOfWarProcessing ()
+	{
+		return fogOfWarProcessing;
+	}
+
+	/**
+	 * @param obj Fog of war update methods
+	 */
+	public final void setFogOfWarProcessing (final IFogOfWarProcessing obj)
+	{
+		fogOfWarProcessing = obj;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final IMomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final IMomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return AI player turns
+	 */
+	public final IMomAI getMomAI ()
+	{
+		return momAI;
+	}
+
+	/**
+	 * @param ai AI player turns
+	 */
+	public final void setMomAI (final IMomAI ai)
+	{
+		momAI = ai;
+	}
+
+	/**
+	 * @return AI decisions about cities
+	 */
+	public final ICityAI getCityAI ()
+	{
+		return cityAI;
+	}
+
+	/**
+	 * @param ai AI decisions about cities
+	 */
+	public final void setCityAI (final ICityAI ai)
+	{
+		cityAI = ai;
+	}
+
+	/**
+	 * @return Overland map generator
+	 */
+	public final IOverlandMapGenerator getOverlandMapGenerator ()
+	{
+		return overlandMapGenerator;
+	}
+
+	/**
+	 * @param gen Overland map generator
+	 */
+	public final void setOverlandMapGenerator (final IOverlandMapGenerator gen)
+	{
+		overlandMapGenerator = gen;
 	}
 }

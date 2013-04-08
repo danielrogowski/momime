@@ -28,6 +28,7 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
+import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.config.v0_9_4.MomImeServerConfig;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseConverters;
@@ -35,8 +36,12 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseFactory;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Spell;
+import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.process.ICityProcessing;
+import momime.server.process.IPlayerMessageProcessing;
+import momime.server.process.ISpellProcessing;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.SessionWindow;
 
@@ -53,7 +58,7 @@ import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
 /**
  * Thread that handles everything going on in one MoM session
  */
-public final class MomSessionThread extends MultiplayerSessionThread
+final class MomSessionThread extends MultiplayerSessionThread implements IMomSessionVariables
 {
 	/** Lookup lists built over the XML database */
 	private ServerDatabaseEx db;
@@ -64,6 +69,23 @@ public final class MomSessionThread extends MultiplayerSessionThread
 	/** Logger for logging key messages relating to this session */
 	private Logger sessionLogger;
 
+	// These are all here so that message implementations and resource consumers can access them
+	
+	/** Methods for updating true map + players' memory */
+	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Resource calculations */
+	private IMomServerResourceCalculations serverResourceCalculations;
+	
+	/** Methods for dealing with player msgs */
+	private IPlayerMessageProcessing playerMessageProcessing;
+
+	/** Spell processing methods */
+	private ISpellProcessing spellProcessing;
+	
+	/** City processing methods */
+	private ICityProcessing cityProcessing;
+	
 	/**
 	 * @param aServer Server this connection belongs to
 	 * @param aSessionDescription Details of this session
@@ -83,6 +105,7 @@ public final class MomSessionThread extends MultiplayerSessionThread
 	/**
 	 * @return Logger for logging key messages relating to this session
 	 */
+	@Override
 	public final Logger getSessionLogger ()
 	{
 		return sessionLogger;
@@ -169,6 +192,7 @@ public final class MomSessionThread extends MultiplayerSessionThread
 	/**
 	 * @return Server XML in use for this session
 	 */
+	@Override
 	public final ServerDatabaseEx getServerDB ()
 	{
 		return db;
@@ -335,5 +359,90 @@ public final class MomSessionThread extends MultiplayerSessionThread
 	protected final TransientPlayerPrivateKnowledge createTransientPlayerPrivateKnowledge ()
 	{
 		return new MomTransientPlayerPrivateKnowledge ();
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	@Override
+	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	@Override
+	public final IMomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final IMomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	@Override
+	public final IPlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final IPlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	@Override
+	public final ISpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final ISpellProcessing obj)
+	{
+		spellProcessing = obj;
+	}
+
+	/**
+	 * @return City processing methods
+	 */
+	@Override
+	public final ICityProcessing getCityProcessing ()
+	{
+		return cityProcessing;
+	}
+
+	/**
+	 * @param obj City processing methods
+	 */
+	public final void setCityProcessing (final ICityProcessing obj)
+	{
+		cityProcessing = obj;
 	}
 }

@@ -30,14 +30,14 @@ import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.ai.CityAI;
+import momime.server.ai.ICityAI;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
 import momime.server.utils.OverlandMapServerUtils;
@@ -54,8 +54,14 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for any significant message processing to do with cities that isn't done in the message implementations
  */
-public final class CityProcessing
+public final class CityProcessing implements ICityProcessing
 {
+	/** Methods for updating true map + players' memory */
+	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** AI decisions about cities */
+	private ICityAI cityAI;
+	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
 	 *
@@ -73,7 +79,8 @@ public final class CityProcessing
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	final static void createStartingCities (final List<PlayerServerDetails> players,
+	@Override
+	public final void createStartingCities (final List<PlayerServerDetails> players,
 		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -110,7 +117,7 @@ public final class CityProcessing
 					plane = db.getPlane ().get (RandomUtils.getGenerator ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
-				final OverlandMapCoordinates cityLocation = CityAI.chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db, debugLogger);
+				final OverlandMapCoordinates cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db, debugLogger);
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 
@@ -216,7 +223,7 @@ public final class CityProcessing
 							unitCoords.setY (cityLocation.getY ());
 							unitCoords.setPlane (cityLocation.getPlane ());
 
-							FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
+							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
 						}
 			}
 		}
@@ -239,7 +246,8 @@ public final class CityProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	final static void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
+	@Override
+	public final void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
 		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
@@ -314,7 +322,7 @@ public final class CityProcessing
 											// This is a leftover from when NTMs showed up instantly, since the mmAddBuilding message would cause the
 											// client to immediately show the 'completed construction' window so we needed to send other data that appears in that window first
 											cityData.setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-											FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd, debugLogger);
+											getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), debugLogger);
 
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())
@@ -327,7 +335,7 @@ public final class CityProcessing
 											}
 
 											// Now actually add the building - this will trigger the messages to be sent to the clients
-											FogOfWarMidTurnChanges.addBuildingOnServerAndClients (gsk, players, cityLocation,
+											getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, players, cityLocation,
 												building.getBuildingID (), null, null, null, sd, db, debugLogger);
 										}
 
@@ -350,7 +358,7 @@ public final class CityProcessing
 											}
 
 											// Now actually add the unit
-											FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, unit.getUnitID (), addLocation.getUnitLocation (),
+											getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, unit.getUnitID (), addLocation.getUnitLocation (),
 												cityLocation, null, cityOwner, UnitStatusID.ALIVE, players, sd, db, debugLogger);
 										}
 
@@ -417,7 +425,7 @@ public final class CityProcessing
 
 							MomServerCityCalculations.ensureNotTooManyOptionalFarmers (cityData, debugLogger);
 
-							FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd, debugLogger);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), debugLogger);
 						}
 					}
 				}
@@ -448,7 +456,8 @@ public final class CityProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public final static void sellBuilding (final FogOfWarMemory trueMap,
+	@Override
+	public final void sellBuilding (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID,
 		final boolean pendingSale, final boolean voluntarySale,
 		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
@@ -491,7 +500,7 @@ public final class CityProcessing
 			}
 
 			// Actually remove the building, both on the server and on any clients who can see the city
-			FogOfWarMidTurnChanges.destroyBuildingOnServerAndClients (trueMap, players, cityLocation, buildingID, voluntarySale, sd, db, debugLogger);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, cityLocation, buildingID, voluntarySale, sd, db, debugLogger);
 
 			// Give gold from selling it
 			final Building building = db.findBuilding (buildingID, "sellBuilding");
@@ -507,16 +516,41 @@ public final class CityProcessing
 			MomServerCityCalculations.ensureNotTooManyOptionalFarmers (tc.getCityData (), debugLogger);
 
 			// Send the updated city stats to any clients that can see the city
-			FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd, debugLogger);
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), debugLogger);
 		}
 
 		debugLogger.exiting (CityProcessing.class.getName (), "sellBuilding");
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Methods for updating true map + players' memory
 	 */
-	private CityProcessing ()
+	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return AI decisions about cities
+	 */
+	public final ICityAI getCityAI ()
+	{
+		return cityAI;
+	}
+
+	/**
+	 * @param ai AI decisions about cities
+	 */
+	public final void setCityAI (final ICityAI ai)
+	{
+		cityAI = ai;
 	}
 }

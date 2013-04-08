@@ -67,8 +67,11 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  *
  * i.e. methods for when the true values remain the same but the visible area changes
  */
-public final class FogOfWarProcessing
+public class FogOfWarProcessing implements IFogOfWarProcessing
 {
+	/** FOW duplication utils */
+	private IFogOfWarDuplication fogOfWarDuplication;
+
 	/**
 	 * Marks that we can see a particular cell
 	 * @param fogOfWarArea Player's fog of war area
@@ -343,7 +346,8 @@ public final class FogOfWarProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public final static void updateAndSendFogOfWar (final FogOfWarMemory trueMap, final PlayerServerDetails player,
+	@Override
+	public final void updateAndSendFogOfWar (final FogOfWarMemory trueMap, final PlayerServerDetails player,
 		final List<PlayerServerDetails> players, final boolean nameCitiesAtStartOfGame,
 		final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
@@ -382,7 +386,7 @@ public final class FogOfWarProcessing
 						// Couldn't see this cell before (either we'd never seen it before, or we'd seen it earlier and have been remembering it) - now we can see it
 						case FOG_OF_WAR_ACTION_UPDATE:
 						{
-							if (FogOfWarDuplication.copyTerrainAndNodeAura (tc, mc))
+							if (getFogOfWarDuplication ().copyTerrainAndNodeAura (tc, mc))
 								if (msg != null)
 								{
 									final UpdateTerrainMessageData terrainMsg = new UpdateTerrainMessageData ();
@@ -396,7 +400,7 @@ public final class FogOfWarProcessing
 						// Could see this cell before but now we need to forget what we saw
 						case FOG_OF_WAR_ACTION_FORGET:
 						{
-							if (FogOfWarDuplication.blankTerrainAndNodeAura (mc))
+							if (getFogOfWarDuplication ().blankTerrainAndNodeAura (mc))
 								if (msg != null)
 								{
 									final UpdateTerrainMessageData terrainMsg = new UpdateTerrainMessageData ();
@@ -429,7 +433,7 @@ public final class FogOfWarProcessing
 							// Careful, may not even be a city here and hence tc.getCityData () may be null
 							final int cityOwnerID = (tc.getCityData () == null) ? 0 : tc.getCityData ().getCityOwnerID ();
 
-							if (FogOfWarDuplication.copyCityData (tc, mc, (cityOwnerID == player.getPlayerDescription ().getPlayerID ()) ||
+							if (getFogOfWarDuplication ().copyCityData (tc, mc, (cityOwnerID == player.getPlayerDescription ().getPlayerID ()) ||
 								(sd.getFogOfWarSetting ().isSeeEnemyCityConstruction ())))
 
 								if (msg != null)
@@ -446,7 +450,7 @@ public final class FogOfWarProcessing
 						// Could see this cell before but now we need to forget what we saw
 						case FOG_OF_WAR_ACTION_FORGET:
 						{
-							if (FogOfWarDuplication.blankCityData (mc))
+							if (getFogOfWarDuplication ().blankCityData (mc))
 								if (msg != null)
 								{
 									final UpdateCityMessageData cityMsg = new UpdateCityMessageData ();
@@ -486,7 +490,7 @@ public final class FogOfWarProcessing
 				(thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ());
 
 			if (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
-				if (FogOfWarDuplication.copyBuilding (thisBuilding, priv.getFogOfWarMemory ().getBuilding (), debugLogger))
+				if (getFogOfWarDuplication ().copyBuilding (thisBuilding, priv.getFogOfWarMemory ().getBuilding (), debugLogger))
 					if (msg != null)
 					{
 						final AddBuildingMessageData buildingMsg = new AddBuildingMessageData ();
@@ -570,12 +574,12 @@ public final class FogOfWarProcessing
 				if ((actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)) &&
 					(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF)))
 				{
-					final boolean unitChanged = FogOfWarDuplication.copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit (), debugLogger);
+					final boolean unitChanged = getFogOfWarDuplication ().copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit (), debugLogger);
 					updatedUnitURNs.add (thisUnit.getUnitURN ());
 
 					debugLogger.finest ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
 					if ((unitChanged) && (msg != null))
-						msg.getAddUnit ().add (FogOfWarDuplication.createAddUnitMessage (thisUnit, db));
+						msg.getAddUnit ().add (getFogOfWarDuplication ().createAddUnitMessage (thisUnit, db));
 
 					// If this is a unit standing on a node or tower, then that proves that the node or tower has been cleared of monsters
 					final String nodeLairTowerKnownUnitID = priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
@@ -713,9 +717,9 @@ public final class FogOfWarProcessing
 				if (needToUpdate)
 
 					// Copy spell into player's memory
-					if (FogOfWarDuplication.copyMaintainedSpell (thisSpell, priv.getFogOfWarMemory ().getMaintainedSpell (), debugLogger))
+					if (getFogOfWarDuplication ().copyMaintainedSpell (thisSpell, priv.getFogOfWarMemory ().getMaintainedSpell (), debugLogger))
 						if (msg != null)
-							msg.getAddMaintainedSpell ().add (FogOfWarDuplication.createAddSpellMessage (thisSpell));
+							msg.getAddMaintainedSpell ().add (getFogOfWarDuplication ().createAddSpellMessage (thisSpell));
 			}
 
 		// Check to see what maintained spells we could see but now can't (this runs down our local memory of the spells)
@@ -784,7 +788,7 @@ public final class FogOfWarProcessing
 					(thisCAE.getMapLocation ().getY ()).getCell ().get (thisCAE.getMapLocation ().getX ());
 
 				if (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
-					if (FogOfWarDuplication.copyCombatAreaEffect (thisCAE, priv.getFogOfWarMemory ().getCombatAreaEffect (), debugLogger))
+					if (getFogOfWarDuplication ().copyCombatAreaEffect (thisCAE, priv.getFogOfWarMemory ().getCombatAreaEffect (), debugLogger))
 						if (msg != null)
 						{
 							final AddCombatAreaEffectMessageData caeMsg = new AddCombatAreaEffectMessageData ();
@@ -890,9 +894,18 @@ public final class FogOfWarProcessing
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return FOW duplication utils
 	 */
-	private FogOfWarProcessing ()
+	public final IFogOfWarDuplication getFogOfWarDuplication ()
 	{
+		return fogOfWarDuplication;
+	}
+
+	/**
+	 * @param dup FOW duplication utils
+	 */
+	public final void setFogOfWarDuplication (final IFogOfWarDuplication dup)
+	{
+		fogOfWarDuplication = dup;
 	}
 }

@@ -32,18 +32,20 @@ public final class TestMomFogOfWarCalculations
 	@Test
 	public final void testCanSeeMidTurn ()
 	{
+		final MomFogOfWarCalculations calc = new MomFogOfWarCalculations ();
+		
 		// If we can see it this turn, then we can see it regardless of FOW setting
 		for (final FogOfWarValue setting : FogOfWarValue.values ())
-			assertTrue (MomFogOfWarCalculations.canSeeMidTurn (FogOfWarStateID.CAN_SEE, setting));
+			assertTrue (calc.canSeeMidTurn (FogOfWarStateID.CAN_SEE, setting));
 
 		// If we've never seen it, then we can't see it regardless of FOW setting
 		for (final FogOfWarValue setting : FogOfWarValue.values ())
-			assertFalse (MomFogOfWarCalculations.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, setting));
+			assertFalse (calc.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, setting));
 
 		// If we have seen it but cannot see it this turn, whether we can see it now depends on the setting
-		assertTrue (MomFogOfWarCalculations.canSeeMidTurn (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
-		assertFalse (MomFogOfWarCalculations.canSeeMidTurn (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.REMEMBER_AS_LAST_SEEN));
-		assertFalse (MomFogOfWarCalculations.canSeeMidTurn (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.FORGET));
+		assertTrue (calc.canSeeMidTurn (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
+		assertFalse (calc.canSeeMidTurn (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.REMEMBER_AS_LAST_SEEN));
+		assertFalse (calc.canSeeMidTurn (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.FORGET));
 	}
 
 	/**
@@ -60,6 +62,8 @@ public final class TestMomFogOfWarCalculations
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
 
+		final MomFogOfWarCalculations calc = new MomFogOfWarCalculations ();
+		
 		// Test two locations, one with a tower and one without
 		final OverlandMapTerrainData towerData = new OverlandMapTerrainData ();
 		towerData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
@@ -78,25 +82,25 @@ public final class TestMomFogOfWarCalculations
 		otherLocationOnMyrror.setPlane (1);
 
 		// Never seen location on either plane
-		assertFalse (MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
-		assertFalse (MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (otherLocationOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
+		assertFalse (calc.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
+		assertFalse (calc.canSeeMidTurnOnAnyPlaneIfTower (otherLocationOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
 
 		// Can see location on opposite plane
 		for (int x = 2; x <=3; x++)
 			fogOfWarArea.getPlane ().get (0).getRow ().get (2).getCell ().set (x, FogOfWarStateID.HAVE_SEEN);
 
-		assertTrue (MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
-		assertFalse (MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (otherLocationOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
+		assertTrue (calc.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
+		assertFalse (calc.canSeeMidTurnOnAnyPlaneIfTower (otherLocationOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
 
 		// Depends on FOW setting
-		assertFalse (MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.REMEMBER_AS_LAST_SEEN, map, fogOfWarArea, db));
-		assertFalse (MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (otherLocationOnMyrror, FogOfWarValue.REMEMBER_AS_LAST_SEEN, map, fogOfWarArea, db));
+		assertFalse (calc.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.REMEMBER_AS_LAST_SEEN, map, fogOfWarArea, db));
+		assertFalse (calc.canSeeMidTurnOnAnyPlaneIfTower (otherLocationOnMyrror, FogOfWarValue.REMEMBER_AS_LAST_SEEN, map, fogOfWarArea, db));
 
 		// Can see location on this plane
 		for (int x = 2; x <=3; x++)
 			fogOfWarArea.getPlane ().get (1).getRow ().get (2).getCell ().set (x, FogOfWarStateID.HAVE_SEEN);
 
-		assertTrue (MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
-		assertTrue (MomFogOfWarCalculations.canSeeMidTurnOnAnyPlaneIfTower (otherLocationOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
+		assertTrue (calc.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
+		assertTrue (calc.canSeeMidTurnOnAnyPlaneIfTower (otherLocationOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));
 	}
 }

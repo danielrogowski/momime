@@ -8,8 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage;
-import momime.server.MomSessionThread;
-import momime.server.process.PlayerMessageProcessing;
+import momime.server.IMomSessionVariables;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -38,7 +37,9 @@ public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage imple
 	{
 		debugLogger.entering (NextTurnButtonMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
 
-		PlayerMessageProcessing.nextTurnButton ((MomSessionThread) thread, sender, debugLogger);
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		
+		mom.getPlayerMessageProcessing ().nextTurnButton (mom, sender, debugLogger);
 
 		debugLogger.exiting (NextTurnButtonMessageImpl.class.getName (), "process");
 	}

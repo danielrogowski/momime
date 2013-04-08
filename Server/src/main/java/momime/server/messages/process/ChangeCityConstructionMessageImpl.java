@@ -10,8 +10,7 @@ import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.server.MomSessionThread;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.IMomSessionVariables;
 import momime.server.utils.CityServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
@@ -38,7 +37,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 		debugLogger.entering (ChangeCityConstructionMessageImpl.class.getName (), "process",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (getCityLocation ()), getBuildingOrUnitID ()});
 
-		final MomSessionThread mom = (MomSessionThread) thread;
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		final String error = CityServerUtils.validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
 			getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
@@ -60,8 +59,8 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 			cityData.setCurrentlyConstructingBuildingOrUnitID (getBuildingOrUnitID ());
 
 			// Send update to clients
-			FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), getCityLocation (), mom.getSessionDescription (), debugLogger);
+			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), debugLogger);
 		}
 
 		debugLogger.exiting (ChangeCityConstructionMessageImpl.class.getName (), "process");

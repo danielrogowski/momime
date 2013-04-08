@@ -17,8 +17,11 @@ import momime.common.messages.MemoryCombatAreaEffectUtils;
 import momime.common.messages.MemoryMaintainedSpellUtils;
 import momime.common.messages.ResourceValueUtils;
 import momime.common.messages.SpellUtils;
+import momime.common.messages.servertoclient.v0_9_4.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.v0_9_4.RemoveQueuedSpellMessage;
+import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateManaSpentOnCastingCurrentSpellMessage;
+import momime.common.messages.v0_9_4.CombatMapCoordinates;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
@@ -30,11 +33,15 @@ import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
+import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.player.MomSpellCastType;
+import momime.server.IMomSessionVariables;
+import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.utils.RandomUtils;
 import momime.server.utils.UnitAddLocation;
@@ -47,8 +54,17 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for any significant message processing to do with spells that isn't done in the message implementations
  */
-public final class SpellProcessing
+public final class SpellProcessing implements ISpellProcessing
 {
+	/** Methods for updating true map + players' memory */
+	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Methods for dealing with player msgs */
+	private IPlayerMessageProcessing playerMessageProcessing;
+	
+	/** Resource calculations */
+	private IMomServerResourceCalculations serverResourceCalculations;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -65,7 +81,7 @@ public final class SpellProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private static void castOverlandNow (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final Spell spell,
+	void castOverlandNow (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final Spell spell,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -94,7 +110,7 @@ public final class SpellProcessing
 						((MomTransientPlayerPrivateKnowledge) messagePlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (overlandMessage);
 
 				// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
-				FogOfWarMidTurnChanges.addMaintainedSpellOnServerAndClients (gsk, player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
+				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (gsk, player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
 					null, null, false, null, null, players, db, sd, debugLogger);
 
 				// Does this overland enchantment give a global combat area effect? (Not all do)
@@ -102,7 +118,7 @@ public final class SpellProcessing
 				{
 					// Pick one at random
 					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (RandomUtils.getGenerator ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
-					FogOfWarMidTurnChanges.addCombatAreaEffectOnServerAndClients (gsk, combatAreaEffectID, player.getPlayerDescription ().getPlayerID (), null, players, db, sd, debugLogger);
+					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (gsk, combatAreaEffectID, player.getPlayerDescription ().getPlayerID (), null, players, db, sd, debugLogger);
 				}
 			}
 		}
@@ -166,11 +182,11 @@ public final class SpellProcessing
 							if (newUnit.getStatus () == UnitStatusID.NOT_GENERATED)
 								UnitServerUtils.generateHeroNameAndRandomSkills (newUnit, db, debugLogger);
 
-							FogOfWarMidTurnChanges.updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, players, gsk.getTrueMap (), sd, db, debugLogger);
+							getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, players, gsk.getTrueMap (), sd, db, debugLogger);
 						}
 						else
 							// For non-heroes, create a new unit
-							newUnit = FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, summonedUnitID, addLocation.getUnitLocation (), summoningCircleLocation,
+							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, summonedUnitID, addLocation.getUnitLocation (), summoningCircleLocation,
 								null, player, UnitStatusID.ALIVE, players, sd, db, debugLogger);
 					}
 
@@ -219,6 +235,121 @@ public final class SpellProcessing
 
 		debugLogger.exiting (SpellProcessing.class.getName (), "castOverlandNow");
 	}
+	
+	/**
+	 * Client wants to cast a spell, either overland or in combat
+	 * We may not actually be able to cast it yet - big overland spells take a number of turns to channel, so this
+	 * routine does all the checks to see if it can be instantly cast or needs to be queued up and cast over multiple turns
+	 * 
+	 * @param player Player who is casting the spell
+	 * @param spellID Which spell they want to cast
+	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
+	 * @param combatTargetLocation Which specific tile of the combat map the spell is being cast at, for cell-targetted spells like combat summons
+	 * @param combatTargetUnitURN Which specific unit within combat the spell is being cast at, for unit-targetted spells like Fire Bolt
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
+	 * @throws MomException If there are any issues with data or calculation logic
+	 */
+	@Override
+	public final void requestCastSpell (final PlayerServerDetails player, final String spellID,
+		final OverlandMapCoordinates combatLocation, final CombatMapCoordinates combatTargetLocation, final Integer combatTargetUnitURN,
+		final IMomSessionVariables mom, final Logger debugLogger)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		debugLogger.entering (SpellProcessing.class.getName (), "requestCastSpell", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), spellID});
+		
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+		
+		// Find the spell in the player's search list
+		final Spell spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");
+		final SpellResearchStatus researchStatus = SpellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), spellID, debugLogger);
+		
+		// Do validation checks
+		final String msg;
+		if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
+			msg = "You don't have that spell researched and/or available so can't cast it.";
+		
+		else if ((combatLocation == null) && (!SpellUtils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND, debugLogger)))
+			msg = "That spell cannot be cast overland.";
+		
+		else if ((combatLocation != null) && (!SpellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT, debugLogger)))
+			msg = "That spell cannot be cast in combat.";
+
+		else if ((combatLocation == null) && (combatTargetUnitURN != null))
+			msg = "Cannot specify a unit target when casting an overland spell.";
+
+		else if ((combatLocation != null) && (combatTargetUnitURN == null) &&
+			((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS)) ||
+			 (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES))))
+			msg = "You must specify a unit target when casting unit enchantments or curses in combat.";
+
+		else if ((combatLocation != null) && (combatTargetLocation == null) &&
+				(spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING)))
+				msg = "You must specify a target location when casting summoning spells in combat.";
+		
+		else
+			msg = null;
+		
+		if ((msg == null) && (combatLocation != null))
+			throw new UnsupportedOperationException ("requestCastSpell is missing a lot validation regarding casting spells in combat");
+		
+		// Ok to go ahead and cast (or queue) it?
+		if (msg != null)
+		{
+			debugLogger.warning (player.getPlayerDescription ().getPlayerName () + " disallowed from casting spell " + spellID + ": " + msg);
+			
+			final TextPopupMessage reply = new TextPopupMessage ();
+			reply.setText (msg);
+			player.getConnection ().sendMessageToClient (reply);
+		}
+		else if (combatLocation != null)
+		{
+			// Cast combat spell
+			throw new UnsupportedOperationException ("requestCastSpell is missing code for casting combat spells");
+		}
+		else
+		{
+			// Overland spell - need to see if we can instant cast it or need to queue it up
+			final int reducedCastingCost = SpellUtils.getReducedOverlandCastingCost (spell, pub.getPick (),
+			mom.getSessionDescription ().getSpellSetting (), mom.getServerDB (), debugLogger);
+			
+			if ((priv.getQueuedSpellID ().size () == 0) && (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (),
+				ResourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (),
+					CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, debugLogger)) >= reducedCastingCost))
+			{
+				// Cast instantly, and show the casting message instantly too
+				castOverlandNow (mom.getGeneralServerKnowledge (), player, spell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription (), debugLogger);
+				getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null, debugLogger);
+				
+				// Charge player the skill/mana
+				trans.setOverlandCastingSkillRemainingThisTurn (trans.getOverlandCastingSkillRemainingThisTurn () - reducedCastingCost);
+				ResourceValueUtils.addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA,
+					-reducedCastingCost, debugLogger);
+				
+				// Recalc their production values, to send them their reduced skill/mana, but also the spell just cast might have had some maintenance
+				getServerResourceCalculations ().recalculateGlobalProductionValues
+					(player.getPlayerDescription ().getPlayerID (), false, mom, debugLogger);
+			}
+			else
+			{
+				// Queue it on server
+				priv.getQueuedSpellID ().add (spellID);
+				
+				// Queue it on client
+				final OverlandCastQueuedMessage reply = new OverlandCastQueuedMessage ();
+				reply.setSpellID (spellID);
+				player.getConnection ().sendMessageToClient (reply);
+			}
+		}
+		
+		debugLogger.exiting (SpellProcessing.class.getName (), "requestCastSpell");
+	}
 
 	/**
 	 * Spends any skill/mana the player has left towards casting queued spells
@@ -236,7 +367,8 @@ public final class SpellProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public static boolean progressOverlandCasting (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final List<PlayerServerDetails> players,
+	@Override
+	public final boolean progressOverlandCasting (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -318,7 +450,8 @@ public final class SpellProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public final static void switchOffSpell (final FogOfWarMemory trueMap,
+	@Override
+	public final void switchOffSpell (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
 		final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
@@ -340,19 +473,60 @@ public final class SpellProcessing
 			// Check each combat area effect that this overland enchantment gives to see if we have any of them in effect - if so cancel them
 			for (final SpellHasCombatEffect effect : spell.getSpellHasCombatEffect ())
 				if (MemoryCombatAreaEffectUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, effect.getCombatAreaEffectID (), castingPlayerID, debugLogger))
-					FogOfWarMidTurnChanges.removeCombatAreaEffectFromServerAndClients (trueMap, effect.getCombatAreaEffectID (), castingPlayerID, null, players, db, sd, debugLogger);
+					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, effect.getCombatAreaEffectID (), castingPlayerID, null, players, db, sd, debugLogger);
 		}
 
 		// Remove spell itself
-		FogOfWarMidTurnChanges.switchOffMaintainedSpellOnServerAndClients (trueMap, castingPlayerID, spellID, unitURN, unitSkillID, castInCombat, cityLocation, citySpellEffectID, players, db, sd, debugLogger);
+		getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, castingPlayerID, spellID, unitURN, unitSkillID, castInCombat, cityLocation, citySpellEffectID, players, db, sd, debugLogger);
 
 		debugLogger.exiting (SpellProcessing.class.getName (), "switchOffSpell");
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Methods for updating true map + players' memory
 	 */
-	private SpellProcessing ()
+	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public IPlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final IPlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final IMomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final IMomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

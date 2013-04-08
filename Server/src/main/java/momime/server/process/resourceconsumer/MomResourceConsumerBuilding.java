@@ -1,6 +1,5 @@
 package momime.server.process.resourceconsumer;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -9,14 +8,11 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.process.CityProcessing;
+import momime.server.IMomSessionVariables;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -92,10 +88,7 @@ public final class MomResourceConsumerBuilding implements IMomResourceConsumer
 	/**
 	 * Sells this building to get some gold back and conserve resources
 	 *
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -104,14 +97,14 @@ public final class MomResourceConsumerBuilding implements IMomResourceConsumer
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void kill (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+	public final void kill (final IMomSessionVariables mom, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (MomResourceConsumerBuilding.class.getName (), "kill",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (getBuilding ().getCityLocation ()), getBuilding ().getBuildingID ()});
 
-		CityProcessing.sellBuilding (trueMap, players, getBuilding ().getCityLocation (), getBuilding ().getBuildingID (), false, false, sd, db, debugLogger);
+		mom.getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
+			getBuilding ().getCityLocation (), getBuilding ().getBuildingID (), false, false, mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{

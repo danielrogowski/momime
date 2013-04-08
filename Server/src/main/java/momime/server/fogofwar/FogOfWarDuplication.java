@@ -34,7 +34,7 @@ import momime.server.database.ServerDatabaseEx;
  * Note these must always make deep copies - if an object includes another object (e.g. OverlandMapCoordinates or UnitHasSkill) then
  * we need to make a copy of the child object and reference that as well, we can't just copy the reference from source
  */
-final class FogOfWarDuplication
+public final class FogOfWarDuplication implements IFogOfWarDuplication
 {
 	/**
 	 * Copies all the terrain and node aura related data items from source to destination
@@ -42,7 +42,8 @@ final class FogOfWarDuplication
 	 * @param destination The map cell to copy to
 	 * @return Whether any update actually happened (i.e. false if source and destination already had the same info)
 	 */
-	final static boolean copyTerrainAndNodeAura (final MemoryGridCell source, final MemoryGridCell destination)
+	@Override
+	public final boolean copyTerrainAndNodeAura (final MemoryGridCell source, final MemoryGridCell destination)
 	{
 		final OverlandMapTerrainData sourceData = source.getTerrainData ();
 		OverlandMapTerrainData destinationData = destination.getTerrainData ();
@@ -75,7 +76,8 @@ final class FogOfWarDuplication
 	 * @param destination Map cell from player's memorized map
 	 * @return True if an actual update was made; false if the player already knew nothing
 	 */
-	final static boolean blankTerrainAndNodeAura (final MemoryGridCell destination)
+	@Override
+	public final boolean blankTerrainAndNodeAura (final MemoryGridCell destination)
 	{
 		final OverlandMapTerrainData destinationData = destination.getTerrainData ();
 
@@ -95,7 +97,8 @@ final class FogOfWarDuplication
 	 * @param includeCurrentlyConstructing Whether to copy currentlyConstructing from source to destination or null it out
 	 * @return Whether any update actually happened (i.e. false if source and destination already had the same info)
 	 */
-	final static boolean copyCityData (final MemoryGridCell source, final MemoryGridCell destination, final boolean includeCurrentlyConstructing)
+	@Override
+	public final boolean copyCityData (final MemoryGridCell source, final MemoryGridCell destination, final boolean includeCurrentlyConstructing)
 	{
 		// Careful, may not even be a city here and hence source.getCityData () may be null
 		// That's a valid scenario - maybe last time we saw this location there was a city here, but since then someone captured and razed it
@@ -154,7 +157,8 @@ final class FogOfWarDuplication
 	 * @param destination Map cell from player's memorized map
 	 * @return True if an actual update was made; false if the player already knew nothing
 	 */
-	final static boolean blankCityData (final MemoryGridCell destination)
+	@Override
+	public final boolean blankCityData (final MemoryGridCell destination)
 	{
 		final OverlandMapCityData destinationData = destination.getCityData ();
 
@@ -175,7 +179,8 @@ final class FogOfWarDuplication
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the building was already in the list)
 	 */
-	final static boolean copyBuilding (final MemoryBuilding source, final List<MemoryBuilding> destination, final Logger debugLogger)
+	@Override
+	public final boolean copyBuilding (final MemoryBuilding source, final List<MemoryBuilding> destination, final Logger debugLogger)
 	{
 		// Since buildings can't change, only be added or destroyed, we don't need to worry about whether the
 		// building in the list but somehow changed, that's can't happen
@@ -205,7 +210,8 @@ final class FogOfWarDuplication
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the unit was already in the list AND all the details already exactly matched)
 	 */
-	final static boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination, final Logger debugLogger)
+	@Override
+	public final boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination, final Logger debugLogger)
 	{
 		// First see if the unit is in the destination list at all
 		boolean needToUpdate;
@@ -331,7 +337,8 @@ final class FogOfWarDuplication
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the spell was already in the list)
 	 */
-	final static boolean copyMaintainedSpell (final MemoryMaintainedSpell source, final List<MemoryMaintainedSpell> destination, final Logger debugLogger)
+	@Override
+	public final boolean copyMaintainedSpell (final MemoryMaintainedSpell source, final List<MemoryMaintainedSpell> destination, final Logger debugLogger)
 	{
 		// Since spells can't change, only be cast or cancelled, we don't need to worry about whether the
 		// spell in the list but somehow changed, that's can't happen
@@ -373,7 +380,8 @@ final class FogOfWarDuplication
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the building was already in the list)
 	 */
-	final static boolean copyCombatAreaEffect (final MemoryCombatAreaEffect source, final List<MemoryCombatAreaEffect> destination, final Logger debugLogger)
+	@Override
+	public final boolean copyCombatAreaEffect (final MemoryCombatAreaEffect source, final List<MemoryCombatAreaEffect> destination, final Logger debugLogger)
 	{
 		// Since CAEs can't change, only be added or destroyed, we don't need to worry about whether the
 		// CAE in the list but somehow changed, that's can't happen
@@ -413,7 +421,8 @@ final class FogOfWarDuplication
 	 * @return Unit creation message to send to client
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
-	final static AddUnitMessageData createAddUnitMessage (final MemoryUnit source, final ServerDatabaseEx db)
+	@Override
+	public final AddUnitMessageData createAddUnitMessage (final MemoryUnit source, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
 		final AddUnitMessageData destination = new AddUnitMessageData ();
@@ -452,7 +461,8 @@ final class FogOfWarDuplication
 	 * @param source True spell details held on server
 	 * @return Spell creation message to send to client
 	 */
-	final static AddMaintainedSpellMessageData createAddSpellMessage (final MemoryMaintainedSpell source)
+	@Override
+	public final AddMaintainedSpellMessageData createAddSpellMessage (final MemoryMaintainedSpell source)
 	{
 		final AddMaintainedSpellMessageData destination = new AddMaintainedSpellMessageData ();
 
@@ -471,7 +481,8 @@ final class FogOfWarDuplication
 	 * @param source True CAE details held on server
 	 * @return CAE creation message to send to client
 	 */
-	final static AddCombatAreaEffectMessageData createAddCombatAreaEffectMessage (final MemoryCombatAreaEffect source)
+	@Override
+	public final AddCombatAreaEffectMessageData createAddCombatAreaEffectMessage (final MemoryCombatAreaEffect source)
 	{
 		final AddCombatAreaEffectMessageData destination = new AddCombatAreaEffectMessageData ();
 
@@ -480,12 +491,5 @@ final class FogOfWarDuplication
 		destination.setMapLocation (source.getMapLocation ());
 
 		return destination;
-	}
-
-	/**
-	 * Prevent instantiation
-	 */
-	private FogOfWarDuplication ()
-	{
 	}
 }

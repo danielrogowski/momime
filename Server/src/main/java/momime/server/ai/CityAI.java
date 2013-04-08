@@ -33,7 +33,7 @@ import momime.server.database.v0_9_4.AiBuildingTypeID;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Race;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.utils.RandomUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
@@ -45,8 +45,11 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for AI players making decisions about where to place cities and what to build in them
  */
-public final class CityAI
+public final class CityAI implements ICityAI
 {
+	/** Methods for updating true map + players' memory */
+	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
 	/**
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
 	 * race will most likely be the race chosen for the continent we decide to put the city on, i.e. we have to pick position first, race second
@@ -60,7 +63,8 @@ public final class CityAI
 	 * @return Best possible location to put a new city, or null if there's no space left for any new cities on this plane
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 */
-	public static final OverlandMapCoordinates chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
+	@Override
+	public final OverlandMapCoordinates chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
 		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
 	{
@@ -151,7 +155,7 @@ public final class CityAI
 	 * @throws RecordNotFoundException If there is a building that cannot be found in the DB
 	 * @throws MomException If a city's race has no farmers defined or those farmers have no ration production defined
 	 */
-	static final int findWorkersToConvertToFarmers (final int doubleRationsNeeded, final boolean tradeGoods, final FogOfWarMemory trueMap,
+	final int findWorkersToConvertToFarmers (final int doubleRationsNeeded, final boolean tradeGoods, final FogOfWarMemory trueMap,
 		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws RecordNotFoundException, MomException
 	{
@@ -220,7 +224,8 @@ public final class CityAI
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
-	public static final void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
+	@Override
+	public final void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -291,7 +296,7 @@ public final class CityAI
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
 
-						FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd, debugLogger);
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), debugLogger);
 					}
 				}
 
@@ -310,7 +315,8 @@ public final class CityAI
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
-	static final void decideWhatToBuild (final OverlandMapCoordinates cityLocation, final OverlandMapCityData cityData,
+	@Override
+	public final void decideWhatToBuild (final OverlandMapCoordinates cityLocation, final OverlandMapCityData cityData,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryBuilding> trueBuildings,
 		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException
@@ -402,9 +408,18 @@ public final class CityAI
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Methods for updating true map + players' memory
 	 */
-	private CityAI ()
+	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

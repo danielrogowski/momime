@@ -42,6 +42,8 @@ public final class TestFogOfWarDuplication
 	@Test
 	public final void testCopyTerrainAndNodeAura ()
 	{
+		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+		
 		// Source terrain data is mandatory; destination terrain data is optional
 		final OverlandMapTerrainData sourceData = new OverlandMapTerrainData ();
 		final MemoryGridCell source = new MemoryGridCell ();
@@ -50,45 +52,45 @@ public final class TestFogOfWarDuplication
 
 		// Considered an update even though there's no source data because destination has no terrainData yet
 		// Every time we do a test, repeat it without changing anything to show that we get false back
-		assertTrue (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertTrue (dup.copyTerrainAndNodeAura (source, destination));
 		assertNotNull (destination.getTerrainData ());
-		assertFalse (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertFalse (dup.copyTerrainAndNodeAura (source, destination));
 
 		// Tile type
 		sourceData.setTileTypeID ("A");
-		assertTrue (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertTrue (dup.copyTerrainAndNodeAura (source, destination));
 		assertEquals ("A", destination.getTerrainData ().getTileTypeID ());
-		assertFalse (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertFalse (dup.copyTerrainAndNodeAura (source, destination));
 
 		// Map feature
 		sourceData.setMapFeatureID ("B");
-		assertTrue (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertTrue (dup.copyTerrainAndNodeAura (source, destination));
 		assertEquals ("B", destination.getTerrainData ().getMapFeatureID ());
-		assertFalse (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertFalse (dup.copyTerrainAndNodeAura (source, destination));
 
 		// River directions
 		sourceData.setRiverDirections ("C");
-		assertTrue (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertTrue (dup.copyTerrainAndNodeAura (source, destination));
 		assertEquals ("C", destination.getTerrainData ().getRiverDirections ());
-		assertFalse (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertFalse (dup.copyTerrainAndNodeAura (source, destination));
 
 		// Node owner
 		sourceData.setNodeOwnerID (1);
-		assertTrue (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertTrue (dup.copyTerrainAndNodeAura (source, destination));
 		assertEquals (1, destination.getTerrainData ().getNodeOwnerID ().intValue ());
-		assertFalse (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertFalse (dup.copyTerrainAndNodeAura (source, destination));
 
 		// Change to another actual value
 		sourceData.setTileTypeID ("D");
-		assertTrue (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertTrue (dup.copyTerrainAndNodeAura (source, destination));
 		assertEquals ("D", destination.getTerrainData ().getTileTypeID ());
-		assertFalse (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertFalse (dup.copyTerrainAndNodeAura (source, destination));
 
 		// Change to null
 		sourceData.setTileTypeID (null);
-		assertTrue (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertTrue (dup.copyTerrainAndNodeAura (source, destination));
 		assertNull (destination.getTerrainData ().getTileTypeID ());
-		assertFalse (FogOfWarDuplication.copyTerrainAndNodeAura (source, destination));
+		assertFalse (dup.copyTerrainAndNodeAura (source, destination));
 	}
 
 	/**
@@ -97,24 +99,26 @@ public final class TestFogOfWarDuplication
 	@Test
 	public final void testBlankTerrainAndNodeAura ()
 	{
+		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+
 		// Set one of the values to an actual value
 		OverlandMapTerrainData destinationData = new OverlandMapTerrainData ();
 		final MemoryGridCell destination = new MemoryGridCell ();
 		destination.setTerrainData (destinationData);
 
 		destinationData.setTileTypeID ("A");
-		assertTrue (FogOfWarDuplication.blankTerrainAndNodeAura (destination));
+		assertTrue (dup.blankTerrainAndNodeAura (destination));
 		assertNull (destination.getTerrainData ());
 
 		// Setting destination but leaving all the values none doesn't count as an update
 		destinationData = new OverlandMapTerrainData ();
 		destination.setTerrainData (destinationData);
 
-		assertFalse (FogOfWarDuplication.blankTerrainAndNodeAura (destination));
+		assertFalse (dup.blankTerrainAndNodeAura (destination));
 		assertNull (destination.getTerrainData ());
 
 		// Try when destination data itself is null
-		assertFalse (FogOfWarDuplication.blankTerrainAndNodeAura (destination));
+		assertFalse (dup.blankTerrainAndNodeAura (destination));
 		assertNull (destination.getTerrainData ());
 	}
 
@@ -124,6 +128,8 @@ public final class TestFogOfWarDuplication
 	@Test
 	public final void testCopyCityData ()
 	{
+		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+
 		// Source terrain data is mandatory; destination terrain data is optional
 		final OverlandMapCityData sourceData = new OverlandMapCityData ();
 		final MemoryGridCell source = new MemoryGridCell ();
@@ -132,83 +138,83 @@ public final class TestFogOfWarDuplication
 
 		// Considered an update even though there's no source data because destination has no cityData yet
 		// Every time we do a test, repeat it without changing anything to show that we get false back
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertNotNull (destination.getCityData ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// City population
 		sourceData.setCityPopulation (1);
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals (1, destination.getCityData ().getCityPopulation ().intValue ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// Number of rebels
 		sourceData.setNumberOfRebels (2);
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals (2, destination.getCityData ().getNumberOfRebels ().intValue ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// Minimum farmers
 		sourceData.setMinimumFarmers (3);
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals (3, destination.getCityData ().getMinimumFarmers ().intValue ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// Optional farmers
 		sourceData.setOptionalFarmers (4);
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals (4, destination.getCityData ().getOptionalFarmers ().intValue ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// City owner
 		sourceData.setCityOwnerID (5);
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals (5, destination.getCityData ().getCityOwnerID ().intValue ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// City race
 		sourceData.setCityRaceID ("A");
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals ("A", destination.getCityData ().getCityRaceID ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// City size
 		sourceData.setCitySizeID ("B");
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals ("B", destination.getCityData ().getCitySizeID ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// City name
 		sourceData.setCityName ("C");
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals ("C", destination.getCityData ().getCityName ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// Currently constructing
 		sourceData.setCurrentlyConstructingBuildingOrUnitID ("D");
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals ("D", destination.getCityData ().getCurrentlyConstructingBuildingOrUnitID ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// Change to another actual value
 		sourceData.setCityRaceID ("E");
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertEquals ("E", destination.getCityData ().getCityRaceID ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// Change to null
 		sourceData.setCityRaceID (null);
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertTrue (dup.copyCityData (source, destination, true));
 		assertNull (destination.getCityData ().getCityRaceID ());
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, true));
+		assertFalse (dup.copyCityData (source, destination, true));
 
 		// Currently constructing gets blanked out if we pass in null, so since it currently has a value, that counts as a change
-		assertTrue (FogOfWarDuplication.copyCityData (source, destination, false));
+		assertTrue (dup.copyCityData (source, destination, false));
 		assertNull (destination.getCityData ().getCurrentlyConstructingBuildingOrUnitID ());
 
 		// Any change to its value doesn't count as a change
 		sourceData.setCurrentlyConstructingBuildingOrUnitID ("F");
-		assertFalse (FogOfWarDuplication.copyCityData (source, destination, false));
+		assertFalse (dup.copyCityData (source, destination, false));
 	}
 
 	/**
@@ -217,24 +223,26 @@ public final class TestFogOfWarDuplication
 	@Test
 	public final void testBlankCityData ()
 	{
+		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+
 		// Set one of the values to an actual value
 		OverlandMapCityData destinationData = new OverlandMapCityData ();
 		final MemoryGridCell destination = new MemoryGridCell ();
 		destination.setCityData (destinationData);
 
 		destinationData.setCityRaceID ("A");
-		assertTrue (FogOfWarDuplication.blankCityData (destination));
+		assertTrue (dup.blankCityData (destination));
 		assertNull (destination.getCityData ());
 
 		// Setting destination but leaving all the values none doesn't count as an update
 		destinationData = new OverlandMapCityData ();
 		destination.setCityData (destinationData);
 
-		assertFalse (FogOfWarDuplication.blankCityData (destination));
+		assertFalse (dup.blankCityData (destination));
 		assertNull (destination.getCityData ());
 
 		// Try when destination data itself is null
-		assertFalse (FogOfWarDuplication.blankCityData (destination));
+		assertFalse (dup.blankCityData (destination));
 		assertNull (destination.getCityData ());
 	}
 
@@ -244,6 +252,8 @@ public final class TestFogOfWarDuplication
 	@Test
 	public final void testCopyBuilding ()
 	{
+		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+
 		final List<MemoryBuilding> destination = new ArrayList<MemoryBuilding> ();
 
 		// Put 3 buildings into the list
@@ -272,7 +282,7 @@ public final class TestFogOfWarDuplication
 		existingBuilding.setCityLocation (existingCoords);
 
 		assertEquals (3, destination.size ());
-		assertFalse (FogOfWarDuplication.copyBuilding (existingBuilding, destination, debugLogger));
+		assertFalse (dup.copyBuilding (existingBuilding, destination, debugLogger));
 		assertEquals (3, destination.size ());
 
 		// Test a building already in the list (location same but different building ID)
@@ -281,7 +291,7 @@ public final class TestFogOfWarDuplication
 		newBuilding.setCityLocation (existingCoords);
 
 		assertEquals (3, destination.size ());
-		assertTrue (FogOfWarDuplication.copyBuilding (newBuilding, destination, debugLogger));
+		assertTrue (dup.copyBuilding (newBuilding, destination, debugLogger));
 
 		assertEquals (4, destination.size ());
 		assertEquals ("BL03", destination.get (3).getBuildingID ());
@@ -298,6 +308,8 @@ public final class TestFogOfWarDuplication
 	@Test
 	public final void testCopyUnit () throws IOException, JAXBException
 	{
+		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final List<MemoryUnit> destination = new ArrayList<MemoryUnit> ();
@@ -312,15 +324,15 @@ public final class TestFogOfWarDuplication
 		unitOne.setUnitLocation (unitOneLocation);
 		unitOne.setOwningPlayerID (2);
 
-		assertTrue (FogOfWarDuplication.copyUnit (unitOne, destination, debugLogger));
+		assertTrue (dup.copyUnit (unitOne, destination, debugLogger));
 
 		// Check again without changing anything
-		assertFalse (FogOfWarDuplication.copyUnit (unitOne, destination, debugLogger));
+		assertFalse (dup.copyUnit (unitOne, destination, debugLogger));
 
 		// Change a value
 		unitOne.setDamageTaken (1);
-		assertTrue (FogOfWarDuplication.copyUnit (unitOne, destination, debugLogger));
-		assertFalse (FogOfWarDuplication.copyUnit (unitOne, destination, debugLogger));
+		assertTrue (dup.copyUnit (unitOne, destination, debugLogger));
+		assertFalse (dup.copyUnit (unitOne, destination, debugLogger));
 
 		// Second unit (magicians)
 		final OverlandMapCoordinates unitTwoLocation = new OverlandMapCoordinates ();
@@ -332,29 +344,31 @@ public final class TestFogOfWarDuplication
 		unitTwo.setUnitLocation (unitTwoLocation);
 		unitTwo.setOwningPlayerID (2);
 
-		assertTrue (FogOfWarDuplication.copyUnit (unitTwo, destination, debugLogger));
-		assertFalse (FogOfWarDuplication.copyUnit (unitTwo, destination, debugLogger));
+		assertTrue (dup.copyUnit (unitTwo, destination, debugLogger));
+		assertFalse (dup.copyUnit (unitTwo, destination, debugLogger));
 
 		// Give them more ammo
 		UnitUtils.setBasicSkillValue (unitTwo, "US132", 20, debugLogger);
-		assertTrue (FogOfWarDuplication.copyUnit (unitTwo, destination, debugLogger));
-		assertFalse (FogOfWarDuplication.copyUnit (unitTwo, destination, debugLogger));
+		assertTrue (dup.copyUnit (unitTwo, destination, debugLogger));
+		assertFalse (dup.copyUnit (unitTwo, destination, debugLogger));
 
 		// Cast flight on them (ok so normally this is done via the spells list and merging that into the unit skills list, but this is what's appropriate for this test...)
 		final UnitHasSkill flight = new UnitHasSkill ();
 		flight.setUnitSkillID ("SS056");
 		unitTwo.getUnitHasSkill ().add (flight);
 
-		assertTrue (FogOfWarDuplication.copyUnit (unitTwo, destination, debugLogger));
-		assertFalse (FogOfWarDuplication.copyUnit (unitTwo, destination, debugLogger));
+		assertTrue (dup.copyUnit (unitTwo, destination, debugLogger));
+		assertFalse (dup.copyUnit (unitTwo, destination, debugLogger));
 	}
 
 	/**
-	 * Tests the copySpell method
+	 * Tests the copyMaintainedSpell method
 	 */
 	@Test
-	public final void testCopySpell ()
+	public final void testCopyMaintainedSpell ()
 	{
+		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+
 		final List<MemoryMaintainedSpell> destination = new ArrayList<MemoryMaintainedSpell> ();
 
 		// Put 3 spells into the list
@@ -385,7 +399,7 @@ public final class TestFogOfWarDuplication
 		existingSpell.setCastingPlayerID (2);
 
 		assertEquals (3, destination.size ());
-		assertFalse (FogOfWarDuplication.copyMaintainedSpell (existingSpell, destination, debugLogger));
+		assertFalse (dup.copyMaintainedSpell (existingSpell, destination, debugLogger));
 		assertEquals (3, destination.size ());
 
 		// Test a spell already in the list (location same but different spell ID)
@@ -395,7 +409,7 @@ public final class TestFogOfWarDuplication
 		newSpell.setCastingPlayerID (3);
 
 		assertEquals (3, destination.size ());
-		assertTrue (FogOfWarDuplication.copyMaintainedSpell (newSpell, destination, debugLogger));
+		assertTrue (dup.copyMaintainedSpell (newSpell, destination, debugLogger));
 
 		assertEquals (4, destination.size ());
 		assertEquals ("SP003", destination.get (3).getSpellID ());
@@ -411,6 +425,8 @@ public final class TestFogOfWarDuplication
 	@Test
 	public final void testCopyCombatAreaEffect ()
 	{
+		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+
 		final List<MemoryCombatAreaEffect> destination = new ArrayList<MemoryCombatAreaEffect> ();
 
 		// Put 3 combatAreaEffects into the list
@@ -441,7 +457,7 @@ public final class TestFogOfWarDuplication
 		existingCombatAreaEffect.setCastingPlayerID (2);
 
 		assertEquals (3, destination.size ());
-		assertFalse (FogOfWarDuplication.copyCombatAreaEffect (existingCombatAreaEffect, destination, debugLogger));
+		assertFalse (dup.copyCombatAreaEffect (existingCombatAreaEffect, destination, debugLogger));
 		assertEquals (3, destination.size ());
 
 		// Test a combatAreaEffect already in the list (location same but different combatAreaEffect ID)
@@ -451,7 +467,7 @@ public final class TestFogOfWarDuplication
 		newCombatAreaEffect.setCastingPlayerID (3);
 
 		assertEquals (3, destination.size ());
-		assertTrue (FogOfWarDuplication.copyCombatAreaEffect (newCombatAreaEffect, destination, debugLogger));
+		assertTrue (dup.copyCombatAreaEffect (newCombatAreaEffect, destination, debugLogger));
 
 		assertEquals (4, destination.size ());
 		assertEquals ("CAE03", destination.get (3).getCombatAreaEffectID ());

@@ -14,7 +14,7 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
-import momime.server.MomSessionThread;
+import momime.server.IMomSessionVariables;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.utils.SpellServerUtils;
 
@@ -42,7 +42,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 		debugLogger.entering (RequestResearchSpellMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getSpellID ()});
 
-		final MomSessionThread mom = (MomSessionThread) thread;
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 
 		// Validate the requested picks

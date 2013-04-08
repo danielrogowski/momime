@@ -134,7 +134,8 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testFindTerrainBorder8_Found () throws JAXBException, MomException, RecordNotFoundException
 	{
-		assertEquals (32, OverlandMapGenerator.findTerrainBorder8 ("10000011"));
+		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, null, debugLogger); 
+		assertEquals (32, gen.findTerrainBorder8 ("10000011"));
 	}
 
 	/**
@@ -146,18 +147,21 @@ public final class TestOverlandMapGenerator
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindTerrainBorder8_NotFound () throws JAXBException, MomException, RecordNotFoundException
 	{
-		assertEquals (32, OverlandMapGenerator.findTerrainBorder8 ("10101010"));
+		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, null, debugLogger); 
+		assertEquals (32, gen.findTerrainBorder8 ("10101010"));
 	}
 
 	/**
 	 * Tests the convertNeighbouringTilesToDirections method
+	 * @throws MomException If some fatal error happens during map generation
 	 */
 	@Test
-	public final void testConvertNeighbouringTilesToDirections ()
+	public final void testConvertNeighbouringTilesToDirections () throws MomException
 	{
-		assertEquals ("37", OverlandMapGenerator.convertNeighbouringTilesToDirections ("0101", -1));
-		assertEquals ("357", OverlandMapGenerator.convertNeighbouringTilesToDirections ("0111", -1));
-		assertEquals ("37", OverlandMapGenerator.convertNeighbouringTilesToDirections ("0111", 5));
+		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, null, debugLogger); 
+		assertEquals ("37", gen.convertNeighbouringTilesToDirections ("0101", -1));
+		assertEquals ("357", gen.convertNeighbouringTilesToDirections ("0111", -1));
+		assertEquals ("37", gen.convertNeighbouringTilesToDirections ("0111", 5));
 	}
 
 	/**
@@ -202,15 +206,17 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the countStringRepetitions method
+	 * @throws MomException If some fatal error happens during map generation
 	 */
 	@Test
-	public final void testCountStringRepetitions ()
+	public final void testCountStringRepetitions () throws MomException
 	{
-		assertEquals ("Zero repetitions", 0, OverlandMapGenerator.countStringRepetitions ("C", "abcde"));
-		assertEquals ("One in the middle", 1, OverlandMapGenerator.countStringRepetitions ("c", "abcde"));
-		assertEquals ("Two in the middle", 2, OverlandMapGenerator.countStringRepetitions ("c", "abcgcde"));
-		assertEquals ("Two including one at the start", 2, OverlandMapGenerator.countStringRepetitions ("c", "cgcde"));
-		assertEquals ("Two including one at the end", 2, OverlandMapGenerator.countStringRepetitions ("c", "abcgc"));
+		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, null, debugLogger); 
+		assertEquals ("Zero repetitions", 0, gen.countStringRepetitions ("C", "abcde"));
+		assertEquals ("One in the middle", 1, gen.countStringRepetitions ("c", "abcde"));
+		assertEquals ("Two in the middle", 2, gen.countStringRepetitions ("c", "abcgcde"));
+		assertEquals ("Two including one at the start", 2, gen.countStringRepetitions ("c", "cgcde"));
+		assertEquals ("Two including one at the end", 2, gen.countStringRepetitions ("c", "abcgc"));
 	}
 
 	/**
@@ -268,12 +274,13 @@ public final class TestOverlandMapGenerator
 	public final void testFindMostExpensiveMonster () throws IOException, JAXBException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, db, debugLogger); 
 
-		assertEquals ("UN179", OverlandMapGenerator.findMostExpensiveMonster ("LT01", 1000, db).getUnitID ());	// Arch angel
-		assertEquals ("UN178", OverlandMapGenerator.findMostExpensiveMonster ("LT01", 900, db).getUnitID ());		// Angel
-		assertEquals ("UN176", OverlandMapGenerator.findMostExpensiveMonster ("LT01", 500, db).getUnitID ());		// Unicorns
-		assertEquals ("UN177", OverlandMapGenerator.findMostExpensiveMonster ("LT01", 100, db).getUnitID ());		// Guardian spirit
-		assertNull (OverlandMapGenerator.findMostExpensiveMonster ("LT01", 45, db));											// Nothing that cheap
+		assertEquals ("UN179", gen.findMostExpensiveMonster ("LT01", 1000).getUnitID ());		// Arch angel
+		assertEquals ("UN178", gen.findMostExpensiveMonster ("LT01", 900).getUnitID ());		// Angel
+		assertEquals ("UN176", gen.findMostExpensiveMonster ("LT01", 500).getUnitID ());		// Unicorns
+		assertEquals ("UN177", gen.findMostExpensiveMonster ("LT01", 100).getUnitID ());		// Guardian spirit
+		assertNull (gen.findMostExpensiveMonster ("LT01", 45));											// Nothing that cheap
 	}
 
 	/**

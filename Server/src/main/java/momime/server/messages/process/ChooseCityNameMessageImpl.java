@@ -8,8 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.server.MomSessionThread;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.IMomSessionVariables;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -33,7 +32,7 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 	{
 		debugLogger.entering (ChooseCityNameMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
 
-		final MomSessionThread mom = (MomSessionThread) thread;
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		// Check and update true map cell
 		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (getCityLocation ().getPlane ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
@@ -42,7 +41,8 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 			tc.getCityData ().setCityName (getCityName ());
 
 			// Then send the change to all players who can see the city
-			FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), getCityLocation (), mom.getSessionDescription (), debugLogger);
+			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), debugLogger);
 		}
 		else
 		{

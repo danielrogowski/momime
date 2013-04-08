@@ -12,7 +12,7 @@ import momime.common.messages.clienttoserver.v0_9_4.AlchemyMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.IMomSessionVariables;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -37,6 +37,8 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements IProcess
 		debugLogger.entering (AlchemyMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getFromProductionTypeID (), new Integer (getFromValue ()).toString ()});
 
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		
 		String error = null;
 		String toProductionTypeID = null;
 
@@ -84,7 +86,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements IProcess
 			ResourceValueUtils.addToAmountStored (priv.getResourceValue (), toProductionTypeID, toValue, debugLogger);
 
 			// Send updated amounts to client
-			MomServerResourceCalculations.sendGlobalProductionValues (sender, 0, debugLogger);
+			mom.getServerResourceCalculations ().sendGlobalProductionValues (sender, 0, debugLogger);
 		}
 
 		debugLogger.exiting (AlchemyMessageImpl.class.getName (), "process");

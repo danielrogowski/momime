@@ -14,6 +14,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
 import momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ObjectFactory;
+import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
@@ -168,5 +169,14 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	public final NextTurnButtonMessage createNextTurnButtonMessage ()
 	{
 		return new NextTurnButtonMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created RequestCastSpellMessage
+	 */
+	@Override
+	public final RequestCastSpellMessage createRequestCastSpellMessage ()
+	{
+		return new RequestCastSpellMessageImpl ();
 	}
 }

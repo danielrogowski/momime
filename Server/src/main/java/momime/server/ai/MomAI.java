@@ -17,7 +17,7 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Plane;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -25,8 +25,14 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Overall AI strategy + control
  */
-public final class MomAI
+public final class MomAI implements IMomAI
 {
+	/** Methods for updating true map + players' memory */
+	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** AI decisions about cities */
+	private ICityAI cityAI;
+	
 	/**
 	 *
 	 * @param player AI player whose turn to take
@@ -41,7 +47,8 @@ public final class MomAI
 	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public final static void aiPlayerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
+	@Override
+	public final void aiPlayerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
 		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -64,13 +71,13 @@ public final class MomAI
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
 
-						CityAI.decideWhatToBuild (cityLocation, cityData, trueMap.getMap (), trueMap.getBuilding (), sd, db, debugLogger);
-						FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd, debugLogger);
+						getCityAI ().decideWhatToBuild (cityLocation, cityData, trueMap.getMap (), trueMap.getBuilding (), sd, db, debugLogger);
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), debugLogger);
 					}
 				}
 
 		// This relies on knowing what's being built in each city, so do it 2nd
-		CityAI.setOptionalFarmersInAllCities (trueMap, players, player, db, sd, debugLogger);
+		getCityAI ().setOptionalFarmersInAllCities (trueMap, players, player, db, sd, debugLogger);
 
 		// Do we need to choose a spell to research?
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
@@ -83,9 +90,34 @@ public final class MomAI
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Methods for updating true map + players' memory
 	 */
-	private MomAI ()
+	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return AI decisions about cities
+	 */
+	public final ICityAI getCityAI ()
+	{
+		return cityAI;
+	}
+
+	/**
+	 * @param ai AI decisions about cities
+	 */
+	public final void setCityAI (final ICityAI ai)
+	{
+		cityAI = ai;
 	}
 }

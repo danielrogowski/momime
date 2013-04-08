@@ -14,7 +14,7 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.server.MomSessionThread;
+import momime.server.IMomSessionVariables;
 import momime.server.utils.PlayerPickServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
@@ -41,7 +41,7 @@ public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMes
 	{
 		debugLogger.entering (ChooseInitialSpellsMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
 
-		final MomSessionThread mom = (MomSessionThread) thread;
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		final String error = PlayerPickServerUtils.validateInitialSpellSelection (sender, getPickID (), getSpell (), mom.getServerDB (), debugLogger);
 		if (error != null)

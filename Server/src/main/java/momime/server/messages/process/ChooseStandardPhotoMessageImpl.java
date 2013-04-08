@@ -10,7 +10,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.server.MomSessionThread;
+import momime.server.IMomSessionVariables;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -34,7 +34,7 @@ public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMes
 	{
 		debugLogger.entering (ChooseStandardPhotoMessageImpl.class.getName (), "process", new String [] {new Integer (sender.getPlayerDescription ().getPlayerID ()).toString (), getPhotoID ()});
 
-		final MomSessionThread mom = (MomSessionThread) thread;
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		// Check is valid - we don't need the record from the DB, we just need to prove that it exists
 		try

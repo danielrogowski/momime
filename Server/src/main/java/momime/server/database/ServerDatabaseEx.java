@@ -188,11 +188,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	 */
 	public final CitySize findCitySize (final String citySizeID, final String caller) throws RecordNotFoundException
 	{
-		final CitySize citySize = citySizesMap.get (citySizeID);
-		if (citySize == null)
+		final CitySize found = citySizesMap.get (citySizeID);
+		if (found == null)
 			throw new RecordNotFoundException (CitySize.class.getName (), citySizeID, caller);
 
-		return citySize;
+		return found;
 	}
 
 	/**
@@ -204,11 +204,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final Plane findPlane (final int planeNumber, final String caller) throws RecordNotFoundException
 	{
-		final Plane plane = planesMap.get (planeNumber);
-		if (plane == null)
+		final Plane found = planesMap.get (planeNumber);
+		if (found == null)
 			throw new RecordNotFoundException (Plane.class.getName (), planeNumber, caller);
 
-		return plane;
+		return found;
 	}
 
 	/**
@@ -220,11 +220,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final MapFeature findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException
 	{
-		final MapFeature mapFeature = mapFeaturesMap.get (mapFeatureID);
-		if (mapFeature == null)
+		final MapFeature found = mapFeaturesMap.get (mapFeatureID);
+		if (found == null)
 			throw new RecordNotFoundException (MapFeature.class.getName (), mapFeatureID, caller);
 
-		return mapFeature;
+		return found;
 	}
 
 	/**
@@ -236,11 +236,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final TileType findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException
 	{
-		final TileType tileType = tileTypesMap.get (tileTypeID);
-		if (tileType == null)
+		final TileType found = tileTypesMap.get (tileTypeID);
+		if (found == null)
 			throw new RecordNotFoundException (TileType.class.getName (), tileTypeID, caller);
 
-		return tileType;
+		return found;
 	}
 
 	/**
@@ -252,11 +252,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final ProductionType findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
 	{
-		final ProductionType productionType = productionTypesMap.get (productionTypeID);
-		if (productionType == null)
+		final ProductionType found = productionTypesMap.get (productionTypeID);
+		if (found == null)
 			throw new RecordNotFoundException (ProductionType.class.getName (), productionTypeID, caller);
 
-		return productionType;
+		return found;
 	}
 
 	/**
@@ -268,11 +268,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final PickType findPickType (final String pickTypeID, final String caller) throws RecordNotFoundException
 	{
-		final PickType pickType = pickTypesMap.get (pickTypeID);
-		if (pickType == null)
+		final PickType found = pickTypesMap.get (pickTypeID);
+		if (found == null)
 			throw new RecordNotFoundException (PickType.class.getName (), pickTypeID, caller);
 
-		return pickType;
+		return found;
 	}
 
 	/**
@@ -284,11 +284,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final Pick findPick (final String pickID, final String caller) throws RecordNotFoundException
 	{
-		final Pick pick = picksMap.get (pickID);
-		if (pick == null)
+		final Pick found = picksMap.get (pickID);
+		if (found == null)
 			throw new RecordNotFoundException (Pick.class.getName (), pickID, caller);
 
-		return pick;
+		return found;
 	}
 
 	/**
@@ -300,11 +300,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final Wizard findWizard (final String wizardID, final String caller) throws RecordNotFoundException
 	{
-		final Wizard wizard = wizardsMap.get (wizardID);
-		if (wizard == null)
+		final Wizard found = wizardsMap.get (wizardID);
+		if (found == null)
 			throw new RecordNotFoundException (Wizard.class.getName (), wizardID, caller);
 
-		return wizard;
+		return found;
 	}
 
 	/**
@@ -316,11 +316,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final UnitType findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException
 	{
-		final UnitType unitType = unitTypesMap.get (unitTypeID);
-		if (unitType == null)
+		final UnitType found = unitTypesMap.get (unitTypeID);
+		if (found == null)
 			throw new RecordNotFoundException (UnitType.class.getName (), unitTypeID, caller);
 
-		return unitType;
+		return found;
 	}
 
 	/**
@@ -332,11 +332,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final UnitMagicRealm findUnitMagicRealm (final String unitMagicRealmID, final String caller) throws RecordNotFoundException
 	{
-		final UnitMagicRealm unitMagicRealm = unitMagicRealmsMap.get (unitMagicRealmID);
-		if (unitMagicRealm == null)
+		final UnitMagicRealm found = unitMagicRealmsMap.get (unitMagicRealmID);
+		if (found == null)
 			throw new RecordNotFoundException (UnitMagicRealm.class.getName (), unitMagicRealmID, caller);
 
-		return unitMagicRealm;
+		return found;
 	}
 
 	/**
@@ -348,11 +348,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException
 	{
-		final Unit unit = unitsMap.get (unitID);
-		if (unit == null)
+		final Unit found = unitsMap.get (unitID);
+		if (found == null)
 			throw new RecordNotFoundException (Unit.class.getName (), unitID, caller);
 
-		return unit;
+		return found;
 	}
 
 	/**
@@ -364,11 +364,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final UnitSkill findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException
 	{
-		final UnitSkill unitSkill = unitSkillsMap.get (unitSkillID);
-		if (unitSkill == null)
+		final UnitSkill found = unitSkillsMap.get (unitSkillID);
+		if (found == null)
 			throw new RecordNotFoundException (UnitSkill.class.getName (), unitSkillID, caller);
 
-		return unitSkill;
+		return found;
 	}
 
 	/**
@@ -380,11 +380,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final WeaponGrade findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException
 	{
-		final WeaponGrade weaponGrade = weaponGradesMap.get (weaponGradeNumber);
-		if (weaponGrade == null)
+		final WeaponGrade found = weaponGradesMap.get (weaponGradeNumber);
+		if (found == null)
 			throw new RecordNotFoundException (WeaponGrade.class.getName (), weaponGradeNumber, caller);
 
-		return weaponGrade;
+		return found;
 	}
 
 	/**
@@ -396,11 +396,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final Race findRace (final String raceID, final String caller) throws RecordNotFoundException
 	{
-		final Race race = racesMap.get (raceID);
-		if (race == null)
+		final Race found = racesMap.get (raceID);
+		if (found == null)
 			throw new RecordNotFoundException (Race.class.getName (), raceID, caller);
 
-		return race;
+		return found;
 	}
 
 	/**
@@ -412,11 +412,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final TaxRate findTaxRate (final String taxRateID, final String caller) throws RecordNotFoundException
 	{
-		final TaxRate taxRate = taxRatesMap.get (taxRateID);
-		if (taxRate == null)
+		final TaxRate found = taxRatesMap.get (taxRateID);
+		if (found == null)
 			throw new RecordNotFoundException (TaxRate.class.getName (), taxRateID, caller);
 
-		return taxRate;
+		return found;
 	}
 
 	/**
@@ -428,11 +428,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final Building findBuilding (final String buildingID, final String caller) throws RecordNotFoundException
 	{
-		final Building building = buildingsMap.get (buildingID);
-		if (building == null)
+		final Building found = buildingsMap.get (buildingID);
+		if (found == null)
 			throw new RecordNotFoundException (Building.class.getName (), buildingID, caller);
 
-		return building;
+		return found;
 	}
 
 	/**
@@ -444,11 +444,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final Spell findSpell (final String spellID, final String caller) throws RecordNotFoundException
 	{
-		final Spell spell = spellsMap.get (spellID);
-		if (spell == null)
+		final Spell found = spellsMap.get (spellID);
+		if (found == null)
 			throw new RecordNotFoundException (Spell.class.getName (), spellID, caller);
 
-		return spell;
+		return found;
 	}
 
 	/**
@@ -460,10 +460,10 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 	@Override
 	public final CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID, final String caller) throws RecordNotFoundException
 	{
-		final CombatAreaEffect combatAreaEffect = combatAreaEffectsMap.get (combatAreaEffectID);
-		if (combatAreaEffect == null)
+		final CombatAreaEffect found = combatAreaEffectsMap.get (combatAreaEffectID);
+		if (found == null)
 			throw new RecordNotFoundException (CombatAreaEffect.class.getName (), combatAreaEffectID, caller);
 
-		return combatAreaEffect;
+		return found;
 	}
 }

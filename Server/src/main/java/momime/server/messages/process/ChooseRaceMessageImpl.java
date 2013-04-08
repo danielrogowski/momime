@@ -11,8 +11,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.server.MomSessionThread;
-import momime.server.process.PlayerMessageProcessing;
+import momime.server.IMomSessionVariables;
 import momime.server.utils.PlayerPickServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
@@ -41,7 +40,7 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements IP
 	{
 		debugLogger.entering (ChooseRaceMessageImpl.class.getName (), "process", new String [] {new Integer (sender.getPlayerDescription ().getPlayerID ()).toString (), getRaceID ()});
 
-		final MomSessionThread mom = (MomSessionThread) thread;
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		final String error = PlayerPickServerUtils.validateRaceChoice (sender, getRaceID (), mom.getServerDB (), debugLogger);
 		if (error != null)
@@ -63,7 +62,7 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements IP
 			sender.getConnection ().sendMessageToClient (new YourRaceIsOkMessage ());
 
 			// If all players have chosen then start the game
-			PlayerMessageProcessing.checkIfCanStartGame (mom, debugLogger);
+			mom.getPlayerMessageProcessing ().checkIfCanStartGame (mom, debugLogger);
 		}
 
 		debugLogger.exiting (ChooseRaceMessageImpl.class.getName (), "process", error);

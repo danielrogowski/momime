@@ -41,14 +41,14 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.server.IMomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.process.SpellProcessing;
+import momime.server.process.ISpellProcessing;
 import momime.server.process.resourceconsumer.IMomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
@@ -63,8 +63,11 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  * Server side methods for dealing with calculating and updating the global economy
  * e.g. gold being produced, cities growing, buildings progressing construction, spells being researched and so on
  */
-public final class MomServerResourceCalculations
+public final class MomServerResourceCalculations implements IMomServerResourceCalculations
 {
+	/** Spell processing methods */
+	private ISpellProcessing spellProcessing;
+
 	/**
 	 * Recalculates all per turn production values
 	 *
@@ -81,7 +84,7 @@ public final class MomServerResourceCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	static final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
@@ -182,7 +185,8 @@ public final class MomServerResourceCalculations
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public static final void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat, final Logger debugLogger)
+	@Override
+	public final void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat, final Logger debugLogger)
 		throws JAXBException, XMLStreamException
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "sendGlobalProductionValues", player.getPlayerDescription ().getPlayerID ());
@@ -216,7 +220,7 @@ public final class MomServerResourceCalculations
 	 * @throws RecordNotFoundException If the unitID, buildingID or spellID doesn't exist
 	 * @throws MomException If we find a building consumption that isn't a multiple of 2
 	 */
-	static final List<IMomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+	final List<IMomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseEx db, final Logger debugLogger)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
@@ -277,12 +281,9 @@ public final class MomServerResourceCalculations
 	 * Searches through the production amounts to see if any which aren't allowed to go below zero are - if they are, we have to kill/sell something
 	 *
 	 * @param player Player whose productions we need to check
-	 * @param players List of players in the session
 	 * @param enforceType Type of production enforcement to check
 	 * @param addOnStoredAmount True if OK for the per turn production amount to be negative as long as we have some in reserve (e.g. ok to make -5 gold per turn if we have 1000 gold already); False if per turn must be positive
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return True if had to sell something, false if all production OK
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -291,9 +292,9 @@ public final class MomServerResourceCalculations
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private static final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+	private final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player,
 		final EnforceProductionID enforceType, final boolean addOnStoredAmount,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final IMomSessionVariables mom, final Logger debugLogger)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething",
@@ -303,7 +304,7 @@ public final class MomServerResourceCalculations
 
 		// Search through different types of production looking for ones matching the required enforce type
 		boolean found = false;
-		final Iterator<ProductionType> productionTypeIter = db.getProductionType ().iterator ();
+		final Iterator<ProductionType> productionTypeIter = mom.getServerDB ().getProductionType ().iterator ();
 		while ((!found) && (productionTypeIter.hasNext ()))
 		{
 			final ProductionType productionType = productionTypeIter.next ();
@@ -317,7 +318,9 @@ public final class MomServerResourceCalculations
 
 				if (valueToCheck < 0)
 				{
-					final List<IMomResourceConsumer> consumers = listConsumersOfProductionType (player, players, productionType.getProductionTypeID (), trueMap, db, debugLogger);
+					final List<IMomResourceConsumer> consumers = listConsumersOfProductionType
+						(player, mom.getPlayers (), productionType.getProductionTypeID (), mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getServerDB (), debugLogger);
 
 					// Want random choice to be weighted, e.g. if something consumes 4 gold then it should be 4x more likely to be chosen than something that only consumes 1 gold
 					int totalConsumption = 0;
@@ -341,7 +344,7 @@ public final class MomServerResourceCalculations
 
 					// Kill off the unit/building/spell and generate a new turn message about it
 					found = true;
-					chosenConsumer.kill (trueMap, players, sd, db, debugLogger);
+					chosenConsumer.kill (mom, debugLogger);
 				}
 			}
 		}
@@ -358,7 +361,7 @@ public final class MomServerResourceCalculations
 	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
 	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
 	 */
-	static final void accumulateGlobalProductionValues (final List<MomResourceValue> resourceList, final ServerDatabaseEx db, final Logger debugLogger)
+	final void accumulateGlobalProductionValues (final List<MomResourceValue> resourceList, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, MomException
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "accumulateGlobalProductionValues");
@@ -411,7 +414,7 @@ public final class MomServerResourceCalculations
 	 * @throws JAXBException If there is a problem converting a reply message into XML
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 */
-	static final void progressResearch (final PlayerServerDetails player, final ServerDatabaseEx db, final Logger debugLogger)
+	final void progressResearch (final PlayerServerDetails player, final ServerDatabaseEx db, final Logger debugLogger)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "progressResearch");
@@ -484,7 +487,7 @@ public final class MomServerResourceCalculations
 	 * @param player Player who's overlandCastingSkillRemainingThisTurn to set
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	static final void resetCastingSkillRemainingThisTurnToFull (final PlayerServerDetails player, final Logger debugLogger)
+	final void resetCastingSkillRemainingThisTurnToFull (final PlayerServerDetails player, final Logger debugLogger)
 	{
 		debugLogger.entering (MomServerResourceCalculations.class.getName (), "resetCastingSkillRemainingThisTurnToFull");
 
@@ -501,10 +504,7 @@ public final class MomServerResourceCalculations
 	 *
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
 	 * @param duringStartPhase If true does additional work around enforcing that we are producing enough, and progresses city construction, spell research & casting and so on
-	 * @param players List of all players in the session
-	 * @param gsk Server knowledge structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
 	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
@@ -512,14 +512,15 @@ public final class MomServerResourceCalculations
 	 * @throws JAXBException If there is a problem converting a reply message into XML
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 */
-	public static final void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase, final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase,
+		final IMomSessionVariables mom, final Logger debugLogger)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		debugLogger.exiting (MomServerResourceCalculations.class.getName (), "recalculateGlobalProductionValues",
 			new String [] {new Integer (onlyOnePlayerID).toString (), new Boolean (duringStartPhase).toString ()});
 
-		for (final PlayerServerDetails player : players)
+		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
 			{
 				debugLogger.finest ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () +
@@ -528,7 +529,8 @@ public final class MomServerResourceCalculations
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 				// Calculate base amounts
-				recalculateAmountsPerTurn (player, players, gsk.getTrueMap (), sd, db, debugLogger);
+				recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 
 				// If during the start phase, use these per turn production amounts as the amounts to add to the stored totals
 				if (duringStartPhase)
@@ -537,20 +539,25 @@ public final class MomServerResourceCalculations
 					// However (and to keep this consistent with how we handle insufficient stored Gold) there are too many interdependencies with what
 					// may happen when we sell buildings, e.g. if we sell a Bank we don't only save its maintenance cost, the population then produces less gold
 					// So the only safe way to do this is to recalculate ALL the productions, from scratch, every time we sell something!
-					while (findInsufficientProductionAndSellSomething (player, players, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO, false, gsk.getTrueMap (), sd, db, debugLogger));
+					while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO,
+						false, mom, debugLogger));
 
 					// Now do the same for stored production
-					while (findInsufficientProductionAndSellSomething (player, players, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO, true, gsk.getTrueMap (), sd, db, debugLogger));
+					while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO,
+						true, mom, debugLogger));
 
 					// Per turn production amounts are now fine, so do the accumulation and effect calculations
-					accumulateGlobalProductionValues (priv.getResourceValue (), db, debugLogger);
-					progressResearch (player, db, debugLogger);
+					accumulateGlobalProductionValues (priv.getResourceValue (), mom.getServerDB (), debugLogger);
+					progressResearch (player, mom.getServerDB (), debugLogger);
 					resetCastingSkillRemainingThisTurnToFull (player, debugLogger);
 
 					// Continue casting spells
 					// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used
-					if (SpellProcessing.progressOverlandCasting (gsk, player, players, sd, db, debugLogger))
-						recalculateAmountsPerTurn (player, players, gsk.getTrueMap (), sd, db, debugLogger);
+					if (getSpellProcessing ().progressOverlandCasting (mom.getGeneralServerKnowledge (),
+						player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger))
+						
+						recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 				}
 				else if (player.getPlayerDescription ().isHuman ())
 
@@ -562,9 +569,18 @@ public final class MomServerResourceCalculations
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Spell processing methods
 	 */
-	private MomServerResourceCalculations ()
+	public final ISpellProcessing getSpellProcessing ()
 	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final ISpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

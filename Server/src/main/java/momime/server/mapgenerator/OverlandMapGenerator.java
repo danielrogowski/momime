@@ -35,7 +35,7 @@ import momime.server.database.v0_9_4.TileType;
 import momime.server.database.v0_9_4.TileTypeAreaEffect;
 import momime.server.database.v0_9_4.TileTypeFeatureChance;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
 import momime.server.utils.RandomUtils;
@@ -51,7 +51,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  *
  * There's no need to run this in a separate thread like in Delphi, because with the entire server XML file cached this version runs considerably faster
  */
-public final class OverlandMapGenerator
+public final class OverlandMapGenerator implements IOverlandMapGenerator
 {
 	/** Logger to write to debug text file when the debug log is enabled */
 	private final Logger debugLogger;
@@ -65,6 +65,9 @@ public final class OverlandMapGenerator
 	/** Server database cache */
 	private final ServerDatabaseEx db;
 
+	/** Methods for updating true map + players' memory */
+	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
 	/** Blobs expand out only in north/south/east/west directions - no diagonals */
 	private static final int [] BLOB_EXPANSION_DIRECTIONS = new int [] {1, 3, 5, 7};
 
@@ -451,8 +454,11 @@ public final class OverlandMapGenerator
 	{
 		super ();
 
+		// sd is blank for a lot of unit tests
+		final Integer sessionID = (sessionDescription == null) ? null : sessionDescription.getSessionID ();
+		
 		debugLogger = aDebugLogger;
-		debugLogger.entering (OverlandMapGenerator.class.getName (), "constructor", sessionDescription.getSessionID ());
+		debugLogger.entering (OverlandMapGenerator.class.getName (), "constructor", sessionID);
 
 		sd = sessionDescription;
 		db = aDB;
@@ -470,6 +476,7 @@ public final class OverlandMapGenerator
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If some entry isn't found in the db during map generation, or one of the smoothing borders isn't found in the fixed arrays
 	 */
+	@Override
 	public final void generateOverlandTerrain () throws MomException, RecordNotFoundException
 	{
 		debugLogger.entering (OverlandMapGenerator.class.getName (), "generateOverlandTerrain", sd.getSessionID ());
@@ -798,7 +805,7 @@ public final class OverlandMapGenerator
 	 * @return Tile number corresponding to this bitmask
 	 * @throws RecordNotFoundException If no tile with this bitmask is defined
 	 */
-	static final int findTerrainBorder8 (final String neighbouringTiles)
+	final int findTerrainBorder8 (final String neighbouringTiles)
 		throws RecordNotFoundException
 	{
 		// List all possible matches rather than just returning the first one - that way we can list the same bitmask multiple times and choose one at random
@@ -901,7 +908,7 @@ public final class OverlandMapGenerator
 	 * @param exceptFor Direction to exclude from the result, or -1 to include them all
 	 * @return Direction list, e.g. 37
 	 */
-	static final String convertNeighbouringTilesToDirections (final String riverBitmask, final int exceptFor)
+	final String convertNeighbouringTilesToDirections (final String riverBitmask, final int exceptFor)
 	{
 		String result = "";
 		for (int directionChk = 0; directionChk < 4; directionChk++)
@@ -970,7 +977,7 @@ public final class OverlandMapGenerator
 	 * @param stringToSearch String to search in
 	 * @return The number of times substring appears in stringToSearch
 	 */
-	public final static int countStringRepetitions (final String substring, final String stringToSearch)
+	final int countStringRepetitions (final String substring, final String stringToSearch)
 	{
 		final int substringLength = substring.length ();
 		int count = 0;
@@ -1571,6 +1578,7 @@ public final class OverlandMapGenerator
 	 * This is an entirely separate process from the terrain generation, and runs separately after the terrain generation has finished (but before locks are released on e.g. the terrain & permanent map)
 	 * @throws RecordNotFoundException If we encounter a combat area effect that we can't find in the cache
 	 */
+	@Override
 	public final void generateInitialCombatAreaEffects ()
 		throws RecordNotFoundException
 	{
@@ -1629,10 +1637,9 @@ public final class OverlandMapGenerator
 	/**
 	 * @param magicRealmLifeformTypeID Type of monsters to find
 	 * @param monsterBudget Maximum cost of monster
-	 * @param db Server database cache
 	 * @return Most expensive monster of the requested type, or null if the cheapest monster of this type is still more expensive than our budget
 	 */
-	static final Unit findMostExpensiveMonster (final String magicRealmLifeformTypeID, final int monsterBudget, final ServerDatabaseEx db)
+	final Unit findMostExpensiveMonster (final String magicRealmLifeformTypeID, final int monsterBudget)
 	{
 		Unit bestMatch = null;
 
@@ -1650,25 +1657,22 @@ public final class OverlandMapGenerator
 	 * Fills a single lair or towers with random monsters once the magic realm and strength of the monsters has been decided
 	 * See strategy guide pages 416 & 418
 	 *
-	 * @param sd Session description
 	 * @param lairLocation Location of the lair to add monsters to
 	 * @param magicRealmLifeformTypeID Type of monsters to add
 	 * @param monsterStrengthMin Minimum strength of monsters to add
 	 * @param monsterStrengthMax Maximum strength of monsters to add
 	 * @param powerProportion Proportion between min and max of monster strengths, so 0 = use minimum, 1 = use maximum
 	 * @param gsk Server knowledge structure to add the unit to
-	 * @param db Server database cache
 	 * @param monsterPlayer Player who owns the monsters we add
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we encounter any records that can't be found in the cache
 	 * @throws MomException If the unit's skill list ends up containing the same skill twice
 	 * @throws PlayerNotFoundException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	private static final void fillSingleLairOrTowerWithMonsters (final MomSessionDescription sd, final OverlandMapCoordinates lairLocation, final String magicRealmLifeformTypeID,
-		final int monsterStrengthMin, final int monsterStrengthMax, final double powerProportion, final MomGeneralServerKnowledge gsk, final ServerDatabaseEx db,
-		final PlayerServerDetails monsterPlayer, final Logger debugLogger)
+	private final void fillSingleLairOrTowerWithMonsters (final OverlandMapCoordinates lairLocation, final String magicRealmLifeformTypeID,
+		final int monsterStrengthMin, final int monsterStrengthMax, final double powerProportion, final MomGeneralServerKnowledge gsk,
+		final PlayerServerDetails monsterPlayer)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (OverlandMapGenerator.class.getName (), "fillSingleLairOrTowerWithMonsters", new String []
@@ -1678,7 +1682,7 @@ public final class OverlandMapGenerator
 
 		// Deal with main monsters
 		final int mainMonsterBudget = monstersStrength / (RandomUtils.getGenerator ().nextInt (4) + 1);
-		final Unit mainMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, mainMonsterBudget, db);
+		final Unit mainMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, mainMonsterBudget);
 
 		int mainMonsterCount = 0;
 		if (mainMonster != null)
@@ -1690,14 +1694,14 @@ public final class OverlandMapGenerator
 			// Actually add them
 			for (int monsterNo = 0; monsterNo < mainMonsterCount; monsterNo++)
 			{
-				FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, mainMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
+				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, mainMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
 				monstersStrength = monstersStrength - mainMonster.getProductionCost ();
 			}
 		}
 
 		// Deal with secondary monsters
 		final int secondaryMonsterBudget = monstersStrength / (RandomUtils.getGenerator ().nextInt (sd.getUnitSetting ().getUnitsPerMapCell () + 1 - mainMonsterCount) + 1);
-		final Unit secondaryMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, secondaryMonsterBudget, db);
+		final Unit secondaryMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, secondaryMonsterBudget);
 
 		if (secondaryMonster != null)
 		{
@@ -1705,7 +1709,7 @@ public final class OverlandMapGenerator
 
 			// Actually add them
 			for (int monsterNo = 0; monsterNo < secondaryMonsterCount; monsterNo++)
-				FogOfWarMidTurnChanges.addUnitOnServerAndClients (gsk, secondaryMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
+				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, secondaryMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
 		}
 
 		debugLogger.exiting (OverlandMapGenerator.class.getName (), "fillSingleLairOrTowerWithMonsters");
@@ -1716,19 +1720,16 @@ public final class OverlandMapGenerator
 	 * This is really separate from the rest of the methods in this class which are to do with generating the terrain
 	 * However its still to do with generating the map so this class is still the most sensible place for it
 	 *
-	 * @param sd Session description
 	 * @param gsk Server knowledge structure to add the unit to
-	 * @param db Server database cache
 	 * @param monsterPlayer Player who owns the monsters we add
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we encounter any records that can't be found in the cache
 	 * @throws MomException If the unit's skill list ends up containing the same skill twice
 	 * @throws PlayerNotFoundException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	public static final void fillNodesLairsAndTowersWithMonsters (final MomSessionDescription sd,
-		final MomGeneralServerKnowledge gsk, final ServerDatabaseEx db, final PlayerServerDetails monsterPlayer, final Logger debugLogger)
+	@Override
+	public final void fillNodesLairsAndTowersWithMonsters (final MomGeneralServerKnowledge gsk, final PlayerServerDetails monsterPlayer)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		debugLogger.entering (OverlandMapGenerator.class.getName (), "fillNodesLairsAndTowersWithMonsters");
@@ -1802,19 +1803,19 @@ public final class OverlandMapGenerator
 								lairLocation.setPlane (plane.getPlaneNumber ());
 
 								if (MemoryGridCellUtils.isTerrainTowerOfWizardry (thisCell.getTerrainData ()))
-									fillSingleLairOrTowerWithMonsters (sd, lairLocation, magicRealmID,
+									fillSingleLairOrTowerWithMonsters (lairLocation, magicRealmID,
 										sd.getDifficultyLevel ().getTowerMonstersMinimum (), sd.getDifficultyLevel ().getTowerMonstersMaximum (),
-										thisCell.getNodeLairTowerPowerProportion (), gsk, db, monsterPlayer, debugLogger);
+										thisCell.getNodeLairTowerPowerProportion (), gsk, monsterPlayer);
 
 								else if (thisCell.isLairWeak ())
-									fillSingleLairOrTowerWithMonsters (sd, lairLocation, magicRealmID,
+									fillSingleLairOrTowerWithMonsters (lairLocation, magicRealmID,
 										plane.getWeakLairMonstersMinimum (), plane.getWeakLairMonstersMaximum (),
-										thisCell.getNodeLairTowerPowerProportion (), gsk, db, monsterPlayer, debugLogger);
+										thisCell.getNodeLairTowerPowerProportion (), gsk, monsterPlayer);
 
 								else
-									fillSingleLairOrTowerWithMonsters (sd, lairLocation, magicRealmID,
+									fillSingleLairOrTowerWithMonsters (lairLocation, magicRealmID,
 										plane.getNormalLairMonstersMinimum (), plane.getNormalLairMonstersMaximum (),
-										thisCell.getNodeLairTowerPowerProportion (), gsk, db, monsterPlayer, debugLogger);
+										thisCell.getNodeLairTowerPowerProportion (), gsk, monsterPlayer);
 							}
 						}
 					}
@@ -1822,5 +1823,21 @@ public final class OverlandMapGenerator
 		}
 
 		debugLogger.exiting (OverlandMapGenerator.class.getName (), "fillNodesLairsAndTowersWithMonsters");
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

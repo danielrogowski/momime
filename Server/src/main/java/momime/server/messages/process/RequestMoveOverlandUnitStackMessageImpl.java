@@ -16,8 +16,7 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.MomSessionThread;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.IMomSessionVariables;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -44,7 +43,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getUnitURN ().toString (),
 			CoordinatesUtils.overlandMapCoordinatesToString (getMoveFrom ()), CoordinatesUtils.overlandMapCoordinatesToString (getMoveTo ())});
 
-		final MomSessionThread mom = (MomSessionThread) thread;
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		// Process through all the units
 		String error = null;
@@ -93,7 +92,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		else
 		{
 			// Proceed with move
-			FogOfWarMidTurnChanges.moveUnitStack (unitStack, sender, getMoveFrom (), getMoveTo (),
+			mom.getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, getMoveFrom (), getMoveTo (),
 				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS),
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
 		}

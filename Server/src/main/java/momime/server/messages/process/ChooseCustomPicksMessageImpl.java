@@ -15,7 +15,7 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
-import momime.server.MomSessionThread;
+import momime.server.IMomSessionVariables;
 import momime.server.utils.PlayerPickServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
@@ -42,7 +42,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 	{
 		debugLogger.entering (ChooseCustomPicksMessageImpl.class.getName (), "process", new Integer [] {sender.getPlayerDescription ().getPlayerID (), getPick ().size ()});
 
-		final MomSessionThread mom = (MomSessionThread) thread;
+		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		// Validate the requested picks
 		final String error = PlayerPickServerUtils.validateCustomPicks (sender, getPick (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);

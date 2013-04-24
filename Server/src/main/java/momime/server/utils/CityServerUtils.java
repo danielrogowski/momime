@@ -3,11 +3,11 @@ package momime.server.utils;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.IMomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.RaceCannotBuild;
-import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
@@ -22,8 +22,17 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Server side only helper methods for dealing with cities
  */
-public final class CityServerUtils
+public final class CityServerUtils implements ICityServerUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (CityServerUtils.class.getName ());
+	
+	/** MemoryBuilding utils */
+	private IMemoryBuildingUtils memoryBuildingUtils;
+	
+	/** City calculations */
+	private IMomCityCalculations cityCalculations;
+	
 	/**
 	 * Validates that a building or unit that we want to construct at a particular city is a valid choice
 	 *
@@ -33,15 +42,15 @@ public final class CityServerUtils
 	 * @param buildingOrUnitID The building or unit that we want to construct
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return null if choice is acceptable; message to send back to client if choices isn't acceptable
 	 * @throws RecordNotFoundException If the race inhabiting the city cannot be found
 	 */
-	public static final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinates cityLocation,
-		final String buildingOrUnitID, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinates cityLocation,
+		final String buildingOrUnitID, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (CityServerUtils.class.getName (), "validateCityConstruction", new String [] {new Integer (player.getPlayerDescription ().getPlayerID ()).toString (), buildingOrUnitID});
+		log.entering (CityServerUtils.class.getName (), "validateCityConstruction", new String [] {new Integer (player.getPlayerDescription ().getPlayerID ()).toString (), buildingOrUnitID});
 
 		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -74,7 +83,7 @@ public final class CityServerUtils
 			if (building != null)
 			{
 				// Check that location doesn't already have that building
-				if (MemoryBuildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, buildingOrUnitID, debugLogger))
+				if (getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, buildingOrUnitID))
 					msg = "The city already has the type of building you're trying to build - change ignored.";
 				else
 				{
@@ -91,11 +100,11 @@ public final class CityServerUtils
 						msg = "The race inhabiting this city cannot build the type of building requested - change ignored.";
 
 					// Check if this building has any pre-requisites e.g. to build a Farmer's Market we have to have a granary
-					else if (!MemoryBuildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, building, debugLogger))
+					else if (!getMemoryBuildingUtils ().meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, building))
 						msg = "This city doesn't have the necessary pre-requisite buildings for the building you're trying to build - change ignored.";
 
 					// Check if this building can only be built next to an ocean (shoreline) tile i.e. Ship Wrights' Guild
-					else if (!MomCityCalculations.buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, building, sd.getMapSize (), debugLogger))
+					else if (!getCityCalculations ().buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, building, sd.getMapSize ()))
 						msg = "That building can only be built when there is a certain tile type close to the city - change ignored.";
 				}
 			}
@@ -110,14 +119,14 @@ public final class CityServerUtils
 					msg = "This unit you're trying to build doesn't match the race inhabiting the city - change ignored.";
 
 				// Check that we have any necessary pre-requisite buildings e.g. have to have a Barracks and a Blacksmith to be able to build Swordsmen
-				else if (!MemoryBuildingUtils.meetsUnitRequirements (trueMap.getBuilding (), cityLocation, unit, debugLogger))
+				else if (!getMemoryBuildingUtils ().meetsUnitRequirements (trueMap.getBuilding (), cityLocation, unit))
 					msg = "This city doesn't have the necessary pre-requisite buildings for the unit you're trying to build - change ignored.";
 			}
 			else
 				msg = "The building/unit that you tried to build doesn't exist";
 		}
 
-		debugLogger.exiting (CityServerUtils.class.getName (), "validateCityConstruction", msg);
+		log.exiting (CityServerUtils.class.getName (), "validateCityConstruction", msg);
 		return msg;
 	}
 
@@ -130,13 +139,13 @@ public final class CityServerUtils
 	 * @param optionalFarmers The number of optional farmers we want
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return null if choice is acceptable; message to send back to client if choices isn't acceptable
 	 */
-	public static final String validateOptionalFarmers (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinates cityLocation,
-		final int optionalFarmers, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final String validateOptionalFarmers (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinates cityLocation,
+		final int optionalFarmers, final MomSessionDescription sd, final ServerDatabaseEx db)
 	{
-		debugLogger.entering (CityServerUtils.class.getName (), "validateOptionalFarmers", new Integer [] {player.getPlayerDescription ().getPlayerID (), optionalFarmers});
+		log.entering (CityServerUtils.class.getName (), "validateOptionalFarmers", new Integer [] {player.getPlayerDescription ().getPlayerID (), optionalFarmers});
 
 		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -146,20 +155,45 @@ public final class CityServerUtils
 
 		else if ((optionalFarmers < 0) || (optionalFarmers + cityData.getMinimumFarmers () + cityData.getNumberOfRebels () > cityData.getCityPopulation () / 1000))
 		{
-			debugLogger.warning ("Player " + player.getPlayerDescription ().getPlayerID () + " tried to set an invalid number of optional farmers, O" +
+			log.warning ("Player " + player.getPlayerDescription ().getPlayerID () + " tried to set an invalid number of optional farmers, O" +
 				optionalFarmers + " + M" + cityData.getMinimumFarmers () + " +R" + cityData.getNumberOfRebels () + " > " + cityData.getCityPopulation () + "/1000");
 
 			msg = "You tried to change the number of farmers & workers to an invalid amount - change ignored.";
 		}
 
-		debugLogger.exiting (CityServerUtils.class.getName (), "validateOptionalFarmers", msg);
+		log.exiting (CityServerUtils.class.getName (), "validateOptionalFarmers", msg);
 		return msg;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return MemoryBuilding utils
 	 */
-	private CityServerUtils ()
+	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
 	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils MemoryBuilding utils
+	 */
+	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final IMomCityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final IMomCityCalculations calc)
+	{
+		cityCalculations = calc;
 	}
 }

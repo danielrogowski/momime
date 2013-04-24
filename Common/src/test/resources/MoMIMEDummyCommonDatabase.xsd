@@ -5,18 +5,18 @@
 	xmlns:momimectos="http://momime/common/messages/clienttoserver/v0_9_4" xmlns:momimestoc="http://momime/common/messages/servertoclient/v0_9_4"
 	xmlns:momimedummy="http://momime/dummycommon/database/v0_9_4" targetNamespace="http://momime/dummycommon/database/v0_9_4">
 	
-	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../NdgMap/src/main/resources/Map.xsd" />
-	<xsd:import namespace="http://www.ndg.com/multiplayer/base" schemaLocation="../../../../NdgMultiplayerBase/src/main/resources/Multiplayer.xsd" />
-	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../NdgMultiplayerSessionBase/src/main/resources/MultiplayerSession.xsd" />
-	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="../../main/resources/MoMIMENewGameDatabase.xsd" />
-	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../../main/resources/MoMIMECommonDatabase.xsd" />
+	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../NdgMap/src/main/resources/com.ndg.map/Map.xsd" />
+	<xsd:import namespace="http://www.ndg.com/multiplayer/base" schemaLocation="../../../../NdgMultiplayerBase/src/main/resources/com.ndg.multiplayer.base/Multiplayer.xsd" />
+	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../NdgMultiplayerSessionBase/src/main/resources/com.ndg.multiplayer.sessionbase/MultiplayerSession.xsd" />
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="../../main/resources/momime.common.database/MoMIMENewGameDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../../main/resources/momime.common.database/MoMIMECommonDatabase.xsd" />
 
 	<!-- Following 4 are only here because they are present in MoMIMECommon's episode file and so we have to declare them even if we don't use them -->
 
-	<xsd:import namespace="http://momime/client/database/v0_9_4" schemaLocation="../../main/resources/MoMIMEClientDatabase.xsd" />
-	<xsd:import namespace="http://momime/common/messages/v0_9_4" schemaLocation="../../main/resources/MoMIMEMessages.xsd" />
-	<xsd:import namespace="http://momime/common/messages/clienttoserver/v0_9_4" schemaLocation="../../main/resources/MoMIMEClientToServerMessages.xsd" />
-	<xsd:import namespace="http://momime/common/messages/servertoclient/v0_9_4" schemaLocation="../../main/resources/MoMIMEServerToClientMessages.xsd" />
+	<xsd:import namespace="http://momime/client/database/v0_9_4" schemaLocation="../../main/resources/momime.client.database/MoMIMEClientDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/messages/v0_9_4" schemaLocation="../../main/resources/momime.common.messages/MoMIMEMessages.xsd" />
+	<xsd:import namespace="http://momime/common/messages/clienttoserver/v0_9_4" schemaLocation="../../main/resources/momime.common.messages/MoMIMEClientToServerMessages.xsd" />
+	<xsd:import namespace="http://momime/common/messages/servertoclient/v0_9_4" schemaLocation="../../main/resources/momime.common.messages/MoMIMEServerToClientMessages.xsd" />
 
 	<!-- Dummy XSD containing at least one reference to each of the XSDs that CommonXsdResourceResovler needs
 			to resolve, just enough to prove that the imports all get resolved correctly -->

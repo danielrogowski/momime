@@ -9,13 +9,13 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResults;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.IMomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.IMemoryBuildingUtils;
+import momime.common.messages.IResourceValueUtils;
 import momime.common.messages.PlayerKnowledgeUtils;
-import momime.common.messages.ResourceValueUtils;
 import momime.common.messages.servertoclient.v0_9_4.PendingSaleMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -31,7 +31,7 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.ai.ICityAI;
-import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.IMomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Building;
@@ -40,11 +40,11 @@ import momime.server.database.v0_9_4.Unit;
 import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
-import momime.server.utils.OverlandMapServerUtils;
-import momime.server.utils.PlayerPickServerUtils;
+import momime.server.utils.IOverlandMapServerUtils;
+import momime.server.utils.IPlayerPickServerUtils;
+import momime.server.utils.IUnitServerUtils;
 import momime.server.utils.RandomUtils;
 import momime.server.utils.UnitAddLocation;
-import momime.server.utils.UnitServerUtils;
 
 import com.ndg.map.areas.StringMapArea2DArray;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -56,8 +56,32 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  */
 public final class CityProcessing implements ICityProcessing
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (CityProcessing.class.getName ());
+
+	/** Resource value utils */
+	private IResourceValueUtils resourceValueUtils;
+	
+	/** MemoryBuilding utils */
+	private IMemoryBuildingUtils memoryBuildingUtils;
+	
+	/** City calculations */
+	private IMomCityCalculations cityCalculations;
+
+	/** Server-only city calculations */
+	private IMomServerCityCalculations serverCityCalculations;
+	
 	/** Methods for updating true map + players' memory */
 	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Server-only pick utils */
+	private IPlayerPickServerUtils playerPickServerUtils;
+	
+	/** Server-only overland map utils */
+	private IOverlandMapServerUtils overlandMapServerUtils;
+
+	/** Server-only unit utils */
+	private IUnitServerUtils unitServerUtils;
 	
 	/** AI decisions about cities */
 	private ICityAI cityAI;
@@ -72,7 +96,6 @@ public final class CityProcessing implements ICityProcessing
 	 * @param gsk Server knowledge data structure
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
  	 * @throws MomException If no races are defined for a particular plane
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
@@ -81,15 +104,15 @@ public final class CityProcessing implements ICityProcessing
 	 */
 	@Override
 	public final void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		debugLogger.entering (CityProcessing.class.getName (), "createStartingCities");
+		log.entering (CityProcessing.class.getName (), "createStartingCities");
 
-		final int totalFoodBonusFromBuildings = MomServerCityCalculations.calculateTotalFoodBonusFromBuildings (db, debugLogger);
+		final int totalFoodBonusFromBuildings = getServerCityCalculations ().calculateTotalFoodBonusFromBuildings (db);
 
 		// Allocate a race to each continent of land for raider cities
-		final List<StringMapArea2DArray> continentalRace = OverlandMapServerUtils.decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getMapSize (), db, debugLogger);
+		final List<StringMapArea2DArray> continentalRace = getOverlandMapServerUtils ().decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getMapSize (), db);
 
 		// Now create cities for each player
 		for (final PlayerServerDetails thisPlayer : players)
@@ -111,13 +134,13 @@ public final class CityProcessing implements ICityProcessing
 			{
 				final int plane;
 				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
-					plane = PlayerPickServerUtils.startingPlaneForWizard (ppk.getPick (), db, debugLogger);
+					plane = getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), db);
 				else
 					// Raiders just pick a random plane
 					plane = db.getPlane ().get (RandomUtils.getGenerator ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
-				final OverlandMapCoordinates cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db, debugLogger);
+				final OverlandMapCoordinates cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db);
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 
@@ -157,21 +180,21 @@ public final class CityProcessing implements ICityProcessing
 					}
 					else
 						// Pick totally random race
-						city.setCityRaceID (PlayerPickServerUtils.chooseRandomRaceForPlane (plane, db, debugLogger));
+						city.setCityRaceID (getPlayerPickServerUtils ().chooseRandomRaceForPlane (plane, db));
 				}
 
 				// Pick a name for the city
-				city.setCityName (OverlandMapServerUtils.generateCityName (gsk, db.findRace (city.getCityRaceID (), "createStartingCities")));
+				city.setCityName (getOverlandMapServerUtils ().generateCityName (gsk, db.findRace (city.getCityRaceID (), "createStartingCities")));
 
 				// Do initial calculations on the city
-				MomServerCityCalculations.calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db, debugLogger);
+				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db);
 
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 
-				city.setNumberOfRebels (MomCityCalculations.calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (),
-					cityLocation, priv.getTaxRateID (), db, debugLogger).getFinalTotal ());
+				city.setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (),
+					cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
 
-				MomServerCityCalculations.ensureNotTooManyOptionalFarmers (city, debugLogger);
+				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (city);
 
 				// Set default production
 				city.setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
@@ -223,12 +246,12 @@ public final class CityProcessing implements ICityProcessing
 							unitCoords.setY (cityLocation.getY ());
 							unitCoords.setPlane (cityLocation.getPlane ());
 
-							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db, debugLogger);
+							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db);
 						}
 			}
 		}
 
-		debugLogger.exiting (CityProcessing.class.getName (), "createStartingCities");
+		log.exiting (CityProcessing.class.getName (), "createStartingCities");
 	}
 
 	/**
@@ -239,7 +262,6 @@ public final class CityProcessing implements ICityProcessing
 	 * @param gsk Server knowledge structure
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -249,10 +271,10 @@ public final class CityProcessing implements ICityProcessing
 	@Override
 	public final void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		debugLogger.entering (CityProcessing.class.getName (), "growCitiesAndProgressConstructionProjects", onlyOnePlayerID);
+		log.entering (CityProcessing.class.getName (), "growCitiesAndProgressConstructionProjects", onlyOnePlayerID);
 
 		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
@@ -272,8 +294,8 @@ public final class CityProcessing implements ICityProcessing
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
 
-						final CalculateCityProductionResults cityProductions = MomCityCalculations.calculateAllCityProductions
-							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db, debugLogger);
+						final CalculateCityProductionResults cityProductions = getCityCalculations ().calculateAllCityProductions
+							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db);
 
 						// Use calculated values to determine construction rate
 						if (cityData.getCurrentlyConstructingBuildingOrUnitID () != null)
@@ -322,7 +344,7 @@ public final class CityProcessing implements ICityProcessing
 											// This is a leftover from when NTMs showed up instantly, since the mmAddBuilding message would cause the
 											// client to immediately show the 'completed construction' window so we needed to send other data that appears in that window first
 											cityData.setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-											getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), debugLogger);
+											getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())
@@ -336,15 +358,15 @@ public final class CityProcessing implements ICityProcessing
 
 											// Now actually add the building - this will trigger the messages to be sent to the clients
 											getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, players, cityLocation,
-												building.getBuildingID (), null, null, null, sd, db, debugLogger);
+												building.getBuildingID (), null, null, null, sd, db);
 										}
 
 										// Did we construct a unit?
 										else if (unit != null)
 										{
 											// Check if the city has space for the unit
-											final UnitAddLocation addLocation = UnitServerUtils.findNearestLocationWhereUnitCanBeAdded
-												(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), gsk.getTrueMap (), sd, db, debugLogger);
+											final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
+												(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), gsk.getTrueMap (), sd, db);
 
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())
@@ -359,7 +381,7 @@ public final class CityProcessing implements ICityProcessing
 
 											// Now actually add the unit
 											getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, unit.getUnitID (), addLocation.getUnitLocation (),
-												cityLocation, null, cityOwner, UnitStatusID.ALIVE, players, sd, db, debugLogger);
+												cityLocation, null, cityOwner, UnitStatusID.ALIVE, players, sd, db);
 										}
 
 										// Zero production for the next construction project
@@ -386,8 +408,8 @@ public final class CityProcessing implements ICityProcessing
 						else
 							maxCitySize = productionAmount.getModifiedProductionAmount ();
 
-						final int cityGrowthRate = MomCityCalculations.calculateCityGrowthRate
-							(gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, maxCitySize, db, debugLogger).getFinalTotal ();
+						final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate
+							(gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, maxCitySize, db).getFinalTotal ();
 
 						if (cityGrowthRate != 0)
 						{
@@ -400,7 +422,7 @@ public final class CityProcessing implements ICityProcessing
 								(newPopulation > mc.getRaiderCityAdditionalPopulationCap ()))
 							{
 								newPopulation = mc.getRaiderCityAdditionalPopulationCap ();
-								debugLogger.finest ("Special raider population cap enforced: " + oldPopulation + " + " + cityGrowthRate + " = " + newPopulation);
+								log.finest ("Special raider population cap enforced: " + oldPopulation + " + " + cityGrowthRate + " = " + newPopulation);
 							}
 
 							cityData.setCityPopulation (newPopulation);
@@ -417,20 +439,20 @@ public final class CityProcessing implements ICityProcessing
 							}
 
 							// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change
-							MomServerCityCalculations.calculateCitySizeIDAndMinimumFarmers
-								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db, debugLogger);
+							getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers
+								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db);
 
-							cityData.setNumberOfRebels (MomCityCalculations.calculateCityRebels
-								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), db, debugLogger).getFinalTotal ());
+							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
+								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
 
-							MomServerCityCalculations.ensureNotTooManyOptionalFarmers (cityData, debugLogger);
+							getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), debugLogger);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 						}
 					}
 				}
 
-		debugLogger.exiting (CityProcessing.class.getName (), "growCitiesAndProgressConstructionProjects");
+		log.exiting (CityProcessing.class.getName (), "growCitiesAndProgressConstructionProjects");
 	}
 
 	/**
@@ -449,7 +471,6 @@ public final class CityProcessing implements ICityProcessing
 	 * @param voluntarySale True if building is being sold by the player's choice; false if they are being forced to sell it e.g. due to lack of production
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -460,10 +481,10 @@ public final class CityProcessing implements ICityProcessing
 	public final void sellBuilding (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID,
 		final boolean pendingSale, final boolean voluntarySale,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		debugLogger.entering (CityProcessing.class.getName (), "sellBuilding",
+		log.entering (CityProcessing.class.getName (), "sellBuilding",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
 
 		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
@@ -493,35 +514,99 @@ public final class CityProcessing implements ICityProcessing
 				tc.setBuildingIdSoldThisTurn (buildingID);
 
 			// If selling a building that the current construction project needs, then cancel the current construction project on the city owner's client
-			if (MemoryBuildingUtils.isBuildingAPrerequisiteFor (buildingID, tc.getCityData ().getCurrentlyConstructingBuildingOrUnitID (), db, debugLogger))
+			if (getMemoryBuildingUtils ().isBuildingAPrerequisiteFor (buildingID, tc.getCityData ().getCurrentlyConstructingBuildingOrUnitID (), db))
 			{
 				tc.getCityData ().setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 				// We send this lower down on the call to updatePlayerMemoryOfCity ()
 			}
 
 			// Actually remove the building, both on the server and on any clients who can see the city
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, cityLocation, buildingID, voluntarySale, sd, db, debugLogger);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, cityLocation, buildingID, voluntarySale, sd, db);
 
 			// Give gold from selling it
 			final Building building = db.findBuilding (buildingID, "sellBuilding");
-			ResourceValueUtils.addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD,
-				MemoryBuildingUtils.goldFromSellingBuilding (building), debugLogger);
+			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD,
+				getMemoryBuildingUtils ().goldFromSellingBuilding (building));
 
 			// The sold building might have been producing rations or stemming unrest so had better recalculate everything
-			MomServerCityCalculations.calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db, debugLogger);
+			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
 
-			tc.getCityData ().setNumberOfRebels (MomCityCalculations.calculateCityRebels
-				(players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), db, debugLogger).getFinalTotal ());
+			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels
+				(players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
 
-			MomServerCityCalculations.ensureNotTooManyOptionalFarmers (tc.getCityData (), debugLogger);
+			getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
 
 			// Send the updated city stats to any clients that can see the city
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), debugLogger);
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 		}
 
-		debugLogger.exiting (CityProcessing.class.getName (), "sellBuilding");
+		log.exiting (CityProcessing.class.getName (), "sellBuilding");
 	}
 
+	/**
+	 * @return Resource value utils
+	 */
+	public final IResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param utils Resource value utils
+	 */
+	public final void setResourceValueUtils (final IResourceValueUtils utils)
+	{
+		resourceValueUtils = utils;
+	}
+	
+	/**
+	 * @return MemoryBuilding utils
+	 */
+	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils MemoryBuilding utils
+	 */
+	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final IMomCityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final IMomCityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+
+	/**
+	 * @return Server-only city calculations
+	 */
+	public final IMomServerCityCalculations getServerCityCalculations ()
+	{
+		return serverCityCalculations;
+	}
+
+	/**
+	 * @param calc Server-only city calculations
+	 */
+	public final void setServerCityCalculations (final IMomServerCityCalculations calc)
+	{
+		serverCityCalculations = calc;
+	}
+	
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
@@ -538,6 +623,54 @@ public final class CityProcessing implements ICityProcessing
 		fogOfWarMidTurnChanges = obj;
 	}
 
+	/**
+	 * @return Server-only pick utils
+	 */
+	public final IPlayerPickServerUtils getPlayerPickServerUtils ()
+	{
+		return playerPickServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only pick utils
+	 */
+	public final void getPlayerPickServerUtils (final IPlayerPickServerUtils utils)
+	{
+		playerPickServerUtils = utils;
+	}
+	
+	/**
+	 * @return Server-only overland map utils
+	 */
+	public final IOverlandMapServerUtils getOverlandMapServerUtils ()
+	{
+		return overlandMapServerUtils;
+	}
+	
+	/**
+	 * @param utils Server-only overland map utils
+	 */
+	public final void setOverlandMapServerUtils (final IOverlandMapServerUtils utils)
+	{
+		overlandMapServerUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final IUnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final IUnitServerUtils utils)
+	{
+		unitServerUtils = utils;
+	}
+	
 	/**
 	 * @return AI decisions about cities
 	 */

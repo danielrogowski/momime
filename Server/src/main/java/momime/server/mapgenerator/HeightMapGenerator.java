@@ -13,9 +13,9 @@ import com.ndg.map.CoordinateSystem;
  */
 final class HeightMapGenerator
 {
-	/** Logger to write to debug text file when the debug log is enabled */
-	private final Logger debugLogger;
-
+	/** Class logger */
+	private final Logger log = Logger.getLogger (HeightMapGenerator.class.getName ());
+	
 	/** Coordinate system we are generating a height map for */
 	private final CoordinateSystem coordinateSystem;
 
@@ -45,14 +45,12 @@ final class HeightMapGenerator
 	 * @param aZoneWidth Width of each "zone" - small values produce more random jagged landscape, larger zones produce more gradual height changes
 	 * @param aZoneHeight Height of each "zone" - small values produce more random jagged landscape, larger zones produce more gradual height changes
 	 * @param aNumberOfRowsFromMapEdgeWhereTundraCanAppear Number of rows from non-wrapping edges were we may place tundra
-	 * @param aDebugLogger Logger to write to debug text file when the debug log is enabled
 	 */
 	HeightMapGenerator (final CoordinateSystem aCoordinateSystem, final int aZoneWidth, final int aZoneHeight,
-		final int aNumberOfRowsFromMapEdgeWhereTundraCanAppear, final Logger aDebugLogger)
+		final int aNumberOfRowsFromMapEdgeWhereTundraCanAppear)
 	{
 		super ();
 
-		debugLogger = aDebugLogger;
 		coordinateSystem = aCoordinateSystem;
 		zoneWidth = aZoneWidth;
 		zoneHeight = aZoneHeight;
@@ -68,7 +66,7 @@ final class HeightMapGenerator
 	 */
 	final void generateHeightMap ()
 	{
-		debugLogger.entering (HeightMapGenerator.class.getName (), "generateHeightMap",
+		log.entering (HeightMapGenerator.class.getName (), "generateHeightMap",
 			coordinateSystem.getWidth () + " x " + coordinateSystem.getHeight () + ", " + numberOfRowsFromMapEdgeWhereTundraCanAppear);
 
 		// Generate height-based scenery
@@ -76,7 +74,7 @@ final class HeightMapGenerator
 		generateZeroBasedHeightMap ();
 		countTilesAtEachHeight ();
 
-		debugLogger.exiting (HeightMapGenerator.class.getName (), "generateHeightMap");
+		log.exiting (HeightMapGenerator.class.getName (), "generateHeightMap");
 	}
 
 	/**
@@ -182,7 +180,7 @@ final class HeightMapGenerator
 	 */
 	private final void generateFractalLandscape ()
 	{
-		debugLogger.entering (HeightMapGenerator.class.getName (), "generateFractalLandscape");
+		log.entering (HeightMapGenerator.class.getName (), "generateFractalLandscape");
 
 		// Session description contains zone width/height - we need the number of zones
 		final int xBlocks = (int) Math.round (coordinateSystem.getWidth () / (double) zoneWidth);		// a.k.a. zonesHorizontally
@@ -251,7 +249,7 @@ final class HeightMapGenerator
 			for (int yn = 0; yn < yBlocks; yn++)
 				fractalLandscapeIteration (step, (xn * xMax) / xBlocks, (yn * yMax) / yBlocks, ((xn + 1) * xMax) / xBlocks, ((yn + 1) * yMax) / yBlocks);
 
-		debugLogger.exiting (HeightMapGenerator.class.getName (), "generateFractalLandscape");
+		log.exiting (HeightMapGenerator.class.getName (), "generateFractalLandscape");
 	}
 
 	/**
@@ -259,7 +257,7 @@ final class HeightMapGenerator
 	 */
 	final void generateZeroBasedHeightMap ()
 	{
-		debugLogger.entering (HeightMapGenerator.class.getName (), "generateZeroBasedHeightMap");
+		log.entering (HeightMapGenerator.class.getName (), "generateZeroBasedHeightMap");
 
 		// Find the minimum height
 		int minimumHeight = heightMap [0] [0];
@@ -276,7 +274,7 @@ final class HeightMapGenerator
 			for (int y = 0; y < coordinateSystem.getHeight (); y++)
 				zeroBasedHeightMap [y] [x] = heightMap [y] [x] - minimumHeight;
 
-		debugLogger.exiting (HeightMapGenerator.class.getName (), "generateZeroBasedHeightMap");
+		log.exiting (HeightMapGenerator.class.getName (), "generateZeroBasedHeightMap");
 	}
 
 	/**
@@ -284,7 +282,7 @@ final class HeightMapGenerator
 	 */
 	final void countTilesAtEachHeight ()
 	{
-		debugLogger.entering (HeightMapGenerator.class.getName (), "countTilesAtEachHeight");
+		log.entering (HeightMapGenerator.class.getName (), "countTilesAtEachHeight");
 
 		// This relies on the fact that there are no entries in the height map with negative values
 		// so by starting at zero and working up, we've guaranteed to evenually hit every tile on the map
@@ -303,7 +301,7 @@ final class HeightMapGenerator
 			tilesDone = tilesDone + count;
 		}
 
-		debugLogger.exiting (HeightMapGenerator.class.getName (), "countTilesAtEachHeight");
+		log.exiting (HeightMapGenerator.class.getName (), "countTilesAtEachHeight");
 	}
 
 	/**

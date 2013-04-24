@@ -3,7 +3,6 @@ package momime.common.database;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
-import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.SchemaFactory;
@@ -18,9 +17,6 @@ import org.xml.sax.SAXParseException;
  */
 public final class TestCommonXsdResourceResolver
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMECommonUnitTests");
-
 	/** Path and name to locate the dummy XSD file on the classpath */
 	private static final String DUMMY_XSD_LOCATION = "/MoMIMEDummyCommonDatabase.xsd";
 
@@ -35,7 +31,7 @@ public final class TestCommonXsdResourceResolver
 		assertNotNull ("Dummy XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance (), debugLogger));
+		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
 		schemaFactory.newSchema (xsdResource).newValidator ();
 	}
 

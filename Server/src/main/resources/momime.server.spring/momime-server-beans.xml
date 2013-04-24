@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
+	
+	<import resource="../momime.common.spring/momime-common-beans.xml"/>
+	
+	<!-- Singleton beans for server -->
+	
+	<bean id="clientToServerObjectFactory" class="momime.server.messages.process.ObjectFactoryClientToServerMessages" />
+	
+	<bean id="multiplayerServerUtils" class="com.ndg.multiplayer.server.MultiplayerServerUtils" />
+	
+	<bean id="momServer" class="momime.server.MomServer">
+		<property name="clientToServerContext" ref="clientToServerJaxbContext" />
+		<property name="serverToClientContext" ref="serverToClientJaxbContext" />
+		<property name="clientToServerContextFactoryArray">
+			<array>
+				<ref bean="clientToServerObjectFactory" />
+			</array>
+		</property>
+		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
+	</bean>
+
+	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConverters" />
+
+	<bean id="spellAI" class="momime.server.ai.SpellAI">
+		<property name="spellUtils" ref="spellUtils" />
+	</bean>
+
+	<bean id="playerPickServerUtils" class="momime.server.utils.PlayerPickServerUtils">
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="spellAI" ref="spellAI" />
+	</bean>
+
+	<bean id="playerMessageProcessing" class="momime.server.process.PlayerMessageProcessing" >
+		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
+		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
+	</bean>
+	
+	<!-- Beans created each time a new session is started -->
+
+	<bean id="gpk" class="momime.common.messages.v0_9_4.MomGeneralPublicKnowledge" scope="prototype" />
+
+	<bean id="sessionThread" class="momime.server.MomSessionThread" scope="prototype">
+		<property name="generalPublicKnowledge" ref="gpk" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
+	</bean>
+	
+</beans>

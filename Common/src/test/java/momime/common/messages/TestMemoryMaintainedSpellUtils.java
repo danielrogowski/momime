@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
@@ -18,9 +17,6 @@ import org.junit.Test;
  */
 public final class TestMemoryMaintainedSpellUtils
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMECommonUnitTests");
-
 	/**
 	 * Tests the findMaintainedSpell method with only the spell ID specified
 	 */
@@ -42,8 +38,9 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		assertEquals ("SP004", MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, "SP004", null, null, null, null, debugLogger).getSpellID ());
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, "SP006", null, null, null, null, debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, "SP004", null, null, null, null).getSpellID ());
+		assertNull (utils.findMaintainedSpell (spells, null, "SP006", null, null, null, null));
 	}
 
 	/**
@@ -65,8 +62,9 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		assertEquals (14, MemoryMaintainedSpellUtils.findMaintainedSpell (spells, 14, null, null, null, null, null, debugLogger).getCastingPlayerID ());
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, 16, null, null, null, null, null, debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertEquals (14, utils.findMaintainedSpell (spells, 14, null, null, null, null, null).getCastingPlayerID ());
+		assertNull (utils.findMaintainedSpell (spells, 16, null, null, null, null, null));
 	}
 
 	/**
@@ -88,8 +86,9 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		assertEquals (14, MemoryMaintainedSpellUtils.findMaintainedSpell (spells, 14, "SP001", null, null, null, null, debugLogger).getCastingPlayerID ());
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, 16, "SP001", null, null, null, null, debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertEquals (14, utils.findMaintainedSpell (spells, 14, "SP001", null, null, null, null).getCastingPlayerID ());
+		assertNull (utils.findMaintainedSpell (spells, 16, "SP001", null, null, null, null));
 	}
 
 	/**
@@ -113,7 +112,8 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, "SP004", null, null, null, null, debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertNull (utils.findMaintainedSpell (spells, null, "SP004", null, null, null, null));
 	}
 
 	/**
@@ -137,7 +137,8 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, "SP004", null, null, null, null, debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertNull (utils.findMaintainedSpell (spells, null, "SP004", null, null, null, null));
 	}
 
 	/**
@@ -160,8 +161,9 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		assertEquals (44, MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, 44, null, null, null, debugLogger).getUnitURN ().intValue ());
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, 46, null, null, null, debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertEquals (44, utils.findMaintainedSpell (spells, null, null, 44, null, null, null).getUnitURN ().intValue ());
+		assertNull (utils.findMaintainedSpell (spells, null, null, 46, null, null, null));
 	}
 
 	/**
@@ -184,8 +186,9 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		assertEquals ("SS024", MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, "SP004", 44, "SS024", null, null, debugLogger).getUnitSkillID ());
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, "SP004", 44, "SS025", null, null, debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertEquals ("SS024", utils.findMaintainedSpell (spells, null, "SP004", 44, "SS024", null, null).getUnitSkillID ());
+		assertNull (utils.findMaintainedSpell (spells, null, "SP004", 44, "SS025", null, null));
 	}
 
 	/**
@@ -208,8 +211,9 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		assertEquals ("SS024", MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, 44, "SS024", null, null, debugLogger).getUnitSkillID ());
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, 44, "SS025", null, null, debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertEquals ("SS024", utils.findMaintainedSpell (spells, null, null, 44, "SS024", null, null).getUnitSkillID ());
+		assertNull (utils.findMaintainedSpell (spells, null, null, 44, "SS025", null, null));
 	}
 
 	/**
@@ -242,10 +246,11 @@ public final class TestMemoryMaintainedSpellUtils
 		cityLocation.setY (204);
 		cityLocation.setPlane (304);
 
-		assertEquals ("SP004", MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, null, null, cityLocation, null, debugLogger).getSpellID ());
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, null).getSpellID ());
 
 		cityLocation.setPlane (305);
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, null, null, cityLocation, null, debugLogger));
+		assertNull (utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, null));
 	}
 
 	/**
@@ -278,8 +283,9 @@ public final class TestMemoryMaintainedSpellUtils
 		cityLocation.setY (204);
 		cityLocation.setPlane (304);
 
-		assertEquals ("SP004", MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, "SP004", null, null, cityLocation, "CSE034", debugLogger).getSpellID ());
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, "SP004", null, null, cityLocation, "CSE035", debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, "SP004", null, null, cityLocation, "CSE034").getSpellID ());
+		assertNull (utils.findMaintainedSpell (spells, null, "SP004", null, null, cityLocation, "CSE035"));
 	}
 
 	/**
@@ -312,8 +318,9 @@ public final class TestMemoryMaintainedSpellUtils
 		cityLocation.setY (204);
 		cityLocation.setPlane (304);
 
-		assertEquals ("SP004", MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE034", debugLogger).getSpellID ());
-		assertNull (MemoryMaintainedSpellUtils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE035", debugLogger));
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE034").getSpellID ());
+		assertNull (utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE035"));
 	}
 
 	/**
@@ -334,7 +341,8 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		MemoryMaintainedSpellUtils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, null, null, debugLogger);
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		utils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, null, null);
 		assertEquals (4, spells.size ());
 		assertEquals ("SP001", spells.get (0).getSpellID ());
 		assertEquals ("SP002", spells.get (1).getSpellID ());
@@ -372,7 +380,8 @@ public final class TestMemoryMaintainedSpellUtils
 		switchOffLocation.setY (14);
 		switchOffLocation.setPlane (4);
 
-		MemoryMaintainedSpellUtils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, switchOffLocation, "CSE004", debugLogger);
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		utils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, switchOffLocation, "CSE004");
 		assertEquals (4, spells.size ());
 		assertEquals ("SP001", spells.get (0).getSpellID ());
 		assertEquals ("SP002", spells.get (1).getSpellID ());
@@ -400,7 +409,8 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		MemoryMaintainedSpellUtils.switchOffMaintainedSpell (spells, 14, "SP004", 104, "US004", null, null, debugLogger);
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		utils.switchOffMaintainedSpell (spells, 14, "SP004", 104, "US004", null, null);
 		assertEquals (4, spells.size ());
 		assertEquals ("SP001", spells.get (0).getSpellID ());
 		assertEquals ("SP002", spells.get (1).getSpellID ());
@@ -426,7 +436,8 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		MemoryMaintainedSpellUtils.switchOffMaintainedSpell (spells, 15, "SP004", null, null, null, null, debugLogger);
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		utils.switchOffMaintainedSpell (spells, 15, "SP004", null, null, null, null);
 	}
 
 	/**
@@ -457,7 +468,8 @@ public final class TestMemoryMaintainedSpellUtils
 		unitURNs.add (2);
 		unitURNs.add (4);
 
-		MemoryMaintainedSpellUtils.removeSpellsCastOnUnitStack (spells, unitURNs, debugLogger);
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		utils.removeSpellsCastOnUnitStack (spells, unitURNs);
 
 		assertEquals (8, spells.size ());
 		assertEquals ("SP001NonUnit", spells.get (0).getSpellID ());

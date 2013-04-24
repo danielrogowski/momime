@@ -12,7 +12,6 @@ import momime.common.messages.clienttoserver.v0_9_4.ChangeOptionalFarmersMessage
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.server.IMomSessionVariables;
-import momime.server.utils.CityServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -24,10 +23,12 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  */
 public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmersMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ChangeOptionalFarmersMessageImpl.class.getName ());
+
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the client
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the client
 	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
@@ -35,21 +36,21 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		debugLogger.entering (ChangeOptionalFarmersMessageImpl.class.getName (), "process",
+		log.entering (ChangeOptionalFarmersMessageImpl.class.getName (), "process",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (getCityLocation ()), new Integer (getOptionalFarmers ()).toString ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
-		final String error = CityServerUtils.validateOptionalFarmers (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			getCityLocation (), getOptionalFarmers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+		final String error = mom.getCityServerUtils ().validateOptionalFarmers (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
+			getCityLocation (), getOptionalFarmers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		if (error != null)
 		{
 			// Return error
-			debugLogger.warning (ChangeOptionalFarmersMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warning (ChangeOptionalFarmersMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -64,12 +65,12 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 
 			// Send update to clients
 			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), debugLogger);
+				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 
 			// Tell the player how this will affect their global production
-			mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom, debugLogger);
+			mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 
-		debugLogger.exiting (ChangeOptionalFarmersMessageImpl.class.getName (), "process");
+		log.exiting (ChangeOptionalFarmersMessageImpl.class.getName (), "process");
 	}
 }

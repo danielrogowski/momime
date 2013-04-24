@@ -5,13 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.ndg.map.CoordinateSystemUtils;
-
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.UnitSettingData;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.CoordinatesUtils;
+import momime.common.messages.IUnitUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -22,29 +21,40 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.UnitSkill;
 import momime.server.messages.ServerMemoryGridCellUtils;
 
+import com.ndg.map.CoordinateSystemUtils;
+
 /**
  * Server side only helper methods for dealing with units
  */
-public final class UnitServerUtils
+public final class UnitServerUtils implements IUnitServerUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (UnitServerUtils.class.getName ());
+	
+	/** Unit utils */
+	private IUnitUtils unitUtils;
+	
+	/** Server-only unit calculations */
+	private IMomServerUnitCalculations serverUnitCalculations;
+	
 	/**
 	 * Chooses a name for this hero (out of 5 possibilities) and rolls their random skills
 	 * @param unit The hero to generate name and skills for
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the definition for the unit
 	 */
-	public static final void generateHeroNameAndRandomSkills (final MemoryUnit unit, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final void generateHeroNameAndRandomSkills (final MemoryUnit unit, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException
 	{
-		debugLogger.entering (UnitServerUtils.class.getName (), "generateHeroNameAndRandomSkills", unit.getUnitID ());
+		log.entering (UnitServerUtils.class.getName (), "generateHeroNameAndRandomSkills", unit.getUnitID ());
 
 		final Unit unitDefinition = db.findUnit (unit.getUnitID (), "generateHeroNameAndRandomSkills");
 
@@ -57,7 +67,7 @@ public final class UnitServerUtils
 		// Any random skills to add?
 		if ((unitDefinition.getHeroRandomPickCount () != null) && (unitDefinition.getHeroRandomPickCount () > 0))
 		{
-			debugLogger.finest ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills before rolling extras: " + UnitUtils.describeBasicSkillValuesInDebugString (unit));
+			log.finest ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills before rolling extras: " + getUnitUtils ().describeBasicSkillValuesInDebugString (unit));
 
 			// Run once for each random skill we get
 			for (int pickNo = 0; pickNo < unitDefinition.getHeroRandomPickCount (); pickNo++)
@@ -72,7 +82,7 @@ public final class UnitServerUtils
 						((thisSkill.getMaxOccurrences () != null) && (thisSkill.getMaxOccurrences () > 0)))
 					{
 						// Its a hero skill - do we have it already?
-						final int currentSkillValue = UnitUtils.getBasicSkillValue (unit.getUnitHasSkill (), thisSkill.getUnitSkillID ());
+						final int currentSkillValue = getUnitUtils ().getBasicSkillValue (unit.getUnitHasSkill (), thisSkill.getUnitSkillID ());
 
 						// Is it applicable?
 						// If the unit has no hero random pick type specified, then it means it can use any hero skills
@@ -90,9 +100,9 @@ public final class UnitServerUtils
 					throw new MomException ("generateHeroNameAndRandomSkills: No valid hero skill choices for unit " + unit.getUnitID ());
 
 				final String skillID = skillChoices.get (RandomUtils.getGenerator ().nextInt (skillChoices.size ()));
-				final int currentSkillValue = UnitUtils.getBasicSkillValue (unit.getUnitHasSkill (), skillID);
+				final int currentSkillValue = getUnitUtils ().getBasicSkillValue (unit.getUnitHasSkill (), skillID);
 				if (currentSkillValue >= 0)
-					UnitUtils.setBasicSkillValue (unit, skillID, currentSkillValue + 1, debugLogger);
+					getUnitUtils ().setBasicSkillValue (unit, skillID, currentSkillValue + 1);
 				else
 				{
 					final UnitHasSkill newSkill = new UnitHasSkill ();
@@ -101,21 +111,22 @@ public final class UnitServerUtils
 					unit.getUnitHasSkill ().add (newSkill);
 				}
 
-				debugLogger.finest ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills after rolling extras: " + UnitUtils.describeBasicSkillValuesInDebugString (unit));
+				log.finest ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills after rolling extras: " + getUnitUtils ().describeBasicSkillValuesInDebugString (unit));
 			}
 		}
 
 		// Update status
 		unit.setStatus (UnitStatusID.GENERATED);
 
-		debugLogger.exiting (UnitServerUtils.class.getName (), "generateHeroNameAndRandomSkills");
+		log.exiting (UnitServerUtils.class.getName (), "generateHeroNameAndRandomSkills");
 	}
 
 	/**
 	 * @param order Special order that a unit has
 	 * @return True if this special order results in the unit dying/being removed from play
 	 */
-	public static final boolean doesUnitSpecialOrderResultInDeath (final UnitSpecialOrder order)
+	@Override
+	public final boolean doesUnitSpecialOrderResultInDeath (final UnitSpecialOrder order)
 	{
 		return (order == UnitSpecialOrder.BUILD_CITY) || (order == UnitSpecialOrder.MELD_WITH_NODE) || (order == UnitSpecialOrder.DISMISS);
 	}
@@ -124,12 +135,12 @@ public final class UnitServerUtils
 	 * @param units List of units to search through
 	 * @param playerID Player to search for
 	 * @param unitID Unit ID to search for
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Unit with requested ID belonging to the requested player, or null if not found
 	 */
-	public final static MemoryUnit findUnitWithPlayerAndID (final List<MemoryUnit> units, final int playerID, final String unitID, final Logger debugLogger)
+	@Override
+	public final MemoryUnit findUnitWithPlayerAndID (final List<MemoryUnit> units, final int playerID, final String unitID)
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "findUnitWithPlayerAndID", new String [] {new Integer (playerID).toString (), unitID});
+		log.entering (UnitUtils.class.getName (), "findUnitWithPlayerAndID", new String [] {new Integer (playerID).toString (), unitID});
 
 		MemoryUnit result = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
@@ -140,7 +151,7 @@ public final class UnitServerUtils
 				result = thisUnit;
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "findUnitWithPlayerAndID", result);
+		log.exiting (UnitUtils.class.getName (), "findUnitWithPlayerAndID", result);
 		return result;
 	}
 
@@ -152,25 +163,24 @@ public final class UnitServerUtils
 	 * @param trueMap Server's true knowledge of terrain, units and so on
 	 * @param settings Unit settings from session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether unit can be added here or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	final static boolean canUnitBeAddedHere (final OverlandMapCoordinates addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
-		final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseEx db, final Logger debugLogger)
+	final boolean canUnitBeAddedHere (final OverlandMapCoordinates addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
+		final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "canUnitBeAddedHere", CoordinatesUtils.overlandMapCoordinatesToString (addLocation));
+		log.entering (UnitUtils.class.getName (), "canUnitBeAddedHere", CoordinatesUtils.overlandMapCoordinatesToString (addLocation));
 
 		// Any other units here?
 		final boolean unitCheckOk;
-		final MemoryUnit unitHere = UnitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getPlane (), 0, debugLogger);
+		final MemoryUnit unitHere = getUnitUtils ().findFirstAliveEnemyAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getPlane (), 0);
 		if (unitHere != null)
 		{
 			// Do we own it?
 			if (unitHere.getOwningPlayerID () == testUnit.getOwningPlayerID ())
 				// Maximum number of units already in the cell?
-				unitCheckOk = (UnitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getPlane (), 0, debugLogger) < settings.getUnitsPerMapCell ());
+				unitCheckOk = (getUnitUtils ().countAliveEnemiesAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getPlane (), 0) < settings.getUnitsPerMapCell ());
 			else
 				// Enemy unit in the cell, so we can't add here
 				unitCheckOk = false;
@@ -190,7 +200,7 @@ public final class UnitServerUtils
 		{
 			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (addLocation.getPlane ()).getRow ().get (addLocation.getY ()).getCell ().get (addLocation.getX ());
 			if ((ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db)) ||
-				(MomServerUnitCalculations.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db, debugLogger) == null))
+				(getServerUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
 
 				okToAdd = false;
 			else
@@ -205,7 +215,7 @@ public final class UnitServerUtils
 			}
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "canUnitBeAddedHere", okToAdd);
+		log.exiting (UnitUtils.class.getName (), "canUnitBeAddedHere", okToAdd);
 		return okToAdd;
 	}
 
@@ -219,22 +229,22 @@ public final class UnitServerUtils
 	 * @param trueMap Server's true knowledge of terrain, units and so on
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Location + bump type; note class and bump type will always be filled in, but location may be null if the unit cannot fit anywhere
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	public final static UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final OverlandMapCoordinates desiredLocation, final String unitID, final int playerID,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final OverlandMapCoordinates desiredLocation, final String unitID, final int playerID,
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", new String []
+		log.entering (UnitUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", new String []
 			{CoordinatesUtils.overlandMapCoordinatesToString (desiredLocation), unitID, new Integer (playerID).toString ()});
 
 		// Create test unit
 		final AvailableUnit testUnit = new AvailableUnit ();
 		testUnit.setUnitID (unitID);
 		testUnit.setOwningPlayerID (playerID);
-		UnitUtils.initializeUnitSkills (testUnit, 0, true, db, debugLogger);
+		getUnitUtils ().initializeUnitSkills (testUnit, 0, true, db);
 
 		final List<String> emptySkillList = new ArrayList<String> ();
 
@@ -242,7 +252,7 @@ public final class UnitServerUtils
 		OverlandMapCoordinates addLocation = null;
 		UnitAddBumpTypeID bumpType = UnitAddBumpTypeID.NO_ROOM;
 
-		if (canUnitBeAddedHere (desiredLocation, testUnit, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger))
+		if (canUnitBeAddedHere (desiredLocation, testUnit, emptySkillList, trueMap, sd.getUnitSetting (), db))
 		{
 			addLocation = desiredLocation;
 			bumpType = UnitAddBumpTypeID.CITY;
@@ -258,7 +268,7 @@ public final class UnitServerUtils
 				adjacentLocation.setPlane (desiredLocation.getPlane ());
 
 				if (CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), adjacentLocation, direction))
-					if (canUnitBeAddedHere (adjacentLocation, testUnit, emptySkillList, trueMap, sd.getUnitSetting (), db, debugLogger))
+					if (canUnitBeAddedHere (adjacentLocation, testUnit, emptySkillList, trueMap, sd.getUnitSetting (), db))
 					{
 						addLocation = adjacentLocation;
 						bumpType = UnitAddBumpTypeID.BUMPED;
@@ -270,14 +280,39 @@ public final class UnitServerUtils
 
 		final UnitAddLocation result = new UnitAddLocation (addLocation, bumpType);
 
-		debugLogger.exiting (UnitUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", result);
+		log.exiting (UnitUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", result);
 		return result;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Unit utils
 	 */
-	private UnitServerUtils ()
+	public final IUnitUtils getUnitUtils ()
 	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final IUnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final IMomServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final IMomServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

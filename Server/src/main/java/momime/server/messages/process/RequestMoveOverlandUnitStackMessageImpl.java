@@ -10,7 +10,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.UnitUtils;
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
@@ -27,19 +26,21 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOverlandUnitStackMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (RequestMoveOverlandUnitStackMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException Iif there is a problem sending a reply back to the client
 	 * @throws XMLStreamException If there is a problem sending a reply back to the client
 	 * @throws IOException If there are any processing errors
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		debugLogger.entering (RequestMoveOverlandUnitStackMessageImpl.class.getName (), "process",
+		log.entering (RequestMoveOverlandUnitStackMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getUnitURN ().toString (),
 			CoordinatesUtils.overlandMapCoordinatesToString (getMoveFrom ()), CoordinatesUtils.overlandMapCoordinatesToString (getMoveTo ())});
 
@@ -59,7 +60,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		while ((error == null) && (unitUrnIterator.hasNext ()))
 		{
 			final Integer thisUnitURN = unitUrnIterator.next ();
-			final MemoryUnit thisUnit = UnitUtils.findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), debugLogger);
+			final MemoryUnit thisUnit = mom.getUnitUtils ().findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 
 			if (thisUnit == null)
 				error = "Some of the units you are trying to move could not be found";
@@ -83,7 +84,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		if (error != null)
 		{
 			// Return error
-			debugLogger.warning (RequestOverlandMovementDistancesMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warning (RequestOverlandMovementDistancesMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -94,9 +95,9 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 			// Proceed with move
 			mom.getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, getMoveFrom (), getMoveTo (),
 				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS),
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 		}
 
-		debugLogger.exiting (RequestMoveOverlandUnitStackMessageImpl.class.getName (), "process");
+		log.exiting (RequestMoveOverlandUnitStackMessageImpl.class.getName (), "process");
 	}
 }

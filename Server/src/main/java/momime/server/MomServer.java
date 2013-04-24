@@ -5,50 +5,53 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
 import java.security.InvalidParameterException;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import momime.common.MomException;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
+import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.config.ServerConfigConstants;
 import momime.server.config.v0_9_4.MomImeServerConfig;
+import momime.server.database.IServerDatabaseConverters;
 import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerDatabaseConverters;
-import momime.server.logging.SingleLineFormatter;
-import momime.server.logging.WriteToOtherLogHandler;
-import momime.server.messages.process.ObjectFactoryClientToServerMessages;
+import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseFactory;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.OneWindowPerGameUI;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.xml.sax.SAXException;
 
 import com.ndg.multiplayer.base.MultiplayerBaseServerThread;
 import com.ndg.multiplayer.server.MultiplayerClientConnection;
 import com.ndg.multiplayer.server.MultiplayerSessionServer;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.users.MultiplayerSessionUserRegistry;
 import com.ndg.multiplayer.server.users.MultiplayerSessionUserRegistryImpl;
 import com.ndg.multiplayer.sessionbase.SessionDescription;
 
 /**
  * Main server class to listen for client connection requests and manage list of sessions
  */
-public final class MomServer extends MultiplayerSessionServer
+public final class MomServer extends MultiplayerSessionServer implements ApplicationContextAware
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomServer.class.getName ());
+	
 	/** Minimum major version of JVM required to run MoM IME */
 	private final static int JAVA_REQUIRED_MAJOR_VERSION = 1;
 
@@ -56,40 +59,80 @@ public final class MomServer extends MultiplayerSessionServer
 	private final static int JAVA_REQUIRED_MINOR_VERSION = 6;
 
 	/** Message to send new game database to clients as they connect */
-	private final NewGameDatabaseMessage newGameDatabaseMessage;
+	private NewGameDatabaseMessage newGameDatabaseMessage;
 
 	/** Server config loaded from XML config file */
-	private final MomImeServerConfig config;
+	private MomImeServerConfig config;
 
 	/** UI to display server status */
-	private final MomServerUI ui;
+	private MomServerUI ui;
 
 	/** Logger which writes to a disk file, if enabled */
-	private final Logger fileLogger;
+	private Logger fileLogger;
+	
+	/** Spring context */
+	private ApplicationContext applicationContext;
+	
+	/** Database converters */
+	private IServerDatabaseConverters serverDatabaseConverters;
 
 	/**
-	 * @param aUserRegistry User registry
-	 * @param aNewGameDatabaseMessage Message to send new game database to clients as they connect
-	 * @param aConfig Server config loaded from XML config file
-	 * @param aUI UI to display server status
-	 * @param aFileLogger Logger which writes to a disk file, if enabled
-	 * @param aDebugLogger Logger to write to debug text file when the debug log is enabled
-	 * @throws JAXBException If there is a problem creating the JAXB contexts
 	 * @throws DatatypeConfigurationException If there is a problem creating the DatatypeFactory
 	 */
-	public MomServer (final MultiplayerSessionUserRegistry aUserRegistry, final NewGameDatabaseMessage aNewGameDatabaseMessage,
-		final MomImeServerConfig aConfig, final MomServerUI aUI, final Logger aFileLogger, final Logger aDebugLogger)
-		throws JAXBException, DatatypeConfigurationException
+	public MomServer () throws DatatypeConfigurationException
 	{
-		super (aUserRegistry, aConfig.getPortNumber (), "MomServer",
-			JAXBContextCreator.createClientToServerMessageContext (), new Object [] {new ObjectFactoryClientToServerMessages ()},
-			JAXBContextCreator.createServerToClientMessageContext (),
-			null, false, aDebugLogger);
+		super ("MomServer");
+	}
+	
+	/**
+	 * Performs all remaining server initialization tasks, after the UI and debugLogger are configured
+	 * @param createUserRegistry
+	 */
+	private final void init (final boolean createUserRegistry)
+	{
+		try
+		{
+			// XSD schema factory
+			final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
 
-		newGameDatabaseMessage = aNewGameDatabaseMessage;
-		config = aConfig;
-		ui = aUI;
-		fileLogger = aFileLogger;
+			// Load server config XSD
+			final URL serverConfigXsdResource = new Object ().getClass ().getResource (ServerConfigConstants.CONFIG_XSD_LOCATION);
+			if (serverConfigXsdResource == null)
+				throw new IOException ("Server config XSD could not be located on classpath");
+
+			final Validator serverConfigXSD = schemaFactory.newSchema (serverConfigXsdResource).newValidator ();
+
+			// Validate the config file
+			final File configFile = new File (ServerConfigConstants.CONFIG_XML_LOCATION);
+			serverConfigXSD.validate (new StreamSource (configFile));
+
+			// Load the config file
+			setConfig ((MomImeServerConfig) JAXBContext.newInstance (MomImeServerConfig.class).createUnmarshaller ().unmarshal (configFile));
+			setPort (getConfig ().getPortNumber ());
+
+			// Load server database XSD
+			final URL serverDatabaseXsdResource = new Object ().getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
+			if (serverDatabaseXsdResource == null)
+				throw new IOException ("Server database XSD could not be located on classpath");
+
+			final Validator serverDatabaseXSD = schemaFactory.newSchema (serverDatabaseXsdResource).newValidator ();
+
+			// Build the new game XML, which lets connecting clients know which XML files are available on the server and what new game settings they can choose
+			final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
+			setNewGameDatabaseMessage (getServerDatabaseConverters ().buildNewGameDatabase
+				(new File (config.getPathToServerXmlDatabases ()), serverDatabaseXSD, serverDatabaseContext));
+
+			// User registry
+			setUserRegistry (new MultiplayerSessionUserRegistryImpl (new File (config.getUserRegistryFilename ()), createUserRegistry));
+		
+			// Start it up
+			start ();
+		}
+		catch (final Exception e)
+		{
+			log.log (Level.SEVERE, "Error during MoM IME server initialization", e);
+		}
 	}
 
 	/**
@@ -105,7 +148,7 @@ public final class MomServer extends MultiplayerSessionServer
 	{
 		final Object readyForMessagesMonitor = new Object ();
 		final MultiplayerClientConnection conn = new MultiplayerClientConnection (this, getMessageProcesser (), socket,
-			clientToServerContext, clientToServerContextFactoryArray, serverToClientContext, readyForMessagesMonitor, debugLogger);
+			getClientToServerContext (), getClientToServerContextFactoryArray (), getServerToClientContext (), readyForMessagesMonitor);
 		conn.start ();
 
 		// Wait until thread has started up properly, then send new game database to the client
@@ -115,7 +158,6 @@ public final class MomServer extends MultiplayerSessionServer
 		}
 
 		conn.sendMessageToClient (newGameDatabaseMessage);
-
 		return conn;
 	}
 
@@ -124,13 +166,79 @@ public final class MomServer extends MultiplayerSessionServer
 	 * @param sessionDescription Description of the new session
 	 * @return Thread object to handle requests for this session
 	 * @throws JAXBException If there is a problem loading the server XML file
+	 * @throws IOException If there is a problem generating the client database for this session
 	 */
 	@Override
-	protected final MultiplayerSessionThread createSessionThread (final SessionDescription sessionDescription) throws JAXBException
+	protected final MultiplayerSessionThread createSessionThread (final SessionDescription sessionDescription) throws JAXBException, IOException
 	{
-		return new MomSessionThread (getMessageProcesser (), sessionDescription, getConfig (), ui, fileLogger, debugLogger);
+		final MomSessionThread thread = (MomSessionThread) applicationContext.getBean ("sessionThread");
+		thread.setMessageProcesser (getMessageProcesser ());
+		thread.setSessionDescription (sessionDescription);
+		
+		final MomSessionDescription sd = (MomSessionDescription) sessionDescription;
+		
+		// Load server XML
+		final File fullFilename = new File (config.getPathToServerXmlDatabases () + sd.getXmlDatabaseName () + ServerDatabaseConverters.SERVER_XML_FILE_EXTENSION);
+		
+		final Unmarshaller unmarshaller = JAXBContextCreator.createServerDatabaseContext ().createUnmarshaller ();		
+		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
+		thread.setServerDB ((ServerDatabaseEx) unmarshaller.unmarshal (fullFilename));
+
+		// Create hash maps to look up all the values from the DB
+		thread.getServerDB ().buildMaps ();
+		
+		// Create client database
+		thread.getGeneralPublicKnowledge ().setClientDatabase (getServerDatabaseConverters ().buildClientDatabase
+			(thread.getServerDB (), sd.getDifficultyLevel ().getHumanSpellPicks ()));
+
+		return thread;
 	}
 
+	/**
+	 * @param uiClassName Class name to use for UI to display server status
+	 */
+	public final void setUiClassName (final String uiClassName)
+	{
+		final Object uiObject;
+		try
+		{
+			uiObject = Class.forName (uiClassName).newInstance ();
+		}
+		catch (final ClassNotFoundException e)
+		{
+			throw new InvalidParameterException ("Requested UI class " + uiClassName + " could not be found on the classpath (full error: " + e.getMessage () + ")");
+		}
+		catch (final IllegalAccessException e)
+		{
+			throw new InvalidParameterException ("Requested UI class " + uiClassName + " found but could not be accessed (full error: " + e.getMessage () + ")");
+		}
+		catch (final InstantiationException e)
+		{
+			throw new InvalidParameterException ("Requested UI class " + uiClassName + " found but could not be instantiated (full error: " + e.getMessage () + ")");
+		}
+
+		if (!(uiObject instanceof MomServerUI))
+			throw new InvalidParameterException ("Requested UI class " + uiClassName + " but this does not implement the " + MomServerUI.class.getName () + " interface");
+
+		setUI ((MomServerUI) uiObject);
+	}
+
+	/**
+	 * @return Message to send new game database to clients as they connect
+	 */
+	public final NewGameDatabaseMessage getNewGameDatabaseMessage ()
+	{
+		return newGameDatabaseMessage;
+	}
+
+	/**
+	 * @param msg Message to send new game database to clients as they connect
+	 */
+	public final void setNewGameDatabaseMessage (final NewGameDatabaseMessage msg)
+	{
+		newGameDatabaseMessage = msg;
+	}
+	
 	/**
 	 * @return Server config loaded from XML config file
 	 */
@@ -139,6 +247,63 @@ public final class MomServer extends MultiplayerSessionServer
 		return config;
 	}
 
+	/**
+	 * @param cfg Server config loaded from XML config file
+	 */
+	public final void setConfig (final MomImeServerConfig cfg)
+	{
+		config = cfg;
+	}
+	
+	/**
+	 * @return Spring context
+	 */
+	public final ApplicationContext getApplicationContext ()
+	{
+		return applicationContext;
+	}
+
+	/**
+	 * @param ctx Spring context
+	 */
+	@Override
+	public final void setApplicationContext (final ApplicationContext ctx)
+	{
+		applicationContext = ctx;
+	}	
+
+	/**
+	 * @return UI to display server status
+	 */
+	public final MomServerUI getUI ()
+	{
+		return ui;
+	}
+
+	/**
+	 * @param newUI UI to display server status
+	 */
+	public final void setUI (final MomServerUI newUI)
+	{
+		ui = newUI;
+	}
+
+	/**
+	 * @return Database converters
+	 */
+	public final IServerDatabaseConverters getServerDatabaseConverters ()
+	{
+		return serverDatabaseConverters;
+	}
+
+	/**
+	 * @param conv Database converters
+	 */
+	public final void setServerDatabaseConverters (final IServerDatabaseConverters conv)
+	{
+		serverDatabaseConverters = conv;
+	}
+	
 	/**
 	 * @param args Command line arguments, following are allowed but all optional:
 	 *		-debug, to turn on writing the full debug log out to a text file; without this, only messages of level INFO and higher are viewable on screen
@@ -152,10 +317,7 @@ public final class MomServer extends MultiplayerSessionServer
 	public final static void main (final String [] args)
 	{
 		// These are needed outside of the first block of try..catches
-		Logger debugLogger = null;
 		Logger fileLogger = null;
-		MomServerUI ui = null;
-		boolean proceed = false;
 		boolean createUserRegistry = false;
 
 		try
@@ -169,6 +331,10 @@ public final class MomServer extends MultiplayerSessionServer
 				throw new InvalidParameterException ("MoM IME requires a Java Virtual Machine version " + JAVA_REQUIRED_MAJOR_VERSION + "." + JAVA_REQUIRED_MINOR_VERSION +
 					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
 
+			// Create MomServer object, so we can start setting necessary values against it, from the command line options and so on
+			final ApplicationContext applicationContext = new ClassPathXmlApplicationContext("/momime.server.spring/momime-server-beans.xml");
+			final MomServer server = (MomServer) applicationContext.getBean ("momServer");
+			
 			// Set defaults
 			String uiClassName = OneWindowPerGameUI.class.getName ();
 
@@ -198,32 +364,11 @@ public final class MomServer extends MultiplayerSessionServer
 
 			if (previousArg != null)
 				throw new InvalidParameterException ("Command line argument " + previousArg + " specified no value.  Usage MomServer [ff] [-createUserRegistry] [-ui <class>]");
+			
+			// Call methods to make the command line options take effect
+			server.setUiClassName (uiClassName);
 
-			// Create the UI object
-			final Object uiObject;
-			try
-			{
-				uiObject = Class.forName (uiClassName).newInstance ();
-			}
-			catch (final ClassNotFoundException e)
-			{
-				throw new InvalidParameterException ("Requested UI class " + uiClassName + " could not be found on the classpath (full error: " + e.getMessage () + ")");
-			}
-			catch (final IllegalAccessException e)
-			{
-				throw new InvalidParameterException ("Requested UI class " + uiClassName + " found but could not be accessed (full error: " + e.getMessage () + ")");
-			}
-			catch (final InstantiationException e)
-			{
-				throw new InvalidParameterException ("Requested UI class " + uiClassName + " found but could not be instantiated (full error: " + e.getMessage () + ")");
-			}
-
-			if (!(uiObject instanceof MomServerUI))
-				throw new InvalidParameterException ("Requested UI class " + uiClassName + " but this does not implement the " + MomServerUI.class.getName () + " interface");
-
-			ui = (MomServerUI) uiObject;
-
-			// Create and configure debug logger
+/*			// Create and configure debug logger
 			debugLogger = Logger.getLogger ("MoMIMEServer");
 
 			if (debugToFile)
@@ -252,106 +397,17 @@ public final class MomServer extends MultiplayerSessionServer
 				debugLogger.addHandler (copyDebugLoggerToFileLogger);
 
 				fileLogger.fine ("Debug file on, using UI \"" + uiClassName + "\"");
-			}
+			} */
 
 			// Create the main window, and set up logging to write to it
-			ui.createMainWindow (debugLogger);
-			proceed = true;
+			server.getUI ().createMainWindow ();
+			
+			// Now the UI and loggers are configured correctly, can proceed with remainder of server startup
+			server.init (createUserRegistry);
 		}
 		catch (final InvalidParameterException e)
 		{
 			System.out.println (e.getMessage ());
-		}
-		catch (final IOException e)
-		{
-			System.out.println ("IOException during pre-logging server startup: " + e.getMessage ());
-		}
-
-		// Any exceptions up until now just get written to System.out, but now we've got the debugLogger and UI set up properly,
-		// we should log any further exceptions to there as well
-		// This is mainly so errors in the config file not matching the XSD are logged correctly
-		if (proceed)
-		{
-			debugLogger.entering (MomServer.class.getName (), "main (proceed section)");
-			try
-			{
-				// XSD schema factory
-				final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
-				schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance (), debugLogger));
-
-				// Load server config XSD
-				final URL serverConfigXsdResource = new Object ().getClass ().getResource (ServerConfigConstants.CONFIG_XSD_LOCATION);
-				if (serverConfigXsdResource == null)
-					throw new IOException ("Server config XSD could not be located on classpath");
-
-				final Validator serverConfigXSD = schemaFactory.newSchema (serverConfigXsdResource).newValidator ();
-
-				// Validate the config file
-				final File configFile = new File (ServerConfigConstants.CONFIG_XML_LOCATION);
-				serverConfigXSD.validate (new StreamSource (configFile));
-
-				// Load the config file
-				final MomImeServerConfig config = (MomImeServerConfig) JAXBContext.newInstance (MomImeServerConfig.class).createUnmarshaller ().unmarshal (configFile);
-
-				// Load server database XSD
-				final URL serverDatabaseXsdResource = new Object ().getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
-				if (serverDatabaseXsdResource == null)
-					throw new IOException ("Server database XSD could not be located on classpath");
-
-				final Validator serverDatabaseXSD = schemaFactory.newSchema (serverDatabaseXsdResource).newValidator ();
-
-				// Build the new game XML, which lets connecting clients know which XML files are available on the server and what new game settings they can choose
-				final JAXBContext serverDatabaseContext = JAXBContextCreator.createServerDatabaseContext ();
-				final NewGameDatabaseMessage newGameDatabaseMessage = ServerDatabaseConverters.buildNewGameDatabase
-					(new File (config.getPathToServerXmlDatabases ()), serverDatabaseXSD, serverDatabaseContext, debugLogger);
-
-				// User registry
-				final MultiplayerSessionUserRegistry userRegistry = new MultiplayerSessionUserRegistryImpl (new File (config.getUserRegistryFilename ()), createUserRegistry, debugLogger);
-
-				// Now everything is ready, open up the TCP/IP port
-				new MomServer (userRegistry, newGameDatabaseMessage, config, ui, fileLogger, debugLogger).start ();
-				debugLogger.exiting (MomServer.class.getName (), "main (proceed section)");
-			}
-			catch (final MomException e)
-			{
-				debugLogger.severe ("MomException during post-logging server startup: " + e.getMessage ());
-				e.printStackTrace ();
-			}
-			catch (final IOException e)
-			{
-				debugLogger.severe ("IOException during post-logging server startup: " + e.getMessage ());
-				e.printStackTrace ();
-			}
-			catch (final SAXException e)
-			{
-				debugLogger.severe ("SAXException during post-logging server startup: " + e.getMessage ());
-				e.printStackTrace ();
-			}
-			catch (final JAXBException e)
-			{
-				debugLogger.severe ("JAXBException during post-logging server startup: " + e.getMessage ());
-				e.printStackTrace ();
-			}
-			catch (final IllegalAccessException e)
-			{
-				debugLogger.severe ("IllegalAccessException during post-logging server startup: " + e.getMessage ());
-				e.printStackTrace ();
-			}
-			catch (final InstantiationException e)
-			{
-				debugLogger.severe ("InstantiationException during post-logging server startup: " + e.getMessage ());
-				e.printStackTrace ();
-			}
-			catch (final ClassNotFoundException e)
-			{
-				debugLogger.severe ("ClassNotFoundException during post-logging server startup: " + e.getMessage ());
-				e.printStackTrace ();
-			}
-			catch (final DatatypeConfigurationException e)
-			{
-				debugLogger.severe ("DatatypeConfigurationException during post-logging server startup: " + e.getMessage ());
-				e.printStackTrace ();
-			}
 		}
 	}
 }

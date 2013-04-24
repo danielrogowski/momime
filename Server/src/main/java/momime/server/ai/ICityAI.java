@@ -1,7 +1,6 @@
 package momime.server.ai;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -33,12 +32,11 @@ public interface ICityAI
 	 * @param sd Session description
 	 * @param totalFoodBonusFromBuildings Value calculated by MomServerCityCalculations.calculateTotalFoodBonusFromBuildings ()
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Best possible location to put a new city, or null if there's no space left for any new cities on this plane
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 */
 	public OverlandMapCoordinates chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
-		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseEx db)
 		throws RecordNotFoundException;
 
 	/**
@@ -49,7 +47,6 @@ public interface ICityAI
 	 * @param player Player who we want to reset the number of optional farmers for
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws RecordNotFoundException If we encounter a unitID that doesn't exist
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
@@ -57,7 +54,7 @@ public interface ICityAI
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
+		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**
@@ -69,11 +66,10 @@ public interface ICityAI
 	 * @param trueBuildings True list of buildings
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
 	public void decideWhatToBuild (final OverlandMapCoordinates cityLocation, final OverlandMapCityData cityData,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryBuilding> trueBuildings,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException;
 }

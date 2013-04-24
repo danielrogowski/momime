@@ -23,6 +23,9 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  */
 public final class MomResourceConsumerUnit implements IMomResourceConsumer
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomResourceConsumerUnit.class.getName ());
+	
 	/** True map unit that is consuming resources */
 	private final MemoryUnit unit;
 
@@ -90,7 +93,6 @@ public final class MomResourceConsumerUnit implements IMomResourceConsumer
 	 * Disbands this unit to conserve resources
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -98,10 +100,10 @@ public final class MomResourceConsumerUnit implements IMomResourceConsumer
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void kill (final IMomSessionVariables mom, final Logger debugLogger)
+	public final void kill (final IMomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		debugLogger.entering (MomResourceConsumerUnit.class.getName (), "kill", getUnit ().getUnitURN ());
+		log.entering (MomResourceConsumerUnit.class.getName (), "kill", getUnit ().getUnitURN ());
 
 		// Action needs to depend on the type of unit
 		final KillUnitActionID action;
@@ -111,7 +113,7 @@ public final class MomResourceConsumerUnit implements IMomResourceConsumer
 			action = KillUnitActionID.UNIT_LACK_OF_PRODUCTION;
 
 		mom.getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (getUnit (), action,
-			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{
@@ -123,6 +125,6 @@ public final class MomResourceConsumerUnit implements IMomResourceConsumer
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (unitKilled);
 		}
 
-		debugLogger.exiting (MomResourceConsumerUnit.class.getName (), "kill");
+		log.exiting (MomResourceConsumerUnit.class.getName (), "kill");
 	}
 }

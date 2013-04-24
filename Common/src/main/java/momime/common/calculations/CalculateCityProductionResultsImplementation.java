@@ -3,7 +3,6 @@ package momime.common.calculations;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -20,8 +19,8 @@ import momime.common.database.v0_9_4.Plane;
 import momime.common.database.v0_9_4.Race;
 import momime.common.database.v0_9_4.RacePopulationTask;
 import momime.common.database.v0_9_4.RacePopulationTaskProduction;
-import momime.common.messages.MemoryBuildingUtils;
-import momime.common.messages.PlayerPickUtils;
+import momime.common.messages.IMemoryBuildingUtils;
+import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.PlayerPick;
@@ -35,6 +34,12 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	/** Underlying list */
 	private final List<CalculateCityProductionResult> results;
 
+	/** Memory building utils */
+	private IMemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Player pick utils */
+	private IPlayerPickUtils playerPickUtils;
+	
 	/**
 	 * Creates underlying list
 	 */
@@ -178,11 +183,10 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	 * @param cityLocation Location of the city where the civilians are
 	 * @param buildings List of known buildings
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	final void addProductionFromPopulation (final Race race, final String populationTaskID, final int numberDoingTask, final OverlandMapCoordinates cityLocation,
-		final List<MemoryBuilding> buildings, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
+		final List<MemoryBuilding> buildings, final ICommonDatabase db) throws RecordNotFoundException
 	{
 		if (numberDoingTask > 0)
 
@@ -195,7 +199,8 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 						// Are there are building we have which increase this type of production from this type of population
 						// i.e. Animists' guild increasing farmers yield by +1
 						final int doubleAmountPerPerson = thisProduction.getDoubleAmount () +
-							MemoryBuildingUtils.totalBonusProductionPerPersonFromBuildings (buildings, cityLocation, populationTaskID, thisProduction.getProductionTypeID (), db, debugLogger);
+							getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings
+								(buildings, cityLocation, populationTaskID, thisProduction.getProductionTypeID (), db);
 
 						// Now add it
 						addProduction (thisProduction.getProductionTypeID (), populationTaskID, null, null, null, null,
@@ -211,11 +216,10 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	 * @param building The building to calculate for
 	 * @param picks The list of spell picks belonging to the player who owns the city that this building is in
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	final void addProductionAndConsumptionFromBuilding (final Building building, final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
+	final void addProductionAndConsumptionFromBuilding (final Building building, final List<PlayerPick> picks, final ICommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		// Go through each type of production/consumption from this building
@@ -236,7 +240,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 					// Bonus from retorts?
 					final int totalReligiousBuildingBonus;
 					if ((building.isBuildingUnrestReductionImprovedByRetorts () != null) && (building.isBuildingUnrestReductionImprovedByRetorts ()))
-						totalReligiousBuildingBonus = PlayerPickUtils.totalReligiousBuildingBonus (picks, db, debugLogger);
+						totalReligiousBuildingBonus = getPlayerPickUtils ().totalReligiousBuildingBonus (picks, db);
 					else
 						totalReligiousBuildingBonus = 0;
 
@@ -337,5 +341,37 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 				useRaceMineralBonusMultipler, doubleAmountAfterRacialBonus,
 				useMineralPercentageBonus, doubleAmountFinal);
 		}
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final IPlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

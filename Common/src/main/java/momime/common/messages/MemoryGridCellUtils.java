@@ -17,8 +17,11 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
  *
  * public final static boolean isNodeLairTower (final OverlandMapTerrainData terrainData)
  */
-public final class MemoryGridCellUtils
+public final class MemoryGridCellUtils implements IMemoryGridCellUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MemoryGridCellUtils.class.getName ());
+	
 	/**
 	 * This is used because the data structures hold blank for an unknown tile type that we can't see, but the XML files
 	 * define movement rate rules and descriptions for tiles within the fog of war, and these can't be defined as null so are defined as "FOW"
@@ -30,7 +33,8 @@ public final class MemoryGridCellUtils
 	 * @param terrainData Terrain data to check
 	 * @return Tile type ID input, with null converted to FOW
 	 */
-	public final static String convertNullTileTypeToFOW (final OverlandMapTerrainData terrainData)
+	@Override
+	public final String convertNullTileTypeToFOW (final OverlandMapTerrainData terrainData)
 	{
 		final String tileTypeID;
 		if (terrainData == null)
@@ -47,7 +51,8 @@ public final class MemoryGridCellUtils
 	 * @param terrainData Terrain data to check
 	 * @return True if this map feature represents a Tower of Wizardy (cleared or uncleared)
 	 */
-	public final static boolean isTerrainTowerOfWizardry (final OverlandMapTerrainData terrainData)
+	@Override
+	public final boolean isTerrainTowerOfWizardry (final OverlandMapTerrainData terrainData)
 	{
 		final boolean tower;
 		if (terrainData == null)
@@ -64,24 +69,17 @@ public final class MemoryGridCellUtils
 	/**
 	 * Nulls out the building sold this turn value in every map cell
 	 * @param map Map to wipe buildings sold from
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	public final static void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map, final Logger debugLogger)
+	@Override
+	public final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map)
 	{
-		debugLogger.entering (MemoryGridCellUtils.class.getName (), "blankBuildingsSoldThisTurn");
+		log.entering (MemoryGridCellUtils.class.getName (), "blankBuildingsSoldThisTurn");
 
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 					cell.setBuildingIdSoldThisTurn (null);
 
-		debugLogger.exiting (MemoryGridCellUtils.class.getName (), "blankBuildingsSoldThisTurn");
-	}
-
-	/**
-	 * Prevent instantiation
-	 */
-	private MemoryGridCellUtils ()
-	{
+		log.exiting (MemoryGridCellUtils.class.getName (), "blankBuildingsSoldThisTurn");
 	}
 }

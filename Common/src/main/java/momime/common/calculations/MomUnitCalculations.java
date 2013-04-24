@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.PlayerPickUtils;
+import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
@@ -20,8 +20,14 @@ import com.ndg.map.SquareMapDirection;
 /**
  * Common calculations pertaining to units
  */
-public final class MomUnitCalculations
+public final class MomUnitCalculations implements IMomUnitCalculations
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomUnitCalculations.class.getName ());
+	
+	/** Player pick utils */
+	private IPlayerPickUtils playerPickUtils;
+	
 	/**
 	 * @param map Our knowledge of the surrounding terrain
 	 * @param buildings Pre-locked buildings list
@@ -29,15 +35,15 @@ public final class MomUnitCalculations
 	 * @param picks Picks of the player who owns the city
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Weapon grade that the unit that we build here will have
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 */
-	public static final int calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
+	@Override
+	public final int calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
-		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
+		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db) throws RecordNotFoundException
 	{
-		debugLogger.entering (MomUnitCalculations.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", cityLocation);
+		log.entering (MomUnitCalculations.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", cityLocation);
 
 		// First look for a building that grants magical weapons, i.e. an Alchemists' Guild
 		int bestWeaponGrade = 0;
@@ -74,18 +80,27 @@ public final class MomUnitCalculations
 		}
 
 		// Check if the wizard has any retorts which give magical weapons, i.e. Alchemy
-		final int weaponGradeFromPicks = PlayerPickUtils.getHighestWeaponGradeGrantedByPicks (picks, db, debugLogger);
+		final int weaponGradeFromPicks = getPlayerPickUtils ().getHighestWeaponGradeGrantedByPicks (picks, db);
 		if (weaponGradeFromPicks > bestWeaponGrade)
 			bestWeaponGrade = weaponGradeFromPicks;
 
-		debugLogger.exiting (MomUnitCalculations.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", bestWeaponGrade);
+		log.exiting (MomUnitCalculations.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", bestWeaponGrade);
 		return bestWeaponGrade;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Player pick utils
 	 */
-	private MomUnitCalculations ()
+	public final IPlayerPickUtils getPlayerPickUtils ()
 	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

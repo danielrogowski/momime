@@ -9,7 +9,6 @@ import java.util.logging.ErrorManager;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -29,7 +28,6 @@ import javax.swing.table.TableColumn;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.MomServer;
-import momime.server.logging.DateTimeAndMessageOnlyFormatter;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -65,10 +63,9 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 	/**
 	 * Placeholder where the UI can perform any work startup work necessary, typically creating the main window
 	 * By this stage the debug logger has been created, so if the UI wants to hook into this and add its own handler, it can do that here too
-	 * @param aDebugLogger Logger to write to debug text file when the debug log is enabled
 	 */
 	@Override
-	public final void createMainWindow (final Logger aDebugLogger)
+	public final void createMainWindow ()
 	{
 		// Switch to Windows look and feel if available
 		try
@@ -141,10 +138,10 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 		contentPane.add (tableScroll);
 
 		// Debug to the text area
-		final Handler debugHandler = new SingleWindowHandler ();
+		/* final Handler debugHandler = new SingleWindowHandler ();
 		debugHandler.setLevel (getMinimumDebugLoggerLogLevel ());
 		debugHandler.setFormatter (new DateTimeAndMessageOnlyFormatter ());
-		aDebugLogger.addHandler (debugHandler);
+		aDebugLogger.addHandler (debugHandler); */
 
 		// Show frame
 		frame.setContentPane (contentPane);

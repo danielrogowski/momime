@@ -1,7 +1,6 @@
 package momime.server.fogofwar;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -38,13 +37,12 @@ public interface IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param coords Location of the terrain that has been updated
 	 * @param terrainAndNodeAurasSetting Terrain and Node Auras FOW setting from session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void updatePlayerMemoryOfTerrain (final MapVolumeOfMemoryGridCells trueTerrain,
 		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords,
-		final FogOfWarValue terrainAndNodeAurasSetting, final Logger debugLogger)
+		final FogOfWarValue terrainAndNodeAurasSetting)
 		throws JAXBException, XMLStreamException;
 
 	/**
@@ -55,12 +53,11 @@ public interface IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param coords Location of the city that has been updated
 	 * @param fogOfWarSettings Fog of War settings from session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void updatePlayerMemoryOfCity (final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords, final FogOfWarSettingData fogOfWarSettings, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords, final FogOfWarSettingData fogOfWarSettings)
 		throws JAXBException, XMLStreamException;
 
 	/**
@@ -79,7 +76,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Newly created unit
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
@@ -90,7 +86,7 @@ public interface IFogOfWarMidTurnChanges
 	public MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final String unitID, final OverlandMapCoordinates locationToAddUnit, final OverlandMapCoordinates buildingsLocation, final OverlandMapCoordinates combatLocation,
 		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
@@ -106,7 +102,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -115,7 +110,7 @@ public interface IFogOfWarMidTurnChanges
 	 */
 	public void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final OverlandMapCoordinates locationToAddUnit,
 		final PlayerServerDetails unitOwner, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
@@ -128,7 +123,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -137,7 +131,7 @@ public interface IFogOfWarMidTurnChanges
 	 */
 	public void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID action,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
@@ -154,7 +148,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -162,7 +155,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -177,7 +170,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -187,7 +179,7 @@ public interface IFogOfWarMidTurnChanges
 	public void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
+		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -202,7 +194,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -212,7 +203,7 @@ public interface IFogOfWarMidTurnChanges
 	public void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
+		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -223,7 +214,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -232,7 +222,7 @@ public interface IFogOfWarMidTurnChanges
 	 */
 	public void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -243,7 +233,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -252,7 +241,7 @@ public interface IFogOfWarMidTurnChanges
 	 */
 	public void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
 		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -265,7 +254,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param buildingCreationSpellCastByPlayerID The player who cast the spell that resulted in the creation of this building; null if building was constructed in the normal way
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -275,7 +263,7 @@ public interface IFogOfWarMidTurnChanges
 	public void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
 		final OverlandMapCoordinates cityLocation, final String firstBuildingID, final String secondBuildingID,
 		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
@@ -286,7 +274,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param updateBuildingSoldThisTurn If true, tells client to update the buildingSoldThisTurn flag, which will prevents this city from selling a 2nd building this turn
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -295,7 +282,7 @@ public interface IFogOfWarMidTurnChanges
 	 */
 	public void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID, final boolean updateBuildingSoldThisTurn,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
@@ -305,7 +292,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
@@ -313,7 +299,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	public void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -339,7 +325,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -348,7 +333,7 @@ public interface IFogOfWarMidTurnChanges
 	 */
 	public void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final OverlandMapCoordinates moveFrom, final OverlandMapCoordinates moveTo, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 
 	/**
@@ -370,7 +355,6 @@ public interface IFogOfWarMidTurnChanges
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -380,6 +364,6 @@ public interface IFogOfWarMidTurnChanges
 	public void moveUnitStack (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final OverlandMapCoordinates originalMoveFrom, final OverlandMapCoordinates moveTo,
 		final boolean forceAsPendingMovement, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 }

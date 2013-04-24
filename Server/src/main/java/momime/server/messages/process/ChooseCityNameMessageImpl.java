@@ -19,18 +19,20 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ChooseCityNameMessageImpl.class.getName ());
+
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		debugLogger.entering (ChooseCityNameMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
+		log.entering (ChooseCityNameMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
@@ -42,17 +44,17 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 
 			// Then send the change to all players who can see the city
 			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), debugLogger);
+				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
 		else
 		{
-			debugLogger.warning ("Received City Name message from " + sender.getPlayerDescription ().getPlayerName () + " who isn't the city owner");
+			log.warning ("Received City Name message from " + sender.getPlayerDescription ().getPlayerName () + " who isn't the city owner");
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText ("You tried to name a city which isn''t yours - change ignored.");
 			sender.getConnection ().sendMessageToClient (reply);
 		}
 
-		debugLogger.exiting (ChooseCityNameMessageImpl.class.getName (), "process");
+		log.exiting (ChooseCityNameMessageImpl.class.getName (), "process");
 	}
 }

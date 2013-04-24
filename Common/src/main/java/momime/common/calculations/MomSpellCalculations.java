@@ -11,16 +11,22 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.PickProductionBonus;
 import momime.common.database.v0_9_4.Spell;
-import momime.common.messages.SpellUtils;
+import momime.common.messages.ISpellUtils;
 import momime.common.messages.v0_9_4.PlayerPick;
 
 /**
  * Calculations for dealing with spell casting cost reductions and research bonuses
  */
-public final class MomSpellCalculations
+public final class MomSpellCalculations implements IMomSpellCalculations
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomSpellCalculations.class.getName ());
+	
 	/** Format used for doubles in debug messages */
 	private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat ("0.000");
+	
+	/** Spell utils */
+	private ISpellUtils spellUtils;
 
 	/**
 	 * @param bookCount The number of books we have in the magic realm of the spell for which we want to calculate the reduction, e.g. to calculate reductions for life spells, pass in how many life books we have
@@ -28,16 +34,16 @@ public final class MomSpellCalculations
 	 * @param spell Cache object of the spell we want to check the reduction for (need this since certain retorts give bonuses to certain types of spells), can pass in null for this
 	 * @param picks Retorts the player has, so we can check them for any which give casting cost reductions
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return The casting cost reduction
 	 * @throws MomException If we find an invalid casting reduction type
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public static final double calculateCastingCostReduction (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
-		final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final double calculateCastingCostReduction (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
+		final List<PlayerPick> picks, final ICommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		debugLogger.entering (MomSpellCalculations.class.getName (), "calculateCastingCostReduction", new String [] {new Integer (bookCount).toString (),
+		log.entering (MomSpellCalculations.class.getName (), "calculateCastingCostReduction", new String [] {new Integer (bookCount).toString (),
 			new Integer (spellSettings.getSpellBooksToObtainFirstReduction ()).toString (),
 			new Integer (spellSettings.getSpellBooksCastingReduction ()).toString (),
 			spellSettings.getSpellBooksCastingReductionCombination ().toString (), new Integer (spellSettings.getSpellBooksCastingReductionCap ()).toString (),
@@ -66,7 +72,7 @@ public final class MomSpellCalculations
 					throw new MomException ("calculateCastingCostReduction: Unknown combination type (books)");
 			}
 
-		debugLogger.finest (booksThatGiveReduction + " books give a base casting cost reduction of " + DECIMAL_FORMATTER.format (castingCostMultiplier) + "...");
+		log.finest (booksThatGiveReduction + " books give a base casting cost reduction of " + DECIMAL_FORMATTER.format (castingCostMultiplier) + "...");
 
 		// Get the values we need from the spell
 		final String spellMagicRealmID;
@@ -74,7 +80,7 @@ public final class MomSpellCalculations
 		if (spell != null)
 		{
 			spellMagicRealmID = spell.getSpellRealm ();
-			spellUnitTypeID = SpellUtils.spellSummonsUnitTypeID (spell, db, debugLogger);
+			spellUnitTypeID = getSpellUtils ().spellSummonsUnitTypeID (spell, db);
 		}
 		else
 		{
@@ -113,7 +119,7 @@ public final class MomSpellCalculations
 									throw new MomException ("calculateCastingCostReduction: Unknown combination type (retorts)");
 							}
 
-							debugLogger.finest (pickProductionBonus.getPercentageBonus () + "% further reduction from " + p.getQuantity () + "x " + p.getPickID () +
+							log.finest (pickProductionBonus.getPercentageBonus () + "% further reduction from " + p.getQuantity () + "x " + p.getPickID () +
 								" improves casting cost reduction to " + DECIMAL_FORMATTER.format (castingCostMultiplier) + "...");
 						}
 					}
@@ -124,15 +130,15 @@ public final class MomSpellCalculations
 
 		if (castingCostPercentageReduction > spellSettings.getSpellBooksCastingReductionCap ())
 		{
-			debugLogger.finest ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) +
+			log.finest ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) +
 				"% but this is capped at " + DECIMAL_FORMATTER.format (spellSettings.getSpellBooksCastingReductionCap ()));
 
 			castingCostPercentageReduction = spellSettings.getSpellBooksCastingReductionCap ();
 		}
 		else
-			debugLogger.finest ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) + "%");
+			log.finest ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) + "%");
 
-		debugLogger.exiting (MomSpellCalculations.class.getName (), "calculateCastingCostReduction", castingCostPercentageReduction);
+		log.exiting (MomSpellCalculations.class.getName (), "calculateCastingCostReduction", castingCostPercentageReduction);
 		return castingCostPercentageReduction;
 	}
 
@@ -142,16 +148,16 @@ public final class MomSpellCalculations
 	 * @param spell Cache object of the spell we want to check the reduction for (need this since certain retorts give bonuses to certain types of spells), can pass in null for this
 	 * @param picks Retorts the player has, so we can check them for any which give casting cost reductions
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return The casting cost reduction
 	 * @throws MomException If we find an invalid casting reduction type
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public static final double calculateResearchBonus (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
-		final List<PlayerPick> picks, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final double calculateResearchBonus (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
+		final List<PlayerPick> picks, final ICommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		debugLogger.entering (MomSpellCalculations.class.getName (), "calculateResearchBonus", new String [] {new Integer (bookCount).toString (),
+		log.entering (MomSpellCalculations.class.getName (), "calculateResearchBonus", new String [] {new Integer (bookCount).toString (),
 			new Integer (spellSettings.getSpellBooksToObtainFirstReduction ()).toString (),
 			new Integer (spellSettings.getSpellBooksResearchBonus ()).toString (),
 			spellSettings.getSpellBooksResearchBonusCombination ().toString (), new Integer (spellSettings.getSpellBooksResearchBonusCap ()).toString (),
@@ -180,7 +186,7 @@ public final class MomSpellCalculations
 					throw new MomException ("calculateResearchBonus: Unknown combination type (books)");
 			}
 
-		debugLogger.finest (booksThatGiveBonus + " books give a base research bonus of " + DECIMAL_FORMATTER.format (researchBonus) + "...");
+		log.finest (booksThatGiveBonus + " books give a base research bonus of " + DECIMAL_FORMATTER.format (researchBonus) + "...");
 
 		// Get the values we need from the spell
 		final String spellMagicRealmID;
@@ -188,7 +194,7 @@ public final class MomSpellCalculations
 		if (spell != null)
 		{
 			spellMagicRealmID = spell.getSpellRealm ();
-			spellUnitTypeID = SpellUtils.spellSummonsUnitTypeID (spell, db, debugLogger);
+			spellUnitTypeID = getSpellUtils ().spellSummonsUnitTypeID (spell, db);
 		}
 		else
 		{
@@ -227,7 +233,7 @@ public final class MomSpellCalculations
 									throw new MomException ("calculateCastingCostReduction: Unknown combination type (retorts)");
 							}
 
-							debugLogger.finest (pickProductionBonus.getPercentageBonus () + "% further bonus from " + p.getQuantity () + "x " + p.getPickID () +
+							log.finest (pickProductionBonus.getPercentageBonus () + "% further bonus from " + p.getQuantity () + "x " + p.getPickID () +
 								" improves research bonus reduction to " + DECIMAL_FORMATTER.format (researchBonus) + "...");
 						}
 					}
@@ -238,22 +244,31 @@ public final class MomSpellCalculations
 
 		if (researchPercentageBonus > spellSettings.getSpellBooksResearchBonusCap ())
 		{
-			debugLogger.finest ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) +
+			log.finest ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) +
 				"% but this is capped at " + DECIMAL_FORMATTER.format (spellSettings.getSpellBooksResearchBonusCap ()));
 
 			researchPercentageBonus = spellSettings.getSpellBooksResearchBonusCap ();
 		}
 		else
-			debugLogger.finest ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) + "%");
+			log.finest ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) + "%");
 
-		debugLogger.exiting (MomSpellCalculations.class.getName (), "calculateResearchBonus", researchPercentageBonus);
+		log.exiting (MomSpellCalculations.class.getName (), "calculateResearchBonus", researchPercentageBonus);
 		return researchPercentageBonus;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Spell utils
 	 */
-	private MomSpellCalculations ()
+	public final ISpellUtils getSpellUtils ()
 	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final ISpellUtils utils)
+	{
+		spellUtils = utils;
 	}
 }

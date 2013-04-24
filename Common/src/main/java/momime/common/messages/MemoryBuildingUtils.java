@@ -20,20 +20,23 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 /**
  * Methods for working with list of MemoryBuildings
  */
-public final class MemoryBuildingUtils
+public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MemoryBuildingUtils.class.getName ());
+	
 	/**
 	 * Checks to see if the specified building exists
 	 * @param buildingsList List of buildings to search through
 	 * @param cityLocation Location of the city to look for
 	 * @param buildingID Building to look for
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether or not the specified building exists
 	 */
-	public static final boolean findBuilding (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final String buildingID, final Logger debugLogger)
+	@Override
+	public final boolean findBuilding (final List<MemoryBuilding> buildingsList,
+		final OverlandMapCoordinates cityLocation, final String buildingID)
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "findBuilding", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
+		log.entering (MemoryBuildingUtils.class.getName (), "findBuilding", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
 
 		boolean found = false;
 		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
@@ -44,7 +47,7 @@ public final class MemoryBuildingUtils
 				found = true;
 		}
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "findBuilding", found);
+		log.exiting (MemoryBuildingUtils.class.getName (), "findBuilding", found);
 		return found;
 	}
 
@@ -53,14 +56,14 @@ public final class MemoryBuildingUtils
 	 * @param buildingsList List of buildings to remove building from
 	 * @param cityLocation Location of the city
 	 * @param buildingID Building to remove
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we can't find the requested building
 	 */
-	public static final void destroyBuilding (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final String buildingID, final Logger debugLogger)
+	@Override
+	public final void destroyBuilding (final List<MemoryBuilding> buildingsList,
+		final OverlandMapCoordinates cityLocation, final String buildingID)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "destroyBuilding", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
+		log.entering (MemoryBuildingUtils.class.getName (), "destroyBuilding", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
 
 		boolean found = false;
 		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
@@ -77,7 +80,7 @@ public final class MemoryBuildingUtils
 		if (!found)
 			throw new RecordNotFoundException (MemoryBuilding.class.getName (), CoordinatesUtils.overlandMapCoordinatesToString (cityLocation) + " - " + buildingID, "destroyBuilding");
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "destroyBuilding");
+		log.exiting (MemoryBuildingUtils.class.getName (), "destroyBuilding");
 	}
 
 	/**
@@ -85,13 +88,13 @@ public final class MemoryBuildingUtils
 	 * @param buildingID Which building we are looking for
 	 * @param map Known terrain
 	 * @param buildings Known buildings
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Location of the first of this type of building we find for this player, or null if they don't have one anywhere (or at least, one we can see)
 	 */
-	public static final OverlandMapCoordinates findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final Logger debugLogger)
+	@Override
+	public final OverlandMapCoordinates findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
+		final List<MemoryBuilding> buildings)
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "findCityWithBuilding", new String [] {new Integer (playerID).toString (), buildingID});
+		log.entering (MemoryBuildingUtils.class.getName (), "findCityWithBuilding", new String [] {new Integer (playerID).toString (), buildingID});
 
 		OverlandMapCoordinates found = null;
 		final Iterator<MemoryBuilding> iter = buildings.iterator ();
@@ -107,7 +110,7 @@ public final class MemoryBuildingUtils
 				found = thisBuilding.getCityLocation ();
 		}
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "findCityWithBuilding", found);
+		log.exiting (MemoryBuildingUtils.class.getName (), "findCityWithBuilding", found);
 		return found;
 	}
 
@@ -116,22 +119,22 @@ public final class MemoryBuildingUtils
 	 * @param buildingsList List of buildings to check against
 	 * @param cityLocation Location of the city to test
 	 * @param building Building we want to construct
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether or not the city has the necessary pre-requisite buildings
 	 */
-	public static final boolean meetsBuildingRequirements (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final Building building, final Logger debugLogger)
+	@Override
+	public final boolean meetsBuildingRequirements (final List<MemoryBuilding> buildingsList,
+		final OverlandMapCoordinates cityLocation, final Building building)
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "meetsBuildingRequirements",
+		log.entering (MemoryBuildingUtils.class.getName (), "meetsBuildingRequirements",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), building.getBuildingID ()});
 
 		boolean result = true;
 		final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
 		while ((result) && (iter.hasNext ()))
-			if (!findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID (), debugLogger))
+			if (!findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()))
 				result = false;
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "meetsBuildingRequirements", result);
+		log.exiting (MemoryBuildingUtils.class.getName (), "meetsBuildingRequirements", result);
 		return result;
 	}
 
@@ -140,22 +143,22 @@ public final class MemoryBuildingUtils
 	 * @param buildingsList List of buildings to check against
 	 * @param cityLocation Location of the city to test
 	 * @param unit Unit we want to construct
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether or not the city has the necessary pre-requisite buildings
 	 */
-	public static final boolean meetsUnitRequirements (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final Unit unit, final Logger debugLogger)
+	@Override
+	public final boolean meetsUnitRequirements (final List<MemoryBuilding> buildingsList,
+		final OverlandMapCoordinates cityLocation, final Unit unit)
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "meetsUnitRequirements",
+		log.entering (MemoryBuildingUtils.class.getName (), "meetsUnitRequirements",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), unit.getUnitID ()});
 
 		boolean result = true;
 		final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
 		while ((result) && (iter.hasNext ()))
-			if (!findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID (), debugLogger))
+			if (!findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()))
 				result = false;
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "meetsUnitRequirements", result);
+		log.exiting (MemoryBuildingUtils.class.getName (), "meetsUnitRequirements", result);
 		return result;
 	}
 
@@ -165,14 +168,14 @@ public final class MemoryBuildingUtils
 	 * @param cityLocation Location of the city containing the building that we want to sell
 	 * @param buildingID Building we want to sell
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Building that depends on the specified building, or null if there is none
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
-	public static final String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinates cityLocation,
-		final String buildingID, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
+	@Override
+	public final String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinates cityLocation,
+		final String buildingID, final ICommonDatabase db) throws RecordNotFoundException
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "doAnyBuildingsDependOn",
+		log.entering (MemoryBuildingUtils.class.getName (), "doAnyBuildingsDependOn",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
 
 		String result = null;
@@ -193,7 +196,7 @@ public final class MemoryBuildingUtils
 			}
 		}
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "doAnyBuildingsDependOn", result);
+		log.exiting (MemoryBuildingUtils.class.getName (), "doAnyBuildingsDependOn", result);
 		return result;
 	}
 
@@ -201,13 +204,13 @@ public final class MemoryBuildingUtils
 	 * @param buildingID Building that is being removed from a city
 	 * @param buildingOrUnitID The building or unit that we were trying to build
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return True if buildingID is a prerequisite for buildingOrUnitID
 	 */
-	public static final boolean isBuildingAPrerequisiteFor (final String buildingID, final String buildingOrUnitID,
-		final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final boolean isBuildingAPrerequisiteFor (final String buildingID, final String buildingOrUnitID,
+		final ICommonDatabase db)
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "isBuildingAPrerequisiteFor", new String [] {buildingID, buildingOrUnitID});
+		log.entering (MemoryBuildingUtils.class.getName (), "isBuildingAPrerequisiteFor", new String [] {buildingID, buildingOrUnitID});
 
 		boolean result = false;
 
@@ -238,7 +241,7 @@ public final class MemoryBuildingUtils
 			// Ignore, it could be a unit
 		}
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "isBuildingAPrerequisiteFor", result);
+		log.exiting (MemoryBuildingUtils.class.getName (), "isBuildingAPrerequisiteFor", result);
 		return result;
 	}
 
@@ -247,14 +250,14 @@ public final class MemoryBuildingUtils
 	 * @param buildingsList List of buildings to search through
 	 * @param cityLocation Location of the city to test
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Number of free experience points units constructed here will have
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
-	public static final int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
+	@Override
+	public final int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
+		final OverlandMapCoordinates cityLocation, final ICommonDatabase db) throws RecordNotFoundException
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "experienceFromBuildings", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		log.entering (MemoryBuildingUtils.class.getName (), "experienceFromBuildings", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
 
 		// Check all buildings at this location
 		int result = 0;
@@ -266,7 +269,7 @@ public final class MemoryBuildingUtils
 					result = Math.max (result, exp);
 			}
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "experienceFromBuildings", result);
+		log.exiting (MemoryBuildingUtils.class.getName (), "experienceFromBuildings", result);
 		return result;
 	}
 
@@ -278,15 +281,15 @@ public final class MemoryBuildingUtils
 	 * @param populationTaskID Population task we want to find the bonus for (i.e. Farmer)
 	 * @param productionTypeID Production type we want to find the bonus for (i.e. Rations)
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Double the additional per population production granted by buildings
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
-	public static final int totalBonusProductionPerPersonFromBuildings (final List<MemoryBuilding> buildingsList,
+	@Override
+	public final int totalBonusProductionPerPersonFromBuildings (final List<MemoryBuilding> buildingsList,
 		final OverlandMapCoordinates cityLocation, final String populationTaskID, final String productionTypeID,
-		final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
+		final ICommonDatabase db) throws RecordNotFoundException
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "totalBonusProductionPerPersonFromBuildings", cityLocation.toString ());
+		log.entering (MemoryBuildingUtils.class.getName (), "totalBonusProductionPerPersonFromBuildings", cityLocation.toString ());
 
 		// Check all buildings at this location
 		int doubleAmount = 0;
@@ -299,21 +302,21 @@ public final class MemoryBuildingUtils
 					if ((populationTaskID.equals (modifier.getPopulationTaskID ())) && (productionTypeID.equals (modifier.getProductionTypeID ())))
 						doubleAmount = doubleAmount + modifier.getDoubleAmount ();
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "totalBonusProductionPerPersonFromBuildings", doubleAmount);
+		log.exiting (MemoryBuildingUtils.class.getName (), "totalBonusProductionPerPersonFromBuildings", doubleAmount);
 		return doubleAmount;
 	}
 
 	/**
 	 * @param building Building we want the consumption of
 	 * @param productionTypeID Production type that we want the consumption of
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return The amount of this production type that this building consumes; these are positive undoubled values
 	 * @throws MomException If we find a building consumption that isn't a multiple of 2
 	 */
-	public static final int findBuildingConsumption (final Building building, final String productionTypeID, final Logger debugLogger)
+	@Override
+	public final int findBuildingConsumption (final Building building, final String productionTypeID)
 		throws MomException
 	{
-		debugLogger.entering (MemoryBuildingUtils.class.getName (), "findBuildingConsumption", new String [] {building.getBuildingID (), productionTypeID});
+		log.entering (MemoryBuildingUtils.class.getName (), "findBuildingConsumption", new String [] {building.getBuildingID (), productionTypeID});
 
 		// Find the right type of production
 		int consumptionAmount = 0;
@@ -336,7 +339,7 @@ public final class MemoryBuildingUtils
 				}
 		}
 
-		debugLogger.exiting (MemoryBuildingUtils.class.getName (), "findBuildingConsumption", consumptionAmount);
+		log.exiting (MemoryBuildingUtils.class.getName (), "findBuildingConsumption", consumptionAmount);
 		return consumptionAmount;
 	}
 
@@ -344,7 +347,8 @@ public final class MemoryBuildingUtils
 	 * @param building Building being sold
 	 * @return Gold obtained from selling building; will be 0 for special buildings such as trade goods
 	 */
-	public static final int goldFromSellingBuilding (final Building building)
+	@Override
+	public final int goldFromSellingBuilding (final Building building)
 	{
 		final int gold;
 		if (building.getProductionCost () == null)
@@ -353,12 +357,5 @@ public final class MemoryBuildingUtils
 			gold = building.getProductionCost () / 3;
 
 		return gold;
-	}
-
-	/**
-	 * Prevent instantiation
-	 */
-	private MemoryBuildingUtils ()
-	{
 	}
 }

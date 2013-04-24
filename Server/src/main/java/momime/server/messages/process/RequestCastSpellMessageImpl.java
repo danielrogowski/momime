@@ -27,26 +27,28 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public class RequestCastSpellMessageImpl extends RequestCastSpellMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (RequestCastSpellMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws IOException For other types of failures
 	 * @throws RecordNotFoundException If either the spell we want to research now, or the spell previously being researched, can't be found
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		debugLogger.entering (RequestCastSpellMessageImpl.class.getName (), "process",
+		log.entering (RequestCastSpellMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getSpellID ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		mom.getSpellProcessing ().requestCastSpell (sender, getSpellID (),
-			getCombatLocation (), getCombatTargetLocation (), getCombatTargetUnitURN (), mom, debugLogger);
+			getCombatLocation (), getCombatTargetLocation (), getCombatTargetUnitURN (), mom);
 
-		debugLogger.exiting (RequestCastSpellMessageImpl.class.getName (), "process");
+		log.exiting (RequestCastSpellMessageImpl.class.getName (), "process");
 	}
 }

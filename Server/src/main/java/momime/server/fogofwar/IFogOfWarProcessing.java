@@ -1,7 +1,6 @@
 package momime.server.fogofwar;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -44,7 +43,6 @@ public interface IFogOfWarProcessing
 	 * @param triggeredFrom What caused the change in visible area - this is only used for debug messages on the client
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -53,6 +51,6 @@ public interface IFogOfWarProcessing
 	 */
 	public void updateAndSendFogOfWar (final FogOfWarMemory trueMap, final PlayerServerDetails player,
 		final List<PlayerServerDetails> players, final boolean nameCitiesAtStartOfGame,
-		final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

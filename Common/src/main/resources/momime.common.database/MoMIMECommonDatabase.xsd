@@ -3,7 +3,7 @@
 	xmlns:momimecommon="http://momime/common/database/v0_9_4" targetNamespace="http://momime/common/database/v0_9_4"
 	jaxb:version="2.0">
 	
-	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../NdgMap/src/main/resources/Map.xsd" />
+	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../../NdgMap/src/main/resources/com.ndg.map/Map.xsd" />
 	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="MoMIMENewGameDatabase.xsd" />
 	
     <xsd:annotation>

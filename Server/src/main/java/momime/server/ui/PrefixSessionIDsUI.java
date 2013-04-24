@@ -1,11 +1,9 @@
 package momime.server.ui;
 
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.server.logging.WriteToOtherLogHandler;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 
@@ -28,12 +26,11 @@ abstract class PrefixSessionIDsUI implements MomServerUI
 	/**
 	 * @param session Newly created session
 	 * @param sessionWindow The session window created by createWindowForNewSession
-	 * @param debugLogger Logger which writes to the main window/console, and copies messages to the file logger if enabled
 	 * @param fileLogger Logger which writes to a disk file, if enabled
 	 * @return Logger created and configured for this session
 	 */
 	@Override
-	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow, final Logger debugLogger, final Logger fileLogger)
+	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow, final Logger fileLogger)
 	{
 		final Logger sessionLogger = Logger.getLogger ("Session" + session.getSessionID ());
 		sessionLogger.setLevel (Level.INFO);
@@ -41,7 +38,7 @@ abstract class PrefixSessionIDsUI implements MomServerUI
 
 		// Careful here, when running test scripts, more than one test script will end up creating the same sesson logger
 		// and so we have to make sure we don't add a new handler to it each time
-		if (sessionLogger.getHandlers ().length == 0)
+/*		if (sessionLogger.getHandlers ().length == 0)
 		{
 			final Handler copyToDebugHandler = new WriteToOtherLogHandler (debugLogger, "[Session " + session.getSessionID () + "] ");
 			copyToDebugHandler.setLevel (Level.INFO);
@@ -50,7 +47,7 @@ abstract class PrefixSessionIDsUI implements MomServerUI
 			sessionLogger.addHandler (copyToDebugHandler);
 
 			// The debug logger then copies the message again to the file logger, so we don't need to worry about that here
-		}
+		} */
 
 		return sessionLogger;
 	}

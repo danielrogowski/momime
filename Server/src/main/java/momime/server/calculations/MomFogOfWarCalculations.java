@@ -3,7 +3,7 @@ package momime.server.calculations;
 import java.util.Iterator;
 
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
-import momime.common.messages.MemoryGridCellUtils;
+import momime.common.messages.IMemoryGridCellUtils;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
@@ -17,6 +17,9 @@ import momime.server.database.v0_9_4.Plane;
  */
 public final class MomFogOfWarCalculations implements IMomFogOfWarCalculations
 {
+	/** MemoryGridCell utils */
+	private IMemoryGridCellUtils memoryGridCellUtils;
+
 	/**
 	 * This is used outside of updateAndSendFogOfWar () method, while the player's FOW area is set to the normal 3 state values indicating what the player can see.
 	 *
@@ -68,7 +71,7 @@ public final class MomFogOfWarCalculations implements IMomFogOfWarCalculations
 	{
 		boolean canSee;
 
-		if (MemoryGridCellUtils.isTerrainTowerOfWizardry
+		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry
 			(trueTerrain.getPlane ().get (location.getPlane ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()).getTerrainData ()))
 		{
 			canSee = false;
@@ -86,5 +89,21 @@ public final class MomFogOfWarCalculations implements IMomFogOfWarCalculations
 			canSee = canSeeMidTurn (fogOfWarArea.getPlane ().get (location.getPlane ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()), setting);
 
 		return canSee;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final IMemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
 	}
 }

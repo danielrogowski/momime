@@ -13,11 +13,11 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
 import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.MemoryBuildingUtils;
-import momime.common.messages.MemoryCombatAreaEffectUtils;
-import momime.common.messages.MemoryGridCellUtils;
-import momime.common.messages.MemoryMaintainedSpellUtils;
-import momime.common.messages.UnitUtils;
+import momime.common.messages.IMemoryBuildingUtils;
+import momime.common.messages.IMemoryCombatAreaEffectUtils;
+import momime.common.messages.IMemoryGridCellUtils;
+import momime.common.messages.IMemoryMaintainedSpellUtils;
+import momime.common.messages.IUnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessageData;
 import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessageData;
@@ -45,8 +45,8 @@ import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.CompareUtils;
-import momime.server.calculations.MomServerCityCalculations;
-import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.calculations.IMomServerCityCalculations;
+import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
@@ -69,9 +69,33 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  */
 public class FogOfWarProcessing implements IFogOfWarProcessing
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (FogOfWarProcessing.class.getName ());
+	
 	/** FOW duplication utils */
 	private IFogOfWarDuplication fogOfWarDuplication;
 
+	/** Unit utils */
+	private IUnitUtils unitUtils;
+	
+	/** MemoryBuilding utils */
+	private IMemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Memory CAE utils */
+	private IMemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private IMemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** MemoryGridCell utils */
+	private IMemoryGridCellUtils memoryGridCellUtils;
+	
+	/** Server-only city calculations */
+	private IMomServerCityCalculations serverCityCalculations;
+	
+	/** Server-only unit calculations */
+	private IMomServerUnitCalculations serverUnitCalculations;
+	
 	/**
 	 * Marks that we can see a particular cell
 	 * @param fogOfWarArea Player's fog of war area
@@ -79,7 +103,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	 * @param y Y coordinate of map cell to update
 	 * @param plane Plane of map cell to update
 	 */
-	final static void canSee (final MapVolumeOfFogOfWarStates fogOfWarArea, final int x, final int y, final int plane)
+	final void canSee (final MapVolumeOfFogOfWarStates fogOfWarArea, final int x, final int y, final int plane)
 	{
 		final List<FogOfWarStateID> row = fogOfWarArea.getPlane ().get (plane).getRow ().get (y).getCell ();
 
@@ -116,7 +140,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	 * @param plane Plane of map cell to update
 	 * @param radius Visible radius (negative = do nothing, 0 = this cell only, 1 = 1 ring around this cell, and so on)
 	 */
-	final static void canSeeRadius (final MapVolumeOfFogOfWarStates fogOfWarArea, final CoordinateSystem sys, final int x, final int y, final int plane, final int radius)
+	final void canSeeRadius (final MapVolumeOfFogOfWarStates fogOfWarArea, final CoordinateSystem sys, final int x, final int y, final int plane, final int radius)
 	{
 		// First the centre square }
 		canSee (fogOfWarArea, x, y, plane);
@@ -151,23 +175,22 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	 * @param players List of players in the session
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	final static void markVisibleArea (final FogOfWarMemory trueMap, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+	final void markVisibleArea (final FogOfWarMemory trueMap, final PlayerServerDetails player,
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		debugLogger.entering (FogOfWarProcessing.class.getName (), "markVisibleArea", player.getPlayerDescription ().getPlayerID ());
+		log.entering (FogOfWarProcessing.class.getName (), "markVisibleArea", player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// Nature Awareness allows us to see the whole map, in which case no point checking each city or unit
 		if (((sd.isDisableFogOfWar () != null) && (sd.isDisableFogOfWar ())) ||
-			MemoryMaintainedSpellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
-				ServerDatabaseValues.VALUE_SPELL_ID_NATURE_AWARENESS, null, null, null, null, debugLogger) != null)
+			getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
+				ServerDatabaseValues.VALUE_SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null)
 		{
 			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
@@ -177,8 +200,8 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 		else
 		{
 			// Check if we have regular Awareness cast, so we don't have to check individually for every city
-			final boolean awareness = (MemoryMaintainedSpellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
-				ServerDatabaseValues.VALUE_SPELL_ID_AWARENESS, null, null, null, null, debugLogger) != null);
+			final boolean awareness = (getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
+				ServerDatabaseValues.VALUE_SPELL_ID_AWARENESS, null, null, null, null) != null);
 
 			// Check what areas we can see because we have cities there
 			for (final Plane plane : db.getPlane ())
@@ -198,7 +221,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 							{
 								// Most cities can 'see' the same pattern as their resource range, but some special buildings can extend this
 								// This does not handle the "Nature's Eye" spell - this is done with the spells below
-								final int scoutingRange = MomServerCityCalculations.calculateCityScoutingRange (trueMap.getBuilding (), coords, db, debugLogger);
+								final int scoutingRange = getServerCityCalculations ().calculateCityScoutingRange (trueMap.getBuilding (), coords, db);
 								if (scoutingRange >= 0)
 									canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), x, y, plane.getPlaneNumber (), scoutingRange);
 								else
@@ -211,8 +234,8 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 							}
 
 							// Enemy city - we can see a small area around it if we either have Awareness cast or a curse cast on the city
-							else if ((awareness) || (MemoryMaintainedSpellUtils.findMaintainedSpell
-								(trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), null, null, null, coords, null, debugLogger) != null))
+							else if ((awareness) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+								(trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), null, null, null, coords, null) != null))
 
 								canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), x, y, plane.getPlaneNumber (), 1);
 						}
@@ -222,11 +245,11 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 			for (final MemoryUnit thisUnit : trueMap.getUnit ())
 				if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
 				{
-					final int scoutingRange = MomServerUnitCalculations.calculateUnitScoutingRange
-						(thisUnit, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db, debugLogger);
+					final int scoutingRange = getServerUnitCalculations ().calculateUnitScoutingRange
+						(thisUnit, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 
 					// If standing in a tower, can see both planes
-					if (MemoryGridCellUtils.isTerrainTowerOfWizardry (trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
+					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
 						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ()))
 					{
 						for (final Plane plane : db.getPlane ())
@@ -250,7 +273,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 				}
 		}
 
-		debugLogger.exiting (FogOfWarProcessing.class.getName (), "markVisibleArea");
+		log.exiting (FogOfWarProcessing.class.getName (), "markVisibleArea");
 	}
 
 	/**
@@ -268,7 +291,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	 * @param setting FOW setting applicable for what we're testing whether we can see (e.g. use unit value to test if we can see a unit)
 	 * @return Action the server needs to take to update the players' memory when the area the player can see changes
 	 */
-	final static FogOfWarUpdateAction determineVisibleAreaChangedUpdateAction (final FogOfWarStateID state, final FogOfWarValue setting)
+	final FogOfWarUpdateAction determineVisibleAreaChangedUpdateAction (final FogOfWarStateID state, final FogOfWarValue setting)
 	{
 		final FogOfWarUpdateAction action;
 
@@ -306,7 +329,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	 * @param coordinates Coordinates to look for
 	 * @return True if coordinates are already in the list
 	 */
-	final static boolean areCoordinatesIncludedInMessage (final List<UpdateNodeLairTowerUnitIDMessageData> coordinateList, final OverlandMapCoordinates coordinates)
+	final boolean areCoordinatesIncludedInMessage (final List<UpdateNodeLairTowerUnitIDMessageData> coordinateList, final OverlandMapCoordinates coordinates)
 	{
 		boolean result = false;
 		final Iterator<UpdateNodeLairTowerUnitIDMessageData> iter = coordinateList.iterator ();
@@ -339,7 +362,6 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	 * @param triggeredFrom What caused the change in visible area - this is only used for debug messages on the client
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -349,12 +371,12 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	@Override
 	public final void updateAndSendFogOfWar (final FogOfWarMemory trueMap, final PlayerServerDetails player,
 		final List<PlayerServerDetails> players, final boolean nameCitiesAtStartOfGame,
-		final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		debugLogger.entering (FogOfWarProcessing.class.getName (), "updateAndSendFogOfWar", player.getPlayerDescription ().getPlayerID ());
+		log.entering (FogOfWarProcessing.class.getName (), "updateAndSendFogOfWar", player.getPlayerDescription ().getPlayerID ());
 
-		markVisibleArea (trueMap, player, players, sd, db, debugLogger);
+		markVisibleArea (trueMap, player, players, sd, db);
 
 		// Start off the big message, if a human player
 		final FogOfWarVisibleAreaChangedMessage msg;
@@ -490,7 +512,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 				(thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ());
 
 			if (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
-				if (getFogOfWarDuplication ().copyBuilding (thisBuilding, priv.getFogOfWarMemory ().getBuilding (), debugLogger))
+				if (getFogOfWarDuplication ().copyBuilding (thisBuilding, priv.getFogOfWarMemory ().getBuilding ()))
 					if (msg != null)
 					{
 						final AddBuildingMessageData buildingMsg = new AddBuildingMessageData ();
@@ -517,7 +539,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 			final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 			if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
-				(!MemoryBuildingUtils.findBuilding (trueMap.getBuilding (), thisBuilding.getCityLocation (), thisBuilding.getBuildingID (), debugLogger))))
+				(!getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), thisBuilding.getCityLocation (), thisBuilding.getBuildingID ()))))
 			{
 				if (msg != null)
 				{
@@ -551,7 +573,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 				// The fact that we can see the terrain on plane 1 also allows us to see the unit, so have multiple states and multiple update actions to consider
 				final List<FogOfWarStateID> states = new ArrayList<FogOfWarStateID> ();
 
-				if (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData))
+				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 				{
 					// In a tower, consider all planes
 					for (final Plane plane : db.getPlane ())
@@ -574,10 +596,10 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 				if ((actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)) &&
 					(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF)))
 				{
-					final boolean unitChanged = getFogOfWarDuplication ().copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit (), debugLogger);
+					final boolean unitChanged = getFogOfWarDuplication ().copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit ());
 					updatedUnitURNs.add (thisUnit.getUnitURN ());
 
-					debugLogger.finest ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
+					log.finest ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
 					if ((unitChanged) && (msg != null))
 						msg.getAddUnit ().add (getFogOfWarDuplication ().createAddUnitMessage (thisUnit, db));
 
@@ -628,7 +650,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 				// The fact that we can see the terrain on plane 1 also allows us to see the unit, so have multiple states and multiple update actions to consider
 				final List<FogOfWarStateID> states = new ArrayList<FogOfWarStateID> ();
 
-				if (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData))
+				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 				{
 					// In a tower, consider all planes
 					for (final Plane plane : db.getPlane ())
@@ -658,7 +680,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 
 				else if (actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE))
 				{
-					final MemoryUnit trueUnit = UnitUtils.findUnitURN (thisUnit.getUnitURN (), trueMap.getUnit (), debugLogger);
+					final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (thisUnit.getUnitURN (), trueMap.getUnit ());
 					if (trueUnit == null)
 						needToRemoveUnit = true;
 					else
@@ -672,7 +694,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 
 				if (needToRemoveUnit)
 				{
-					debugLogger.finest ("UnitURN " + thisUnit.getUnitURN () + " has gone out of view for player " + player.getPlayerDescription ().getPlayerID () + ", sending kill as part of VAC");
+					log.finest ("UnitURN " + thisUnit.getUnitURN () + " has gone out of view for player " + player.getPlayerDescription ().getPlayerID () + ", sending kill as part of VAC");
 					removedUnitURNs.add (thisUnit.getUnitURN ());
 
 					if (msg != null)
@@ -717,7 +739,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 				if (needToUpdate)
 
 					// Copy spell into player's memory
-					if (getFogOfWarDuplication ().copyMaintainedSpell (thisSpell, priv.getFogOfWarMemory ().getMaintainedSpell (), debugLogger))
+					if (getFogOfWarDuplication ().copyMaintainedSpell (thisSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
 						if (msg != null)
 							msg.getAddMaintainedSpell ().add (getFogOfWarDuplication ().createAddSpellMessage (thisSpell));
 			}
@@ -747,8 +769,8 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 					final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 					needToRemoveSpell = ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
-						(MemoryMaintainedSpellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), thisSpell.getCastingPlayerID (), thisSpell.getSpellID (),
-							thisSpell.getUnitURN (), thisSpell.getUnitSkillID (), thisSpell.getCityLocation (), thisSpell.getCitySpellEffectID (), debugLogger) == null)));
+						(getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), thisSpell.getCastingPlayerID (), thisSpell.getSpellID (),
+							thisSpell.getUnitURN (), thisSpell.getUnitSkillID (), thisSpell.getCityLocation (), thisSpell.getCitySpellEffectID ()) == null)));
 				}
 
 				if (needToRemoveSpell)
@@ -788,7 +810,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 					(thisCAE.getMapLocation ().getY ()).getCell ().get (thisCAE.getMapLocation ().getX ());
 
 				if (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
-					if (getFogOfWarDuplication ().copyCombatAreaEffect (thisCAE, priv.getFogOfWarMemory ().getCombatAreaEffect (), debugLogger))
+					if (getFogOfWarDuplication ().copyCombatAreaEffect (thisCAE, priv.getFogOfWarMemory ().getCombatAreaEffect ()))
 						if (msg != null)
 						{
 							final AddCombatAreaEffectMessageData caeMsg = new AddCombatAreaEffectMessageData ();
@@ -817,7 +839,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 				final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 				if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
-					(!MemoryCombatAreaEffectUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), thisCAE.getMapLocation (), thisCAE.getCombatAreaEffectID (), thisCAE.getCastingPlayerID (), debugLogger))))
+					(!getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (trueMap.getCombatAreaEffect (), thisCAE.getMapLocation (), thisCAE.getCombatAreaEffectID (), thisCAE.getCastingPlayerID ()))))
 				{
 					if (msg != null)
 					{
@@ -890,7 +912,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 		if (msg != null)
 			player.getConnection ().sendMessageToClient (msg);
 
-		debugLogger.exiting (FogOfWarProcessing.class.getName (), "updateAndSendFogOfWar");
+		log.exiting (FogOfWarProcessing.class.getName (), "updateAndSendFogOfWar");
 	}
 
 	/**
@@ -907,5 +929,117 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	public final void setFogOfWarDuplication (final IFogOfWarDuplication dup)
 	{
 		fogOfWarDuplication = dup;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final IUnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final IUnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
+	/**
+	 * @return MemoryBuilding utils
+	 */
+	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils MemoryBuilding utils
+	 */
+	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final IMemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final IMemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final IMemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final IMemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return Server-only city calculations
+	 */
+	public final IMomServerCityCalculations getServerCityCalculations ()
+	{
+		return serverCityCalculations;
+	}
+
+	/**
+	 * @param calc Server-only city calculations
+	 */
+	public final void setServerCityCalculations (final IMomServerCityCalculations calc)
+	{
+		serverCityCalculations = calc;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final IMomServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final IMomServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

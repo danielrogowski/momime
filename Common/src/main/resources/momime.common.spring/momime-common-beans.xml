@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
+
+	<!-- Common beans used both by the MoM IME client and server -->
+	
+	<bean id="clientToServerJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>com.ndg.multiplayer.base.ClientToServerMessage</value>
+    			<value>com.ndg.multiplayer.sessionbase.CreateAccount</value>
+    			<value>com.ndg.multiplayer.sessionbase.Login</value>
+    			<value>com.ndg.multiplayer.sessionbase.Logout</value>
+    			<value>com.ndg.multiplayer.sessionbase.RequestSessionList</value>
+    			<value>com.ndg.multiplayer.sessionbase.NewSession</value>
+    			<value>com.ndg.multiplayer.sessionbase.JoinSession</value>
+    			<value>com.ndg.multiplayer.sessionbase.LeaveSession</value>
+
+    			<!-- MoM multiplayer structures -->
+    			<value>momime.common.messages.v0_9_4.MomSessionDescription</value>
+
+				<!-- MoM multiplayer messages -->
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseCustomPicksMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseCustomFlagColourMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChangeOptionalFarmersMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistributionMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.AlchemyMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+
+	<bean id="serverToClientJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>com.ndg.multiplayer.base.ServerToClientMessage</value>
+    			<value>com.ndg.multiplayer.sessionbase.CreateAccountSuccessful</value>
+    			<value>com.ndg.multiplayer.sessionbase.CreateAccountFailed</value>
+    			<value>com.ndg.multiplayer.sessionbase.LoginSuccessful</value>
+    			<value>com.ndg.multiplayer.sessionbase.LoginFailed</value>
+    			<value>com.ndg.multiplayer.sessionbase.LogoutSuccessful</value>
+    			<value>com.ndg.multiplayer.sessionbase.LogoutFailed</value>
+    			<value>com.ndg.multiplayer.sessionbase.RequestSessionListSuccessful</value>
+    			<value>com.ndg.multiplayer.sessionbase.RequestSessionListFailed</value>
+    			<value>com.ndg.multiplayer.sessionbase.JoinSuccessful</value>
+    			<value>com.ndg.multiplayer.sessionbase.JoinFailed</value>
+    			<value>com.ndg.multiplayer.sessionbase.PlayerLeft</value>
+    			<value>com.ndg.multiplayer.sessionbase.AdditionalPlayerJoined</value>
+    			<value>com.ndg.multiplayer.sessionbase.SessionEnding</value>
+    			<value>com.ndg.multiplayer.sessionbase.KickedByAnotherLogin</value>
+    			
+    			<!-- MoM multiplayer structures -->
+    			<value>momime.common.messages.v0_9_4.MomSessionDescription</value>
+    			<value>momime.common.messages.v0_9_4.MomGeneralPublicKnowledge</value>
+    			<value>momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge</value>
+    			<value>momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge</value>
+    			<value>momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge</value>
+    			<value>momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge</value>
+
+				<!-- MoM multiplayer messages -->
+    			<value>momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.TextPopupMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChosenWizardMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChooseYourRaceNowMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChosenStandardPhotoMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChosenCustomPhotoMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.StartGameMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ErasePendingMovementsMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.EndOfContinuedMovementMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SetCurrentPlayerMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.StartSimultaneousTurnMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.AddNewTurnMessagesMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.OverlandMovementTypesMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateOverlandMovementRemainingMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.MoveUnitStackOverlandMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SelectNextUnitToMoveOverlandMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SpellResearchChangedMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage</value>
+
+				<!-- FoW messages -->
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.AddBuildingMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.AddUnitMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.KillUnitMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.FogOfWarVisibleAreaChangedMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateDamageTakenAndExperienceMessage</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+
+	<bean id="cityCalculations" class="momime.common.calculations.MomCityCalculations">
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
+	
+	<bean id="skillCalculations" class="momime.common.calculations.MomSkillCalculations" />
+	
+	<bean id="spellCalculations" class="momime.common.calculations.MomSpellCalculations">
+		<property name="spellUtils" ref="spellUtils" />
+	</bean>
+	
+	<bean id="unitCalculations" class="momime.common.calculations.MomUnitCalculations">
+		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
+
+	<bean id="memoryBuildingUtils" class="momime.common.messages.MemoryBuildingUtils" />
+	
+	<bean id="memoryCombatAreaEffectUtils" class="momime.common.messages.MemoryCombatAreaEffectUtils" />
+	
+	<bean id="memoryGridCellUtils" class="momime.common.messages.MemoryGridCellUtils" />
+	
+	<bean id="memoryMaintainedSpellUtils" class="momime.common.messages.MemoryMaintainedSpellUtils" />
+	
+	<bean id="playerPickUtils" class="momime.common.messages.PlayerPickUtils" />
+	
+	<bean id="resourceValueUtils" class="momime.common.messages.ResourceValueUtils">
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="skillCalculations" ref="skillCalculations" />
+		<property name="spellCalculations" ref="spellCalculations" />
+	</bean>
+	
+	<bean id="spellUtils" class="momime.common.messages.SpellUtils">
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="spellCalculations" ref="spellCalculations" />
+	</bean>
+	
+	<bean id="unitUtils" class="momime.common.messages.UnitUtils">
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+	</bean>
+
+</beans>

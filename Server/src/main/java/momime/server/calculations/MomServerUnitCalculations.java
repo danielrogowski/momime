@@ -12,8 +12,8 @@ import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.UnitHasSkill;
-import momime.common.messages.MemoryGridCellUtils;
-import momime.common.messages.UnitUtils;
+import momime.common.messages.IMemoryGridCellUtils;
+import momime.common.messages.IUnitUtils;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
@@ -42,41 +42,50 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
  */
-public final class MomServerUnitCalculations
+public final class MomServerUnitCalculations implements IMomServerUnitCalculations
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomServerUnitCalculations.class.getName ());
+	
 	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
 	private static final int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
 
 	/** Marks locations in the doubleMovementDistances array that we've proved that we cannot move to */
 	private static final int MOVEMENT_DISTANCE_CANNOT_MOVE_HERE = -2;
 
+	/** Unit utils */
+	private IUnitUtils unitUtils;
+	
+	/** MemoryGridCell utils */
+	private IMemoryGridCellUtils memoryGridCellUtils;
+	
 	/**
 	 * @param unit The unit to check
 	 * @param players Pre-locked players list
 	 * @param spells Known spells (flight spell might increase scouting range)
 	 * @param combatAreaEffects Known combat area effects (because theoretically, you could define a CAE which bumped up the scouting skill...)
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return How many squares this unit can see; by default = 1, flying units automatically get 2, and the Scouting unit skill can push this even higher
 	 * @throws RecordNotFoundException If we can't find the player who owns the unit, or the unit has a skill that we can't find in the cache
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public static final int calculateUnitScoutingRange (final MemoryUnit unit, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final int calculateUnitScoutingRange (final MemoryUnit unit, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		debugLogger.entering (MomServerUnitCalculations.class.getName (), "calculateUnitScoutingRange",
+		log.entering (MomServerUnitCalculations.class.getName (), "calculateUnitScoutingRange",
 			new String [] {new Integer (unit.getUnitURN ()).toString (), unit.getUnitID ()});
 
 		int scoutingRange = 1;
 
 		// Make sure we only bother to do this once
-		final UnitHasSkillMergedList mergedSkills = UnitUtils.mergeSpellEffectsIntoSkillList (spells, unit, debugLogger);
+		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit);
 
 		// Actual scouting skill
-		scoutingRange = Math.max (scoutingRange, UnitUtils.getModifiedSkillValue
-			(unit, mergedSkills, ServerDatabaseValues.VALUE_UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db, debugLogger));
+		scoutingRange = Math.max (scoutingRange, getUnitUtils ().getModifiedSkillValue
+			(unit, mergedSkills, ServerDatabaseValues.VALUE_UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db));
 
 		// Scouting range granted by other skills (i.e. flight skills)
 		for (final UnitHasSkill thisSkill : mergedSkills)
@@ -86,7 +95,7 @@ public final class MomServerUnitCalculations
 				scoutingRange = Math.max (scoutingRange, unitSkillScoutingRange);
 		}
 
-		debugLogger.exiting (MomServerUnitCalculations.class.getName (), "calculateUnitScoutingRange", scoutingRange);
+		log.exiting (MomServerUnitCalculations.class.getName (), "calculateUnitScoutingRange", scoutingRange);
 		return scoutingRange;
 	}
 
@@ -95,20 +104,19 @@ public final class MomServerUnitCalculations
 	 * @param units Player's knowledge of all units
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Count how many of that player's units are in every cell on the map
 	 */
-	static final int [] [] [] countOurAliveUnitsAtEveryLocation (final int playerID, final List<MemoryUnit> units,
-		final CoordinateSystem sys, final ServerDatabaseEx db, final Logger debugLogger)
+	final int [] [] [] countOurAliveUnitsAtEveryLocation (final int playerID, final List<MemoryUnit> units,
+		final CoordinateSystem sys, final ServerDatabaseEx db)
 	{
-		debugLogger.entering (MomServerUnitCalculations.class.getName (), "countOurAliveUnitsAtEveryLocation", playerID);
+		log.entering (MomServerUnitCalculations.class.getName (), "countOurAliveUnitsAtEveryLocation", playerID);
 
 		final int [] [] [] count = new int [db.getPlane ().size ()] [sys.getHeight ()] [sys.getWidth ()];
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) & (thisUnit.getUnitLocation () != null))
 				count [thisUnit.getUnitLocation ().getPlane ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
 
-		debugLogger.exiting (MomServerUnitCalculations.class.getName (), "countOurAliveUnitsAtEveryLocation");
+		log.exiting (MomServerUnitCalculations.class.getName (), "countOurAliveUnitsAtEveryLocation");
 		return count;
 	}
 
@@ -121,20 +129,20 @@ public final class MomServerUnitCalculations
 	 * @param units The player who is trying to move here's knowledge of units
 	 * @param nodeLairTowerKnownUnitIDs The player who is trying to move here's knowledge of nodes/lairs/tower's they've scouted
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether moving here will result in an attack or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	public static final MoveResultsInAttackTypeID willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
+	@Override
+	public final MoveResultsInAttackTypeID willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs,
-		final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
+		final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		debugLogger.entering (MomServerUnitCalculations.class.getName (), "willMovingHereResultInAnAttack", new Integer [] {x, y, plane, movingPlayerID});
+		log.entering (MomServerUnitCalculations.class.getName (), "willMovingHereResultInAnAttack", new Integer [] {x, y, plane, movingPlayerID});
 
 		// Work out what plane to look for units on
 		final MemoryGridCell mc = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
 		final int towerPlane;
-		if (MemoryGridCellUtils.isTerrainTowerOfWizardry (mc.getTerrainData ()))
+		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
 			towerPlane = 0;
 		else
 			towerPlane = plane;
@@ -156,12 +164,12 @@ public final class MomServerUnitCalculations
 			resultsInAttack = MoveResultsInAttackTypeID.SCOUT;
 
 		// Lastly check for enemy units
-		else if (UnitUtils.findFirstAliveEnemyAtLocation (units, x, y, towerPlane, movingPlayerID, debugLogger) != null)
+		else if (getUnitUtils ().findFirstAliveEnemyAtLocation (units, x, y, towerPlane, movingPlayerID) != null)
 			resultsInAttack = MoveResultsInAttackTypeID.YES;
 		else
 			resultsInAttack = MoveResultsInAttackTypeID.NO;
 
-		debugLogger.exiting (MomServerUnitCalculations.class.getName (), "willMovingHereResultInAnAttack", resultsInAttack);
+		log.exiting (MomServerUnitCalculations.class.getName (), "willMovingHereResultInAnAttack", resultsInAttack);
 		return resultsInAttack;
 	}
 
@@ -169,20 +177,20 @@ public final class MomServerUnitCalculations
 	 * @param unitStack Unit stack to check
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
 	 */
-	public static final List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
+		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
 	{
-		debugLogger.entering (MomServerUnitCalculations.class.getName (), "listAllSkillsInUnitStack", UnitUtils.listUnitURNs (unitStack));
+		log.entering (MomServerUnitCalculations.class.getName (), "listAllSkillsInUnitStack", getUnitUtils ().listUnitURNs (unitStack));
 
 		final List<String> list = new ArrayList<String> ();
 		String debugList = "";
 
 		if (unitStack != null)
 			for (final MemoryUnit thisUnit : unitStack)
-				for (final UnitHasSkill thisSkill : UnitUtils.mergeSpellEffectsIntoSkillList (spells, thisUnit, debugLogger))
+				for (final UnitHasSkill thisSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, thisUnit))
 					if (!list.contains (thisSkill.getUnitSkillID ()))
 					{
 						list.add (thisSkill.getUnitSkillID ());
@@ -193,7 +201,7 @@ public final class MomServerUnitCalculations
 						debugList = debugList + thisSkill.getUnitSkillID ();
 					}
 
-		debugLogger.exiting (MomServerUnitCalculations.class.getName (), "listAllSkillsInUnitStack", debugList);
+		log.exiting (MomServerUnitCalculations.class.getName (), "listAllSkillsInUnitStack", debugList);
 		return list;
 	}
 
@@ -203,19 +211,19 @@ public final class MomServerUnitCalculations
 	 * @param tileTypeID Type of tile we are moving onto
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
 	 */
-	public static final Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
+		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
 	{
-		debugLogger.entering (MomServerUnitCalculations.class.getName (), "calculateDoubleMovementToEnterTileType",
+		log.entering (MomServerUnitCalculations.class.getName (), "calculateDoubleMovementToEnterTileType",
 			new String [] {unit.getUnitID (), new Integer (unit.getOwningPlayerID ()).toString (), tileTypeID});
 
 		// Only merge the units list of skills once
 		final List<UnitHasSkill> unitHasSkills;
 		if (unit instanceof MemoryUnit)
-			unitHasSkills = UnitUtils.mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit, debugLogger);
+			unitHasSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit);
 		else
 			unitHasSkills = unit.getUnitHasSkill ();
 
@@ -240,7 +248,7 @@ public final class MomServerUnitCalculations
 				doubleMovement = thisRule.getDoubleMovement ();
 		}
 
-		debugLogger.exiting (MomServerUnitCalculations.class.getName (), "calculateDoubleMovementToEnterTileType", doubleMovement);
+		log.exiting (MomServerUnitCalculations.class.getName (), "calculateDoubleMovementToEnterTileType", doubleMovement);
 		return doubleMovement;
 	}
 
@@ -248,16 +256,15 @@ public final class MomServerUnitCalculations
 	 * @param unitStack Unit stack we are moving
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Map indicating the doubled movement cost of entering every type of tile type for this unit stack
 	 */
-	static final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db, final Logger debugLogger)
+	final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<MemoryUnit> unitStack,
+		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
 	{
-		debugLogger.entering (MomServerUnitCalculations.class.getName (), "calculateDoubleMovementRatesForUnitStack", UnitUtils.listUnitURNs (unitStack));
+		log.entering (MomServerUnitCalculations.class.getName (), "calculateDoubleMovementRatesForUnitStack", getUnitUtils ().listUnitURNs (unitStack));
 
 		// Get list of all the skills that any unit in the stack has, in case any of them have path finding, wind walking, etc.
-		final List<String> unitStackSkills = listAllSkillsInUnitStack (unitStack, spells, db, debugLogger);
+		final List<String> unitStackSkills = listAllSkillsInUnitStack (unitStack, spells, db);
 
 		// Go through each tile type
 		final Map<String, Integer> movementRates = new HashMap<String, Integer> ();
@@ -272,7 +279,7 @@ public final class MomServerUnitCalculations
 				{
 					final MemoryUnit thisUnit = unitIter.next ();
 
-					final Integer thisMovementRate = calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileType.getTileTypeID (), spells, db, debugLogger);
+					final Integer thisMovementRate = calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileType.getTileTypeID (), spells, db);
 					if (thisMovementRate == null)
 						worstMovementRate = null;
 					else if (thisMovementRate > worstMovementRate)
@@ -284,7 +291,7 @@ public final class MomServerUnitCalculations
 					movementRates.put (tileType.getTileTypeID (), worstMovementRate);
 			}
 
-		debugLogger.exiting (MomServerUnitCalculations.class.getName (), "calculateDoubleMovementRatesForUnitStack");
+		log.exiting (MomServerUnitCalculations.class.getName (), "calculateDoubleMovementRatesForUnitStack");
 		return movementRates;
 	}
 
@@ -307,16 +314,15 @@ public final class MomServerUnitCalculations
 	 * @param cellsLeftToCheck List of cells that still need to be checked (we add adjacent cells to the end of this list)
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	private static final void calculateOverlandMovementDistances_Cell (final int cellX, final int cellY, final int cellPlane, final int movingPlayerID,
+	private final void calculateOverlandMovementDistances_Cell (final int cellX, final int cellY, final int cellPlane, final int movingPlayerID,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
 		final boolean [] [] [] canMoveToInOneTurn, final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
-		final List<MapCoordinates> cellsLeftToCheck, final CoordinateSystem sys, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
+		final List<MapCoordinates> cellsLeftToCheck, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		debugLogger.entering (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances_Cell", new Integer [] {cellX, cellY, cellPlane, movingPlayerID});
+		log.entering (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances_Cell", new Integer [] {cellX, cellY, cellPlane, movingPlayerID});
 
 		final int doubleDistanceToHere = doubleMovementDistances [cellPlane] [cellY] [cellX];
 		final int doubleMovementRemainingToHere = doubleMovementRemaining - doubleDistanceToHere;
@@ -357,7 +363,7 @@ public final class MomServerUnitCalculations
 
 							// Is this a square we have to stop at, i.e. one which contains enemy units?
 							movingHereResultsInAttack [cellPlane] [coords.getY ()] [coords.getX ()] = willMovingHereResultInAnAttack
-								(coords.getX (), coords.getY (), cellPlane, movingPlayerID, map, units, nodeLairTowerKnownUnitIDs, db, debugLogger);
+								(coords.getX (), coords.getY (), cellPlane, movingPlayerID, map, units, nodeLairTowerKnownUnitIDs, db);
 
 							// Log that we need to check every location branching off from here
 							if (movingHereResultsInAttack [cellPlane] [coords.getY ()] [coords.getX ()] == MoveResultsInAttackTypeID.NO)
@@ -368,7 +374,7 @@ public final class MomServerUnitCalculations
 			}
 		}
 
-		debugLogger.exiting (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances_Cell");
+		log.exiting (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances_Cell");
 	}
 
 	/**
@@ -389,16 +395,15 @@ public final class MomServerUnitCalculations
 	 * @param doubleMovementToEnterTile Double the movement points required to enter every tile on both planes; null = impassable
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	private static final void calculateOverlandMovementDistances_Plane (final int startX, final int startY, final int startPlane, final int movingPlayerID,
+	private final void calculateOverlandMovementDistances_Plane (final int startX, final int startY, final int startPlane, final int movingPlayerID,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
 		final boolean [] [] [] canMoveToInOneTurn, final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
-		final CoordinateSystem sys, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
+		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		debugLogger.entering (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances_Plane", new Integer [] {startX, startY, startPlane, movingPlayerID});
+		log.entering (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances_Plane", new Integer [] {startX, startY, startPlane, movingPlayerID});
 
 		// We can move to where we start from for free
 		doubleMovementDistances [startPlane] [startY] [startX] = 0;
@@ -409,19 +414,19 @@ public final class MomServerUnitCalculations
 		final List<MapCoordinates> cellsLeftToCheck = new ArrayList<MapCoordinates> ();
 		calculateOverlandMovementDistances_Cell (startX, startY, startPlane, movingPlayerID, map, units, nodeLairTowerKnownUnitIDs,
 			doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-			doubleMovementToEnterTile, cellsLeftToCheck, sys, db, debugLogger);
+			doubleMovementToEnterTile, cellsLeftToCheck, sys, db);
 
 		// Keep going until there's nowhere left to check
 		while (cellsLeftToCheck.size () > 0)
 		{
 			calculateOverlandMovementDistances_Cell (cellsLeftToCheck.get (0).getX (), cellsLeftToCheck.get (0).getY (), startPlane, movingPlayerID, map, units,
 				nodeLairTowerKnownUnitIDs, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
-				movingHereResultsInAttack, doubleMovementToEnterTile, cellsLeftToCheck, sys, db, debugLogger);
+				movingHereResultsInAttack, doubleMovementToEnterTile, cellsLeftToCheck, sys, db);
 
 			cellsLeftToCheck.remove (0);
 		}
 
-		debugLogger.exiting (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances_Plane");
+		log.exiting (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances_Plane");
 	}
 
 	/**
@@ -444,22 +449,22 @@ public final class MomServerUnitCalculations
 	 * @param movingHereResultsInAttack Indicates whether we know that moving here will result in attacking an enemy unit stack
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	public static final void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
+	@Override
+	public final void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
 		final FogOfWarMemory map, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs, final List<MemoryUnit> unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
 		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
+		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		debugLogger.entering (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances", new Integer [] {startX, startY, startPlane});
+		log.entering (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances", new Integer [] {startX, startY, startPlane});
 
 		// Work out all the movement rates over all tile types of the unit stack
-		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack (unitStack, map.getMaintainedSpell (), db, debugLogger);
+		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack (unitStack, map.getMaintainedSpell (), db);
 
 		// Count how many of OUR units are in every cell on the map - enemy units are fine, we'll just attack them :-)
-		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getMapSize (), db, debugLogger);
+		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getMapSize (), db);
 
 		// Now we can work out the movement cost of entering every tile, taking into account the tiles we can't enter because we'll have too many units there
 		final Integer [] [] [] doubleMovementToEnterTile = new Integer [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
@@ -469,7 +474,7 @@ public final class MomServerUnitCalculations
 				{
 					// If cell will be full, leave it as null = impassable
 					if (ourUnitCountAtLocation [plane.getPlaneNumber ()] [y] [x] + unitStack.size () <= sd.getUnitSetting ().getUnitsPerMapCell ())
-						doubleMovementToEnterTile [plane.getPlaneNumber ()] [y] [x] = doubleMovementRates.get (MemoryGridCellUtils.convertNullTileTypeToFOW
+						doubleMovementToEnterTile [plane.getPlaneNumber ()] [y] [x] = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW
 							(map.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ()));
 
 					// Initialize all the map areas
@@ -481,18 +486,50 @@ public final class MomServerUnitCalculations
 
 		// If at a tower of wizardry, we can move on all planes
 		final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (startPlane).getRow ().get (startY).getCell ().get (startX).getTerrainData ();
-		if (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData))
+		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 		{
 			for (final Plane plane : db.getPlane ())
 				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID, map.getMap (), map.getUnit (), nodeLairTowerKnownUnitIDs,
 					doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-					doubleMovementToEnterTile, sd.getMapSize (), db, debugLogger);
+					doubleMovementToEnterTile, sd.getMapSize (), db);
 		}
 		else
 			calculateOverlandMovementDistances_Plane (startX, startY, startPlane, movingPlayerID, map.getMap (), map.getUnit (), nodeLairTowerKnownUnitIDs,
 				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-				doubleMovementToEnterTile, sd.getMapSize (), db, debugLogger);
+				doubleMovementToEnterTile, sd.getMapSize (), db);
 
-		debugLogger.exiting (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances");
+		log.exiting (MomServerUnitCalculations.class.getName (), "calculateOverlandMovementDistances");
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final IUnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final IUnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final IMemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
 	}
 }

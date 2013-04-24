@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.0.4</version>
+		<version>0.0.5</version>
 	</parent>
 
 	<build>
@@ -20,33 +20,76 @@
 				<artifactId>maven-jaxb2-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>main-xjc-generate</id>
+						<id>config-xjc-generate</id>
 						<phase>generate-sources</phase>
 						<goals><goal>generate</goal></goals>
 						<configuration>
+							<schemaDirectory>src/main/resources/momime.server.config</schemaDirectory>
+							<generateDirectory>target/generated-sources/xjc-momime-servercfg</generateDirectory>
+							<episodeFile>target/generated-sources/xjc-momime-servercfg/META-INF/momime-servercfg.episode</episodeFile>
 							<extension>true</extension>
-							<episodes>
-								<episode>
-									<groupId>com.ndg.map</groupId>
-									<artifactId>ndgmap</artifactId>
-								</episode>
-								<episode>
-									<groupId>com.ndg.multiplayer</groupId>
-									<artifactId>ndgmultiplayer-base</artifactId>
-								</episode>
-								<episode>
-									<groupId>com.ndg.multiplayer</groupId>
-									<artifactId>ndgmultiplayer-sessionbase</artifactId>
-								</episode>
-								<episode>
-									<groupId>com.ndg.momime</groupId>
-									<artifactId>momime-common</artifactId>
-								</episode>
-								<episode>
-									<groupId>com.ndg.momime</groupId>
-									<artifactId>momime-serverdatabase</artifactId>
-								</episode>
-							</episodes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>msgs-xjc-generate</id>
+						<phase>generate-sources</phase>
+						<goals><goal>generate</goal></goals>
+						<configuration>
+							<schemaDirectory>src/main/resources/momime.server.messages</schemaDirectory>
+							<generateDirectory>target/generated-sources/xjc-momime-servermsgs</generateDirectory>
+							<episodeFile>target/generated-sources/xjc-momime-servermsgs/META-INF/momime-servermsgs.episode</episodeFile>
+							<extension>true</extension>
+							<bindings>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.map</groupId>
+										<artifactId>ndgmap</artifactId>
+										<resource>META-INF/map.episode</resource>
+									</dependencyResource>
+								</binding>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.multiplayer</groupId>
+										<artifactId>ndgmultiplayer-sessionbase</artifactId>
+										<resource>META-INF/multiplayer-sessionbase.episode</resource>
+									</dependencyResource>
+								</binding>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.multiplayer</groupId>
+										<artifactId>ndgmultiplayer-base</artifactId>
+										<resource>META-INF/multiplayer-base.episode</resource>
+									</dependencyResource>
+								</binding>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.momime</groupId>
+										<artifactId>momime-common</artifactId>
+										<resource>META-INF/momime-commondb.episode</resource>
+									</dependencyResource>
+								</binding>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.momime</groupId>
+										<artifactId>momime-common</artifactId>
+										<resource>META-INF/momime-clientdb.episode</resource>
+									</dependencyResource>
+								</binding>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.momime</groupId>
+										<artifactId>momime-common</artifactId>
+										<resource>META-INF/momime-commonmsgs.episode</resource>
+									</dependencyResource>
+								</binding>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.momime</groupId>
+										<artifactId>momime-serverdatabase</artifactId>
+										<resource>META-INF/momime-serverdb.episode</resource>
+									</dependencyResource>
+								</binding>
+							</bindings>
 						</configuration>
 					</execution>
 				</executions>
@@ -58,22 +101,22 @@
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-base</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-sessionbase</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-sessionserver</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.map</groupId>
 			<artifactId>ndgmap</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
@@ -84,6 +127,10 @@
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-serverdatabase</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

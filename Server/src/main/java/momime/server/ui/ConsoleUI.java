@@ -1,13 +1,9 @@
 package momime.server.ui;
 
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import momime.server.MomServer;
-import momime.server.logging.DateTimeAndMessageOnlyFormatter;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 
@@ -29,16 +25,15 @@ public class ConsoleUI extends PrefixSessionIDsUI
 	/**
 	 * Placeholder where the UI can perform any work startup work necessary, typically creating the main window
 	 * By this stage the debug logger has been created, so if the UI wants to hook into this and add its own handler, it can do that here too
-	 * @param aDebugLogger Logger to write to debug text file when the debug log is enabled
 	 */
 	@Override
-	public void createMainWindow (final Logger aDebugLogger)
+	public void createMainWindow ()
 	{
 		// Debug to the console
-		final Handler debugHandler = new ConsoleHandler ();
+		/* final Handler debugHandler = new ConsoleHandler ();
 		debugHandler.setLevel (getMinimumDebugLoggerLogLevel ());
 		debugHandler.setFormatter (new DateTimeAndMessageOnlyFormatter ());
-		aDebugLogger.addHandler (debugHandler);
+		aDebugLogger.addHandler (debugHandler); */
 	}
 
 	/**

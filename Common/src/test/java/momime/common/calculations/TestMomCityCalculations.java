@@ -7,16 +7,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
 import momime.common.database.GenerateTestData;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.database.v0_9_4.Building;
+import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryGridCell;
@@ -42,9 +43,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestMomCityCalculations
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMECommonUnitTests");
-
 	/**
 	 * Tests the calculateProductionBonus method
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
@@ -52,6 +50,9 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testCalculateProductionBonus () throws RecordNotFoundException
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		
 		// Location
 		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
 		cityLocation.setX (2);
@@ -63,7 +64,7 @@ public final class TestMomCityCalculations
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
 		// 0 so far
-		assertEquals (0, MomCityCalculations.calculateProductionBonus (map, cityLocation, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (0, calc.calculateProductionBonus (map, cityLocation, sys, GenerateTestData.createDB ()));
 
 		// Add 3 hills and 5 mountains, (3*3) + (5*5) = 34
 		// Note we add hills in the NW and NE corners too, outside the city radius, so we prove that this isn't counted
@@ -78,7 +79,7 @@ public final class TestMomCityCalculations
 			map.getPlane ().get (0).getRow ().get (1).getCell ().get (x).setTerrainData (mountainsTerrain);
 		}
 
-		assertEquals (34, MomCityCalculations.calculateProductionBonus (map, cityLocation, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (34, calc.calculateProductionBonus (map, cityLocation, sys, GenerateTestData.createDB ()));
 	}
 
 	/**
@@ -88,6 +89,9 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testCalculateGoldBonus () throws RecordNotFoundException
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		
 		// Location
 		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
 		cityLocation.setX (2);
@@ -99,29 +103,29 @@ public final class TestMomCityCalculations
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
 		// 0 so far
-		assertEquals (0, MomCityCalculations.calculateGoldBonus (map, cityLocation, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (0, calc.calculateGoldBonus (map, cityLocation, sys, GenerateTestData.createDB ()));
 
 		// Bonus from centre square
 		final OverlandMapTerrainData riverTile = new OverlandMapTerrainData ();
 		riverTile.setTileTypeID (GenerateTestData.RIVER_TILE);
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setTerrainData (riverTile);
-		assertEquals (20, MomCityCalculations.calculateGoldBonus (map, cityLocation, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (20, calc.calculateGoldBonus (map, cityLocation, sys, GenerateTestData.createDB ()));
 
 		// Bonus from adjacent tile, but centre takes precedence
 		final OverlandMapTerrainData shoreTile = new OverlandMapTerrainData ();
 		shoreTile.setTileTypeID (GenerateTestData.SHORE_TILE);
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (3).setTerrainData (shoreTile);
-		assertEquals (20, MomCityCalculations.calculateGoldBonus (map, cityLocation, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (20, calc.calculateGoldBonus (map, cityLocation, sys, GenerateTestData.createDB ()));
 
 		// Remove bonus from centre square so we get adjacent bonus
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setTerrainData (null);
-		assertEquals (10, MomCityCalculations.calculateGoldBonus (map, cityLocation, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (10, calc.calculateGoldBonus (map, cityLocation, sys, GenerateTestData.createDB ()));
 
 		// Adjacent bonus only applies if adjacent flag is set on the tile type
 		// To test this we fudge the DB after creating it
 		final ICommonDatabase db = GenerateTestData.createDB ();
 		db.findTileType (GenerateTestData.SHORE_TILE, "testCalculateGoldBonus").setGoldBonusSurroundingTiles (null);
-		assertEquals (0, MomCityCalculations.calculateGoldBonus (map, cityLocation, sys, db, debugLogger));
+		assertEquals (0, calc.calculateGoldBonus (map, cityLocation, sys, db));
 	}
 
 	/**
@@ -131,6 +135,9 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testBuildingPassesTileTypeRequirements_DistanceTwo () throws RecordNotFoundException
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		
 		// Location
 		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
 		cityLocation.setX (2);
@@ -142,18 +149,18 @@ public final class TestMomCityCalculations
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
 		// Building which has no pre-requisites
-		assertTrue (MomCityCalculations.buildingPassesTileTypeRequirements (map, cityLocation,
-			GenerateTestData.createDB ().findBuilding (GenerateTestData.SAGES_GUILD, "testBuildingPassesTileTypeRequirements_DistanceTwo"), sys, debugLogger));
+		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation,
+			GenerateTestData.createDB ().findBuilding (GenerateTestData.SAGES_GUILD, "testBuildingPassesTileTypeRequirements_DistanceTwo"), sys));
 
 		// Can't pass yet, since there's no tiles
 		final Building building = GenerateTestData.createDB ().findBuilding (GenerateTestData.MINERS_GUILD, "testBuildingPassesTileTypeRequirements_DistanceTwo");
-		assertFalse (MomCityCalculations.buildingPassesTileTypeRequirements (map, cityLocation, building, sys, debugLogger));
+		assertFalse (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 
 		// 2 requirements, but its an 'or', so setting one of them should be enough
 		final OverlandMapTerrainData mountainsTerrain = new OverlandMapTerrainData ();
 		mountainsTerrain.setTileTypeID (GenerateTestData.MOUNTAINS_TILE);
 		map.getPlane ().get (0).getRow ().get (1).getCell ().get (4).setTerrainData (mountainsTerrain);
-		assertTrue (MomCityCalculations.buildingPassesTileTypeRequirements (map, cityLocation, building, sys, debugLogger));
+		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 	}
 
 	/**
@@ -163,6 +170,9 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testBuildingPassesTileTypeRequirements_DistanceOne () throws RecordNotFoundException
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		
 		// Location
 		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
 		cityLocation.setX (2);
@@ -175,19 +185,19 @@ public final class TestMomCityCalculations
 
 		// Can't pass yet, since there's no tiles
 		final Building building = GenerateTestData.createDB ().findBuilding (GenerateTestData.SHIP_WRIGHTS_GUILD, "testBuildingPassesTileTypeRequirements_DistanceOne");
-		assertFalse (MomCityCalculations.buildingPassesTileTypeRequirements (map, cityLocation, building, sys, debugLogger));
+		assertFalse (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 
 		// Putting it 2 tiles away doesn't help
 		final OverlandMapTerrainData twoAway = new OverlandMapTerrainData ();
 		twoAway.setTileTypeID (GenerateTestData.RIVER_TILE);
 		map.getPlane ().get (0).getRow ().get (1).getCell ().get (4).setTerrainData (twoAway);
-		assertFalse (MomCityCalculations.buildingPassesTileTypeRequirements (map, cityLocation, building, sys, debugLogger));
+		assertFalse (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 
 		// Putting it 1 tile away does
 		final OverlandMapTerrainData oneAway = new OverlandMapTerrainData ();
 		oneAway.setTileTypeID (GenerateTestData.RIVER_TILE);
 		map.getPlane ().get (0).getRow ().get (1).getCell ().get (3).setTerrainData (oneAway);
-		assertTrue (MomCityCalculations.buildingPassesTileTypeRequirements (map, cityLocation, building, sys, debugLogger));
+		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
 	}
 
 	/**
@@ -197,6 +207,9 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testCalculateMaxCitySize () throws RecordNotFoundException
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		
 		// Location
 		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
 		cityLocation.setX (2);
@@ -223,9 +236,9 @@ public final class TestMomCityCalculations
 		sd.setDifficultyLevel (dl);
 
 		// 0 so far
-		assertEquals (0, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, false, false, GenerateTestData.createDB (), debugLogger));
-		assertEquals (0, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, true, false, GenerateTestData.createDB (), debugLogger));
-		assertEquals (0, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, true, true, GenerateTestData.createDB (), debugLogger));
+		assertEquals (0, calc.calculateMaxCitySize (map, cityLocation, sd, false, false, GenerateTestData.createDB ()));
+		assertEquals (0, calc.calculateMaxCitySize (map, cityLocation, sd, true, false, GenerateTestData.createDB ()));
+		assertEquals (0, calc.calculateMaxCitySize (map, cityLocation, sd, true, true, GenerateTestData.createDB ()));
 
 		// Add some tile types that grant food, 3 hills and 5 rivers, (3*1) + (4*5) = 23
 		// Note we add hills in the NW and NE corners too, outside the city radius, so we prove that this isn't counted
@@ -240,17 +253,17 @@ public final class TestMomCityCalculations
 			map.getPlane ().get (0).getRow ().get (1).getCell ().get (x).setTerrainData (riverTile);
 		}
 
-		assertEquals (23, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, false, false, GenerateTestData.createDB (), debugLogger));
-		assertEquals (23, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, true, false, GenerateTestData.createDB (), debugLogger));
-		assertEquals (12, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, true, true, GenerateTestData.createDB (), debugLogger));
+		assertEquals (23, calc.calculateMaxCitySize (map, cityLocation, sd, false, false, GenerateTestData.createDB ()));
+		assertEquals (23, calc.calculateMaxCitySize (map, cityLocation, sd, true, false, GenerateTestData.createDB ()));
+		assertEquals (12, calc.calculateMaxCitySize (map, cityLocation, sd, true, true, GenerateTestData.createDB ()));
 
 		// Add some wild game
 		for (int y = 0; y <= 1; y++)
 			map.getPlane ().get (0).getRow ().get (y).getCell ().get (2).getTerrainData ().setMapFeatureID (GenerateTestData.WILD_GAME);
 
-		assertEquals (23, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, false, false, GenerateTestData.createDB (), debugLogger));
-		assertEquals (31, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, true, false, GenerateTestData.createDB (), debugLogger));
-		assertEquals (16, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, true, true, GenerateTestData.createDB (), debugLogger));
+		assertEquals (23, calc.calculateMaxCitySize (map, cityLocation, sd, false, false, GenerateTestData.createDB ()));
+		assertEquals (31, calc.calculateMaxCitySize (map, cityLocation, sd, true, false, GenerateTestData.createDB ()));
+		assertEquals (16, calc.calculateMaxCitySize (map, cityLocation, sd, true, true, GenerateTestData.createDB ()));
 
 		// Test cap
 		// Uncapped would be 26 - previous tests prove that rounding is up
@@ -263,9 +276,9 @@ public final class TestMomCityCalculations
 			mc.getTerrainData ().setMapFeatureID (GenerateTestData.WILD_GAME);
 		}
 
-		assertEquals (23, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, false, false, GenerateTestData.createDB (), debugLogger));
-		assertEquals (51, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, true, false, GenerateTestData.createDB (), debugLogger));
-		assertEquals (25, MomCityCalculations.calculateMaxCitySize (map, cityLocation, sd, true, true, GenerateTestData.createDB (), debugLogger));
+		assertEquals (23, calc.calculateMaxCitySize (map, cityLocation, sd, false, false, GenerateTestData.createDB ()));
+		assertEquals (51, calc.calculateMaxCitySize (map, cityLocation, sd, true, false, GenerateTestData.createDB ()));
+		assertEquals (25, calc.calculateMaxCitySize (map, cityLocation, sd, true, true, GenerateTestData.createDB ()));
 	}
 
 	/**
@@ -275,6 +288,9 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testCalculateCityGrowthRate () throws RecordNotFoundException
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		
 		// Location
 		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
 		cityLocation.setX (2);
@@ -295,7 +311,7 @@ public final class TestMomCityCalculations
 
 		// At max size
 		cityData.setCityPopulation (10000);
-		final CalculateCityGrowthRateBreakdown maximum = MomCityCalculations.calculateCityGrowthRate (map, buildings, cityLocation, 10, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityGrowthRateBreakdown maximum = calc.calculateCityGrowthRate (map, buildings, cityLocation, 10, GenerateTestData.createDB ());
 		assertEquals (MomCityGrowthDirection.MAXIMUM, maximum.getDirection ());
 		assertEquals (10000, maximum.getCurrentPopulation ());
 		assertEquals (10000, maximum.getMaximumPopulation ());
@@ -310,7 +326,7 @@ public final class TestMomCityCalculations
 
 		// Growing (this is the example quoted in the strategy guide, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1)
 		cityData.setCityPopulation (12000);
-		final CalculateCityGrowthRateBreakdown growingEven = MomCityCalculations.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityGrowthRateBreakdown growingEven = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
 		assertEquals (MomCityGrowthDirection.GROWING, growingEven.getDirection ());
 		assertEquals (12000, growingEven.getCurrentPopulation ());
 		assertEquals (22000, growingEven.getMaximumPopulation ());
@@ -323,7 +339,7 @@ public final class TestMomCityCalculations
 		assertEquals (0, growingEven.getCityDeathRate ());
 		assertEquals (50, growingEven.getFinalTotal ());
 
-		final CalculateCityGrowthRateBreakdown growingOdd = MomCityCalculations.calculateCityGrowthRate (map, buildings, cityLocation, 23, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityGrowthRateBreakdown growingOdd = calc.calculateCityGrowthRate (map, buildings, cityLocation, 23, GenerateTestData.createDB ());
 		assertEquals (MomCityGrowthDirection.GROWING, growingOdd.getDirection ());
 		assertEquals (12000, growingOdd.getCurrentPopulation ());
 		assertEquals (23000, growingOdd.getMaximumPopulation ());
@@ -338,7 +354,7 @@ public final class TestMomCityCalculations
 
 		// Bonus from race - positive
 		cityData.setCityRaceID (GenerateTestData.BARBARIAN);
-		final CalculateCityGrowthRateBreakdown barbarian = MomCityCalculations.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityGrowthRateBreakdown barbarian = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
 		assertEquals (MomCityGrowthDirection.GROWING, barbarian.getDirection ());
 		assertEquals (12000, barbarian.getCurrentPopulation ());
 		assertEquals (22000, barbarian.getMaximumPopulation ());
@@ -353,7 +369,7 @@ public final class TestMomCityCalculations
 
 		// Bonus from race - negative
 		cityData.setCityRaceID (GenerateTestData.HIGH_ELF);
-		final CalculateCityGrowthRateBreakdown highElf = MomCityCalculations.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityGrowthRateBreakdown highElf = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
 		assertEquals (MomCityGrowthDirection.GROWING, highElf.getDirection ());
 		assertEquals (12000, highElf.getCurrentPopulation ());
 		assertEquals (22000, highElf.getMaximumPopulation ());
@@ -397,7 +413,7 @@ public final class TestMomCityCalculations
 		sagesGuild.setCityLocation (sagesGuildLocation);
 		buildings.add (sagesGuild);
 
-		final CalculateCityGrowthRateBreakdown withBuildings = MomCityCalculations.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityGrowthRateBreakdown withBuildings = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
 		assertEquals (MomCityGrowthDirection.GROWING, withBuildings.getDirection ());
 		assertEquals (12000, withBuildings.getCurrentPopulation ());
 		assertEquals (22000, withBuildings.getMaximumPopulation ());
@@ -416,7 +432,7 @@ public final class TestMomCityCalculations
 
 		// With all those buildings, at almost max size we still get a reasonable increase
 		cityData.setCityPopulation (21960);
-		final CalculateCityGrowthRateBreakdown almostCapped = MomCityCalculations.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityGrowthRateBreakdown almostCapped = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
 		assertEquals (MomCityGrowthDirection.GROWING, almostCapped.getDirection ());
 		assertEquals (21960, almostCapped.getCurrentPopulation ());
 		assertEquals (22000, almostCapped.getMaximumPopulation ());
@@ -435,7 +451,7 @@ public final class TestMomCityCalculations
 
 		// +30 with only 20 to spare would push us over max size
 		cityData.setCityPopulation (21980);
-		final CalculateCityGrowthRateBreakdown overCap = MomCityCalculations.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityGrowthRateBreakdown overCap = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
 		assertEquals (MomCityGrowthDirection.GROWING, overCap.getDirection ());
 		assertEquals (21980, overCap.getCurrentPopulation ());
 		assertEquals (22000, overCap.getMaximumPopulation ());
@@ -453,7 +469,7 @@ public final class TestMomCityCalculations
 		assertEquals (20, overCap.getFinalTotal ());
 
 		// Dying - note the race and building modifiers don't apply, because we can't by virtue of bonuses force a city to go over max size
-		final CalculateCityGrowthRateBreakdown dying = MomCityCalculations.calculateCityGrowthRate (map, buildings, cityLocation, 18, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityGrowthRateBreakdown dying = calc.calculateCityGrowthRate (map, buildings, cityLocation, 18, GenerateTestData.createDB ());
 		assertEquals (MomCityGrowthDirection.DYING, dying.getDirection ());
 		assertEquals (21980, dying.getCurrentPopulation ());
 		assertEquals (18000, dying.getMaximumPopulation ());
@@ -475,6 +491,11 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testCalculateCityRebels () throws PlayerNotFoundException, RecordNotFoundException
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		calc.setPlayerPickUtils (new PlayerPickUtils ());
+		
 		// Location
 		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
 		cityLocation.setX (2);
@@ -511,8 +532,8 @@ public final class TestMomCityCalculations
 		players.add (ppd);
 
 		// Tax rate with no rebels!  and no gold...
-		final CalculateCityUnrestBreakdown zeroPercent = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_0_GOLD_0_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown zeroPercent = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_0_GOLD_0_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, zeroPercent.getPopulation ());
 		assertEquals (0, zeroPercent.getTaxPercentage ());
 		assertEquals (0, zeroPercent.getRacialPercentage ());
@@ -524,8 +545,8 @@ public final class TestMomCityCalculations
 		assertEquals (0, zeroPercent.getFinalTotal ());
 
 		// Harsh 45% tax rate = 7.65, prove that it rounds down
-		final CalculateCityUnrestBreakdown highPercent = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown highPercent = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, highPercent.getPopulation ());
 		assertEquals (45, highPercent.getTaxPercentage ());
 		assertEquals (0, highPercent.getRacialPercentage ());
@@ -537,8 +558,8 @@ public final class TestMomCityCalculations
 		assertEquals (7, highPercent.getFinalTotal ());
 
 		// Worst 75% tax rate = 12.75, but we have 6 minimum farmers so would be 18 population in a size 17 city - prove rebels will revert to farmers to avoid starving
-		final CalculateCityUnrestBreakdown maxPercent = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_3_GOLD_75_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown maxPercent = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_3_GOLD_75_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, maxPercent.getPopulation ());
 		assertEquals (75, maxPercent.getTaxPercentage ());
 		assertEquals (0, maxPercent.getRacialPercentage ());
@@ -560,8 +581,8 @@ public final class TestMomCityCalculations
 		shrineBuilding.setCityLocation (shrineLocation);
 		buildings.add (shrineBuilding);
 
-		final CalculateCityUnrestBreakdown shrine = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown shrine = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, shrine.getPopulation ());
 		assertEquals (45, shrine.getTaxPercentage ());
 		assertEquals (0, shrine.getRacialPercentage ());
@@ -590,8 +611,8 @@ public final class TestMomCityCalculations
 		secondBuilding.setCityLocation (secondBuildingLocation);
 		buildings.add (secondBuilding);
 
-		final CalculateCityUnrestBreakdown animistsGuild = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown animistsGuild = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, animistsGuild.getPopulation ());
 		assertEquals (45, animistsGuild.getTaxPercentage ());
 		assertEquals (0, animistsGuild.getRacialPercentage ());
@@ -608,8 +629,8 @@ public final class TestMomCityCalculations
 
 		// Divine power does work on 2nd religious building
 		secondBuilding.setBuildingID (GenerateTestData.TEMPLE);
-		final CalculateCityUnrestBreakdown temple = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown temple = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, temple.getPopulation ());
 		assertEquals (45, temple.getTaxPercentage ());
 		assertEquals (0, temple.getRacialPercentage ());
@@ -636,8 +657,8 @@ public final class TestMomCityCalculations
 		normalUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (normalUnit);
 
-		final CalculateCityUnrestBreakdown firstUnit = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown firstUnit = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, firstUnit.getPopulation ());
 		assertEquals (45, firstUnit.getTaxPercentage ());
 		assertEquals (0, firstUnit.getRacialPercentage ());
@@ -666,8 +687,8 @@ public final class TestMomCityCalculations
 		heroUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (heroUnit);
 
-		final CalculateCityUnrestBreakdown secondUnit = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown secondUnit = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, secondUnit.getPopulation ());
 		assertEquals (45, secondUnit.getTaxPercentage ());
 		assertEquals (0, secondUnit.getRacialPercentage ());
@@ -710,8 +731,8 @@ public final class TestMomCityCalculations
 			units.add (summonedUnit);
 		}
 
-		final CalculateCityUnrestBreakdown extraUnits = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown extraUnits = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, extraUnits.getPopulation ());
 		assertEquals (45, extraUnits.getTaxPercentage ());
 		assertEquals (0, extraUnits.getRacialPercentage ());
@@ -739,8 +760,8 @@ public final class TestMomCityCalculations
 		fortressBuilding.setCityLocation (fortressLocation);
 		buildings.add (fortressBuilding);
 
-		final CalculateCityUnrestBreakdown klackons = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown klackons = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, klackons.getPopulation ());
 		assertEquals (45, klackons.getTaxPercentage ());
 		assertEquals (0, klackons.getRacialPercentage ());
@@ -760,8 +781,8 @@ public final class TestMomCityCalculations
 		// Other races get no bonus from being same as capital race
 		cityData.setCityRaceID (GenerateTestData.HIGH_ELF);
 
-		final CalculateCityUnrestBreakdown highElves = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown highElves = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, highElves.getPopulation ());
 		assertEquals (45, highElves.getTaxPercentage ());
 		assertEquals (0, highElves.getRacialPercentage ());
@@ -792,8 +813,8 @@ public final class TestMomCityCalculations
 
 		fortressBuilding.setCityLocation (capitalCityLocation);
 
-		final CalculateCityUnrestBreakdown racialUnrest = MomCityCalculations.calculateCityRebels
-			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityUnrestBreakdown racialUnrest = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, racialUnrest.getPopulation ());
 		assertEquals (45, racialUnrest.getTaxPercentage ());
 		assertEquals (30, racialUnrest.getRacialPercentage ());
@@ -820,6 +841,11 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testCalculateAllCityProductions () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		calc.setPlayerPickUtils (new PlayerPickUtils ());
+		
 		// Location
 		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
 		cityLocation.setX (2);
@@ -896,8 +922,8 @@ public final class TestMomCityCalculations
 		// b) max city size
 		// c) people eating food
 		// d) gold from taxes
-		final CalculateCityProductionResultsImplementation baseNoPeople = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, false, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation baseNoPeople = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, false, GenerateTestData.createDB ());
 		assertEquals (4, baseNoPeople.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, baseNoPeople.getResults ().get (0).getProductionTypeID ());
 		assertEquals (8, baseNoPeople.getResults ().get (0).getDoubleProductionAmount ());
@@ -924,8 +950,8 @@ public final class TestMomCityCalculations
 		assertEquals (18, baseNoPeople.getResults ().get (3).getModifiedProductionAmount ());
 		assertEquals (0, baseNoPeople.getResults ().get (3).getConsumptionAmount ());
 
-		final CalculateCityProductionResultsImplementation baseWithPeople = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation baseWithPeople = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
 		assertEquals (4, baseWithPeople.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, baseWithPeople.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, baseWithPeople.getResults ().get (0).getDoubleProductionAmount ());
@@ -975,8 +1001,8 @@ public final class TestMomCityCalculations
 		fortressBuilding.setCityLocation (fortressLocation);
 		buildings.add (fortressBuilding);
 
-		final CalculateCityProductionResultsImplementation fortress = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation fortress = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
 		assertEquals (5, fortress.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, fortress.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, fortress.getResults ().get (0).getDoubleProductionAmount ());
@@ -1030,8 +1056,8 @@ public final class TestMomCityCalculations
 		sawmillBuilding.setCityLocation (sawmillLocation);
 		buildings.add (sawmillBuilding);
 
-		final CalculateCityProductionResultsImplementation sawmill = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation sawmill = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
 		assertEquals (6, sawmill.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, sawmill.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, sawmill.getResults ().get (0).getDoubleProductionAmount ());
@@ -1074,8 +1100,8 @@ public final class TestMomCityCalculations
 		map.getPlane ().get (1).getRow ().get (0).getCell ().get (3).getTerrainData ().setMapFeatureID (GenerateTestData.GEMS);
 		map.getPlane ().get (1).getRow ().get (1).getCell ().get (3).getTerrainData ().setMapFeatureID (GenerateTestData.ADAMANTIUM_ORE);
 
-		final CalculateCityProductionResultsImplementation minerals = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation minerals = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
 		assertEquals (6, minerals.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, minerals.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, minerals.getResults ().get (0).getDoubleProductionAmount ());
@@ -1125,8 +1151,8 @@ public final class TestMomCityCalculations
 		minersGuildBuilding.setCityLocation (minersGuildLocation);
 		buildings.add (minersGuildBuilding);
 
-		final CalculateCityProductionResultsImplementation minersGuild = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation minersGuild = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
 		assertEquals (7, minersGuild.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, minersGuild.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, minersGuild.getResults ().get (0).getDoubleProductionAmount ());
@@ -1168,8 +1194,8 @@ public final class TestMomCityCalculations
 		// Dwarves double bonuses from map features, and also workers produce 3 production instead of 2
 		cityData.setCityRaceID (GenerateTestData.DWARVES);
 
-		final CalculateCityProductionResultsImplementation dwarves = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation dwarves = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
 		assertEquals (7, dwarves.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, dwarves.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, dwarves.getResults ().get (0).getDoubleProductionAmount ());
@@ -1211,8 +1237,8 @@ public final class TestMomCityCalculations
 		// High elf rebels produce mana too
 		cityData.setCityRaceID (GenerateTestData.HIGH_ELF);
 
-		final CalculateCityProductionResultsImplementation highElves = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation highElves = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
 		assertEquals (7, highElves.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, highElves.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, highElves.getResults ().get (0).getDoubleProductionAmount ());
@@ -1257,8 +1283,8 @@ public final class TestMomCityCalculations
 		cityData.setOptionalFarmers (1);
 		cityData.setNumberOfRebels (1);		// 6 -1 -1 -1 = 3 workers
 
-		final CalculateCityProductionResultsImplementation shrunk = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation shrunk = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
 		assertEquals (7, shrunk.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, shrunk.getResults ().get (0).getProductionTypeID ());
 		assertEquals (16, shrunk.getResults ().get (0).getDoubleProductionAmount ());
@@ -1307,8 +1333,8 @@ public final class TestMomCityCalculations
 			mc.getTerrainData ().setMapFeatureID (GenerateTestData.WILD_GAME);
 		}
 
-		final CalculateCityProductionResultsImplementation maxSize = (CalculateCityProductionResultsImplementation) MomCityCalculations.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger);
+		final CalculateCityProductionResultsImplementation maxSize = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
 		assertEquals (7, maxSize.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, maxSize.getResults ().get (0).getProductionTypeID ());
 		assertEquals (36, maxSize.getResults ().get (0).getDoubleProductionAmount ());
@@ -1357,6 +1383,10 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testCalculateSingleCityProduction () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		
 		// This is the same initial setup as the calculateAllCityProductions test
 		// Location
 		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
@@ -1430,8 +1460,8 @@ public final class TestMomCityCalculations
 		players.add (ppd);
 
 		// 20 production - 17 consumption = 3
-		assertEquals (3, MomCityCalculations.calculateSingleCityProduction (players, map, buildings, cityLocation,
-			GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), debugLogger, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS));
+		assertEquals (3, calc.calculateSingleCityProduction (players, map, buildings, cityLocation,
+			GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS));
 	}
 
 	/**
@@ -1440,6 +1470,9 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testBlankBuildingsSoldThisTurn_OnePlayer ()
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
@@ -1457,7 +1490,7 @@ public final class TestMomCityCalculations
 				mc.setBuildingIdSoldThisTurn (GenerateTestData.SAWMILL);
 			}
 
-		MomCityCalculations.blankBuildingsSoldThisTurn (map, 4, debugLogger);
+		calc.blankBuildingsSoldThisTurn (map, 4);
 
 		for (int x = 1; x <= 3; x++)
 			for (int y = 1; y <= 3; y++)
@@ -1473,6 +1506,9 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testBlankBuildingsSoldThisTurn_AllPlayers ()
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
@@ -1490,7 +1526,7 @@ public final class TestMomCityCalculations
 				mc.setBuildingIdSoldThisTurn (GenerateTestData.SAWMILL);
 			}
 
-		MomCityCalculations.blankBuildingsSoldThisTurn (map, 0, debugLogger);
+		calc.blankBuildingsSoldThisTurn (map, 0);
 
 		for (int x = 1; x <= 3; x++)
 			for (int y = 1; y <= 3; y++)
@@ -1503,6 +1539,9 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testMarkWithinExistingCityRadius ()
 	{
+		// Set up object to test
+		final MomCityCalculations calc = new MomCityCalculations ();
+		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
@@ -1518,7 +1557,7 @@ public final class TestMomCityCalculations
 		mapSize.setCitySeparation (3);
 
 		// No cities
-		final BooleanMapArea2DArray none = MomCityCalculations.markWithinExistingCityRadius (map, 1, mapSize, debugLogger);
+		final BooleanMapArea2DArray none = calc.markWithinExistingCityRadius (map, 1, mapSize);
 		assertEquals (0, none.countCellsEqualTo (true));
 
 		// City on the wrong plane
@@ -1526,7 +1565,7 @@ public final class TestMomCityCalculations
 		wrongPlaneCity.setCityPopulation (1);
 		map.getPlane ().get (0).getRow ().get (4).getCell ().get (6).setCityData (wrongPlaneCity);
 
-		final BooleanMapArea2DArray wrongPlane = MomCityCalculations.markWithinExistingCityRadius (map, 1, mapSize, debugLogger);
+		final BooleanMapArea2DArray wrongPlane = calc.markWithinExistingCityRadius (map, 1, mapSize);
 		assertEquals (0, wrongPlane.countCellsEqualTo (true));
 
 		// City in the middle of the map
@@ -1534,7 +1573,7 @@ public final class TestMomCityCalculations
 		oneCity.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (4).getCell ().get (6).setCityData (oneCity);
 
-		final BooleanMapArea2DArray one = MomCityCalculations.markWithinExistingCityRadius (map, 1, mapSize, debugLogger);
+		final BooleanMapArea2DArray one = calc.markWithinExistingCityRadius (map, 1, mapSize);
 		assertEquals (49, one.countCellsEqualTo (true));
 
 		for (int x = 3; x <= 9; x++)
@@ -1546,7 +1585,7 @@ public final class TestMomCityCalculations
 		twoCities.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (1).getCell ().get (16).setCityData (twoCities);
 
-		final BooleanMapArea2DArray two = MomCityCalculations.markWithinExistingCityRadius (map, 1, mapSize, debugLogger);
+		final BooleanMapArea2DArray two = calc.markWithinExistingCityRadius (map, 1, mapSize);
 		assertEquals (49 + 35, two.countCellsEqualTo (true));
 
 		// 3nd city at left edge of map so some of it gets wrapped
@@ -1554,7 +1593,7 @@ public final class TestMomCityCalculations
 		threeCities.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (14).getCell ().get (1).setCityData (threeCities);
 
-		final BooleanMapArea2DArray three = MomCityCalculations.markWithinExistingCityRadius (map, 1, mapSize, debugLogger);
+		final BooleanMapArea2DArray three = calc.markWithinExistingCityRadius (map, 1, mapSize);
 		assertEquals (49 + 49 + 35, three.countCellsEqualTo (true));
 	}
 }

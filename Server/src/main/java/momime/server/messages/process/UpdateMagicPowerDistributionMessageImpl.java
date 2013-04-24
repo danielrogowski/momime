@@ -18,18 +18,20 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPowerDistributionMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (UpdateMagicPowerDistributionMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		debugLogger.entering (UpdateMagicPowerDistributionMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
+		log.entering (UpdateMagicPowerDistributionMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
 
 		final String error;
 
@@ -53,7 +55,7 @@ public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPo
 		if (error != null)
 		{
 			// Return error
-			debugLogger.warning (UpdateMagicPowerDistributionMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warning (UpdateMagicPowerDistributionMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -68,6 +70,6 @@ public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPo
 			// No confirmation - client assumes change will be OK
 		}
 
-		debugLogger.exiting (UpdateMagicPowerDistributionMessageImpl.class.getName (), "process");
+		log.exiting (UpdateMagicPowerDistributionMessageImpl.class.getName (), "process");
 	}
 }

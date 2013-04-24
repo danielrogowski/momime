@@ -1,13 +1,15 @@
 package momime.server;
 
-import java.io.File;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.IPlayerPickUtils;
+import momime.common.messages.IResourceValueUtils;
+import momime.common.messages.ISpellUtils;
+import momime.common.messages.IUnitUtils;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapAreaOfFogOfWarStates;
@@ -29,11 +31,10 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.calculations.IMomServerResourceCalculations;
+import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.config.v0_9_4.MomImeServerConfig;
-import momime.server.database.JAXBContextCreator;
-import momime.server.database.ServerDatabaseConverters;
+import momime.server.database.IServerDatabaseConverters;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.ServerDatabaseFactory;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.fogofwar.IFogOfWarMidTurnChanges;
@@ -44,14 +45,14 @@ import momime.server.process.IPlayerMessageProcessing;
 import momime.server.process.ISpellProcessing;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.SessionWindow;
+import momime.server.utils.ICityServerUtils;
+import momime.server.utils.IPlayerPickServerUtils;
+import momime.server.utils.ISpellServerUtils;
 
-import com.ndg.multiplayer.server.IMultiplayerServerMessageProcesser;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.sessionbase.GeneralPublicKnowledge;
 import com.ndg.multiplayer.sessionbase.GeneralServerKnowledge;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPublicKnowledge;
-import com.ndg.multiplayer.sessionbase.SessionDescription;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
 
@@ -60,6 +61,9 @@ import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
  */
 final class MomSessionThread extends MultiplayerSessionThread implements IMomSessionVariables
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomSessionThread.class.getName ());
+	
 	/** Lookup lists built over the XML database */
 	private ServerDatabaseEx db;
 
@@ -86,22 +90,33 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 	/** City processing methods */
 	private ICityProcessing cityProcessing;
 	
-	/**
-	 * @param aServer Server this connection belongs to
-	 * @param aSessionDescription Details of this session
-	 * @param config Server config loaded from XML config file
-	 * @param aUI UI being used by server
-	 * @param fileLogger Logger which writes to a disk file, if enabled
-	 * @param aDebugLogger Logger to write to debug text file when the debug log is enabled
-	 * @throws JAXBException If there is a problem loading the server XML file
-	 */
-	public MomSessionThread (final IMultiplayerServerMessageProcesser aServer, final SessionDescription aSessionDescription,
-		final MomImeServerConfig config, final MomServerUI aUI, final Logger fileLogger, final Logger aDebugLogger)
-		throws JAXBException
-	{
-		super (aServer, aSessionDescription, new MomSessionConstructorParam (config, aUI, fileLogger), aDebugLogger);
-	}
+	/** Database converters */
+	private IServerDatabaseConverters serverDatabaseConverters;
 
+	/** Resource value utils */
+	private IResourceValueUtils resourceValueUtils;
+
+	/** Spell utils */
+	private ISpellUtils spellUtils;
+
+	/** Unit utils */
+	private IUnitUtils unitUtils;
+	
+	/** Player pick utils */
+	private IPlayerPickUtils playerPickUtils;
+
+	/** Server-only pick utils */
+	private IPlayerPickServerUtils playerPickServerUtils;
+	
+	/** Server-only city utils */
+	private ICityServerUtils cityServerUtils;
+	
+	/** Server-only spell utils */
+	private ISpellServerUtils spellServerUtils;
+	
+	/** Server-only unit calculations */
+	private IMomServerUnitCalculations serverUnitCalculations;
+	
 	/**
 	 * @return Logger for logging key messages relating to this session
 	 */
@@ -124,30 +139,14 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 	 * @return Load XML file specified in session description
 	 * @throws JAXBException If there is a problem loading the server XML file
 	 */
-	@Override
-	protected final GeneralServerKnowledge createGeneralServerKnowledge () throws JAXBException
+	protected final GeneralServerKnowledge createGeneralServerKnowledge (final MomServerUI ui,
+		final MomImeServerConfig config, final Logger fileLogger) throws JAXBException
 	{
-		debugLogger.entering (MomSessionThread.class.getName (), "createGeneralServerKnowledge", getSessionDescription ().getXmlDatabaseName ());
-
-		// Get access to the server config and UI
-		final MomSessionConstructorParam param = (MomSessionConstructorParam) getConstructorParam ();
-		ui = param.getUI ();
+		log.entering (MomSessionThread.class.getName (), "createGeneralServerKnowledge", getSessionDescription ().getXmlDatabaseName ());
 
 		// Start up UI for this session
 		final SessionWindow sessionWindow = ui.createWindowForNewSession (getSessionDescription ());
-		sessionLogger = ui.createLoggerForNewSession (getSessionDescription (), sessionWindow, debugLogger, param.getFileLogger ());
-
-		// Load server XML
-		sessionLogger.info ("Loading server database \"" + getSessionDescription ().getXmlDatabaseName () + "\"...");
-		final File fullFilename = new File (param.getConfig ().getPathToServerXmlDatabases () + getSessionDescription ().getXmlDatabaseName () + ServerDatabaseConverters.SERVER_XML_FILE_EXTENSION);
-		
-		final Unmarshaller unmarshaller = JAXBContextCreator.createServerDatabaseContext ().createUnmarshaller ();		
-		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
-		db = (ServerDatabaseEx) unmarshaller.unmarshal (fullFilename);
-
-		// Create hash maps to look up all the values from the DB
-		sessionLogger.info ("Caching lookups into server database...");
-		db.buildMaps ();
+		sessionLogger = ui.createLoggerForNewSession (getSessionDescription (), sessionWindow, fileLogger);
 
 		// Generate map
 		sessionLogger.info ("Generating overland map...");
@@ -155,7 +154,7 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 
 		try
 		{
-			final OverlandMapGenerator mapGen = new OverlandMapGenerator (trueMap, getSessionDescription (), db, debugLogger);
+			final OverlandMapGenerator mapGen = new OverlandMapGenerator (trueMap, getSessionDescription (), db);
 			mapGen.generateOverlandTerrain ();
 		}
 		catch (final MomException e)
@@ -176,7 +175,7 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 		gsk.setTrueMap (trueMap);
 		gsk.setNextFreeUnitURN (1);
 
-		debugLogger.exiting (MomSessionThread.class.getName (), "createGeneralServerKnowledge", gsk);
+		log.exiting (MomSessionThread.class.getName (), "createGeneralServerKnowledge", gsk);
 		return gsk;
 	}
 
@@ -199,29 +198,13 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 	}
 
 	/**
-	 * @return Derive client XML file from server XML file
-	 * @throws JAXBException If one of the wizards does not have picks for the specified number of human picks defined
+	 * @param ex Server XML in use for this session
 	 */
-	@Override
-	protected final GeneralPublicKnowledge createGeneralPublicKnowledge () throws JAXBException
+	public final void setServerDB (final ServerDatabaseEx ex)
 	{
-		sessionLogger.info ("Generating client database...");
-
-		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
-
-		try
-		{
-			gpk.setClientDatabase (ServerDatabaseConverters.buildClientDatabase (getServerDB (), getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks (), debugLogger));
-		}
-		catch (final RecordNotFoundException e)
-		{
-			// This is a bit of a fudge since the exception has nothing to do with JAXB, but RecordNotFoundException is MoM-specific and so the multiplayer layer can't handle it
-			throw new JAXBException (e.getMessage ());
-		}
-
-		return gpk;
+		db = ex;
 	}
-
+	
 	/**
 	 * @return Public knowledge structure, typecasted to MoM specific type
 	 */
@@ -231,6 +214,15 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 		return (MomGeneralPublicKnowledge) super.getGeneralPublicKnowledge ();
 	}
 
+	/**
+	 * Spring seems to need this to be able to set the property - odd, since the MP demo works without this
+	 * @param gpk Public knowledge structure, typecasted to MoM specific type
+	 */
+	public final void setGeneralPublicKnowledge (final MomGeneralPublicKnowledge gpk)
+	{
+		super.setGeneralPublicKnowledge (gpk);
+	}
+	
 	/**
 	 * @return Descendant of PersistentPlayerPublicKnowledge, or can be left as null if not required
 	 */
@@ -444,5 +436,157 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 	public final void setCityProcessing (final ICityProcessing obj)
 	{
 		cityProcessing = obj;
+	}
+
+	/**
+	 * @return Database converters
+	 */
+	public final IServerDatabaseConverters getServerDatabaseConverters ()
+	{
+		return serverDatabaseConverters;
+	}
+
+	/**
+	 * @param conv Database converters
+	 */
+	public final void setServerDatabaseConverters (final IServerDatabaseConverters conv)
+	{
+		serverDatabaseConverters = conv;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	@Override
+	public final IResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param utils Resource value utils
+	 */
+	public final void setResourceValueUtils (final IResourceValueUtils utils)
+	{
+		resourceValueUtils = utils;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	@Override
+	public final ISpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final ISpellUtils utils)
+	{
+		spellUtils = utils;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	@Override
+	public final IUnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final IUnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	@Override
+	public final IPlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Server-only pick utils
+	 */
+	@Override
+	public final IPlayerPickServerUtils getPlayerPickServerUtils ()
+	{
+		return playerPickServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only pick utils
+	 */
+	public final void setPlayerPickServerUtils (final IPlayerPickServerUtils utils)
+	{
+		playerPickServerUtils = utils;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	@Override
+	public final ICityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final ICityServerUtils utils)
+	{
+		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return Server-only spell utils
+	 */
+	@Override
+	public final ISpellServerUtils getSpellServerUtils ()
+	{
+		return spellServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only spell utils
+	 */
+	public final void setSpellServerUtils (final ISpellServerUtils utils)
+	{
+		spellServerUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	@Override
+	public final IMomServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final IMomServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

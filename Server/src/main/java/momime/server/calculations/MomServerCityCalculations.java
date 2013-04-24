@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.IMomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
@@ -14,7 +14,7 @@ import momime.common.database.v0_9_4.RaceCannotBuild;
 import momime.common.database.v0_9_4.RacePopulationTask;
 import momime.common.database.v0_9_4.RacePopulationTaskProduction;
 import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
@@ -34,8 +34,17 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server only calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public final class MomServerCityCalculations
+public final class MomServerCityCalculations implements IMomServerCityCalculations
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomServerCityCalculations.class.getName ());
+	
+	/** Memory building utils */
+	private IMemoryBuildingUtils memoryBuildingUtils;
+	
+	/** City calculations */
+	private IMomCityCalculations cityCalculations;
+	
 	/**
 	 * Could do this inside chooseCityLocation, however declaring it separately avoids having to repeat this over
 	 * and over when adding multiple new cities at the start of the game
@@ -44,14 +53,14 @@ public final class MomServerCityCalculations
 	 * buildings that gives a food bonus, or a pre-requisite of it) or similarly tile type restrictions
 	 *
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Amount of free food we'll get from building all buildings, with the default server database, this gives 5 = 2 from Granary + 3 from Farmers' Market
 	 * @throws MomException If the food production values from the XML database aren't multiples of 2
 	 */
-	public static final int calculateTotalFoodBonusFromBuildings (final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final int calculateTotalFoodBonusFromBuildings (final ServerDatabaseEx db)
 		throws MomException
 	{
-		debugLogger.entering (MomServerCityCalculations.class.getName (), "calculateTotalFoodBonusFromBuildings");
+		log.entering (MomServerCityCalculations.class.getName (), "calculateTotalFoodBonusFromBuildings");
 		int doubleTotalFood = 0;
 
 		for (final Building thisBuilding : db.getBuilding ())
@@ -66,7 +75,7 @@ public final class MomServerCityCalculations
 
 		final int totalFood = doubleTotalFood / 2;
 
-		debugLogger.exiting (MomServerCityCalculations.class.getName (), "calculateTotalFoodBonusFromBuildings", totalFood);
+		log.exiting (MomServerCityCalculations.class.getName (), "calculateTotalFoodBonusFromBuildings", totalFood);
 		return totalFood;
 	}
 
@@ -75,16 +84,16 @@ public final class MomServerCityCalculations
 	 * @param buildings True list of buildings
 	 * @param cityLocation Location of the city to calculate for
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Rations produced by one farmer in this city
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 * @throws MomException If the city's race has no farmers defined or those farmers have no ration production defined
 	 */
-	public static final int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
+		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException
 	{
-		debugLogger.entering (MomServerCityCalculations.class.getName (), "calculateDoubleFarmingRate", cityLocation);
+		log.entering (MomServerCityCalculations.class.getName (), "calculateDoubleFarmingRate", cityLocation);
 
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -118,10 +127,10 @@ public final class MomServerCityCalculations
 		final int doubleFarmingRate = rations.getDoubleAmount () +
 
 			// Bump up farming rate if we have an Animists' guild
-			MemoryBuildingUtils.totalBonusProductionPerPersonFromBuildings (buildings, cityLocation,
-				CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, db, debugLogger);
+			getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings (buildings, cityLocation,
+				CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, db);
 
-		debugLogger.exiting (MomServerCityCalculations.class.getName (), "calculateDoubleFarmingRate", doubleFarmingRate);
+		log.exiting (MomServerCityCalculations.class.getName (), "calculateDoubleFarmingRate", doubleFarmingRate);
 		return doubleFarmingRate;
 	}
 
@@ -144,17 +153,17 @@ public final class MomServerCityCalculations
 	 * @param cityLocation Location of the city to update
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we can't find the player who owns the city
 	 * @throws MomException If any of a number of expected items aren't found in the database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 */
-	public static final void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
+	@Override
+	public final void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		debugLogger.entering (MomServerCityCalculations.class.getName (), "calculateCitySizeIDAndMinimumFarmers", cityLocation);
+		log.entering (MomServerCityCalculations.class.getName (), "calculateCitySizeIDAndMinimumFarmers", cityLocation);
 
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -182,9 +191,9 @@ public final class MomServerCityCalculations
 		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCitySizeIDAndMinimumFarmers");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
-		final int rationsNeeded = (cityData.getCityPopulation () / 1000) - MomCityCalculations.calculateSingleCityProduction
+		final int rationsNeeded = (cityData.getCityPopulation () / 1000) - getCityCalculations ().calculateSingleCityProduction
 			(players, map, buildings, cityLocation, priv.getTaxRateID (), sd, false,
-				db, debugLogger, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+				db, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
 
 		// See if we need any farmers at all
 		if (rationsNeeded <= 0)
@@ -192,13 +201,13 @@ public final class MomServerCityCalculations
 		else
 		{
 			// Get the farming rate for this race
-			final int doubleFarmingRate = calculateDoubleFarmingRate (map, buildings, cityLocation, db, debugLogger);
+			final int doubleFarmingRate = calculateDoubleFarmingRate (map, buildings, cityLocation, db);
 
 			// Now can do calculation, round up
 			cityData.setMinimumFarmers (((rationsNeeded * 2) + doubleFarmingRate - 1) / doubleFarmingRate);
 		}
 
-		debugLogger.exiting (MomServerCityCalculations.class.getName (), "calculateCitySizeIDAndMinimumFarmers",
+		log.exiting (MomServerCityCalculations.class.getName (), "calculateCitySizeIDAndMinimumFarmers",
 			new String [] {cityData.getCitySizeID (), new Integer (cityData.getMinimumFarmers ()).toString ()});
 	}
 
@@ -216,13 +225,13 @@ public final class MomServerCityCalculations
 	 * if they can see the city, and if so then sends them the updated values
 	 *
 	 * @param city City data
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If we end up setting optional farmers to negative, which indicates that minimum farmers and/or rebels have been previously calculated incorrectly
 	 */
-	public static final void ensureNotTooManyOptionalFarmers (final OverlandMapCityData city, final Logger debugLogger)
+	@Override
+	public final void ensureNotTooManyOptionalFarmers (final OverlandMapCityData city)
 		throws MomException
 	{
-		debugLogger.entering (MomServerCityCalculations.class.getName (), "ensureNotTooManyOptionalFarmers");
+		log.entering (MomServerCityCalculations.class.getName (), "ensureNotTooManyOptionalFarmers");
 
 		final boolean tooMany = (city.getMinimumFarmers () + city.getOptionalFarmers () + city.getNumberOfRebels () > city.getCityPopulation () / 1000);
 		if (tooMany)
@@ -234,21 +243,21 @@ public final class MomServerCityCalculations
 					city.getCityPopulation () + " population, " + city.getMinimumFarmers () + " minimum farmers, " + city.getNumberOfRebels () + " rebels");
 		}
 
-		debugLogger.exiting (MomServerCityCalculations.class.getName (), "ensureNotTooManyOptionalFarmers", tooMany);
+		log.exiting (MomServerCityCalculations.class.getName (), "ensureNotTooManyOptionalFarmers", tooMany);
 	}
 
 	/**
 	 * @param buildings Locked buildings list
 	 * @param cityLocation Location of the city to test
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return -1 if this city has no buildings which give any particular bonus to sight range and so can see the regular resource pattern; 1 or above indicates a longer radius this city can 'see'
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
-	public static final int calculateCityScoutingRange (final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
+	@Override
+	public final int calculateCityScoutingRange (final List<MemoryBuilding> buildings,
+		final OverlandMapCoordinates cityLocation, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		debugLogger.entering (MomServerCityCalculations.class.getName (), "calculateCityScoutingRange", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		log.entering (MomServerCityCalculations.class.getName (), "calculateCityScoutingRange", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
 
 		// Check all buildings at this location
 		int result = -1;
@@ -261,7 +270,7 @@ public final class MomServerCityCalculations
 					result = Math.max (result, scoutingRange);
 			}
 
-		debugLogger.exiting (MomServerCityCalculations.class.getName (), "calculateCityScoutingRange", result);
+		log.exiting (MomServerCityCalculations.class.getName (), "calculateCityScoutingRange", result);
 		return result;
 	}
 
@@ -277,16 +286,16 @@ public final class MomServerCityCalculations
 	 * @param building Cache for the building that we want to construct
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return True if the surrounding terrain has one of the tile type options that we need to construct this building
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or one of the buildings involved
 	 */
-	public static final boolean canEventuallyConstructBuilding (final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
+	@Override
+	public final boolean canEventuallyConstructBuilding (final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinates cityLocation, final Building building,
-		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db, final Logger debugLogger)
+		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (MomServerCityCalculations.class.getName (), "canEventuallyConstructBuilding",
+		log.entering (MomServerCityCalculations.class.getName (), "canEventuallyConstructBuilding",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), building.getBuildingID ()});
 
 		// Need to get the city race
@@ -294,7 +303,7 @@ public final class MomServerCityCalculations
 		final Race race = db.findRace (cityData.getCityRaceID (), "canEventuallyConstructBuilding");
 
 		// Check any direct blocks to us constructing this building
-		boolean passes = MomCityCalculations.buildingPassesTileTypeRequirements (map, cityLocation, building, overlandMapCoordinateSystem, debugLogger);
+		boolean passes = getCityCalculations ().buildingPassesTileTypeRequirements (map, cityLocation, building, overlandMapCoordinateSystem);
 		final Iterator<RaceCannotBuild> iter = race.getRaceCannotBuild ().iterator ();
 		while ((passes) && (iter.hasNext ()))
 			if (iter.next ().getCannotBuildBuildingID ().equals (building.getBuildingID ()))
@@ -308,19 +317,44 @@ public final class MomServerCityCalculations
 
 			// Don't check it is we've already got it - its possible, for example, for a sawmill to be built and then us lose the only forest tile, so while
 			// we don't have the prerequisites for it anymore, we still have the building
-			if (!MemoryBuildingUtils.findBuilding (buildings, cityLocation, thisBuilding.getBuildingID (), debugLogger))
-				if (!canEventuallyConstructBuilding (map, buildings, cityLocation, thisBuilding, overlandMapCoordinateSystem, db, debugLogger))
+			if (!getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, thisBuilding.getBuildingID ()))
+				if (!canEventuallyConstructBuilding (map, buildings, cityLocation, thisBuilding, overlandMapCoordinateSystem, db))
 					passes = false;
 		}
 
-		debugLogger.exiting (MomServerCityCalculations.class.getName (), "canEventuallyConstructBuilding", passes);
+		log.exiting (MomServerCityCalculations.class.getName (), "canEventuallyConstructBuilding", passes);
 		return passes;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Memory building utils
 	 */
-	private MomServerCityCalculations ()
+	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
 	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final IMomCityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final IMomCityCalculations calc)
+	{
+		cityCalculations = calc;
 	}
 }

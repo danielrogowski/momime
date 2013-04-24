@@ -22,8 +22,8 @@ import momime.common.database.v0_9_4.RoundingDirectionID;
 import momime.common.database.v0_9_4.TaxRate;
 import momime.common.database.v0_9_4.TileType;
 import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.MemoryBuildingUtils;
-import momime.common.messages.PlayerPickUtils;
+import momime.common.messages.IMemoryBuildingUtils;
+import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
@@ -49,8 +49,17 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Common calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public final class MomCityCalculations
+public final class MomCityCalculations implements IMomCityCalculations
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomCityCalculations.class.getName ());
+	
+	/** Memory building utils */
+	private IMemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Player pick utils */
+	private IPlayerPickUtils playerPickUtils;
+	
 	/**
 	 * A list of directions for traversing from a city's coordinates through all the map cells within that city's radius
 	 * Note this is different from the Delphi list TRACE_CITY_DIRECTION is in MomMap.pas in that the list here DOES include the tile the city itself is on, the Delphi code (unnecessarily) deals with the centre tile separately
@@ -73,15 +82,15 @@ public final class MomCityCalculations
 	 * @param cityLocation Location of the city to calculate for
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return % production bonus for a city located at this grid cell
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
-	public static final int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
+		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "calculateProductionBonus", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		log.entering (MomCityCalculations.class.getName (), "calculateProductionBonus", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
 
 		int productionBonus = 0;
 		final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
@@ -103,7 +112,7 @@ public final class MomCityCalculations
 			}
 		}
 
-		debugLogger.exiting (MomCityCalculations.class.getName (), "calculateProductionBonus", productionBonus);
+		log.exiting (MomCityCalculations.class.getName (), "calculateProductionBonus", productionBonus);
 		return productionBonus;
 	}
 
@@ -112,15 +121,15 @@ public final class MomCityCalculations
 	 * @param cityLocation Location of the city to calculate for
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return % gold bonus for a city located at this grid cell
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
-	public static final int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
+		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "calculateGoldBonus", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		log.entering (MomCityCalculations.class.getName (), "calculateGoldBonus", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
 
 		// Deal with centre square
 		int goldBonus = 0;
@@ -156,7 +165,7 @@ public final class MomCityCalculations
 			d++;
 		}
 
-		debugLogger.exiting (MomCityCalculations.class.getName (), "calculateGoldBonus", goldBonus);
+		log.exiting (MomCityCalculations.class.getName (), "calculateGoldBonus", goldBonus);
 		return goldBonus;
 	}
 
@@ -165,13 +174,13 @@ public final class MomCityCalculations
 	 * @param cityLocation Location of the city to check
 	 * @param building Cache for the building that we want to construct
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return True if the surrounding terrain has one of the tile type options that we need to construct this building
 	 */
-	public static final boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation, final Building building,
-		final CoordinateSystem overlandMapCoordinateSystem, final Logger debugLogger)
+	@Override
+	public final boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation, final Building building,
+		final CoordinateSystem overlandMapCoordinateSystem)
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "buildingPassesTileTypeRequirements",
+		log.entering (MomCityCalculations.class.getName (), "buildingPassesTileTypeRequirements",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), building.getBuildingID ()});
 
 		// If there are no requirements then we're automatically fine
@@ -250,7 +259,7 @@ public final class MomCityCalculations
 			passes = anyRequirementPassed;
 		}
 
-		debugLogger.exiting (MomCityCalculations.class.getName (), "buildingPassesTileTypeRequirements", passes);
+		log.exiting (MomCityCalculations.class.getName (), "buildingPassesTileTypeRequirements", passes);
 		return passes;
 	}
 
@@ -262,16 +271,16 @@ public final class MomCityCalculations
 	 * @param includeBonusesFromMapFeatures True to include bonuses from map features (Wild Game), false to just count food harvested from the terrain
 	 * @param halveAndCapResult True to halve the result (i.e. return the actual max city size) and cap at the game max city size, false to leave the production values as they are (i.e. return double the actual max city size) and uncapped
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Maximum size a city here will grow to, based on knowledge of surrounding terrain, excluding any buildings that will improve it (Granary & Farmers' Market)
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 */
-	public static final int calculateMaxCitySize (final MapVolumeOfMemoryGridCells map,
+	@Override
+	public final int calculateMaxCitySize (final MapVolumeOfMemoryGridCells map,
 		final OverlandMapCoordinates cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
-		final ICommonDatabase db, final Logger debugLogger)
+		final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "calculateMaxCitySize", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation),
+		log.entering (MomCityCalculations.class.getName (), "calculateMaxCitySize", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation),
 			new Integer (sessionDescription.getDifficultyLevel ().getCityMaxSize ()).toString (), new Boolean (includeBonusesFromMapFeatures).toString (), new Boolean (halveAndCapResult).toString ()});
 
 		int maxCitySize = 0;
@@ -312,7 +321,7 @@ public final class MomCityCalculations
 				maxCitySize = sessionDescription.getDifficultyLevel ().getCityMaxSize ();
 		}
 
-		debugLogger.exiting (MomCityCalculations.class.getName (), "calculateMaxCitySize", maxCitySize);
+		log.exiting (MomCityCalculations.class.getName (), "calculateMaxCitySize", maxCitySize);
 		return maxCitySize;
 	}
 
@@ -325,15 +334,15 @@ public final class MomCityCalculations
 	 * @param cityLocation Location of the city to calculate for
 	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () - not the value output from calculateMaxCitySize ()
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Breakdown of all the values used in calculating the growth rate of this city; if the caller doesn't care about the breakdown and just wants the value, just call .getFinalTotal () on the breakdown
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
-	public static final CalculateCityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final int maxCitySize, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final CalculateCityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
+		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final int maxCitySize, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "calculateMaxCitySize", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		log.entering (MomCityCalculations.class.getName (), "calculateMaxCitySize", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
 
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -432,7 +441,7 @@ public final class MomCityCalculations
 			baseGrowthRate, racialGrowthModifier, buildingsModifyingGrowthRateArray, totalGrowthRate, cappedGrowthRate,
 			baseDeathRate, cityDeathRate, finalTotal);
 
-		debugLogger.exiting (MomCityCalculations.class.getName (), "calculateMaxCitySize", finalTotal);
+		log.exiting (MomCityCalculations.class.getName (), "calculateMaxCitySize", finalTotal);
 		return breakdown;
 	}
 
@@ -456,17 +465,17 @@ public final class MomCityCalculations
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Breakdown of all the values used in calculating the number of rebels this city should have; if the caller doesn't care about the breakdown and just wants the value, just call .getFinalTotal () on the breakdown
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If any of a number of items cannot be found in the cache
 	 */
-	public static final CalculateCityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
+	@Override
+	public final CalculateCityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final String taxRateID, final ICommonDatabase db, final Logger debugLogger)
+		final OverlandMapCoordinates cityLocation, final String taxRateID, final ICommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "calculateCityRebels", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		log.entering (MomCityCalculations.class.getName (), "calculateCityRebels", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
 
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
@@ -476,7 +485,8 @@ public final class MomCityCalculations
 
 		// Add on racial unrest percentage
 		// To do this, need to find the player's capital race, i.e. the race inhabiting the city where their fortress is
-		final OverlandMapCoordinates fortressLocation = MemoryBuildingUtils.findCityWithBuilding (cityData.getCityOwnerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings, debugLogger);
+		final OverlandMapCoordinates fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
+			(cityData.getCityOwnerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings);
 		final int racialPercentage;
 		final int racialLiteral;
 
@@ -560,8 +570,8 @@ public final class MomCityCalculations
 			final PlayerPublicDetails cityOwner = MultiplayerSessionUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityRebels");
 			final List<PlayerPick> cityOwnerPicks = ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
 
-			religiousBuildingRetortPercentage = PlayerPickUtils.totalReligiousBuildingBonus (cityOwnerPicks, db, debugLogger);
-			final List<String> pickIdsContributingToReligiousBuildingBonusList = PlayerPickUtils.pickIdsContributingToReligiousBuildingBonus (cityOwnerPicks, db, debugLogger);
+			religiousBuildingRetortPercentage = getPlayerPickUtils ().totalReligiousBuildingBonus (cityOwnerPicks, db);
+			final List<String> pickIdsContributingToReligiousBuildingBonusList = getPlayerPickUtils ().pickIdsContributingToReligiousBuildingBonus (cityOwnerPicks, db);
 
 			if (religiousBuildingRetortPercentage == 0)
 			{
@@ -647,7 +657,7 @@ public final class MomCityCalculations
 			racialLiteral, religiousBuildingRetortPercentage, religiousBuildingReduction, religiousBuildingRetortValue, unitCount, unitReduction, baseTotal,
 			forcePositive, forceAll, minimumFarmers, totalAfterFarmers, finalTotal, buildingsReducingUnrestArray, pickIdsContributingToReligiousBuildingBonus);
 
-		debugLogger.entering (MomCityCalculations.class.getName (), "calculateCityRebels", finalTotal);
+		log.entering (MomCityCalculations.class.getName (), "calculateCityRebels", finalTotal);
 		return breakdown;
 	}
 
@@ -660,19 +670,19 @@ public final class MomCityCalculations
 	 * @param sd Session description
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return List of all productions and consumptions from this city
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public static final CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
+	@Override
+	public final CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinates cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final ICommonDatabase db, final Logger debugLogger)
+		final ICommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "calculateAllCityProductions", cityLocation);
+		log.entering (MomCityCalculations.class.getName (), "calculateAllCityProductions", cityLocation);
 
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
@@ -681,19 +691,22 @@ public final class MomCityCalculations
 		final PlayerPublicDetails cityOwner = MultiplayerSessionUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "calculateAllCityProductions");
 		final List<PlayerPick> cityOwnerPicks = ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
 
+		// Set up results object, and inject necessary values across into it
 		final CalculateCityProductionResultsImplementation productionValues = new CalculateCityProductionResultsImplementation ();
+		productionValues.setMemoryBuildingUtils (getMemoryBuildingUtils ());
+		productionValues.setPlayerPickUtils (getPlayerPickUtils ());
 
 		// Food production from surrounding tiles
 		productionValues.addProduction (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, null, null, null, null, null,
-			0, 0, 0, 0, 0, 0, 0, calculateMaxCitySize (map, cityLocation, sd, false, false, db, debugLogger));
+			0, 0, 0, 0, 0, 0, 0, calculateMaxCitySize (map, cityLocation, sd, false, false, db));
 
 		// Production % increase from surrounding tiles
-		final int terrainProductionBonus = calculateProductionBonus (map, cityLocation, sd.getMapSize (), db, debugLogger);
+		final int terrainProductionBonus = calculateProductionBonus (map, cityLocation, sd.getMapSize (), db);
 		if (terrainProductionBonus > 0)
 			productionValues.addPercentage (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION, null, terrainProductionBonus);
 
 		// Gold trade % from rivers and oceans
-		final int goldTradeBonus = calculateGoldBonus (map, cityLocation, sd.getMapSize (), db, debugLogger);
+		final int goldTradeBonus = calculateGoldBonus (map, cityLocation, sd.getMapSize (), db);
 		if (goldTradeBonus > 0)
 		{
 			productionValues.addPercentage (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, null, goldTradeBonus);
@@ -713,14 +726,14 @@ public final class MomCityCalculations
 		{
 			// Production from population
 			productionValues.addProductionFromPopulation (cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER,
-				cityData.getMinimumFarmers () + cityData.getOptionalFarmers (), cityLocation, buildings, db, debugLogger);
+				cityData.getMinimumFarmers () + cityData.getOptionalFarmers (), cityLocation, buildings, db);
 
 			productionValues.addProductionFromPopulation (cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER,
-				(cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getOptionalFarmers () - cityData.getNumberOfRebels (), cityLocation, buildings, db, debugLogger);
+				(cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getOptionalFarmers () - cityData.getNumberOfRebels (), cityLocation, buildings, db);
 
 			// With magical races, even the rebels produce power
 			productionValues.addProductionFromPopulation (cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL,
-				cityData.getNumberOfRebels (), cityLocation, buildings, db, debugLogger);
+				cityData.getNumberOfRebels (), cityLocation, buildings, db);
 
 			// Gold from taxes
 			final TaxRate taxRate = db.findTaxRate (taxRateID, "calculateAllCityProductions");
@@ -747,7 +760,7 @@ public final class MomCityCalculations
 				{
 					// Wizard's fortress produces mana according to how many books were chosen at the start of the game...
 					for (final PickType thisPickType : db.getPickType ())
-						productionValues.addProductionFromFortressPickType (thisPickType, PlayerPickUtils.countPicksOfType (cityOwnerPicks, thisPickType.getPickTypeID (), true, db, debugLogger));
+						productionValues.addProductionFromFortressPickType (thisPickType, getPlayerPickUtils ().countPicksOfType (cityOwnerPicks, thisPickType.getPickTypeID (), true, db));
 
 					// ...and according to which plane it is on
 					productionValues.addProductionFromFortressPlane (db.findPlane (cityLocation.getPlane (), "calculateAllCityProductions"));
@@ -756,7 +769,7 @@ public final class MomCityCalculations
 				// Regular building
 				// Do not count buildings with a pending sale
 				else if (!thisBuilding.getBuildingID ().equals (mc.getBuildingIdSoldThisTurn ()))
-					productionValues.addProductionAndConsumptionFromBuilding (db.findBuilding (thisBuilding.getBuildingID (), "calculateAllCityProductions"), cityOwnerPicks, db, debugLogger);
+					productionValues.addProductionAndConsumptionFromBuilding (db.findBuilding (thisBuilding.getBuildingID (), "calculateAllCityProductions"), cityOwnerPicks, db);
 			}
 
 		// Maintenance cost of city enchantment spells
@@ -844,7 +857,7 @@ public final class MomCityCalculations
 		// Sort the list
 		Collections.sort (productionValues.getResults ());
 
-		debugLogger.exiting (MomCityCalculations.class.getName (), "calculateAllCityProductions", productionValues);
+		log.exiting (MomCityCalculations.class.getName (), "calculateAllCityProductions", productionValues);
 		return productionValues;
 	}
 
@@ -857,26 +870,26 @@ public final class MomCityCalculations
 	 * @param sd Session description
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @param productionTypeID The type of production we want the value for
 	 * @return Production value - consumption value for the specified production type
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public static final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
+	@Override
+	public final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinates cityLocation, final String taxRateID, final MomSessionDescription sd,
-		final boolean includeProductionAndConsumptionFromPopulation, final ICommonDatabase db, final Logger debugLogger, final String productionTypeID)
+		final boolean includeProductionAndConsumptionFromPopulation, final ICommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "calculateSingleCityProduction", cityLocation);
+		log.entering (MomCityCalculations.class.getName (), "calculateSingleCityProduction", cityLocation);
 
 		// This is a right pain - ideally we want a cut down routine that scans only for this production type - however the Miners' Guild really
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
 		// So just do this the long way and then throw away all the other results
 		final CalculateCityProductionResults productionValues = calculateAllCityProductions (players, map, buildings, cityLocation, taxRateID, sd,
-			includeProductionAndConsumptionFromPopulation, db, debugLogger);
+			includeProductionAndConsumptionFromPopulation, db);
 
 		final CalculateCityProductionResult singleProductionValue = productionValues.findProductionType (productionTypeID);
 		final int netGain;
@@ -885,7 +898,7 @@ public final class MomCityCalculations
 		else
 			netGain = singleProductionValue.getModifiedProductionAmount () - singleProductionValue.getConsumptionAmount ();
 
-		debugLogger.exiting (MomCityCalculations.class.getName (), "calculateSingleCityProduction", netGain);
+		log.exiting (MomCityCalculations.class.getName (), "calculateSingleCityProduction", netGain);
 		return netGain;
 	}
 
@@ -893,11 +906,11 @@ public final class MomCityCalculations
 	 * Blanks the building sold this turn value in every map cell
 	 * @param map Should either be the true map or the memory map for the player requested, to ensure that they can see their own cities
 	 * @param onlyOnePlayerID If zero, will blank values in cities belonging to all players; if specified will blank values in cities belonging only to the specified player
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	public static final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map, final int onlyOnePlayerID, final Logger debugLogger)
+	@Override
+	public final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map, final int onlyOnePlayerID)
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "blankBuildingsSoldThisTurn", onlyOnePlayerID);
+		log.entering (MomCityCalculations.class.getName (), "blankBuildingsSoldThisTurn", onlyOnePlayerID);
 
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
@@ -909,7 +922,7 @@ public final class MomCityCalculations
 						mc.setBuildingIdSoldThisTurn (null);
 				}
 
-		debugLogger.exiting (MomCityCalculations.class.getName (), "blankBuildingsSoldThisTurn");
+		log.exiting (MomCityCalculations.class.getName (), "blankBuildingsSoldThisTurn");
 	}
 
 	/**
@@ -923,14 +936,14 @@ public final class MomCityCalculations
 	 * @param plane Which plane we want to place a city on
 	 * @param mapSize Overland map coordinate system and extended details
 	 * @return Map area with areas we know are too close to cities marked
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	public static final BooleanMapArea2DArray markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
-		final int plane, final MapSizeData mapSize, final Logger debugLogger)
+	@Override
+	public final BooleanMapArea2DArray markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
+		final int plane, final MapSizeData mapSize)
 	{
-		debugLogger.entering (MomCityCalculations.class.getName (), "markWithinExistingCityRadius", plane);
+		log.entering (MomCityCalculations.class.getName (), "markWithinExistingCityRadius", plane);
 
-		final BooleanMapArea2DArray result = new BooleanMapArea2DArray (mapSize, debugLogger);
+		final BooleanMapArea2DArray result = new BooleanMapArea2DArray (mapSize);
 		for (int x = 0; x < mapSize.getWidth (); x++)
 			for (int y = 0; y < mapSize.getHeight (); y++)
 			{
@@ -939,14 +952,39 @@ public final class MomCityCalculations
 					result.selectRadius (x, y, mapSize.getCitySeparation ());
 			}
 
-		debugLogger.exiting (MomCityCalculations.class.getName (), "markWithinExistingCityRadius");
+		log.exiting (MomCityCalculations.class.getName (), "markWithinExistingCityRadius");
 		return result;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Memory building utils
 	 */
-	private MomCityCalculations ()
+	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
 	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final IPlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

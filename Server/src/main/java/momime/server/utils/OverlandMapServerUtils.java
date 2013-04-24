@@ -23,19 +23,21 @@ import com.ndg.map.areas.StringMapArea2DArray;
 /**
  * Server side only helper methods for dealing with the overland map
  */
-public final class OverlandMapServerUtils
+public final class OverlandMapServerUtils implements IOverlandMapServerUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (OverlandMapServerUtils.class.getName ());
+	
 	/**
 	 * @param plane Plane that we want to choose a race for
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
  	 * @return ID of a random race who inhabits the requested plane
  	 * @throws MomException If no races are defined with the requested plane
 	 */
-	final static String chooseRandomRaceForPlane (final int plane, final ServerDatabaseEx db, final Logger debugLogger)
+	final String chooseRandomRaceForPlane (final int plane, final ServerDatabaseEx db)
 		throws MomException
 	{
-		debugLogger.exiting (OverlandMapGenerator.class.getName (), "chooseRandomRaceForPlane");
+		log.exiting (OverlandMapGenerator.class.getName (), "chooseRandomRaceForPlane");
 
 		// List all candidates
 		final List<String> raceIDs = new ArrayList<String> ();
@@ -48,7 +50,7 @@ public final class OverlandMapServerUtils
 
 		final String chosenRaceID = raceIDs.get (RandomUtils.getGenerator ().nextInt (raceIDs.size ()));
 
-		debugLogger.exiting (OverlandMapGenerator.class.getName (), "chooseRandomRaceForPlane", chosenRaceID);
+		log.exiting (OverlandMapGenerator.class.getName (), "chooseRandomRaceForPlane", chosenRaceID);
 		return chosenRaceID;
 	}
 
@@ -61,13 +63,12 @@ public final class OverlandMapServerUtils
 	 * @param plane Plane of starting location
 	 * @param raceID Race ID to set
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
-	final static void setContinentalRace (final MapVolumeOfMemoryGridCells map, final List<StringMapArea2DArray> continentalRace,
-		final int x, final int y, final int plane, final String raceID, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
+	final void setContinentalRace (final MapVolumeOfMemoryGridCells map, final List<StringMapArea2DArray> continentalRace,
+		final int x, final int y, final int plane, final String raceID, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		debugLogger.entering (OverlandMapServerUtils.class.getName (), "setContinentalRace",
+		log.entering (OverlandMapServerUtils.class.getName (), "setContinentalRace",
 			new String [] {new Integer (x).toString (), new Integer (y).toString (), new Integer (plane).toString (), raceID});
 
 		final CoordinateSystem sys = continentalRace.get (plane).getCoordinateSystem ();
@@ -89,11 +90,11 @@ public final class OverlandMapServerUtils
 				// NB. IsLand is Boolean so could be null, but should be set for all tile types produced by the map generator
 				// the only tile types for which it is null are those which are special references for the movement tables, e.g. road tiles
 				if ((db.findTileType (terrain.getTileTypeID (), "setContinentalRace").isIsLand ()) && (continentalRace.get (plane).get (coords) == null))
-					setContinentalRace (map, continentalRace, coords.getX (), coords.getY (), plane, raceID, db, debugLogger);
+					setContinentalRace (map, continentalRace, coords.getX (), coords.getY (), plane, raceID, db);
 			}
 		}
 
-		debugLogger.exiting (OverlandMapServerUtils.class.getName (), "setContinentalRace");
+		log.exiting (OverlandMapServerUtils.class.getName (), "setContinentalRace");
 	}
 
 	/**
@@ -103,19 +104,19 @@ public final class OverlandMapServerUtils
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return Generated area of race IDs
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
  	 * @throws MomException If no races are defined for a particular plane
 	 */
-	public final static List<StringMapArea2DArray> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
-		final CoordinateSystem sys, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException, MomException
+	@Override
+	public final List<StringMapArea2DArray> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
+		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
-		debugLogger.entering (OverlandMapServerUtils.class.getName (), "decideAllContinentalRaces");
+		log.entering (OverlandMapServerUtils.class.getName (), "decideAllContinentalRaces");
 
 		// Allocate a race to each continent of land for raider cities
 		final List<StringMapArea2DArray> continentalRace = new ArrayList<StringMapArea2DArray> ();
 		for (int plane = 0; plane < db.getPlane ().size (); plane++)
-			continentalRace.add (new StringMapArea2DArray (sys, debugLogger));
+			continentalRace.add (new StringMapArea2DArray (sys));
 
 		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sys.getWidth (); x++)
@@ -129,10 +130,10 @@ public final class OverlandMapServerUtils
 						(continentalRace.get (plane.getPlaneNumber ()).get (x, y) == null))
 
 						setContinentalRace (map, continentalRace, x, y, plane.getPlaneNumber (),
-							chooseRandomRaceForPlane (plane.getPlaneNumber (), db, debugLogger), db, debugLogger);
+							chooseRandomRaceForPlane (plane.getPlaneNumber (), db), db);
 				}
 
-		debugLogger.exiting (OverlandMapServerUtils.class.getName (), "decideAllContinentalRaces", continentalRace);
+		log.exiting (OverlandMapServerUtils.class.getName (), "decideAllContinentalRaces", continentalRace);
 		return continentalRace;
 	}
 
@@ -144,7 +145,8 @@ public final class OverlandMapServerUtils
 	 * @param race The race who is creating a new city
 	 * @return Auto generated city name
 	 */
-	public final static String generateCityName (final MomGeneralServerKnowledge gsk, final Race race)
+	@Override
+	public final String generateCityName (final MomGeneralServerKnowledge gsk, final Race race)
 	{
 		final List<String> possibleChoices = new ArrayList<String> ();
 
@@ -176,12 +178,5 @@ public final class OverlandMapServerUtils
 		gsk.getUsedCityName ().add (chosenCityName);
 
 		return chosenCityName;
-	}
-
-	/**
-	 * Prevent instantiation
-	 */
-	private OverlandMapServerUtils ()
-	{
 	}
 }

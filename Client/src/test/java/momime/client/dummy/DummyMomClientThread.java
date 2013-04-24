@@ -3,8 +3,8 @@ package momime.client.dummy;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
-import java.util.logging.Logger;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -43,7 +43,6 @@ import momime.common.messages.v0_9_4.MomResourceValue;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.server.database.JAXBContextCreator;
 
 import com.ndg.multiplayer.base.MultiplayerBaseClientThread;
 import com.ndg.multiplayer.base.ServerToClientMessage;
@@ -76,14 +75,17 @@ public final class DummyMomClientThread extends MultiplayerBaseClientThread
 	 * @param aSocket Socket used to communicate with the server
 	 * @param aReadyForMessagesMonitor Thread lock object to notify once thread is ready to send and receive messages; null if no start notification is requested
 	 * @param aClient Link to demo client, so we can trigger methods on it
-	 * @param aDebugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem creating the contexts
 	 */
-	public DummyMomClientThread (final Socket aSocket, final Object aReadyForMessagesMonitor, final DummyMomClient aClient, final Logger aDebugLogger)
+	public DummyMomClientThread (final Socket aSocket, final Object aReadyForMessagesMonitor, final DummyMomClient aClient)
 		throws JAXBException
 	{
-		super (aSocket, JAXBContextCreator.createClientToServerMessageContext (), JAXBContextCreator.createServerToClientMessageContext (), null,
-			aReadyForMessagesMonitor, aDebugLogger);
+		// Pulling the JAXB contexts straight out of the spring application context by naming the beans is really ugly but
+		// it'll do for now until I put some more work into how to write client side multiplayer apps using spring
+		// and include a demo client in NdgMultiplayerSessionDemo
+		super (aSocket, (JAXBContext) aClient.getApplicationContext ().getBean ("clientToServerJaxbContext"),
+			(JAXBContext) aClient.getApplicationContext ().getBean ("serverToClientJaxbContext"),
+			null, aReadyForMessagesMonitor);
 
 		client = aClient;
 	}
@@ -191,6 +193,7 @@ public final class DummyMomClientThread extends MultiplayerBaseClientThread
 			client.addToTextArea ("Successfully joined session " + join.getSessionDescription ().getSessionID ());
 			client.addToTextArea ("  Persistent player private knowledge: " + join.getPersistentPlayerPrivateKnowledge ());
 			client.addToTextArea ("  Transient player private knowledge: " + join.getTransientPlayerPrivateKnowledge ());
+			client.addToTextArea ("  General public knowledge: " + join.getGeneralPublicKnowledge ());
 			client.addToTextArea ("  Players now in session: " + playerList);
 
 			final MomGeneralPublicKnowledge gpk = (MomGeneralPublicKnowledge) join.getGeneralPublicKnowledge ();

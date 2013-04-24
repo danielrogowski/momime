@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSkillCalculations;
-import momime.common.calculations.MomSpellCalculations;
+import momime.common.calculations.IMomSkillCalculations;
+import momime.common.calculations.IMomSpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
@@ -19,14 +19,26 @@ import momime.common.messages.v0_9_4.PlayerPick;
 /**
  * Methods for working with list of MomResourceValues
  */
-public final class ResourceValueUtils
+public final class ResourceValueUtils implements IResourceValueUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ResourceValueUtils.class.getName ());
+	
+	/** Skill calculations */
+	private IMomSkillCalculations skillCalculations;
+
+	/** Spell calculations */
+	private IMomSpellCalculations spellCalculations;
+	
+	/** Player pick utils */
+	private IPlayerPickUtils playerPickUtils;
+	
 	/**
 	 * @param resourceList List of resources to search through
 	 * @param productionTypeID Production type ID to search for
 	 * @return The resource value for the specified production type, or null if the player has none of this production type
 	 */
-	static final MomResourceValue findResourceValue (final List<MomResourceValue> resourceList, final String productionTypeID)
+	final MomResourceValue findResourceValue (final List<MomResourceValue> resourceList, final String productionTypeID)
 	{
 		MomResourceValue result = null;
 
@@ -49,12 +61,12 @@ public final class ResourceValueUtils
 	 *
 	 * @param resourceList List of resources to search through
      * @param productionTypeID Type of production to look up
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
      * @return How much of this production type that this player generates per turn
      */
-	public static final int findAmountPerTurnForProductionType (final List<MomResourceValue> resourceList, final String productionTypeID, final Logger debugLogger)
+	@Override
+	public final int findAmountPerTurnForProductionType (final List<MomResourceValue> resourceList, final String productionTypeID)
 	{
-		debugLogger.entering (ResourceValueUtils.class.getName (), "findAmountPerTurnForProductionType", productionTypeID);
+		log.entering (ResourceValueUtils.class.getName (), "findAmountPerTurnForProductionType", productionTypeID);
 
 		final MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 
@@ -64,19 +76,19 @@ public final class ResourceValueUtils
 		else
 			result = playerResourceValue.getAmountPerTurn ();
 
-		debugLogger.exiting (ResourceValueUtils.class.getName (), "findAmountPerTurnForProductionType", result);
+		log.exiting (ResourceValueUtils.class.getName (), "findAmountPerTurnForProductionType", result);
 		return result;
 	}
 
 	/**
 	 * @param resourceList List of resources to search through
      * @param productionTypeID Type of production to look up
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
      * @return How much of this production type that this player has stored
      */
-	public static final int findAmountStoredForProductionType (final List<MomResourceValue> resourceList, final String productionTypeID, final Logger debugLogger)
+	@Override
+	public final int findAmountStoredForProductionType (final List<MomResourceValue> resourceList, final String productionTypeID)
 	{
-		debugLogger.entering (ResourceValueUtils.class.getName (), "findAmountStoredForProductionType", productionTypeID);
+		log.entering (ResourceValueUtils.class.getName (), "findAmountStoredForProductionType", productionTypeID);
 
 		final MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 
@@ -86,7 +98,7 @@ public final class ResourceValueUtils
 		else
 			result = playerResourceValue.getAmountStored ();
 
-		debugLogger.exiting (ResourceValueUtils.class.getName (), "findAmountStoredForProductionType", result);
+		log.exiting (ResourceValueUtils.class.getName (), "findAmountStoredForProductionType", result);
 		return result;
 	}
 
@@ -94,12 +106,11 @@ public final class ResourceValueUtils
 	 * @param resourceList List of resources to update
 	 * @param productionTypeID Which type of production we are modifing
 	 * @param amountToAdd Amount to modify their per turn production by
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	public static final void addToAmountPerTurn (final List<MomResourceValue> resourceList, final String productionTypeID,
-		final int amountToAdd, final Logger debugLogger)
+	@Override
+	public final void addToAmountPerTurn (final List<MomResourceValue> resourceList, final String productionTypeID, final int amountToAdd)
 	{
-		debugLogger.entering (ResourceValueUtils.class.getName (), "addToAmountPerTurn", new String [] {productionTypeID, new Integer (amountToAdd).toString ()});
+		log.entering (ResourceValueUtils.class.getName (), "addToAmountPerTurn", new String [] {productionTypeID, new Integer (amountToAdd).toString ()});
 
 		MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 		if (playerResourceValue == null)
@@ -111,19 +122,18 @@ public final class ResourceValueUtils
 
 		playerResourceValue.setAmountPerTurn (playerResourceValue.getAmountPerTurn () + amountToAdd);
 
-		debugLogger.exiting (ResourceValueUtils.class.getName (), "addToAmountPerTurn");
+		log.exiting (ResourceValueUtils.class.getName (), "addToAmountPerTurn");
 	}
 
 	/**
 	 * @param resourceList List of resources to update
 	 * @param productionTypeID Which type of production we are modifing
 	 * @param amountToAdd Amount to modify their stored production by
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	public static final void addToAmountStored (final List<MomResourceValue> resourceList, final String productionTypeID,
-		final int amountToAdd, final Logger debugLogger)
+	@Override
+	public final void addToAmountStored (final List<MomResourceValue> resourceList, final String productionTypeID, final int amountToAdd)
 	{
-		debugLogger.entering (ResourceValueUtils.class.getName (), "addToAmountStored", new String [] {productionTypeID, new Integer (amountToAdd).toString ()});
+		log.entering (ResourceValueUtils.class.getName (), "addToAmountStored", new String [] {productionTypeID, new Integer (amountToAdd).toString ()});
 
 		MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 		if (playerResourceValue == null)
@@ -135,7 +145,7 @@ public final class ResourceValueUtils
 
 		playerResourceValue.setAmountStored (playerResourceValue.getAmountStored () + amountToAdd);
 
-		debugLogger.exiting (ResourceValueUtils.class.getName (), "addToAmountStored");
+		log.exiting (ResourceValueUtils.class.getName (), "addToAmountStored");
 	}
 
 	/**
@@ -143,16 +153,16 @@ public final class ResourceValueUtils
 	 * Java version operates only on one player because each player now has their own resource list
 	 *
 	 * @param resourceList List of resources to update
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	public static final void zeroAmountsPerTurn (final List<MomResourceValue> resourceList, final Logger debugLogger)
+	@Override
+	public final void zeroAmountsPerTurn (final List<MomResourceValue> resourceList)
 	{
-		debugLogger.entering (ResourceValueUtils.class.getName (), "zeroAmountsPerTurn");
+		log.entering (ResourceValueUtils.class.getName (), "zeroAmountsPerTurn");
 
 		for (final MomResourceValue playerResourceValue : resourceList)
 			playerResourceValue.setAmountPerTurn (0);
 
-		debugLogger.exiting (ResourceValueUtils.class.getName (), "zeroAmountsPerTurn");
+		log.exiting (ResourceValueUtils.class.getName (), "zeroAmountsPerTurn");
 	}
 
 	/**
@@ -160,31 +170,31 @@ public final class ResourceValueUtils
 	 * Java version operates only on one player because each player now has their own resource list
 	 *
 	 * @param resourceList List of resources to update
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	public static final void zeroAmountsStored (final List<MomResourceValue> resourceList, final Logger debugLogger)
+	@Override
+	public final void zeroAmountsStored (final List<MomResourceValue> resourceList)
 	{
-		debugLogger.entering (ResourceValueUtils.class.getName (), "zeroAmountsStored");
+		log.entering (ResourceValueUtils.class.getName (), "zeroAmountsStored");
 
 		for (final MomResourceValue playerResourceValue : resourceList)
 			playerResourceValue.setAmountStored (0);
 
-		debugLogger.exiting (ResourceValueUtils.class.getName (), "zeroAmountsStored");
+		log.exiting (ResourceValueUtils.class.getName (), "zeroAmountsStored");
 	}
 
     /**
 	 * @param resourceList List of resources to search through
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
      * @return The specified player's casting skill, in mana-points-spendable/turn instead of raw skill points
      */
-	public static final int calculateCastingSkillOfPlayer (final List<MomResourceValue> resourceList, final Logger debugLogger)
+	@Override
+	public final int calculateCastingSkillOfPlayer (final List<MomResourceValue> resourceList)
 	{
-		debugLogger.entering (ResourceValueUtils.class.getName (), "calculateCastingSkillOfPlayer");
+		log.entering (ResourceValueUtils.class.getName (), "calculateCastingSkillOfPlayer");
 
-		final int playerSkillPoints = findAmountStoredForProductionType (resourceList, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, debugLogger);
-		final int result = MomSkillCalculations.getCastingSkillForSkillPoints (playerSkillPoints, debugLogger);
+		final int playerSkillPoints = findAmountStoredForProductionType (resourceList, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+		final int result = getSkillCalculations ().getCastingSkillForSkillPoints (playerSkillPoints);
 
-		debugLogger.exiting (ResourceValueUtils.class.getName (), "calculateCastingSkillOfPlayer", result);
+		log.exiting (ResourceValueUtils.class.getName (), "calculateCastingSkillOfPlayer", result);
 		return result;
 	}
 
@@ -197,16 +207,16 @@ public final class ResourceValueUtils
      * @param productionTypeID Type of production to calculate
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
      * @return How much of this production type that this player gets per turn
 	 * @throws MomException If we find an invalid casting reduction type
 	 * @throws RecordNotFoundException If we look for a particular record that we expect to be present in the XML file and we can't find it
      */
-	public static final int calculateAmountPerTurnForProductionType (final MomPersistentPlayerPrivateKnowledge privateInfo, final List<PlayerPick> picks,
-		final String productionTypeID, final SpellSettingData spellSettings, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final int calculateAmountPerTurnForProductionType (final MomPersistentPlayerPrivateKnowledge privateInfo, final List<PlayerPick> picks,
+		final String productionTypeID, final SpellSettingData spellSettings, final ICommonDatabase db)
     	throws MomException, RecordNotFoundException
 	{
-		debugLogger.entering (ResourceValueUtils.class.getName (), "calculateAmountPerTurnForProductionType", productionTypeID);
+		log.entering (ResourceValueUtils.class.getName (), "calculateAmountPerTurnForProductionType", productionTypeID);
 
 		// Is there a research spell specified?
 		final Spell spellBeingResearched;
@@ -233,7 +243,7 @@ public final class ResourceValueUtils
 			(productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT)))
 		{
 			final int powerBase = calculateAmountPerTurnForProductionType (privateInfo, picks,
-				CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, spellSettings, db, debugLogger);
+				CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, spellSettings, db);
 
 			// Calculate research and skill
 			final int researchPerTurnAmountFromMagicPower = (int) Math.round (powerBase * privateInfo.getMagicPowerDistribution ().getResearchRatio () / 240d);
@@ -270,19 +280,19 @@ public final class ResourceValueUtils
 				// How many spell books do we have in this realm? (we might get a research bonus)
 				final int bookCount;
 				if (spellBeingResearched != null)
-					bookCount = PlayerPickUtils.getQuantityOfPick (picks, spellBeingResearched.getSpellRealm (), debugLogger);
+					bookCount = getPlayerPickUtils ().getQuantityOfPick (picks, spellBeingResearched.getSpellRealm ());
 				else
 					bookCount = 0;
 
 				// Now can calculate the bonus
-				final double researchBonusPercentage = MomSpellCalculations.calculateResearchBonus (bookCount, spellSettings, spellBeingResearched, picks, db, debugLogger);
+				final double researchBonusPercentage = getSpellCalculations ().calculateResearchBonus (bookCount, spellSettings, spellBeingResearched, picks, db);
 
 				// The 0.00001 is a hack so that if we end up with a value like 5.99999999 which is supposed to be 6, just has lost a fraction due to rounding errors, we still round it in the correct direction
 				amountPerTurnFromPercentageBonuses = (int) ((totalBeforePercentageBonuses * (researchBonusPercentage / 100d)) + 0.00001d);
 			}
 			else
 			{
-				amountPerTurnFromPercentageBonuses = (totalBeforePercentageBonuses * PlayerPickUtils.totalProductionBonus (productionTypeID, null, picks, db, debugLogger)) / 100;
+				amountPerTurnFromPercentageBonuses = (totalBeforePercentageBonuses * getPlayerPickUtils ().totalProductionBonus (productionTypeID, null, picks, db)) / 100;
 			}
 		}
 		else
@@ -293,14 +303,55 @@ public final class ResourceValueUtils
 
 		final int result = rawAmountPerTurn + amountPerTurnFromMagicPower + amountPerTurnFromPercentageBonuses;
 
-		debugLogger.exiting (ResourceValueUtils.class.getName (), "calculateAmountPerTurnForProductionType", result);
+		log.exiting (ResourceValueUtils.class.getName (), "calculateAmountPerTurnForProductionType", result);
 		return result;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Skill calculations
 	 */
-	private ResourceValueUtils ()
+	public final IMomSkillCalculations getSkillCalculations ()
 	{
+		return skillCalculations;
+	}
+
+	/**
+	 * @param calc Skill calculations
+	 */
+	public final void setSkillCalculations (final IMomSkillCalculations calc)
+	{
+		skillCalculations = calc;
+	}
+
+	/**
+	 * @return Spell calculations
+	 */
+	public final IMomSpellCalculations getSpellCalculations ()
+	{
+		return spellCalculations;
+	}
+
+	/**
+	 * @param calc Spell calculations
+	 */
+	public final void setSpellCalculations (final IMomSpellCalculations calc)
+	{
+		spellCalculations = calc;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final IPlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

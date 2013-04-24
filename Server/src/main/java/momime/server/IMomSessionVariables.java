@@ -6,15 +6,23 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.messages.IPlayerPickUtils;
+import momime.common.messages.IResourceValueUtils;
+import momime.common.messages.ISpellUtils;
+import momime.common.messages.IUnitUtils;
 import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.calculations.IMomServerResourceCalculations;
+import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.process.ICityProcessing;
 import momime.server.process.IPlayerMessageProcessing;
 import momime.server.process.ISpellProcessing;
+import momime.server.utils.ICityServerUtils;
+import momime.server.utils.IPlayerPickServerUtils;
+import momime.server.utils.ISpellServerUtils;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -79,6 +87,46 @@ public interface IMomSessionVariables
 	 * @return Resource calculations
 	 */
 	public IMomServerResourceCalculations getServerResourceCalculations ();
+	
+	/**
+	 * @return Resource value utils
+	 */
+	public IResourceValueUtils getResourceValueUtils ();
+	
+	/**
+	 * @return Player pick utils
+	 */
+	public IPlayerPickUtils getPlayerPickUtils ();
+	
+	/**
+	 * @return Unit utils
+	 */
+	public IUnitUtils getUnitUtils ();
+	
+	/**
+	 * @return Spell utils
+	 */
+	public ISpellUtils getSpellUtils ();
+	
+	/**
+	 * @return Server-only city utils
+	 */
+	public ICityServerUtils getCityServerUtils ();
+	
+	/**
+	 * @return Server-only pick utils
+	 */
+	public IPlayerPickServerUtils getPlayerPickServerUtils ();
+	
+	/**
+	 * @return Server-only spell utils
+	 */
+	public ISpellServerUtils getSpellServerUtils ();
+	
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public IMomServerUnitCalculations getServerUnitCalculations ();
 	
 	/**
 	 * Adds an AI player

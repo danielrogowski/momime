@@ -26,9 +26,8 @@ public interface MomServerUI
 	/**
 	 * Placeholder where the UI can perform any work startup work necessary, typically creating the main window
 	 * By this stage the debug logger has been created, so if the UI wants to hook into this and add its own handler, it can do that here too
-	 * @param aDebugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	public void createMainWindow (final Logger aDebugLogger);
+	public void createMainWindow ();
 
 	/**
 	 * @param session Newly created session
@@ -39,11 +38,10 @@ public interface MomServerUI
 	/**
 	 * @param session Newly created session
 	 * @param sessionWindow The session window created by createWindowForNewSession
-	 * @param debugLogger Logger which writes to the main window/console, and copies messages to the file logger if enabled
 	 * @param fileLogger Logger which writes to a disk file, if enabled
 	 * @return Logger created and configured for this session
 	 */
-	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow, final Logger debugLogger, final Logger fileLogger);
+	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow, final Logger fileLogger);
 
 	/**
 	 * Allows the UI to update its list of sessions when a session is either added or closed

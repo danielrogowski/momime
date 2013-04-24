@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
-import momime.common.messages.SpellUtils;
+import momime.common.messages.ISpellUtils;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
@@ -16,26 +16,32 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Server side methods dealing with researching and casting spells
  */
-public final class SpellServerUtils
+public final class SpellServerUtils implements ISpellServerUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (SpellServerUtils.class.getName ());
+	
+	/** Spell utils */
+	private ISpellUtils spellUtils;
+	
 	/**
 	 * @param player Player who wants to switch research
 	 * @param spellID Spell that we want to research
 	 * @param switchResearch Switch research option from session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return null if choice is acceptable; message to send back to client if choice isn't acceptable
 	 * @throws RecordNotFoundException If either the spell we want to research now, or the spell previously being researched, can't be found
 	 */
-	public final static String validateResearch (final PlayerServerDetails player, final String spellID,
-		final SwitchResearch switchResearch, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
+	@Override
+	public final String validateResearch (final PlayerServerDetails player, final String spellID,
+		final SwitchResearch switchResearch, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		debugLogger.entering (SpellServerUtils.class.getName (), "validateResearch", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), spellID});
+		log.entering (SpellServerUtils.class.getName (), "validateResearch", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), spellID});
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// Find the spell that we want to research
-		final SpellResearchStatus spellWeWantToResearch = SpellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), spellID, debugLogger);
+		final SpellResearchStatus spellWeWantToResearch = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
 
 		// Find the spell that was previously being researched
 		final Spell spellPreviouslyBeingResearched;
@@ -49,7 +55,7 @@ public final class SpellServerUtils
 		else
 		{
 			spellPreviouslyBeingResearched = db.findSpell (priv.getSpellIDBeingResearched (), "validateResearch");
-			spellPreviouslyBeingResearchedStatus = SpellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched (), debugLogger);
+			spellPreviouslyBeingResearchedStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched ());
 		}
 
 		// If we can't research it then its obviously disallowed regardless of the status of the previous research
@@ -71,14 +77,23 @@ public final class SpellServerUtils
 		else
 			msg = null;
 
-		debugLogger.exiting (SpellServerUtils.class.getName (), "validateResearch", msg);
+		log.exiting (SpellServerUtils.class.getName (), "validateResearch", msg);
 		return msg;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Spell utils
 	 */
-	private SpellServerUtils ()
+	public final ISpellUtils getSpellUtils ()
 	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final ISpellUtils utils)
+	{
+		spellUtils = utils;
 	}
 }

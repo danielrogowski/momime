@@ -21,6 +21,9 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  */
 public final class MomResourceConsumerSpell implements IMomResourceConsumer
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomResourceConsumerSpell.class.getName ());
+	
 	/** True map spell that is consuming resources */
 	private final MemoryMaintainedSpell spell;
 
@@ -88,7 +91,6 @@ public final class MomResourceConsumerSpell implements IMomResourceConsumer
 	 * Switches off this spell to conserve resources
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -96,15 +98,15 @@ public final class MomResourceConsumerSpell implements IMomResourceConsumer
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void kill (final IMomSessionVariables mom, final Logger debugLogger)
+	public final void kill (final IMomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		debugLogger.entering (MomResourceConsumerSpell.class.getName (), "kill", getSpell ().getSpellID ());
+		log.entering (MomResourceConsumerSpell.class.getName (), "kill", getSpell ().getSpellID ());
 
 		mom.getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (),
 			getSpell ().getCastingPlayerID (), getSpell ().getSpellID (), getSpell ().getUnitURN (), getSpell ().getUnitSkillID (),
 			getSpell ().isCastInCombat (), getSpell ().getCityLocation (), getSpell ().getCitySpellEffectID (),
-			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription (), debugLogger);
+			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{
@@ -116,6 +118,6 @@ public final class MomResourceConsumerSpell implements IMomResourceConsumer
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (spellSwitchedOff);
 		}
 
-		debugLogger.exiting (MomResourceConsumerSpell.class.getName (), "kill");
+		log.exiting (MomResourceConsumerSpell.class.getName (), "kill");
 	}
 }

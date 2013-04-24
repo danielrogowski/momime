@@ -9,9 +9,9 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.WizardPick;
+import momime.common.messages.IPlayerPickUtils;
+import momime.common.messages.ISpellUtils;
 import momime.common.messages.PlayerKnowledgeUtils;
-import momime.common.messages.PlayerPickUtils;
-import momime.common.messages.SpellUtils;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowRank;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
@@ -20,7 +20,7 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.server.ai.SpellAI;
+import momime.server.ai.ISpellAI;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
@@ -36,18 +36,30 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Server side only helper methods for dealing with picks
  */
-public final class PlayerPickServerUtils
+public final class PlayerPickServerUtils implements IPlayerPickServerUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (PlayerPickServerUtils.class.getName ());
+	
+	/** Player pick utils */
+	private IPlayerPickUtils playerPickUtils;
+	
+	/** Spell utils */
+	private ISpellUtils spellUtils;
+	
+	/** AI decisions about spells */
+	private ISpellAI spellAI;
+	
 	/**
 	 * @param picks Player's picks to count up
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger
 	 * @return Initial skill wizard will start game with - 2 per book +10 if they chose Archmage
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public final static int getTotalInitialSkill (final List<PlayerPick> picks, final ServerDatabaseEx db, final Logger debugLogger) throws RecordNotFoundException
+	@Override
+	public final int getTotalInitialSkill (final List<PlayerPick> picks, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "getTotalInitialSkill", picks.size ());
+		log.entering (PlayerPickServerUtils.class.getName (), "getTotalInitialSkill", picks.size ());
 
 		int total = 0;
 		for (final PlayerPick thisPick : picks)
@@ -57,19 +69,19 @@ public final class PlayerPickServerUtils
 				total = total + (thisPickRecord.getPickInitialSkill () * thisPick.getQuantity ());
 		}
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "getTotalInitialSkill", total);
+		log.exiting (PlayerPickServerUtils.class.getName (), "getTotalInitialSkill", total);
 		return total;
 	}
 
 	/**
 	 * @param players List of players
 	 * @param wizardID Wizard ID we want to pick
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Player with the specified wizard ID, or null if none are found
 	 */
-	public final static PlayerServerDetails findPlayerUsingWizard (final List<PlayerServerDetails> players, final String wizardID, final Logger debugLogger)
+	@Override
+	public final PlayerServerDetails findPlayerUsingWizard (final List<PlayerServerDetails> players, final String wizardID)
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "findPlayerUsingWizard", wizardID);
+		log.entering (PlayerPickServerUtils.class.getName (), "findPlayerUsingWizard", wizardID);
 
 		PlayerServerDetails result = null;
 		final Iterator<PlayerServerDetails> iter = players.iterator ();
@@ -82,19 +94,19 @@ public final class PlayerPickServerUtils
 				result = player;
 		}
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "findPlayerUsingWizard", (result == null) ? "null" : result.getPlayerDescription ().getPlayerID ());
+		log.exiting (PlayerPickServerUtils.class.getName (), "findPlayerUsingWizard", (result == null) ? "null" : result.getPlayerDescription ().getPlayerID ());
 		return result;
 	}
 
 	/**
 	 * @param players List of players
 	 * @param standardPhotoID Standard photo ID we want to pick
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Player with the specified Standard photo ID, or null if none are found
 	 */
-	public final static PlayerServerDetails findPlayerUsingStandardPhoto (final List<PlayerServerDetails> players, final String standardPhotoID, final Logger debugLogger)
+	@Override
+	public final PlayerServerDetails findPlayerUsingStandardPhoto (final List<PlayerServerDetails> players, final String standardPhotoID)
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "findPlayerUsingStandardPhoto", standardPhotoID);
+		log.entering (PlayerPickServerUtils.class.getName (), "findPlayerUsingStandardPhoto", standardPhotoID);
 
 		PlayerServerDetails result = null;
 		final Iterator<PlayerServerDetails> iter = players.iterator ();
@@ -107,7 +119,7 @@ public final class PlayerPickServerUtils
 				result = player;
 		}
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "findPlayerUsingStandardPhoto", (result == null) ? "null" : result.getPlayerDescription ().getPlayerID ());
+		log.exiting (PlayerPickServerUtils.class.getName (), "findPlayerUsingStandardPhoto", (result == null) ? "null" : result.getPlayerDescription ().getPlayerID ());
 		return result;
 	}
 
@@ -118,12 +130,12 @@ public final class PlayerPickServerUtils
 	 * @param picks The custom picks they have requested
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
-	public final static String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final MomSessionDescription sd, final ServerDatabaseEx db)
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "validateCustomPicks", new Integer [] {player.getPlayerDescription ().getPlayerID (), picks.size ()});
+		log.entering (PlayerPickServerUtils.class.getName (), "validateCustomPicks", new Integer [] {player.getPlayerDescription ().getPlayerID (), picks.size ()});
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -160,7 +172,7 @@ public final class PlayerPickServerUtils
 			}
 		}
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "validateCustomPicks", msg);
+		log.exiting (PlayerPickServerUtils.class.getName (), "validateCustomPicks", msg);
 		return msg;
 	}
 
@@ -171,14 +183,13 @@ public final class PlayerPickServerUtils
 	 * @param player Player we want to check to see if they need to pick free spells
 	 * @param pick The pick we want to see if we get any free spells from
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Message containing magic realm and counts of how many spells we need to pick of each rank - can be an empty list; null indicates that the quantity of pick we have doesn't grant any free spells
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
-	private final static ChooseInitialSpellsNowMessage countFreeSpellsLeftToChoose (final PlayerServerDetails player, final PlayerPick pick, final ServerDatabaseEx db, final Logger debugLogger)
+	private final ChooseInitialSpellsNowMessage countFreeSpellsLeftToChoose (final PlayerServerDetails player, final PlayerPick pick, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "countFreeSpellsLeftToChoose", player.getPlayerDescription ().getPlayerID ());
+		log.entering (PlayerPickServerUtils.class.getName (), "countFreeSpellsLeftToChoose", player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -207,8 +218,8 @@ public final class PlayerPickServerUtils
 
 			for (final PickTypeGrantsSpells thisSpellRank : pickTypeCount.getSpellCount ())
 			{
-				final int freeSpellsAlreadySelected = SpellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (),
-					pick.getPickID (), thisSpellRank.getSpellRank (), SpellResearchStatusID.AVAILABLE, db, debugLogger).size ();
+				final int freeSpellsAlreadySelected = getSpellUtils ().getSpellsForRealmRankStatus (priv.getSpellResearchStatus (),
+					pick.getPickID (), thisSpellRank.getSpellRank (), SpellResearchStatusID.AVAILABLE, db).size ();
 
 				if ((thisSpellRank.getSpellsFreeAtStart () != null) && (thisSpellRank.getSpellsFreeAtStart () > freeSpellsAlreadySelected))
 				{
@@ -218,13 +229,13 @@ public final class PlayerPickServerUtils
 					msgRank.setFreeSpellCount (thisSpellRank.getSpellsFreeAtStart () - freeSpellsAlreadySelected);
 					msg.getSpellRank ().add (msgRank);
 
-					debugLogger.finest (PlayerPickServerUtils.class.getName () + ".countFreeSpellsLeftToChoose: Human player " + player.getPlayerDescription ().getPlayerName () + " needs to choose " +
+					log.finest (PlayerPickServerUtils.class.getName () + ".countFreeSpellsLeftToChoose: Human player " + player.getPlayerDescription ().getPlayerName () + " needs to choose " +
 						msgRank.getFreeSpellCount () + " free spells of realm " + msg.getMagicRealmID () + " rank " + msgRank.getSpellRankID ());
 				}
 			}
 		}
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "countFreeSpellsLeftToChoose", msg);
+		log.exiting (PlayerPickServerUtils.class.getName (), "countFreeSpellsLeftToChoose", msg);
 		return msg;
 	}
 
@@ -240,15 +251,15 @@ public final class PlayerPickServerUtils
 	 *
 	 * @param player Player we want to check to see if they need to pick free spells
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Message containing magic realm and counts of how many spells we need to pick of each rank; or null if there are no more free spells we need to choose
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 * @throws RecordNotFoundException If the player has picks which we can't find in the cache, or the AI player chooses a spell which we can't then find in their list
 	 */
-	public final static ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "findRealmIDWhereWeNeedToChooseFreeSpells", player.getPlayerDescription ().getPlayerID ());
+		log.entering (PlayerPickServerUtils.class.getName (), "findRealmIDWhereWeNeedToChooseFreeSpells", player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -262,7 +273,7 @@ public final class PlayerPickServerUtils
 			final PlayerPick pick = picksIterator.next ();
 
 			// Make a list of how many spells of each rank we still need to pick
-			msg = countFreeSpellsLeftToChoose (player, pick, db, debugLogger);
+			msg = countFreeSpellsLeftToChoose (player, pick, db);
 
 			// If we found a type of book that we have enough of to get some free spells, but we've already chosen them, then wipe out the message and continue looking
 			if ((msg != null) && (msg.getSpellRank ().size () == 0))
@@ -275,15 +286,15 @@ public final class PlayerPickServerUtils
 		if ((msg != null) && (!player.getPlayerDescription ().isHuman ()))
 			for (final ChooseInitialSpellsNowRank thisSpellRank : msg.getSpellRank ())
 			{
-				debugLogger.finest (PlayerPickServerUtils.class.getName () + ".findRealmIDWhereWeNeedToChooseFreeSpells: AI player " + player.getPlayerDescription ().getPlayerName () + " about to choose " +
+				log.finest (PlayerPickServerUtils.class.getName () + ".findRealmIDWhereWeNeedToChooseFreeSpells: AI player " + player.getPlayerDescription ().getPlayerName () + " about to choose " +
 					thisSpellRank.getFreeSpellCount () + " free spells of realm " + msg.getMagicRealmID () + " rank " + thisSpellRank.getSpellRankID ());
 
 				for (int aiSpellChoices = 0; aiSpellChoices < thisSpellRank.getFreeSpellCount (); aiSpellChoices++)
-					SpellAI.chooseFreeSpellAI (priv.getSpellResearchStatus (), msg.getMagicRealmID (), thisSpellRank.getSpellRankID (), player.getPlayerDescription ().getPlayerName (),
-						db, debugLogger).setStatus (SpellResearchStatusID.AVAILABLE);
+					getSpellAI ().chooseFreeSpellAI (priv.getSpellResearchStatus (), msg.getMagicRealmID (), thisSpellRank.getSpellRankID (), player.getPlayerDescription ().getPlayerName (),
+						db).setStatus (SpellResearchStatusID.AVAILABLE);
 			}
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "findRealmIDWhereWeNeedToChooseFreeSpells", (msg == null) ? "null" : msg.getMagicRealmID ());
+		log.exiting (PlayerPickServerUtils.class.getName (), "findRealmIDWhereWeNeedToChooseFreeSpells", (msg == null) ? "null" : msg.getMagicRealmID ());
 		return msg;
 	}
 
@@ -294,14 +305,14 @@ public final class PlayerPickServerUtils
 	 * @param pickID The magic realm of the spells they want to choose
 	 * @param spellIDs Which spells they want to choose
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
-	public final static String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "validateInitialSpellSelection",
+		log.entering (PlayerPickServerUtils.class.getName (), "validateInitialSpellSelection",
 			new String [] {new Integer (player.getPlayerDescription ().getPlayerID ()).toString (), pickID});
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
@@ -322,7 +333,7 @@ public final class PlayerPickServerUtils
 		else
 		{
 			// First get a list of how many spells of each rank the player has left to choose in this magic realm
-			final ChooseInitialSpellsNowMessage rankCounts = countFreeSpellsLeftToChoose (player, pick, db, debugLogger);
+			final ChooseInitialSpellsNowMessage rankCounts = countFreeSpellsLeftToChoose (player, pick, db);
 			if (rankCounts == null)
 				msg = "Having " + pick.getQuantity () + " books doesn't grant any free spells";
 			else
@@ -356,7 +367,7 @@ public final class PlayerPickServerUtils
 			}
 		}
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "validateInitialSpellSelection", msg);
+		log.exiting (PlayerPickServerUtils.class.getName (), "validateInitialSpellSelection", msg);
 		return msg;
 	}
 
@@ -364,14 +375,14 @@ public final class PlayerPickServerUtils
 	 * @param player Player who wants to choose a race
 	 * @param raceID Race they wish to choose
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return null if choice is acceptable; message to send back to client if choice isn't acceptable
 	 * @throws RecordNotFoundException If we choose a race whose native plane can't be found
 	 */
-	public final static String validateRaceChoice (final PlayerServerDetails player, final String raceID, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final String validateRaceChoice (final PlayerServerDetails player, final String raceID, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "validateRaceChoice",
+		log.entering (PlayerPickServerUtils.class.getName (), "validateRaceChoice",
 			new String [] {new Integer (player.getPlayerDescription ().getPlayerID ()).toString (), raceID});
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
@@ -397,25 +408,24 @@ public final class PlayerPickServerUtils
 				msg = null;
 
 			// Check if we have the pick
-			else if (PlayerPickUtils.getQuantityOfPick (ppk.getPick (), pickID, debugLogger) > 0)
+			else if (getPlayerPickUtils ().getQuantityOfPick (ppk.getPick (), pickID) > 0)
 				msg = null;
 
 			else
 				msg = "You don''t have the necessary pick to choose this race";
 		}
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "validateRaceChoice", msg);
+		log.exiting (PlayerPickServerUtils.class.getName (), "validateRaceChoice", msg);
 		return msg;
 	}
 
 	/**
 	 * @param player Player to test
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return True if this player has made all their pre-game selections and are waiting to start
 	 */
-	final static boolean hasChosenAllDetails (final PlayerServerDetails player, final Logger debugLogger)
+	final boolean hasChosenAllDetails (final PlayerServerDetails player)
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "hasChosenAllDetails", player.getPlayerDescription ().getPlayerID ());
+		log.entering (PlayerPickServerUtils.class.getName (), "hasChosenAllDetails", player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -425,7 +435,7 @@ public final class PlayerPickServerUtils
 		final boolean result = ((PlayerKnowledgeUtils.hasWizardBeenChosen (ppk.getWizardID ())) && (priv.getFirstCityRaceID () != null) &&
 			((!PlayerKnowledgeUtils.isCustomWizard (ppk.getWizardID ())) || (isCustomPicksChosen)));
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "hasChosenAllDetails", result);
+		log.exiting (PlayerPickServerUtils.class.getName (), "hasChosenAllDetails", result);
 		return result;
 	}
 
@@ -433,12 +443,12 @@ public final class PlayerPickServerUtils
 	 * Tests whether everyone has finished pre-game selections and is ready to start
 	 * @param players List of players
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return True if all players have chosen all details to start game
 	 */
-	public final static boolean allPlayersHaveChosenAllDetails (final List<PlayerServerDetails> players, final MomSessionDescription sd, final Logger debugLogger)
+	@Override
+	public final boolean allPlayersHaveChosenAllDetails (final List<PlayerServerDetails> players, final MomSessionDescription sd)
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "allHumanPlayersHaveChosenAllDetails");
+		log.entering (PlayerPickServerUtils.class.getName (), "allHumanPlayersHaveChosenAllDetails");
 
 		// If not all players have joined, then not all have chosen
 		boolean result = (players.size () == sd.getMaxPlayers () - sd.getAiPlayerCount () - 2);	// -2 for raiders & monsters
@@ -446,33 +456,33 @@ public final class PlayerPickServerUtils
 		// Check each player
 		final Iterator<PlayerServerDetails> iter = players.iterator ();
 		while ((result) && (iter.hasNext ()))
-			if (!hasChosenAllDetails (iter.next (), debugLogger))
+			if (!hasChosenAllDetails (iter.next ()))
 				result = false;
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "allHumanPlayersHaveChosenAllDetails", result);
+		log.exiting (PlayerPickServerUtils.class.getName (), "allHumanPlayersHaveChosenAllDetails", result);
 		return result;
 	}
 
 	/**
 	 * @param players List of players
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list
 	 */
-	public final static List<Wizard> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final List<Wizard> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db)
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "listWizardsForAIPlayers", players.size ());
+		log.entering (PlayerPickServerUtils.class.getName (), "listWizardsForAIPlayers", players.size ());
 
 		// First get a list of all the available wizards
 		final List<Wizard> availableWizards = new ArrayList<Wizard> ();
 		for (final Wizard thisWizard : db.getWizard ())
 			if ((!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
 				(!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
-				(findPlayerUsingStandardPhoto (players, thisWizard.getWizardID (), debugLogger) == null))
+				(findPlayerUsingStandardPhoto (players, thisWizard.getWizardID ()) == null))
 
 				availableWizards.add (thisWizard);
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "listWizardsForAIPlayers", availableWizards.size ());
+		log.exiting (PlayerPickServerUtils.class.getName (), "listWizardsForAIPlayers", availableWizards.size ());
 		return availableWizards;
 	}
 
@@ -480,12 +490,12 @@ public final class PlayerPickServerUtils
 	 * Checks which plane a wizard with a certain selection of picks should start on
 	 * @param picks List of picks the wizard has
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Plane the wizard should start on
 	 */
-	public static final int startingPlaneForWizard (final List<PlayerPick> picks, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final int startingPlaneForWizard (final List<PlayerPick> picks, final ServerDatabaseEx db)
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "startingPlaneForWizard");
+		log.entering (PlayerPickServerUtils.class.getName (), "startingPlaneForWizard");
 
 		int bestMatch = 0;		// Default to Arcanus
 		int bestMatchPrerequisiteCount = 0;
@@ -494,7 +504,7 @@ public final class PlayerPickServerUtils
 		for (final Plane plane : db.getPlane ())
 		{
 			// Meet whatever pre-requisites are defined?
-			if ((plane.getPrerequisitePickToChooseNativeRace () == null) || (PlayerPickUtils.getQuantityOfPick (picks, plane.getPrerequisitePickToChooseNativeRace (), debugLogger) > 0))
+			if ((plane.getPrerequisitePickToChooseNativeRace () == null) || (getPlayerPickUtils ().getQuantityOfPick (picks, plane.getPrerequisitePickToChooseNativeRace ()) > 0))
 			{
 				// How many picks did we match on? (this is a bit of a fake way of doing it when you can only need a single pick, but, well it works)
 				int thisMatchPrerequisiteCount = 0;
@@ -510,21 +520,21 @@ public final class PlayerPickServerUtils
 			}
 		}
 
-		debugLogger.exiting (PlayerPickServerUtils.class.getName (), "startingPlaneForWizard", bestMatch);
+		log.exiting (PlayerPickServerUtils.class.getName (), "startingPlaneForWizard", bestMatch);
 		return bestMatch;
 	}
 
 	/**
 	 * @param planeNumber Plane we want to look for races for
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Random race ID that inhabits this plane
 	 * @throws MomException If there are no races defined in the database that inhabit this plane
 	 */
-	public static final String chooseRandomRaceForPlane (final int planeNumber, final ServerDatabaseEx db, final Logger debugLogger)
+	@Override
+	public final String chooseRandomRaceForPlane (final int planeNumber, final ServerDatabaseEx db)
 		throws MomException
 	{
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "chooseRandomRaceForPlane", planeNumber);
+		log.entering (PlayerPickServerUtils.class.getName (), "chooseRandomRaceForPlane", planeNumber);
 
 		final List<String> possibleRaces = new ArrayList<String> ();
 
@@ -537,14 +547,55 @@ public final class PlayerPickServerUtils
 
 		final String raceID = possibleRaces.get (RandomUtils.getGenerator ().nextInt (possibleRaces.size ()));
 
-		debugLogger.entering (PlayerPickServerUtils.class.getName (), "chooseRandomRaceForPlane", raceID);
+		log.entering (PlayerPickServerUtils.class.getName (), "chooseRandomRaceForPlane", raceID);
 		return raceID;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Player pick utils
 	 */
-	private PlayerPickServerUtils ()
+	public final IPlayerPickUtils getPlayerPickUtils ()
 	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final ISpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final ISpellUtils utils)
+	{
+		spellUtils = utils;
+	}
+
+	/**
+	 * @return AI decisions about spells
+	 */
+	public final ISpellAI getSpellAI ()
+	{
+		return spellAI;
+	}
+
+	/**
+	 * @param ai AI decisions about spells
+	 */
+	public final void setSpellAI (final ISpellAI ai)
+	{
+		spellAI = ai;
 	}
 }

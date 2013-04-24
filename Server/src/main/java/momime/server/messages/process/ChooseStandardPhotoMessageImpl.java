@@ -21,18 +21,20 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ChooseStandardPhotoMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		debugLogger.entering (ChooseStandardPhotoMessageImpl.class.getName (), "process", new String [] {new Integer (sender.getPlayerDescription ().getPlayerID ()).toString (), getPhotoID ()});
+		log.entering (ChooseStandardPhotoMessageImpl.class.getName (), "process", new String [] {new Integer (sender.getPlayerDescription ().getPlayerID ()).toString (), getPhotoID ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
@@ -51,13 +53,13 @@ public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMes
 		catch (final RecordNotFoundException e)
 		{
 			// Send error back to client
-			debugLogger.warning (sender.getPlayerDescription ().getPlayerName () + " tried to choose invalid photo ID \"" + getPhotoID () + "\"");
+			log.warning (sender.getPlayerDescription ().getPlayerName () + " tried to choose invalid photo ID \"" + getPhotoID () + "\"");
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText ("Photo choice invalid, please try again");
 			sender.getConnection ().sendMessageToClient (reply);
 		}
 
-		debugLogger.exiting (ChooseStandardPhotoMessageImpl.class.getName (), "process");
+		log.exiting (ChooseStandardPhotoMessageImpl.class.getName (), "process");
 	}
 }

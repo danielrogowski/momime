@@ -10,7 +10,6 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.UnitUtils;
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.servertoclient.v0_9_4.MapAreaOfOverlandMoveType;
 import momime.common.messages.servertoclient.v0_9_4.MapRowOfOverlandMoveType;
@@ -23,7 +22,6 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.IMomSessionVariables;
-import momime.server.calculations.MomServerUnitCalculations;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -34,19 +32,21 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class RequestOverlandMovementDistancesMessageImpl extends RequestOverlandMovementDistancesMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (RequestOverlandMovementDistancesMessageImpl.class.getName ());
+
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		debugLogger.entering (RequestOverlandMovementDistancesMessageImpl.class.getName (), "process", new Integer []
+		log.entering (RequestOverlandMovementDistancesMessageImpl.class.getName (), "process", new Integer []
 			{getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getPlane (), sender.getPlayerDescription ().getPlayerID ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
@@ -64,7 +64,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		while ((error == null) && (unitUrnIterator.hasNext ()))
 		{
 			final Integer thisUnitURN = unitUrnIterator.next ();
-			final MemoryUnit thisUnit = UnitUtils.findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), debugLogger);
+			final MemoryUnit thisUnit = mom.getUnitUtils ().findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 
 			if (thisUnit == null)
 				error = "Some of the units you are trying to move could not be found";
@@ -88,7 +88,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		if (error != null)
 		{
 			// Return error
-			debugLogger.warning (RequestOverlandMovementDistancesMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warning (RequestOverlandMovementDistancesMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -102,10 +102,10 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 			final boolean [] [] [] canMoveToInOneTurn										= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 
-			MomServerUnitCalculations.calculateOverlandMovementDistances (getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getPlane (),
+			mom.getServerUnitCalculations ().calculateOverlandMovementDistances (getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getPlane (),
 				sender.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (),
 				unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-				mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+				mom.getSessionDescription (), mom.getServerDB ());
 
 			// The client only needs to know which areas they can reach, and which they can reach in one turn - not the actual distances or any of the other stuff that gets generated
 			final MapVolumeOfOverlandMoveType movementTypesVolume = new MapVolumeOfOverlandMoveType ();
@@ -139,6 +139,6 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 			sender.getConnection ().sendMessageToClient (msg);
 		}
 
-		debugLogger.exiting (RequestOverlandMovementDistancesMessageImpl.class.getName (), "process");
+		log.exiting (RequestOverlandMovementDistancesMessageImpl.class.getName (), "process");
 	}
 }

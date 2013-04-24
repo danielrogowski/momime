@@ -1,7 +1,6 @@
 package momime.server.process;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -32,7 +31,6 @@ public interface ICityProcessing
 	 * @param gsk Server knowledge data structure
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
  	 * @throws MomException If no races are defined for a particular plane
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
@@ -40,7 +38,7 @@ public interface ICityProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**
@@ -51,7 +49,6 @@ public interface ICityProcessing
 	 * @param gsk Server knowledge structure
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -60,7 +57,7 @@ public interface ICityProcessing
 	 */
 	public void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
@@ -79,7 +76,6 @@ public interface ICityProcessing
 	 * @param voluntarySale True if building is being sold by the player's choice; false if they are being forced to sell it e.g. due to lack of production
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -89,6 +85,6 @@ public interface ICityProcessing
 	public void sellBuilding (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID,
 		final boolean pendingSale, final boolean voluntarySale,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

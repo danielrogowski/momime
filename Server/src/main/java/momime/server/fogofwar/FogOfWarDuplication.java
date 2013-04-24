@@ -2,16 +2,15 @@ package momime.server.fogofwar;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.MemoryBuildingUtils;
-import momime.common.messages.MemoryCombatAreaEffectUtils;
-import momime.common.messages.MemoryMaintainedSpellUtils;
-import momime.common.messages.UnitUtils;
+import momime.common.messages.IMemoryBuildingUtils;
+import momime.common.messages.IMemoryCombatAreaEffectUtils;
+import momime.common.messages.IMemoryMaintainedSpellUtils;
+import momime.common.messages.IUnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.v0_9_4.AddUnitMessageData;
@@ -36,6 +35,18 @@ import momime.server.database.ServerDatabaseEx;
  */
 public final class FogOfWarDuplication implements IFogOfWarDuplication
 {
+	/** Unit utils */
+	private IUnitUtils unitUtils;
+	
+	/** MemoryBuilding utils */
+	private IMemoryBuildingUtils memoryBuildingUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private IMemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Memory CAE utils */
+	private IMemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	
 	/**
 	 * Copies all the terrain and node aura related data items from source to destination
 	 * @param source The map cell to copy from
@@ -176,15 +187,14 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	 * Copies a building from source into the destination list
 	 * @param source The building to copy from (i.e. the true building details)
 	 * @param destination The building list to copy into (i.e. the player's memory of buildings)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the building was already in the list)
 	 */
 	@Override
-	public final boolean copyBuilding (final MemoryBuilding source, final List<MemoryBuilding> destination, final Logger debugLogger)
+	public final boolean copyBuilding (final MemoryBuilding source, final List<MemoryBuilding> destination)
 	{
 		// Since buildings can't change, only be added or destroyed, we don't need to worry about whether the
 		// building in the list but somehow changed, that's can't happen
-		final boolean needToAdd = !MemoryBuildingUtils.findBuilding (destination, source.getCityLocation (), source.getBuildingID (), debugLogger);
+		final boolean needToAdd = !getMemoryBuildingUtils ().findBuilding (destination, source.getCityLocation (), source.getBuildingID ());
 
 		if (needToAdd)
 		{
@@ -207,15 +217,14 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	 * Copies a unit from source into the destination list
 	 * @param source The unit to copy from (i.e. the true unit details)
 	 * @param destination The building list to copy into (i.e. the player's memory of buildings)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the unit was already in the list AND all the details already exactly matched)
 	 */
 	@Override
-	public final boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination, final Logger debugLogger)
+	public final boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination)
 	{
 		// First see if the unit is in the destination list at all
 		boolean needToUpdate;
-		MemoryUnit dest = UnitUtils.findUnitURN (source.getUnitURN (), destination, debugLogger);
+		MemoryUnit dest = getUnitUtils ().findUnitURN (source.getUnitURN (), destination);
 		if (dest == null)
 		{
 			dest = new MemoryUnit ();
@@ -257,7 +266,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 			{
 				final UnitHasSkill srcSkill = sourceSkillsIter.next ();
 				final int expectedValue = (srcSkill.getUnitSkillValue () == null) ? 0 : srcSkill.getUnitSkillValue ();
-				if (UnitUtils.getBasicSkillValue (dest.getUnitHasSkill (), srcSkill.getUnitSkillID ()) != expectedValue)
+				if (getUnitUtils ().getBasicSkillValue (dest.getUnitHasSkill (), srcSkill.getUnitSkillID ()) != expectedValue)
 					needToUpdate = true;
 			}
 		}
@@ -334,16 +343,15 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	 * Copies a spell from source into the destination list
 	 * @param source The spell to copy from (i.e. the true spell details)
 	 * @param destination The spell list to copy into (i.e. the player's memory of spells)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the spell was already in the list)
 	 */
 	@Override
-	public final boolean copyMaintainedSpell (final MemoryMaintainedSpell source, final List<MemoryMaintainedSpell> destination, final Logger debugLogger)
+	public final boolean copyMaintainedSpell (final MemoryMaintainedSpell source, final List<MemoryMaintainedSpell> destination)
 	{
 		// Since spells can't change, only be cast or cancelled, we don't need to worry about whether the
 		// spell in the list but somehow changed, that's can't happen
-		final boolean needToAdd = (MemoryMaintainedSpellUtils.findMaintainedSpell (destination, source.getCastingPlayerID (), source.getSpellID (),
-			source.getUnitURN (), source.getUnitSkillID (), source.getCityLocation (), source.getCitySpellEffectID (), debugLogger) == null);
+		final boolean needToAdd = (getMemoryMaintainedSpellUtils ().findMaintainedSpell (destination, source.getCastingPlayerID (), source.getSpellID (),
+			source.getUnitURN (), source.getUnitSkillID (), source.getCityLocation (), source.getCitySpellEffectID ()) == null);
 
 		if (needToAdd)
 		{
@@ -377,15 +385,15 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	 * Copies a CAE from source into the destination list
 	 * @param source The CAE to copy from (i.e. the true CAE details)
 	 * @param destination The CAE list to copy into (i.e. the player's memory of CAEs)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the building was already in the list)
 	 */
 	@Override
-	public final boolean copyCombatAreaEffect (final MemoryCombatAreaEffect source, final List<MemoryCombatAreaEffect> destination, final Logger debugLogger)
+	public final boolean copyCombatAreaEffect (final MemoryCombatAreaEffect source, final List<MemoryCombatAreaEffect> destination)
 	{
 		// Since CAEs can't change, only be added or destroyed, we don't need to worry about whether the
 		// CAE in the list but somehow changed, that's can't happen
-		final boolean needToAdd = !MemoryCombatAreaEffectUtils.findCombatAreaEffect (destination, source.getMapLocation (), source.getCombatAreaEffectID (), source.getCastingPlayerID (), debugLogger);
+		final boolean needToAdd = !getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
+			(destination, source.getMapLocation (), source.getCombatAreaEffectID (), source.getCastingPlayerID ());
 
 		if (needToAdd)
 		{
@@ -447,7 +455,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 		else
 		{
 			// Tell client to read skills from XML file; include experience
-			final int experience = UnitUtils.getBasicSkillValue (source.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+			final int experience = getUnitUtils ().getBasicSkillValue (source.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
 
 			destination.setReadSkillsFromXML (true);
 			if (experience >= 0)
@@ -491,5 +499,69 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 		destination.setMapLocation (source.getMapLocation ());
 
 		return destination;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final IUnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final IUnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
+	/**
+	 * @return MemoryBuilding utils
+	 */
+	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils MemoryBuilding utils
+	 */
+	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final IMemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final IMemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final IMemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
 	}
 }

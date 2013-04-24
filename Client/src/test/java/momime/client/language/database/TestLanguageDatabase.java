@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -35,9 +34,6 @@ import com.ndg.multiplayer.session.MultiplayerSessionBaseConstants;
  */
 public final class TestLanguageDatabase
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEClientUnitTests");
-
 	/** Prefix that we expect all keyrefs in the language XSD to begin with */
 	private static final String SERVER_NAMESPACE_PREFIX = "momimesvr:";
 
@@ -59,7 +55,7 @@ public final class TestLanguageDatabase
 
 		// Load XSD
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		schemaFactory.setResourceResolver (new ServerXsdResourceResolver (DOMImplementationRegistry.newInstance (), debugLogger));
+		schemaFactory.setResourceResolver (new ServerXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
 		final Validator xsd = schemaFactory.newSchema (xsdResource).newValidator ();
 
 		// Load both XMLs in as DOM documents

@@ -57,8 +57,11 @@ import org.xml.sax.SAXException;
  * Converters for building derivative XML files from the server XML file
  * Old Delphi unit: MomServerDB.pas
  */
-public final class ServerDatabaseConverters
+public final class ServerDatabaseConverters implements IServerDatabaseConverters
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ServerDatabaseConverters.class.getName ());
+	
 	/** Extension that XML files for the server must have */
 	public static final String SERVER_XML_FILE_EXTENSION = ".Master of Magic Server.xml";
 
@@ -67,7 +70,7 @@ public final class ServerDatabaseConverters
 	 * @param dbName Filename the server XML was read from
 	 * @return Info extracted from server XML
 	 */
-	private final static AvailableDatabase convertServerToAvailableDatabase (final ServerDatabaseEx src, final String dbName)
+	private final AvailableDatabase convertServerToAvailableDatabase (final ServerDatabaseEx src, final String dbName)
 	{
 		final AvailableDatabase dest = new AvailableDatabase ();
 		dest.setDbName (dbName);
@@ -101,19 +104,19 @@ public final class ServerDatabaseConverters
 	 * @param xmlFolder Folder in which to look for server XML files, e.g. F:\Workspaces\Delphi\Master of Magic\XML Files\Server\
 	 * @param xsdValidator XSD validator created for the server XSD file
 	 * @param serverDatabaseContext JAXB Context for loading server XML files
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Info extracted from all available XML databases
 	 * @throws JAXBException If there is a problem creating the server XML unmarshaller
 	 * @throws MomException If there are no compatible server XML databases
 	 */
-	public final static NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Validator xsdValidator, final JAXBContext serverDatabaseContext, final Logger debugLogger)
+	@Override
+	public final NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Validator xsdValidator, final JAXBContext serverDatabaseContext)
 		throws JAXBException, MomException
 	{
-		debugLogger.entering (ServerDatabaseConverters.class.getName (), "buildNewGameDatabase");
+		log.entering (ServerDatabaseConverters.class.getName (), "buildNewGameDatabase");
 
 		// First put the list of all compatibly named XML databases in a string list, so we can sort it before we start trying to load them in and check them
 		// Strip the suffix off each one as we add it
-		debugLogger.finest ("buildNewGameDatabase searching for XML files in \"" + xmlFolder + "\"");
+		log.finest ("buildNewGameDatabase searching for XML files in \"" + xmlFolder + "\"");
 		final File [] xmlFiles = xmlFolder.listFiles (new SuffixFilenameFilter (SERVER_XML_FILE_EXTENSION));
 		if (xmlFiles == null)
 			throw new MomException ("Unable to search folder \"" + xmlFolder + "\" for server XML files - check path specified in config file is valid");
@@ -124,7 +127,7 @@ public final class ServerDatabaseConverters
 			String thisFilename = thisFile.getName ();
 			thisFilename = thisFilename.substring (0, thisFilename.length () - SERVER_XML_FILE_EXTENSION.length ());
 
-			debugLogger.finest ("buildNewGameDatabase found suitably named XML file \"" + thisFilename + "\"");
+			log.finest ("buildNewGameDatabase found suitably named XML file \"" + thisFilename + "\"");
 
 			xmlFilenames.add (thisFilename);
 		}
@@ -155,15 +158,15 @@ public final class ServerDatabaseConverters
 			}
 			catch (final IOException e)
 			{
-				debugLogger.warning ("Server XML database \"" + thisFilename + "\" can't be used because of an error while trying to read it: " + e.getMessage ());
+				log.warning ("Server XML database \"" + thisFilename + "\" can't be used because of an error while trying to read it: " + e.getMessage ());
 			}
 			catch (final SAXException e)
 			{
-				debugLogger.warning ("Server XML database \"" + thisFilename + "\" can't be used because it doesn't validate against the XSD: " + e.getMessage ());
+				log.warning ("Server XML database \"" + thisFilename + "\" can't be used because it doesn't validate against the XSD: " + e.getMessage ());
 			}
 			catch (final JAXBException e)
 			{
-				debugLogger.warning ("Server XML database \"" + thisFilename + "\" can't be used because it couldn't be loaded in correctly: " + e.getMessage ());
+				log.warning ("Server XML database \"" + thisFilename + "\" can't be used because it couldn't be loaded in correctly: " + e.getMessage ());
 			}
 		}
 
@@ -174,20 +177,20 @@ public final class ServerDatabaseConverters
 		final NewGameDatabaseMessage msg = new NewGameDatabaseMessage ();
 		msg.setNewGameDatabase (newGameDatabase);
 
-		debugLogger.exiting (ServerDatabaseConverters.class.getName (), "buildNewGameDatabase", newGameDatabase.getMomimeXmlDatabase ().size ());
+		log.exiting (ServerDatabaseConverters.class.getName (), "buildNewGameDatabase", newGameDatabase.getMomimeXmlDatabase ().size ());
 		return msg;
 	}
 
 	/**
 	 * @param src Server side database loaded from XML
 	 * @param humanSpellPicks Number of picks human players get in this game, as per session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Info extracted from server XML
 	 * @throws RecordNotFoundException If one of the wizards does not have picks for the specified number of human picks defined
 	 */
-	public final static ClientDatabase buildClientDatabase (final ServerDatabaseEx src, final int humanSpellPicks, final Logger debugLogger) throws RecordNotFoundException
+	@Override
+	public final ClientDatabase buildClientDatabase (final ServerDatabaseEx src, final int humanSpellPicks) throws RecordNotFoundException
 	{
-		debugLogger.exiting (ServerDatabaseConverters.class.getName (), "buildClientDatabase", src);
+		log.exiting (ServerDatabaseConverters.class.getName (), "buildClientDatabase", src);
 
 		final ClientDatabase dest = new ClientDatabase ();
 
@@ -297,14 +300,7 @@ public final class ServerDatabaseConverters
 			dest.getWizard ().add (destWizard);
 		}
 
-		debugLogger.exiting (ServerDatabaseConverters.class.getName (), "buildClientDatabase", dest);
+		log.exiting (ServerDatabaseConverters.class.getName (), "buildClientDatabase", dest);
 		return dest;
-	}
-
-	/**
-	 * Prevent instatiation
-	 */
-	private ServerDatabaseConverters ()
-	{
 	}
 }

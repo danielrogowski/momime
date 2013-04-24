@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.0.4</version>
+		<version>0.0.5</version>
 	</parent>
 
 	<build>
@@ -58,17 +58,17 @@
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-base</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-sessionbase</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.map</groupId>
 			<artifactId>ndgmap</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
@@ -79,6 +79,10 @@
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-serverdatabase</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

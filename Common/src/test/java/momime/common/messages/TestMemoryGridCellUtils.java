@@ -5,8 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.logging.Logger;
-
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
@@ -24,9 +22,6 @@ import com.ndg.map.CoordinateSystem;
  */
 public final class TestMemoryGridCellUtils
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMECommonUnitTests");
-
 	/**
 	 * Tests the convertNullTileTypeToFOW method with a non-null value
 	 */
@@ -36,7 +31,8 @@ public final class TestMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("A");
 
-		assertEquals ("A", MemoryGridCellUtils.convertNullTileTypeToFOW (terrainData));
+		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		assertEquals ("A", utils.convertNullTileTypeToFOW (terrainData));
 	}
 
 	/**
@@ -45,7 +41,8 @@ public final class TestMemoryGridCellUtils
 	@Test
 	public final void testConvertNullTileTypeToFOW_NullTileTypeID ()
 	{
-		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, MemoryGridCellUtils.convertNullTileTypeToFOW (new OverlandMapTerrainData ()));
+		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (new OverlandMapTerrainData ()));
 	}
 
 	/**
@@ -54,7 +51,8 @@ public final class TestMemoryGridCellUtils
 	@Test
 	public final void testConvertNullTileTypeToFOW_NullTerrainData ()
 	{
-		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, MemoryGridCellUtils.convertNullTileTypeToFOW (null));
+		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (null));
 	}
 
 	/**
@@ -66,7 +64,8 @@ public final class TestMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 
-		assertTrue (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData));
+		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		assertTrue (utils.isTerrainTowerOfWizardry (terrainData));
 	}
 
 	/**
@@ -78,7 +77,8 @@ public final class TestMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 
-		assertTrue (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData));
+		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		assertTrue (utils.isTerrainTowerOfWizardry (terrainData));
 	}
 
 	/**
@@ -90,7 +90,8 @@ public final class TestMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("A");
 
-		assertFalse (MemoryGridCellUtils.isTerrainTowerOfWizardry (terrainData));
+		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		assertFalse (utils.isTerrainTowerOfWizardry (terrainData));
 	}
 
 	/**
@@ -99,7 +100,8 @@ public final class TestMemoryGridCellUtils
 	@Test
 	public final void testIsTerrainTowerOfWizardry_NullMapFeature ()
 	{
-		assertFalse (MemoryGridCellUtils.isTerrainTowerOfWizardry (new OverlandMapTerrainData ()));
+		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		assertFalse (utils.isTerrainTowerOfWizardry (new OverlandMapTerrainData ()));
 	}
 
 	/**
@@ -108,7 +110,8 @@ public final class TestMemoryGridCellUtils
 	@Test
 	public final void testIsTerrainTowerOfWizardry_NullTerrainData ()
 	{
-		assertFalse (MemoryGridCellUtils.isTerrainTowerOfWizardry (null));
+		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		assertFalse (utils.isTerrainTowerOfWizardry (null));
 	}
 
 	/**
@@ -126,7 +129,8 @@ public final class TestMemoryGridCellUtils
 				map.getPlane ().get (plane).getRow ().get (n).getCell ().get (n * 2).setBuildingIdSoldThisTurn ("BL" + n);
 
 		// Run method
-		MemoryGridCellUtils.blankBuildingsSoldThisTurn (map, debugLogger);
+		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		utils.blankBuildingsSoldThisTurn (map);
 
 		// Ensure they all get blanked
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())

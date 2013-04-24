@@ -16,7 +16,6 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.server.IMomSessionVariables;
-import momime.server.utils.PlayerPickServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -27,29 +26,31 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ChooseCustomPicksMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 * @throws RecordNotFoundException If the player has picks which we can't find in the cache, or the AI player chooses a spell which we can't then find in their list
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException
 	{
-		debugLogger.entering (ChooseCustomPicksMessageImpl.class.getName (), "process", new Integer [] {sender.getPlayerDescription ().getPlayerID (), getPick ().size ()});
+		log.entering (ChooseCustomPicksMessageImpl.class.getName (), "process", new Integer [] {sender.getPlayerDescription ().getPlayerID (), getPick ().size ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		// Validate the requested picks
-		final String error = PlayerPickServerUtils.validateCustomPicks (sender, getPick (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+		final String error = mom.getPlayerPickServerUtils ().validateCustomPicks (sender, getPick (), mom.getSessionDescription (), mom.getServerDB ());
 		if (error != null)
 		{
 			// Return error
-			debugLogger.warning (ChooseCustomPicksMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warning (ChooseCustomPicksMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -78,14 +79,14 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 
 			// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 			// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
-			debugLogger.finest (ChooseCustomPicksMessageImpl.class.getName () + ".process: About to search for first realm (if any) where human player " + sender.getPlayerDescription ().getPlayerName () + " gets free spells");
-			final ChooseInitialSpellsNowMessage chooseSpellsMsg = PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB (), debugLogger);
+			log.finest (ChooseCustomPicksMessageImpl.class.getName () + ".process: About to search for first realm (if any) where human player " + sender.getPlayerDescription ().getPlayerName () + " gets free spells");
+			final ChooseInitialSpellsNowMessage chooseSpellsMsg = mom.getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB ());
 			if (chooseSpellsMsg != null)
 				sender.getConnection ().sendMessageToClient (chooseSpellsMsg);
 			else
 				sender.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
 		}
 
-		debugLogger.exiting (ChooseCustomPicksMessageImpl.class.getName (), "process");
+		log.exiting (ChooseCustomPicksMessageImpl.class.getName (), "process");
 	}
 }

@@ -1,7 +1,5 @@
 package momime.server.calculations;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -26,11 +24,10 @@ public interface IMomServerResourceCalculations
 	 *
 	 * @param player Player whose values to send
 	 * @param castingSkillRemainingThisCombat Only specified when this is called as a result of a combat spell being cast, thereby reducing skill and mana
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat, final Logger debugLogger)
+	public void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat)
 		throws JAXBException, XMLStreamException;
 
 	/**
@@ -39,7 +36,6 @@ public interface IMomServerResourceCalculations
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
 	 * @param duringStartPhase If true does additional work around enforcing that we are producing enough, and progresses city construction, spell research & casting and so on
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
 	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
 	 * @throws MomException If there are any issues with data or calculation logic
@@ -47,6 +43,6 @@ public interface IMomServerResourceCalculations
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 */
 	public void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase,
-		final IMomSessionVariables mom, final Logger debugLogger)
+		final IMomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

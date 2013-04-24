@@ -5,12 +5,13 @@ import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
+import momime.common.calculations.MomSkillCalculations;
+import momime.common.calculations.MomSpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
 import momime.common.database.GenerateTestData;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.messages.v0_9_4.MagicPowerDistribution;
@@ -25,9 +26,6 @@ import org.junit.Test;
  */
 public final class TestResourceValueUtils
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMECommonUnitTests");
-
 	/**
 	 * Tests the findResourceValue method where the resource value does exist
 	 */
@@ -42,7 +40,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		assertEquals ("RE02", ResourceValueUtils.findResourceValue (resourceValues, "RE02").getProductionTypeID ());
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		assertEquals ("RE02", utils.findResourceValue (resourceValues, "RE02").getProductionTypeID ());
 	}
 
 	/**
@@ -59,7 +58,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		assertNull (ResourceValueUtils.findResourceValue (resourceValues, "RE04"));
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		assertNull (utils.findResourceValue (resourceValues, "RE04"));
 	}
 
 	/**
@@ -77,7 +77,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		assertEquals (20, ResourceValueUtils.findAmountPerTurnForProductionType (resourceValues, "RE02", debugLogger));
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		assertEquals (20, utils.findAmountPerTurnForProductionType (resourceValues, "RE02"));
 	}
 
 	/**
@@ -95,7 +96,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		assertEquals (0, ResourceValueUtils.findAmountPerTurnForProductionType (resourceValues, "RE04", debugLogger));
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		assertEquals (0, utils.findAmountPerTurnForProductionType (resourceValues, "RE04"));
 	}
 
 	/**
@@ -113,7 +115,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		assertEquals (20, ResourceValueUtils.findAmountStoredForProductionType (resourceValues, "RE02", debugLogger));
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		assertEquals (20, utils.findAmountStoredForProductionType (resourceValues, "RE02"));
 	}
 
 	/**
@@ -131,7 +134,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		assertEquals (0, ResourceValueUtils.findAmountStoredForProductionType (resourceValues, "RE04", debugLogger));
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		assertEquals (0, utils.findAmountStoredForProductionType (resourceValues, "RE04"));
 	}
 
 	/**
@@ -150,7 +154,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		ResourceValueUtils.addToAmountPerTurn (resourceValues, "RE02", 5, debugLogger);
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		utils.addToAmountPerTurn (resourceValues, "RE02", 5);
 
 		assertEquals (2, resourceValues.size ());
 		assertEquals ("RE01", resourceValues.get (0).getProductionTypeID ());
@@ -177,7 +182,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		ResourceValueUtils.addToAmountPerTurn (resourceValues, "RE03", 5, debugLogger);
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		utils.addToAmountPerTurn (resourceValues, "RE03", 5);
 
 		assertEquals (3, resourceValues.size ());
 		assertEquals ("RE01", resourceValues.get (0).getProductionTypeID ());
@@ -207,7 +213,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		ResourceValueUtils.addToAmountStored (resourceValues, "RE02", 5, debugLogger);
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		utils.addToAmountStored (resourceValues, "RE02", 5);
 
 		assertEquals (2, resourceValues.size ());
 		assertEquals ("RE01", resourceValues.get (0).getProductionTypeID ());
@@ -234,7 +241,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		ResourceValueUtils.addToAmountStored (resourceValues, "RE03", 5, debugLogger);
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		utils.addToAmountStored (resourceValues, "RE03", 5);
 
 		assertEquals (3, resourceValues.size ());
 		assertEquals ("RE01", resourceValues.get (0).getProductionTypeID ());
@@ -264,7 +272,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		ResourceValueUtils.zeroAmountsPerTurn (resourceValues, debugLogger);
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		utils.zeroAmountsPerTurn (resourceValues);
 
 		assertEquals (2, resourceValues.size ());
 		assertEquals ("RE01", resourceValues.get (0).getProductionTypeID ());
@@ -291,7 +300,8 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		ResourceValueUtils.zeroAmountsStored (resourceValues, debugLogger);
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		utils.zeroAmountsStored (resourceValues);
 
 		assertEquals (2, resourceValues.size ());
 		assertEquals ("RE01", resourceValues.get (0).getProductionTypeID ());
@@ -315,7 +325,9 @@ public final class TestResourceValueUtils
 		skillImprovement.setAmountStored (10);
 		resourceValues.add (skillImprovement);
 
-		assertEquals (3, ResourceValueUtils.calculateCastingSkillOfPlayer (resourceValues, debugLogger));
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		utils.setSkillCalculations (new MomSkillCalculations ());
+		assertEquals (3, utils.calculateCastingSkillOfPlayer (resourceValues));
 	}
 
 	/**
@@ -326,14 +338,21 @@ public final class TestResourceValueUtils
 	@Test
 	public final void testCalculateAmountPerTurnForProductionType () throws MomException, RecordNotFoundException
 	{
+		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final PlayerPickUtils playerPickUtils = new PlayerPickUtils ();
+		final MomSpellCalculations spellCalculations = new MomSpellCalculations ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setSpellCalculations (spellCalculations);
+		spellCalculations.setSpellUtils (new SpellUtils ());
+		
 		final MomPersistentPlayerPrivateKnowledge privateInfo = new MomPersistentPlayerPrivateKnowledge ();
 		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
 		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Add some production
-		ResourceValueUtils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 20, debugLogger);
-		ResourceValueUtils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, 5, debugLogger);				// Library + Sages' Guild
-		ResourceValueUtils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, 24, debugLogger);		// 12 book start
+		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 20);
+		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, 5);				// Library + Sages' Guild
+		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, 24);		// 12 book start
 
 		// Set our magic sliders
 		final MagicPowerDistribution powerDist = new MagicPowerDistribution ();
@@ -344,47 +363,47 @@ public final class TestResourceValueUtils
 
 		// 11 Chaos books + Summoner
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
-		PlayerPickUtils.updatePickQuantity (picks, GenerateTestData.CHAOS_BOOK, 11, debugLogger);
-		PlayerPickUtils.updatePickQuantity (picks, GenerateTestData.SUMMONER, 1, debugLogger);
+		playerPickUtils.updatePickQuantity (picks, GenerateTestData.CHAOS_BOOK, 11);
+		playerPickUtils.updatePickQuantity (picks, GenerateTestData.SUMMONER, 1);
 
 		// Simple read
-		assertEquals ("Simple gold read", 20, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db, debugLogger));
+		assertEquals ("Simple gold read", 20, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db));
 
 		// Would give us +5 gold, but that's dealt with elsewhere
-		ResourceValueUtils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, 10, debugLogger);
-		assertEquals ("Prove don't get money from selling rations", 20, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db, debugLogger));
+		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, 10);
+		assertEquals ("Prove don't get money from selling rations", 20, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db));
 
 		// 20% of 24 = 4.8
-		assertEquals ("Unmodified skill calculation", 5, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db, debugLogger));
+		assertEquals ("Unmodified skill calculation", 5, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
 
 		// 5 + (40% of 24) = 5 + 9.6 = 14.6
-		assertEquals ("Unmodified research calculation", 15, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db, debugLogger));
+		assertEquals ("Unmodified research calculation", 15, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
 		// 24 - 5 - 10 = 9
-		assertEquals ("Unmodified mana calculation", 9, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db, debugLogger));
+		assertEquals ("Unmodified mana calculation", 9, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db));
 
 		// Archmage gives +50%, so 5 * 1.5 = 7.5
-		PlayerPickUtils.updatePickQuantity (picks, GenerateTestData.ARCHMAGE, 1, debugLogger);
-		assertEquals ("Archmage", 7, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db, debugLogger));
+		playerPickUtils.updatePickQuantity (picks, GenerateTestData.ARCHMAGE, 1);
+		assertEquals ("Archmage", 7, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
 
 		// Mana focusing gives +25%, so 9 * 1.25 = 11.25
-		PlayerPickUtils.updatePickQuantity (picks, GenerateTestData.MANA_FOCUSING, 1, debugLogger);
-		assertEquals ("Mana focusing", 11, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db, debugLogger));
+		playerPickUtils.updatePickQuantity (picks, GenerateTestData.MANA_FOCUSING, 1);
+		assertEquals ("Mana focusing", 11, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db));
 
 		// Prove researching a non-chaos non-summoning spell gets no bonus
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.EARTH_TO_MUD);
-		assertEquals ("Research with no bonus", 15, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db, debugLogger));
+		assertEquals ("Research with no bonus", 15, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
 		// Chaos books give +40%, so 15 * 1.4 = 21
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.WARP_WOOD);
-		assertEquals ("Research with book bonus", 21, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db, debugLogger));
+		assertEquals ("Research with book bonus", 21, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
 		// Summoner gives +25%, so 15 * 1.25 = 18.75
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.GIANT_SPIDERS_SPELL);
-		assertEquals ("Research with Summoner bonus", 18, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db, debugLogger));
+		assertEquals ("Research with Summoner bonus", 18, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
 		// Both combined gives +65%, so 15 * 1.65 = 24.75
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.HELL_HOUNDS_SPELL);
-		assertEquals ("Research with combined bonus", 24, ResourceValueUtils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db, debugLogger));
+		assertEquals ("Research with combined bonus", 24, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 	}
 }

@@ -6,10 +6,10 @@
 	xmlns:momimectos="http://momime/common/messages/clienttoserver/v0_9_4" targetNamespace="http://momime/common/messages/clienttoserver/v0_9_4"
 	jaxb:version="2.0">
 
-	<xsd:import namespace="http://www.ndg.com/multiplayer/base" schemaLocation="../../../../NdgMultiplayerBase/src/main/resources/Multiplayer.xsd"/>
-	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../NdgMultiplayerSessionBase/src/main/resources/MultiplayerSession.xsd"/>
-	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="MoMIMENewGameDatabase.xsd" />
-	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="MoMIMECommonDatabase.xsd" />
+	<xsd:import namespace="http://www.ndg.com/multiplayer/base" schemaLocation="../../../../../NdgMultiplayerBase/src/main/resources/com.ndg.multiplayer.base/Multiplayer.xsd"/>
+	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../../NdgMultiplayerSessionBase/src/main/resources/com.ndg.multiplayer.sessionbase/MultiplayerSession.xsd"/>
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="../momime.common.database/MoMIMENewGameDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../momime.common.database/MoMIMECommonDatabase.xsd" />
 	<xsd:import namespace="http://momime/common/messages/v0_9_4" schemaLocation="MoMIMEMessages.xsd" />
     
     <xsd:annotation>

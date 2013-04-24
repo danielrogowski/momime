@@ -1,7 +1,6 @@
 package momime.server.process;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -35,7 +34,6 @@ public interface ISpellProcessing
 	 * @param combatTargetLocation Which specific tile of the combat map the spell is being cast at, for cell-targetted spells like combat summons
 	 * @param combatTargetUnitURN Which specific unit within combat the spell is being cast at, for unit-targetted spells like Fire Bolt
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
@@ -44,7 +42,7 @@ public interface ISpellProcessing
 	 */
 	public void requestCastSpell (final PlayerServerDetails player, final String spellID,
 		final OverlandMapCoordinates combatLocation, final CombatMapCoordinates combatTargetLocation, final Integer combatTargetUnitURN,
-		final IMomSessionVariables mom, final Logger debugLogger)
+		final IMomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**
@@ -55,7 +53,6 @@ public interface ISpellProcessing
 	 * @param players List of players in the session
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return True if we cast at least one spell
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -64,7 +61,7 @@ public interface ISpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public boolean progressOverlandCasting (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**
@@ -86,7 +83,6 @@ public interface ISpellProcessing
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -96,6 +92,6 @@ public interface ISpellProcessing
 	public void switchOffSpell (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final MomSessionDescription sd, final Logger debugLogger)
+		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 }

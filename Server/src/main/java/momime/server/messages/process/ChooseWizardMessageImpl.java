@@ -19,27 +19,29 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class ChooseWizardMessageImpl extends ChooseWizardMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ChooseWizardMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
-		debugLogger.entering (ChooseWizardMessageImpl.class.getName (), "process",
+		log.entering (ChooseWizardMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getWizardID ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		mom.getPlayerMessageProcessing ().chooseWizard
-			(getWizardID (), sender, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+			(getWizardID (), sender, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
-		debugLogger.exiting (ChooseWizardMessageImpl.class.getName (), "process");
+		log.exiting (ChooseWizardMessageImpl.class.getName (), "process");
 	}
 }

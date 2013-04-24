@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.net.Socket;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -42,6 +41,9 @@ import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.TurnSystem;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.ndg.multiplayer.sessionbase.CreateAccount;
 import com.ndg.multiplayer.sessionbase.JoinSession;
 import com.ndg.multiplayer.sessionbase.Login;
@@ -55,9 +57,9 @@ import com.ndg.multiplayer.sessionbase.RequestSessionList;
  */
 public final class DummyMomClient
 {
-	/** Dummy logger for demo client */
-	final Logger debugLogger = Logger.getLogger ("NdgMultiplayerSessionDemo");
-
+	/** Spring application context */
+	private ApplicationContext applicationContext;
+	
 	/** Area on demo panel to add messages to */
 	private final JTextArea textArea;
 
@@ -206,7 +208,7 @@ public final class DummyMomClient
 				addToTextArea ("Connecting to " + hostname.getText () + " port " + port.getText () + "...");
 				try
 				{
-					connection = new DummyMomClientThread (new Socket (hostname.getText (), Integer.parseInt (port.getText ())), null, client, debugLogger);
+					connection = new DummyMomClientThread (new Socket (hostname.getText (), Integer.parseInt (port.getText ())), null, client);
 					connection.start ();
 					enableOrDisableButtons ();
 				}
@@ -913,6 +915,22 @@ public final class DummyMomClient
 	}
 
 	/**
+	 * @return Spring application context
+	 */
+	public final ApplicationContext getApplicationContext ()
+	{
+		return applicationContext;
+	}
+	
+	/**
+	 * @param ctx Spring application context 
+	 */
+	public final void setApplicationContext (final ApplicationContext ctx)
+	{
+		applicationContext = ctx;
+	}
+	
+	/**
 	 * @param args Command line arguments, ignored
 	 */
 	public final static void main (final String [] args)
@@ -928,6 +946,7 @@ public final class DummyMomClient
 		}
 
 		// Create frame
-		new DummyMomClient ();
+		final ApplicationContext applicationContext = new ClassPathXmlApplicationContext("/momime.common.spring/momime-common-beans.xml");
+		new DummyMomClient ().setApplicationContext (applicationContext);
 	}
 }

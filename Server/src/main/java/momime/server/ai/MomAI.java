@@ -27,11 +27,17 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  */
 public final class MomAI implements IMomAI
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomAI.class.getName ());
+	
 	/** Methods for updating true map + players' memory */
 	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** AI decisions about cities */
 	private ICityAI cityAI;
+
+	/** AI decisions about spells */
+	private ISpellAI spellAI;
 	
 	/**
 	 *
@@ -40,7 +46,6 @@ public final class MomAI implements IMomAI
 	 * @param trueMap True map details
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
@@ -49,10 +54,10 @@ public final class MomAI implements IMomAI
 	 */
 	@Override
 	public final void aiPlayerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final Logger debugLogger)
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		debugLogger.entering (MomAI.class.getName (), "aiPlayerTurn", player.getPlayerDescription ().getPlayerName ());
+		log.entering (MomAI.class.getName (), "aiPlayerTurn", player.getPlayerDescription ().getPlayerName ());
 
 		// Decide what to build in all of this players' cities
 		// Note we do this EVERY TURN - we don't wait for the previous building to complete - this allows the AI player to change their mind
@@ -71,22 +76,22 @@ public final class MomAI implements IMomAI
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
 
-						getCityAI ().decideWhatToBuild (cityLocation, cityData, trueMap.getMap (), trueMap.getBuilding (), sd, db, debugLogger);
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), debugLogger);
+						getCityAI ().decideWhatToBuild (cityLocation, cityData, trueMap.getMap (), trueMap.getBuilding (), sd, db);
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 					}
 				}
 
 		// This relies on knowing what's being built in each city, so do it 2nd
-		getCityAI ().setOptionalFarmersInAllCities (trueMap, players, player, db, sd, debugLogger);
+		getCityAI ().setOptionalFarmersInAllCities (trueMap, players, player, db, sd);
 
 		// Do we need to choose a spell to research?
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (priv.getSpellIDBeingResearched () == null))
-			SpellAI.decideWhatToResearch (player, db, debugLogger);
+			getSpellAI ().decideWhatToResearch (player, db);
 
-		debugLogger.exiting (MomAI.class.getName (), "aiPlayerTurn", player.getPlayerDescription ().getPlayerName ());
+		log.exiting (MomAI.class.getName (), "aiPlayerTurn", player.getPlayerDescription ().getPlayerName ());
 	}
 
 	/**
@@ -119,5 +124,21 @@ public final class MomAI implements IMomAI
 	public final void setCityAI (final ICityAI ai)
 	{
 		cityAI = ai;
+	}
+
+	/**
+	 * @return AI decisions about spells
+	 */
+	public final ISpellAI getSpellAI ()
+	{
+		return spellAI;
+	}
+
+	/**
+	 * @param ai AI decisions about spells
+	 */
+	public final void setSpellAI (final ISpellAI ai)
+	{
+		spellAI = ai;
 	}
 }

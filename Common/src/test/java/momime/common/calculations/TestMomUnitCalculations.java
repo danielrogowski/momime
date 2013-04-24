@@ -4,11 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
@@ -24,9 +24,6 @@ import com.ndg.map.CoordinateSystem;
  */
 public final class TestMomUnitCalculations
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMECommonUnitTests");
-
 	/**
 	 * Tests the calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort method
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
@@ -34,6 +31,10 @@ public final class TestMomUnitCalculations
 	@Test
 	public final void testCalculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort () throws RecordNotFoundException
 	{
+		// Set up object to test
+		final MomUnitCalculations calc = new MomUnitCalculations ();
+		calc.setPlayerPickUtils (new PlayerPickUtils ());
+		
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
@@ -51,14 +52,14 @@ public final class TestMomUnitCalculations
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
 		// Do basic calc where nothing gives mag weps
-		assertEquals (0, MomUnitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (0, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Adamantium next to city, but we can't use it without an alchemists' guild
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID (GenerateTestData.ADAMANTIUM_ORE);
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (3).setTerrainData (terrainData);
 
-		assertEquals (0, MomUnitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (0, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Alchemy retort grants us grade 1, but still can't use that adamantium
 		final PlayerPick alchemy = new PlayerPick ();
@@ -66,7 +67,7 @@ public final class TestMomUnitCalculations
 		alchemy.setQuantity (1);
 		picks.add (alchemy);
 
-		assertEquals (1, MomUnitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Add the wrong type of building, to prove that it doesn't help
 		final OverlandMapCoordinates sagesGuildLocation = new OverlandMapCoordinates ();
@@ -79,7 +80,7 @@ public final class TestMomUnitCalculations
 		sagesGuild.setBuildingID (GenerateTestData.SAGES_GUILD);
 		buildings.add (sagesGuild);
 
-		assertEquals (1, MomUnitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Add an alchemists' guild, in the wrong place
 		final OverlandMapCoordinates alchemistsGuildLocation = new OverlandMapCoordinates ();
@@ -92,10 +93,10 @@ public final class TestMomUnitCalculations
 		alchemistsGuild.setBuildingID (GenerateTestData.ALCHEMISTS_GUILD);
 		buildings.add (alchemistsGuild);
 
-		assertEquals (1, MomUnitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Move it to the right place
 		alchemistsGuildLocation.setPlane (0);
-		assertEquals (3, MomUnitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB (), debugLogger));
+		assertEquals (3, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 	}
 }

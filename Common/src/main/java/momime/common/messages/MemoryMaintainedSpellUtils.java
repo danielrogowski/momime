@@ -12,8 +12,11 @@ import momime.common.utils.CompareUtils;
 /**
  * Methods for working with list of MemoryMaintainedSpells
  */
-public final class MemoryMaintainedSpellUtils
+public final class MemoryMaintainedSpellUtils implements IMemoryMaintainedSpellUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MemoryMaintainedSpellUtils.class.getName ());
+	
 	/**
 	 * Searches for a maintained spell in a list
 	 *
@@ -27,14 +30,14 @@ public final class MemoryMaintainedSpellUtils
 	 * @param unitSkillID Which actual unit spell effect was granted, or null to match any
 	 * @param cityLocation Which city the spell is cast on - this is mandatory, null will match only non-city spells or untargetted city spells
 	 * @param citySpellEffectID Which actual city spell effect was granted, or null to match any
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return First matching spell found, or null if none matched
 	 */
-	public static final MemoryMaintainedSpell findMaintainedSpell (final List<MemoryMaintainedSpell> spells,
+	@Override
+	public final MemoryMaintainedSpell findMaintainedSpell (final List<MemoryMaintainedSpell> spells,
 		final Integer castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final Logger debugLogger)
+		final OverlandMapCoordinates cityLocation, final String citySpellEffectID)
 	{
-		debugLogger.entering (MemoryMaintainedSpellUtils.class.getName (), "findMaintainedSpell", new String []
+		log.entering (MemoryMaintainedSpellUtils.class.getName (), "findMaintainedSpell", new String []
 			{(castingPlayerID == null) ? "null" : castingPlayerID.toString (), spellID,
 			(unitURN == null) ? "null" : unitURN.toString (), unitSkillID,
 			CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), citySpellEffectID});
@@ -56,7 +59,7 @@ public final class MemoryMaintainedSpellUtils
 				match = thisSpell;
 		}
 
-		debugLogger.exiting (MemoryMaintainedSpellUtils.class.getName (), "findMaintainedSpell", match);
+		log.exiting (MemoryMaintainedSpellUtils.class.getName (), "findMaintainedSpell", match);
 		return match;
 	}
 
@@ -70,15 +73,15 @@ public final class MemoryMaintainedSpellUtils
 	 * @param unitSkillID Which actual unit spell effect was granted
 	 * @param cityLocation Which city the spell is cast on
 	 * @param citySpellEffectID Which actual city spell effect was granted
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we can't find the requested spell
 	 */
-	public static final void switchOffMaintainedSpell (final List<MemoryMaintainedSpell> spells,
+	@Override
+	public final void switchOffMaintainedSpell (final List<MemoryMaintainedSpell> spells,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final Logger debugLogger)
+		final OverlandMapCoordinates cityLocation, final String citySpellEffectID)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (MemoryMaintainedSpellUtils.class.getName (), "switchOffMaintainedSpell", new String []
+		log.entering (MemoryMaintainedSpellUtils.class.getName (), "switchOffMaintainedSpell", new String []
 			{new Integer (castingPlayerID).toString (), spellID,
 			(unitURN == null) ? "null" : unitURN.toString (), unitSkillID,
 			CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), citySpellEffectID});
@@ -104,7 +107,7 @@ public final class MemoryMaintainedSpellUtils
 		if (!found)
 			throw new RecordNotFoundException (MemoryMaintainedSpell.class.getName (), spellID + " - " + castingPlayerID, "switchOffMaintainedSpell");
 
-		debugLogger.exiting (MemoryMaintainedSpellUtils.class.getName (), "switchOffMaintainedSpell");
+		log.exiting (MemoryMaintainedSpellUtils.class.getName (), "switchOffMaintainedSpell");
 	}
 
 	/**
@@ -112,11 +115,11 @@ public final class MemoryMaintainedSpellUtils
 	 *
 	 * @param spells List of spells to search through
 	 * @param unitURNs List of units to remove spells from
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
-	public static final void removeSpellsCastOnUnitStack (final List<MemoryMaintainedSpell> spells, final List<Integer> unitURNs, final Logger debugLogger)
+	@Override
+	public final void removeSpellsCastOnUnitStack (final List<MemoryMaintainedSpell> spells, final List<Integer> unitURNs)
 	{
-    	debugLogger.entering (MemoryMaintainedSpellUtils.class.getName (), "removeSpellsCastOnUnitStack", unitURNs);
+    	log.entering (MemoryMaintainedSpellUtils.class.getName (), "removeSpellsCastOnUnitStack", unitURNs);
 
     	int numberRemoved = 0;
 
@@ -132,13 +135,6 @@ public final class MemoryMaintainedSpellUtils
     		}
     	}
 
-    	debugLogger.exiting (MemoryMaintainedSpellUtils.class.getName (), "removeSpellsCastOnUnitStack", numberRemoved);
-	}
-
-	/**
-	 * Prevent instantiation
-	 */
-	private MemoryMaintainedSpellUtils ()
-	{
+    	log.exiting (MemoryMaintainedSpellUtils.class.getName (), "removeSpellsCastOnUnitStack", numberRemoved);
 	}
 }

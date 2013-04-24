@@ -63,7 +63,7 @@ public final class ServerTestData
 		// This makes the assumption that the MoMIMEServerDatabase project is called as such and hasn't been checked out under a different name
 		final URL configXsd = new Object ().getClass ().getResource (ServerConfigConstants.CONFIG_XSD_LOCATION);
 		final File configXsdFile = new File (configXsd.getFile ());
-		final File serverXmlFile = new File (configXsdFile, "../../../../MoMIMEServerDatabase/src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
+		final File serverXmlFile = new File (configXsdFile, "../../../../../MoMIMEServerDatabase/src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
 
 		return serverXmlFile.getCanonicalFile ();
 	}

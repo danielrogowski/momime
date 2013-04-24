@@ -7,7 +7,6 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
-import momime.common.messages.SpellUtils;
 import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.SpellResearchChangedMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
@@ -16,7 +15,6 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.server.IMomSessionVariables;
 import momime.server.database.v0_9_4.Spell;
-import momime.server.utils.SpellServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -27,30 +25,32 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class RequestResearchSpellMessageImpl extends RequestResearchSpellMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (RequestResearchSpellMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If either the spell we want to research now, or the spell previously being researched, can't be found
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		debugLogger.entering (RequestResearchSpellMessageImpl.class.getName (), "process",
+		log.entering (RequestResearchSpellMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getSpellID ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 
 		// Validate the requested picks
-		final String error = SpellServerUtils.validateResearch (sender, spellID, mom.getSessionDescription ().getSpellSetting ().getSwitchResearch (), mom.getServerDB (), debugLogger);
+		final String error = mom.getSpellServerUtils ().validateResearch (sender, spellID, mom.getSessionDescription ().getSpellSetting ().getSwitchResearch (), mom.getServerDB ());
 		if (error != null)
 		{
 			// Return error
-			debugLogger.warning (ChooseCustomPicksMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warning (ChooseCustomPicksMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -63,7 +63,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 			{
 				// Lose on server
 				final Spell spellPreviouslyBeingResearched = mom.getServerDB ().findSpell (priv.getSpellIDBeingResearched (), "RequestResearchSpellMessageImpl");
-				final SpellResearchStatus spellPreviouslyBeingResearchedStatus = SpellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched (), debugLogger);
+				final SpellResearchStatus spellPreviouslyBeingResearchedStatus = mom.getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched ());
 
 				spellPreviouslyBeingResearchedStatus.setRemainingResearchCost (spellPreviouslyBeingResearched.getResearchCost ());
 
@@ -83,6 +83,6 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 			sender.getConnection ().sendMessageToClient (msg);
 		}
 
-		debugLogger.exiting (RequestResearchSpellMessageImpl.class.getName (), "process");
+		log.exiting (RequestResearchSpellMessageImpl.class.getName (), "process");
 	}
 }

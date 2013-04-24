@@ -22,6 +22,9 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  */
 public final class MomResourceConsumerBuilding implements IMomResourceConsumer
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomResourceConsumerBuilding.class.getName ());
+	
 	/** True map building that is consuming resources */
 	private final MemoryBuilding building;
 
@@ -89,7 +92,6 @@ public final class MomResourceConsumerBuilding implements IMomResourceConsumer
 	 * Sells this building to get some gold back and conserve resources
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -97,14 +99,14 @@ public final class MomResourceConsumerBuilding implements IMomResourceConsumer
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void kill (final IMomSessionVariables mom, final Logger debugLogger)
+	public final void kill (final IMomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		debugLogger.entering (MomResourceConsumerBuilding.class.getName (), "kill",
+		log.entering (MomResourceConsumerBuilding.class.getName (), "kill",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (getBuilding ().getCityLocation ()), getBuilding ().getBuildingID ()});
 
 		mom.getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-			getBuilding ().getCityLocation (), getBuilding ().getBuildingID (), false, false, mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+			getBuilding ().getCityLocation (), getBuilding ().getBuildingID (), false, false, mom.getSessionDescription (), mom.getServerDB ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{
@@ -117,6 +119,6 @@ public final class MomResourceConsumerBuilding implements IMomResourceConsumer
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (buildingSold);
 		}
 
-		debugLogger.exiting (MomResourceConsumerBuilding.class.getName (), "kill");
+		log.exiting (MomResourceConsumerBuilding.class.getName (), "kill");
 	}
 }

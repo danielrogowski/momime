@@ -11,7 +11,6 @@ import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessag
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.server.IMomSessionVariables;
-import momime.server.utils.CityServerUtils;
 
 import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -22,30 +21,32 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class ChangeCityConstructionMessageImpl extends ChangeCityConstructionMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ChangeCityConstructionMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the client
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the client
 	 * @throws RecordNotFoundException If the race inhabiting the city cannot be found
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		debugLogger.entering (ChangeCityConstructionMessageImpl.class.getName (), "process",
+		log.entering (ChangeCityConstructionMessageImpl.class.getName (), "process",
 			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (getCityLocation ()), getBuildingOrUnitID ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
-		final String error = CityServerUtils.validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription (), mom.getServerDB (), debugLogger);
+		final String error = mom.getCityServerUtils ().validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
+			getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription (), mom.getServerDB ());
 
 		if (error != null)
 		{
 			// Return error
-			debugLogger.warning (ChangeCityConstructionMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warning (ChangeCityConstructionMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -60,9 +61,9 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 
 			// Send update to clients
 			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), debugLogger);
+				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
 
-		debugLogger.exiting (ChangeCityConstructionMessageImpl.class.getName (), "process");
+		log.exiting (ChangeCityConstructionMessageImpl.class.getName (), "process");
 	}
 }

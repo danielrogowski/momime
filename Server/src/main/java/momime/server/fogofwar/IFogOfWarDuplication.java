@@ -1,7 +1,6 @@
 package momime.server.fogofwar;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessageData;
@@ -58,37 +57,33 @@ public interface IFogOfWarDuplication
 	 * Copies a building from source into the destination list
 	 * @param source The building to copy from (i.e. the true building details)
 	 * @param destination The building list to copy into (i.e. the player's memory of buildings)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the building was already in the list)
 	 */
-	public boolean copyBuilding (final MemoryBuilding source, final List<MemoryBuilding> destination, final Logger debugLogger);
+	public boolean copyBuilding (final MemoryBuilding source, final List<MemoryBuilding> destination);
 
 	/**
 	 * Copies a unit from source into the destination list
 	 * @param source The unit to copy from (i.e. the true unit details)
 	 * @param destination The building list to copy into (i.e. the player's memory of buildings)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the unit was already in the list AND all the details already exactly matched)
 	 */
-	public boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination, final Logger debugLogger);
+	public boolean copyUnit (final MemoryUnit source, final List<MemoryUnit> destination);
 
 	/**
 	 * Copies a spell from source into the destination list
 	 * @param source The spell to copy from (i.e. the true spell details)
 	 * @param destination The spell list to copy into (i.e. the player's memory of spells)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the spell was already in the list)
 	 */
-	public boolean copyMaintainedSpell (final MemoryMaintainedSpell source, final List<MemoryMaintainedSpell> destination, final Logger debugLogger);
+	public boolean copyMaintainedSpell (final MemoryMaintainedSpell source, final List<MemoryMaintainedSpell> destination);
 
 	/**
 	 * Copies a CAE from source into the destination list
 	 * @param source The CAE to copy from (i.e. the true CAE details)
 	 * @param destination The CAE list to copy into (i.e. the player's memory of CAEs)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Whether any update actually happened (i.e. false if the building was already in the list)
 	 */
-	public boolean copyCombatAreaEffect (final MemoryCombatAreaEffect source, final List<MemoryCombatAreaEffect> destination, final Logger debugLogger);
+	public boolean copyCombatAreaEffect (final MemoryCombatAreaEffect source, final List<MemoryCombatAreaEffect> destination);
 
 	/**
 	 * There's (for now at least, until I get this all sorted out in 0.9.5) there's a number of different places that

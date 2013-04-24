@@ -18,18 +18,20 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class UploadCustomPhotoMessageImpl extends UploadCustomPhotoMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (UploadCustomPhotoMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		debugLogger.entering (UploadCustomPhotoMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
+		log.entering (UploadCustomPhotoMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
 
 		// No validation here, just remember the photo and send back confirmation
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
@@ -37,6 +39,6 @@ public final class UploadCustomPhotoMessageImpl extends UploadCustomPhotoMessage
 
 		sender.getConnection ().sendMessageToClient (new YourPhotoIsOkMessage ());
 
-		debugLogger.entering (UploadCustomPhotoMessageImpl.class.getName (), "process");
+		log.entering (UploadCustomPhotoMessageImpl.class.getName (), "process");
 	}
 }

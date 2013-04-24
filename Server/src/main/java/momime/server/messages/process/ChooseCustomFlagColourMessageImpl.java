@@ -14,20 +14,22 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  */
 public final class ChooseCustomFlagColourMessageImpl extends ChooseCustomFlagColourMessage implements IProcessableClientToServerMessage
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ChooseCustomFlagColourMessageImpl.class.getName ());
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender, final Logger debugLogger)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 	{
-		debugLogger.entering (ChooseCustomFlagColourMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
+		log.entering (ChooseCustomFlagColourMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
 
 		// No validation here or return message to send here, we just store it
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
 		ppk.setCustomFlagColour (getFlagColour ());
 
-		debugLogger.entering (ChooseCustomFlagColourMessageImpl.class.getName (), "process");
+		log.entering (ChooseCustomFlagColourMessageImpl.class.getName (), "process");
 	}
 }

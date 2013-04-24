@@ -35,17 +35,26 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Simple unit lookups and calculations
  */
-public final class UnitUtils
+public final class UnitUtils implements IUnitUtils
 {
+	/** Class logger */
+	final Logger log = Logger.getLogger (UnitUtils.class.getName ());
+	
+	/** Player pick utils */
+	private IPlayerPickUtils playerPickUtils;
+	
+	/** Memory CAE utils */
+	private IMemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	
 	/**
 	 * @param unitURN Unit URN to search for
 	 * @param units List of units to search through
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Unit with requested URN, or null if not found
 	 */
-	public final static MemoryUnit findUnitURN (final int unitURN, final List<MemoryUnit> units, final Logger debugLogger)
+	@Override
+	public final MemoryUnit findUnitURN (final int unitURN, final List<MemoryUnit> units)
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "findUnitURN", unitURN);
+		log.entering (UnitUtils.class.getName (), "findUnitURN", unitURN);
 
 		MemoryUnit result = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
@@ -56,7 +65,7 @@ public final class UnitUtils
 				result = thisUnit;
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "findUnitURN", result);
+		log.exiting (UnitUtils.class.getName (), "findUnitURN", result);
 		return result;
 	}
 
@@ -64,34 +73,34 @@ public final class UnitUtils
 	 * @param unitURN Unit URN to search for
 	 * @param units List of units to search through
 	 * @param caller The routine that was looking for the value
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Unit with requested URN
 	 * @throws RecordNotFoundException If unit with requested URN is not found
 	 */
-	public final static MemoryUnit findUnitURN (final int unitURN, final List<MemoryUnit> units, final String caller, final Logger debugLogger)
+	@Override
+	public final MemoryUnit findUnitURN (final int unitURN, final List<MemoryUnit> units, final String caller)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "findUnitURN", new String [] {new Integer (unitURN).toString (), caller});
+		log.entering (UnitUtils.class.getName (), "findUnitURN", new String [] {new Integer (unitURN).toString (), caller});
 
-		final MemoryUnit result = findUnitURN (unitURN, units, debugLogger);
+		final MemoryUnit result = findUnitURN (unitURN, units);
 
 		if (result == null)
 			throw new RecordNotFoundException (MemoryUnit.class.getName (), unitURN, caller);
 
-		debugLogger.exiting (UnitUtils.class.getName (), "findUnitURN", result);
+		log.exiting (UnitUtils.class.getName (), "findUnitURN", result);
 		return result;
 	}
 
 	/**
 	 * @param unitURN Unit URN to remove
 	 * @param units List of units to search through
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If unit with requested URN is not found
 	 */
-	public final static void removeUnitURN (final int unitURN, final List<MemoryUnit> units, final Logger debugLogger)
+	@Override
+	public final void removeUnitURN (final int unitURN, final List<MemoryUnit> units)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "removeUnitURN", unitURN);
+		log.entering (UnitUtils.class.getName (), "removeUnitURN", unitURN);
 
 		boolean found = false;
 		final Iterator<MemoryUnit> iter = units.iterator ();
@@ -108,7 +117,7 @@ public final class UnitUtils
 		if (!found)
 			throw new RecordNotFoundException (MemoryUnit.class.getName (), unitURN, "removeUnitURN");
 
-		debugLogger.exiting (UnitUtils.class.getName (), "removeUnitURN");
+		log.exiting (UnitUtils.class.getName (), "removeUnitURN");
 	}
 
 	/**
@@ -117,14 +126,14 @@ public final class UnitUtils
 	 * @param startingExperience Initial experience; if -1 then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
 	 * @param loadDefaultSkillsFromXML Whether to add the skills defined in the db for this unit into its skills list
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 * @return Unit definition
 	 */
-	public final static Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
-		final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
+	@Override
+	public final Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
+		final ICommonDatabase db) throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "initializeUnitSkills", unit.getUnitID ());
+		log.entering (UnitUtils.class.getName (), "initializeUnitSkills", unit.getUnitID ());
 
 		final Unit unitDefinition = db.findUnit (unit.getUnitID (), "initializeUnitSkills");
 
@@ -154,7 +163,7 @@ public final class UnitUtils
 				unit.getUnitHasSkill ().add (destSkill);
 			}
 
-		debugLogger.entering (UnitUtils.class.getName (), "initializeUnitSkills");
+		log.entering (UnitUtils.class.getName (), "initializeUnitSkills");
 		return unitDefinition;
 	}
 
@@ -166,14 +175,14 @@ public final class UnitUtils
 	 * @param startingExperience Initial experience; if -1 then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
 	 * @param loadDefaultSkillsFromXML Whether to add the skills defined in the db for this unit into its skills list
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Newly created unit
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
-	public final static MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final int startingExperience,
-		final boolean loadDefaultSkillsFromXML, final ICommonDatabase db, final Logger debugLogger) throws RecordNotFoundException
+	@Override
+	public final MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final int startingExperience,
+		final boolean loadDefaultSkillsFromXML, final ICommonDatabase db) throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "createMemoryUnit", new String [] {unitID, new Integer (unitURN).toString ()});
+		log.entering (UnitUtils.class.getName (), "createMemoryUnit", new String [] {unitID, new Integer (unitURN).toString ()});
 
 		final MemoryUnit newUnit = new MemoryUnit ();
 		newUnit.setUnitURN (unitURN);
@@ -181,11 +190,11 @@ public final class UnitUtils
 		newUnit.setWeaponGrade (weaponGrade);
 		newUnit.setStatus (UnitStatusID.ALIVE);		// Assume unit is alive - heroes being initialized will reset this value
 
-		final Unit unitDefinition = initializeUnitSkills (newUnit, startingExperience, loadDefaultSkillsFromXML, db, debugLogger);
+		final Unit unitDefinition = initializeUnitSkills (newUnit, startingExperience, loadDefaultSkillsFromXML, db);
 
 		newUnit.setDoubleOverlandMovesLeft (unitDefinition.getDoubleMovement ());
 
-		debugLogger.exiting (UnitUtils.class.getName (), "createMemoryUnit");
+		log.exiting (UnitUtils.class.getName (), "createMemoryUnit");
 		return newUnit;
 	}
 
@@ -193,7 +202,8 @@ public final class UnitUtils
 	 * @param unit Unit to test
 	 * @return Number of figures in this unit before it takes any damage
 	 */
-	public final static int getFullFigureCount (final Unit unit)
+	@Override
+	public final int getFullFigureCount (final Unit unit)
 	{
 		final int countAccordingToRecord = unit.getFigureCount ();
 
@@ -212,7 +222,8 @@ public final class UnitUtils
 	 * @param unitSkillID Unique identifier for this skill
 	 * @return Basic value of the specified skill (defined in the XML or heroes rolled randomly); whether skills granted from spells are included depends on whether we pass in a UnitHasSkillMergedList or not; -1 if we do not have the skill
 	 */
-	public final static int getBasicSkillValue (final List<UnitHasSkill> skills, final String unitSkillID)
+	@Override
+	public final int getBasicSkillValue (final List<UnitHasSkill> skills, final String unitSkillID)
 	{
 		int skillValue = -1;
 		final Iterator<UnitHasSkill> iter = skills.iterator ();
@@ -236,13 +247,13 @@ public final class UnitUtils
 	 * @param unit Unit whose skills to modify (note we pass in the unit rather than the skills list to force using the live list and not a UnitHasSkillMergedList)
 	 * @param unitSkillID Unique identifier for this skill
 	 * @param skillValue New basic value of the specified skill
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws MomException If this unit didn't previously have the specified skill (this method only modifies existing skills, not adds new ones)
 	 */
-	public final static void setBasicSkillValue (final AvailableUnit unit, final String unitSkillID, final int skillValue, final Logger debugLogger)
+	@Override
+	public final void setBasicSkillValue (final AvailableUnit unit, final String unitSkillID, final int skillValue)
 		throws MomException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "setBasicSkillValue", new String [] {unit.getUnitID (), unitSkillID, new Integer (skillValue).toString ()});
+		log.entering (UnitUtils.class.getName (), "setBasicSkillValue", new String [] {unit.getUnitID (), unitSkillID, new Integer (skillValue).toString ()});
 
 		boolean found = false;
 		final Iterator<UnitHasSkill> iter = unit.getUnitHasSkill ().iterator ();
@@ -260,14 +271,15 @@ public final class UnitUtils
 		if (!found)
 			throw new MomException ("setBasicSkillValue: Unit " + unit.getUnitID () + " does not have skill " + unitSkillID + " and so cannot set its value to " + skillValue);
 
-		debugLogger.exiting (UnitUtils.class.getName (), "setBasicSkillValue");
+		log.exiting (UnitUtils.class.getName (), "setBasicSkillValue");
 	}
 
 	/**
 	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
 	 * @return Debug string listing out all the skills
 	 */
-	public final static String describeBasicSkillValuesInDebugString (final AvailableUnit unit)
+	@Override
+	public final String describeBasicSkillValuesInDebugString (final AvailableUnit unit)
 	{
 		String result = "";
 		for (final UnitHasSkill thisSkill : unit.getUnitHasSkill ())
@@ -287,12 +299,12 @@ public final class UnitUtils
 	/**
 	 * @param spells List of known maintained spells
 	 * @param unit Unit whose skill list this is
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return List of all skills this unit has, with skills gained from spells (both enchantments such as Holy Weapon and curses such as Vertigo) merged into the list
 	 */
-	public final static UnitHasSkillMergedList mergeSpellEffectsIntoSkillList (final List<MemoryMaintainedSpell> spells, final MemoryUnit unit, final Logger debugLogger)
+	@Override
+	public final UnitHasSkillMergedList mergeSpellEffectsIntoSkillList (final List<MemoryMaintainedSpell> spells, final MemoryUnit unit)
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "mergeSpellEffectsIntoSkillList", new String [] {unit.getUnitID (), new Integer (spells.size ()).toString (), new Integer (unit.getUnitHasSkill ().size ()).toString ()});
+		log.entering (UnitUtils.class.getName (), "mergeSpellEffectsIntoSkillList", new String [] {unit.getUnitID (), new Integer (spells.size ()).toString (), new Integer (unit.getUnitHasSkill ().size ()).toString ()});
 
 		// To avoid getModifiedSkillValue () getting stuck in a loop, we HAVE to return a MomUnitSkillValueMergedList object with the
 		// different implementation of getModifiedSkillValue (), even if there's no spells cast on this unit that grant extra skills
@@ -308,7 +320,7 @@ public final class UnitUtils
 				mergedSkills.add (spellSkill);
 			}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "mergeSpellEffectsIntoSkillList", mergedSkills.size ());
+		log.exiting (UnitUtils.class.getName (), "mergeSpellEffectsIntoSkillList", mergedSkills.size ());
 
 		return mergedSkills;
 	}
@@ -319,17 +331,17 @@ public final class UnitUtils
 	 * @param players Players list
 	 * @param combatAreaEffects List of combat area effects known to us (we may not be the owner of the unit)
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Experience level of this unit (0-5 for regular units, 0-8 for heroes); for units that don't gain experience (e.g. summoned), returns null
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws RecordNotFoundException If we can't find the unit, unit type, magic realm or so on
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public final static ExperienceLevel getExperienceLevel (final AvailableUnit unit, final boolean includeBonuses, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final ExperienceLevel getExperienceLevel (final AvailableUnit unit, final boolean includeBonuses, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "getExperienceLevel", unit.getUnitID ());
+		log.entering (UnitUtils.class.getName (), "getExperienceLevel", unit.getUnitID ());
 
 		// Experience can never be increased by spells, combat area effects, weapon grades, etc. etc. therefore safe to do this from the basic skill value on the unmerged list
 		final int experienceSkillValue = getBasicSkillValue (unit.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
@@ -366,11 +378,11 @@ public final class UnitUtils
 				// Does the player have the Warlord retort?
 				final PlayerPublicDetails owningPlayer = MultiplayerSessionUtils.findPlayerWithID (players, unit.getOwningPlayerID (), "getExperienceLevel");
 				final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
-				if (PlayerPickUtils.getQuantityOfPick (picks, CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD, debugLogger) > 0)
+				if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD) > 0)
 					levelIncludingBonuses++;
 
 				// Does the player have the Crusade CAE?
-				if (MemoryCombatAreaEffectUtils.findCombatAreaEffect (combatAreaEffects, null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, unit.getOwningPlayerID (), debugLogger))
+				if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (combatAreaEffects, null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, unit.getOwningPlayerID ()))
 					levelIncludingBonuses++;
 
 				// Now we have to ensure that the level we've attained actually exists, this is fine for units but a hero might reach Demi-God naturally,
@@ -385,7 +397,7 @@ public final class UnitUtils
 			result = levelFromExperience;
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "getExperienceLevel", result);
+		log.exiting (UnitUtils.class.getName (), "getExperienceLevel", result);
 		return result;
 	}
 
@@ -402,14 +414,14 @@ public final class UnitUtils
 	 * @param unit Unit to test
 	 * @param effect The combat area effect to test
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return True if this combat area effect affects this unit
 	 * @throws RecordNotFoundException If we can't find the definition for the CAE
 	 */
-	public final static boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "doesCombatAreaEffectApplyToUnit", new String [] {unit.getUnitID (), effect.getCombatAreaEffectID ()});
+		log.entering (UnitUtils.class.getName (), "doesCombatAreaEffectApplyToUnit", new String [] {unit.getUnitID (), effect.getCombatAreaEffectID ()});
 
 		// Check if unit is in combat (available units can never be in combat)
 		final OverlandMapCoordinates combatLocation;
@@ -476,7 +488,7 @@ public final class UnitUtils
 				applies = false;
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "doesCombatAreaEffectApplyToUnit", applies);
+		log.exiting (UnitUtils.class.getName (), "doesCombatAreaEffectApplyToUnit", applies);
 		return applies;
 	}
 
@@ -485,15 +497,15 @@ public final class UnitUtils
 	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
 	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return True magic realm/lifeform type ID of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
-	public static final String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitHasSkill> skills,
-		final List<MemoryMaintainedSpell> spells, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitHasSkill> skills,
+		final List<MemoryMaintainedSpell> spells, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "getModifiedUnitMagicRealmLifeformTypeID", unit);
+		log.entering (UnitUtils.class.getName (), "getModifiedUnitMagicRealmLifeformTypeID", unit);
 
 		// Get basic value
 		String magicRealmLifeformTypeID = db.findUnit (unit.getUnitID (), "getModifiedUnitMagicRealmLifeformTypeID").getUnitMagicRealm ();
@@ -501,7 +513,7 @@ public final class UnitUtils
 		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
 		final List<UnitHasSkill> mergedSkills;
 		if ((unit instanceof MemoryUnit) && (!(skills instanceof UnitHasSkillMergedList)))
-			mergedSkills = mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit, debugLogger);
+			mergedSkills = mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit);
 		else
 			mergedSkills = skills;
 
@@ -513,7 +525,7 @@ public final class UnitUtils
 				magicRealmLifeformTypeID = changedMagicRealmLifeformTypeID;
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "getModifiedUnitMagicRealmLifeformTypeID", magicRealmLifeformTypeID);
+		log.exiting (UnitUtils.class.getName (), "getModifiedUnitMagicRealmLifeformTypeID", magicRealmLifeformTypeID);
 		return magicRealmLifeformTypeID;
 	}
 
@@ -525,27 +537,27 @@ public final class UnitUtils
 	 * @param spells Known spells
 	 * @param combatAreaEffects Known combat area effects
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Value of the specified skill - base value can be improved by weapon grades, experience or CAEs (e.g. Node Auras or Prayer), or can be reduced by curses or enemy CAEs (e.g. Black Prayer); skills granted from spells currently always return zero but this is likely to change
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public final static int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "getModifiedSkillValue", new String [] {unit.getUnitID (), unitSkillID});
+		log.entering (UnitUtils.class.getName (), "getModifiedSkillValue", new String [] {unit.getUnitID (), unitSkillID});
 
 		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
 		final List<UnitHasSkill> mergedSkills;
 		if ((unit instanceof MemoryUnit) && (!(skills instanceof UnitHasSkillMergedList)))
-			mergedSkills = mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit, debugLogger);
+			mergedSkills = mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit);
 		else
 			mergedSkills = skills;
 
 		// Get unit magic realm ID
-		final String storeMagicRealmLifeformTypeID = getModifiedUnitMagicRealmLifeformTypeID (unit, mergedSkills, spells, db, debugLogger);
+		final String storeMagicRealmLifeformTypeID = getModifiedUnitMagicRealmLifeformTypeID (unit, mergedSkills, spells, db);
 
 		// Get basic skill value
 		final int basicValue = getBasicSkillValue (mergedSkills, unitSkillID);
@@ -566,7 +578,7 @@ public final class UnitUtils
 			}
 
 			// Any bonuses due to experience?
-			final ExperienceLevel expLvl = getExperienceLevel (unit, true, players, combatAreaEffects, db, debugLogger);
+			final ExperienceLevel expLvl = getExperienceLevel (unit, true, players, combatAreaEffects, db);
 			if (expLvl != null)
 			{
 				for (final ExperienceSkillBonus bonus : expLvl.getExperienceSkillBonus ())
@@ -576,7 +588,7 @@ public final class UnitUtils
 
 			// Any bonuses from CAEs?
 			for (final MemoryCombatAreaEffect thisCAE : combatAreaEffects)
-				if (doesCombatAreaEffectApplyToUnit (unit, thisCAE, db, debugLogger))
+				if (doesCombatAreaEffectApplyToUnit (unit, thisCAE, db))
 				{
 					// Found a combat area effect whose location matches this unit, as well as any player or other pre-requisites
 					// So this means all the skill bonuses apply, except we still need to do the magic realm
@@ -591,7 +603,7 @@ public final class UnitUtils
 				}
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "getModifiedSkillValue", modifiedValue);
+		log.exiting (UnitUtils.class.getName (), "getModifiedSkillValue", modifiedValue);
 		return modifiedValue;
 	}
 
@@ -599,14 +611,14 @@ public final class UnitUtils
 	 * @param unit Unit to look up the base upkeep for
 	 * @param productionTypeID Production type we want to look up the base upkeep for
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Base upkeep value, before any reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
-	public final static int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "getBasicUpkeepValue", new String [] {unit.getUnitID (), productionTypeID});
+		log.entering (UnitUtils.class.getName (), "getBasicUpkeepValue", new String [] {unit.getUnitID (), productionTypeID});
 
 		int result = 0;
 		final Iterator<UnitUpkeep> iter = db.findUnit (unit.getUnitID (), "getBasicUpkeepValue").getUnitUpkeep ().iterator ();
@@ -617,7 +629,7 @@ public final class UnitUtils
 				result = thisUpkeep.getUpkeepValue ();
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "getBasicUpkeepValue", result);
+		log.exiting (UnitUtils.class.getName (), "getBasicUpkeepValue", result);
 		return result;
 	}
 
@@ -626,19 +638,19 @@ public final class UnitUtils
 	 * @param productionTypeID Production type we want to look up the modified upkeep for
 	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Upkeep value, modified by reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
-	public final static int getModifiedUpkeepValue (final AvailableUnit unit, final String productionTypeID, final List<? extends PlayerPublicDetails> players,
-		final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final int getModifiedUpkeepValue (final AvailableUnit unit, final String productionTypeID, final List<? extends PlayerPublicDetails> players,
+		final ICommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "getModifiedUpkeepValue", new String [] {unit.getUnitID (), productionTypeID});
+		log.entering (UnitUtils.class.getName (), "getModifiedUpkeepValue", new String [] {unit.getUnitID (), productionTypeID});
 
 		// Get base value
-		final int baseUpkeepValue = getBasicUpkeepValue (unit, productionTypeID, db, debugLogger);
+		final int baseUpkeepValue = getBasicUpkeepValue (unit, productionTypeID, db);
 
 		// Reduce upkeep for Summoner retort?
 		final int upkeepValue;
@@ -654,7 +666,7 @@ public final class UnitUtils
 			final String unitMagicRealmID = db.findUnit (unit.getUnitID (), "getModifiedUpkeepValue").getUnitMagicRealm ();
 			final String unitTypeID = db.findUnitMagicRealm (unitMagicRealmID, "getModifiedUpkeepValue").getUnitTypeID ();
 
-			final int percentageReduction = PlayerPickUtils.totalProductionBonus (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, unitTypeID, picks, db, debugLogger);
+			final int percentageReduction = getPlayerPickUtils ().totalProductionBonus (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, unitTypeID, picks, db);
 
 			// Calculate actual amount of reduction, rounding down
 			final int amountReduction = (baseUpkeepValue * percentageReduction) / 100;
@@ -662,7 +674,7 @@ public final class UnitUtils
 			upkeepValue = baseUpkeepValue - amountReduction;
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "getModifiedUpkeepValue", upkeepValue);
+		log.exiting (UnitUtils.class.getName (), "getModifiedUpkeepValue", upkeepValue);
 		return upkeepValue;
 	}
 
@@ -672,26 +684,27 @@ public final class UnitUtils
 	 * @param units List of units to update
 	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
 	 * @param db Lookup lists built over the XML database
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @throws RecordNotFoundException If we can't find the definition for one of the units
 	 */
-	public final static void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final ICommonDatabase db, final Logger debugLogger)
+	@Override
+	public final void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "resetUnitOverlandMovement", onlyOnePlayerID);
+		log.entering (UnitUtils.class.getName (), "resetUnitOverlandMovement", onlyOnePlayerID);
 
 		for (final MemoryUnit thisUnit : units)
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 				thisUnit.setDoubleOverlandMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitOverlandMovement").getDoubleMovement ());
 
-		debugLogger.exiting (UnitUtils.class.getName (), "resetUnitOverlandMovement");
+		log.exiting (UnitUtils.class.getName (), "resetUnitOverlandMovement");
 	}
 
 	/**
 	 * @param units Unit stack
 	 * @return Comma delimited list of their unit URNs, for debug messages
 	 */
-	public final static String listUnitURNs (final List<MemoryUnit> units)
+	@Override
+	public final String listUnitURNs (final List<MemoryUnit> units)
 	{
 		String list = "";
 		if (units != null)
@@ -712,12 +725,12 @@ public final class UnitUtils
 	 * @param y Y coordinate of location to check
 	 * @param plane Plane to check
 	 * @param exceptPlayerID Player who's units to not consider (can pass in 0 to test if there are units *at all* at this location)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return First unit we find at the requested location who belongs to someone other than the specified player
 	 */
-	public final static MemoryUnit findFirstAliveEnemyAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID, final Logger debugLogger)
+	@Override
+	public final MemoryUnit findFirstAliveEnemyAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID)
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "findFirstAliveEnemyAtLocation", new Integer [] {x, y, plane, exceptPlayerID});
+		log.entering (UnitUtils.class.getName (), "findFirstAliveEnemyAtLocation", new Integer [] {x, y, plane, exceptPlayerID});
 
 		// The reason this is done separately from countAliveEnemiesAtLocation is because this routine can exit as
 		// soon as it finds the first matching unit, whereas countAliveEnemiesAtLocation always has to run over the entire list
@@ -734,7 +747,7 @@ public final class UnitUtils
 				found = thisUnit;
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "findFirstAliveEnemyAtLocation", found);
+		log.exiting (UnitUtils.class.getName (), "findFirstAliveEnemyAtLocation", found);
 		return found;
 	}
 
@@ -744,12 +757,12 @@ public final class UnitUtils
 	 * @param y Y coordinate of location to check
 	 * @param plane Plane to check
 	 * @param exceptPlayerID Player who's units to not consider (can pass in 0 to count *all* units at this location)
-	 * @param debugLogger Logger to write to debug text file when the debug log is enabled
 	 * @return Number of units that we find at the requested location who belongs to someone other than the specified player
 	 */
-	public final static int countAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID, final Logger debugLogger)
+	@Override
+	public final int countAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID)
 	{
-		debugLogger.entering (UnitUtils.class.getName (), "countAliveEnemiesAtLocation", new Integer [] {x, y, plane, exceptPlayerID});
+		log.entering (UnitUtils.class.getName (), "countAliveEnemiesAtLocation", new Integer [] {x, y, plane, exceptPlayerID});
 
 		int count = 0;
 		for (final MemoryUnit thisUnit : units)
@@ -760,14 +773,39 @@ public final class UnitUtils
 				count++;
 		}
 
-		debugLogger.exiting (UnitUtils.class.getName (), "countAliveEnemiesAtLocation", count);
+		log.exiting (UnitUtils.class.getName (), "countAliveEnemiesAtLocation", count);
 		return count;
 	}
 
 	/**
-	 * Prevent instantiation
+	 * @return Player pick utils
 	 */
-	private UnitUtils ()
+	public final IPlayerPickUtils getPlayerPickUtils ()
 	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final IMemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final IMemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
 	}
 }

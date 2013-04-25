@@ -16,6 +16,7 @@ import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.mapgenerator.IOverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.process.ICityProcessing;
 import momime.server.process.IPlayerMessageProcessing;
@@ -127,6 +128,11 @@ public interface IMomSessionVariables
 	 * @return Server-only unit calculations
 	 */
 	public IMomServerUnitCalculations getServerUnitCalculations ();
+	
+	/**
+	 * @return Overland map generator for this session
+	 */
+	public IOverlandMapGenerator getOverlandMapGenerator ();
 	
 	/**
 	 * Adds an AI player

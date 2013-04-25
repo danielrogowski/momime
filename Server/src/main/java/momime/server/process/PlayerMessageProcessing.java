@@ -57,7 +57,6 @@ import momime.server.database.v0_9_4.Wizard;
 import momime.server.database.v0_9_4.WizardPickCount;
 import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.fogofwar.IFogOfWarProcessing;
-import momime.server.mapgenerator.IOverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.IUnitServerUtils;
@@ -120,9 +119,6 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/** AI decisions about cities */
 	private ICityAI cityAI;
 	
-	/** Overland map generator */
-	private IOverlandMapGenerator overlandMapGenerator;
-
 	/** Player list utils */
 	private IMultiplayerServerUtils multiplayerServerUtils;
 	
@@ -511,7 +507,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 			// Add monsters in nodes/lairs/towers - can only do this after we've added the players
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_MONSTERS);
 			mom.getSessionLogger ().info ("Filling nodes, lairs & towers with monsters...");
-			getOverlandMapGenerator ().fillNodesLairsAndTowersWithMonsters (mom.getGeneralServerKnowledge (), monstersPlayer);
+			mom.getOverlandMapGenerator ().fillNodesLairsAndTowersWithMonsters (mom.getGeneralServerKnowledge (), monstersPlayer);
 
 			// Sort out heroes
 			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_HEROES);
@@ -1079,22 +1075,6 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	public final void setCityAI (final ICityAI ai)
 	{
 		cityAI = ai;
-	}
-
-	/**
-	 * @return Overland map generator
-	 */
-	public final IOverlandMapGenerator getOverlandMapGenerator ()
-	{
-		return overlandMapGenerator;
-	}
-
-	/**
-	 * @param gen Overland map generator
-	 */
-	public final void setOverlandMapGenerator (final IOverlandMapGenerator gen)
-	{
-		overlandMapGenerator = gen;
 	}
 
 	/**

@@ -38,6 +38,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.mapgenerator.IOverlandMapGenerator;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.process.ICityProcessing;
@@ -117,6 +118,9 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 	/** Server-only unit calculations */
 	private IMomServerUnitCalculations serverUnitCalculations;
 	
+	/** Overland map generator for this session */
+	private IOverlandMapGenerator overlandMapGenerator;	
+	
 	/**
 	 * @return Logger for logging key messages relating to this session
 	 */
@@ -126,6 +130,14 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 		return sessionLogger;
 	}
 
+	/**
+	 * @param logger Logger for logging key messages relating to this session
+	 */
+	public final void setSessionLogger (final Logger logger)
+	{
+		sessionLogger = logger;
+	}
+	
 	/**
 	 * @return Session description, typecasted to MoM specific type
 	 */
@@ -138,8 +150,8 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 	/**
 	 * @return Load XML file specified in session description
 	 * @throws JAXBException If there is a problem loading the server XML file
-	 */
-	protected final GeneralServerKnowledge createGeneralServerKnowledge (final MomServerUI ui,
+	 */ 
+/*	protected final GeneralServerKnowledge createGeneralServerKnowledge (final MomServerUI ui,
 		final MomImeServerConfig config, final Logger fileLogger) throws JAXBException
 	{
 		log.entering (MomSessionThread.class.getName (), "createGeneralServerKnowledge", getSessionDescription ().getXmlDatabaseName ());
@@ -177,7 +189,7 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 
 		log.exiting (MomSessionThread.class.getName (), "createGeneralServerKnowledge", gsk);
 		return gsk;
-	}
+	} */
 
 	/**
 	 * @return Server general knowledge, typecasted to MoM specific type
@@ -188,6 +200,15 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 		return (MomGeneralServerKnowledge) super.getGeneralServerKnowledge ();
 	}
 
+	/**
+	 * Spring seems to need this to be able to set the property - odd, since the MP demo works without this
+	 * @param gsk Server knowledge structure, typecasted to MoM specific type
+	 */
+	public final void setGeneralServerKnowledge (final MomGeneralServerKnowledge gsk)
+	{
+		super.setGeneralServerKnowledge (gsk);
+	}
+	
 	/**
 	 * @return Server XML in use for this session
 	 */
@@ -588,5 +609,22 @@ final class MomSessionThread extends MultiplayerSessionThread implements IMomSes
 	public final void setServerUnitCalculations (final IMomServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Overland map generator for this session
+	 */
+	@Override
+	public final IOverlandMapGenerator getOverlandMapGenerator ()
+	{
+		return overlandMapGenerator;
+	}
+
+	/**
+	 * @param mapGen Overland map generator for this session
+	 */
+	public final void setOverlandMapGenerator (final IOverlandMapGenerator mapGen)
+	{
+		overlandMapGenerator = mapGen;
 	}
 }

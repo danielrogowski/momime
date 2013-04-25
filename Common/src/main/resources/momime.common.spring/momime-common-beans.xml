@@ -94,6 +94,7 @@
     			<value>momime.common.messages.servertoclient.v0_9_4.SelectNextUnitToMoveOverlandMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.SpellResearchChangedMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.OverlandCastQueuedMessage</value>    			
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage</value>

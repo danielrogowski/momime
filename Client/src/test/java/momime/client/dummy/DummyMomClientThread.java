@@ -22,16 +22,20 @@ import momime.common.messages.servertoclient.v0_9_4.ChosenCustomPhotoMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChosenStandardPhotoMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChosenWizardMessage;
 import momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_4.EndOfContinuedMovementMessage;
+import momime.common.messages.servertoclient.v0_9_4.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.v0_9_4.FogOfWarVisibleAreaChangedMessage;
 import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage;
+import momime.common.messages.servertoclient.v0_9_4.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage;
 import momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
+import momime.common.messages.servertoclient.v0_9_4.UpdateDamageTakenAndExperienceMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
@@ -355,6 +359,24 @@ public final class DummyMomClientThread extends MultiplayerBaseClientThread
 		else if (msg instanceof StartGameMessage)
 		{
 			client.addToTextArea ("Starting game (switches client to map view)");
+		}
+		else if (msg instanceof UpdateDamageTakenAndExperienceMessage)
+		{
+			final UpdateDamageTakenAndExperienceMessage dmg = (UpdateDamageTakenAndExperienceMessage) msg;
+			client.addToTextArea ("Unit URN #" + dmg.getUnitURN () + " now has " + dmg.getExperience () + " exp and has taken " + dmg.getDamageTaken () + " damage");
+		}
+		else if (msg instanceof SetCurrentPlayerMessage)
+		{
+			final SetCurrentPlayerMessage set = (SetCurrentPlayerMessage) msg;
+			client.addToTextArea ("Turn #" + set.getTurnNumber () + ", player ID " + set.getCurrentPlayerID () + "'s turn, expireMessages=" + set.isExpireMessages () + ", you have " + set.getMessage ().size () + " NTMs");
+		}
+		else if (msg instanceof ErasePendingMovementsMessage)
+		{
+			client.addToTextArea ("ErasePendingMovements");
+		}
+		else if (msg instanceof EndOfContinuedMovementMessage)
+		{
+			client.addToTextArea ("EndOfContinuedMovement");
 		}
 		else
 			throw new IOException ("DemoSessionClientThread received a message of type " + msg.getClass ().getName () + " which it does not know how to process");

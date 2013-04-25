@@ -23,9 +23,7 @@
 
 	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConverters" />
 
-	<bean id="spellAI" class="momime.server.ai.SpellAI">
-		<property name="spellUtils" ref="spellUtils" />
-	</bean>
+	<!-- Utils -->
 
 	<bean id="playerPickServerUtils" class="momime.server.utils.PlayerPickServerUtils">
 		<property name="playerPickUtils" ref="playerPickUtils" />
@@ -33,19 +31,196 @@
 		<property name="spellAI" ref="spellAI" />
 	</bean>
 
-	<bean id="playerMessageProcessing" class="momime.server.process.PlayerMessageProcessing" >
-		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
-		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
+	<bean id="overlandMapServerUtils" class="momime.server.utils.OverlandMapServerUtils" />
+
+	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtils">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+	</bean>
+
+	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtils">
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
+	</bean>
+
+	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtils">
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 	
-	<!-- Beans created each time a new session is started -->
+	<!-- Calculations -->
+	
+	<bean id="serverSpellCalculations" class="momime.server.calculations.MomServerSpellCalculations">
+		<property name="spellUtils" ref="spellUtils" />
+	</bean>
+
+	<bean id="serverCityCalculations" class="momime.server.calculations.MomServerCityCalculations">
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
+	</bean>
+
+	<bean id="serverUnitCalculations" class="momime.server.calculations.MomServerUnitCalculations">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+	</bean>
+
+	<bean id="serverResourceCalculations" class="momime.server.calculations.MomServerResourceCalculations">
+		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+	</bean>
+
+	<!-- Processing -->
+
+	<bean id="playerMessageProcessing" class="momime.server.process.PlayerMessageProcessing">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="skillCalculations" ref="skillCalculations" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="momAI" ref="momAI" />
+		<property name="cityAI" ref="cityAI" />
+		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
+	</bean>
+
+	<bean id="cityProcessing" class="momime.server.process.CityProcessing">
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="serverCityCalculations" ref="serverCityCalculations" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
+		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="cityAI" ref="cityAI" />
+	</bean>
+
+	<bean id="spellProcessing" class="momime.server.process.SpellProcessing">
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+	</bean>
+	
+	<!-- AI -->
+	
+	<bean id="spellAI" class="momime.server.ai.SpellAI">
+		<property name="spellUtils" ref="spellUtils" />
+	</bean>
+
+	<bean id="cityAI" class="momime.server.ai.CityAI">
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="serverCityCalculations" ref="serverCityCalculations" />
+	</bean>
+
+	<bean id="momAI" class="momime.server.ai.MomAI">
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="spellAI" ref="spellAI" />
+		<property name="cityAI" ref="cityAI" />
+	</bean>
+	
+	<!-- Fog of War -->
+
+	<bean id="fogOfWarCalculations" class="momime.server.calculations.MomFogOfWarCalculations">
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+	</bean>
+
+	<bean id="fogOfWarDuplication" class="momime.server.fogofwar.FogOfWarDuplication">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+	</bean>
+
+	<bean id="fogOfWarMidTurnChanges" class="momime.server.fogofwar.FogOfWarMidTurnChanges">
+		<property name="fogOfWarCalculations" ref="fogOfWarCalculations" />
+		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />
+		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="serverCityCalculations" ref="serverCityCalculations" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+	</bean>
+
+	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessing">
+		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="serverCityCalculations" ref="serverCityCalculations" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+	</bean>
+	
+	<!-- Beans created each time a new session is started
+	
+			Note have to be careful here that each bean is only referenced once - if, for example, we declare
+			"trueMap" as a prototype bean and then try to set it against both the gsk + map generator, they
+			will both get different copies of "trueMap" injected
+			
+			So if there are places that something is genuinely required twice, we have to declare it only
+			once here and then deal with copying the reference within the code -->
+
+	<bean id="trueMap" class="momime.common.messages.v0_9_4.FogOfWarMemory" scope="prototype" />
+
+	<bean id="gsk" class="momime.server.messages.v0_9_4.MomGeneralServerKnowledge" scope="prototype">
+		<property name="trueMap" ref="trueMap" />
+	</bean>
 
 	<bean id="gpk" class="momime.common.messages.v0_9_4.MomGeneralPublicKnowledge" scope="prototype" />
+	
+	<bean id="overlandMapGenerator" class="momime.server.mapgenerator.OverlandMapGenerator" scope="prototype">
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<!-- <property name="trueTerrain" ref="trueMap" /> see comment above, this is done in the code instead -->
+	</bean>
 
 	<bean id="sessionThread" class="momime.server.MomSessionThread" scope="prototype">
 		<property name="generalPublicKnowledge" ref="gpk" />
+		<property name="generalServerKnowledge" ref="gsk" />
+		<property name="utils" ref="multiplayerServerUtils" />
+		
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="spellServerUtils" ref="spellServerUtils" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="overlandMapGenerator" ref="overlandMapGenerator" />
 	</bean>
 	
 </beans>

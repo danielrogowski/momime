@@ -57,13 +57,13 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	private final Logger log = Logger.getLogger (OverlandMapGenerator.class.getName ());
 	
 	/** Where to write the generated map to */
-	private final FogOfWarMemory trueTerrain;
+	private FogOfWarMemory trueTerrain;
 
 	/** Session description containing the parameters used to generate the map */
-	private final MomSessionDescription sd;
+	private MomSessionDescription sd;
 
 	/** Server database cache */
-	private final ServerDatabaseEx db;
+	private ServerDatabaseEx db;
 
 	/** Methods for updating true map + players' memory */
 	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -438,41 +438,6 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 		"1111"};
 
 	/**
-	 * After calling this constructor, let the map generator object die, it'll have output the map into trueTerrain already
-	 * The reason I've done it like this, rather than the alternative of having a static generateMap method, is to avoid
-	 * having to pass all the above 4 objects between every method
-	 *
-	 * Also this allows some of the temporary areas to be made available from get methods on this class,
-	 * so they can be examined by test classes
-	 *
-	 * @param aTrueTerrain Where to write the generated map to
-	 * @param aDB Server database cache
-	 * @param sessionDescription Session description containing the parameters used to generate the map
-	 * @throws MomException If some fatal error happens during map generation
-	 */
-	public OverlandMapGenerator (final FogOfWarMemory aTrueTerrain,
-		final MomSessionDescription sessionDescription, final ServerDatabaseEx aDB)
-		throws MomException
-	{
-		super ();
-
-		// sd is blank for a lot of unit tests
-		final Integer sessionID = (sessionDescription == null) ? null : sessionDescription.getSessionID ();
-		
-		log.entering (OverlandMapGenerator.class.getName (), "constructor", sessionID);
-
-		sd = sessionDescription;
-		db = aDB;
-		trueTerrain = aTrueTerrain;
-
-		// Quick check that arrays are the same length
-		if (TERRAIN_BORDER8_NEIGHBOURING_TILES.length != RIVER_MOUTH_DIRECTIONS.length)
-			throw new MomException ("momime.server.MomMapGenerator: Tile number and river mouth arrays must be same length");
-
-		log.exiting (OverlandMapGenerator.class.getName (), "constructor");
-	}
-
-	/**
 	 * Main routine to generate the overland terrain map
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If some entry isn't found in the db during map generation, or one of the smoothing borders isn't found in the fixed arrays
@@ -482,6 +447,10 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	{
 		log.entering (OverlandMapGenerator.class.getName (), "generateOverlandTerrain", sd.getSessionID ());
 
+		// Quick check that arrays are the same length
+		if (TERRAIN_BORDER8_NEIGHBOURING_TILES.length != RIVER_MOUTH_DIRECTIONS.length)
+			throw new MomException ("momime.server.MomMapGenerator: Tile number and river mouth arrays must be same length");
+		
 		// Start map generation, this initializes both planes at once
 		setAllToWater ();
 
@@ -1827,6 +1796,22 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	}
 
 	/**
+	 * @return Where to write the generated map to
+	 */
+	public final FogOfWarMemory getTrueTerrain ()
+	{
+		return trueTerrain;
+	}
+
+	/**
+	 * @param terr Where to write the generated map to
+	 */
+	public final void setTrueTerrain (final FogOfWarMemory terr)
+	{
+		trueTerrain = terr;
+	}
+	
+	/**
 	 * @return Methods for updating true map + players' memory
 	 */
 	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
@@ -1856,5 +1841,37 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return Session description containing the parameters used to generate the map
+	 */
+	public final MomSessionDescription getSessionDescription ()
+	{
+		return sd;
+	}
+
+	/**
+	 * @param obj Session description containing the parameters used to generate the map
+	 */
+	public final void setSessionDescription (final MomSessionDescription obj)
+	{
+		sd = obj;
+	}
+
+	/**
+	 * @return Server database cache
+	 */
+	public final ServerDatabaseEx getServerDB ()
+	{
+		return db;
+	}
+
+	/**
+	 * @param obj Server database cache
+	 */
+	public final void setServerDB (final ServerDatabaseEx obj)
+	{
+		db = obj;
 	}
 }

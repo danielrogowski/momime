@@ -634,7 +634,7 @@ public final class CityProcessing implements ICityProcessing
 	/**
 	 * @param utils Server-only pick utils
 	 */
-	public final void getPlayerPickServerUtils (final IPlayerPickServerUtils utils)
+	public final void setPlayerPickServerUtils (final IPlayerPickServerUtils utils)
 	{
 		playerPickServerUtils = utils;
 	}

@@ -29,8 +29,10 @@ import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseFactory;
+import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.OneWindowPerGameUI;
+import momime.server.ui.SessionWindow;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -174,9 +176,13 @@ public final class MomServer extends MultiplayerSessionServer implements Applica
 		final MomSessionThread thread = (MomSessionThread) applicationContext.getBean ("sessionThread");
 		thread.setMessageProcesser (getMessageProcesser ());
 		thread.setSessionDescription (sessionDescription);
-		
+
 		final MomSessionDescription sd = (MomSessionDescription) sessionDescription;
 		
+		// Start logger for this sesssion
+		final SessionWindow sessionWindow = ui.createWindowForNewSession (sd);
+		thread.setSessionLogger (ui.createLoggerForNewSession (sd, sessionWindow, fileLogger));
+
 		// Load server XML
 		final File fullFilename = new File (config.getPathToServerXmlDatabases () + sd.getXmlDatabaseName () + ServerDatabaseConverters.SERVER_XML_FILE_EXTENSION);
 		
@@ -190,6 +196,13 @@ public final class MomServer extends MultiplayerSessionServer implements Applica
 		// Create client database
 		thread.getGeneralPublicKnowledge ().setClientDatabase (getServerDatabaseConverters ().buildClientDatabase
 			(thread.getServerDB (), sd.getDifficultyLevel ().getHumanSpellPicks ()));
+		
+		// Generate the overland map
+		final OverlandMapGenerator mapGen = (OverlandMapGenerator) thread.getOverlandMapGenerator ();
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (thread.getServerDB ());
+		mapGen.setTrueTerrain (thread.getGeneralServerKnowledge ().getTrueMap ());		// See comment in spring XML for why this isn't just injected
+		mapGen.generateOverlandTerrain ();
 
 		return thread;
 	}

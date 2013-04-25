@@ -1,12 +1,10 @@
 package momime.server.mapgenerator;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.util.logging.Logger;
 
 import org.junit.Test;
 
@@ -17,9 +15,6 @@ import com.ndg.map.CoordinateSystem;
  */
 public final class TestHeightMapGenerator
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the nearSingularity method
 	 */
@@ -30,7 +25,7 @@ public final class TestHeightMapGenerator
 		sys.setWidth (60);
 		sys.setHeight (40);
 
-		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0, debugLogger);
+		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0);
 		final int dist = 5;
 
 		// Neither wrapping
@@ -79,7 +74,7 @@ public final class TestHeightMapGenerator
 		sys.setWidth (6);
 		sys.setHeight (6);
 
-		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0, debugLogger);
+		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0);
 
 		// So basically test that we can only set each value once
 		assertNull (mapGen.getHeightMap () [0] [0]);
@@ -105,7 +100,7 @@ public final class TestHeightMapGenerator
 		sys.setHeight (3);
 
 		// Fill in values
-		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0, debugLogger);
+		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0);
 		mapGen.getHeightMap () [0] [0] = 5;
 		mapGen.getHeightMap () [0] [1] = 3;
 		mapGen.getHeightMap () [0] [2] = -3;
@@ -140,7 +135,7 @@ public final class TestHeightMapGenerator
 		sys.setHeight (6);
 
 		// So this fills the cells with values 0..10
-		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0, debugLogger);
+		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0);
 		for (int x = 0; x < sys.getWidth (); x++)
 			for (int y = 0; y < sys.getHeight (); y++)
 				mapGen.getZeroBasedHeightMap () [y] [x] = x + y;
@@ -168,7 +163,7 @@ public final class TestHeightMapGenerator
 	public final void testCountTilesAboveThreshold ()
 	{
 		final CoordinateSystem sys = new CoordinateSystem ();
-		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0, debugLogger);
+		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0);
 
 		// So this puts 10 height 0 cells, 11 height 1 cells, 12 height 2 cells, and so on
 		for (int n = 0; n <= 10; n++)
@@ -184,7 +179,7 @@ public final class TestHeightMapGenerator
 	public final void testCountTilesBelowThreshold ()
 	{
 		final CoordinateSystem sys = new CoordinateSystem ();
-		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0, debugLogger);
+		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 0, 0, 0);
 
 		// So this puts 10 height 0 cells, 11 height 1 cells, 12 height 2 cells, and so on
 		for (int n = 0; n <= 10; n++)
@@ -206,7 +201,7 @@ public final class TestHeightMapGenerator
 		sys.setHeight (40);
 		sys.setWrapsLeftToRight (true);
 
-		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 10, 10, 7, debugLogger);
+		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 10, 10, 7);
 		mapGen.generateHeightMap ();
 
 		// Not much that can be automatically checked here, we can at least verify that the sum of all the counted heights should equal the number of cells

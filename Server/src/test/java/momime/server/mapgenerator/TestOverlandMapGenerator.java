@@ -7,13 +7,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.MemoryGridCellUtils;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
@@ -32,9 +32,6 @@ import org.junit.Test;
  */
 public final class TestOverlandMapGenerator
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the setAllToWater method
 	 * @throws IOException If we are unable to locate the server XML file
@@ -50,7 +47,10 @@ public final class TestOverlandMapGenerator
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
-		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
+		final OverlandMapGenerator mapGen = new OverlandMapGenerator ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
 
 		mapGen.setAllToWater ();
 
@@ -84,12 +84,15 @@ public final class TestOverlandMapGenerator
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
-		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
+		final OverlandMapGenerator mapGen = new OverlandMapGenerator ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
 
 		// Create a dummy height map, this makes 1 cell of height 0, 2 of height 1, 3 of height 2 and so on, and from the other side
 		// 1 of height 98, 2 of height 97, 3 of height 96, 4 of height 95, and so on
 		final HeightMapGenerator heightMap = new HeightMapGenerator (sd.getMapSize (),
-			sd.getMapSize ().getZoneWidth (), sd.getMapSize ().getZoneHeight (), sd.getLandProportion ().getTundraRowCount (), debugLogger);
+			sd.getMapSize ().getZoneWidth (), sd.getMapSize ().getZoneHeight (), sd.getLandProportion ().getTundraRowCount ());
 
 		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
@@ -134,7 +137,7 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testFindTerrainBorder8_Found () throws JAXBException, MomException, RecordNotFoundException
 	{
-		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, null, debugLogger); 
+		final OverlandMapGenerator gen = new OverlandMapGenerator (); 
 		assertEquals (32, gen.findTerrainBorder8 ("10000011"));
 	}
 
@@ -147,7 +150,7 @@ public final class TestOverlandMapGenerator
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindTerrainBorder8_NotFound () throws JAXBException, MomException, RecordNotFoundException
 	{
-		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, null, debugLogger); 
+		final OverlandMapGenerator gen = new OverlandMapGenerator (); 
 		assertEquals (32, gen.findTerrainBorder8 ("10101010"));
 	}
 
@@ -158,7 +161,7 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testConvertNeighbouringTilesToDirections () throws MomException
 	{
-		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, null, debugLogger); 
+		final OverlandMapGenerator gen = new OverlandMapGenerator (); 
 		assertEquals ("37", gen.convertNeighbouringTilesToDirections ("0101", -1));
 		assertEquals ("357", gen.convertNeighbouringTilesToDirections ("0111", -1));
 		assertEquals ("37", gen.convertNeighbouringTilesToDirections ("0111", 5));
@@ -179,7 +182,10 @@ public final class TestOverlandMapGenerator
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
-		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
+		final OverlandMapGenerator mapGen = new OverlandMapGenerator ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
 
 		// Grass to the east and west (via wrapping), ocean to the south because we didn't overwrite it
 		mapGen.setAllToWater ();
@@ -211,7 +217,7 @@ public final class TestOverlandMapGenerator
 	@Test
 	public final void testCountStringRepetitions () throws MomException
 	{
-		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, null, debugLogger); 
+		final OverlandMapGenerator gen = new OverlandMapGenerator (); 
 		assertEquals ("Zero repetitions", 0, gen.countStringRepetitions ("C", "abcde"));
 		assertEquals ("One in the middle", 1, gen.countStringRepetitions ("c", "abcde"));
 		assertEquals ("Two in the middle", 2, gen.countStringRepetitions ("c", "abcgcde"));
@@ -237,7 +243,10 @@ public final class TestOverlandMapGenerator
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (map);
 
-		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
+		final OverlandMapGenerator mapGen = new OverlandMapGenerator ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
 
 		assertNotNull (db.findTileType (mapGen.chooseRandomNodeTileTypeID (), "testChooseRandomNodeTileTypeID").getMagicRealmID ());
 	}
@@ -260,7 +269,10 @@ public final class TestOverlandMapGenerator
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (map);
 
-		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
+		final OverlandMapGenerator mapGen = new OverlandMapGenerator ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
 
 		assertTrue (db.findMapFeature (mapGen.chooseRandomLairFeatureID (), "testChooseRandomLairFeatureID").getMapFeatureMagicRealm ().size () > 0);
 	}
@@ -274,13 +286,14 @@ public final class TestOverlandMapGenerator
 	public final void testFindMostExpensiveMonster () throws IOException, JAXBException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final OverlandMapGenerator gen = new OverlandMapGenerator (null, null, db, debugLogger); 
+		final OverlandMapGenerator mapGen = new OverlandMapGenerator ();
+		mapGen.setServerDB (db);
 
-		assertEquals ("UN179", gen.findMostExpensiveMonster ("LT01", 1000).getUnitID ());		// Arch angel
-		assertEquals ("UN178", gen.findMostExpensiveMonster ("LT01", 900).getUnitID ());		// Angel
-		assertEquals ("UN176", gen.findMostExpensiveMonster ("LT01", 500).getUnitID ());		// Unicorns
-		assertEquals ("UN177", gen.findMostExpensiveMonster ("LT01", 100).getUnitID ());		// Guardian spirit
-		assertNull (gen.findMostExpensiveMonster ("LT01", 45));											// Nothing that cheap
+		assertEquals ("UN179", mapGen.findMostExpensiveMonster ("LT01", 1000).getUnitID ());		// Arch angel
+		assertEquals ("UN178", mapGen.findMostExpensiveMonster ("LT01", 900).getUnitID ());		// Angel
+		assertEquals ("UN176", mapGen.findMostExpensiveMonster ("LT01", 500).getUnitID ());		// Unicorns
+		assertEquals ("UN177", mapGen.findMostExpensiveMonster ("LT01", 100).getUnitID ());		// Guardian spirit
+		assertNull (mapGen.findMostExpensiveMonster ("LT01", 45));											// Nothing that cheap
 	}
 
 	/**
@@ -338,7 +351,12 @@ public final class TestOverlandMapGenerator
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
-		final OverlandMapGenerator mapGen = new OverlandMapGenerator (fow, sd, db, debugLogger);
+		final OverlandMapGenerator mapGen = new OverlandMapGenerator ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
+		
+		mapGen.setMemoryGridCellUtils (new MemoryGridCellUtils ());
 
 		mapGen.generateOverlandTerrain ();
 

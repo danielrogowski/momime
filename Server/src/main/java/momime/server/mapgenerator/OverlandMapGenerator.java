@@ -547,7 +547,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	 */
 	final void setHighestTiles (final HeightMapGenerator heightMap, final int plane, final String tileTypeID, final int desiredTileCount)
 	{
-		log.entering (OverlandMapGenerator.class.getName (), "countTilesAtEachHeight", new String [] {tileTypeID, new Integer (desiredTileCount).toString ()});
+		log.entering (OverlandMapGenerator.class.getName (), "setHighestTiles", new String [] {new Integer (plane).toString (), tileTypeID, new Integer (desiredTileCount).toString ()});
 
 		// Check zero first
 		int bestThreshold = 0;

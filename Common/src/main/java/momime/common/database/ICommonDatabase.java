@@ -4,6 +4,7 @@ import java.util.List;
 
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.CombatAreaEffect;
+import momime.common.database.v0_9_4.CombatTileType;
 import momime.common.database.v0_9_4.MapFeature;
 import momime.common.database.v0_9_4.Pick;
 import momime.common.database.v0_9_4.PickType;
@@ -216,4 +217,12 @@ public interface ICommonDatabase
 	 * @throws RecordNotFoundException If the combat area effect ID doesn't exist
 	 */
 	public CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @param combatTileTypeID Combat tile type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return CombatTileType object
+	 * @throws RecordNotFoundException If the combat tile type ID doesn't exist
+	 */
+	public CombatTileType findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException;
 }

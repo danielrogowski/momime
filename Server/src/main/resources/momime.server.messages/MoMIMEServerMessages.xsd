@@ -55,6 +55,7 @@
     						<xsd:documentation>Raiders have a special population cap that prevents cities expanding by more than a certain value, see strategy guide p426.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="combatMap" type="momimemsgs:mapAreaOfCombatTiles"/>
 		        </xsd:sequence>
 	        </xsd:extension>
 		</xsd:complexContent>

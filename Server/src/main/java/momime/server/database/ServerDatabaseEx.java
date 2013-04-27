@@ -9,6 +9,7 @@ import momime.common.database.v0_9_4.TaxRate;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CitySize;
 import momime.server.database.v0_9_4.CombatAreaEffect;
+import momime.server.database.v0_9_4.CombatTileType;
 import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
@@ -83,6 +84,9 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 
 	/** Map of combat area effect IDs to combat area effect objects */
 	private Map<String, CombatAreaEffect> combatAreaEffectsMap;
+	
+	/** Map of combat tile type IDs to combat tile type objects */
+	private Map<String, CombatTileType> combatTileTypesMap;
 	
 	/**
 	 * Builds all the hash maps to enable finding records faster
@@ -178,6 +182,11 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 		combatAreaEffectsMap = new HashMap<String, CombatAreaEffect> ();
 		for (final CombatAreaEffect thisCombatAreaEffect : getCombatAreaEffect ())
 			combatAreaEffectsMap.put (thisCombatAreaEffect.getCombatAreaEffectID (), thisCombatAreaEffect);
+
+		// Combat tile types map
+		combatTileTypesMap = new HashMap<String, CombatTileType> ();
+		for (final CombatTileType thisCombatTileType : getCombatTileType ())
+			combatTileTypesMap.put (thisCombatTileType.getCombatTileTypeID (), thisCombatTileType);
 	}
 
 	/**
@@ -463,6 +472,22 @@ public final class ServerDatabaseEx extends ServerDatabase implements ICommonDat
 		final CombatAreaEffect found = combatAreaEffectsMap.get (combatAreaEffectID);
 		if (found == null)
 			throw new RecordNotFoundException (CombatAreaEffect.class.getName (), combatAreaEffectID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param combatTileTypeID Combat tile type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return CombatTileType object
+	 * @throws RecordNotFoundException If the combat tile type ID doesn't exist
+	 */
+	@Override
+	public final CombatTileType findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException
+	{
+		final CombatTileType found = combatTileTypesMap.get (combatTileTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (CombatTileType.class.getName (), combatTileTypeID, caller);
 
 		return found;
 	}

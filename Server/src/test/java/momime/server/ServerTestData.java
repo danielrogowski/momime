@@ -19,7 +19,6 @@ import momime.common.messages.v0_9_4.MapRowOfStrings;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfStrings;
-import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.config.ServerConfigConstants;
@@ -33,6 +32,7 @@ import momime.server.database.v0_9_4.MapSize;
 import momime.server.database.v0_9_4.NodeStrength;
 import momime.server.database.v0_9_4.SpellSetting;
 import momime.server.database.v0_9_4.UnitSetting;
+import momime.server.messages.v0_9_4.ServerGridCell;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -231,7 +231,7 @@ public final class ServerTestData
 			{
 				final MapRowOfMemoryGridCells row = new MapRowOfMemoryGridCells ();
 				for (int x = 0; x < sys.getWidth (); x++)
-					row.getCell ().add (new MemoryGridCell ());
+					row.getCell ().add (new ServerGridCell ());
 
 				area.getRow ().add (row);
 			}
@@ -261,7 +261,7 @@ public final class ServerTestData
 				final MapRowOfMemoryGridCells row = new MapRowOfMemoryGridCells ();
 				for (int x = 0; x < sys.getWidth (); x++)
 				{
-					final MemoryGridCell mc = new MemoryGridCell ();
+					final ServerGridCell mc = new ServerGridCell ();
 
 					// Look for data in Excel sheet
 					final Cell cell = workbook.getSheetAt (plane).getRow (y + 1).getCell (x + 1);

@@ -7,6 +7,7 @@ import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.CitySize;
 import momime.server.database.v0_9_4.CombatAreaEffect;
+import momime.server.database.v0_9_4.CombatTileType;
 import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
@@ -757,5 +758,45 @@ public final class TestServerDatabaseEx
 		db.buildMaps ();
 
 		assertNull (db.findCombatAreaEffect ("CAE04", "testFindCombatAreaEffect_NotExists"));
+	}
+
+	/**
+	 * Tests the findCombatTileType method to find a combatTileType ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindCombatTileType_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatTileType newCombatTileType = new CombatTileType ();
+			newCombatTileType.setCombatTileTypeID ("CTL0" + n);
+			db.getCombatTileType ().add (newCombatTileType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("CTL02", db.findCombatTileType ("CTL02", "testFindCombatTileType_Exists").getCombatTileTypeID ());
+	}
+
+	/**
+	 * Tests the findCombatTileType method to find a combatTileType ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindCombatTileType_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatTileType newCombatTileType = new CombatTileType ();
+			newCombatTileType.setCombatTileTypeID ("CTL0" + n);
+			db.getCombatTileType ().add (newCombatTileType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findCombatTileType ("CTL04", "testFindCombatTileType_NotExists"));
 	}
 }

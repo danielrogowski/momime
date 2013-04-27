@@ -154,5 +154,7 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
+	
+	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtils" />
 
 </beans>

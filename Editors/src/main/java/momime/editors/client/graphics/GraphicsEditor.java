@@ -1,7 +1,5 @@
 package momime.editors.client.graphics;
 
-import java.util.logging.Logger;
-
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.xml.XMLConstants;
@@ -21,9 +19,6 @@ import com.ndg.xmleditor.editor.XmlEditorDispatcher;
  */
 public final class GraphicsEditor
 {
-	/** Logger for the editor */
-	private static final Logger debugLogger = Logger.getLogger ("MoMIMEEditors");
-
 	/**
 	 * Kicks off the XML editor by opening up the frame asking for the path to the XSD and XML files
 	 * @param args Command line arguments - ignored
@@ -45,7 +40,7 @@ public final class GraphicsEditor
 		try
 		{
 			// Set up resource resolver - used both by the schema factory and the XML Editor code to load in the referenced XSDs
-			final ServerXsdResourceResolver resourceResolver = new ServerXsdResourceResolver (DOMImplementationRegistry.newInstance (), debugLogger);
+			final ServerXsdResourceResolver resourceResolver = new ServerXsdResourceResolver (DOMImplementationRegistry.newInstance ());
 
 			// Need to tweak the schema factory to use the resource resolver
 			final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);

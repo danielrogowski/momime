@@ -10,15 +10,18 @@ import javax.xml.bind.Unmarshaller;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.DifficultyLevelNodeStrength;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
+import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_4.MapAreaOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapAreaOfStrings;
+import momime.common.messages.v0_9_4.MapRowOfCombatTiles;
 import momime.common.messages.v0_9_4.MapRowOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfStrings;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfStrings;
+import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.config.ServerConfigConstants;
@@ -32,6 +35,7 @@ import momime.server.database.v0_9_4.MapSize;
 import momime.server.database.v0_9_4.NodeStrength;
 import momime.server.database.v0_9_4.SpellSetting;
 import momime.server.database.v0_9_4.UnitSetting;
+import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.messages.v0_9_4.ServerGridCell;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -287,6 +291,24 @@ public final class ServerTestData
 			}
 
 			map.getPlane ().add (area);
+		}
+
+		return map;
+	}
+
+	/**
+	 * @return Map area prepopulated with empty cells
+	 */
+	public final static MapAreaOfCombatTiles createCombatMap ()
+	{
+		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
+		for (int y = 0; y < CombatMapGenerator.COMBAT_MAP_HEIGHT; y++)
+		{
+			final MapRowOfCombatTiles row = new MapRowOfCombatTiles ();
+			for (int x = 0; x < CombatMapGenerator.COMBAT_MAP_WIDTH; x++)
+				row.getCell ().add (new MomCombatTile ());
+
+			map.getRow ().add (row);
 		}
 
 		return map;

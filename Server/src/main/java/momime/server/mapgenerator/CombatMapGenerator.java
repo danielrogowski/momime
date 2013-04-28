@@ -109,7 +109,7 @@ public final class CombatMapGenerator
 	}
 	
 	/**
-	 * @return Newly created map initialized with all cells set to grass
+	 * @return Newly created map initialized with all cells set to grass; also sets all of the offMapEdge values
 	 */
 	final MapAreaOfCombatTiles setAllToGrass ()
 	{
@@ -124,6 +124,7 @@ public final class CombatMapGenerator
 			final MapRowOfCombatTiles row = new MapRowOfCombatTiles ();
 			for (int x = 0; x < COMBAT_MAP_WIDTH; x++)
 			{
+				// Create grass tile
 				final MomCombatTileLayer layer = new MomCombatTileLayer ();
 				layer.setLayer (CombatMapLayerID.TERRAIN);
 				layer.setCombatTileTypeID (ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_GRASS);
@@ -131,6 +132,16 @@ public final class CombatMapGenerator
 				final MomCombatTile cell = new MomCombatTile ();
 				cell.getTileLayer ().add (layer);
 				
+				// Set the areas that are off the edge of the map
+				// See "MoMIMEMiscellaneous\MoM IME screen layouts\Combat map.psp" for why these boundaries are like this
+				final boolean canWalkOn = (x >= 1) && (y >= 2) &&
+					(y <= COMBAT_MAP_HEIGHT - 3) &&
+					(((y % 2 == 0) && (x <= COMBAT_MAP_WIDTH - 2)) ||
+					((y % 2 == 1) && (x <= COMBAT_MAP_WIDTH - 3)));
+				
+				cell.setOffMapEdge (!canWalkOn);
+				
+				// Add it
 				row.getCell ().add (cell);
 			}
 
@@ -150,32 +161,19 @@ public final class CombatMapGenerator
 	 * @param combatTileTypeID The tile type to set the highest tiles to
 	 * @param desiredTileCount How many tiles to set to this tile type
 	 */
-	final void setHighestTiles (final HeightMapGenerator heightMap, final MapAreaOfCombatTiles map, final String combatTileTypeID, final int desiredTileCount)
+	private final void setHighestTiles (final HeightMapGenerator heightMap, final MapAreaOfCombatTiles map, final String combatTileTypeID, final int desiredTileCount)
 	{
 		log.entering (CombatMapGenerator.class.getName (), "setHighestTiles", new String [] {combatTileTypeID, new Integer (desiredTileCount).toString ()});
 
-		// Check zero first
-		int bestThreshold = 0;
-		int bestValue = Math.abs (heightMap.countTilesAboveThreshold (bestThreshold) - desiredTileCount);
-
-		// Then try all others
-		for (int thisThreshold = 1; thisThreshold < heightMap.getHeightCounts ().size (); thisThreshold++)
+		heightMap.setHighestTiles (desiredTileCount, new ProcessTileCallback ()
 		{
-			final int thisValue = Math.abs (heightMap.countTilesAboveThreshold (thisThreshold) - desiredTileCount);
-			if (thisValue < bestValue)
+			@Override
+			public final void process (final int x, final int y)
 			{
-				bestThreshold = thisThreshold;
-				bestValue = thisValue;
+				// We can assume the terrain layer will always be the first/only one in the list, since this gets called right after setAllToGrass
+				map.getRow ().get (y).getCell ().get (x).getTileLayer ().get (0).setCombatTileTypeID (combatTileTypeID);
 			}
-		}
-
-		// Then set scenery above this threshold
-		for (int x = 0; x < heightMap.getCoordinateSystem ().getWidth (); x++)
-			for (int y = 0; y < heightMap.getCoordinateSystem ().getHeight (); y++)
-				if (heightMap.getZeroBasedHeightMap () [y] [x] >= bestThreshold)
-					
-					// We can assume the terrain layer will always be the first/only one in the list, since this gets called right after setAllToGrass
-					map.getRow ().get (y).getCell ().get (x).getTileLayer ().get (0).setCombatTileTypeID (combatTileTypeID);
+		});
 
 		log.exiting (CombatMapGenerator.class.getName (), "setHighestTiles");
 	}
@@ -189,32 +187,19 @@ public final class CombatMapGenerator
 	 * @param combatTileTypeID The tile type to set the highest tiles to
 	 * @param desiredTileCount How many tiles to set to this tile type
 	 */
-	final void setLowestTiles (final HeightMapGenerator heightMap, final MapAreaOfCombatTiles map, final String combatTileTypeID, final int desiredTileCount)
+	private final void setLowestTiles (final HeightMapGenerator heightMap, final MapAreaOfCombatTiles map, final String combatTileTypeID, final int desiredTileCount)
 	{
 		log.entering (CombatMapGenerator.class.getName (), "setLowestTiles", new String [] {combatTileTypeID, new Integer (desiredTileCount).toString ()});
 
-		// Check zero first
-		int bestThreshold = 0;
-		int bestValue = Math.abs (heightMap.countTilesBelowThreshold (bestThreshold) - desiredTileCount);
-
-		// Then try all others
-		for (int thisThreshold = 1; thisThreshold < heightMap.getHeightCounts ().size (); thisThreshold++)
+		heightMap.setLowestTiles (desiredTileCount, new ProcessTileCallback ()
 		{
-			final int thisValue = Math.abs (heightMap.countTilesBelowThreshold (thisThreshold) - desiredTileCount);
-			if (thisValue < bestValue)
+			@Override
+			public final void process (final int x, final int y)
 			{
-				bestThreshold = thisThreshold;
-				bestValue = thisValue;
+				// We can assume the terrain layer will always be the first/only one in the list, since this gets called right after setAllToGrass
+				map.getRow ().get (y).getCell ().get (x).getTileLayer ().get (0).setCombatTileTypeID (combatTileTypeID);
 			}
-		}
-
-		// Then set scenery below this threshold
-		for (int x = 0; x < heightMap.getCoordinateSystem ().getWidth (); x++)
-			for (int y = 0; y < heightMap.getCoordinateSystem ().getHeight (); y++)
-				if (heightMap.getZeroBasedHeightMap () [y] [x] <= bestThreshold)
-					
-					// We can assume the terrain layer will always be the first/only one in the list, since this gets called right after setAllToGrass
-					map.getRow ().get (y).getCell ().get (x).getTileLayer ().get (0).setCombatTileTypeID (combatTileTypeID);
+		});
 
 		log.exiting (CombatMapGenerator.class.getName (), "setLowestTiles");
 	}

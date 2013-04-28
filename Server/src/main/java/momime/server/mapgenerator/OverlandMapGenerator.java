@@ -545,30 +545,18 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	 * @param tileTypeID The tile type to set the highest tiles to
 	 * @param desiredTileCount How many tiles to set to this tile type
 	 */
-	final void setHighestTiles (final HeightMapGenerator heightMap, final int plane, final String tileTypeID, final int desiredTileCount)
+	private final void setHighestTiles (final HeightMapGenerator heightMap, final int plane, final String tileTypeID, final int desiredTileCount)
 	{
 		log.entering (OverlandMapGenerator.class.getName (), "setHighestTiles", new String [] {new Integer (plane).toString (), tileTypeID, new Integer (desiredTileCount).toString ()});
 
-		// Check zero first
-		int bestThreshold = 0;
-		int bestValue = Math.abs (heightMap.countTilesAboveThreshold (bestThreshold) - desiredTileCount);
-
-		// Then try all others
-		for (int thisThreshold = 1; thisThreshold < heightMap.getHeightCounts ().size (); thisThreshold++)
+		heightMap.setHighestTiles (desiredTileCount, new ProcessTileCallback ()
 		{
-			final int thisValue = Math.abs (heightMap.countTilesAboveThreshold (thisThreshold) - desiredTileCount);
-			if (thisValue < bestValue)
+			@Override
+			public final void process (final int x, final int y)
 			{
-				bestThreshold = thisThreshold;
-				bestValue = thisValue;
+				trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (tileTypeID);
 			}
-		}
-
-		// Then set scenery above this threshold
-		for (int x = 0; x < heightMap.getCoordinateSystem ().getWidth (); x++)
-			for (int y = 0; y < heightMap.getCoordinateSystem ().getHeight (); y++)
-				if (heightMap.getZeroBasedHeightMap () [y] [x] >= bestThreshold)
-					trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (tileTypeID);
+		});
 
 		log.exiting (OverlandMapGenerator.class.getName (), "setHighestTiles");
 	}

@@ -331,6 +331,76 @@ final class HeightMapGenerator
 	}
 
 	/**
+	 * Finds the height in the heightmap for which as close as possible to DesiredTileCount tiles are above that height and the remainder are below it
+	 * Then sets all tiles above this height to have scenery combatTileTypeID
+	 *
+	 * @param desiredTileCount How many tiles to set to this tile type
+	 * @param callback Method to trigger on each of the tiles to update
+	 */
+	final void setHighestTiles (final int desiredTileCount, final ProcessTileCallback callback)
+	{
+		log.entering (HeightMapGenerator.class.getName (), "setHighestTiles", desiredTileCount);
+
+		// Check zero first
+		int bestThreshold = 0;
+		int bestValue = Math.abs (countTilesAboveThreshold (bestThreshold) - desiredTileCount);
+
+		// Then try all others
+		for (int thisThreshold = 1; thisThreshold < getHeightCounts ().size (); thisThreshold++)
+		{
+			final int thisValue = Math.abs (countTilesAboveThreshold (thisThreshold) - desiredTileCount);
+			if (thisValue < bestValue)
+			{
+				bestThreshold = thisThreshold;
+				bestValue = thisValue;
+			}
+		}
+
+		// Then set scenery above this threshold
+		for (int x = 0; x < getCoordinateSystem ().getWidth (); x++)
+			for (int y = 0; y < getCoordinateSystem ().getHeight (); y++)
+				if (getZeroBasedHeightMap () [y] [x] >= bestThreshold)
+					callback.process (x, y);
+
+		log.exiting (HeightMapGenerator.class.getName (), "setHighestTiles");
+	}
+
+	/**
+	 * Finds the height in the heightmap for which as close as possible to DesiredTileCount tiles are below that height and the remainder are above it
+	 * Then sets all tiles above this height to have scenery combatTileTypeID
+	 *
+	 * @param desiredTileCount How many tiles to set to this tile type
+	 * @param callback Method to trigger on each of the tiles to update
+	 */
+	final void setLowestTiles (final int desiredTileCount, final ProcessTileCallback callback)
+	{
+		log.entering (HeightMapGenerator.class.getName (), "setLowestTiles", desiredTileCount);
+
+		// Check zero first
+		int bestThreshold = 0;
+		int bestValue = Math.abs (countTilesBelowThreshold (bestThreshold) - desiredTileCount);
+
+		// Then try all others
+		for (int thisThreshold = 1; thisThreshold < getHeightCounts ().size (); thisThreshold++)
+		{
+			final int thisValue = Math.abs (countTilesBelowThreshold (thisThreshold) - desiredTileCount);
+			if (thisValue < bestValue)
+			{
+				bestThreshold = thisThreshold;
+				bestValue = thisValue;
+			}
+		}
+
+		// Then set scenery below this threshold
+		for (int x = 0; x < getCoordinateSystem ().getWidth (); x++)
+			for (int y = 0; y < getCoordinateSystem ().getHeight (); y++)
+				if (getZeroBasedHeightMap () [y] [x] <= bestThreshold)
+					callback.process (x, y);
+
+		log.exiting (HeightMapGenerator.class.getName (), "setLowestTiles");
+	}
+	
+	/**
 	 * @return Coordinate system we are generating a height map for
 	 */
 	final CoordinateSystem getCoordinateSystem ()

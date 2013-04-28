@@ -70,65 +70,6 @@ public final class TestOverlandMapGenerator
 	}
 
 	/**
-	 * Tests the setHighestTiles method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If some fatal error happens during map generation
-	 * @throws RecordNotFoundException If there is a problem building the session description
-	 */
-	@Test
-	public final void testSetHighestTiles () throws IOException, JAXBException, MomException, RecordNotFoundException
-	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		final OverlandMapGenerator mapGen = new OverlandMapGenerator ();
-		mapGen.setTrueTerrain (fow);
-		mapGen.setSessionDescription (sd);
-		mapGen.setServerDB (db);
-
-		// Create a dummy height map, this makes 1 cell of height 0, 2 of height 1, 3 of height 2 and so on, and from the other side
-		// 1 of height 98, 2 of height 97, 3 of height 96, 4 of height 95, and so on
-		final HeightMapGenerator heightMap = new HeightMapGenerator (sd.getMapSize (),
-			sd.getMapSize ().getZoneWidth (), sd.getMapSize ().getZoneHeight (), sd.getLandProportion ().getTundraRowCount ());
-
-		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-				heightMap.getZeroBasedHeightMap () [y] [x] = x + y;
-
-		heightMap.countTilesAtEachHeight ();
-
-		// So this should now "fill in" the bottom right hand triangle
-		mapGen.setAllToWater ();
-		mapGen.setHighestTiles (heightMap, 0, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, 12);
-
-		// Requested 12, but only choices are 10 and 15, so should round down to marking 10 tiles
-		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-			{
-				if (x + y >= 95)
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ());
-				else
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ());
-			}
-
-		// Requested 13, but only choices are 10 and 15, so should round up to marking 15 tiles
-		mapGen.setAllToWater ();
-		mapGen.setHighestTiles (heightMap, 0, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, 13);
-
-		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
-			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
-			{
-				if (x + y >= 94)
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ());
-				else
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().getTileTypeID ());
-			}
-	}
-
-	/**
 	 * Tests the findTerrainBorder8 method to find a bitmask that exists
 	 * @throws JAXBException If there is a problem reading the XML file
 	 * @throws MomException If some fatal error happens during map generation

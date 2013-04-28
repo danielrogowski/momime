@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import momime.server.ServerTestData;
 
 import org.junit.Test;
 
@@ -210,5 +211,131 @@ public final class TestHeightMapGenerator
 		// Also check that the entire map is not flat
 		if (mapGen.getHeightCounts ().size () == 1)
 			fail ("Map is flat");
+	}
+
+	/**
+	 * Tests the setHighestTiles method
+	 */
+	@Test
+	public final void testSetHighestTiles ()
+	{
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final boolean [] [] area = new boolean [sys.getWidth ()] [sys.getHeight ()];
+
+		// Create a dummy height map, this makes 1 cell of height 0, 2 of height 1, 3 of height 2 and so on, and from the other side
+		// 1 of height 98, 2 of height 97, 3 of height 96, 4 of height 95, and so on
+		final HeightMapGenerator heightMap = new HeightMapGenerator (sys, 0, 0, 0);
+
+		for (int x = 0; x < sys.getWidth (); x++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				heightMap.getZeroBasedHeightMap () [y] [x] = x + y;
+
+		heightMap.countTilesAtEachHeight ();
+
+		// So this should now "fill in" the bottom right hand triangle
+		heightMap.setHighestTiles (12, new ProcessTileCallback ()
+		{
+			@Override
+			public final void process (final int x, final int y)
+			{
+				area [x] [y] = true;
+			}
+		});
+
+		// Requested 12, but only choices are 10 and 15, so should round down to marking 10 tiles
+		for (int x = 0; x < sys.getWidth (); x++)
+			for (int y = 0; y < sys.getHeight (); y++)
+			{
+				if (x + y >= 95)
+					assertTrue (area [x] [y]);
+				else
+					assertFalse (area [x] [y]);
+			}
+
+		// Requested 13, but only choices are 10 and 15, so should round up to marking 15 tiles
+		for (int x = 0; x < sys.getWidth (); x++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				area [x] [y] = false;
+		
+		heightMap.setHighestTiles (13, new ProcessTileCallback ()
+		{
+			@Override
+			public final void process (final int x, final int y)
+			{
+				area [x] [y] = true;
+			}
+		});
+
+		for (int x = 0; x < sys.getWidth (); x++)
+			for (int y = 0; y < sys.getHeight (); y++)
+			{
+				if (x + y >= 94)
+					assertTrue (area [x] [y]);
+				else
+					assertFalse (area [x] [y]);
+			}
+	}
+
+	/**
+	 * Tests the setLowestTiles method
+	 */
+	@Test
+	public final void testSetLowestTiles ()
+	{
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final boolean [] [] area = new boolean [sys.getWidth ()] [sys.getHeight ()];
+
+		// Create a dummy height map, this makes 1 cell of height 0, 2 of height 1, 3 of height 2 and so on, and from the other side
+		// 1 of height 98, 2 of height 97, 3 of height 96, 4 of height 95, and so on
+		final HeightMapGenerator heightMap = new HeightMapGenerator (sys, 0, 0, 0);
+
+		for (int x = 0; x < sys.getWidth (); x++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				heightMap.getZeroBasedHeightMap () [y] [x] = x + y;
+
+		heightMap.countTilesAtEachHeight ();
+
+		// So this should now "fill in" the top left hand triangle
+		heightMap.setLowestTiles (12, new ProcessTileCallback ()
+		{
+			@Override
+			public final void process (final int x, final int y)
+			{
+				area [x] [y] = true;
+			}
+		});
+
+		// Requested 12, but only choices are 10 and 15, so should round down to marking 10 tiles
+		for (int x = 0; x < sys.getWidth (); x++)
+			for (int y = 0; y < sys.getHeight (); y++)
+			{
+				if (x + y <= 3)
+					assertTrue (area [x] [y]);
+				else
+					assertFalse (area [x] [y]);
+			}
+
+		// Requested 13, but only choices are 10 and 15, so should round up to marking 15 tiles
+		for (int x = 0; x < sys.getWidth (); x++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				area [x] [y] = false;
+		
+		heightMap.setLowestTiles (13, new ProcessTileCallback ()
+		{
+			@Override
+			public final void process (final int x, final int y)
+			{
+				area [x] [y] = true;
+			}
+		});
+
+		for (int x = 0; x < sys.getWidth (); x++)
+			for (int y = 0; y < sys.getHeight (); y++)
+			{
+				if (x + y <= 4)
+					assertTrue (area [x] [y]);
+				else
+					assertFalse (area [x] [y]);
+			}
 	}
 }

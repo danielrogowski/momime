@@ -13,69 +13,69 @@ import javax.imageio.stream.ImageInputStream;
 public final class NdgBmpReaderSpi extends ImageReaderSpi
 {
 	/** Name of the vendor of the .ndgbmp format */
-	private static final String vendorName = "Nigel Gay";
+	private static final String ndgbmpVendorName = "Nigel Gay";
 
 	/** Version of the .ndgbmp file structure */
-	private static final String version = "1.0";
+	private static final String ndgbmpVersion = "1.0";
 
 	/** Class responsible for decoding .ndgbmp streams */
-	private static final String readerClassName = "com.ndg.graphics.ndgbmp.NdgBmpReader";
+	private static final String ndgbmpReaderClassName = "com.ndg.graphics.ndgbmp.NdgBmpReader";
 
 	/** SPI for encoding .ndgbmp streams */
-	private static final String [] writerSpiNames = { "com.ndg.graphics.ndgbmp.NdgBmpWriterSpi" };
+	private static final String [] ndgbmpWriterSpiNames = { "com.ndg.graphics.ndgbmp.NdgBmpWriterSpi" };
 
 	/** Accepts ImageInputStream only */
 	@SuppressWarnings ("rawtypes")
-	private static final Class [] inputTypes = {ImageInputStream.class};
+	private static final Class [] ndgbmpInputTypes = {ImageInputStream.class};
 
 	/** Descriptive list of the format(s) supported by this reader */
-	private static final String [] names = { "NDG BMP", "ndg bmp" };
+	private static final String [] ndgbmpNames = { "NDG BMP", "ndg bmp" };
 
 	/** List of the file extension(s) supported by this reader */
-	private static final String [] suffixes = { "NDGBMP", "ndgbmp" };
+	private static final String [] ndgbmpSuffixes = { "NDGBMP", "ndgbmp" };
 
 	/** List of the MIME type(s) supported by this reader */
-	private static final String [] MIMETypes = { "image/ndgbmp" };
+	private static final String [] ndgbmpMIMETypes = { "image/ndgbmp" };
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final boolean supportsStandardStreamMetadataFormat = false;
+	private static final boolean ndgbmpSupportsStandardStreamMetadataFormat = false;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String nativeStreamMetadataFormatName = null;
+	private static final String ndgbmpNativeStreamMetadataFormatName = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String nativeStreamMetadataFormatClassName = null;
+	private static final String ndgbmpNativeStreamMetadataFormatClassName = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String [] extraStreamMetadataFormatNames = null;
+	private static final String [] ndgbmpExtraStreamMetadataFormatNames = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String [] extraStreamMetadataFormatClassNames = null;
+	private static final String [] ndgbmpExtraStreamMetadataFormatClassNames = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final boolean supportsStandardImageMetadataFormat = false;
+	private static final boolean ndgbmpSupportsStandardImageMetadataFormat = false;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String nativeImageMetadataFormatName = null;
+	private static final String ndgbmpNativeImageMetadataFormatName = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String nativeImageMetadataFormatClassName = null;
+	private static final String ndgbmpNativeImageMetadataFormatClassName = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String [] extraImageMetadataFormatNames = null;
+	private static final String [] ndgbmpExtraImageMetadataFormatNames = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String [] extraImageMetadataFormatClassNames = null;
+	private static final String [] ndgbmpExtraImageMetadataFormatClassNames = null;
 
 	/**
 	 * Fills in all the details about the .ndgbmp format
 	 */
 	public NdgBmpReaderSpi ()
 	{
-		super (vendorName, version, names, suffixes, MIMETypes, readerClassName, inputTypes, writerSpiNames,
-			supportsStandardStreamMetadataFormat, nativeStreamMetadataFormatName, nativeStreamMetadataFormatClassName,
-			extraStreamMetadataFormatNames, extraStreamMetadataFormatClassNames, supportsStandardImageMetadataFormat,
-			nativeImageMetadataFormatName, nativeImageMetadataFormatClassName, extraImageMetadataFormatNames, extraImageMetadataFormatClassNames);
+		super (ndgbmpVendorName, ndgbmpVersion, ndgbmpNames, ndgbmpSuffixes, ndgbmpMIMETypes, ndgbmpReaderClassName, ndgbmpInputTypes, ndgbmpWriterSpiNames,
+			ndgbmpSupportsStandardStreamMetadataFormat, ndgbmpNativeStreamMetadataFormatName, ndgbmpNativeStreamMetadataFormatClassName,
+			ndgbmpExtraStreamMetadataFormatNames, ndgbmpExtraStreamMetadataFormatClassNames, ndgbmpSupportsStandardImageMetadataFormat,
+			ndgbmpNativeImageMetadataFormatName, ndgbmpNativeImageMetadataFormatClassName, ndgbmpExtraImageMetadataFormatNames, ndgbmpExtraImageMetadataFormatClassNames);
 	}
 
 	/**

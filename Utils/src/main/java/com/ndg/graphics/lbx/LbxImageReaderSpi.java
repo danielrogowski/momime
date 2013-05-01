@@ -16,101 +16,101 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 	/**
 	 * Name of the vendor of the .lbx format
 	 */
-	private static final String vendorName = "Nigel Gay";
+	private static final String lbxVendorName = "Nigel Gay";
 
 	/**
 	 * Version of the .lbx file structure
 	 */
-	private static final String version = "1.0";
+	private static final String lbxVersion = "1.0";
 
 	/**
 	 * Class responsible for decoding .lbx streams
 	 */
-	private static final String readerClassName = "com.ndg.graphics.lbx.LbxReader";
+	private static final String lbxReaderClassName = "com.ndg.graphics.lbx.LbxReader";
 
 	/**
 	 * Encoding .lbx streams currently not supported in Java
 	 */
-	private static final String [] writerSpiNames = null;
+	private static final String [] lbxWriterSpiNames = null;
 
 	/** Accepts ImageInputStream only */
 	@SuppressWarnings ("rawtypes")
-	private static final Class [] inputTypes = {ImageInputStream.class};
+	private static final Class [] lbxInputTypes = {ImageInputStream.class};
 
 	/**
 	 * Descriptive list of the format(s) supported by this reader
 	 */
-	private static final String [] names = { "LBX" };
+	private static final String [] lbxNames = { "LBX" };
 
 	/**
 	 * List of the file extension(s) supported by this reader
 	 */
-	private static final String [] suffixes = { "lbx" };
+	private static final String [] lbxSuffixes = { "lbx" };
 
 	/**
 	 * List of the MIME type(s) supported by this reader
 	 */
-	private static final String [] MIMETypes = { "image/lbx" };
+	private static final String [] lbxMIMETypes = { "image/lbx" };
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final boolean supportsStandardStreamMetadataFormat = false;
+	private static final boolean lbxSupportsStandardStreamMetadataFormat = false;
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final String nativeStreamMetadataFormatName = null;
+	private static final String lbxNativeStreamMetadataFormatName = null;
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final String nativeStreamMetadataFormatClassName = null;
+	private static final String lbxNativeStreamMetadataFormatClassName = null;
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final String [] extraStreamMetadataFormatNames = null;
+	private static final String [] lbxExtraStreamMetadataFormatNames = null;
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final String [] extraStreamMetadataFormatClassNames = null;
+	private static final String [] lbxExtraStreamMetadataFormatClassNames = null;
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final boolean supportsStandardImageMetadataFormat = false;
+	private static final boolean lbxSupportsStandardImageMetadataFormat = false;
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final String nativeImageMetadataFormatName = null;
+	private static final String lbxNativeImageMetadataFormatName = null;
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final String nativeImageMetadataFormatClassName = null;
+	private static final String lbxNativeImageMetadataFormatClassName = null;
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final String [] extraImageMetadataFormatNames = null;
+	private static final String [] lbxExtraImageMetadataFormatNames = null;
 
 	/**
 	 * .lbx reader currently doesn't support any metadata
 	 */
-	private static final String [] extraImageMetadataFormatClassNames = null;
+	private static final String [] lbxExtraImageMetadataFormatClassNames = null;
 
 	/**
 	 * Fills in all the details about the .lbx format
 	 */
 	public LbxImageReaderSpi ()
 	{
-		super (vendorName, version, names, suffixes, MIMETypes, readerClassName, inputTypes, writerSpiNames,
-			supportsStandardStreamMetadataFormat, nativeStreamMetadataFormatName, nativeStreamMetadataFormatClassName,
-			extraStreamMetadataFormatNames, extraStreamMetadataFormatClassNames, supportsStandardImageMetadataFormat,
-			nativeImageMetadataFormatName, nativeImageMetadataFormatClassName, extraImageMetadataFormatNames, extraImageMetadataFormatClassNames);
+		super (lbxVendorName, lbxVersion, lbxNames, lbxSuffixes, lbxMIMETypes, lbxReaderClassName, lbxInputTypes, lbxWriterSpiNames,
+			lbxSupportsStandardStreamMetadataFormat, lbxNativeStreamMetadataFormatName, lbxNativeStreamMetadataFormatClassName,
+			lbxExtraStreamMetadataFormatNames, lbxExtraStreamMetadataFormatClassNames, lbxSupportsStandardImageMetadataFormat,
+			lbxNativeImageMetadataFormatName, lbxNativeImageMetadataFormatClassName, lbxExtraImageMetadataFormatNames, lbxExtraImageMetadataFormatClassNames);
 	}
 
 	/**

@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBException;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
+import momime.common.messages.MemoryGridCellUtils;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
@@ -63,6 +64,7 @@ public final class TestMomFogOfWarCalculations
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
 
 		final MomFogOfWarCalculations calc = new MomFogOfWarCalculations ();
+		calc.setMemoryGridCellUtils (new MemoryGridCellUtils ());
 		
 		// Test two locations, one with a tower and one without
 		final OverlandMapTerrainData towerData = new OverlandMapTerrainData ();

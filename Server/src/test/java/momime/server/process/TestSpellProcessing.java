@@ -9,10 +9,16 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
+import momime.common.calculations.MomSpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.MemoryMaintainedSpellUtils;
+import momime.common.messages.PlayerPickUtils;
+import momime.common.messages.ResourceValueUtils;
+import momime.common.messages.SpellUtils;
+import momime.common.messages.UnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -37,10 +43,12 @@ import momime.server.DummyServerToClientConnection;
 import momime.server.IMomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.IMomServerResourceCalculations;
+import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.utils.UnitServerUtils;
 
 import org.junit.Test;
 
@@ -52,9 +60,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestSpellProcessing
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-	
 	/**
 	 * Tests the castOverlandNow spell casting a spell that we haven't researched yet
 	 * @throws Exception If there is a problem
@@ -92,9 +97,10 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setSpellUtils (new SpellUtils ());
 
 		// Run test
-		proc.castOverlandNow (null, player3, spell, players, db, sd, debugLogger);
+		proc.castOverlandNow (null, player3, spell, players, db, sd);
 	}
 
 	/**
@@ -158,15 +164,17 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setSpellUtils (new SpellUtils ());
+		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd, debugLogger);
+		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// Mocked method handles adding the spell to the true map, player's memories and sending the network msgs, so don't need to worry about any of that
-		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd, debugLogger);
+		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd);
 		
 		// CAE should get added also
-		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", pd3.getPlayerID (), null, players, db, sd, debugLogger);
+		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", pd3.getPlayerID (), null, players, db, sd);
 		
 		// Human players should both have NTMs about it
 		assertEquals (1, trans1.getNewTurnMessage ().size ());
@@ -247,15 +255,17 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setSpellUtils (new SpellUtils ());
+		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd, debugLogger);
+		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// So this shouldn't happen
-		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd, debugLogger);
+		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd);
 		
 		// CAE shouldn't be added either
-		verify (midTurn, times (0)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", pd3.getPlayerID (), null, players, db, sd, debugLogger);
+		verify (midTurn, times (0)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", pd3.getPlayerID (), null, players, db, sd);
 		
 		// Human players won't get any NTMs about it
 		assertEquals (0, trans1.getNewTurnMessage ().size ());
@@ -325,15 +335,22 @@ public final class TestSpellProcessing
 		// Set up test object
 		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
 		
+		final UnitServerUtils unitServerUtils = new UnitServerUtils ();
+		unitServerUtils.setUnitUtils (new UnitUtils ());
+		unitServerUtils.setServerUnitCalculations (new MomServerUnitCalculations ());
+		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setSpellUtils (new SpellUtils ());
+		proc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		proc.setUnitServerUtils (unitServerUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd, debugLogger);
+		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// Prove that unit got added
 		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN156", summoningCircleLocation, summoningCircleLocation, null, player3,
-			UnitStatusID.ALIVE, players, sd, db, debugLogger);
+			UnitStatusID.ALIVE, players, sd, db);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
@@ -432,15 +449,22 @@ public final class TestSpellProcessing
 		
 		// Set up test object
 		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+
+		final UnitServerUtils unitServerUtils = new UnitServerUtils ();
+		unitServerUtils.setUnitUtils (new UnitUtils ());
+		unitServerUtils.setServerUnitCalculations (new MomServerUnitCalculations ());
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setSpellUtils (new SpellUtils ());
+		proc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		proc.setUnitServerUtils (unitServerUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd, debugLogger);
+		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// Prove that hero got updated to alive
-		verify (midTurn, times (1)).updateUnitStatusToAliveOnServerAndClients (hero, summoningCircleLocation, player3, players, gsk.getTrueMap (), sd, db, debugLogger);
+		verify (midTurn, times (1)).updateUnitStatusToAliveOnServerAndClients (hero, summoningCircleLocation, player3, players, gsk.getTrueMap (), sd, db);
 		
 		// Casting player gets the "You have summoned some hero!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
@@ -517,13 +541,15 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setSpellUtils (new SpellUtils ());
+		proc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd, debugLogger);
+		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// Prove that unit wasn't added
 		verify (midTurn, times (0)).addUnitOnServerAndClients (gsk, "UN156", summoningCircleLocation, summoningCircleLocation, null, player3,
-			UnitStatusID.ALIVE, players, sd, db, debugLogger);
+			UnitStatusID.ALIVE, players, sd, db);
 		
 		// Casting player doesn't gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (0, trans3.getNewTurnMessage ().size ());
@@ -572,9 +598,10 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setSpellUtils (new SpellUtils ());
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, players, db, sd, debugLogger);
+		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// Spell gets added server side, but with no target
 		assertEquals (1, trueMap.getMaintainedSpell ().size ());
@@ -622,9 +649,10 @@ public final class TestSpellProcessing
 		
 		// Set up test object
 		final SpellProcessing proc = new SpellProcessing ();
+		proc.setSpellUtils (new SpellUtils ());
 
 		// Run test
-		proc.requestCastSpell (player3, "SP123", null, null, null, mom, debugLogger);
+		proc.requestCastSpell (player3, "SP123", null, null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
@@ -664,9 +692,10 @@ public final class TestSpellProcessing
 		
 		// Set up test object
 		final SpellProcessing proc = new SpellProcessing ();
+		proc.setSpellUtils (new SpellUtils ());
 
 		// Run test
-		proc.requestCastSpell (player3, "SP123", new OverlandMapCoordinates (), null, null, mom, debugLogger);
+		proc.requestCastSpell (player3, "SP123", new OverlandMapCoordinates (), null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
@@ -708,9 +737,10 @@ public final class TestSpellProcessing
 		
 		// Set up test object
 		final SpellProcessing proc = new SpellProcessing ();
+		proc.setSpellUtils (new SpellUtils ());
 
 		// Run test
-		proc.requestCastSpell (player3, "SP123", null, null, 1, mom, debugLogger);
+		proc.requestCastSpell (player3, "SP123", null, null, 1, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
@@ -774,12 +804,21 @@ public final class TestSpellProcessing
 		final IPlayerMessageProcessing msgProc = mock (IPlayerMessageProcessing.class);
 		final IMomServerResourceCalculations calc = mock (IMomServerResourceCalculations.class);
 		
+		final SpellUtils spellUtils = new SpellUtils ();
+		spellUtils.setPlayerPickUtils (new PlayerPickUtils ());
+		
+		final MomSpellCalculations spellCalculations = new MomSpellCalculations ();
+		spellUtils.setSpellCalculations (spellCalculations);
+		spellCalculations.setSpellUtils (spellUtils);
+		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setPlayerMessageProcessing (msgProc);
 		proc.setServerResourceCalculations (calc);
+		proc.setSpellUtils (spellUtils);
+		proc.setResourceValueUtils (new ResourceValueUtils ());
 
 		// Run test
-		proc.requestCastSpell (player3, "SP123", null, null, null, mom, debugLogger);
+		proc.requestCastSpell (player3, "SP123", null, null, null, mom);
 		
 		// Spell gets added server side, but with no target
 		assertEquals (1, trueMap.getMaintainedSpell ().size ());
@@ -795,14 +834,14 @@ public final class TestSpellProcessing
 		assertEquals ("SP123", trans3.getNewTurnMessage ().get (0).getSpellID ());
 		
 		// Verify target NTM gets sent
-		verify (msgProc).sendNewTurnMessages (null, players, null, debugLogger);
+		verify (msgProc).sendNewTurnMessages (null, players, null);
 		
 		// Should be charged relevant amount of mana
 		assertEquals (20, trans3.getOverlandCastingSkillRemainingThisTurn ());
 		assertEquals (15, mana.getAmountStored ());
 		
 		// Recalc GPV to take into account higher spell maintaince (maybe - it doesn't know it isn't a maintained spell)
-		verify (calc).recalculateGlobalProductionValues (pd3.getPlayerID (), false, mom, debugLogger);
+		verify (calc).recalculateGlobalProductionValues (pd3.getPlayerID (), false, mom);
 		
 		// Nothing gets queued
 		assertEquals (0, priv3.getQueuedSpellID ().size ());
@@ -864,12 +903,21 @@ public final class TestSpellProcessing
 		final IPlayerMessageProcessing msgProc = mock (IPlayerMessageProcessing.class);
 		final IMomServerResourceCalculations calc = mock (IMomServerResourceCalculations.class);
 		
+		final SpellUtils spellUtils = new SpellUtils ();
+		spellUtils.setPlayerPickUtils (new PlayerPickUtils ());
+		
+		final MomSpellCalculations spellCalculations = new MomSpellCalculations ();
+		spellUtils.setSpellCalculations (spellCalculations);
+		spellCalculations.setSpellUtils (spellUtils);
+		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setPlayerMessageProcessing (msgProc);
 		proc.setServerResourceCalculations (calc);
+		proc.setSpellUtils (spellUtils);
+		proc.setResourceValueUtils (new ResourceValueUtils ());
 
 		// Run test
-		proc.requestCastSpell (player3, "SP123", null, null, null, mom, debugLogger);
+		proc.requestCastSpell (player3, "SP123", null, null, null, mom);
 		
 		// No spell gets added server side
 		assertEquals (0, trueMap.getMaintainedSpell ().size ());

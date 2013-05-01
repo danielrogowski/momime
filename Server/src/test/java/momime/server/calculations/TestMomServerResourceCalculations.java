@@ -6,17 +6,21 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.RoundingDirectionID;
+import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.PlayerPickUtils;
+import momime.common.messages.ResourceValueUtils;
+import momime.common.messages.SpellUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
@@ -44,6 +48,7 @@ import momime.server.process.resourceconsumer.IMomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
+import momime.server.utils.UnitServerUtils;
 
 import org.junit.Test;
 
@@ -57,9 +62,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestMomServerResourceCalculations
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the recalculateAmountsPerTurn method
 	 * @throws IOException If we are unable to locate the server XML file
@@ -92,14 +94,27 @@ public final class TestMomServerResourceCalculations
 		players.add (player);
 		
 		// Set up test object
+		final UnitUtils unitUtils = new UnitUtils ();
+		final PlayerPickUtils playerPickUtils = new PlayerPickUtils ();
+		unitUtils.setPlayerPickUtils (playerPickUtils);
+		
+		final MomCityCalculations cityCalculations = new MomCityCalculations ();
+		cityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		cityCalculations.setPlayerPickUtils (playerPickUtils);
+		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
+		calc.setResourceValueUtils (new ResourceValueUtils ());
+		calc.setUnitServerUtils (new UnitServerUtils ());
+		calc.setCityCalculations (cityCalculations);
+		calc.setUnitUtils (unitUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
 
 		// We have some shadow demons (7 mana upkeep)
-		final MemoryUnit shadowDemons = UnitUtils.createMemoryUnit ("UN172", 1, null, -1, true, db, debugLogger);
+		final MemoryUnit shadowDemons = unitUtils.createMemoryUnit ("UN172", 1, null, -1, true, db);
 		shadowDemons.setOwningPlayerID (2);
 		trueMap.getUnit ().add (shadowDemons);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-7, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -111,27 +126,27 @@ public final class TestMomServerResourceCalculations
 		crusade.setCastingPlayerID (2);
 		trueMap.getMaintainedSpell ().add (crusade);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-17, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 
 		// Wizard has Channeler, halfing spell maintainence (half of 17 is 8.5, proves that maintainence is rounded up)
-		PlayerPickUtils.updatePickQuantity (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER, 1, debugLogger);
+		playerPickUtils.updatePickQuantity (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER, 1);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 
 		// Add some warlocks, so we get some other production type IDs
-		final MemoryUnit warlocks = UnitUtils.createMemoryUnit ("UN065", 2, 0, 0, true, db, debugLogger);
+		final MemoryUnit warlocks = unitUtils.createMemoryUnit ("UN065", 2, 0, 0, true, db);
 		warlocks.setOwningPlayerID (2);
 		trueMap.getUnit ().add (warlocks);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (3, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -147,7 +162,7 @@ public final class TestMomServerResourceCalculations
 		priv.getResourceValue ().get (1).setAmountPerTurn (10);
 		priv.getResourceValue ().get (1).setAmountStored (10);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (3, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -173,7 +188,7 @@ public final class TestMomServerResourceCalculations
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		// Population will eat 5 rations, but produce 2x2 = 4 rations, and generate 3 x 1.5 = 4.5 gold from taxes and 2x.5 + 1x2 production
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (5, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -203,7 +218,7 @@ public final class TestMomServerResourceCalculations
 
 		trueMap.getBuilding ().add (granary);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (5, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -233,7 +248,7 @@ public final class TestMomServerResourceCalculations
 
 		trueMap.getBuilding ().add (temple);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (6, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -262,7 +277,7 @@ public final class TestMomServerResourceCalculations
 			trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x).setTerrainData (terrainData);
 		}
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db, debugLogger);
+		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (6, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -323,7 +338,7 @@ public final class TestMomServerResourceCalculations
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
 		
 		// Run test
-		calc.sendGlobalProductionValues (player, 17, debugLogger);
+		calc.sendGlobalProductionValues (player, 17);
 		assertEquals (1, msgs.getMessages ().size ());
 		
 		final UpdateGlobalEconomyMessage msg = (UpdateGlobalEconomyMessage) msgs.getMessages ().get (0);
@@ -460,11 +475,16 @@ public final class TestMomServerResourceCalculations
 		trueMap.getMaintainedSpell ().add (natureAwarenessOtherPlayer);
 
 		// Set up test object
+		final UnitUtils unitUtils = new UnitUtils ();
+		unitUtils.setPlayerPickUtils (new PlayerPickUtils ());
+		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		calc.setUnitUtils (unitUtils);
 		
 		// Run test
 		final List<IMomResourceConsumer> consumptions = calc.listConsumersOfProductionType
-			(player, players, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, trueMap, db, debugLogger);
+			(player, players, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, trueMap, db);
 
 		assertEquals (3, consumptions.size ());
 
@@ -532,9 +552,10 @@ public final class TestMomServerResourceCalculations
 
 		// Set up test object
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
+		calc.setResourceValueUtils (new ResourceValueUtils ());
 		
 		// Call method
-		calc.accumulateGlobalProductionValues (resourceList, db, debugLogger);
+		calc.accumulateGlobalProductionValues (resourceList, db);
 
 		// Check results
 		assertEquals (4, resourceList.size ());
@@ -555,7 +576,7 @@ public final class TestMomServerResourceCalculations
 		for (final MomResourceValue production : resourceList)
 			production.setAmountPerTurn (-production.getAmountPerTurn ());
 
-		calc.accumulateGlobalProductionValues (resourceList, db, debugLogger);
+		calc.accumulateGlobalProductionValues (resourceList, db);
 
 		assertEquals (4, resourceList.size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, resourceList.get (0).getProductionTypeID ());
@@ -599,7 +620,7 @@ public final class TestMomServerResourceCalculations
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
 		
 		// Call method
-		calc.accumulateGlobalProductionValues (resourceList, db, debugLogger);
+		calc.accumulateGlobalProductionValues (resourceList, db);
 	}
 
 	/**
@@ -629,7 +650,7 @@ public final class TestMomServerResourceCalculations
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
 		
 		// Call method
-		calc.accumulateGlobalProductionValues (resourceList, db, debugLogger);
+		calc.accumulateGlobalProductionValues (resourceList, db);
 	}
 	
 	/**
@@ -672,10 +693,17 @@ public final class TestMomServerResourceCalculations
 		priv.getResourceValue ().add (researchAmount);
 		
 		// Set up test object
+		final SpellUtils spellUtils = new SpellUtils ();
+		final MomServerSpellCalculations serverSpellCalculations = new MomServerSpellCalculations ();
+		serverSpellCalculations.setSpellUtils (spellUtils);
+		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
+		calc.setResourceValueUtils (new ResourceValueUtils ());
+		calc.setSpellUtils (spellUtils);
+		calc.setServerSpellCalculations (serverSpellCalculations);
 		
 		// No spell being researched
-		calc.progressResearch (player, db, debugLogger);
+		calc.progressResearch (player, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -694,7 +722,7 @@ public final class TestMomServerResourceCalculations
 		// Spend 40 research - 60 left
 		priv.setSpellIDBeingResearched ("SP002");
 
-		calc.progressResearch (player, db, debugLogger);
+		calc.progressResearch (player, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -716,7 +744,7 @@ public final class TestMomServerResourceCalculations
 
 		// Spend 40 research - 20 left
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, db, debugLogger);
+		calc.progressResearch (player, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -738,7 +766,7 @@ public final class TestMomServerResourceCalculations
 		
 		// Finish research
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, db, debugLogger);
+		calc.progressResearch (player, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -786,10 +814,14 @@ public final class TestMomServerResourceCalculations
 		priv.getResourceValue ().add (skillImprovement);
 		
 		// Set up test object
+		final ResourceValueUtils resourceValueUtils = new ResourceValueUtils ();
+		resourceValueUtils.setSkillCalculations (new MomSkillCalculations ());
+		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
+		calc.setResourceValueUtils (resourceValueUtils);
 		
 		// Run test
-		calc.resetCastingSkillRemainingThisTurnToFull (player, debugLogger);
+		calc.resetCastingSkillRemainingThisTurnToFull (player);
 		assertEquals (3, trans.getOverlandCastingSkillRemainingThisTurn ());
 	}
 }

@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.SpellUtils;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.ServerTestData;
@@ -25,9 +25,6 @@ import org.junit.Test;
  */
 public final class TestSpellAI
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the chooseSpellToResearchAI method with a valid spell list
 	 * @throws IOException If we are unable to locate the server XML file
@@ -38,13 +35,14 @@ public final class TestSpellAI
 	public final void testChooseSpellToResearchAI_Valid () throws IOException, JAXBException, MomException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final SpellAI ai = new SpellAI ();
 
 		// List the 2nd 10 earth spells, two of these have research order 1, so the routine should pick either of them
 		final List<Spell> spells = new ArrayList<Spell> ();
 		for (int n = 10; n < 20; n++)
 			spells.add (db.getSpell ().get (n));
 
-		final Spell spell = SpellAI.chooseSpellToResearchAI (spells, "AI Player", debugLogger);
+		final Spell spell = ai.chooseSpellToResearchAI (spells, "AI Player");
 		assertTrue ("Chosen spell was " + spell.getSpellID (), (spell.getSpellID ().equals ("SP013")) || (spell.getSpellID ().equals ("SP020")));
 	}
 
@@ -55,7 +53,8 @@ public final class TestSpellAI
 	@Test(expected=MomException.class)
 	public final void testChooseSpellToResearchAI_EmptyList () throws MomException
 	{
-		SpellAI.chooseSpellToResearchAI (new ArrayList<Spell> (), "AI Player", debugLogger);
+		final SpellAI ai = new SpellAI ();
+		ai.chooseSpellToResearchAI (new ArrayList<Spell> (), "AI Player");
 	}
 
 	/**
@@ -69,6 +68,10 @@ public final class TestSpellAI
 	public final void testChooseFreeSpellAI () throws IOException, JAXBException, MomException, RecordNotFoundException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		
+		// Set up test object
+		final SpellAI ai = new SpellAI ();
+		ai.setSpellUtils (new SpellUtils ());
 
 		// Player knows no spells yet
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
@@ -81,11 +84,11 @@ public final class TestSpellAI
 		}
 
 		// Same magic realm/spell rank at the 10 from the previous test
-		final SpellResearchStatus spell = SpellAI.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db, debugLogger);
+		final SpellResearchStatus spell = ai.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db);
 		assertTrue ("Chosen spell was " + spell.getSpellID (), (spell.getSpellID ().equals ("SP013")) || (spell.getSpellID ().equals ("SP020")));
 
 		// If we give the player one of the spells, should always pick the other one
 		spells.get (12).setStatus (SpellResearchStatusID.AVAILABLE);
-		assertEquals ("SP020", SpellAI.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db, debugLogger).getSpellID ());
+		assertEquals ("SP020", ai.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db).getSpellID ());
 	}
 }

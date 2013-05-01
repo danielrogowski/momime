@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
@@ -27,9 +26,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestSpellServerUtils
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the validateResearch method
 	 * @throws IOException If we are unable to locate the server XML file
@@ -59,48 +55,53 @@ public final class TestSpellServerUtils
 
 			priv.getSpellResearchStatus ().add (thisStatus);
 		}
+		
+		// Set up object to test
+		final SpellServerUtils utils = new SpellServerUtils ();
+		final SpellUtils spellUtils = new SpellUtils ();
+		utils.setSpellUtils (spellUtils);
 
 		// Can't research anything if its unavailable
 		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNotNull (SpellServerUtils.validateResearch (player, "SP100", switchResearch, db, debugLogger));
+			assertNotNull (utils.validateResearch (player, "SP100", switchResearch, db));
 
 		// Other statuses don't help either
-		final SpellResearchStatus spell100 = SpellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP100", debugLogger);
+		final SpellResearchStatus spell100 = spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP100");
 		spell100.setStatus (SpellResearchStatusID.NOT_IN_SPELL_BOOK);
 		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNotNull (SpellServerUtils.validateResearch (player, "SP100", switchResearch, db, debugLogger));
+			assertNotNull (utils.validateResearch (player, "SP100", switchResearch, db));
 
 		spell100.setStatus (SpellResearchStatusID.AVAILABLE);
 		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNotNull (SpellServerUtils.validateResearch (player, "SP100", switchResearch, db, debugLogger));
+			assertNotNull (utils.validateResearch (player, "SP100", switchResearch, db));
 
 		spell100.setStatus (SpellResearchStatusID.RESEARCHABLE);
 		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNotNull (SpellServerUtils.validateResearch (player, "SP100", switchResearch, db, debugLogger));
+			assertNotNull (utils.validateResearch (player, "SP100", switchResearch, db));
 
 		// Now can research it regardless of setting because we have no current research
 		spell100.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
 		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNull (SpellServerUtils.validateResearch (player, "SP100", switchResearch, db, debugLogger));
+			assertNull (utils.validateResearch (player, "SP100", switchResearch, db));
 
 		// Also always fine if we're just setting research to what it already is
 		priv.setSpellIDBeingResearched ("SP100");
 		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNull (SpellServerUtils.validateResearch (player, "SP100", switchResearch, db, debugLogger));
+			assertNull (utils.validateResearch (player, "SP100", switchResearch, db));
 
 		// Now set it to something different, disallowed then won't let us switch research
 		priv.setSpellIDBeingResearched ("SP101");
-		assertNull (SpellServerUtils.validateResearch (player, "SP100", SwitchResearch.FREE, db, debugLogger));
-		assertNull (SpellServerUtils.validateResearch (player, "SP100", SwitchResearch.LOSE_CURRENT_RESEARCH, db, debugLogger));
-		assertNotNull (SpellServerUtils.validateResearch (player, "SP100", SwitchResearch.DISALLOWED, db, debugLogger));
-		assertNull (SpellServerUtils.validateResearch (player, "SP100", SwitchResearch.ONLY_IF_NOT_STARTED, db, debugLogger));
+		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.FREE, db));
+		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.LOSE_CURRENT_RESEARCH, db));
+		assertNotNull (utils.validateResearch (player, "SP100", SwitchResearch.DISALLOWED, db));
+		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.ONLY_IF_NOT_STARTED, db));
 
 		// If we spent 1 BP on the spell previously being researched, that stops us swapping research if that is the chosen setting
-		final SpellResearchStatus spell101 = SpellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP101", debugLogger);
+		final SpellResearchStatus spell101 = spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP101");
 		spell101.setRemainingResearchCost (spell101.getRemainingResearchCost () - 1);
-		assertNull (SpellServerUtils.validateResearch (player, "SP100", SwitchResearch.FREE, db, debugLogger));
-		assertNull (SpellServerUtils.validateResearch (player, "SP100", SwitchResearch.LOSE_CURRENT_RESEARCH, db, debugLogger));
-		assertNotNull (SpellServerUtils.validateResearch (player, "SP100", SwitchResearch.DISALLOWED, db, debugLogger));
-		assertNotNull (SpellServerUtils.validateResearch (player, "SP100", SwitchResearch.ONLY_IF_NOT_STARTED, db, debugLogger));
+		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.FREE, db));
+		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.LOSE_CURRENT_RESEARCH, db));
+		assertNotNull (utils.validateResearch (player, "SP100", SwitchResearch.DISALLOWED, db));
+		assertNotNull (utils.validateResearch (player, "SP100", SwitchResearch.ONLY_IF_NOT_STARTED, db));
 	}
 }

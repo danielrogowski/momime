@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
@@ -43,9 +42,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestFogOfWarMidTurnChanges
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the updatePlayerMemoryOfTerrain method
 	 * @throws Exception If there is a problem
@@ -185,7 +181,7 @@ public final class TestFogOfWarMidTurnChanges
 		calc.setFogOfWarDuplication (dup);
 
 		// Run test
-		calc.updatePlayerMemoryOfTerrain (trueTerrain, players, coords, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, debugLogger);
+		calc.updatePlayerMemoryOfTerrain (trueTerrain, players, coords, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
 		
 		// 3rd player is only one who should actually receive a message
 		// (The other players don't even have dummy connections created for them, so would fall over with null pointer exception
@@ -345,7 +341,7 @@ public final class TestFogOfWarMidTurnChanges
 		calc.setFogOfWarDuplication (dup);
 
 		// Run test
-		calc.updatePlayerMemoryOfCity (trueTerrain, players, coords, sd.getFogOfWarSetting (), debugLogger);
+		calc.updatePlayerMemoryOfCity (trueTerrain, players, coords, sd.getFogOfWarSetting ());
 		
 		// 3rd player is only one who should actually receive a message
 		// (The other players don't even have dummy connections created for them, so would fall over with null pointer exception

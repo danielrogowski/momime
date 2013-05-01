@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
@@ -18,6 +17,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
 import momime.common.database.v0_9_4.WizardPick;
+import momime.common.messages.PlayerPickUtils;
+import momime.common.messages.SpellUtils;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
@@ -27,6 +28,7 @@ import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.ServerTestData;
+import momime.server.ai.SpellAI;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Wizard;
@@ -41,9 +43,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestPlayerPickServerUtils
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the getTotalInitialSkill method
 	 * @throws IOException If we are unable to locate the server XML file
@@ -55,6 +54,9 @@ public final class TestPlayerPickServerUtils
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		
 		// Add 1x Book 1, 2x Book 2, 3x Book 3, 4x Book 4 and 5x Book 5 = 15 books x2 skill per book = 30
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 		for (int n = 1; n <= 5; n++)
@@ -65,7 +67,7 @@ public final class TestPlayerPickServerUtils
 			picks.add (pick);
 		}
 
-		assertEquals (30, PlayerPickServerUtils.getTotalInitialSkill (picks, db, debugLogger));
+		assertEquals (30, utils.getTotalInitialSkill (picks, db));
 
 		// Archmage adds +10
 		final PlayerPick archmage = new PlayerPick ();
@@ -73,7 +75,7 @@ public final class TestPlayerPickServerUtils
 		archmage.setQuantity (1);
 		picks.add (archmage);
 
-		assertEquals (40, PlayerPickServerUtils.getTotalInitialSkill (picks, db, debugLogger));
+		assertEquals (40, utils.getTotalInitialSkill (picks, db));
 
 		// Some other irrelevant retort adds nothing
 		final PlayerPick somethingElse = new PlayerPick ();
@@ -81,7 +83,7 @@ public final class TestPlayerPickServerUtils
 		somethingElse.setQuantity (1);
 		picks.add (somethingElse);
 
-		assertEquals (40, PlayerPickServerUtils.getTotalInitialSkill (picks, db, debugLogger));
+		assertEquals (40, utils.getTotalInitialSkill (picks, db));
 	}
 
 	/**
@@ -102,7 +104,11 @@ public final class TestPlayerPickServerUtils
 			players.add (new PlayerServerDetails (pd, ppk, null, null, null));
 		}
 
-		final PlayerServerDetails player = PlayerPickServerUtils.findPlayerUsingWizard (players, "WZ04", debugLogger);
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		
+		// Run test
+		final PlayerServerDetails player = utils.findPlayerUsingWizard (players, "WZ04");
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		assertEquals ("WZ04", ppk.getWizardID ());
 	}
@@ -122,7 +128,11 @@ public final class TestPlayerPickServerUtils
 			players.add (new PlayerServerDetails (null, ppk, null, null, null));
 		}
 
-		assertNull (PlayerPickServerUtils.findPlayerUsingWizard (players, "WZ10", debugLogger));
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		
+		// Run test
+		assertNull (utils.findPlayerUsingWizard (players, "WZ10"));
 	}
 
 	/**
@@ -143,7 +153,11 @@ public final class TestPlayerPickServerUtils
 			players.add (new PlayerServerDetails (pd, ppk, null, null, null));
 		}
 
-		final PlayerServerDetails player = PlayerPickServerUtils.findPlayerUsingStandardPhoto (players, "WZ04", debugLogger);
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		
+		// Run test
+		final PlayerServerDetails player = utils.findPlayerUsingStandardPhoto (players, "WZ04");
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		assertEquals ("WZ04", ppk.getStandardPhotoID ());
 	}
@@ -163,7 +177,11 @@ public final class TestPlayerPickServerUtils
 			players.add (new PlayerServerDetails (null, ppk, null, null, null));
 		}
 
-		assertNull (PlayerPickServerUtils.findPlayerUsingStandardPhoto (players, "WZ10", debugLogger));
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		
+		// Run test
+		assertNull (utils.findPlayerUsingStandardPhoto (players, "WZ10"));
 	}
 
 	/**
@@ -194,20 +212,23 @@ public final class TestPlayerPickServerUtils
 		// Create requested picks list
 		final List<WizardPick> picks = new ArrayList<WizardPick> ();
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		
 		// This is invalid because the player didn't choose a wizard yet
-		assertNotNull (PlayerPickServerUtils.validateCustomPicks (player, picks, sd, db, debugLogger));
+		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
 
 		// Can't choose a pre-defined wizard either
 		ppk.setWizardID ("WZ01");
-		assertNotNull (PlayerPickServerUtils.validateCustomPicks (player, picks, sd, db, debugLogger));
+		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
 
 		// This is valid, because they're requesting 0 picks and the session description currently says 0 picks
 		ppk.setWizardID ("");
-		assertNull (PlayerPickServerUtils.validateCustomPicks (player, picks, sd, db, debugLogger));
+		assertNull (utils.validateCustomPicks (player, picks, sd, db));
 
 		// Invalid because we didn't choose enough picks
 		dl.setHumanSpellPicks (11);
-		assertNotNull (PlayerPickServerUtils.validateCustomPicks (player, picks, sd, db, debugLogger));
+		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
 
 		// Still not enough picks
 		final WizardPick lifeBook = new WizardPick ();
@@ -215,7 +236,7 @@ public final class TestPlayerPickServerUtils
 		lifeBook.setQuantity (10);
 		picks.add (lifeBook);
 
-		assertNotNull (PlayerPickServerUtils.validateCustomPicks (player, picks, sd, db, debugLogger));
+		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
 
 		// Too many picks
 		final WizardPick warlord = new WizardPick ();
@@ -223,15 +244,15 @@ public final class TestPlayerPickServerUtils
 		warlord.setQuantity (1);
 		picks.add (warlord);
 
-		assertNotNull (PlayerPickServerUtils.validateCustomPicks (player, picks, sd, db, debugLogger));
+		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
 
 		// Just right
 		lifeBook.setQuantity (9);
-		assertNull (PlayerPickServerUtils.validateCustomPicks (player, picks, sd, db, debugLogger));
+		assertNull (utils.validateCustomPicks (player, picks, sd, db));
 
 		// Already chosen picks
 		priv.setCustomPicksChosen (true);
-		assertNotNull (PlayerPickServerUtils.validateCustomPicks (player, picks, sd, db, debugLogger));
+		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
 	}
 
 	/**
@@ -261,8 +282,12 @@ public final class TestPlayerPickServerUtils
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		utils.setSpellUtils (new SpellUtils ());
+		
 		// So far we have no books, so we get no free spells
-		assertNull (PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db, debugLogger));
+		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
 
 		// Give player a retort and 1 chaos book - neither of which is enough to grant any free spells
 		final PlayerPick retort = new PlayerPick ();
@@ -275,7 +300,7 @@ public final class TestPlayerPickServerUtils
 		chaosBook.setQuantity (1);
 		ppk.getPick ().add (chaosBook);
 
-		assertNull (PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db, debugLogger));
+		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
 
 		// Give player 4 nature books - which then grant 3 free common nature spells
 		final PlayerPick natureBooks = new PlayerPick ();
@@ -283,7 +308,7 @@ public final class TestPlayerPickServerUtils
 		natureBooks.setQuantity (4);
 		ppk.getPick ().add (natureBooks);
 
-		final ChooseInitialSpellsNowMessage natureBooksResult = PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db, debugLogger);
+		final ChooseInitialSpellsNowMessage natureBooksResult = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
 		assertEquals ("MB04", natureBooksResult.getMagicRealmID ());
 		assertEquals (1, natureBooksResult.getSpellRank ().size ());
 		assertEquals ("SR01", natureBooksResult.getSpellRank ().get (0).getSpellRankID ());
@@ -293,7 +318,7 @@ public final class TestPlayerPickServerUtils
 		priv.getSpellResearchStatus ().get (3).setStatus (SpellResearchStatusID.AVAILABLE);
 		priv.getSpellResearchStatus ().get (7).setStatus (SpellResearchStatusID.AVAILABLE);
 
-		final ChooseInitialSpellsNowMessage chosenSomeSpells = PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db, debugLogger);
+		final ChooseInitialSpellsNowMessage chosenSomeSpells = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
 		assertEquals ("MB04", chosenSomeSpells.getMagicRealmID ());
 		assertEquals (1, chosenSomeSpells.getSpellRank ().size ());
 		assertEquals ("SR01", chosenSomeSpells.getSpellRank ().get (0).getSpellRankID ());
@@ -302,7 +327,7 @@ public final class TestPlayerPickServerUtils
 		// Now get 11 nature books, so we get free spells at 3 different ranks, 2 of which we've already chosen
 		natureBooks.setQuantity (11);
 
-		final ChooseInitialSpellsNowMessage elevenBooks = PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db, debugLogger);
+		final ChooseInitialSpellsNowMessage elevenBooks = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
 		assertEquals ("MB04", elevenBooks.getMagicRealmID ());
 		assertEquals (3, elevenBooks.getSpellRank ().size ());
 		assertEquals ("SR01", elevenBooks.getSpellRank ().get (0).getSpellRankID ());
@@ -340,8 +365,16 @@ public final class TestPlayerPickServerUtils
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		final SpellUtils spellUtils = new SpellUtils ();
+		final SpellAI spellAI = new SpellAI ();
+		utils.setSpellUtils (spellUtils);
+		utils.setSpellAI (spellAI);
+		spellAI.setSpellUtils (spellUtils);
+		
 		// So far we have no books, so we get no free spells
-		assertNull (PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db, debugLogger));
+		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
 
 		// Give player a retort and 1 chaos book - neither of which is enough to grant any free spells
 		final PlayerPick retort = new PlayerPick ();
@@ -354,7 +387,7 @@ public final class TestPlayerPickServerUtils
 		chaosBook.setQuantity (1);
 		ppk.getPick ().add (chaosBook);
 
-		assertNull (PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db, debugLogger));
+		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
 
 		// Give player 4 nature books - which then grant 3 free common nature spells
 		// Since its an AI player, they then actually choose the spells
@@ -364,7 +397,7 @@ public final class TestPlayerPickServerUtils
 		natureBooks.setQuantity (4);
 		ppk.getPick ().add (natureBooks);
 
-		PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db, debugLogger);
+		utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
 		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (0).getStatus ());
 		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (1).getStatus ());
 		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (2).getStatus ());
@@ -377,7 +410,7 @@ public final class TestPlayerPickServerUtils
 		assertEquals (SpellResearchStatusID.AVAILABLE, priv.getSpellResearchStatus ().get (9).getStatus ());
 
 		// If we run it again, there's nothing else to pick because we've already done so
-		assertNull (PlayerPickServerUtils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db, debugLogger));
+		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
 	}
 
 	/**
@@ -401,9 +434,13 @@ public final class TestPlayerPickServerUtils
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		utils.setSpellUtils (new SpellUtils ());
+		
 		// Ask for a pick ID that we have none of
 		final List<String> spellIDs = new ArrayList<String> ();
-		assertNotNull (PlayerPickServerUtils.validateInitialSpellSelection (player, "MB04", spellIDs, db, debugLogger));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
 
 		// Using a number of books that isn't listed under pick type "B" means we get no free spells
 		// Bit of an artificial test because we're triggering it by going over the number of books we could ever have
@@ -412,31 +449,31 @@ public final class TestPlayerPickServerUtils
 		natureBooks.setQuantity (21);
 		ppk.getPick ().add (natureBooks);
 
-		assertNotNull (PlayerPickServerUtils.validateInitialSpellSelection (player, "MB04", spellIDs, db, debugLogger));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
 
 		// Get 4 books, so we get 3 free spell choices - because we're requesting no spells, its valid
 		natureBooks.setQuantity (4);
-		assertNull (PlayerPickServerUtils.validateInitialSpellSelection (player, "MB04", spellIDs, db, debugLogger));
+		assertNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
 
 		// Request wrong rank
 		spellIDs.add ("SP011");
-		assertNotNull (PlayerPickServerUtils.validateInitialSpellSelection (player, "MB04", spellIDs, db, debugLogger));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
 
 		// Request wrong magic realm
 		spellIDs.set (0, "SP041");
-		assertNotNull (PlayerPickServerUtils.validateInitialSpellSelection (player, "MB04", spellIDs, db, debugLogger));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
 
 		// Valid request
 		spellIDs.set (0, "SP001");
-		assertNull (PlayerPickServerUtils.validateInitialSpellSelection (player, "MB04", spellIDs, db, debugLogger));
+		assertNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
 
 		spellIDs.add ("SP002");
 		spellIDs.add ("SP003");
-		assertNull (PlayerPickServerUtils.validateInitialSpellSelection (player, "MB04", spellIDs, db, debugLogger));
+		assertNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
 
 		// Request too many
 		spellIDs.add ("SP004");
-		assertNotNull (PlayerPickServerUtils.validateInitialSpellSelection (player, "MB04", spellIDs, db, debugLogger));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
 	}
 
 	/**
@@ -459,14 +496,18 @@ public final class TestPlayerPickServerUtils
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		utils.setPlayerPickUtils (new PlayerPickUtils ());
+		
 		// Invalid race
-		assertNotNull (PlayerPickServerUtils.validateRaceChoice (player, "RC15", db, debugLogger));
+		assertNotNull (utils.validateRaceChoice (player, "RC15", db));
 
 		// Race with no pre-requisite
-		assertNull (PlayerPickServerUtils.validateRaceChoice (player, "RC04", db, debugLogger));
+		assertNull (utils.validateRaceChoice (player, "RC04", db));
 
 		// Myrran race without Myrran pick
-		assertNotNull (PlayerPickServerUtils.validateRaceChoice (player, "RC14", db, debugLogger));
+		assertNotNull (utils.validateRaceChoice (player, "RC14", db));
 
 		// Myrran race without Myrran pick
 		final PlayerPick myrran = new PlayerPick ();
@@ -474,7 +515,7 @@ public final class TestPlayerPickServerUtils
 		myrran.setQuantity (1);
 		ppk.getPick ().add (myrran);
 
-		assertNull (PlayerPickServerUtils.validateRaceChoice (player, "RC14", db, debugLogger));
+		assertNull (utils.validateRaceChoice (player, "RC14", db));
 	}
 
 	/**
@@ -492,24 +533,27 @@ public final class TestPlayerPickServerUtils
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		
 		// Nothing picked yet
-		assertFalse (PlayerPickServerUtils.hasChosenAllDetails (player, debugLogger));
+		assertFalse (utils.hasChosenAllDetails (player));
 
 		// Wizard but no race
 		ppk.setWizardID ("WZ01");
-		assertFalse (PlayerPickServerUtils.hasChosenAllDetails (player, debugLogger));
+		assertFalse (utils.hasChosenAllDetails (player));
 
 		// Standard wizard
 		priv.setFirstCityRaceID ("RC01");
-		assertTrue (PlayerPickServerUtils.hasChosenAllDetails (player, debugLogger));
+		assertTrue (utils.hasChosenAllDetails (player));
 
 		// Custom wizard without custom picks chosen
 		ppk.setWizardID ("");
-		assertFalse (PlayerPickServerUtils.hasChosenAllDetails (player, debugLogger));
+		assertFalse (utils.hasChosenAllDetails (player));
 
 		// Chosen custom picks
 		priv.setCustomPicksChosen (true);
-		assertTrue (PlayerPickServerUtils.hasChosenAllDetails (player, debugLogger));
+		assertTrue (utils.hasChosenAllDetails (player));
 	}
 
 	/**
@@ -525,6 +569,9 @@ public final class TestPlayerPickServerUtils
 
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		
 		// Single player game just against raiders, and nothing chosen yet
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
@@ -536,21 +583,21 @@ public final class TestPlayerPickServerUtils
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		players.add (player);
 
-		assertFalse (PlayerPickServerUtils.allPlayersHaveChosenAllDetails (players, sd, debugLogger));
+		assertFalse (utils.allPlayersHaveChosenAllDetails (players, sd));
 
 		// Fill in details
 		ppk.setWizardID ("WZ01");
 		priv.setFirstCityRaceID ("RC01");
-		assertTrue (PlayerPickServerUtils.allPlayersHaveChosenAllDetails (players, sd, debugLogger));
+		assertTrue (utils.allPlayersHaveChosenAllDetails (players, sd));
 
 		// Add an AI player - this doesn't stop the game starting, since AI players are added after
 		sd.setMaxPlayers (4);
 		sd.setAiPlayerCount (1);
-		assertTrue (PlayerPickServerUtils.allPlayersHaveChosenAllDetails (players, sd, debugLogger));
+		assertTrue (utils.allPlayersHaveChosenAllDetails (players, sd));
 
 		// Add slot for 2nd player
 		sd.setMaxPlayers (5);
-		assertFalse (PlayerPickServerUtils.allPlayersHaveChosenAllDetails (players, sd, debugLogger));
+		assertFalse (utils.allPlayersHaveChosenAllDetails (players, sd));
 
 		// Add second player
 		final PlayerDescription pd2 = new PlayerDescription ();
@@ -563,12 +610,12 @@ public final class TestPlayerPickServerUtils
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, ppk2, null, null, priv2);
 		players.add (player2);
 
-		assertFalse (PlayerPickServerUtils.allPlayersHaveChosenAllDetails (players, sd, debugLogger));
+		assertFalse (utils.allPlayersHaveChosenAllDetails (players, sd));
 
 		// Fill in second player details
 		ppk2.setWizardID ("WZ02");
 		priv2.setFirstCityRaceID ("RC02");
-		assertTrue (PlayerPickServerUtils.allPlayersHaveChosenAllDetails (players, sd, debugLogger));
+		assertTrue (utils.allPlayersHaveChosenAllDetails (players, sd));
 	}
 
 	/**
@@ -599,8 +646,11 @@ public final class TestPlayerPickServerUtils
 		ppk2.setStandardPhotoID ("WZ12");
 		players.add (new PlayerServerDetails (pd2, ppk2, null, null, null));
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		
 		// Run test
-		final List<Wizard> wizardIDs = PlayerPickServerUtils.listWizardsForAIPlayers (players, db, debugLogger);
+		final List<Wizard> wizardIDs = utils.listWizardsForAIPlayers (players, db);
 		assertEquals (12, wizardIDs.size ());
 		assertEquals ("WZ01", wizardIDs.get (0).getWizardID ());
 		assertEquals ("WZ03", wizardIDs.get (1).getWizardID ());
@@ -628,8 +678,12 @@ public final class TestPlayerPickServerUtils
 
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+		utils.setPlayerPickUtils (new PlayerPickUtils ());
+		
 		// No picks
-		assertEquals (0, PlayerPickServerUtils.startingPlaneForWizard (picks, db, debugLogger));
+		assertEquals (0, utils.startingPlaneForWizard (picks, db));
 
 		// Irrelevant pick
 		final PlayerPick warlord = new PlayerPick ();
@@ -637,7 +691,7 @@ public final class TestPlayerPickServerUtils
 		warlord.setQuantity (1);
 		picks.add (warlord);
 
-		assertEquals (0, PlayerPickServerUtils.startingPlaneForWizard (picks, db, debugLogger));
+		assertEquals (0, utils.startingPlaneForWizard (picks, db));
 
 		// Myrran pick
 		final PlayerPick myrran = new PlayerPick ();
@@ -645,7 +699,7 @@ public final class TestPlayerPickServerUtils
 		myrran.setQuantity (1);
 		picks.add (myrran);
 
-		assertEquals (1, PlayerPickServerUtils.startingPlaneForWizard (picks, db, debugLogger));
+		assertEquals (1, utils.startingPlaneForWizard (picks, db));
 	}
 
 	/**
@@ -659,10 +713,14 @@ public final class TestPlayerPickServerUtils
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final int arcanusRaceID = Integer.parseInt (PlayerPickServerUtils.chooseRandomRaceForPlane (0, db, debugLogger).substring (2));
+		// Set up object to test
+		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
+
+		// Run test
+		final int arcanusRaceID = Integer.parseInt (utils.chooseRandomRaceForPlane (0, db).substring (2));
 		assertTrue ((arcanusRaceID >= 1) && (arcanusRaceID <= 9));
 
-		final int myrranRaceID = Integer.parseInt (PlayerPickServerUtils.chooseRandomRaceForPlane (1, db, debugLogger).substring (2));
+		final int myrranRaceID = Integer.parseInt (utils.chooseRandomRaceForPlane (1, db).substring (2));
 		assertTrue ((myrranRaceID >= 10) && (myrranRaceID <= 14));
 	}
 }

@@ -6,11 +6,11 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.SpellUtils;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
@@ -25,9 +25,6 @@ import org.junit.Test;
  */
 public final class TestMomServerSpellCalculations
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the randomizeResearchableSpells method
 	 * @throws IOException If we are unable to locate the server XML file
@@ -48,6 +45,10 @@ public final class TestMomServerSpellCalculations
 			status.setStatus (SpellResearchStatusID.UNAVAILABLE);
 			spells.add (status);
 		}
+		
+		// Set up object to test
+		final MomServerSpellCalculations calc = new MomServerSpellCalculations ();
+		calc.setSpellUtils (new SpellUtils ());
 
 		// With only 1 book, we get 3 common and 1 uncommon spell researchable
 		// That also means the rest of the common and uncommon spells are obtainable, but rare and very rares aren't
@@ -57,7 +58,7 @@ public final class TestMomServerSpellCalculations
 		natureBook.setQuantity (1);
 		picks.add (natureBook);
 
-		MomServerSpellCalculations.randomizeResearchableSpells (spells, picks, db, debugLogger);
+		calc.randomizeResearchableSpells (spells, picks, db);
 
 		// Check results
 		final List<Integer> reseachableSpellsFirstPass = new ArrayList<Integer> ();
@@ -96,7 +97,7 @@ public final class TestMomServerSpellCalculations
 
 		// Gain an extra book, now we should get 5 common, 2 uncommon, 1 rare
 		natureBook.setQuantity (2);
-		MomServerSpellCalculations.randomizeResearchableSpells (spells, picks, db, debugLogger);
+		calc.randomizeResearchableSpells (spells, picks, db);
 
 		// Recheck the counts
 		final List<Integer> reseachableSpellsSecondPass = new ArrayList<Integer> ();
@@ -172,6 +173,10 @@ public final class TestMomServerSpellCalculations
 			spells.add (status);
 		}
 
+		// Set up object to test
+		final MomServerSpellCalculations calc = new MomServerSpellCalculations ();
+		calc.setSpellUtils (new SpellUtils ());
+		
 		// The key part of this is that it will exhaust lower spell ranks first before moving onto higher ones
 		// So lets set 2 spells to already be "researchable", 4 commons and 4 uncommons
 		for (int n = 0; n < 2; n++)
@@ -180,7 +185,7 @@ public final class TestMomServerSpellCalculations
 		for (int n = 6; n < 14; n++)
 			spells.get (n).setStatus (SpellResearchStatusID.RESEARCHABLE);
 
-		MomServerSpellCalculations.randomizeSpellsResearchableNow (spells, db, debugLogger);
+		calc.randomizeSpellsResearchableNow (spells, db);
 
 		// So should now have our original 2 spells, all 4 commons and 2 out of 4 of the uncommons "researchable now"
 		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, spells.get (0).getStatus ());

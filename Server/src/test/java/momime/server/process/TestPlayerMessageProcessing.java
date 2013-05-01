@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.messages.servertoclient.v0_9_4.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.v0_9_4.SetCurrentPlayerMessage;
@@ -28,9 +27,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestPlayerMessageProcessing
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the sendNewTurnMessages method, sending messages mid-turn
 	 * @throws Exception If there is a problem
@@ -92,7 +88,7 @@ public final class TestPlayerMessageProcessing
 		final PlayerMessageProcessing proc = new PlayerMessageProcessing ();
 		
 		// Run test
-		proc.sendNewTurnMessages (null, players, null, debugLogger);
+		proc.sendNewTurnMessages (null, players, null);
 		
 		// Check player1's messages
 		assertEquals (1, msgs1.getMessages ().size ());
@@ -178,7 +174,7 @@ public final class TestPlayerMessageProcessing
 		final PlayerMessageProcessing proc = new PlayerMessageProcessing ();
 		
 		// Run test
-		proc.sendNewTurnMessages (gpk, players, TurnSystem.SIMULTANEOUS, debugLogger);
+		proc.sendNewTurnMessages (gpk, players, TurnSystem.SIMULTANEOUS);
 		
 		// Check player1's messages
 		assertEquals (1, msgs1.getMessages ().size ());
@@ -267,7 +263,7 @@ public final class TestPlayerMessageProcessing
 		final PlayerMessageProcessing proc = new PlayerMessageProcessing ();
 		
 		// Run test
-		proc.sendNewTurnMessages (gpk, players, TurnSystem.ONE_PLAYER_AT_A_TIME, debugLogger);
+		proc.sendNewTurnMessages (gpk, players, TurnSystem.ONE_PLAYER_AT_A_TIME);
 		
 		// Check player1's messages
 		assertEquals (1, msgs1.getMessages ().size ());

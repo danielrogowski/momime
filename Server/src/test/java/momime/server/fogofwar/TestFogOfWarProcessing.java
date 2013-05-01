@@ -7,12 +7,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
+import momime.common.messages.MemoryCombatAreaEffectUtils;
+import momime.common.messages.MemoryGridCellUtils;
+import momime.common.messages.MemoryMaintainedSpellUtils;
+import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -29,6 +32,8 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
+import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
@@ -48,9 +53,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestFogOfWarProcessing
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the canSee method
 	 */
@@ -59,29 +61,32 @@ public final class TestFogOfWarProcessing
 	{
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
+		
+		// Set up test object
+		final FogOfWarProcessing proc = new FogOfWarProcessing ();
 
 		// Never seen, so now seeing it for the first time
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
-		FogOfWarProcessing.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
-		FogOfWarProcessing.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
 		// Have seen on a previous turn, then lost sight of it, and now seeing it again
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.HAVE_SEEN);
-		FogOfWarProcessing.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
-		FogOfWarProcessing.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
 		// Can see, so could see it last turn and still can
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		FogOfWarProcessing.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_CAN_STILL_SEE, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 
-		FogOfWarProcessing.canSee (fogOfWarArea, 20, 10, 1);
+		proc.canSee (fogOfWarArea, 20, 10, 1);
 		assertEquals (FogOfWarStateID.TEMP_CAN_STILL_SEE, fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().get (20));
 	}
 
@@ -103,8 +108,11 @@ public final class TestFogOfWarProcessing
 			y++;
 		}
 
+		// Set up test object
+		final FogOfWarProcessing proc = new FogOfWarProcessing ();
+
 		// Run method
-		FogOfWarProcessing.canSeeRadius (fogOfWarArea, sys, 2, 2, 1, 3);
+		proc.canSeeRadius (fogOfWarArea, sys, 2, 2, 1, 3);
 
 		// Check results of right hand area which is all the same value
 		for (int x = 0; x <= 5; x++)
@@ -140,6 +148,7 @@ public final class TestFogOfWarProcessing
 	public final void testMarkVisibleArea () throws IOException, JAXBException, InvalidFormatException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final UnitUtils unitUtils = new UnitUtils ();
 
 		// Map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
@@ -240,7 +249,7 @@ public final class TestFogOfWarProcessing
 		unitOneLocation.setY (4);
 		unitOneLocation.setPlane (1);
 
-		final MemoryUnit unitOne = UnitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db, debugLogger);
+		final MemoryUnit unitOne = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
 		unitOne.setUnitLocation (unitOneLocation);
 		unitOne.setOwningPlayerID (2);
 
@@ -251,7 +260,7 @@ public final class TestFogOfWarProcessing
 		unitTwoLocation.setY (34);
 		unitTwoLocation.setPlane (1);
 
-		final MemoryUnit unitTwo = UnitUtils.createMemoryUnit ("UN067", 2, 0, 0, true, db, debugLogger);
+		final MemoryUnit unitTwo = unitUtils.createMemoryUnit ("UN067", 2, 0, 0, true, db);
 		unitTwo.setUnitLocation (unitTwoLocation);
 		unitTwo.setOwningPlayerID (2);
 
@@ -262,7 +271,7 @@ public final class TestFogOfWarProcessing
 		unitThreeLocation.setY (17);
 		unitThreeLocation.setPlane (0);
 
-		final MemoryUnit unitThree = UnitUtils.createMemoryUnit ("UN005", 3, 0, 0, true, db, debugLogger);
+		final MemoryUnit unitThree = unitUtils.createMemoryUnit ("UN005", 3, 0, 0, true, db);
 		unitThree.setUnitLocation (unitThreeLocation);
 		unitThree.setOwningPlayerID (2);
 
@@ -282,7 +291,7 @@ public final class TestFogOfWarProcessing
 		unitFourLocation.setY (22);
 		unitFourLocation.setPlane (0);
 
-		final MemoryUnit unitFour = UnitUtils.createMemoryUnit ("UN105", 4, 0, 0, true, db, debugLogger);
+		final MemoryUnit unitFour = unitUtils.createMemoryUnit ("UN105", 4, 0, 0, true, db);
 		unitFour.setUnitLocation (unitFourLocation);
 		unitFour.setOwningPlayerID (2);
 
@@ -294,7 +303,7 @@ public final class TestFogOfWarProcessing
 		unitFiveLocation.setY (9);
 		unitFiveLocation.setPlane (1);
 
-		final MemoryUnit unitFive = UnitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db, debugLogger);
+		final MemoryUnit unitFive = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
 		unitFive.setUnitLocation (unitFiveLocation);
 		unitFive.setOwningPlayerID (1);
 
@@ -314,9 +323,22 @@ public final class TestFogOfWarProcessing
 
 		trueMap.getMaintainedSpell ().add (naturesEye);
 
+		// Set up test object
+		unitUtils.setPlayerPickUtils (new PlayerPickUtils ());
+		unitUtils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtils ());
+		
+		final MomServerUnitCalculations serverUnitCalculations = new MomServerUnitCalculations ();
+		serverUnitCalculations.setUnitUtils (unitUtils);
+		
+		final FogOfWarProcessing proc = new FogOfWarProcessing ();
+		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
+		proc.setMemoryGridCellUtils (new MemoryGridCellUtils ());
+		proc.setServerCityCalculations (new MomServerCityCalculations ());
+		proc.setServerUnitCalculations (serverUnitCalculations);
+
 		// Test with no special spells
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
-		FogOfWarProcessing.markVisibleArea (trueMap, player, players, sd, db, debugLogger);
+		proc.markVisibleArea (trueMap, player, players, sd, db);
 
 		final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/markVisibleArea.xlsx"));
 		for (final Plane plane : db.getPlane ())
@@ -339,7 +361,7 @@ public final class TestFogOfWarProcessing
 		trueMap.getMaintainedSpell ().add (awareness);
 
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
-		FogOfWarProcessing.markVisibleArea (trueMap, player, players, sd, db, debugLogger);
+		proc.markVisibleArea (trueMap, player, players, sd, db);
 
 		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
@@ -356,7 +378,7 @@ public final class TestFogOfWarProcessing
 		awareness.setSpellID (ServerDatabaseValues.VALUE_SPELL_ID_NATURE_AWARENESS);
 
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
-		FogOfWarProcessing.markVisibleArea (trueMap, player, players, sd, db, debugLogger);
+		proc.markVisibleArea (trueMap, player, players, sd, db);
 
 		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
@@ -370,45 +392,48 @@ public final class TestFogOfWarProcessing
 	@Test
 	public final void testDetermineVisibleAreaChangedUpdateAction ()
 	{
+		// Set up test object
+		final FogOfWarProcessing proc = new FogOfWarProcessing ();
+
 		// Just go through every possible combination against the expected outcome
 
 		// Never seen - couldn't see before, and we still can't
 		// So regardless of what FOW setting we're on, that means there's nothing to do
 		for (final FogOfWarValue setting : FogOfWarValue.values ())
-			assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NONE, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.NEVER_SEEN, setting));
+			assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NONE, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.NEVER_SEEN, setting));
 
 		// Have seen - at some prior time we saw it then lost sight of it - and this turn it still didn't come back into view yet
 		// So regardless of what FOW setting we're on, that means there's nothing to do
 		// Although if we're on "always see once seen" then the fact that we saw the location ages ago still means we've got up to date info on it
-		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NONE, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.FORGET));
-		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NONE, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.REMEMBER_AS_LAST_SEEN));
-		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
+		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NONE, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.FORGET));
+		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NONE, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.REMEMBER_AS_LAST_SEEN));
+		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.HAVE_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
 
 		// Can see - could see it last turn, but this turn we lost sight of it
 		// If setting = forget then we need to forget our knowledge of it
 		// If setting = remember then we need to remember our knowledge of it, so nothing to do
 		// If setting = always see once seen then we're still able to see it and so know that nothing has changed, so still nothing to do
-		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.CAN_SEE, FogOfWarValue.FORGET));
-		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NONE, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.CAN_SEE, FogOfWarValue.REMEMBER_AS_LAST_SEEN));
-		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
+		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.CAN_SEE, FogOfWarValue.FORGET));
+		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NONE, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.CAN_SEE, FogOfWarValue.REMEMBER_AS_LAST_SEEN));
+		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
 
 		// Seeing it for first time
 		// So regardless of what FOW setting we're on, we need to add it
 		for (final FogOfWarValue setting : FogOfWarValue.values ())
-			assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, setting));
+			assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, setting));
 
 		// Seeing after lost sight of it - we saw it once before, lost sight of it for a while, and it just came back into view again
 		// If setting = forget then we'd have forgotten about it when it went out of view, so now need to re-add it
 		// If setting = remember then maybe it changed while we couldn't see it, so our memory of it may now be incorrect, so need to update it
 		// If setting = always see once seen then even when it went out of sight, we could watch changes to it even while it was out of sight, so we know our knowledge of it is already correct
-		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, FogOfWarValue.FORGET));
-		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, FogOfWarValue.REMEMBER_AS_LAST_SEEN));
-		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
+		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, FogOfWarValue.FORGET));
+		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, FogOfWarValue.REMEMBER_AS_LAST_SEEN));
+		assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_SEEING_AFTER_LOST_SIGHT_OF_IT, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
 
 		// Can still see - could see it last turn, and still can
 		// So regardless of what FOW setting we're on, we know we already have the correct values so no update required
 		for (final FogOfWarValue setting : FogOfWarValue.values ())
-			assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF, FogOfWarProcessing.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_CAN_STILL_SEE, setting));
+			assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_CAN_STILL_SEE, setting));
 	}
 
 	/**
@@ -433,17 +458,20 @@ public final class TestFogOfWarProcessing
 			coordinateList.add (msgData);
 		}
 
+		// Set up test object
+		final FogOfWarProcessing proc = new FogOfWarProcessing ();
+
 		// Test some coordinates that are in the list
 		final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
 		coords.setX (2);
 		coords.setY (3);
 		coords.setPlane (4);
 
-		assertTrue (FogOfWarProcessing.areCoordinatesIncludedInMessage (coordinateList, coords));
+		assertTrue (proc.areCoordinatesIncludedInMessage (coordinateList, coords));
 
 		// Test some coordinates that aren't in the list
 		coords.setX (3);
 
-		assertFalse (FogOfWarProcessing.areCoordinatesIncludedInMessage (coordinateList, coords));
+		assertFalse (proc.areCoordinatesIncludedInMessage (coordinateList, coords));
 	}
 }

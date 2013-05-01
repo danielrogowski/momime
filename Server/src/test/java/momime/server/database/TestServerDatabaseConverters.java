@@ -9,9 +9,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
@@ -26,6 +26,8 @@ import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.server.ServerTestData;
 
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
@@ -33,9 +35,6 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
  */
 public final class TestServerDatabaseConverters
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the buildNewGameDatabase method
 	 * @throws Exception If there is a problem
@@ -47,14 +46,17 @@ public final class TestServerDatabaseConverters
 		assertNotNull ("MoM IME Server XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance (), debugLogger));
+		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
 
 		final Validator xsd = schemaFactory.newSchema (xsdResource).newValidator ();
+		
+		// Set up object to test
+		final ServerDatabaseConverters conv = new ServerDatabaseConverters ();
 
 		// Build it
 		// Locate the server XML file, then go one level up to the folder that it is in
-		final NewGameDatabaseMessage msg = ServerDatabaseConverters.buildNewGameDatabase
-			(new File (ServerTestData.locateServerXmlFile (), "..").getCanonicalFile (), xsd, JAXBContextCreator.createServerDatabaseContext (), debugLogger);
+		final NewGameDatabaseMessage msg = conv.buildNewGameDatabase
+			(new File (ServerTestData.locateServerXmlFile (), "..").getCanonicalFile (), xsd, JAXBContextCreator.createServerDatabaseContext ());
 		assertEquals (1, msg.getNewGameDatabase ().getMomimeXmlDatabase ().size ());
 
 		final AvailableDatabase db = msg.getNewGameDatabase ().getMomimeXmlDatabase ().get (0);
@@ -69,7 +71,9 @@ public final class TestServerDatabaseConverters
 
 		// This tests not only that the objects are assembled correctly, but that they are marshalled correctly when we send the message - as common not server versions,
 		// i.e. that the generated XML does not contain any descriptions, which are server-only
-		final Marshaller marshaller = JAXBContextCreator.createServerToClientMessageContext ().createMarshaller ();
+		final ApplicationContext applicationContext = new ClassPathXmlApplicationContext("/momime.common.spring/momime-common-beans.xml");
+		final JAXBContext serverToClientJaxbContext  = (JAXBContext) applicationContext.getBean ("serverToClientJaxbContext");
+		final Marshaller marshaller = serverToClientJaxbContext.createMarshaller ();
 
 		final ByteArrayOutputStream stream = new ByteArrayOutputStream ();
 		marshaller.marshal (msg, stream);
@@ -87,10 +91,11 @@ public final class TestServerDatabaseConverters
 	public final void testBuildClientDatabase_Valid () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseConverters conv = new ServerDatabaseConverters ();
 
 		for (int humanSpellPicks = 0; humanSpellPicks <= 20; humanSpellPicks++)
 		{
-			final ClientDatabase clientDB = ServerDatabaseConverters.buildClientDatabase (db, humanSpellPicks, debugLogger);
+			final ClientDatabase clientDB = conv.buildClientDatabase (db, humanSpellPicks);
 
 			assertEquals ("MF01", clientDB.getMapFeature ().get (0).getMapFeatureID ());
 			assertFalse (clientDB.getMapFeature ().get (0).isAnyMagicRealmsDefined ());
@@ -110,7 +115,8 @@ public final class TestServerDatabaseConverters
 	public final void testBuildClientDatabase_PickCountDoesntExist () throws IOException, JAXBException, RecordNotFoundException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseConverters conv = new ServerDatabaseConverters ();
 
-		ServerDatabaseConverters.buildClientDatabase (db, 21, debugLogger);
+		conv.buildClientDatabase (db, 21);
 	}
 }

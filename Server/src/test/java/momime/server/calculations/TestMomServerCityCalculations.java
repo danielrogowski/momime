@@ -7,14 +7,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
+import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
@@ -40,9 +41,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestMomServerCityCalculations
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the calculateTotalFoodBonusFromBuildings method with the default XML database
 	 * @throws IOException If we are unable to locate the server XML file
@@ -53,8 +51,9 @@ public final class TestMomServerCityCalculations
 	public final void testCalculateTotalFoodBonusFromBuildings_Valid () throws IOException, JAXBException, MomException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final MomServerCityCalculations calc = new MomServerCityCalculations ();
 
-		assertEquals (5, MomServerCityCalculations.calculateTotalFoodBonusFromBuildings (db, debugLogger));
+		assertEquals (5, calc.calculateTotalFoodBonusFromBuildings (db));
 	}
 
 	/**
@@ -74,7 +73,8 @@ public final class TestMomServerCityCalculations
 			if (mod.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD))
 				mod.setDoubleAmount (mod.getDoubleAmount () + 1);
 
-		assertEquals (5, MomServerCityCalculations.calculateTotalFoodBonusFromBuildings (db, debugLogger));
+		final MomServerCityCalculations calc = new MomServerCityCalculations ();
+		calc.calculateTotalFoodBonusFromBuildings (db);
 	}
 
 	/**
@@ -104,13 +104,17 @@ public final class TestMomServerCityCalculations
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
 
+		// Set up object to test
+		final MomServerCityCalculations calc = new MomServerCityCalculations ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		
 		// Halflings farmers produce 1 extra food
 		cityData.setCityRaceID ("RC03");
-		assertEquals (6, MomServerCityCalculations.calculateDoubleFarmingRate (map, buildings, cityLocation, db, debugLogger));
+		assertEquals (6, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Normal race (high men) with no bonuses
 		cityData.setCityRaceID ("RC05");
-		assertEquals (4, MomServerCityCalculations.calculateDoubleFarmingRate (map, buildings, cityLocation, db, debugLogger));
+		assertEquals (4, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Add an irrelevant building
 		final OverlandMapCoordinates firstBuildingLocation = new OverlandMapCoordinates ();
@@ -123,7 +127,7 @@ public final class TestMomServerCityCalculations
 		firstBuilding.setCityLocation (firstBuildingLocation);
 
 		buildings.add (firstBuilding);
-		assertEquals (4, MomServerCityCalculations.calculateDoubleFarmingRate (map, buildings, cityLocation, db, debugLogger));
+		assertEquals (4, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Add an animists' guild in the wrong location
 		final OverlandMapCoordinates secondBuildingLocation = new OverlandMapCoordinates ();
@@ -136,7 +140,7 @@ public final class TestMomServerCityCalculations
 		secondBuilding.setCityLocation (secondBuildingLocation);
 
 		buildings.add (secondBuilding);
-		assertEquals (4, MomServerCityCalculations.calculateDoubleFarmingRate (map, buildings, cityLocation, db, debugLogger));
+		assertEquals (4, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Add an animists' guild in the right location
 		final OverlandMapCoordinates thirdBuildingLocation = new OverlandMapCoordinates ();
@@ -149,7 +153,7 @@ public final class TestMomServerCityCalculations
 		thirdBuilding.setCityLocation (thirdBuildingLocation);
 
 		buildings.add (thirdBuilding);
-		assertEquals (6, MomServerCityCalculations.calculateDoubleFarmingRate (map, buildings, cityLocation, db, debugLogger));
+		assertEquals (6, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 	}
 
 	/**
@@ -192,9 +196,14 @@ public final class TestMomServerCityCalculations
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
 
+		// Set up object to test
+		final MomServerCityCalculations calc = new MomServerCityCalculations ();
+		calc.setCityCalculations (new MomCityCalculations ());
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		
 		// Starter size city - with no wild game and no granary, we need 2 farmers to feed the 4 population
 		cityData.setCityPopulation (4900);
-		MomServerCityCalculations.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db, debugLogger);
+		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db);
 		assertEquals ("CS02", cityData.getCitySizeID ());
 		assertEquals (2, cityData.getMinimumFarmers ().intValue ());
 
@@ -210,19 +219,19 @@ public final class TestMomServerCityCalculations
 
 		buildings.add (granary);
 
-		MomServerCityCalculations.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db, debugLogger);
+		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db);
 		assertEquals ("CS02", cityData.getCitySizeID ());
 		assertEquals (1, cityData.getMinimumFarmers ().intValue ());
 
 		// Make the city bigger - now need 3 farmers to feed the 7 population (1 is fed by the granary)
 		cityData.setCityPopulation (7500);
-		MomServerCityCalculations.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db, debugLogger);
+		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db);
 		assertEquals ("CS03", cityData.getCitySizeID ());
 		assertEquals (3, cityData.getMinimumFarmers ().intValue ());
 
 		// Halfling farmers produce more rations - so now we only need 5/3 = 2 farmers
 		cityData.setCityRaceID ("RC03");
-		MomServerCityCalculations.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db, debugLogger);
+		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db);
 		assertEquals ("CS03", cityData.getCitySizeID ());
 		assertEquals (2, cityData.getMinimumFarmers ().intValue ());
 	}
@@ -241,24 +250,27 @@ public final class TestMomServerCityCalculations
 		city.setMinimumFarmers (3);
 		city.setNumberOfRebels (3);
 
+		// Set up object to test
+		final MomServerCityCalculations calc = new MomServerCityCalculations ();
+		
 		// Lower optional farmers
 		city.setOptionalFarmers (1);
-		MomServerCityCalculations.ensureNotTooManyOptionalFarmers (city, debugLogger);
+		calc.ensureNotTooManyOptionalFarmers (city);
 		assertEquals (1, city.getOptionalFarmers ().intValue ());
 
 		// Exact number of optional farmers
 		city.setOptionalFarmers (2);
-		MomServerCityCalculations.ensureNotTooManyOptionalFarmers (city, debugLogger);
+		calc.ensureNotTooManyOptionalFarmers (city);
 		assertEquals (2, city.getOptionalFarmers ().intValue ());
 
 		// Too many optional farmers
 		city.setOptionalFarmers (3);
-		MomServerCityCalculations.ensureNotTooManyOptionalFarmers (city, debugLogger);
+		calc.ensureNotTooManyOptionalFarmers (city);
 		assertEquals (2, city.getOptionalFarmers ().intValue ());
 
 		// Way too many optional farmers
 		city.setNumberOfRebels (5);
-		MomServerCityCalculations.ensureNotTooManyOptionalFarmers (city, debugLogger);
+		calc.ensureNotTooManyOptionalFarmers (city);
 		assertEquals (0, city.getOptionalFarmers ().intValue ());
 	}
 
@@ -276,7 +288,8 @@ public final class TestMomServerCityCalculations
 		city.setNumberOfRebels (6);
 		city.setOptionalFarmers (0);
 
-		MomServerCityCalculations.ensureNotTooManyOptionalFarmers (city, debugLogger);
+		final MomServerCityCalculations calc = new MomServerCityCalculations ();
+		calc.ensureNotTooManyOptionalFarmers (city);
 	}
 
 	/**
@@ -298,8 +311,11 @@ public final class TestMomServerCityCalculations
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
 
+		// Set up object to test
+		final MomServerCityCalculations calc = new MomServerCityCalculations ();
+		
 		// No buildings
-		assertEquals (-1, MomServerCityCalculations.calculateCityScoutingRange (buildings, cityLocation, db, debugLogger));
+		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// City walls in wrong location
 		final OverlandMapCoordinates firstBuildingLocation = new OverlandMapCoordinates ();
@@ -312,7 +328,7 @@ public final class TestMomServerCityCalculations
 		firstBuilding.setCityLocation (firstBuildingLocation);
 
 		buildings.add (firstBuilding);
-		assertEquals (-1, MomServerCityCalculations.calculateCityScoutingRange (buildings, cityLocation, db, debugLogger));
+		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// Irrelevant building in right location
 		final OverlandMapCoordinates secondBuildingLocation = new OverlandMapCoordinates ();
@@ -325,7 +341,7 @@ public final class TestMomServerCityCalculations
 		secondBuilding.setCityLocation (secondBuildingLocation);
 
 		buildings.add (secondBuilding);
-		assertEquals (-1, MomServerCityCalculations.calculateCityScoutingRange (buildings, cityLocation, db, debugLogger));
+		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// City walls increase to 3
 		final OverlandMapCoordinates cityWallsLocation = new OverlandMapCoordinates ();
@@ -338,7 +354,7 @@ public final class TestMomServerCityCalculations
 		cityWalls.setCityLocation (cityWallsLocation);
 
 		buildings.add (cityWalls);
-		assertEquals (3, MomServerCityCalculations.calculateCityScoutingRange (buildings, cityLocation, db, debugLogger));
+		assertEquals (3, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// Oracle increases to 4
 		final OverlandMapCoordinates oracleLocation = new OverlandMapCoordinates ();
@@ -351,7 +367,7 @@ public final class TestMomServerCityCalculations
 		oracle.setCityLocation (oracleLocation);
 
 		buildings.add (oracle);
-		assertEquals (4, MomServerCityCalculations.calculateCityScoutingRange (buildings, cityLocation, db, debugLogger));
+		assertEquals (4, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 	}
 
 	/**
@@ -391,40 +407,45 @@ public final class TestMomServerCityCalculations
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
+		// Set up object to test
+		final MomServerCityCalculations calc = new MomServerCityCalculations ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		calc.setCityCalculations (new MomCityCalculations ());
+		
 		// Orcs can build absolutely everything
 		cityData.setCityRaceID ("RC09");
 		for (final Building building : db.getBuilding ())
 			if ((!building.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)) &&
 				(!building.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)))
 
-				assertTrue (building.getBuildingID (), MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation, building, sd.getMapSize (), db, debugLogger));
+				assertTrue (building.getBuildingID (), calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation, building, sd.getMapSize (), db));
 
 		// Barbarians can't build Universities
 		cityData.setCityRaceID ("RC01");
-		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL20", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL20", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
 
 		// Barbarians can't build Banks, because they can't build Universities
-		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL27", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL27", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
 
 		// Barbarians can't build Merchants' Guilds, because they can't build Banks, because they can't build Universities
-		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
 
 		// Orcs can't build Ship Wrights' Guilds if there's no water
 		cityData.setCityRaceID ("RC09");
 		ocean.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
-		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL12", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL12", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
 
 		// Orcs can't build Ship Yards if there's no water, because they can't build a Ship Wrights' Guild
-		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
 
 		// Orcs can't build Merchants' Guilds if there's no water, because they can't build a Ship Yard, because they can't build a Ship Wrights' Guild
-		assertFalse (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
 
 		// If we got a Ship Wrights' Guild and subsequently the water all dried up then we *can* then construct the other building types
 		// (Ok bad example, but similar with Sawmills + forests disappearing is definitely possible)
@@ -439,9 +460,9 @@ public final class TestMomServerCityCalculations
 
 		buildings.add (shipWrightsGuild);
 
-		assertTrue (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
-		assertTrue (MomServerCityCalculations.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
-			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db, debugLogger));
+		assertTrue (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL13", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
+		assertTrue (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
+			db.findBuilding ("BL28", "testCanEventuallyConstructBuilding"), sd.getMapSize (), db));
 	}
 }

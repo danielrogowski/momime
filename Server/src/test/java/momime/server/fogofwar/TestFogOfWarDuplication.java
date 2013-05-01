@@ -9,11 +9,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
 import momime.common.database.v0_9_4.UnitHasSkill;
+import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.MemoryCombatAreaEffectUtils;
+import momime.common.messages.MemoryMaintainedSpellUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
@@ -33,9 +35,6 @@ import org.junit.Test;
  */
 public final class TestFogOfWarDuplication
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the copyTerrainAndNodeAura method
 	 */
@@ -253,6 +252,7 @@ public final class TestFogOfWarDuplication
 	public final void testCopyBuilding ()
 	{
 		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+		dup.setMemoryBuildingUtils (new MemoryBuildingUtils ());
 
 		final List<MemoryBuilding> destination = new ArrayList<MemoryBuilding> ();
 
@@ -282,7 +282,7 @@ public final class TestFogOfWarDuplication
 		existingBuilding.setCityLocation (existingCoords);
 
 		assertEquals (3, destination.size ());
-		assertFalse (dup.copyBuilding (existingBuilding, destination, debugLogger));
+		assertFalse (dup.copyBuilding (existingBuilding, destination));
 		assertEquals (3, destination.size ());
 
 		// Test a building already in the list (location same but different building ID)
@@ -291,7 +291,7 @@ public final class TestFogOfWarDuplication
 		newBuilding.setCityLocation (existingCoords);
 
 		assertEquals (3, destination.size ());
-		assertTrue (dup.copyBuilding (newBuilding, destination, debugLogger));
+		assertTrue (dup.copyBuilding (newBuilding, destination));
 
 		assertEquals (4, destination.size ());
 		assertEquals ("BL03", destination.get (3).getBuildingID ());
@@ -309,6 +309,8 @@ public final class TestFogOfWarDuplication
 	public final void testCopyUnit () throws IOException, JAXBException
 	{
 		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+		final UnitUtils utils = new UnitUtils ();
+		dup.setUnitUtils (utils);
 
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -320,19 +322,19 @@ public final class TestFogOfWarDuplication
 		unitOneLocation.setY (12);
 		unitOneLocation.setPlane (1);
 
-		final MemoryUnit unitOne = UnitUtils.createMemoryUnit ("UN105", 1, 1, 10, true, db, debugLogger);
+		final MemoryUnit unitOne = utils.createMemoryUnit ("UN105", 1, 1, 10, true, db);
 		unitOne.setUnitLocation (unitOneLocation);
 		unitOne.setOwningPlayerID (2);
 
-		assertTrue (dup.copyUnit (unitOne, destination, debugLogger));
+		assertTrue (dup.copyUnit (unitOne, destination));
 
 		// Check again without changing anything
-		assertFalse (dup.copyUnit (unitOne, destination, debugLogger));
+		assertFalse (dup.copyUnit (unitOne, destination));
 
 		// Change a value
 		unitOne.setDamageTaken (1);
-		assertTrue (dup.copyUnit (unitOne, destination, debugLogger));
-		assertFalse (dup.copyUnit (unitOne, destination, debugLogger));
+		assertTrue (dup.copyUnit (unitOne, destination));
+		assertFalse (dup.copyUnit (unitOne, destination));
 
 		// Second unit (magicians)
 		final OverlandMapCoordinates unitTwoLocation = new OverlandMapCoordinates ();
@@ -340,25 +342,25 @@ public final class TestFogOfWarDuplication
 		unitTwoLocation.setY (12);
 		unitTwoLocation.setPlane (1);
 
-		final MemoryUnit unitTwo = UnitUtils.createMemoryUnit ("UN052", 2, 0, 25, true, db, debugLogger);
+		final MemoryUnit unitTwo = utils.createMemoryUnit ("UN052", 2, 0, 25, true, db);
 		unitTwo.setUnitLocation (unitTwoLocation);
 		unitTwo.setOwningPlayerID (2);
 
-		assertTrue (dup.copyUnit (unitTwo, destination, debugLogger));
-		assertFalse (dup.copyUnit (unitTwo, destination, debugLogger));
+		assertTrue (dup.copyUnit (unitTwo, destination));
+		assertFalse (dup.copyUnit (unitTwo, destination));
 
 		// Give them more ammo
-		UnitUtils.setBasicSkillValue (unitTwo, "US132", 20, debugLogger);
-		assertTrue (dup.copyUnit (unitTwo, destination, debugLogger));
-		assertFalse (dup.copyUnit (unitTwo, destination, debugLogger));
+		utils.setBasicSkillValue (unitTwo, "US132", 20);
+		assertTrue (dup.copyUnit (unitTwo, destination));
+		assertFalse (dup.copyUnit (unitTwo, destination));
 
 		// Cast flight on them (ok so normally this is done via the spells list and merging that into the unit skills list, but this is what's appropriate for this test...)
 		final UnitHasSkill flight = new UnitHasSkill ();
 		flight.setUnitSkillID ("SS056");
 		unitTwo.getUnitHasSkill ().add (flight);
 
-		assertTrue (dup.copyUnit (unitTwo, destination, debugLogger));
-		assertFalse (dup.copyUnit (unitTwo, destination, debugLogger));
+		assertTrue (dup.copyUnit (unitTwo, destination));
+		assertFalse (dup.copyUnit (unitTwo, destination));
 	}
 
 	/**
@@ -368,6 +370,7 @@ public final class TestFogOfWarDuplication
 	public final void testCopyMaintainedSpell ()
 	{
 		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+		dup.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
 
 		final List<MemoryMaintainedSpell> destination = new ArrayList<MemoryMaintainedSpell> ();
 
@@ -399,7 +402,7 @@ public final class TestFogOfWarDuplication
 		existingSpell.setCastingPlayerID (2);
 
 		assertEquals (3, destination.size ());
-		assertFalse (dup.copyMaintainedSpell (existingSpell, destination, debugLogger));
+		assertFalse (dup.copyMaintainedSpell (existingSpell, destination));
 		assertEquals (3, destination.size ());
 
 		// Test a spell already in the list (location same but different spell ID)
@@ -409,7 +412,7 @@ public final class TestFogOfWarDuplication
 		newSpell.setCastingPlayerID (3);
 
 		assertEquals (3, destination.size ());
-		assertTrue (dup.copyMaintainedSpell (newSpell, destination, debugLogger));
+		assertTrue (dup.copyMaintainedSpell (newSpell, destination));
 
 		assertEquals (4, destination.size ());
 		assertEquals ("SP003", destination.get (3).getSpellID ());
@@ -426,6 +429,7 @@ public final class TestFogOfWarDuplication
 	public final void testCopyCombatAreaEffect ()
 	{
 		final FogOfWarDuplication dup = new FogOfWarDuplication ();
+		dup.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtils ());
 
 		final List<MemoryCombatAreaEffect> destination = new ArrayList<MemoryCombatAreaEffect> ();
 
@@ -457,7 +461,7 @@ public final class TestFogOfWarDuplication
 		existingCombatAreaEffect.setCastingPlayerID (2);
 
 		assertEquals (3, destination.size ());
-		assertFalse (dup.copyCombatAreaEffect (existingCombatAreaEffect, destination, debugLogger));
+		assertFalse (dup.copyCombatAreaEffect (existingCombatAreaEffect, destination));
 		assertEquals (3, destination.size ());
 
 		// Test a combatAreaEffect already in the list (location same but different combatAreaEffect ID)
@@ -467,7 +471,7 @@ public final class TestFogOfWarDuplication
 		newCombatAreaEffect.setCastingPlayerID (3);
 
 		assertEquals (3, destination.size ());
-		assertTrue (dup.copyCombatAreaEffect (newCombatAreaEffect, destination, debugLogger));
+		assertTrue (dup.copyCombatAreaEffect (newCombatAreaEffect, destination));
 
 		assertEquals (4, destination.size ());
 		assertEquals ("CAE03", destination.get (3).getCombatAreaEffectID ());

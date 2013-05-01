@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
@@ -40,9 +39,6 @@ import com.ndg.map.areas.StringMapArea2DArray;
  */
 public class TestOverlandMapServerUtils
 {
-	/** Dummy logger to use during unit tests */
-	private final Logger debugLogger = Logger.getLogger ("MoMIMEServerUnitTests");
-
 	/**
 	 * Tests the chooseRandomRaceForPlane method
 	 * @throws IOException If we are unable to locate the server XML file
@@ -55,10 +51,13 @@ public class TestOverlandMapServerUtils
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Set up object to test
+		final OverlandMapServerUtils utils = new OverlandMapServerUtils ();
+		
 		// Pick a random race for each plane
 		for (final Plane plane : db.getPlane ())
 		{
-			final String raceID = OverlandMapServerUtils.chooseRandomRaceForPlane (plane.getPlaneNumber (), db, debugLogger);
+			final String raceID = utils.chooseRandomRaceForPlane (plane.getPlaneNumber (), db);
 
 			// Verify race inhabits the correct plane
 			assertEquals (plane.getPlaneNumber (), db.findRace (raceID, "testChooseRandomRaceForPlane").getNativePlane ());
@@ -93,11 +92,14 @@ public class TestOverlandMapServerUtils
 		// Create area to output into
 		final List<StringMapArea2DArray> continentalRace = new ArrayList<StringMapArea2DArray> ();
 		for (int plane = 0; plane < db.getPlane ().size (); plane++)
-			continentalRace.add (new StringMapArea2DArray (sys, debugLogger));
+			continentalRace.add (new StringMapArea2DArray (sys));
 
+		// Set up object to test
+		final OverlandMapServerUtils utils = new OverlandMapServerUtils ();
+		
 		// One cell of land
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
-		OverlandMapServerUtils.setContinentalRace (map, continentalRace, 20, 10, 1, "RC01", db, debugLogger);
+		utils.setContinentalRace (map, continentalRace, 20, 10, 1, "RC01", db);
 		assertEquals (1, continentalRace.get (1).countCellsEqualTo ("RC01"));
 
 		// Mark a city radius around the tile - just to test a non-square area
@@ -109,7 +111,7 @@ public class TestOverlandMapServerUtils
 			if (CoordinateSystemUtils.moveCoordinates (sys, coords, d.getDirectionID ()))
 				map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 
-		OverlandMapServerUtils.setContinentalRace (map, continentalRace, 20, 10, 1, "RC02", db, debugLogger);
+		utils.setContinentalRace (map, continentalRace, 20, 10, 1, "RC02", db);
 		assertEquals (21, continentalRace.get (1).countCellsEqualTo ("RC02"));
 	}
 
@@ -139,8 +141,11 @@ public class TestOverlandMapServerUtils
 					cell.setTerrainData (terrain);
 				}
 
+		// Set up object to test
+		final OverlandMapServerUtils utils = new OverlandMapServerUtils ();
+		
 		// Run method
-		final List<StringMapArea2DArray> continentalRace = OverlandMapServerUtils.decideAllContinentalRaces (map, sys, db, debugLogger);
+		final List<StringMapArea2DArray> continentalRace = utils.decideAllContinentalRaces (map, sys, db);
 
 		// Check results, we should have
 		// null at every sea tile
@@ -204,13 +209,16 @@ public class TestOverlandMapServerUtils
 		gsk.getUsedCityName ().add ("Emily");
 		gsk.getUsedCityName ().add ("Rose");
 
+		// Set up object to test
+		final OverlandMapServerUtils utils = new OverlandMapServerUtils ();
+		
 		// Then there's only one possible outcome
-		assertEquals ("Mara", OverlandMapServerUtils.generateCityName (gsk, race));
+		assertEquals ("Mara", utils.generateCityName (gsk, race));
 
 		// Now all 4 are used, the next 4 we generate will be suffixed with II
 		for (int n = 0; n < 4; n++)
 		{
-			final String name = OverlandMapServerUtils.generateCityName (gsk, race);
+			final String name = utils.generateCityName (gsk, race);
 			if (!name.endsWith (" II"))
 				fail ("Second round of city names not suffixed with II, got \"" + name + "\"");
 		}
@@ -218,7 +226,7 @@ public class TestOverlandMapServerUtils
 		// And the next 4 we generate will be suffixed with III
 		for (int n = 0; n < 4; n++)
 		{
-			final String name = OverlandMapServerUtils.generateCityName (gsk, race);
+			final String name = utils.generateCityName (gsk, race);
 			if (!name.endsWith (" III"))
 				fail ("Third round of city names not suffixed with III, got \"" + name + "\"");
 		}

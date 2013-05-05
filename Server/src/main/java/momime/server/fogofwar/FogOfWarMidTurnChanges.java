@@ -241,7 +241,10 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @param unit True unit to test
 	 * @param players List of players in the session
 	 * @param trueTerrain True terrain map
-	 * @param fogOfWarArea Area the player can/can't see, outside of FOW recalc
+	 * @param player The player we are testing whether they can see the unit
+	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
+	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
+	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @return True if player can see this unit
@@ -249,7 +252,8 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 */
 	final boolean canSeeUnitMidTurn (final MemoryUnit unit, final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea,
+		final MapVolumeOfMemoryGridCells trueTerrain, final PlayerServerDetails player,
+		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
@@ -260,6 +264,8 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 			canSee = false;
 		else
 		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			
 			final OverlandMapTerrainData unitLocationTerrain = trueTerrain.getPlane ().get (unit.getUnitLocation ().getPlane ()).getRow ().get
 				(unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ();
 
@@ -284,17 +290,18 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 				if (ServerMemoryGridCellUtils.isNodeLairTower (unitLocationTerrain, db))
 				{
 					// Monster in a node/lair/tower - the only way we can see it is if we're in combat with it
-					throw new UnsupportedOperationException ("canSeeUnitMidTurn doesn't know how to handle monsters in nodes/lairs/towers yet");
+					canSee = ((combatLocation != null) && (CoordinatesUtils.overlandMapCoordinatesEqual (combatLocation, unit.getCombatLocation (), true)) &&
+						((player == combatAttackingPlayer) || (player == combatDefendingPlayer)));
 				}
 				else
 					// Rampaging monsters walking around the map - treat just like regular units
-					canSee = getFogOfWarCalculations ().canSeeMidTurn (fogOfWarArea.getPlane ().get (unit.getUnitLocation ().getPlane ()).getRow ().get
+					canSee = getFogOfWarCalculations ().canSeeMidTurn (priv.getFogOfWar ().getPlane ().get (unit.getUnitLocation ().getPlane ()).getRow ().get
 						(unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()), sd.getFogOfWarSetting ().getUnits ());
 			}
 			else
 			{
 				// Regular unit - is it in a tower of wizardy?
-				canSee = getFogOfWarCalculations ().canSeeMidTurnOnAnyPlaneIfTower (unit.getUnitLocation (), sd.getFogOfWarSetting ().getUnits (), trueTerrain, fogOfWarArea, db);
+				canSee = getFogOfWarCalculations ().canSeeMidTurnOnAnyPlaneIfTower (unit.getUnitLocation (), sd.getFogOfWarSetting ().getUnits (), trueTerrain, priv.getFogOfWar (), db);
 			}
 		}
 
@@ -306,7 +313,10 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param trueTerrain True terrain map
 	 * @param trueUnits True list of units
-	 * @param fogOfWarArea Area the player can/can't see, outside of FOW recalc
+	 * @param player The player we are testing whether they can see the spell
+	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
+	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
+	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @return True if player can see this spell
@@ -314,7 +324,8 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 */
 	final boolean canSeeSpellMidTurn (final MemoryMaintainedSpell spell, final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final MapVolumeOfFogOfWarStates fogOfWarArea,
+		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final PlayerServerDetails player,
+		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
@@ -324,13 +335,17 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		if (spell.getUnitURN () != null)
 		{
 			final MemoryUnit unit = getUnitUtils ().findUnitURN (spell.getUnitURN (), trueUnits, "canSeeSpellMidTurn");
-			canSee = canSeeUnitMidTurn (unit, players, trueTerrain, fogOfWarArea, db, sd);
+			canSee = canSeeUnitMidTurn (unit, players, trueTerrain, player, combatLocation, combatAttackingPlayer, combatDefendingPlayer, db, sd);
 		}
 
 		// City spell?
 		else if (spell.getCityLocation () != null)
-			canSee = getFogOfWarCalculations ().canSeeMidTurn (fogOfWarArea.getPlane ().get (spell.getCityLocation ().getPlane ()).getRow ().get
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			
+			canSee = getFogOfWarCalculations ().canSeeMidTurn (priv.getFogOfWar ().getPlane ().get (spell.getCityLocation ().getPlane ()).getRow ().get
 				(spell.getCityLocation ().getY ()).getCell ().get (spell.getCityLocation ().getX ()), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
+		}
 
 		// Overland enchantment
 		else
@@ -489,7 +504,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 			for (final PlayerServerDetails player : players)
 			{
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-				if (canSeeUnitMidTurn (trueUnit, players, trueMap.getMap (), priv.getFogOfWar (), db, sd))
+				if (canSeeUnitMidTurn (trueUnit, players, trueMap.getMap (), player, null, null, null, db, sd))
 				{
 					// Does the player already have the unit in their memory?
 					if (getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ()) == null)
@@ -549,7 +564,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		for (final PlayerServerDetails player : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (canSeeUnitMidTurn (trueUnit, players, trueMap.getMap (), priv.getFogOfWar (), db, sd))
+			if (canSeeUnitMidTurn (trueUnit, players, trueMap.getMap (), player, null, null, null, db, sd))
 			{
 				// For now this doesn't have all the statuses that the Delphi server had, because there's no "free" status in Java yet
 				// Likely have to change this once I find issues wth it, but for now always remove units from player's memory and client regardless of kill action
@@ -597,6 +612,9 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @param trueSpell True spell to add
 	 * @param players List of players in the session
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
+	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
+	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -606,8 +624,9 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final ServerDatabaseEx db, final MomSessionDescription sd)
+	public final void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
+		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		log.entering (FogOfWarMidTurnChanges.class.getName (), "addExistingTrueMaintainedSpellToClients",
@@ -621,7 +640,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		for (final PlayerServerDetails player : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (canSeeSpellMidTurn (trueSpell, players, trueMap.getMap (), trueMap.getUnit (), priv.getFogOfWar (), db, sd))
+			if (canSeeSpellMidTurn (trueSpell, players, trueMap.getMap (), trueMap.getUnit (), player, combatLocation, combatAttackingPlayer, combatDefendingPlayer, db, sd))
 			{
 				// Update player's memory on server
 				if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
@@ -651,6 +670,9 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param players List of players in the session
+	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
+	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
+	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -663,6 +685,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	public final void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -693,7 +716,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		gsk.getTrueMap ().getMaintainedSpell ().add (trueSpell);
 
 		// Then let the other routine deal with updating player memory and the clients
-		addExistingTrueMaintainedSpellToClients (trueSpell, players, gsk.getTrueMap (), db, sd);
+		addExistingTrueMaintainedSpellToClients (trueSpell, players, gsk.getTrueMap (), combatLocation, combatAttackingPlayer, combatDefendingPlayer, db, sd);
 
 		log.exiting (FogOfWarMidTurnChanges.class.getName (), "addMaintainedSpellOnServerAndClients");
 	}
@@ -708,6 +731,9 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param players List of players in the session
+	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
+	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
+	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -720,6 +746,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	public final void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -746,7 +773,8 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		for (final PlayerServerDetails player : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (canSeeSpellMidTurn (msgData, players, trueMap.getMap (), trueMap.getUnit (), priv.getFogOfWar (), db, sd))		// Cheating a little passing msgData as the spell details, but we know they're correct
+			if (canSeeSpellMidTurn (msgData, players, trueMap.getMap (), trueMap.getUnit (), player,
+				combatLocation, combatAttackingPlayer, combatDefendingPlayer, db, sd))		// Cheating a little passing msgData as the spell details, but we know they're correct
 			{
 				// Update player's memory on server
 				getMemoryMaintainedSpellUtils ().switchOffMaintainedSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), castingPlayerID, spellID, unitURN, unitSkillID, cityLocation, citySpellEffectID);
@@ -1071,7 +1099,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		for (final PlayerServerDetails thisPlayer : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
-			if (canSeeUnitMidTurn (tu, players, trueTerrain, priv.getFogOfWar (), db, sd))
+			if (canSeeUnitMidTurn (tu, players, trueTerrain, thisPlayer, null, null, null, db, sd))
 			{
 				// Update player's memory on server
 				final MemoryUnit mu = getUnitUtils ().findUnitURN (tu.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience");

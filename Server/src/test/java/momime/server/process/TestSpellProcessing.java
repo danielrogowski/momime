@@ -171,7 +171,7 @@ public final class TestSpellProcessing
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// Mocked method handles adding the spell to the true map, player's memories and sending the network msgs, so don't need to worry about any of that
-		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd);
+		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, null, null, null, db, sd);
 		
 		// CAE should get added also
 		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", pd3.getPlayerID (), null, players, db, sd);
@@ -262,7 +262,7 @@ public final class TestSpellProcessing
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// So this shouldn't happen
-		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd);
+		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, null, null, null, db, sd);
 		
 		// CAE shouldn't be added either
 		verify (midTurn, times (0)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", pd3.getPlayerID (), null, players, db, sd);

@@ -69,8 +69,8 @@ public interface ISpellProcessing
 	 * deals with all the knock on effects of spells being switched off, which isn't really much since spells don't grant money or anything when sold
 	 * so this is mostly here for consistency with the building and unit methods
 	 *
-	 *  Does not recalc global production (which will now be reduced from not having to pay the maintenance of the cancelled spell),
-	 *  this has to be done by the calling routine
+	 * Does not recalc global production (which will now be reduced from not having to pay the maintenance of the cancelled spell),
+	 * this has to be done by the calling routine
 	 *
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param castingPlayerID Player who cast the spell

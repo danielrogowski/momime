@@ -146,6 +146,9 @@ public interface IFogOfWarMidTurnChanges
 	 * @param trueSpell True spell to add
 	 * @param players List of players in the session
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
+	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
+	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -154,8 +157,9 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final ServerDatabaseEx db, final MomSessionDescription sd)
+	public void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
+		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -168,6 +172,9 @@ public interface IFogOfWarMidTurnChanges
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param players List of players in the session
+	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
+	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
+	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -179,6 +186,7 @@ public interface IFogOfWarMidTurnChanges
 	public void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -192,6 +200,9 @@ public interface IFogOfWarMidTurnChanges
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param players List of players in the session
+	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
+	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
+	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -203,6 +214,7 @@ public interface IFogOfWarMidTurnChanges
 	public void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 

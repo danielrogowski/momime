@@ -131,7 +131,7 @@ public final class SpellProcessing implements ISpellProcessing
 
 				// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
 				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (gsk, player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-					null, null, false, null, null, players, db, sd);
+					null, null, false, null, null, players, null, null, null, db, sd);
 
 				// Does this overland enchantment give a global combat area effect? (Not all do)
 				if (spell.getSpellHasCombatEffect ().size () > 0)
@@ -447,8 +447,8 @@ public final class SpellProcessing implements ISpellProcessing
 	 * deals with all the knock on effects of spells being switched off, which isn't really much since spells don't grant money or anything when sold
 	 * so this is mostly here for consistency with the building and unit methods
 	 *
-	 *  Does not recalc global production (which will now be reduced from not having to pay the maintenance of the cancelled spell),
-	 *  this has to be done by the calling routine
+	 * Does not recalc global production (which will now be reduced from not having to pay the maintenance of the cancelled spell),
+	 * this has to be done by the calling routine
 	 *
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param castingPlayerID Player who cast the spell
@@ -494,7 +494,8 @@ public final class SpellProcessing implements ISpellProcessing
 		}
 
 		// Remove spell itself
-		getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, castingPlayerID, spellID, unitURN, unitSkillID, castInCombat, cityLocation, citySpellEffectID, players, db, sd);
+		getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, castingPlayerID, spellID, unitURN, unitSkillID, castInCombat,
+			cityLocation, citySpellEffectID, players, null, null, null, db, sd);
 
 		log.exiting (SpellProcessing.class.getName (), "switchOffSpell");
 	}

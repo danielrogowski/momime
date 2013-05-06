@@ -10,7 +10,18 @@
 			<xsd:sequence>
 				<xsd:element minOccurs="1" maxOccurs="1" name="portNumber" type="momimesvrconfig:portNumber" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="userRegistryFilename" type="momimesvrconfig:filename" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="createUserRegistry" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="pathToServerXmlDatabases" type="momimesvrconfig:path" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="uiClassName" type="xsd:normalizedString">
+					<xsd:annotation><xsd:documentation>
+						Name of a class that implements momime.server.ui.MomServerUI.  Currently available are:
+						
+						momime.server.ui.OneWindowPerGameUI - Similar to the old Delphi MoM IME server, opens up a new window for each game in progress, and msgs relating to that game appear in that window (this is the default)
+						momime.server.ui.SingleWindowUI - Still uses a graphical display, but there is only a single window so all msgs from all games appear in the same window
+						momime.server.ui.ConsoleUI - No GUI at all; msgs from all games are just written to the console
+						momime.server.ui.NoUI - The same as "console" except that only SEVERE log messages are output so unless something goes wrong, the server is totally silent
+					</xsd:documentation></xsd:annotation>
+				</xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>

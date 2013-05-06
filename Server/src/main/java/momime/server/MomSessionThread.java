@@ -2,10 +2,6 @@ package momime.server;
 
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBException;
-
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.IResourceValueUtils;
 import momime.common.messages.ISpellUtils;
@@ -32,26 +28,22 @@ import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.calculations.IMomServerUnitCalculations;
-import momime.server.config.v0_9_4.MomImeServerConfig;
 import momime.server.database.IServerDatabaseConverters;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.fogofwar.IFogOfWarMidTurnChanges;
 import momime.server.mapgenerator.IOverlandMapGenerator;
-import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.process.ICityProcessing;
 import momime.server.process.IPlayerMessageProcessing;
 import momime.server.process.ISpellProcessing;
 import momime.server.ui.MomServerUI;
-import momime.server.ui.SessionWindow;
 import momime.server.utils.ICityServerUtils;
 import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.ISpellServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.sessionbase.GeneralServerKnowledge;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPublicKnowledge;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPrivateKnowledge;
@@ -60,7 +52,7 @@ import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
 /**
  * Thread that handles everything going on in one MoM session
  */
-final class MomSessionThread extends MultiplayerSessionThread implements IMomSessionVariables
+public final class MomSessionThread extends MultiplayerSessionThread implements IMomSessionVariables
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomSessionThread.class.getName ());

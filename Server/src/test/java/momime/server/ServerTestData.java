@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
@@ -25,7 +26,6 @@ import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.config.ServerConfigConstants;
-import momime.server.database.JAXBContextCreator;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseFactory;
 import momime.server.database.v0_9_4.DifficultyLevel;
@@ -33,6 +33,7 @@ import momime.server.database.v0_9_4.FogOfWarSetting;
 import momime.server.database.v0_9_4.LandProportion;
 import momime.server.database.v0_9_4.MapSize;
 import momime.server.database.v0_9_4.NodeStrength;
+import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.SpellSetting;
 import momime.server.database.v0_9_4.UnitSetting;
 import momime.server.mapgenerator.CombatMapGenerator;
@@ -79,7 +80,7 @@ public final class ServerTestData
 	 */
 	public final static ServerDatabaseEx loadServerDatabase () throws IOException, JAXBException
 	{
-		final Unmarshaller unmarshaller = JAXBContextCreator.createServerDatabaseContext ().createUnmarshaller ();		
+		final Unmarshaller unmarshaller = JAXBContext.newInstance (ServerDatabase.class).createUnmarshaller ();		
 		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
 
 		final ServerDatabaseEx serverDB = (ServerDatabaseEx) unmarshaller.unmarshal (locateServerXmlFile ());

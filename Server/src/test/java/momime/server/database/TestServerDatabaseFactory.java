@@ -4,10 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import momime.server.ServerTestData;
+import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
 
@@ -24,7 +26,7 @@ public final class TestServerDatabaseFactory
 	@Test
 	public final void testServerDatabaseFactory () throws IOException, JAXBException
 	{
-		final Unmarshaller unmarshaller = JAXBContextCreator.createServerDatabaseContext ().createUnmarshaller ();
+		final Unmarshaller unmarshaller = JAXBContext.newInstance (ServerDatabase.class).createUnmarshaller ();
 		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
 
 		final Object serverDB = unmarshaller.unmarshal (ServerTestData.locateServerXmlFile ());

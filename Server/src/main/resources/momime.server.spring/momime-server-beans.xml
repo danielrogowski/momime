@@ -4,13 +4,94 @@
 	
 	<import resource="../momime.common.spring/momime-common-beans.xml"/>
 	
+	<!-- General XSD objects (may move these into common project at some stage)-->
+	
+	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
+	
+	<bean id="commonXsdResourceResolver" class="momime.common.database.CommonXsdResourceResolver">
+		<constructor-arg ref="domImplementationRegistry" />
+	</bean>
+	
+	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
+		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
+		<property name="resourceResolver" ref="commonXsdResourceResolver" />
+	</bean>	
+	
+	<!-- Server config XML -->
+	
+	<bean id="serverConfigSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg value="/momime.server.config/MoMIMEServerConfig.xsd"/>
+	</bean>
+	
+	<bean id="serverConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>momime.server.config.v0_9_4.MomImeServerConfig</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+	
+	<bean id="serverConfigUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="serverConfigJaxbContext" factory-method="createUnmarshaller">
+		<property name="schema" ref="serverConfigSchema" />
+	</bean>
+	
+	<bean id="serverConfig" class="momime.server.config.v0_9_4.MomImeServerConfig" factory-bean="serverConfigUnmarshaller" factory-method="unmarshal">
+		<constructor-arg value="MoMIMEServerConfig.xml" />
+	</bean>
+	
+	<!-- Server database XMLs -->
+
+	<bean id="serverDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg value="/momime.server.database/MoMIMEServerDatabase.xsd"/>
+	</bean>
+	
+	<bean id="serverDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>momime.server.database.v0_9_4.ServerDatabase</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+	
+	<bean id="serverDatabaseFactory" class="momime.server.database.ServerDatabaseFactory" />	<!-- Creates ServerDatabaseEx instead of ServerDatabase -->
+	
+	<bean id="serverDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="serverDatabaseJaxbContext" factory-method="createUnmarshaller">
+		<property name="schema" ref="serverDatabaseSchema" />
+	</bean>
+	
+	<bean id="configureServerDatabaseUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="serverDatabaseUnmarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>com.sun.xml.bind.ObjectFactory</value>
+				<array>
+					<ref bean="serverDatabaseFactory" />
+				</array>
+			</list>
+		</property>
+	</bean>	
+	
 	<!-- Singleton beans for server -->
 	
-	<bean id="clientToServerObjectFactory" class="momime.server.messages.process.ObjectFactoryClientToServerMessages" />
+	<bean id="clientToServerObjectFactory" class="momime.server.messages.process.ObjectFactoryClientToServerMessages" />	<!-- Creates Impl versions of msgs -->
 	
 	<bean id="multiplayerServerUtils" class="com.ndg.multiplayer.server.MultiplayerServerUtils" />
 	
-	<bean id="momServer" class="momime.server.MomServer">
+	<bean id="userRegistry" class="com.ndg.multiplayer.server.users.MultiplayerSessionUserRegistryImpl">
+		<constructor-arg value="#{serverConfig.userRegistryFilename}" />
+		<constructor-arg value="#{serverConfig.createUserRegistry}" />
+	</bean>
+
+	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConverters" />
+	
+	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
+		<constructor-arg value="#{serverConfig.pathToServerXmlDatabases}" />
+		<constructor-arg ref="serverDatabaseSchema" />
+		<constructor-arg ref="serverDatabaseUnmarshaller" />
+	</bean>
+	
+	<bean id="momServer" class="momime.server.MomServer" init-method="start">
 		<property name="clientToServerContext" ref="clientToServerJaxbContext" />
 		<property name="serverToClientContext" ref="serverToClientJaxbContext" />
 		<property name="clientToServerContextFactoryArray">
@@ -19,9 +100,14 @@
 			</array>
 		</property>
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
+		<property name="serverDatabaseUnmarshaller" ref="serverDatabaseUnmarshaller" />
+		<property name="userRegistry" ref="userRegistry" />
+		<property name="newGameDatabaseMessage" ref="newGameDatabaseMessage" />
+		<property name="port" value="#{serverConfig.portNumber}" />
+		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
+		<property name="uiClassName" value="#{serverConfig.uiClassName}" />
+		<property name="sessionThreadFactory" ref="sessionThreadFactory" />
 	</bean>
-
-	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConverters" />
 
 	<!-- Utils -->
 
@@ -186,6 +272,10 @@
 			
 			So if there are places that something is genuinely required twice, we have to declare it only
 			once here and then deal with copying the reference within the code -->
+			
+	<bean id="sessionThreadFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.server.IMomSessionThreadFactory" />
+	</bean>			
 
 	<bean id="trueMap" class="momime.common.messages.v0_9_4.FogOfWarMemory" scope="prototype" />
 

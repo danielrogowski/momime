@@ -14,8 +14,9 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
 import momime.client.database.v0_9_4.AvailableDatabase;
 import momime.client.database.v0_9_4.ClientDatabase;
@@ -24,6 +25,7 @@ import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.server.ServerTestData;
+import momime.server.database.v0_9_4.ServerDatabase;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -48,15 +50,18 @@ public final class TestServerDatabaseConverters
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
 
-		final Validator xsd = schemaFactory.newSchema (xsdResource).newValidator ();
+		final Schema xsd = schemaFactory.newSchema (xsdResource);
 		
 		// Set up object to test
 		final ServerDatabaseConverters conv = new ServerDatabaseConverters ();
 
 		// Build it
 		// Locate the server XML file, then go one level up to the folder that it is in
+		final Unmarshaller serverDatabaseUnmarshaller = JAXBContext.newInstance (ServerDatabase.class).createUnmarshaller ();
+		serverDatabaseUnmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
+		
 		final NewGameDatabaseMessage msg = conv.buildNewGameDatabase
-			(new File (ServerTestData.locateServerXmlFile (), "..").getCanonicalFile (), xsd, JAXBContextCreator.createServerDatabaseContext ());
+			(new File (ServerTestData.locateServerXmlFile (), "..").getCanonicalFile (), xsd, serverDatabaseUnmarshaller);
 		assertEquals (1, msg.getNewGameDatabase ().getMomimeXmlDatabase ().size ());
 
 		final AvailableDatabase db = msg.getNewGameDatabase ().getMomimeXmlDatabase ().get (0);

@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.logging.DateTimeAndMessageOnlyFormatter;
-import momime.server.logging.WriteToOtherLogHandler;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 
@@ -33,11 +32,10 @@ public class OneWindowPerGameUI extends SingleWindowUI
 	/**
 	 * @param session Newly created session
 	 * @param sessionWindow The session window created by createWindowForNewSession
-	 * @param fileLogger Logger which writes to a disk file, if enabled
 	 * @return Logger created and configured for this session
 	 */
 	@Override
-	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow, final Logger fileLogger)
+	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
 	{
 		// Every window gets its own logger
 		final Logger sessionLogger = Logger.getLogger ("Session" + session.getSessionID ());
@@ -50,12 +48,12 @@ public class OneWindowPerGameUI extends SingleWindowUI
 		sessionLogger.addHandler (sessionHandler);
 
 		// Also make sure anything written to the session log gets logged to the disk file too, if enabled
-		if (fileLogger != null)
+/*		if (fileLogger != null)
 		{
 			final Handler copySessionLoggerToFileLogger = new WriteToOtherLogHandler (fileLogger, "[Session " + session.getSessionID () + "] ");
 			copySessionLoggerToFileLogger.setLevel (Level.INFO);
 			sessionLogger.addHandler (copySessionLoggerToFileLogger);
-		}
+		} */
 
 		return sessionLogger;
 	}

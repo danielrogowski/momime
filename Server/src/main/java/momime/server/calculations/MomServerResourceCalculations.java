@@ -13,6 +13,7 @@ import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.IMomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.EnforceProductionID;
 import momime.common.database.v0_9_4.SpellUpkeep;
 import momime.common.database.v0_9_4.UnitUpkeep;
@@ -378,24 +379,31 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 
 	/**
 	 * Adds production generated this turn to the permanent values
-	 * @param resourceList List of resources to accumulate
+	 * @param player Player that production amounts are being accumulated for
+	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
 	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
 	 */
-	final void accumulateGlobalProductionValues (final List<MomResourceValue> resourceList, final ServerDatabaseEx db)
+	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException
 	{
 		log.entering (MomServerResourceCalculations.class.getName (), "accumulateGlobalProductionValues");
 
-		for (final MomResourceValue thisProduction : resourceList)
-			if (thisProduction.getAmountPerTurn () != 0)
+		// Note that we can't simply go down the list of production types in the resource list because of the way Magic Power splits into
+		// Mana/Research/Skill Improvement - so its entirely possible that we're supposed to accumulate some Mana even though there is
+		// no pre-existing entry for Mana in this player's resource list
+		for (final ProductionType productionType : db.getProductionType ())
+			if (productionType.getAccumulatesInto () != null)
 			{
-				final ProductionType productionType = db.findProductionType (thisProduction.getProductionTypeID (), "accumulateGlobalProductionValues");
-				if (productionType.getAccumulatesInto () != null)
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				
+				final int amountPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionType.getProductionTypeID (), spellSettings, db);
+				if (amountPerTurn != 0)
 				{
 					// See if need to halve it
-					int amountToAdd = thisProduction.getAmountPerTurn ();
+					int amountToAdd = amountPerTurn;
 					if (productionType.getAccumulationHalved () != null)
 						switch (productionType.getAccumulationHalved ())
 						{
@@ -411,7 +419,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 								if (amountToAdd % 2 == 0)
 									amountToAdd = amountToAdd / 2;
 								else
-									throw new MomException ("accumulateGlobalProductionValues: Expect value for " + thisProduction.getProductionTypeID () + " being accumulated into " +
+									throw new MomException ("accumulateGlobalProductionValues: Expect value for " + productionType.getProductionTypeID () + " being accumulated into " +
 										productionType.getAccumulatesInto () + " to be exact multiple of 2 but was " + amountToAdd);
 								break;
 
@@ -420,7 +428,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 						}
 
 					// Add it
-					getResourceValueUtils ().addToAmountStored (resourceList, productionType.getAccumulatesInto (), amountToAdd);
+					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), productionType.getAccumulatesInto (), amountToAdd);
 				}
 			}
 
@@ -545,8 +553,6 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 				log.finest ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () +
 					" (" + player.getPlayerDescription ().getPlayerName () + ")");
 				
-				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-
 				// Calculate base amounts
 				recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getSessionDescription (), mom.getServerDB ());
@@ -566,7 +572,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 						true, mom));
 
 					// Per turn production amounts are now fine, so do the accumulation and effect calculations
-					accumulateGlobalProductionValues (priv.getResourceValue (), mom.getServerDB ());
+					accumulateGlobalProductionValues (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 					progressResearch (player, mom.getServerDB ());
 					resetCastingSkillRemainingThisTurnToFull (player);
 

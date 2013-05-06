@@ -1,9 +1,11 @@
 package momime.server;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.InvalidParameterException;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -48,9 +50,6 @@ public final class MomServer extends MultiplayerSessionServer
 	/** UI to display server status */
 	private MomServerUI ui;
 
-	/** Logger which writes to a disk file, if enabled */
-	private Logger fileLogger;
-	
 	/** Database converters */
 	private IServerDatabaseConverters serverDatabaseConverters;
 	
@@ -115,7 +114,7 @@ public final class MomServer extends MultiplayerSessionServer
 		
 		// Start logger for this sesssion
 		final SessionWindow sessionWindow = ui.createWindowForNewSession (sd);
-		thread.setSessionLogger (ui.createLoggerForNewSession (sd, sessionWindow, fileLogger));
+		thread.setSessionLogger (ui.createLoggerForNewSession (sd, sessionWindow));
 
 		// Load server XML
 		final File fullFilename = new File (getPathToServerXmlDatabases () + sd.getXmlDatabaseName () + ServerDatabaseConverters.SERVER_XML_FILE_EXTENSION);
@@ -280,13 +279,19 @@ public final class MomServer extends MultiplayerSessionServer
 			if ((majorVersion < JAVA_REQUIRED_MAJOR_VERSION) || ((majorVersion == JAVA_REQUIRED_MAJOR_VERSION) && (minorVersion < JAVA_REQUIRED_MINOR_VERSION)))
 				throw new InvalidParameterException ("MoM IME requires a Java Virtual Machine version " + JAVA_REQUIRED_MAJOR_VERSION + "." + JAVA_REQUIRED_MINOR_VERSION +
 					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
+			
+			// Initialize logging first, in case debug logging for spring itself is enabled
+			final FileInputStream in = new FileInputStream ("MoMIMEServerLogging.properties");
+			LogManager.getLogManager ().readConfiguration (in);
+			in.close ();
 
 			// Everything is now set to start with spring
 			new ClassPathXmlApplicationContext("/momime.server.spring/momime-server-beans.xml");			
 		}
-		catch (final InvalidParameterException e)
+		catch (final Exception e)
 		{
-			System.out.println (e.getMessage ());
+			System.out.println ("Exception in main method:");
+			e.printStackTrace ();
 		}
 	}
 }

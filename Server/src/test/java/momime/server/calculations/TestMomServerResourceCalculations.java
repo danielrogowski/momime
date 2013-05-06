@@ -3,6 +3,11 @@ package momime.server.calculations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +20,10 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.RoundingDirectionID;
+import momime.common.messages.IResourceValueUtils;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.ResourceValueUtils;
@@ -519,78 +526,54 @@ public final class TestMomServerResourceCalculations
 		throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
 
-		final List<MomResourceValue> resourceList = new ArrayList<MomResourceValue> ();
-
-		// Research resource has no accumulation defined
-		final MomResourceValue research = new MomResourceValue ();
-		research.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
-		research.setAmountPerTurn (10);
-		research.setAmountStored (15);
-		resourceList.add (research);
-
-		// Mana accumulates into itself
-		final MomResourceValue mana = new MomResourceValue ();
-		mana.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
-		mana.setAmountPerTurn (12);
-		mana.setAmountStored (16);
-		resourceList.add (mana);
-
-		// Gold accumulates into itself
-		final MomResourceValue gold = new MomResourceValue ();
-		gold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
-		gold.setAmountPerTurn (7);
-		gold.setAmountStored (100);
-		resourceList.add (gold);
-
-		// Rations are accumulates into gold, halved + rounded down
-		final MomResourceValue rations = new MomResourceValue ();
-		rations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
-		rations.setAmountPerTurn (9);
-		rations.setAmountStored (80);
-		resourceList.add (rations);
+		// Player
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
 		// Set up test object
+		final IResourceValueUtils utils = mock (IResourceValueUtils.class); 
+
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
-		calc.setResourceValueUtils (new ResourceValueUtils ());
+		calc.setResourceValueUtils (utils);
 		
+		// Research resource has no accumulation defined
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (10);
+		
+		// Mana accumulates into itself
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (12);
+
+		// Gold accumulates into itself
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (7);
+
+		// Rations are accumulates into gold, halved + rounded down
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
+
 		// Call method
-		calc.accumulateGlobalProductionValues (resourceList, db);
+		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
 		// Check results
-		assertEquals (4, resourceList.size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, resourceList.get (0).getProductionTypeID ());
-		assertEquals (10, resourceList.get (0).getAmountPerTurn ());
-		assertEquals (15, resourceList.get (0).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, resourceList.get (1).getProductionTypeID ());
-		assertEquals (12, resourceList.get (1).getAmountPerTurn ());
-		assertEquals (28, resourceList.get (1).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, resourceList.get (2).getProductionTypeID ());
-		assertEquals (7, resourceList.get (2).getAmountPerTurn ());
-		assertEquals (111, resourceList.get (2).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, resourceList.get (3).getProductionTypeID ());
-		assertEquals (9, resourceList.get (3).getAmountPerTurn ());
-		assertEquals (80, resourceList.get (3).getAmountStored ());
+		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, 10);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, 12);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 7);
+		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, 9);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 4);		// from rations
 
 		// Negate all the per turn amounts and run it again (this is here to prove how the rounding down works on a negative value)
-		for (final MomResourceValue production : resourceList)
-			production.setAmountPerTurn (-production.getAmountPerTurn ());
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (-10);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (-12);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (-7);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
 
-		calc.accumulateGlobalProductionValues (resourceList, db);
+		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
-		assertEquals (4, resourceList.size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, resourceList.get (0).getProductionTypeID ());
-		assertEquals (-10, resourceList.get (0).getAmountPerTurn ());
-		assertEquals (15, resourceList.get (0).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, resourceList.get (1).getProductionTypeID ());
-		assertEquals (-12, resourceList.get (1).getAmountPerTurn ());
-		assertEquals (16, resourceList.get (1).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, resourceList.get (2).getProductionTypeID ());
-		assertEquals (-7, resourceList.get (2).getAmountPerTurn ());
-		assertEquals (100, resourceList.get (2).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, resourceList.get (3).getProductionTypeID ());
-		assertEquals (-9, resourceList.get (3).getAmountPerTurn ());
-		assertEquals (80, resourceList.get (3).getAmountStored ());
+		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, -10);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -12);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, -7);
+		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, -9);
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, -4);		// from rations
 	}
 
 	/**
@@ -605,22 +588,24 @@ public final class TestMomServerResourceCalculations
 		throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
 
 		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
-		final List<MomResourceValue> resourceList = new ArrayList<MomResourceValue> ();
-
-		final MomResourceValue rations = new MomResourceValue ();
-		rations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
-		rations.setAmountPerTurn (9);
-		rations.setAmountStored (80);
-		resourceList.add (rations);
+		// Player
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
 		// Set up test object
+		final IResourceValueUtils utils = mock (IResourceValueUtils.class);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
+		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
+		calc.setResourceValueUtils (utils);
 		
 		// Call method
-		calc.accumulateGlobalProductionValues (resourceList, db);
+		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 	}
 
 	/**
@@ -635,22 +620,24 @@ public final class TestMomServerResourceCalculations
 		throws IOException, JAXBException, RecordNotFoundException, MomException
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
 
 		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
-		final List<MomResourceValue> resourceList = new ArrayList<MomResourceValue> ();
-
-		final MomResourceValue rations = new MomResourceValue ();
-		rations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
-		rations.setAmountPerTurn (-9);
-		rations.setAmountStored (80);
-		resourceList.add (rations);
+		// Player
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
 		// Set up test object
+		final IResourceValueUtils utils = mock (IResourceValueUtils.class); 
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
+		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
+		calc.setResourceValueUtils (utils);
 		
 		// Call method
-		calc.accumulateGlobalProductionValues (resourceList, db);
+		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 	}
 	
 	/**

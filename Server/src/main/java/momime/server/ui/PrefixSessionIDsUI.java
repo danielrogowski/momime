@@ -26,11 +26,10 @@ abstract class PrefixSessionIDsUI implements MomServerUI
 	/**
 	 * @param session Newly created session
 	 * @param sessionWindow The session window created by createWindowForNewSession
-	 * @param fileLogger Logger which writes to a disk file, if enabled
 	 * @return Logger created and configured for this session
 	 */
 	@Override
-	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow, final Logger fileLogger)
+	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
 	{
 		final Logger sessionLogger = Logger.getLogger ("Session" + session.getSessionID ());
 		sessionLogger.setLevel (Level.INFO);

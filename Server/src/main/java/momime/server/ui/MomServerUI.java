@@ -41,7 +41,7 @@ public interface MomServerUI
 	 * @param fileLogger Logger which writes to a disk file, if enabled
 	 * @return Logger created and configured for this session
 	 */
-	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow, final Logger fileLogger);
+	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow);
 
 	/**
 	 * Allows the UI to update its list of sessions when a session is either added or closed

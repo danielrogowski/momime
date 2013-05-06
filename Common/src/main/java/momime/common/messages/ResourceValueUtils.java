@@ -218,13 +218,6 @@ public final class ResourceValueUtils implements IResourceValueUtils
 	{
 		log.entering (ResourceValueUtils.class.getName (), "calculateAmountPerTurnForProductionType", productionTypeID);
 
-		// Is there a research spell specified?
-		final Spell spellBeingResearched;
-		if (privateInfo.getSpellIDBeingResearched () == null)
-			spellBeingResearched = null;
-		else
-			spellBeingResearched = db.findSpell (privateInfo.getSpellIDBeingResearched (), "calculateAmountPerTurnForProductionType");
-
 		// Find directly produced values - for research, this will give the amounts produced by libraries, universities, etc.
 		final MomResourceValue playerResourceValue = findResourceValue (privateInfo.getResourceValue (), productionTypeID);
 		final int rawAmountPerTurn;
@@ -277,6 +270,13 @@ public final class ResourceValueUtils implements IResourceValueUtils
 			 */
 			if (productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH))
 			{
+				// Is there a research spell specified?
+				final Spell spellBeingResearched;
+				if (privateInfo.getSpellIDBeingResearched () == null)
+					spellBeingResearched = null;
+				else
+					spellBeingResearched = db.findSpell (privateInfo.getSpellIDBeingResearched (), "calculateAmountPerTurnForProductionType");
+
 				// How many spell books do we have in this realm? (we might get a research bonus)
 				final int bookCount;
 				if (spellBeingResearched != null)

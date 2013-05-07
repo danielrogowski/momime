@@ -8,6 +8,7 @@ import momime.common.messages.ISpellUtils;
 import momime.common.messages.IUnitUtils;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
+import momime.common.messages.v0_9_4.MagicPowerDistribution;
 import momime.common.messages.v0_9_4.MapAreaOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapAreaOfStrings;
@@ -282,6 +283,13 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 
 		// Set default tax rate
 		priv.setTaxRateID (ServerDatabaseValues.VALUE_TAX_RATE_DEFAULT);
+		
+		// Set default power distribution
+		final MagicPowerDistribution dist = new MagicPowerDistribution ();
+		dist.setManaRatio (80);
+		dist.setResearchRatio (80);
+		dist.setSkillRatio (80);
+		priv.setMagicPowerDistribution (dist);
 
 		// Create and initialize fog of war area
 		final MapVolumeOfFogOfWarStates fogOfWar = new MapVolumeOfFogOfWarStates ();

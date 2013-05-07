@@ -225,6 +225,8 @@ public final class ResourceValueUtils implements IResourceValueUtils
 			rawAmountPerTurn = 0;
 		else
 			rawAmountPerTurn = playerResourceValue.getAmountPerTurn ();
+		
+		log.finest ("rawAmountPerTurn = " + rawAmountPerTurn);
 
 		// If the production type ID is mana, research or skill improvement then we may also be channeling some in from magic power, and may also get various bonuses
 		// So there's 3 portions to the result: the raw value, the amount channeled from magic power, and percentage bonuses

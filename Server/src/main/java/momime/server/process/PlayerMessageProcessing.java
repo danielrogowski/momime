@@ -702,7 +702,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 		}
 
 		log.exiting (PlayerMessageProcessing.class.getName (), "switchToNextPlayer",
-			new Integer [] {mom.getGeneralPublicKnowledge ().getTurnNumber (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID ()});
+			"Player ID " + mom.getGeneralPublicKnowledge ().getCurrentPlayerID () + " turn " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
 	}
 
 	/**

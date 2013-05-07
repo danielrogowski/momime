@@ -31,7 +31,6 @@ import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomResourceValue;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
@@ -388,7 +387,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException
 	{
-		log.entering (MomServerResourceCalculations.class.getName (), "accumulateGlobalProductionValues");
+		log.entering (MomServerResourceCalculations.class.getName (), "accumulateGlobalProductionValues", player.getPlayerDescription ().getPlayerID ());
 
 		// Note that we can't simply go down the list of production types in the resource list because of the way Magic Power splits into
 		// Mana/Research/Skill Improvement - so its entirely possible that we're supposed to accumulate some Mana even though there is

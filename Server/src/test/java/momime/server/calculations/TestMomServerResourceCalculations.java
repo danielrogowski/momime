@@ -2,11 +2,10 @@ package momime.server.calculations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,10 +23,10 @@ import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.RoundingDirectionID;
 import momime.common.messages.IResourceValueUtils;
+import momime.common.messages.ISpellUtils;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.ResourceValueUtils;
-import momime.common.messages.SpellUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
@@ -529,9 +528,13 @@ public final class TestMomServerResourceCalculations
 		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
 
 		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (3);
+		pd.setHuman (true);
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 
 		// Set up test object
 		final IResourceValueUtils utils = mock (IResourceValueUtils.class); 
@@ -593,9 +596,13 @@ public final class TestMomServerResourceCalculations
 		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
 		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (3);
+		pd.setHuman (true);
+
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 
 		// Set up test object
 		final IResourceValueUtils utils = mock (IResourceValueUtils.class);
@@ -625,9 +632,13 @@ public final class TestMomServerResourceCalculations
 		db.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 
 		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (3);
+		pd.setHuman (true);
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 
 		// Set up test object
 		final IResourceValueUtils utils = mock (IResourceValueUtils.class); 
@@ -648,21 +659,33 @@ public final class TestMomServerResourceCalculations
 	public final void testProgressResearch () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, trans);
 
 		// Connection
 		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
 		player.setConnection (msgs);
 		
+		// Set up test object
+		final IMomServerSpellCalculations serverSpellCalculations = mock (IMomServerSpellCalculations.class);
+		final ISpellUtils spellUtils = mock (ISpellUtils.class);
+		final IResourceValueUtils resourceValueUtils = mock (IResourceValueUtils.class);
+		
+		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
+		calc.setResourceValueUtils (resourceValueUtils);
+		calc.setSpellUtils (spellUtils);
+		calc.setServerSpellCalculations (serverSpellCalculations);
+
 		// Put in some dummy spells
 		for (int n = 1; n <= 3; n++)
 		{
@@ -671,26 +694,16 @@ public final class TestMomServerResourceCalculations
 			status.setStatus (SpellResearchStatusID.RESEARCHABLE);
 			status.setRemainingResearchCost (n * 50);
 			priv.getSpellResearchStatus ().add (status);
+			
+			when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), status.getSpellID ())).thenReturn (status);
 		}
 		
 		// Generate 40 research each turn
-		final MomResourceValue researchAmount = new MomResourceValue ();
-		researchAmount.setAmountPerTurn (40);
-		researchAmount.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
-		priv.getResourceValue ().add (researchAmount);
-		
-		// Set up test object
-		final SpellUtils spellUtils = new SpellUtils ();
-		final MomServerSpellCalculations serverSpellCalculations = new MomServerSpellCalculations ();
-		serverSpellCalculations.setSpellUtils (spellUtils);
-		
-		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
-		calc.setResourceValueUtils (new ResourceValueUtils ());
-		calc.setSpellUtils (spellUtils);
-		calc.setServerSpellCalculations (serverSpellCalculations);
+		when (resourceValueUtils.calculateAmountPerTurnForProductionType
+			(priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (40);
 		
 		// No spell being researched
-		calc.progressResearch (player, db);
+		calc.progressResearch (player, spellSettings, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -706,10 +719,12 @@ public final class TestMomServerResourceCalculations
 		
 		assertEquals (0, msgs.getMessages ().size ());
 		
+		verify (serverSpellCalculations, times (0)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
+		
 		// Spend 40 research - 60 left
 		priv.setSpellIDBeingResearched ("SP002");
 
-		calc.progressResearch (player, db);
+		calc.progressResearch (player, spellSettings, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -729,9 +744,11 @@ public final class TestMomServerResourceCalculations
 		assertEquals ("SP002", msg1.getSpellID ());
 		assertEquals (60, msg1.getRemainingResearchCost ());
 
+		verify (serverSpellCalculations, times (0)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
+
 		// Spend 40 research - 20 left
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, db);
+		calc.progressResearch (player, spellSettings, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -751,21 +768,23 @@ public final class TestMomServerResourceCalculations
 		assertEquals ("SP002", msg2.getSpellID ());
 		assertEquals (20, msg2.getRemainingResearchCost ());
 		
+		verify (serverSpellCalculations, times (0)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
+		
 		// Finish research
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, db);
+		calc.progressResearch (player, spellSettings, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
 		assertEquals ("SP001", priv.getSpellResearchStatus ().get (0).getSpellID ());
 		assertEquals (50, priv.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
-		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, priv.getSpellResearchStatus ().get (0).getStatus ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (0).getStatus ());		// would be RESEARCHABLE_NOW if method wasn't mocked out
 		assertEquals ("SP002", priv.getSpellResearchStatus ().get (1).getSpellID ());
 		assertEquals (0, priv.getSpellResearchStatus ().get (1).getRemainingResearchCost ());		// Done
 		assertEquals (SpellResearchStatusID.AVAILABLE, priv.getSpellResearchStatus ().get (1).getStatus ());
 		assertEquals ("SP003", priv.getSpellResearchStatus ().get (2).getSpellID ());
 		assertEquals (150, priv.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
-		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, priv.getSpellResearchStatus ().get (2).getStatus ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (2).getStatus ());		// same
 
 		assertEquals (1, msgs.getMessages ().size ());
 		
@@ -773,13 +792,15 @@ public final class TestMomServerResourceCalculations
 		assertEquals (3, msg3.getSpellResearchStatus ().size ());
 		assertEquals ("SP001", msg3.getSpellResearchStatus ().get (0).getSpellID ());
 		assertEquals (50, msg3.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
-		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, msg3.getSpellResearchStatus ().get (0).getStatus ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, msg3.getSpellResearchStatus ().get (0).getStatus ());		// same
 		assertEquals ("SP002", msg3.getSpellResearchStatus ().get (1).getSpellID ());
 		assertEquals (0, msg3.getSpellResearchStatus ().get (1).getRemainingResearchCost ());
 		assertEquals (SpellResearchStatusID.AVAILABLE, msg3.getSpellResearchStatus ().get (1).getStatus ());
 		assertEquals ("SP003", msg3.getSpellResearchStatus ().get (2).getSpellID ());
 		assertEquals (150, msg3.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
-		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, msg3.getSpellResearchStatus ().get (2).getStatus ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, msg3.getSpellResearchStatus ().get (2).getStatus ());		// same
+
+		verify (serverSpellCalculations, times (1)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);		// <---
 	}
 	
 	/**

@@ -248,7 +248,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 		final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseEx db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.entering (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething",
+		log.entering (MomServerResourceCalculations.class.getName (), "listConsumersOfProductionType",
 			new String [] {player.getPlayerDescription ().getPlayerID ().toString (), productionTypeID});
 
 		final List<IMomResourceConsumer> consumers = new ArrayList<IMomResourceConsumer> ();
@@ -297,7 +297,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 				}
 			}
 
-		log.exiting (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething");
+		log.exiting (MomServerResourceCalculations.class.getName (), "listConsumersOfProductionType");
 		return consumers;
 	}
 
@@ -437,23 +437,26 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * Checks how much research we generate this turn and puts it towards the current spell
 	 * @param player Player to progress research for
+	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 * @throws JAXBException If there is a problem converting a reply message into XML
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
+	 * @throws MomException If we find an invalid casting reduction type
 	 */
-	final void progressResearch (final PlayerServerDetails player, final ServerDatabaseEx db)
-		throws RecordNotFoundException, JAXBException, XMLStreamException
+	final void progressResearch (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		log.entering (MomServerResourceCalculations.class.getName (), "progressResearch");
 		
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		
 		if (priv.getSpellIDBeingResearched () != null)
 		{
-			final int researchAmount = getResourceValueUtils ().findAmountPerTurnForProductionType
-				(priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+			final int researchAmount = getResourceValueUtils ().calculateAmountPerTurnForProductionType
+				(priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db);
 			
 			log.finest ("Player generated " + researchAmount + " RPs this turn in spell research");
 			
@@ -572,7 +575,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 
 					// Per turn production amounts are now fine, so do the accumulation and effect calculations
 					accumulateGlobalProductionValues (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
-					progressResearch (player, mom.getServerDB ());
+					progressResearch (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 					resetCastingSkillRemainingThisTurnToFull (player);
 
 					// Continue casting spells

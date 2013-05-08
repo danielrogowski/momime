@@ -95,7 +95,8 @@
     			<value>momime.common.messages.servertoclient.v0_9_4.SpellResearchChangedMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.OverlandCastQueuedMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateManaSpentOnCastingCurrentSpellMessage</value>    			
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateManaSpentOnCastingCurrentSpellMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage</value>

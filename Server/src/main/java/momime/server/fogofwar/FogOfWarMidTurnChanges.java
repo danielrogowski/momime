@@ -589,6 +589,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 			case UNIT_LACK_OF_PRODUCTION:
 				log.finest ("Permanently removing unit URN " + trueUnit.getUnitURN ());
 				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
+				break;
 
 			// VISIBLE_AREA_CHANGED is only ever used in msgs sent to clients and should never be passed into this method
 

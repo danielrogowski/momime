@@ -336,8 +336,15 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 				// Check how much of this type of production the player has
 				int valueToCheck = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), productionType.getProductionTypeID ());
 
+				log.finest ("findInsufficientProductionAndSellSomething: PlayerID " + player.getPlayerDescription ().getPlayerID () + " is generating " + valueToCheck +
+					" per turn of productionType " + productionType.getProductionTypeID () + " which has enforceType " + enforceType);
+				
 				if (addOnStoredAmount)
-					valueToCheck = valueToCheck + getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), productionType.getProductionTypeID ());
+				{
+					final int amountStored = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), productionType.getProductionTypeID ());
+					valueToCheck = valueToCheck + amountStored;
+					log.finest ("findInsufficientProductionAndSellSomething: +amountStored " + amountStored + " = " + valueToCheck);
+				}
 
 				if (valueToCheck < 0)
 				{
@@ -345,6 +352,8 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 						(player, mom.getPlayers (), productionType.getProductionTypeID (), mom.getGeneralServerKnowledge ().getTrueMap (),
 							mom.getServerDB ());
 
+					log.finest ("findInsufficientProductionAndSellSomething: Found " + consumers.size () + " consumers of productionType " + productionType.getProductionTypeID ());
+					
 					// Want random choice to be weighted, e.g. if something consumes 4 gold then it should be 4x more likely to be chosen than something that only consumes 1 gold
 					int totalConsumption = 0;
 					for (final IMomResourceConsumer consumer : consumers)
@@ -552,44 +561,50 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
 			{
-				log.finest ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () +
-					" (" + player.getPlayerDescription ().getPlayerName () + ")");
+				// Don't calc production for the Rampaging Monsters player, or the routine spots that they have lots of units
+				// that take a lot of mana to maintain, and no buildings generating any mana to support them, and kills them all off
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				if (!pub.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
+				{				
+					log.finest ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () +
+						" (" + player.getPlayerDescription ().getPlayerName () + ")");
 				
-				// Calculate base amounts
-				recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getSessionDescription (), mom.getServerDB ());
+					// Calculate base amounts
+					recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+						mom.getSessionDescription (), mom.getServerDB ());
 
-				// If during the start phase, use these per turn production amounts as the amounts to add to the stored totals
-				if (duringStartPhase)
-				{
-					// Search for a type of per-turn production that we're not producing enough of - currently this is only Rations
-					// However (and to keep this consistent with how we handle insufficient stored Gold) there are too many interdependencies with what
-					// may happen when we sell buildings, e.g. if we sell a Bank we don't only save its maintenance cost, the population then produces less gold
-					// So the only safe way to do this is to recalculate ALL the productions, from scratch, every time we sell something!
-					while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO,
-						false, mom));
+					// If during the start phase, use these per turn production amounts as the amounts to add to the stored totals
+					if (duringStartPhase)
+					{
+						// Search for a type of per-turn production that we're not producing enough of - currently this is only Rations
+						// However (and to keep this consistent with how we handle insufficient stored Gold) there are too many interdependencies with what
+						// may happen when we sell buildings, e.g. if we sell a Bank we don't only save its maintenance cost, the population then produces less gold
+						// So the only safe way to do this is to recalculate ALL the productions, from scratch, every time we sell something!
+						while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO, false, mom))
+							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 
-					// Now do the same for stored production
-					while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO,
-						true, mom));
+						// Now do the same for stored production
+						while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO, true, mom))
+							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 
-					// Per turn production amounts are now fine, so do the accumulation and effect calculations
-					accumulateGlobalProductionValues (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
-					progressResearch (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
-					resetCastingSkillRemainingThisTurnToFull (player);
+						// Per turn production amounts are now fine, so do the accumulation and effect calculations
+						accumulateGlobalProductionValues (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+						progressResearch (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+						resetCastingSkillRemainingThisTurnToFull (player);
 
-					// Continue casting spells
-					// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used
-					if (getSpellProcessing ().progressOverlandCasting (mom.getGeneralServerKnowledge (),
-						player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
+						// Continue casting spells
+						// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used
+						if (getSpellProcessing ().progressOverlandCasting (mom.getGeneralServerKnowledge (),
+							player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
 						
-						recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getSessionDescription (), mom.getServerDB ());
-				}
-				else if (player.getPlayerDescription ().isHuman ())
+							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+								mom.getSessionDescription (), mom.getServerDB ());
+					}
+					else if (player.getPlayerDescription ().isHuman ())
 
-					// No need to send values during start phase, since the start phase calls recalculateGlobalProductionValues () for a second time with DuringStartPhase set to False
-					sendGlobalProductionValues  (player, 0);
+						// No need to send values during start phase, since the start phase calls recalculateGlobalProductionValues () for a second time with DuringStartPhase set to False
+						sendGlobalProductionValues (player, 0);
+				}
 			}
 
 		log.exiting (MomServerResourceCalculations.class.getName (), "recalculateGlobalProductionValues");

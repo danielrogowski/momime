@@ -2,9 +2,13 @@ package momime.common.messages;
 
 import java.util.List;
 
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_4.Spell;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
+import momime.common.utils.TargetUnitSpellResult;
 
 /**
  * Methods for working with list of MemoryMaintainedSpells
@@ -54,4 +58,46 @@ public interface IMemoryMaintainedSpellUtils
 	 * @param unitURNs List of units to remove spells from
 	 */
 	public void removeSpellsCastOnUnitStack (final List<MemoryMaintainedSpell> spells, final List<Integer> unitURNs);
+
+	/**
+	 * When trying to cast a spell on a unit, this will make a list of all the unit spell effect IDs for that spell that aren't already in effect on that unit.
+	 * This is mainly to deal with Warp Creature which has 3 seperate effects and can be multi-cast to get all 3 effects.
+	 * 
+	 * @param spells List of spells to check against
+	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
+	 * @param unitURN Which unit the spell is being case on
+	 * @return Null = this spell has no unitSpellEffectIDs defined; empty list = has effect(s) defined but they're all cast on this unit already; non-empty list = list of effects that can still be cast
+	 */
+	public List<String> listUnitSpellEffectsNotYetCastOnUnit (final List<MemoryMaintainedSpell> spells, final Spell spell,
+		final int castingPlayerID, final int unitURN);
+	
+	/**
+	 * When trying to cast a spell on a city, this will make a list of all the city spell effect IDs for that spell that aren't already in effect on that city.
+	 * This is mainly to deal with Spell Ward - we might have a Nature and Chaos Ward in place
+	 * already, in that case this method will tell us that we can still cast a Life, Death or Sorcery Ward.
+	 * 
+	 * @param spells List of spells to check against
+	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
+	 * @param cityLocation Location of the city
+	 * @return Null = this spell has no citySpellEffectIDs defined; empty list = has effect(s) defined but they're all cast on this city already; non-empty list = list of effects that can still be cast
+	 */
+	public List<String> listCitySpellEffectsNotYetCastAtLocation (final List<MemoryMaintainedSpell> spells, final Spell spell,
+		final int castingPlayerID, final OverlandMapCoordinates cityLocation);
+	
+	/**
+	 * Checks whether the specified spell can be targetted at the specified unit.  There's lots of validation to do for this, and the
+	 * client does it in a few places and then repeated on the server, so much cleaner if we pull it out into a common routine.
+	 * 
+	 * @param spells List of known existing spells
+	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
+	 * @param unit Unit to cast the spell on
+	 * @param db Lookup lists built over the XML database
+	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
+	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 */
+	public TargetUnitSpellResult isUnitValidTargetForSpell (final List<MemoryMaintainedSpell> spells,
+		final Spell spell, final int castingPlayerID, final MemoryUnit unit, final ICommonDatabase db) throws RecordNotFoundException; 
 }

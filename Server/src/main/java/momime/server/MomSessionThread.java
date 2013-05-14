@@ -2,6 +2,8 @@ package momime.server;
 
 import java.util.logging.Logger;
 
+import momime.common.messages.IMemoryBuildingUtils;
+import momime.common.messages.IMemoryMaintainedSpellUtils;
 import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.IResourceValueUtils;
 import momime.common.messages.ISpellUtils;
@@ -92,7 +94,13 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 
 	/** Spell utils */
 	private ISpellUtils spellUtils;
+	
+	/** Maintained spell utils */
+	private IMemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 
+	/** Builiding utils */
+	private IMemoryBuildingUtils memoryBuildingUtils;
+	
 	/** Unit utils */
 	private IUnitUtils unitUtils;
 	
@@ -508,7 +516,41 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	{
 		spellUtils = utils;
 	}
+	
+	/**
+	 * @return Maintained spell utils
+	 */
+	@Override
+	public final IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
 
+	/**
+	 * @param utils Maintained spell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final IMemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}	
+
+	/**
+	 * @return Builiding utils 
+	 */
+	@Override
+	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+	
+	/**
+	 * @param utils Builiding utils 
+	 */
+	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+	
 	/**
 	 * @return Unit utils
 	 */

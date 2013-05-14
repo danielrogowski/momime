@@ -2,13 +2,23 @@ package momime.common.messages;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.GenerateTestData;
+import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_4.Spell;
+import momime.common.database.v0_9_4.SpellHasCityEffect;
+import momime.common.database.v0_9_4.UnitSpellEffect;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
+import momime.common.utils.TargetUnitSpellResult;
 
 import org.junit.Test;
 
@@ -480,5 +490,236 @@ public final class TestMemoryMaintainedSpellUtils
 		assertEquals ("SP004NonUnit", spells.get (5).getSpellID ());
 		assertEquals ("SP005NonUnit", spells.get (6).getSpellID ());
 		assertEquals ("SP005", spells.get (7).getSpellID ());
+	}
+
+	/**
+	 * Tests the listUnitSpellEffectsNotYetCastOnUnit method
+	 */
+	@Test
+	public final void testListUnitSpellEffectsNotYetCastOnUnit ()
+	{
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		
+		// Spell has no unitSpellEffectIDs defined
+		assertNull (utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10));
+		
+		// Spell with exactly one unitSpellEffectID, that isn't cast yet
+		final UnitSpellEffect effectA = new UnitSpellEffect ();
+		effectA.setUnitSkillID ("A");
+		spell.getUnitSpellEffect ().add (effectA);
+		
+		final List<String> listOne = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
+		assertEquals (1, listOne.size ());
+		assertEquals ("A", listOne.get (0));
+
+		// Spell with exactly one unitSpellEffectID, that is already cast yet
+		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
+		existingEffectA.setSpellID ("SP001");
+		existingEffectA.setCastingPlayerID (1);
+		existingEffectA.setUnitSkillID ("A");
+		existingEffectA.setUnitURN (10);
+		spells.add (existingEffectA);
+		
+		final List<String> listZero = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
+		assertEquals (0, listZero.size ());
+		
+		// Add three more effects
+		for (final String effectID : new String [] {"B", "C", "D"})
+		{
+			final UnitSpellEffect effectB = new UnitSpellEffect ();
+			effectB.setUnitSkillID (effectID);
+			spell.getUnitSpellEffect ().add (effectB);
+		}
+		
+		// One with wrong spell ID
+		final MemoryMaintainedSpell existingEffectB = new MemoryMaintainedSpell ();
+		existingEffectB.setSpellID ("SP002");
+		existingEffectB.setCastingPlayerID (1);
+		existingEffectB.setUnitSkillID ("B");
+		existingEffectB.setUnitURN (10);
+		spells.add (existingEffectB);
+		
+		// One for wrong player
+		final MemoryMaintainedSpell existingEffectC = new MemoryMaintainedSpell ();
+		existingEffectC.setSpellID ("SP001");
+		existingEffectC.setCastingPlayerID (2);
+		existingEffectC.setUnitSkillID ("C");
+		existingEffectC.setUnitURN (10);
+		spells.add (existingEffectC);
+		
+		// One in wrong unit
+		final MemoryMaintainedSpell existingEffectD = new MemoryMaintainedSpell ();
+		existingEffectD.setSpellID ("SP001");
+		existingEffectD.setCastingPlayerID (1);
+		existingEffectD.setUnitSkillID ("D");
+		existingEffectD.setUnitURN (11);
+		spells.add (existingEffectD);
+		
+		// All three effect should still be listed
+		final List<String> listThree = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
+		assertEquals (3, listThree.size ());
+		assertEquals ("B", listThree.get (0));
+		assertEquals ("C", listThree.get (1));
+		assertEquals ("D", listThree.get (2));
+	}
+	
+	/**
+	 * Tests the listCitySpellEffectsNotYetCastAtLocation method
+	 */
+	@Test
+	public final void testListCitySpellEffectsNotYetCastAtLocation ()
+	{
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		
+		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		cityLocation.setX (20);
+		cityLocation.setY (10);
+		cityLocation.setPlane (1);
+		
+		// Spell has no citySpellEffectIDs defined
+		assertNull (utils.listCitySpellEffectsNotYetCastAtLocation (spells, spell, 1, cityLocation));
+		
+		// Spell with exactly one citySpellEffectID, that isn't cast yet
+		final SpellHasCityEffect effectA = new SpellHasCityEffect ();
+		effectA.setCitySpellEffectID ("A");
+		spell.getSpellHasCityEffect ().add (effectA);
+		
+		final List<String> listOne = utils.listCitySpellEffectsNotYetCastAtLocation (spells, spell, 1, cityLocation);
+		assertEquals (1, listOne.size ());
+		assertEquals ("A", listOne.get (0));
+
+		// Spell with exactly one citySpellEffectID, that is already cast yet
+		final OverlandMapCoordinates effectLocationA = new OverlandMapCoordinates ();
+		effectLocationA.setX (20);
+		effectLocationA.setY (10);
+		effectLocationA.setPlane (1);
+
+		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
+		existingEffectA.setSpellID ("SP001");
+		existingEffectA.setCastingPlayerID (1);
+		existingEffectA.setCitySpellEffectID ("A");
+		existingEffectA.setCityLocation (effectLocationA);
+		spells.add (existingEffectA);
+		
+		final List<String> listZero = utils.listCitySpellEffectsNotYetCastAtLocation (spells, spell, 1, cityLocation);
+		assertEquals (0, listZero.size ());
+		
+		// Add three more effects
+		for (final String effectID : new String [] {"B", "C", "D"})
+		{
+			final SpellHasCityEffect effectB = new SpellHasCityEffect ();
+			effectB.setCitySpellEffectID (effectID);
+			spell.getSpellHasCityEffect ().add (effectB);
+		}
+		
+		// One with wrong spell ID
+		final MemoryMaintainedSpell existingEffectB = new MemoryMaintainedSpell ();
+		existingEffectB.setSpellID ("SP002");
+		existingEffectB.setCastingPlayerID (1);
+		existingEffectB.setCitySpellEffectID ("B");
+		existingEffectB.setCityLocation (effectLocationA);
+		spells.add (existingEffectB);
+		
+		// One for wrong player
+		final MemoryMaintainedSpell existingEffectC = new MemoryMaintainedSpell ();
+		existingEffectC.setSpellID ("SP001");
+		existingEffectC.setCastingPlayerID (2);
+		existingEffectC.setCitySpellEffectID ("C");
+		existingEffectC.setCityLocation (effectLocationA);
+		spells.add (existingEffectC);
+		
+		// One in wrong location
+		final OverlandMapCoordinates effectLocationD = new OverlandMapCoordinates ();
+		effectLocationD.setX (20);
+		effectLocationD.setY (11);
+		effectLocationD.setPlane (1);
+
+		final MemoryMaintainedSpell existingEffectD = new MemoryMaintainedSpell ();
+		existingEffectD.setSpellID ("SP001");
+		existingEffectD.setCastingPlayerID (1);
+		existingEffectD.setCitySpellEffectID ("D");
+		existingEffectD.setCityLocation (effectLocationD);
+		spells.add (existingEffectD);
+		
+		// All three effect should still be listed
+		final List<String> listThree = utils.listCitySpellEffectsNotYetCastAtLocation (spells, spell, 1, cityLocation);
+		assertEquals (3, listThree.size ());
+		assertEquals ("B", listThree.get (0));
+		assertEquals ("C", listThree.get (1));
+		assertEquals ("D", listThree.get (2));
+	}
+	
+	/**
+	 * Tests the isUnitValidTargetForSpell method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsUnitValidTargetForSpell () throws Exception
+	{
+		final ICommonDatabase db = GenerateTestData.createDB ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final Spell spell = new Spell ();
+		spell.setSpellID ("SP001");
+		
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (10);
+		
+		// Set up object to test
+		final ISpellUtils spellUtils = mock (ISpellUtils.class);
+		final IUnitUtils unitUtils = mock (IUnitUtils.class);
+		
+		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		utils.setSpellUtils (spellUtils);
+		utils.setUnitUtils (unitUtils);
+	
+		// Enchanting enemy unit
+		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		unit.setOwningPlayerID (2);
+		assertEquals (TargetUnitSpellResult.ENCHANTING_ENEMY_UNIT, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
+		
+		// Cursing own uint
+		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES);
+		unit.setOwningPlayerID (1);
+		assertEquals (TargetUnitSpellResult.CURSING_OWN_UNIT, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
+		
+		// Spell has no effects defined
+		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		assertEquals (TargetUnitSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
+		
+		// All effects already cast on this unit
+		final UnitSpellEffect effectA = new UnitSpellEffect ();
+		effectA.setUnitSkillID ("A");
+		spell.getUnitSpellEffect ().add (effectA);
+
+		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
+		existingEffectA.setSpellID ("SP001");
+		existingEffectA.setCastingPlayerID (1);
+		existingEffectA.setUnitSkillID ("A");
+		existingEffectA.setUnitURN (10);
+		spells.add (existingEffectA);
+
+		assertEquals (TargetUnitSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
+		
+		// Invalid magic realm/lifeform type
+		final UnitSpellEffect effectB = new UnitSpellEffect ();
+		effectA.setUnitSkillID ("B");
+		spell.getUnitSpellEffect ().add (effectB);
+
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db)).thenReturn ("X");
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (false);
+		assertEquals (TargetUnitSpellResult.INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
+		
+		// Valid target
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (true);
+		assertEquals (TargetUnitSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
 	}
 }

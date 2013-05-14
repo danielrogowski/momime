@@ -18,6 +18,7 @@ import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
 
@@ -178,5 +179,14 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	public final RequestCastSpellMessage createRequestCastSpellMessage ()
 	{
 		return new RequestCastSpellMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created TargetSpellMessage
+	 */
+	@Override
+	public TargetSpellMessage createTargetSpellMessage ()
+	{
+		return new TargetSpellMessageImpl ();
 	}
 }

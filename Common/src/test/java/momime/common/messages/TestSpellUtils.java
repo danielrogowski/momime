@@ -353,11 +353,11 @@ public final class TestSpellUtils
 		// Resist elements can be cast on anything (has no Targets defined)
 		final Spell resistElements = new Spell ();
 
-		assertEquals ("Resist elements should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, null));
-		assertEquals ("Resist elements should be targettable against LTH", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO, null));
-		assertEquals ("Resist elements should be targettable against LT01", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, LIFE_CREATURE, null));
-		assertEquals ("Resist elements should be targettable against LTCC", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CHAOS_CHANNELED_CREATURE, null));
-		assertEquals ("Resist elements should be targettable against LTU", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, UNDEAD_CREATURE, null));
+		assertEquals ("Resist elements should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL));
+		assertEquals ("Resist elements should be targettable against LTH", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO));
+		assertEquals ("Resist elements should be targettable against LT01", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, LIFE_CREATURE));
+		assertEquals ("Resist elements should be targettable against LTCC", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CHAOS_CHANNELED_CREATURE));
+		assertEquals ("Resist elements should be targettable against LTU", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, UNDEAD_CREATURE));
 
 		// Confusion can be cast on anything, but has a saving throw modifier (so has a Target record defined)
 		final Spell confusion = new Spell ();
@@ -366,11 +366,11 @@ public final class TestSpellUtils
 		confusionSavingThrowModifier.setSavingThrowModifier (-4);
 		confusion.getSpellValidUnitTarget ().add (confusionSavingThrowModifier);
 
-		assertEquals ("Confusion should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (confusion, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, null));
-		assertEquals ("Confusion should be targettable against LTH", true, utils.spellCanTargetMagicRealmLifeformType (confusion, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO, null));
-		assertEquals ("Confusion should be targettable against LT01", true, utils.spellCanTargetMagicRealmLifeformType (confusion, LIFE_CREATURE, null));
-		assertEquals ("Confusion should be targettable against LTCC", true, utils.spellCanTargetMagicRealmLifeformType (confusion, CHAOS_CHANNELED_CREATURE, null));
-		assertEquals ("Confusion should be targettable against LTU", true, utils.spellCanTargetMagicRealmLifeformType (confusion, UNDEAD_CREATURE, null));
+		assertEquals ("Confusion should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (confusion, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL));
+		assertEquals ("Confusion should be targettable against LTH", true, utils.spellCanTargetMagicRealmLifeformType (confusion, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO));
+		assertEquals ("Confusion should be targettable against LT01", true, utils.spellCanTargetMagicRealmLifeformType (confusion, LIFE_CREATURE));
+		assertEquals ("Confusion should be targettable against LTCC", true, utils.spellCanTargetMagicRealmLifeformType (confusion, CHAOS_CHANNELED_CREATURE));
+		assertEquals ("Confusion should be targettable against LTU", true, utils.spellCanTargetMagicRealmLifeformType (confusion, UNDEAD_CREATURE));
 
 		// Shatter can only be cast on normal units (has a Target record defined, with no saving throw)
 		final Spell shatter = new Spell ();
@@ -379,11 +379,11 @@ public final class TestSpellUtils
 		shatterSavingThrowModifier.setSavingThrowAttributeID (RESISTANCE);
 		shatter.getSpellValidUnitTarget ().add (shatterSavingThrowModifier);
 
-		assertEquals ("Shatter should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (shatter, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, null));
-		assertEquals ("Shatter shouldn't be targettable against LTH", false, utils.spellCanTargetMagicRealmLifeformType (shatter, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO, null));
-		assertEquals ("Shatter shouldn't be targettable against LT01", false, utils.spellCanTargetMagicRealmLifeformType (shatter, LIFE_CREATURE, null));
-		assertEquals ("Shatter shouldn't be targettable against LTCC", false, utils.spellCanTargetMagicRealmLifeformType (shatter, CHAOS_CHANNELED_CREATURE, null));
-		assertEquals ("Shatter shouldn't be targettable against LTU", false, utils.spellCanTargetMagicRealmLifeformType (shatter, UNDEAD_CREATURE, null));
+		assertEquals ("Shatter should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (shatter, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL));
+		assertEquals ("Shatter shouldn't be targettable against LTH", false, utils.spellCanTargetMagicRealmLifeformType (shatter, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO));
+		assertEquals ("Shatter shouldn't be targettable against LT01", false, utils.spellCanTargetMagicRealmLifeformType (shatter, LIFE_CREATURE));
+		assertEquals ("Shatter shouldn't be targettable against LTCC", false, utils.spellCanTargetMagicRealmLifeformType (shatter, CHAOS_CHANNELED_CREATURE));
+		assertEquals ("Shatter shouldn't be targettable against LTU", false, utils.spellCanTargetMagicRealmLifeformType (shatter, UNDEAD_CREATURE));
 
 		// Flame Blade can be cast on normal units, heroes and Chaos Channeled units, but has no saving throw
 		final Spell flameBlade = new Spell ();
@@ -395,11 +395,11 @@ public final class TestSpellUtils
 			flameBlade.getSpellValidUnitTarget ().add (flameBladeTarget);
 		}
 
-		assertEquals ("Flame blade should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, null));
-		assertEquals ("Flame blade should be targettable against LTH", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO, null));
-		assertEquals ("Flame blade shouldn't be targettable against LT01", false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, LIFE_CREATURE, null));
-		assertEquals ("Flame blade should be targettable against LTCC", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CHAOS_CHANNELED_CREATURE, null));
-		assertEquals ("Flame blade shouldn't be targettable against LTU", false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, UNDEAD_CREATURE, null));
+		assertEquals ("Flame blade should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL));
+		assertEquals ("Flame blade should be targettable against LTH", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO));
+		assertEquals ("Flame blade shouldn't be targettable against LT01", false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, LIFE_CREATURE));
+		assertEquals ("Flame blade should be targettable against LTCC", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CHAOS_CHANNELED_CREATURE));
+		assertEquals ("Flame blade shouldn't be targettable against LTU", false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, UNDEAD_CREATURE));
 	}
 
 	// Methods dealing with lists of spells

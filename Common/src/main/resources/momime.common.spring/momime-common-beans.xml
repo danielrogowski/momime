@@ -37,6 +37,7 @@
     			<value>momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -138,7 +139,10 @@
 	
 	<bean id="memoryGridCellUtils" class="momime.common.messages.MemoryGridCellUtils" />
 	
-	<bean id="memoryMaintainedSpellUtils" class="momime.common.messages.MemoryMaintainedSpellUtils" />
+	<bean id="memoryMaintainedSpellUtils" class="momime.common.messages.MemoryMaintainedSpellUtils">
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.messages.PlayerPickUtils" />
 	

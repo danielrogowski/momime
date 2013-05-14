@@ -38,7 +38,6 @@ public interface MomServerUI
 	/**
 	 * @param session Newly created session
 	 * @param sessionWindow The session window created by createWindowForNewSession
-	 * @param fileLogger Logger which writes to a disk file, if enabled
 	 * @return Logger created and configured for this session
 	 */
 	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow);

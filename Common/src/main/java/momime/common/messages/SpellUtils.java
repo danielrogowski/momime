@@ -263,27 +263,20 @@ public final class SpellUtils implements ISpellUtils
 	}
 
 	/**
-	 * For unit enchantment/curse spells, checks whether the requested magic
-	 * realm/lifeform type ID is a valid target for the spell
-	 *
-	 * Will also build up a list of all the valid magic realm/ lifeform type IDs
-	 * for this spell in List, although List can be left null if this is not
-	 * needed (i.e. on the server)
+	 * For unit enchantment/curse spells, checks whether the requested magic realm/lifeform type ID is a valid target for the spell
+	 * Delphi method was named CheckMagicRealmLifeformTypeIsValidTarget, and also allowed building up a list of the valid magicRealmLifeformTypeIDs
+	 * But really that was only necessary because of the awkwardness of parsing the XML database in Delphi - there's
+	 * no point doing that here because the list of valid targets is already directly accessible as spell.getSpellValidUnitTarget ()
 	 *
 	 * @param spell Spell we want to cast
 	 * @param targetMagicRealmLifeformTypeID the unique string ID of the magic realm/lifeform type to check
-	 * @param validMagicRealmLifeformTypeIDs The list to populate with the string IDs of the magic realm/lifeform types that are valid targets for this spell, can pass this in as null if not required
 	 * @return True if this spell can be cast on this type of target
 	 */
 	@Override
-	public final boolean spellCanTargetMagicRealmLifeformType (final Spell spell,
-		final String targetMagicRealmLifeformTypeID, final List<String> validMagicRealmLifeformTypeIDs)
+	public final boolean spellCanTargetMagicRealmLifeformType (final Spell spell, final String targetMagicRealmLifeformTypeID)
 	{
 		log.entering (SpellUtils.class.getName (), "spellCanTargetMagicRealmLifeform",
-			new String [] {spell.getSpellID (), targetMagicRealmLifeformTypeID, (validMagicRealmLifeformTypeIDs == null) ? "No list" : "List supplied"});
-
-		if (validMagicRealmLifeformTypeIDs != null)
-			validMagicRealmLifeformTypeIDs.clear ();
+			new String [] {spell.getSpellID (), targetMagicRealmLifeformTypeID});
 
 		boolean targetIsValidForThisSpell = false;
 		boolean anyTargetEntryFound = false;
@@ -295,9 +288,6 @@ public final class SpellUtils implements ISpellUtils
 			if (magicRealmLifeformTypeID != null)
 			{
 				anyTargetEntryFound = true;
-
-				if (validMagicRealmLifeformTypeIDs != null)
-					validMagicRealmLifeformTypeIDs.add (magicRealmLifeformTypeID);
 
 				if (targetMagicRealmLifeformTypeID.equals (magicRealmLifeformTypeID))
 					targetIsValidForThisSpell = true;

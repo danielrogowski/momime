@@ -90,20 +90,16 @@ public interface ISpellUtils
 		throws MomException;
 
 	/**
-	 * For unit enchantment/curse spells, checks whether the requested magic
-	 * realm/lifeform type ID is a valid target for the spell
-	 *
-	 * Will also build up a list of all the valid magic realm/ lifeform type IDs
-	 * for this spell in List, although List can be left null if this is not
-	 * needed (i.e. on the server)
+	 * For unit enchantment/curse spells, checks whether the requested magic realm/lifeform type ID is a valid target for the spell
+	 * Delphi method was named CheckMagicRealmLifeformTypeIsValidTarget, and also allowed building up a list of the valid magicRealmLifeformTypeIDs
+	 * But really that was only necessary because of the awkwardness of parsing the XML database in Delphi - there's
+	 * no point doing that here because the list of valid targets is already directly accessible as spell.getSpellValidUnitTarget ()
 	 *
 	 * @param spell Spell we want to cast
 	 * @param targetMagicRealmLifeformTypeID the unique string ID of the magic realm/lifeform type to check
-	 * @param validMagicRealmLifeformTypeIDs The list to populate with the string IDs of the magic realm/lifeform types that are valid targets for this spell, can pass this in as null if not required
 	 * @return True if this spell can be cast on this type of target
 	 */
-	public boolean spellCanTargetMagicRealmLifeformType (final Spell spell,
-		final String targetMagicRealmLifeformTypeID, final List<String> validMagicRealmLifeformTypeIDs);
+	public boolean spellCanTargetMagicRealmLifeformType (final Spell spell, final String targetMagicRealmLifeformTypeID);
 
 	// Methods dealing with lists of spells
 

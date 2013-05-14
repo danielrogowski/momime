@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.messages.IMemoryBuildingUtils;
+import momime.common.messages.IMemoryMaintainedSpellUtils;
 import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.IResourceValueUtils;
 import momime.common.messages.ISpellUtils;
@@ -108,6 +110,16 @@ public interface IMomSessionVariables
 	 * @return Spell utils
 	 */
 	public ISpellUtils getSpellUtils ();
+
+	/**
+	 * @return Maintained spell utils 
+	 */
+	public IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ();
+
+	/**
+	 * @return Builiding utils 
+	 */
+	public IMemoryBuildingUtils getMemoryBuildingUtils ();
 	
 	/**
 	 * @return Server-only city utils

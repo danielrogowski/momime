@@ -555,7 +555,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 		final IMomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.exiting (MomServerResourceCalculations.class.getName (), "recalculateGlobalProductionValues",
+		log.entering (MomServerResourceCalculations.class.getName (), "recalculateGlobalProductionValues",
 			new String [] {new Integer (onlyOnePlayerID).toString (), new Boolean (duringStartPhase).toString ()});
 
 		for (final PlayerServerDetails player : mom.getPlayers ())

@@ -1664,6 +1664,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 				// Send the pending movement to the client
 				final PendingMovementMessage pendingMsg = new PendingMovementMessage ();
 				pendingMsg.setPendingMovement (pending);
+				unitStackOwner.getConnection ().sendMessageToClient (pendingMsg);
 			}
 		}
 

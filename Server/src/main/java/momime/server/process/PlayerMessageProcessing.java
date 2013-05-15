@@ -40,6 +40,7 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_4.PendingMovement;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
@@ -687,7 +688,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 			currentPlayer.getConnection ().sendMessageToClient (new ErasePendingMovementsMessage ());
 
 		// Continue the player's movement
-		// Call to ContinueMovement missing here
+		continueMovement (currentPlayer.getPlayerDescription ().getPlayerID (), mom);
 
 		if (currentPlayer.getPlayerDescription ().isHuman ())
 		{
@@ -853,6 +854,47 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 		log.exiting (PlayerMessageProcessing.class.getName (), "nextTurnButton");
 	}
 
+	private final void continueMovement (final int onlyOnePlayerID, final IMomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+	{
+		log.entering (PlayerMessageProcessing.class.getName (), "continueMovement", onlyOnePlayerID);
+
+		if (onlyOnePlayerID == 0)
+			mom.getSessionLogger ().info ("Continuing pending movements for everyone...");
+		else
+			mom.getSessionLogger ().info ("Continuing pending movements for " + MultiplayerSessionServerUtils.findPlayerWithID
+				(mom.getPlayers (), onlyOnePlayerID, "continueMovement").getPlayerDescription ().getPlayerName () + "...");
+		
+		for (final PlayerServerDetails player : mom.getPlayers ())
+			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
+			{
+				// If a pending movement doesn't finish this turn then the moveUnitStack routine will recreate the pending movement object and add it to the end of the list
+				// So we need to make sure we don't keep going through the list and end up processing pending moves that have only just been added
+				// Simplest way to do it is just to copy the list and run down that instead
+				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+				final List<PendingMovement> moves = new ArrayList<PendingMovement> ();
+				moves.addAll (trans.getPendingMovement ());
+				trans.getPendingMovement ().clear ();
+				
+				for (final PendingMovement thisMove : moves)
+				{
+					// Find each of the units
+					final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+					for (final Integer unitURN : thisMove.getUnitURN ())
+						unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "continueMovement"));
+					
+					final PlayerServerDetails unitStackOwner =MultiplayerSessionServerUtils.findPlayerWithID
+						(mom.getPlayers (), unitStack.get (0).getOwningPlayerID (), "continueMovement");
+					
+					getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, unitStackOwner,
+						thisMove.getMoveFrom (), thisMove.getMoveTo (), false,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+				}
+			}
+
+		log.exiting (PlayerMessageProcessing.class.getName (), "continueMovement");				
+	}
+	
 	/**
 	 * @return Unit utils
 	 */

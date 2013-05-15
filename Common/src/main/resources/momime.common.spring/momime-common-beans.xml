@@ -99,6 +99,7 @@
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateManaSpentOnCastingCurrentSpellMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.RemoveQueuedSpellMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.PendingMovementMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage</value>

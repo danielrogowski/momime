@@ -26,6 +26,7 @@ import momime.server.process.ISpellProcessing;
 import momime.server.utils.ICityServerUtils;
 import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.ISpellServerUtils;
+import momime.server.utils.IUnitServerUtils;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -125,6 +126,11 @@ public interface IMomSessionVariables
 	 * @return Server-only city utils
 	 */
 	public ICityServerUtils getCityServerUtils ();
+
+	/**
+	 * @return Server-only unit utils
+	 */
+	public IUnitServerUtils getUnitServerUtils ();
 	
 	/**
 	 * @return Server-only pick utils

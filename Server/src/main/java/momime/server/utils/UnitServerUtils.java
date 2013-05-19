@@ -5,22 +5,28 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.UnitSettingData;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.IUnitUtils;
-import momime.common.messages.UnitUtils;
+import momime.common.messages.servertoclient.v0_9_4.SetSpecialOrderMessage;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.IPendingMovementUtils;
 import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Unit;
@@ -28,6 +34,7 @@ import momime.server.database.v0_9_4.UnitSkill;
 import momime.server.messages.ServerMemoryGridCellUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Server side only helper methods for dealing with units
@@ -39,6 +46,9 @@ public final class UnitServerUtils implements IUnitServerUtils
 	
 	/** Unit utils */
 	private IUnitUtils unitUtils;
+
+	/** Pending movement utils */
+	private IPendingMovementUtils pendingMovementUtils;
 	
 	/** Server-only unit calculations */
 	private IMomServerUnitCalculations serverUnitCalculations;
@@ -130,6 +140,43 @@ public final class UnitServerUtils implements IUnitServerUtils
 	{
 		return (order == UnitSpecialOrder.BUILD_CITY) || (order == UnitSpecialOrder.MELD_WITH_NODE) || (order == UnitSpecialOrder.DISMISS);
 	}
+	
+	/**
+	 * Sets a special order on a unit, and sends the special order to the player owning the unit
+	 * 
+	 * @param trueUnit Unit to give an order to
+	 * @param specialOrder Order to give to this unit
+	 * @param player Player who owns the unit
+	 * @throws RecordNotFoundException If we can't find the unit in the player's memory (they don't know about their own unit?)
+	 * @throws JAXBException If there is a problem sending the message to the client
+	 * @throws XMLStreamException If there is a problem sending the message to the client
+	 */
+	@Override
+	public final void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		log.entering (UnitServerUtils.class.getName (), "findUnitWithPlayerAndID",
+			new String [] {player.getPlayerDescription ().getPlayerName (), new Integer (trueUnit.getUnitURN ()).toString (), specialOrder.toString ()});
+		
+		// Setting a special order cancels any other kind of move
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge (); 
+		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (trans.getPendingMovement (), trueUnit.getUnitURN ());
+		
+		// Set in true memory
+		trueUnit.setSpecialOrder (specialOrder);
+		
+		// Set in server's copy of player memory
+		getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "setAndSendSpecialOrder").setSpecialOrder (specialOrder);
+		
+		// Set in client's copy of player memory
+		final SetSpecialOrderMessage msg = new SetSpecialOrderMessage ();
+		msg.setSpecialOrder (specialOrder);
+		msg.getUnitURN ().add (trueUnit.getUnitURN ());
+		player.getConnection ().sendMessageToClient (msg);
+
+		log.exiting (UnitServerUtils.class.getName (), "findUnitWithPlayerAndID");
+	}
 
 	/**
 	 * @param units List of units to search through
@@ -140,7 +187,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 	@Override
 	public final MemoryUnit findUnitWithPlayerAndID (final List<MemoryUnit> units, final int playerID, final String unitID)
 	{
-		log.entering (UnitUtils.class.getName (), "findUnitWithPlayerAndID", new String [] {new Integer (playerID).toString (), unitID});
+		log.entering (UnitServerUtils.class.getName (), "findUnitWithPlayerAndID", new String [] {new Integer (playerID).toString (), unitID});
 
 		MemoryUnit result = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
@@ -151,7 +198,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 				result = thisUnit;
 		}
 
-		log.exiting (UnitUtils.class.getName (), "findUnitWithPlayerAndID", result);
+		log.exiting (UnitServerUtils.class.getName (), "findUnitWithPlayerAndID", result);
 		return result;
 	}
 
@@ -170,7 +217,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 		final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (UnitUtils.class.getName (), "canUnitBeAddedHere", CoordinatesUtils.overlandMapCoordinatesToString (addLocation));
+		log.entering (UnitServerUtils.class.getName (), "canUnitBeAddedHere", CoordinatesUtils.overlandMapCoordinatesToString (addLocation));
 
 		// Any other units here?
 		final boolean unitCheckOk;
@@ -215,7 +262,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 			}
 		}
 
-		log.exiting (UnitUtils.class.getName (), "canUnitBeAddedHere", okToAdd);
+		log.exiting (UnitServerUtils.class.getName (), "canUnitBeAddedHere", okToAdd);
 		return okToAdd;
 	}
 
@@ -237,7 +284,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (UnitUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", new String []
+		log.entering (UnitServerUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", new String []
 			{CoordinatesUtils.overlandMapCoordinatesToString (desiredLocation), unitID, new Integer (playerID).toString ()});
 
 		// Create test unit
@@ -280,7 +327,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 
 		final UnitAddLocation result = new UnitAddLocation (addLocation, bumpType);
 
-		log.exiting (UnitUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", result);
+		log.exiting (UnitServerUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", result);
 		return result;
 	}
 
@@ -300,6 +347,22 @@ public final class UnitServerUtils implements IUnitServerUtils
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Pending movement utils
+	 */
+	public final IPendingMovementUtils getPendingMovementUtils ()
+	{
+		return pendingMovementUtils;
+	}
+
+	/**
+	 * @param utils Pending movement utils
+	 */
+	public final void setPendingMovementUtils (final IPendingMovementUtils utils)
+	{
+		pendingMovementUtils = utils;
+	}
+	
 	/**
 	 * @return Server-only unit calculations
 	 */

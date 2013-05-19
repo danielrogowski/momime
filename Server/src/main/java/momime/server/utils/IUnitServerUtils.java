@@ -2,6 +2,11 @@ package momime.server.utils;
 
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -32,6 +37,19 @@ public interface IUnitServerUtils
 	 */
 	public boolean doesUnitSpecialOrderResultInDeath (final UnitSpecialOrder order);
 
+	/**
+	 * Sets a special order on a unit, and sends the special order to the player owning the unit
+	 * 
+	 * @param trueUnit Unit to give an order to
+	 * @param specialOrder Order to give to this unit
+	 * @param player Player who owns the unit
+	 * @throws RecordNotFoundException If we can't find the unit in the player's memory (they don't know about their own unit?)
+	 * @throws JAXBException If there is a problem sending the message to the client
+	 * @throws XMLStreamException If there is a problem sending the message to the client
+	 */
+	public void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
 	/**
 	 * @param units List of units to search through
 	 * @param playerID Player to search for

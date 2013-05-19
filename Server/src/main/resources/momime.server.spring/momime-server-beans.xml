@@ -121,6 +121,7 @@
 
 	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtils">
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 
@@ -251,6 +252,7 @@
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessing">
@@ -310,6 +312,7 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="spellServerUtils" ref="spellServerUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="overlandMapGenerator" ref="overlandMapGenerator" />

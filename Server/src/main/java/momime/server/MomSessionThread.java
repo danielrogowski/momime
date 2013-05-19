@@ -45,6 +45,7 @@ import momime.server.ui.MomServerUI;
 import momime.server.utils.ICityServerUtils;
 import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.ISpellServerUtils;
+import momime.server.utils.IUnitServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
@@ -112,6 +113,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** Server-only city utils */
 	private ICityServerUtils cityServerUtils;
+
+	/** Server-only unit utils */
+	private IUnitServerUtils unitServerUtils;
 	
 	/** Server-only spell utils */
 	private ISpellServerUtils spellServerUtils;
@@ -619,6 +623,23 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		cityServerUtils = utils;
 	}
 
+	/**
+	 * @return Server-only unit utils
+	 */
+	@Override
+	public final IUnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final IUnitServerUtils utils)
+	{
+		unitServerUtils = utils;
+	}
+	
 	/**
 	 * @return Server-only spell utils
 	 */

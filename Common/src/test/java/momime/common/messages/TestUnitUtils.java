@@ -3,6 +3,7 @@ package momime.common.messages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.v0_9_4.AvailableUnit;
+import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
@@ -1564,5 +1566,34 @@ public final class TestUnitUtils
 		units.add (u7);
 
 		assertEquals (2, utils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4));
+	}
+	
+	/**
+	 * Tests the beforeKillingUnit method
+	 */
+	@Test
+	public final void testBeforeKillingUnit ()
+	{
+		// Set up test data
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MemoryMaintainedSpell wrongUnit = new MemoryMaintainedSpell ();
+		wrongUnit.setUnitURN (6);
+		mem.getMaintainedSpell ().add (wrongUnit);
+
+		final MemoryMaintainedSpell rightUnit = new MemoryMaintainedSpell ();
+		rightUnit.setUnitURN (5);
+		mem.getMaintainedSpell ().add (rightUnit);
+
+		final MemoryMaintainedSpell noUnit = new MemoryMaintainedSpell ();
+		mem.getMaintainedSpell ().add (noUnit);
+		
+		// Run test
+		new UnitUtils ().beforeKillingUnit (mem, 5);
+		
+		// Check results
+		assertEquals (2, mem.getMaintainedSpell ().size ());
+		assertSame (wrongUnit, mem.getMaintainedSpell ().get (0));
+		assertSame (noUnit, mem.getMaintainedSpell ().get (1));
 	}
 }

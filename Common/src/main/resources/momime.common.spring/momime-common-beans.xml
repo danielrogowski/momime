@@ -38,6 +38,7 @@
     			<value>momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.DismissUnitMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -164,5 +165,7 @@
 	</bean>
 	
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtils" />
+
+	<bean id="pendingMovementUtils" class="momime.common.utils.PendingMovementUtils" />
 
 </beans>

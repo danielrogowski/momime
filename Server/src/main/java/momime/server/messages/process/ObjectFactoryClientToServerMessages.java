@@ -12,6 +12,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
+import momime.common.messages.clienttoserver.v0_9_4.DismissUnitMessage;
 import momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ObjectFactory;
 import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
@@ -185,8 +186,17 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	 * @return Newly created TargetSpellMessage
 	 */
 	@Override
-	public TargetSpellMessage createTargetSpellMessage ()
+	public final TargetSpellMessage createTargetSpellMessage ()
 	{
 		return new TargetSpellMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created DismissUnitMessage
+	 */
+	@Override
+	public final DismissUnitMessage createDismissUnitMessage ()
+	{
+		return new DismissUnitMessageImpl ();
 	}
 }

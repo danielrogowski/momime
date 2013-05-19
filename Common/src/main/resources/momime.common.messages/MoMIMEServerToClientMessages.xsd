@@ -1362,16 +1362,20 @@ Used when units heal and gain experience at the start of a turn, and when units 
 	
 	<xsd:simpleType name="killUnitActionID">
 		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Free (Unit dismissed voluntarily)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FREE"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="D"><xsd:annotation>
-				<xsd:documentation>Dismissed voluntarily</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="DIMISSED_VOLUNTARILY"/></xsd:appinfo>
+				<xsd:documentation>Hero dismissed voluntarily</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="HERO_DIMISSED_VOLUNTARILY"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="U"><xsd:annotation>
 				<xsd:documentation>Unit killed by lack of production</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_LACK_OF_PRODUCTION"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="H"><xsd:annotation>
-				<xsd:documentation>Hero killed by lack of production</xsd:documentation>
+				<xsd:documentation>Hero dismissed by lack of production</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="HERO_LACK_OF_PRODUCTION"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="V"><xsd:annotation>

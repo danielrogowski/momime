@@ -1,4 +1,3 @@
-
 package momime.server.utils;
 
 import static org.junit.Assert.assertEquals;
@@ -6,6 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,23 +19,32 @@ import javax.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.IUnitUtils;
 import momime.common.messages.UnitUtils;
+import momime.common.messages.servertoclient.v0_9_4.SetSpecialOrderMessage;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
+import momime.common.utils.IPendingMovementUtils;
+import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.UnitSkill;
 
 import org.junit.Test;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the UnitServerUtils class
@@ -392,13 +403,68 @@ public final class TestUnitServerUtils
 		assertFalse (utils.doesUnitSpecialOrderResultInDeath (UnitSpecialOrder.BUILD_ROAD));
 		assertTrue (utils.doesUnitSpecialOrderResultInDeath (UnitSpecialOrder.BUILD_CITY));
 	}
+	
+	/**
+	 * Tests the setAndSendSpecialOrder method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testSetAndSendSpecialOrder () throws Exception
+	{
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge (); 
+		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
+
+		priv.setFogOfWarMemory (new FogOfWarMemory ());
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
+		
+		// Connection
+		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
+		player.setConnection (msgs);
+		
+		// Unit
+		final MemoryUnit trueUnit = new MemoryUnit ();
+		trueUnit.setUnitURN (5);
+
+		final MemoryUnit memoryUnit = new MemoryUnit ();
+		memoryUnit.setUnitURN (5);
+		
+		// Set up object to test
+		final IUnitUtils unitUtils = mock (IUnitUtils.class);
+		when (unitUtils.findUnitURN (5, priv.getFogOfWarMemory ().getUnit (), "setAndSendSpecialOrder")).thenReturn (memoryUnit);
+		
+		final IPendingMovementUtils pendingMovementUtils = mock (IPendingMovementUtils.class);
+		
+		final UnitServerUtils utils = new UnitServerUtils ();
+		utils.setUnitUtils (unitUtils);
+		utils.setPendingMovementUtils (pendingMovementUtils);
+		
+		// Run test
+		utils.setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.BUILD_ROAD, player);
+		
+		// Check results
+		assertEquals (UnitSpecialOrder.BUILD_ROAD, trueUnit.getSpecialOrder ());
+		assertEquals (UnitSpecialOrder.BUILD_ROAD, memoryUnit.getSpecialOrder ());
+		
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (trans.getPendingMovement (), 5);
+		
+		assertEquals (1, msgs.getMessages ().size ());
+		final SetSpecialOrderMessage msg = (SetSpecialOrderMessage) msgs.getMessages ().get (0);
+		assertEquals (1, msg.getUnitURN ().size ());
+		assertEquals (5, msg.getUnitURN ().get (0).intValue ());
+		assertEquals (UnitSpecialOrder.BUILD_ROAD, msg.getSpecialOrder ());
+	}
 
 	/**
-	 * Tests the findUnitURN method on a unit that does exist
+	 * Tests the findUnitWithPlayerAndID method on a unit that does exist
 	 * @throws RecordNotFoundException If unit with requested URN is not found
 	 */
 	@Test
-	public final void testFindUnitURN () throws RecordNotFoundException
+	public final void testFndUnitWithPlayerAndID () throws RecordNotFoundException
 	{
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		for (int n = 1; n <= 3; n++)

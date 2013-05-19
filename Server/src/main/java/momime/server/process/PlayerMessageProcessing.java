@@ -854,6 +854,23 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 		log.exiting (PlayerMessageProcessing.class.getName (), "nextTurnButton");
 	}
 
+	/**
+	 * Checks for any units this player (or all players if 0) has which have pending movement orders (i.e. clicked to move
+	 * somewhere which will take longer than a turn to get there), and continues the units further along their movement
+	 * 
+	 * Really this is part of the player's StartPhase, except that the resulting messages have to be sent after the
+	 * mmSetCurrentPlayer or mmSetSimultaneousTurn messages since both these messages cause the client to reset all units for the player back to full movement
+	 * 
+	 * So order must be StartPhase - Set Player - ContinueMovement
+	 * 
+	 * @param onlyOnePlayerID If zero, will continue movement for all players; if specified will continue movement only for the specified player
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
 	private final void continueMovement (final int onlyOnePlayerID, final IMomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{

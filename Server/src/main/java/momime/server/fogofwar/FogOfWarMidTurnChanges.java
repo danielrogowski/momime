@@ -68,6 +68,7 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PendingMovement;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.CompareUtils;
+import momime.common.utils.IPendingMovementUtils;
 import momime.server.calculations.IMomFogOfWarCalculations;
 import momime.server.calculations.IMomServerCityCalculations;
 import momime.server.calculations.IMomServerUnitCalculations;
@@ -125,6 +126,9 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	
 	/** Server-only unit calculations */
 	private IMomServerUnitCalculations serverUnitCalculations;
+	
+	/** Pending movement utils */
+	private IPendingMovementUtils pendingMovementUtils;
 	
 	/**
 	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
@@ -553,9 +557,9 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		log.entering (FogOfWarMidTurnChanges.class.getName (), "killUnitOnServerAndClients", trueUnit.getUnitURN ());
 
 		// Build the message ready to send it to whoever could see the unit
+		// Action has to be set per player depending on who can see it
 		final KillUnitMessageData msgData = new KillUnitMessageData ();
 		msgData.setUnitURN (trueUnit.getUnitURN ());
-		msgData.setKillUnitActionID (action);
 
 		final KillUnitMessage msg = new KillUnitMessage ();
 		msg.setData (msgData);
@@ -563,29 +567,49 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		// Check which players could see the unit
 		for (final PlayerServerDetails player : players)
 		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 			if (canSeeUnitMidTurn (trueUnit, players, trueMap.getMap (), player, null, null, null, db, sd))
 			{
-				// For now this doesn't have all the statuses that the Delphi server had, because there's no "free" status in Java yet
-				// Likely have to change this once I find issues wth it, but for now always remove units from player's memory and client regardless of kill action
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+				
+				// Remove unit from players' memory on server - this doesn't suffer from the issue described below so we can just do it
+				getPendingMovementUtils ().removeUnitFromAnyPendingMoves (trans.getPendingMovement (), trueUnit.getUnitURN ());
+				getUnitUtils ().beforeKillingUnit (priv.getFogOfWarMemory (), trueUnit.getUnitURN ());	// Removes spells cast on unit
 				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
+
 				if (player.getPlayerDescription ().isHuman ())
+				{
+					// Edit the action appropriately for the client - the only reason this isn't always FREE is that
+					// units killed or dismissed by lack of production need to go to a special status on
+					// the owning client so they are freed once their name has been recorded in the NTM
+				
+					// For other players and statuses, they are just killed outright
+					if ((trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ().intValue ()) &&
+							((action == KillUnitActionID.HERO_LACK_OF_PRODUCTION) || (action == KillUnitActionID.UNIT_LACK_OF_PRODUCTION)))
+
+						msgData.setKillUnitActionID (action);
+					else
+						msgData.setKillUnitActionID (KillUnitActionID.FREE);
+				
 					player.getConnection ().sendMessageToClient (msg);
+				}
 			}
 		}
 
 		// Update the true copy of the unit as appropriate
+		getUnitUtils ().beforeKillingUnit (trueMap, trueUnit.getUnitURN ());	// Removes spells cast on unit
 		switch (action)
 		{
 			// Dismissed heroes go back to Generated
 			// Heroes dismissed by lack of production go back to Generated
-			case DIMISSED_VOLUNTARILY:
+			case HERO_DIMISSED_VOLUNTARILY:
 			case HERO_LACK_OF_PRODUCTION:
 				log.finest ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated");
 				trueUnit.setStatus (UnitStatusID.GENERATED);
 				break;
 
 			// Units killed by lack of production are simply killed off
+			case FREE:
 			case UNIT_LACK_OF_PRODUCTION:
 				log.finest ("Permanently removing unit URN " + trueUnit.getUnitURN ());
 				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
@@ -1872,5 +1896,21 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	public final void setServerUnitCalculations (final IMomServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Pending movement utils
+	 */
+	public final IPendingMovementUtils getPendingMovementUtils ()
+	{
+		return pendingMovementUtils;
+	}
+
+	/**
+	 * @param utils Pending movement utils
+	 */
+	public final void setPendingMovementUtils (final IPendingMovementUtils utils)
+	{
+		pendingMovementUtils = utils;
 	}
 }

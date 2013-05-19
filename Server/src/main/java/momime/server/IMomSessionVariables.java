@@ -28,6 +28,7 @@ import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.ISpellServerUtils;
 import momime.server.utils.IUnitServerUtils;
 
+import com.ndg.multiplayer.server.IMultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -61,6 +62,11 @@ public interface IMomSessionVariables
 	 * @return All information about all players in this session - some may be AI players or disconnected
 	 */
 	public List<PlayerServerDetails> getPlayers ();
+	
+	/**
+	 * @return Server-side multiplayer utils
+	 */
+	public IMultiplayerServerUtils getMultiplayerServerUtils ();
 	
 	/**
 	 * @return Logger for logging key messages relating to this session

@@ -47,6 +47,7 @@ import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.ISpellServerUtils;
 import momime.server.utils.IUnitServerUtils;
 
+import com.ndg.multiplayer.server.IMultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPublicKnowledge;
@@ -71,6 +72,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	private Logger sessionLogger;
 
 	// These are all here so that message implementations and resource consumers can access them
+
+	/** Server-side multiplayer utils */
+	private IMultiplayerServerUtils multiplayerServerUtils;
 	
 	/** Methods for updating true map + players' memory */
 	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -386,6 +390,23 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		return new MomTransientPlayerPrivateKnowledge ();
 	}
 
+	/**
+	 * @return Server-side multiplayer utils
+	 */
+	@Override
+	public final IMultiplayerServerUtils getMultiplayerServerUtils ()
+	{
+		return multiplayerServerUtils;
+	}
+	
+	/**
+	 * @param utils Server-side multiplayer utils
+	 */
+	public final void setMultiplayerServerUtils (final IMultiplayerServerUtils utils)
+	{
+		multiplayerServerUtils = utils;
+	}
+	
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */

@@ -297,6 +297,7 @@
 		<property name="generalPublicKnowledge" ref="gpk" />
 		<property name="generalServerKnowledge" ref="gsk" />
 		<property name="utils" ref="multiplayerServerUtils" />
+		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
 		
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />

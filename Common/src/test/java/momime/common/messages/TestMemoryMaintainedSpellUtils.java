@@ -17,7 +17,6 @@ import momime.common.database.v0_9_4.SpellHasCityEffect;
 import momime.common.database.v0_9_4.UnitSpellEffect;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.utils.TargetUnitSpellResult;
 
 import org.junit.Test;
@@ -142,7 +141,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spell.setCastingPlayerID (10 + n);
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
-			spell.setCityLocation (new OverlandMapCoordinates ());		// 0, 0, 0 is good enough for this test
+			spell.setCityLocation (new OverlandMapCoordinatesEx ());		// 0, 0, 0 is good enough for this test
 
 			spells.add (spell);
 		}
@@ -242,7 +241,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
 
-			final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 			cityLocation.setX (100 + n);
 			cityLocation.setY (200 + n);
 			cityLocation.setPlane (300 + n);
@@ -251,7 +250,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (104);
 		cityLocation.setY (204);
 		cityLocation.setPlane (304);
@@ -279,7 +278,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
 
-			final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 			cityLocation.setX (100 + n);
 			cityLocation.setY (200 + n);
 			cityLocation.setPlane (300 + n);
@@ -288,7 +287,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (104);
 		cityLocation.setY (204);
 		cityLocation.setPlane (304);
@@ -314,7 +313,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
 
-			final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 			cityLocation.setX (100 + n);
 			cityLocation.setY (200 + n);
 			cityLocation.setPlane (300 + n);
@@ -323,7 +322,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (104);
 		cityLocation.setY (204);
 		cityLocation.setPlane (304);
@@ -371,7 +370,7 @@ public final class TestMemoryMaintainedSpellUtils
 
 		for (int n = 1; n <= 5; n++)
 		{
-			final OverlandMapCoordinates spellLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx spellLocation = new OverlandMapCoordinatesEx ();
 			spellLocation.setX (20 + n);
 			spellLocation.setY (10 + n);
 			spellLocation.setPlane (n);
@@ -385,7 +384,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final OverlandMapCoordinates switchOffLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx switchOffLocation = new OverlandMapCoordinatesEx ();
 		switchOffLocation.setX (24);
 		switchOffLocation.setY (14);
 		switchOffLocation.setPlane (4);
@@ -579,7 +578,7 @@ public final class TestMemoryMaintainedSpellUtils
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (20);
 		cityLocation.setY (10);
 		cityLocation.setPlane (1);
@@ -597,7 +596,7 @@ public final class TestMemoryMaintainedSpellUtils
 		assertEquals ("A", listOne.get (0));
 
 		// Spell with exactly one citySpellEffectID, that is already cast yet
-		final OverlandMapCoordinates effectLocationA = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx effectLocationA = new OverlandMapCoordinatesEx ();
 		effectLocationA.setX (20);
 		effectLocationA.setY (10);
 		effectLocationA.setPlane (1);
@@ -637,7 +636,7 @@ public final class TestMemoryMaintainedSpellUtils
 		spells.add (existingEffectC);
 		
 		// One in wrong location
-		final OverlandMapCoordinates effectLocationD = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx effectLocationD = new OverlandMapCoordinatesEx ();
 		effectLocationD.setX (20);
 		effectLocationD.setY (11);
 		effectLocationD.setPlane (1);

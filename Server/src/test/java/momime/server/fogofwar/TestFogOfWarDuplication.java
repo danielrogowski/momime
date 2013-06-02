@@ -16,6 +16,7 @@ import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.MemoryCombatAreaEffectUtils;
 import momime.common.messages.MemoryMaintainedSpellUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
@@ -23,7 +24,6 @@ import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -259,7 +259,7 @@ public final class TestFogOfWarDuplication
 		// Put 3 buildings into the list
 		for (int n = 1; n <= 3; n++)
 		{
-			final OverlandMapCoordinates buildingCoords = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx buildingCoords = new OverlandMapCoordinatesEx ();
 			buildingCoords.setX (20 + n);
 			buildingCoords.setY (10 + n);
 			buildingCoords.setPlane (1);
@@ -272,7 +272,7 @@ public final class TestFogOfWarDuplication
 		}
 
 		// Test a building already in the list
-		final OverlandMapCoordinates existingCoords = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx existingCoords = new OverlandMapCoordinatesEx ();
 		existingCoords.setX (22);
 		existingCoords.setY (12);
 		existingCoords.setPlane (1);
@@ -317,7 +317,7 @@ public final class TestFogOfWarDuplication
 		final List<MemoryUnit> destination = new ArrayList<MemoryUnit> ();
 
 		// First unit (spearmen)
-		final OverlandMapCoordinates unitOneLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx unitOneLocation = new OverlandMapCoordinatesEx ();
 		unitOneLocation.setX (22);
 		unitOneLocation.setY (12);
 		unitOneLocation.setPlane (1);
@@ -337,7 +337,7 @@ public final class TestFogOfWarDuplication
 		assertFalse (dup.copyUnit (unitOne, destination));
 
 		// Second unit (magicians)
-		final OverlandMapCoordinates unitTwoLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx unitTwoLocation = new OverlandMapCoordinatesEx ();
 		unitTwoLocation.setX (22);
 		unitTwoLocation.setY (12);
 		unitTwoLocation.setPlane (1);
@@ -377,7 +377,7 @@ public final class TestFogOfWarDuplication
 		// Put 3 spells into the list
 		for (int n = 1; n <= 3; n++)
 		{
-			final OverlandMapCoordinates spellCoords = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx spellCoords = new OverlandMapCoordinatesEx ();
 			spellCoords.setX (20 + n);
 			spellCoords.setY (10 + n);
 			spellCoords.setPlane (1);
@@ -391,7 +391,7 @@ public final class TestFogOfWarDuplication
 		}
 
 		// Test a spell already in the list
-		final OverlandMapCoordinates existingCoords = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx existingCoords = new OverlandMapCoordinatesEx ();
 		existingCoords.setX (22);
 		existingCoords.setY (12);
 		existingCoords.setPlane (1);
@@ -436,7 +436,7 @@ public final class TestFogOfWarDuplication
 		// Put 3 combatAreaEffects into the list
 		for (int n = 1; n <= 3; n++)
 		{
-			final OverlandMapCoordinates combatAreaEffectCoords = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx combatAreaEffectCoords = new OverlandMapCoordinatesEx ();
 			combatAreaEffectCoords.setX (20 + n);
 			combatAreaEffectCoords.setY (10 + n);
 			combatAreaEffectCoords.setPlane (1);
@@ -450,7 +450,7 @@ public final class TestFogOfWarDuplication
 		}
 
 		// Test a combatAreaEffect already in the list
-		final OverlandMapCoordinates existingCoords = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx existingCoords = new OverlandMapCoordinatesEx ();
 		existingCoords.setX (22);
 		existingCoords.setY (12);
 		existingCoords.setPlane (1);

@@ -12,16 +12,17 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.SpellHasCombatEffect;
 import momime.common.database.v0_9_4.SummonedUnit;
+import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.IMemoryCombatAreaEffectUtils;
 import momime.common.messages.IMemoryMaintainedSpellUtils;
 import momime.common.messages.IResourceValueUtils;
 import momime.common.messages.ISpellUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.v0_9_4.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateManaSpentOnCastingCurrentSpellMessage;
-import momime.common.messages.v0_9_4.CombatMapCoordinates;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
@@ -31,7 +32,6 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
@@ -147,7 +147,7 @@ public final class SpellProcessing implements ISpellProcessing
 		else if (sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING))
 		{
 			// Find the location of the wizards' summoning circle 'building'
-			final OverlandMapCoordinates summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
+			final OverlandMapCoordinatesEx summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
 				CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding ());
 
 			if (summoningCircleLocation != null)
@@ -275,7 +275,7 @@ public final class SpellProcessing implements ISpellProcessing
 	 */
 	@Override
 	public final void requestCastSpell (final PlayerServerDetails player, final String spellID,
-		final OverlandMapCoordinates combatLocation, final CombatMapCoordinates combatTargetLocation, final Integer combatTargetUnitURN,
+		final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final IMomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
@@ -470,7 +470,7 @@ public final class SpellProcessing implements ISpellProcessing
 	@Override
 	public final void switchOffSpell (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final boolean castInCombat, final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{

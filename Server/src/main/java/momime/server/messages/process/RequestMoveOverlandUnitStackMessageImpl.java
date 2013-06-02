@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.CoordinatesUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
@@ -42,7 +42,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 	{
 		log.entering (RequestMoveOverlandUnitStackMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getUnitURN ().toString (),
-			CoordinatesUtils.overlandMapCoordinatesToString (getMoveFrom ()), CoordinatesUtils.overlandMapCoordinatesToString (getMoveTo ())});
+			(getMoveFrom () == null) ? "null" : getMoveFrom ().toString (), (getMoveTo () == null) ? "null" : getMoveTo ().toString ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
@@ -68,7 +68,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 				error = "Some of the units you are trying to move belong to another player";
 			else if (thisUnit.getStatus () != UnitStatusID.ALIVE)
 				error = "Some of the units you are trying to move are dead/dismissed.";
-			else if (!CoordinatesUtils.overlandMapCoordinatesEqual (thisUnit.getUnitLocation (), getMoveFrom (), false))
+			else if (!thisUnit.getUnitLocation ().equals (getMoveFrom ()))
 				error = "Some of the units you are trying to move are not at the starting location";
 			else
 			{
@@ -93,7 +93,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		else
 		{
 			// Proceed with move
-			mom.getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, getMoveFrom (), getMoveTo (),
+			mom.getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, (OverlandMapCoordinatesEx) getMoveFrom (), (OverlandMapCoordinatesEx) getMoveTo (),
 				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS),
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 		}

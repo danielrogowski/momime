@@ -15,9 +15,9 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPrerequisite;
 import momime.common.database.v0_9_4.RaceCannotBuild;
-import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.IUnitUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
@@ -25,7 +25,6 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.calculations.IMomServerCityCalculations;
@@ -79,7 +78,7 @@ public final class CityAI implements ICityAI
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 */
 	@Override
-	public final OverlandMapCoordinates chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
+	public final OverlandMapCoordinatesEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
 		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
@@ -89,7 +88,7 @@ public final class CityAI implements ICityAI
 		final BooleanMapArea2D withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (map, plane, sd.getMapSize ());
 
 		// Now consider every map location as a possible location for a new city
-		OverlandMapCoordinates bestLocation = null;
+		OverlandMapCoordinatesEx bestLocation = null;
 		int bestCityQuality = -1;
 
 		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
@@ -107,7 +106,7 @@ public final class CityAI implements ICityAI
 						(canBuildCityOnThisFeature != null) && (canBuildCityOnThisFeature))
 					{
 						// How good will this city be?
-						final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane);
@@ -125,7 +124,7 @@ public final class CityAI implements ICityAI
 							getCityCalculations ().calculateProductionBonus (map, cityLocation, sd.getMapSize (), db);	// Typically 0-80 usefully
 
 						// Improve the estimate according to nearby map features e.g. always stick cities next to adamantium!
-						final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+						final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 						coords.setX (x);
 						coords.setY (y);
 						coords.setPlane (plane);
@@ -152,7 +151,7 @@ public final class CityAI implements ICityAI
 				}
 			}
 
-		log.exiting (CityAI.class.getName (), "chooseCityLocation", CoordinatesUtils.overlandMapCoordinatesToString (bestLocation));
+		log.exiting (CityAI.class.getName (), "chooseCityLocation", bestLocation);
 		return bestLocation;
 	}
 
@@ -177,7 +176,7 @@ public final class CityAI implements ICityAI
 
 		// Build a list of all the workers, by finding all the cities and adding the coordinates of the city to the list the number
 		// of times for how many workers there are in the city that we could convert to farmers
-		final List<OverlandMapCoordinates> workerCoordinates = new ArrayList<OverlandMapCoordinates> ();
+		final List<OverlandMapCoordinatesEx> workerCoordinates = new ArrayList<OverlandMapCoordinatesEx> ();
 
 		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
@@ -190,7 +189,7 @@ public final class CityAI implements ICityAI
 						if (((tradeGoods) && (cityData.getCurrentlyConstructingBuildingOrUnitID ().equals (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS))) ||
 							((!tradeGoods) && (!cityData.getCurrentlyConstructingBuildingOrUnitID ().equals (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS))))
 						{
-							final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+							final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 							cityLocation.setX (x);
 							cityLocation.setY (y);
 							cityLocation.setPlane (plane.getPlaneNumber ());
@@ -209,7 +208,7 @@ public final class CityAI implements ICityAI
 		while ((modifiedDoubleRationsNeeded > 0) && (workerCoordinates.size () > 0))
 		{
 			final int workerNo = RandomUtils.getGenerator ().nextInt (workerCoordinates.size ());
-			final OverlandMapCoordinates cityLocation = workerCoordinates.get (workerNo);
+			final OverlandMapCoordinatesEx cityLocation = workerCoordinates.get (workerNo);
 			workerCoordinates.remove (workerNo);
 
 			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
@@ -267,7 +266,7 @@ public final class CityAI implements ICityAI
 					{
 						cityData.setOptionalFarmers (0);
 
-						final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
@@ -304,7 +303,7 @@ public final class CityAI implements ICityAI
 					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) &&
 						(cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
 					{
-						final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
@@ -328,12 +327,12 @@ public final class CityAI implements ICityAI
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
 	@Override
-	public final void decideWhatToBuild (final OverlandMapCoordinates cityLocation, final OverlandMapCityData cityData,
+	public final void decideWhatToBuild (final OverlandMapCoordinatesEx cityLocation, final OverlandMapCityData cityData,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryBuilding> trueBuildings,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (CityAI.class.getName (), "decideWhatToBuild", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		log.entering (CityAI.class.getName (), "decideWhatToBuild", cityLocation);
 
 		// Convert list of buildings that our race can't build into a string list, so its easier to search
 		final Race race = db.findRace (cityData.getCityRaceID (), "decideWhatToBuild");

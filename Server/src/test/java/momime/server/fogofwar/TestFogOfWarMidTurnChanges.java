@@ -15,6 +15,7 @@ import java.util.List;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
 import momime.common.messages.IUnitUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
@@ -30,7 +31,6 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.DummyServerToClientConnection;
@@ -69,7 +69,7 @@ public final class TestFogOfWarMidTurnChanges
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().set (20, tc);
 		
 		// Set up coordinates
-		final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (20);
 		coords.setY (10);
 		coords.setPlane (1);
@@ -229,7 +229,7 @@ public final class TestFogOfWarMidTurnChanges
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().set (20, tc);
 		
 		// Set up coordinates
-		final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (20);
 		coords.setY (10);
 		coords.setPlane (1);
@@ -422,7 +422,7 @@ public final class TestFogOfWarMidTurnChanges
 		
 		// The unit we're trying to see
 		// Note creating units like this defaults them to ALIVE, so we don't need to set that
-		final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
 		unitLocation.setPlane (0);
@@ -462,13 +462,13 @@ public final class TestFogOfWarMidTurnChanges
 		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, sd));
 		
 		// Still can't see them if someone else is attacking the lair
-		final OverlandMapCoordinates unitCombatLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx unitCombatLocation = new OverlandMapCoordinatesEx ();
 		unitCombatLocation.setX (21);
 		unitCombatLocation.setY (10);
 		unitCombatLocation.setPlane (0);
 		spearmen.setCombatLocation (unitCombatLocation);
 		
-		final OverlandMapCoordinates playerCombatLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx playerCombatLocation = new OverlandMapCoordinatesEx ();
 		playerCombatLocation.setX (21);
 		playerCombatLocation.setY (10);
 		playerCombatLocation.setPlane (0);
@@ -529,7 +529,7 @@ public final class TestFogOfWarMidTurnChanges
 		
 		// The unit we're trying to see
 		// Note creating units like this defaults them to ALIVE, so we don't need to set that
-		final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
 		unitLocation.setPlane (0);
@@ -568,7 +568,7 @@ public final class TestFogOfWarMidTurnChanges
 		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
 
 		// The location of the city that has the spell we're trying to see
-		final OverlandMapCoordinates spellLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx spellLocation = new OverlandMapCoordinatesEx ();
 		spellLocation.setX (20);
 		spellLocation.setY (10);
 		spellLocation.setPlane (1);
@@ -652,7 +652,7 @@ public final class TestFogOfWarMidTurnChanges
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (21, FogOfWarStateID.NEVER_SEEN);
 		
 		// CAE
-		final OverlandMapCoordinates caeLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx caeLocation = new OverlandMapCoordinatesEx ();
 		caeLocation.setX (20);
 		caeLocation.setY (10);
 		caeLocation.setPlane (1);

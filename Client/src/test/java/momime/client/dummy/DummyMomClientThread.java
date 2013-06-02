@@ -9,7 +9,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.database.v0_9_4.AvailableDatabase;
-import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessage;
@@ -278,22 +277,22 @@ public final class DummyMomClientThread extends MultiplayerBaseClientThread
 		else if (msg instanceof UpdateTerrainMessage)
 		{
 			final UpdateTerrainMessage terrain = (UpdateTerrainMessage) msg;
-			client.addToTextArea ("Knowledge of terrain at " + CoordinatesUtils.overlandMapCoordinatesToString (terrain.getData ().getMapLocation ()) + " updated");
+			client.addToTextArea ("Knowledge of terrain at " + terrain.getData ().getMapLocation () + " updated");
 		}
 		else if (msg instanceof UpdateCityMessage)
 		{
 			final UpdateCityMessage city = (UpdateCityMessage) msg;
-			client.addToTextArea ("Knowledge of city at " + CoordinatesUtils.overlandMapCoordinatesToString (city.getData ().getMapLocation ()) + " updated");
+			client.addToTextArea ("Knowledge of city at " + city.getData ().getMapLocation () + " updated");
 		}
 		else if (msg instanceof AddBuildingMessage)
 		{
 			final AddBuildingMessage building = (AddBuildingMessage) msg;
-			client.addToTextArea ("Building " + building.getData ().getFirstBuildingID () + " added to city at " + CoordinatesUtils.overlandMapCoordinatesToString (building.getData ().getCityLocation ()) + " updated");
+			client.addToTextArea ("Building " + building.getData ().getFirstBuildingID () + " added to city at " + building.getData ().getCityLocation () + " updated");
 		}
 		else if (msg instanceof DestroyBuildingMessage)
 		{
 			final DestroyBuildingMessage building = (DestroyBuildingMessage) msg;
-			client.addToTextArea ("Building " + building.getData ().getBuildingID () + " destroyed or gone out of sight from city at " + CoordinatesUtils.overlandMapCoordinatesToString (building.getData ().getCityLocation ()) + " updated");
+			client.addToTextArea ("Building " + building.getData ().getBuildingID () + " destroyed or gone out of sight from city at " + building.getData ().getCityLocation () + " updated");
 		}
 		else if (msg instanceof AddUnitMessage)
 		{
@@ -308,7 +307,7 @@ public final class DummyMomClientThread extends MultiplayerBaseClientThread
 		else if (msg instanceof UpdateNodeLairTowerUnitIDMessage)
 		{
 			final UpdateNodeLairTowerUnitIDMessage update = (UpdateNodeLairTowerUnitIDMessage) msg;
-			client.addToTextArea ("Node/Lair/Tower at " + CoordinatesUtils.overlandMapCoordinatesToString (update.getData ().getNodeLairTowerLocation ()) + " known to contain unit ID " + update.getData ().getMonsterUnitID ());
+			client.addToTextArea ("Node/Lair/Tower at " + update.getData ().getNodeLairTowerLocation () + " known to contain unit ID " + update.getData ().getMonsterUnitID ());
 		}
 		else if (msg instanceof AddMaintainedSpellMessage)
 		{

@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
@@ -105,7 +106,7 @@ public final class MomResourceConsumerSpell implements IMomResourceConsumer
 
 		mom.getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (),
 			getSpell ().getCastingPlayerID (), getSpell ().getSpellID (), getSpell ().getUnitURN (), getSpell ().getUnitSkillID (),
-			getSpell ().isCastInCombat (), getSpell ().getCityLocation (), getSpell ().getCitySpellEffectID (),
+			getSpell ().isCastInCombat (), (OverlandMapCoordinatesEx) getSpell ().getCityLocation (), getSpell ().getCitySpellEffectID (),
 			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())

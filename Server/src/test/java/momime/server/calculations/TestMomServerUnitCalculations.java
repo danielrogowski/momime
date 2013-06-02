@@ -16,6 +16,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryCombatAreaEffectUtils;
 import momime.common.messages.MemoryGridCellUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -28,7 +29,6 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.ServerTestData;
@@ -131,7 +131,7 @@ public final class TestMomServerUnitCalculations
 		// 3 at first location
 		for (int n = 0; n < 3; n++)
 		{
-			final OverlandMapCoordinates u2location = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 			u2location.setX (20);
 			u2location.setY (10);
 			u2location.setPlane (0);
@@ -146,7 +146,7 @@ public final class TestMomServerUnitCalculations
 		// 4 at second location
 		for (int n = 0; n < 4; n++)
 		{
-			final OverlandMapCoordinates u2location = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 			u2location.setX (30);
 			u2location.setY (20);
 			u2location.setPlane (1);
@@ -159,7 +159,7 @@ public final class TestMomServerUnitCalculations
 		}
 
 		// Wrong player
-		final OverlandMapCoordinates u2location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 		u2location.setX (20);
 		u2location.setY (10);
 		u2location.setPlane (0);
@@ -171,7 +171,7 @@ public final class TestMomServerUnitCalculations
 		units.add (u2);
 
 		// Null status
-		final OverlandMapCoordinates u3location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u3location = new OverlandMapCoordinatesEx ();
 		u3location.setX (20);
 		u3location.setY (10);
 		u3location.setPlane (0);
@@ -182,7 +182,7 @@ public final class TestMomServerUnitCalculations
 		units.add (u3);
 
 		// Unit is dead
-		final OverlandMapCoordinates u4location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u4location = new OverlandMapCoordinatesEx ();
 		u4location.setX (20);
 		u4location.setY (10);
 		u4location.setPlane (0);
@@ -317,7 +317,7 @@ public final class TestMomServerUnitCalculations
 			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
 
 		// Tower that we've previously cleared but now occupied by our units
-		final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
 		unitLocation.setPlane (0);
@@ -791,7 +791,7 @@ public final class TestMomServerUnitCalculations
 
 		for (int n = 1; n <= 2; n++)
 		{
-			final OverlandMapCoordinates spearmenLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx spearmenLocation = new OverlandMapCoordinatesEx ();
 			spearmenLocation.setX (20);
 			spearmenLocation.setY (10);
 			spearmenLocation.setPlane (1);
@@ -939,7 +939,7 @@ public final class TestMomServerUnitCalculations
 
 		for (int n = 1; n <= 2; n++)
 		{
-			final OverlandMapCoordinates spearmenLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx spearmenLocation = new OverlandMapCoordinatesEx ();
 			spearmenLocation.setX (20);
 			spearmenLocation.setY (10);
 			spearmenLocation.setPlane (1);
@@ -957,7 +957,7 @@ public final class TestMomServerUnitCalculations
 		// Our units become impassable terrain because we can't fit that many in one map cell; enemy units we can walk onto the tile but not through it
 		for (int n = 1; n <= 8; n++)
 		{
-			final OverlandMapCoordinates ourLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx ourLocation = new OverlandMapCoordinatesEx ();
 			ourLocation.setX (19);
 			ourLocation.setY (9);
 			ourLocation.setPlane (1);
@@ -969,7 +969,7 @@ public final class TestMomServerUnitCalculations
 
 			map.getUnit ().add (our);
 
-			final OverlandMapCoordinates theirLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx theirLocation = new OverlandMapCoordinatesEx ();
 			theirLocation.setX (20);
 			theirLocation.setY (9);
 			theirLocation.setPlane (1);

@@ -25,6 +25,7 @@ import momime.common.database.v0_9_4.RoundingDirectionID;
 import momime.common.messages.IResourceValueUtils;
 import momime.common.messages.ISpellUtils;
 import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.ResourceValueUtils;
 import momime.common.messages.UnitUtils;
@@ -42,7 +43,6 @@ import momime.common.messages.v0_9_4.MomResourceValue;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
@@ -213,7 +213,7 @@ public final class TestMomServerResourceCalculations
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
 
 		// Add a granary, costs 1 gold but produces 2 rations and 2 food (city size)
-		final OverlandMapCoordinates granaryLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx granaryLocation = new OverlandMapCoordinatesEx ();
 		granaryLocation.setX (2);
 		granaryLocation.setY (2);
 		granaryLocation.setPlane (0);
@@ -243,7 +243,7 @@ public final class TestMomServerResourceCalculations
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
 
 		// Add a temple, costs 2 gold but produces 2 magic power
-		final OverlandMapCoordinates templeLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx templeLocation = new OverlandMapCoordinatesEx ();
 		templeLocation.setX (2);
 		templeLocation.setY (2);
 		templeLocation.setPlane (0);
@@ -430,7 +430,7 @@ public final class TestMomServerResourceCalculations
 		trueMap.getUnit ().add (gargoylesOtherStatus);
 
 		// Building with wrong type of consumption
-		final OverlandMapCoordinates parthenonLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx parthenonLocation = new OverlandMapCoordinatesEx ();
 		parthenonLocation.setX (20);
 		parthenonLocation.setY (10);
 		parthenonLocation.setPlane (1);
@@ -441,7 +441,7 @@ public final class TestMomServerResourceCalculations
 		trueMap.getBuilding ().add (parthenon);
 
 		// Building with right type of consumption
-		final OverlandMapCoordinates wizardsGuildLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx wizardsGuildLocation = new OverlandMapCoordinatesEx ();
 		wizardsGuildLocation.setX (20);
 		wizardsGuildLocation.setY (10);
 		wizardsGuildLocation.setPlane (1);
@@ -452,7 +452,7 @@ public final class TestMomServerResourceCalculations
 		trueMap.getBuilding ().add (wizardsGuild);
 
 		// Building with wrong owner
-		final OverlandMapCoordinates wizardsGuildEnemyCityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx wizardsGuildEnemyCityLocation = new OverlandMapCoordinatesEx ();
 		wizardsGuildEnemyCityLocation.setX (21);
 		wizardsGuildEnemyCityLocation.setY (10);
 		wizardsGuildEnemyCityLocation.setPlane (1);

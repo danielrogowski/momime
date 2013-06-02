@@ -8,13 +8,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.utils.TargetUnitSpellResult;
 import momime.server.IMomSessionVariables;
@@ -95,7 +95,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					
 					// Get the list of possible citySpellEffectIDs that this spell might cast
 					final List<String> citySpellEffectIDs = mom.getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
-						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), cityLocation);
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (OverlandMapCoordinatesEx) getCityLocation ());
 					
 					if ((spell.getBuildingID () == null) && (citySpellEffectIDs == null))
 						error = "Spell does not specify any city effects or a building ID so code doesn't know what to do with it";
@@ -118,7 +118,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						error = "This city already has this enchantment cast on it";
 					
 					else if ((citySpellEffectIDs == null) && (mom.getMemoryBuildingUtils ().findBuilding
-						(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), cityLocation, spell.getBuildingID ())))
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), (OverlandMapCoordinatesEx) getCityLocation (), spell.getBuildingID ())))
 						error = "This city already has the type of building that this spell creates";
 					
 					else
@@ -203,7 +203,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					(spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)))
 				{
 					// Find & remove the main building for this spell
-					final OverlandMapCoordinates destroyBuildingLocation = mom.getMemoryBuildingUtils ().findCityWithBuilding
+					final OverlandMapCoordinatesEx destroyBuildingLocation = mom.getMemoryBuildingUtils ().findCityWithBuilding
 						(sender.getPlayerDescription ().getPlayerID (), spell.getBuildingID (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 					
@@ -215,7 +215,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						// Move summoning circle as well if its in the same place as the wizard's fortress
 						if (spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
 						{
-							final OverlandMapCoordinates summoningCircleLocation = mom.getMemoryBuildingUtils ().findCityWithBuilding
+							final OverlandMapCoordinatesEx summoningCircleLocation = mom.getMemoryBuildingUtils ().findCityWithBuilding
 								(sender.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
 									mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 							
@@ -233,7 +233,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				
 				// First create the building(s) on the server
 				mom.getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
-					mom.getPlayers (), getCityLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
+					mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
 					mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Remove the maintained spell on the server (clients would never have gotten it to begin with)

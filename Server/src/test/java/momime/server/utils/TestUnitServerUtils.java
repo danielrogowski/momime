@@ -20,6 +20,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.IUnitUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.UnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.SetSpecialOrderMessage;
 import momime.common.messages.v0_9_4.AvailableUnit;
@@ -30,7 +31,6 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
@@ -519,7 +519,7 @@ public final class TestUnitServerUtils
 		spearmen.setUnitID ("UN105");
 		unitUtils.initializeUnitSkills (spearmen,  0, true, db);
 
-		final OverlandMapCoordinates addLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setPlane (1);
@@ -545,7 +545,7 @@ public final class TestUnitServerUtils
 		// Enemy unit here
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (null);
 
-		final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
 		unitLocation.setPlane (1);
@@ -573,7 +573,7 @@ public final class TestUnitServerUtils
 		// Our units have the cell full already
 		for (int n = 2; n <= sd.getUnitSetting ().getUnitsPerMapCell (); n++)
 		{
-			final OverlandMapCoordinates anotherUnitLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx anotherUnitLocation = new OverlandMapCoordinatesEx ();
 			anotherUnitLocation.setX (20);
 			anotherUnitLocation.setY (10);
 			anotherUnitLocation.setPlane (1);
@@ -626,7 +626,7 @@ public final class TestUnitServerUtils
 		// Put 8 of our units in the middle
 		for (int n = 1; n < sd.getUnitSetting ().getUnitsPerMapCell (); n++)
 		{
-			final OverlandMapCoordinates anotherUnitLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx anotherUnitLocation = new OverlandMapCoordinatesEx ();
 			anotherUnitLocation.setX (20);
 			anotherUnitLocation.setY (10);
 			anotherUnitLocation.setPlane (1);
@@ -639,7 +639,7 @@ public final class TestUnitServerUtils
 		}
 
 		// Run test
-		final OverlandMapCoordinates desiredLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
 		desiredLocation.setX (20);
 		desiredLocation.setY (10);
 		desiredLocation.setPlane (1);
@@ -649,7 +649,7 @@ public final class TestUnitServerUtils
 		assertEquals (UnitAddBumpTypeID.CITY, centre.getBumpType ());
 
 		// Add a 9th unit in the middle
-		final OverlandMapCoordinates anotherUnitLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx anotherUnitLocation = new OverlandMapCoordinatesEx ();
 		anotherUnitLocation.setX (20);
 		anotherUnitLocation.setY (10);
 		anotherUnitLocation.setPlane (1);
@@ -661,7 +661,7 @@ public final class TestUnitServerUtils
 		trueMap.getUnit ().add (anotherUnitInTheWay);
 
 		// Add an enemy unit above us
-		final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (9);
 		unitLocation.setPlane (1);

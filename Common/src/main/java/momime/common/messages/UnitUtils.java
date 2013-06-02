@@ -25,7 +25,6 @@ import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.UnitStatusID;
 
@@ -425,9 +424,9 @@ public final class UnitUtils implements IUnitUtils
 		log.entering (UnitUtils.class.getName (), "doesCombatAreaEffectApplyToUnit", new String [] {unit.getUnitID (), effect.getCombatAreaEffectID ()});
 
 		// Check if unit is in combat (available units can never be in combat)
-		final OverlandMapCoordinates combatLocation;
+		final OverlandMapCoordinatesEx combatLocation;
 		if (unit instanceof MemoryUnit)
-			combatLocation = ((MemoryUnit) unit).getCombatLocation ();
+			combatLocation = (OverlandMapCoordinatesEx) ((MemoryUnit) unit).getCombatLocation ();
 		else
 			combatLocation = null;
 
@@ -441,12 +440,12 @@ public final class UnitUtils implements IUnitUtils
 		else if (combatLocation != null)
 		{
 			// If unit is in combat, then the effect must be located at the combat
-			locationOk = CoordinatesUtils.overlandMapCoordinatesEqual (effect.getMapLocation (), combatLocation, true);
+			locationOk = effect.getMapLocation ().equals (combatLocation);
 		}
 		else
 		{
 			// Area effect in one map location only, so we have to be in the right place
-			locationOk = CoordinatesUtils.overlandMapCoordinatesEqual (effect.getMapLocation (), unit.getUnitLocation (), true);
+			locationOk = effect.getMapLocation ().equals (unit.getUnitLocation ());
 		}
 
 		// Check which player(s) this CAE affects

@@ -7,10 +7,10 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_4.CombatMapCoordinates;
+import momime.common.messages.CombatMapCoordinatesEx;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.server.IMomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
@@ -41,7 +41,7 @@ public interface ISpellProcessing
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	public void requestCastSpell (final PlayerServerDetails player, final String spellID,
-		final OverlandMapCoordinates combatLocation, final CombatMapCoordinates combatTargetLocation, final Integer combatTargetUnitURN,
+		final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final IMomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 
@@ -91,7 +91,7 @@ public interface ISpellProcessing
 	 */
 	public void switchOffSpell (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final boolean castInCombat, final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 }

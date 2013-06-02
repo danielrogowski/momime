@@ -15,7 +15,6 @@ import momime.common.database.v0_9_4.UnitPrerequisite;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 
 /**
  * Methods for working with list of MemoryBuildings
@@ -34,16 +33,16 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 	 */
 	@Override
 	public final boolean findBuilding (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final String buildingID)
+		final OverlandMapCoordinatesEx cityLocation, final String buildingID)
 	{
-		log.entering (MemoryBuildingUtils.class.getName (), "findBuilding", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
+		log.entering (MemoryBuildingUtils.class.getName (), "findBuilding", new String [] {cityLocation.toString (), buildingID});
 
 		boolean found = false;
 		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
 		while ((!found) && (iter.hasNext ()))
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
-			if ((CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisBuilding.getCityLocation (), true)) && (thisBuilding.getBuildingID ().equals (buildingID)))
+			if ((thisBuilding.getCityLocation ().equals (cityLocation)) && (thisBuilding.getBuildingID ().equals (buildingID)))
 				found = true;
 		}
 
@@ -60,17 +59,17 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 	 */
 	@Override
 	public final void destroyBuilding (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final String buildingID)
+		final OverlandMapCoordinatesEx cityLocation, final String buildingID)
 		throws RecordNotFoundException
 	{
-		log.entering (MemoryBuildingUtils.class.getName (), "destroyBuilding", new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
+		log.entering (MemoryBuildingUtils.class.getName (), "destroyBuilding", new String [] {cityLocation.toString (), buildingID});
 
 		boolean found = false;
 		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
 		while ((!found) && (iter.hasNext ()))
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
-			if ((CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisBuilding.getCityLocation (), true)) && (thisBuilding.getBuildingID ().equals (buildingID)))
+			if ((thisBuilding.getCityLocation ().equals (cityLocation)) && (thisBuilding.getBuildingID ().equals (buildingID)))
 			{
 				iter.remove ();
 				found = true;
@@ -78,7 +77,7 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 		}
 
 		if (!found)
-			throw new RecordNotFoundException (MemoryBuilding.class.getName (), CoordinatesUtils.overlandMapCoordinatesToString (cityLocation) + " - " + buildingID, "destroyBuilding");
+			throw new RecordNotFoundException (MemoryBuilding.class.getName (), cityLocation + " - " + buildingID, "destroyBuilding");
 
 		log.exiting (MemoryBuildingUtils.class.getName (), "destroyBuilding");
 	}
@@ -91,23 +90,23 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 	 * @return Location of the first of this type of building we find for this player, or null if they don't have one anywhere (or at least, one we can see)
 	 */
 	@Override
-	public final OverlandMapCoordinates findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
+	public final OverlandMapCoordinatesEx findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
 		final List<MemoryBuilding> buildings)
 	{
 		log.entering (MemoryBuildingUtils.class.getName (), "findCityWithBuilding", new String [] {new Integer (playerID).toString (), buildingID});
 
-		OverlandMapCoordinates found = null;
+		OverlandMapCoordinatesEx found = null;
 		final Iterator<MemoryBuilding> iter = buildings.iterator ();
 		while ((found == null) && (iter.hasNext ()))
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
-			final OverlandMapCoordinates coords = thisBuilding.getCityLocation ();
+			final OverlandMapCoordinatesEx coords = (OverlandMapCoordinatesEx) thisBuilding.getCityLocation ();
 			final OverlandMapCityData cityData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getCityData ();
 
 			if ((thisBuilding.getBuildingID ().equals (buildingID)) && (cityData != null) && (cityData.getCityOwnerID () == playerID) &&
 				(cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
 
-				found = thisBuilding.getCityLocation ();
+				found = coords;
 		}
 
 		log.exiting (MemoryBuildingUtils.class.getName (), "findCityWithBuilding", found);
@@ -123,10 +122,9 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 	 */
 	@Override
 	public final boolean meetsBuildingRequirements (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final Building building)
+		final OverlandMapCoordinatesEx cityLocation, final Building building)
 	{
-		log.entering (MemoryBuildingUtils.class.getName (), "meetsBuildingRequirements",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), building.getBuildingID ()});
+		log.entering (MemoryBuildingUtils.class.getName (), "meetsBuildingRequirements", new String [] {cityLocation.toString (), building.getBuildingID ()});
 
 		boolean result = true;
 		final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
@@ -146,11 +144,9 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 	 * @return Whether or not the city has the necessary pre-requisite buildings
 	 */
 	@Override
-	public final boolean meetsUnitRequirements (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final Unit unit)
+	public final boolean meetsUnitRequirements (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinatesEx cityLocation, final Unit unit)
 	{
-		log.entering (MemoryBuildingUtils.class.getName (), "meetsUnitRequirements",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), unit.getUnitID ()});
+		log.entering (MemoryBuildingUtils.class.getName (), "meetsUnitRequirements", new String [] {cityLocation.toString (), unit.getUnitID ()});
 
 		boolean result = true;
 		final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
@@ -172,11 +168,10 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	@Override
-	public final String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinates cityLocation,
+	public final String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinatesEx cityLocation,
 		final String buildingID, final ICommonDatabase db) throws RecordNotFoundException
 	{
-		log.entering (MemoryBuildingUtils.class.getName (), "doAnyBuildingsDependOn",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
+		log.entering (MemoryBuildingUtils.class.getName (), "doAnyBuildingsDependOn", new String [] {cityLocation.toString (), buildingID});
 
 		String result = null;
 		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
@@ -185,7 +180,7 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 		while ((result == null) && (iter.hasNext ()))
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true))
+			if (thisBuilding.getCityLocation ().equals (cityLocation))
 			{
 				// This building is at the same location as the one we're tryign to sell - does it have as
 				// a prerequisite the building we are trying to sell?
@@ -255,14 +250,14 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 	 */
 	@Override
 	public final int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final ICommonDatabase db) throws RecordNotFoundException
+		final OverlandMapCoordinatesEx cityLocation, final ICommonDatabase db) throws RecordNotFoundException
 	{
-		log.entering (MemoryBuildingUtils.class.getName (), "experienceFromBuildings", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		log.entering (MemoryBuildingUtils.class.getName (), "experienceFromBuildings", cityLocation);
 
 		// Check all buildings at this location
 		int result = 0;
 		for (final MemoryBuilding thisBuilding : buildingsList)
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true))
+			if (thisBuilding.getCityLocation ().equals (cityLocation))
 			{
 				final Integer exp = db.findBuilding (thisBuilding.getBuildingID (), "experienceFromBuildings").getBuildingExperience ();
 				if (exp != null)
@@ -286,15 +281,15 @@ public final class MemoryBuildingUtils implements IMemoryBuildingUtils
 	 */
 	@Override
 	public final int totalBonusProductionPerPersonFromBuildings (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final String populationTaskID, final String productionTypeID,
+		final OverlandMapCoordinatesEx cityLocation, final String populationTaskID, final String productionTypeID,
 		final ICommonDatabase db) throws RecordNotFoundException
 	{
-		log.entering (MemoryBuildingUtils.class.getName (), "totalBonusProductionPerPersonFromBuildings", cityLocation.toString ());
+		log.entering (MemoryBuildingUtils.class.getName (), "totalBonusProductionPerPersonFromBuildings", cityLocation);
 
 		// Check all buildings at this location
 		int doubleAmount = 0;
 		for (final MemoryBuilding thisBuilding : buildingsList)
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true))
+			if (thisBuilding.getCityLocation ().equals (cityLocation))
 
 				// Although it would be weird, theoretically you could have multiple entries for the same population task & production type, the XSD doesn't (can't) enforce there being only one
 				// The Delphi code searches the full list so we'd better do the same

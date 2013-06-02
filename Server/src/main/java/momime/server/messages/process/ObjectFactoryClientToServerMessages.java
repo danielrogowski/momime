@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 import momime.common.messages.clienttoserver.v0_9_4.AlchemyMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeOptionalFarmersMessage;
+import momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChatMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCustomFlagColourMessage;
@@ -209,5 +210,13 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	{
 		return new ChatMessageImpl ();
 	}
-	
+
+	/**
+	 * @return Newly created ChangeTaxRateMessage
+	 */
+	@Override
+	public final ChangeTaxRateMessage createChangeTaxRateMessage ()
+	{
+		return new ChangeTaxRateMessageImpl ();
+	}
 }

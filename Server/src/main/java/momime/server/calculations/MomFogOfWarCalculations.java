@@ -4,10 +4,10 @@ import java.util.Iterator;
 
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
 import momime.common.messages.IMemoryGridCellUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Plane;
 
@@ -66,7 +66,7 @@ public final class MomFogOfWarCalculations implements IMomFogOfWarCalculations
 	 * @return If a tower, returns true if we can see the location on either plane; if not a tower, does a regular check
 	 */
 	@Override
-	public final boolean canSeeMidTurnOnAnyPlaneIfTower (final OverlandMapCoordinates location, final FogOfWarValue setting,
+	public final boolean canSeeMidTurnOnAnyPlaneIfTower (final OverlandMapCoordinatesEx location, final FogOfWarValue setting,
 		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea, final ServerDatabaseEx db)
 	{
 		boolean canSee;

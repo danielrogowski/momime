@@ -9,7 +9,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.servertoclient.v0_9_4.MapAreaOfOverlandMoveType;
 import momime.common.messages.servertoclient.v0_9_4.MapRowOfOverlandMoveType;
@@ -72,7 +71,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 				error = "Some of the units you are trying to move belong to another player";
 			else if (thisUnit.getStatus () != UnitStatusID.ALIVE)
 				error = "Some of the units you are trying to move are dead/dismissed.";
-			else if (!CoordinatesUtils.overlandMapCoordinatesEqual (thisUnit.getUnitLocation (), getMoveFrom (), false))
+			else if (!thisUnit.getUnitLocation ().equals (getMoveFrom ()))
 				error = "Some of the units you are trying to move are not at the starting location";
 			else
 			{

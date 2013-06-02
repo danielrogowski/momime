@@ -16,15 +16,14 @@ import momime.common.database.newgame.v0_9_4.DifficultyLevelPlane;
 import momime.common.database.newgame.v0_9_4.LandProportionPlane;
 import momime.common.database.newgame.v0_9_4.LandProportionTileType;
 import momime.common.database.newgame.v0_9_4.NodeStrengthPlane;
-import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.IMemoryGridCellUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.database.ServerDatabaseEx;
@@ -1245,7 +1244,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	 * @param setAuraFromNode If set, will update the auraFromNode on each square of node aura; if null, only performs a test whether the node aura fits
 	 * @return True if could fit node rings at this location, false if not
 	 */
-	private final boolean placeNodeRings (final int nodeAuraSize, final int x, final int y, final int plane, final OverlandMapCoordinates setAuraFromNode)
+	private final boolean placeNodeRings (final int nodeAuraSize, final int x, final int y, final int plane, final OverlandMapCoordinatesEx setAuraFromNode)
 	{
 		log.entering (OverlandMapGenerator.class.getName (), "placeNodeRings",
 			new String [] {new Integer (nodeAuraSize).toString (), new Integer (x).toString (), new Integer (y).toString (), new Integer (plane).toString (),
@@ -1416,7 +1415,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 					thisCell.getTerrainData ().setTileTypeID (chooseRandomNodeTileTypeID ());
 					thisCell.setNodeLairTowerPowerProportion (nodePowerProportion);
 
-					final OverlandMapCoordinates auraFromNode = new OverlandMapCoordinates ();
+					final OverlandMapCoordinatesEx auraFromNode = new OverlandMapCoordinatesEx ();
 					auraFromNode.setX (coords.getX ());
 					auraFromNode.setY (coords.getY ());
 					auraFromNode.setPlane (plane.getPlaneNumber ());
@@ -1494,7 +1493,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 		log.entering (OverlandMapGenerator.class.getName (), "placeLairs", new String [] {new Integer (numberOfLairs).toString (), new Boolean (isWeak).toString ()});
 
 		// Check if possible to place a lair at every cell
-		final List<OverlandMapCoordinates> possibleLocations = new ArrayList<OverlandMapCoordinates> ();
+		final List<OverlandMapCoordinatesEx> possibleLocations = new ArrayList<OverlandMapCoordinatesEx> ();
 		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
@@ -1503,7 +1502,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 					if ((terrainData.getMapFeatureID () == null) &&
 						(db.findTileType (terrainData.getTileTypeID (), "placeLairs").isCanPlaceLair ()))
 					{
-						final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+						final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 						coords.setX (x);
 						coords.setY (y);
 						coords.setPlane (plane);
@@ -1517,7 +1516,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 		while ((lairsPlaced < numberOfLairs) && (possibleLocations.size () > 0))
 		{
 			final int listIndex = RandomUtils.getGenerator ().nextInt (possibleLocations.size ());
-			final OverlandMapCoordinates coords = possibleLocations.get (listIndex);
+			final OverlandMapCoordinatesEx coords = possibleLocations.get (listIndex);
 
 			final ServerGridCell lairCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
@@ -1552,7 +1551,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 					// Check for area effects from the terrain, e.g. node dispelling effect
 					for (final TileTypeAreaEffect thisEffect : thisTileType.getTileTypeAreaEffect ())
 					{
-						final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+						final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 						coords.setX (x);
 						coords.setY (y);
 						coords.setPlane (plane);
@@ -1575,7 +1574,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 							// It must specify that this effect extends out across the node aura
 							if (thisEffect.isExtendAcrossNodeAura ())
 							{
-								final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+								final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 								coords.setX (x);
 								coords.setY (y);
 								coords.setPlane (plane);
@@ -1628,13 +1627,13 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	private final void fillSingleLairOrTowerWithMonsters (final OverlandMapCoordinates lairLocation, final String magicRealmLifeformTypeID,
+	private final void fillSingleLairOrTowerWithMonsters (final OverlandMapCoordinatesEx lairLocation, final String magicRealmLifeformTypeID,
 		final int monsterStrengthMin, final int monsterStrengthMax, final double powerProportion, final MomGeneralServerKnowledge gsk,
 		final PlayerServerDetails monsterPlayer)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.entering (OverlandMapGenerator.class.getName (), "fillSingleLairOrTowerWithMonsters", new String []
-			{CoordinatesUtils.overlandMapCoordinatesToString (lairLocation), magicRealmLifeformTypeID, new Integer (monsterStrengthMin).toString (), new Integer (monsterStrengthMax).toString (), new DecimalFormat ("0.000").format (powerProportion)});
+			{lairLocation.toString (), magicRealmLifeformTypeID, new Integer (monsterStrengthMin).toString (), new Integer (monsterStrengthMax).toString (), new DecimalFormat ("0.000").format (powerProportion)});
 
 		int monstersStrength = monsterStrengthMin + (int) Math.round ((monsterStrengthMax - monsterStrengthMin) * powerProportion);
 
@@ -1755,7 +1754,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 							{
 								thisCell.setNodeLairTowerPowerProportion (RandomUtils.getGenerator ().nextInt (10001) / 10000d);
 
-								final OverlandMapCoordinates lairLocation = new OverlandMapCoordinates ();
+								final OverlandMapCoordinatesEx lairLocation = new OverlandMapCoordinatesEx ();
 								lairLocation.setX (x);
 								lairLocation.setY (y);
 								lairLocation.setPlane (plane.getPlaneNumber ());

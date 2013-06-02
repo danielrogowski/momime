@@ -13,12 +13,12 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
-import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.IMemoryCombatAreaEffectUtils;
 import momime.common.messages.IMemoryGridCellUtils;
 import momime.common.messages.IMemoryMaintainedSpellUtils;
 import momime.common.messages.IUnitUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessageData;
 import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessageData;
@@ -43,7 +43,6 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.CompareUtils;
@@ -214,7 +213,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 						final OverlandMapCityData trueCity = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 						if ((trueCity != null) && (trueCity.getCityPopulation () != null) && (trueCity.getCityPopulation () > 0))
 						{
-							final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+							final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 							coords.setX (x);
 							coords.setY (y);
 							coords.setPlane (plane.getPlaneNumber ());
@@ -328,18 +327,20 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	}
 
 	/**
+	 * I think now that there is a OverlandMapCoordinatesEx.equals () method, that this could just be done with coordinateList.contains (), but leaving it for now
+	 * 
 	 * @param coordinateList List of coordinates to check
 	 * @param coordinates Coordinates to look for
 	 * @return True if coordinates are already in the list
 	 */
-	final boolean areCoordinatesIncludedInMessage (final List<UpdateNodeLairTowerUnitIDMessageData> coordinateList, final OverlandMapCoordinates coordinates)
+	final boolean areCoordinatesIncludedInMessage (final List<UpdateNodeLairTowerUnitIDMessageData> coordinateList, final OverlandMapCoordinatesEx coordinates)
 	{
 		boolean result = false;
 		final Iterator<UpdateNodeLairTowerUnitIDMessageData> iter = coordinateList.iterator ();
 		while ((!result) && (iter.hasNext ()))
 		{
 			final UpdateNodeLairTowerUnitIDMessageData theseCoords = iter.next ();
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (theseCoords.getNodeLairTowerLocation (), coordinates, true))
+			if (theseCoords.getNodeLairTowerLocation ().equals (coordinates))
 				result = true;
 		}
 
@@ -400,7 +401,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 					final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 					final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 
-					final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+					final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 					coords.setX (x);
 					coords.setY (y);
 					coords.setPlane (plane.getPlaneNumber ());
@@ -542,7 +543,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 			final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 			if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
-				(!getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), thisBuilding.getCityLocation (), thisBuilding.getBuildingID ()))))
+				(!getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), (OverlandMapCoordinatesEx) thisBuilding.getCityLocation (), thisBuilding.getBuildingID ()))))
 			{
 				if (msg != null)
 				{
@@ -627,9 +628,9 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 								(thisUnit.getUnitLocation ().getY ()).getCell ().set (thisUnit.getUnitLocation ().getX (), "");
 
 							if (msg != null)
-								if (!areCoordinatesIncludedInMessage (msg.getUpdateNodeLairTowerUnitID (), thisUnit.getUnitLocation ()))
+								if (!areCoordinatesIncludedInMessage (msg.getUpdateNodeLairTowerUnitID (), (OverlandMapCoordinatesEx) thisUnit.getUnitLocation ()))
 								{
-									final OverlandMapCoordinates scoutMsgCoords = new OverlandMapCoordinates ();
+									final OverlandMapCoordinatesEx scoutMsgCoords = new OverlandMapCoordinatesEx ();
 									scoutMsgCoords.setX (thisUnit.getUnitLocation ().getX ());
 									scoutMsgCoords.setY (thisUnit.getUnitLocation ().getY ());
 									scoutMsgCoords.setPlane (thisUnit.getUnitLocation ().getPlane ());
@@ -713,7 +714,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 							// We don't need to worry about checking whether or not we can see where the unit has moved to - we already know that we can't
 							// because if we could see it, we'd have already dealt with it and updated our memory of the unit in the 'add' section above
 							// The only way the code can drop into this block is if the unit has moved to somewhere that we can't see it
-							needToRemoveUnit = !CoordinatesUtils.overlandMapCoordinatesEqual (thisUnit.getUnitLocation (), trueUnit.getUnitLocation (), true);
+							needToRemoveUnit = !trueUnit.getUnitLocation ().equals (thisUnit.getUnitLocation ());
 					}
 					else
 						needToRemoveUnit = false;
@@ -797,7 +798,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 
 					needToRemoveSpell = ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
 						(getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), thisSpell.getCastingPlayerID (), thisSpell.getSpellID (),
-							thisSpell.getUnitURN (), thisSpell.getUnitSkillID (), thisSpell.getCityLocation (), thisSpell.getCitySpellEffectID ()) == null)));
+							thisSpell.getUnitURN (), thisSpell.getUnitSkillID (), (OverlandMapCoordinatesEx) thisSpell.getCityLocation (), thisSpell.getCitySpellEffectID ()) == null)));
 				}
 
 				if (needToRemoveSpell)
@@ -866,7 +867,8 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 				final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 				if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
-					(!getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (trueMap.getCombatAreaEffect (), thisCAE.getMapLocation (), thisCAE.getCombatAreaEffectID (), thisCAE.getCastingPlayerID ()))))
+					(!getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (trueMap.getCombatAreaEffect (),
+						(OverlandMapCoordinatesEx) thisCAE.getMapLocation (), thisCAE.getCombatAreaEffectID (), thisCAE.getCastingPlayerID ()))))
 				{
 					if (msg != null)
 					{
@@ -890,7 +892,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 				{
 					final List<FogOfWarStateID> row = priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ();
 
-					final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+					final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 					coords.setX (x);
 					coords.setY (y);
 					coords.setPlane (plane.getPlaneNumber ());

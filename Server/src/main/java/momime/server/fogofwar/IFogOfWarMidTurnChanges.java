@@ -9,13 +9,13 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
@@ -41,7 +41,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void updatePlayerMemoryOfTerrain (final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx coords,
 		final FogOfWarValue terrainAndNodeAurasSetting)
 		throws JAXBException, XMLStreamException;
 
@@ -57,7 +57,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void updatePlayerMemoryOfCity (final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords, final FogOfWarSettingData fogOfWarSettings)
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx coords, final FogOfWarSettingData fogOfWarSettings)
 		throws JAXBException, XMLStreamException;
 
 	/**
@@ -84,7 +84,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final String unitID, final OverlandMapCoordinates locationToAddUnit, final OverlandMapCoordinates buildingsLocation, final OverlandMapCoordinates combatLocation,
+		final String unitID, final OverlandMapCoordinatesEx locationToAddUnit, final OverlandMapCoordinatesEx buildingsLocation, final OverlandMapCoordinatesEx combatLocation,
 		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
@@ -108,7 +108,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final OverlandMapCoordinates locationToAddUnit,
+	public void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final OverlandMapCoordinatesEx locationToAddUnit,
 		final PlayerServerDetails unitOwner, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
@@ -158,7 +158,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -185,8 +185,8 @@ public interface IFogOfWarMidTurnChanges
 	 */
 	public void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final boolean castInCombat, final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -213,8 +213,8 @@ public interface IFogOfWarMidTurnChanges
 	 */
 	public void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final boolean castInCombat, final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -233,7 +233,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
+		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinatesEx mapLocation,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -252,7 +252,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
-		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
+		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinatesEx mapLocation,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -273,7 +273,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
-		final OverlandMapCoordinates cityLocation, final String firstBuildingID, final String secondBuildingID,
+		final OverlandMapCoordinatesEx cityLocation, final String firstBuildingID, final String secondBuildingID,
 		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
@@ -293,7 +293,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID, final boolean updateBuildingSoldThisTurn,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx cityLocation, final String buildingID, final boolean updateBuildingSoldThisTurn,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
@@ -344,7 +344,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final OverlandMapCoordinates moveFrom, final OverlandMapCoordinates moveTo, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinatesEx moveFrom, final OverlandMapCoordinatesEx moveTo, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 
@@ -374,7 +374,7 @@ public interface IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void moveUnitStack (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final OverlandMapCoordinates originalMoveFrom, final OverlandMapCoordinates moveTo,
+		final OverlandMapCoordinatesEx originalMoveFrom, final OverlandMapCoordinatesEx moveTo,
 		final boolean forceAsPendingMovement, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;

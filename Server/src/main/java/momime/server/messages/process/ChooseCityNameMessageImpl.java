@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryGridCell;
@@ -44,7 +45,7 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 
 			// Then send the change to all players who can see the city
 			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
+				mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
 		else
 		{

@@ -7,6 +7,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.CombatMapCoordinatesEx;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
 import momime.server.IMomSessionVariables;
 
@@ -47,7 +49,7 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		mom.getSpellProcessing ().requestCastSpell (sender, getSpellID (),
-			getCombatLocation (), getCombatTargetLocation (), getCombatTargetUnitURN (), mom);
+			(OverlandMapCoordinatesEx) getCombatLocation (), (CombatMapCoordinatesEx) getCombatTargetLocation (), getCombatTargetUnitURN (), mom);
 
 		log.exiting (RequestCastSpellMessageImpl.class.getName (), "process");
 	}

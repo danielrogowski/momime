@@ -16,13 +16,13 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -99,7 +99,7 @@ public final class TestMomServerCityCalculations
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -117,7 +117,7 @@ public final class TestMomServerCityCalculations
 		assertEquals (4, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Add an irrelevant building
-		final OverlandMapCoordinates firstBuildingLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx firstBuildingLocation = new OverlandMapCoordinatesEx ();
 		firstBuildingLocation.setX (2);
 		firstBuildingLocation.setY (2);
 		firstBuildingLocation.setPlane (0);
@@ -130,7 +130,7 @@ public final class TestMomServerCityCalculations
 		assertEquals (4, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Add an animists' guild in the wrong location
-		final OverlandMapCoordinates secondBuildingLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx secondBuildingLocation = new OverlandMapCoordinatesEx ();
 		secondBuildingLocation.setX (2);
 		secondBuildingLocation.setY (2);
 		secondBuildingLocation.setPlane (1);
@@ -143,7 +143,7 @@ public final class TestMomServerCityCalculations
 		assertEquals (4, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Add an animists' guild in the right location
-		final OverlandMapCoordinates thirdBuildingLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx thirdBuildingLocation = new OverlandMapCoordinatesEx ();
 		thirdBuildingLocation.setX (2);
 		thirdBuildingLocation.setY (2);
 		thirdBuildingLocation.setPlane (0);
@@ -191,7 +191,7 @@ public final class TestMomServerCityCalculations
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -208,7 +208,7 @@ public final class TestMomServerCityCalculations
 		assertEquals (2, cityData.getMinimumFarmers ().intValue ());
 
 		// If we add a granary, that feeds 2 of the population so we need 1 less farmer
-		final OverlandMapCoordinates granaryLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx granaryLocation = new OverlandMapCoordinatesEx ();
 		granaryLocation.setX (2);
 		granaryLocation.setY (2);
 		granaryLocation.setPlane (0);
@@ -306,7 +306,7 @@ public final class TestMomServerCityCalculations
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -318,7 +318,7 @@ public final class TestMomServerCityCalculations
 		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// City walls in wrong location
-		final OverlandMapCoordinates firstBuildingLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx firstBuildingLocation = new OverlandMapCoordinatesEx ();
 		firstBuildingLocation.setX (2);
 		firstBuildingLocation.setY (3);
 		firstBuildingLocation.setPlane (0);
@@ -331,7 +331,7 @@ public final class TestMomServerCityCalculations
 		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// Irrelevant building in right location
-		final OverlandMapCoordinates secondBuildingLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx secondBuildingLocation = new OverlandMapCoordinatesEx ();
 		secondBuildingLocation.setX (2);
 		secondBuildingLocation.setY (2);
 		secondBuildingLocation.setPlane (0);
@@ -344,7 +344,7 @@ public final class TestMomServerCityCalculations
 		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// City walls increase to 3
-		final OverlandMapCoordinates cityWallsLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityWallsLocation = new OverlandMapCoordinatesEx ();
 		cityWallsLocation.setX (2);
 		cityWallsLocation.setY (2);
 		cityWallsLocation.setPlane (0);
@@ -357,7 +357,7 @@ public final class TestMomServerCityCalculations
 		assertEquals (3, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// Oracle increases to 4
-		final OverlandMapCoordinates oracleLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx oracleLocation = new OverlandMapCoordinatesEx ();
 		oracleLocation.setX (2);
 		oracleLocation.setY (2);
 		oracleLocation.setPlane (0);
@@ -399,7 +399,7 @@ public final class TestMomServerCityCalculations
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
 
 		// Set up city
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (20);
 		cityLocation.setY (10);
 		cityLocation.setPlane (1);
@@ -449,7 +449,7 @@ public final class TestMomServerCityCalculations
 
 		// If we got a Ship Wrights' Guild and subsequently the water all dried up then we *can* then construct the other building types
 		// (Ok bad example, but similar with Sawmills + forests disappearing is definitely possible)
-		final OverlandMapCoordinates shipWrightsGuildLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx shipWrightsGuildLocation = new OverlandMapCoordinatesEx ();
 		shipWrightsGuildLocation.setX (20);
 		shipWrightsGuildLocation.setY (10);
 		shipWrightsGuildLocation.setPlane (1);

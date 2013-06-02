@@ -11,12 +11,12 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -56,7 +56,7 @@ public final class TestCityServerUtils
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -83,7 +83,7 @@ public final class TestCityServerUtils
 		// Can't build a stables without a blacksmith
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL09", sd, db));
 
-		final OverlandMapCoordinates blacksmithLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx blacksmithLocation = new OverlandMapCoordinatesEx ();
 		blacksmithLocation.setX (2);
 		blacksmithLocation.setY (2);
 		blacksmithLocation.setPlane (0);
@@ -143,7 +143,7 @@ public final class TestCityServerUtils
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -170,7 +170,7 @@ public final class TestCityServerUtils
 		// Building swordsmen requires both a Barracks and Blacksmith
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "UN041", sd, db));
 
-		final OverlandMapCoordinates barracksLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx barracksLocation = new OverlandMapCoordinatesEx ();
 		barracksLocation.setX (2);
 		barracksLocation.setY (2);
 		barracksLocation.setPlane (0);
@@ -182,7 +182,7 @@ public final class TestCityServerUtils
 
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "UN041", sd, db));
 
-		final OverlandMapCoordinates blacksmithLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx blacksmithLocation = new OverlandMapCoordinatesEx ();
 		blacksmithLocation.setX (2);
 		blacksmithLocation.setY (2);
 		blacksmithLocation.setPlane (0);
@@ -219,7 +219,7 @@ public final class TestCityServerUtils
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -261,7 +261,7 @@ public final class TestCityServerUtils
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -304,7 +304,7 @@ public final class TestCityServerUtils
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);

@@ -17,6 +17,7 @@ import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.database.v0_9_4.Building;
 import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
@@ -25,7 +26,6 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.UnitStatusID;
@@ -54,7 +54,7 @@ public final class TestMomCityCalculations
 		final MomCityCalculations calc = new MomCityCalculations ();
 		
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -93,7 +93,7 @@ public final class TestMomCityCalculations
 		final MomCityCalculations calc = new MomCityCalculations ();
 		
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -139,7 +139,7 @@ public final class TestMomCityCalculations
 		final MomCityCalculations calc = new MomCityCalculations ();
 		
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -174,7 +174,7 @@ public final class TestMomCityCalculations
 		final MomCityCalculations calc = new MomCityCalculations ();
 		
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -211,7 +211,7 @@ public final class TestMomCityCalculations
 		final MomCityCalculations calc = new MomCityCalculations ();
 		
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -292,7 +292,7 @@ public final class TestMomCityCalculations
 		final MomCityCalculations calc = new MomCityCalculations ();
 		
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -383,7 +383,7 @@ public final class TestMomCityCalculations
 		assertEquals (30, highElf.getFinalTotal ());
 
 		// Bonus from buildings
-		final OverlandMapCoordinates granaryLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx granaryLocation = new OverlandMapCoordinatesEx ();
 		granaryLocation.setX (2);
 		granaryLocation.setY (2);
 		granaryLocation.setPlane (0);
@@ -393,7 +393,7 @@ public final class TestMomCityCalculations
 		granary.setCityLocation (granaryLocation);
 		buildings.add (granary);
 
-		final OverlandMapCoordinates farmersMarketLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx farmersMarketLocation = new OverlandMapCoordinatesEx ();
 		farmersMarketLocation.setX (2);
 		farmersMarketLocation.setY (2);
 		farmersMarketLocation.setPlane (0);
@@ -403,7 +403,7 @@ public final class TestMomCityCalculations
 		farmersMarket.setCityLocation (farmersMarketLocation);
 		buildings.add (farmersMarket);
 
-		final OverlandMapCoordinates sagesGuildLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx sagesGuildLocation = new OverlandMapCoordinatesEx ();
 		sagesGuildLocation.setX (2);
 		sagesGuildLocation.setY (2);
 		sagesGuildLocation.setPlane (0);
@@ -497,7 +497,7 @@ public final class TestMomCityCalculations
 		calc.setPlayerPickUtils (new PlayerPickUtils ());
 		
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -571,7 +571,7 @@ public final class TestMomCityCalculations
 		assertEquals (11, maxPercent.getFinalTotal ());
 
 		// Add some buildings that reduce unrest - and back to 45% tax rate = 7.65
-		final OverlandMapCoordinates shrineLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx shrineLocation = new OverlandMapCoordinatesEx ();
 		shrineLocation.setX (2);
 		shrineLocation.setY (2);
 		shrineLocation.setPlane (0);
@@ -601,7 +601,7 @@ public final class TestMomCityCalculations
 		divinePower.setQuantity (1);
 		ppk.getPick ().add (divinePower);
 
-		final OverlandMapCoordinates secondBuildingLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx secondBuildingLocation = new OverlandMapCoordinatesEx ();
 		secondBuildingLocation.setX (2);
 		secondBuildingLocation.setY (2);
 		secondBuildingLocation.setPlane (0);
@@ -646,7 +646,7 @@ public final class TestMomCityCalculations
 		assertEquals (4, temple.getFinalTotal ());
 
 		// 1 unit does nothing
-		final OverlandMapCoordinates normalUnitLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx normalUnitLocation = new OverlandMapCoordinatesEx ();
 		normalUnitLocation.setX (2);
 		normalUnitLocation.setY (2);
 		normalUnitLocation.setPlane (0);
@@ -676,7 +676,7 @@ public final class TestMomCityCalculations
 		assertEquals (4, firstUnit.getFinalTotal ());
 
 		// 2nd unit reduces unrest, even if one is normal and one a hero
-		final OverlandMapCoordinates heroUnitLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx heroUnitLocation = new OverlandMapCoordinatesEx ();
 		heroUnitLocation.setX (2);
 		heroUnitLocation.setY (2);
 		heroUnitLocation.setPlane (0);
@@ -708,7 +708,7 @@ public final class TestMomCityCalculations
 		// summoned units or dead units don't help (unitCount still = 2)
 		for (int n = 0; n < 2; n++)
 		{
-			final OverlandMapCoordinates deadUnitLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx deadUnitLocation = new OverlandMapCoordinatesEx ();
 			deadUnitLocation.setX (2);
 			deadUnitLocation.setY (2);
 			deadUnitLocation.setPlane (0);
@@ -719,7 +719,7 @@ public final class TestMomCityCalculations
 			deadUnit.setStatus (UnitStatusID.DEAD);
 			units.add (deadUnit);
 
-			final OverlandMapCoordinates summonedUnitLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx summonedUnitLocation = new OverlandMapCoordinatesEx ();
 			summonedUnitLocation.setX (2);
 			summonedUnitLocation.setY (2);
 			summonedUnitLocation.setPlane (0);
@@ -750,7 +750,7 @@ public final class TestMomCityCalculations
 		assertEquals (3, extraUnits.getFinalTotal ());
 
 		// Put our captial here, and its klackons so we get -2
-		final OverlandMapCoordinates fortressLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx fortressLocation = new OverlandMapCoordinatesEx ();
 		fortressLocation.setX (2);
 		fortressLocation.setY (2);
 		fortressLocation.setPlane (0);
@@ -800,7 +800,7 @@ public final class TestMomCityCalculations
 		assertEquals (3, highElves.getFinalTotal ());
 
 		// Move capital to a different city with a different race
-		final OverlandMapCoordinates capitalCityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx capitalCityLocation = new OverlandMapCoordinatesEx ();
 		capitalCityLocation.setX (20);
 		capitalCityLocation.setY (2);
 		capitalCityLocation.setPlane (0);
@@ -847,7 +847,7 @@ public final class TestMomCityCalculations
 		calc.setPlayerPickUtils (new PlayerPickUtils ());
 		
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (1);
@@ -991,7 +991,7 @@ public final class TestMomCityCalculations
 		summoner.setQuantity (1);
 		ppk.getPick ().add (summoner);
 
-		final OverlandMapCoordinates fortressLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx fortressLocation = new OverlandMapCoordinatesEx ();
 		fortressLocation.setX (2);
 		fortressLocation.setY (2);
 		fortressLocation.setPlane (1);
@@ -1036,7 +1036,7 @@ public final class TestMomCityCalculations
 		assertEquals (0, fortress.getResults ().get (4).getConsumptionAmount ());
 
 		// Add some buildings that give production (both regular like sages guild, and percentage like sawmill), and consumption
-		final OverlandMapCoordinates sagesGuildLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx sagesGuildLocation = new OverlandMapCoordinatesEx ();
 		sagesGuildLocation.setX (2);
 		sagesGuildLocation.setY (2);
 		sagesGuildLocation.setPlane (1);
@@ -1046,7 +1046,7 @@ public final class TestMomCityCalculations
 		sagesGuildBuilding.setCityLocation (sagesGuildLocation);
 		buildings.add (sagesGuildBuilding);
 
-		final OverlandMapCoordinates sawmillLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx sawmillLocation = new OverlandMapCoordinatesEx ();
 		sawmillLocation.setX (2);
 		sawmillLocation.setY (2);
 		sawmillLocation.setPlane (1);
@@ -1141,7 +1141,7 @@ public final class TestMomCityCalculations
 		assertEquals (0, minerals.getResults ().get (5).getConsumptionAmount ());
 
 		// Miners' guild boosting bonuses from map features
-		final OverlandMapCoordinates minersGuildLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx minersGuildLocation = new OverlandMapCoordinatesEx ();
 		minersGuildLocation.setX (2);
 		minersGuildLocation.setY (2);
 		minersGuildLocation.setPlane (1);
@@ -1389,7 +1389,7 @@ public final class TestMomCityCalculations
 		
 		// This is the same initial setup as the calculateAllCityProductions test
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (1);

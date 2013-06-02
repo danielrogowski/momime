@@ -7,11 +7,11 @@ import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.database.v0_9_4.Building;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.areas.BooleanMapArea2DArray;
@@ -31,7 +31,7 @@ public interface IMomCityCalculations
 	 * @return % production bonus for a city located at this grid cell
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
-	public int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
+	public int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
 		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
 		throws RecordNotFoundException;
 
@@ -43,7 +43,7 @@ public interface IMomCityCalculations
 	 * @return % gold bonus for a city located at this grid cell
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
-	public int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
+	public int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
 		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
 		throws RecordNotFoundException;
 
@@ -54,7 +54,7 @@ public interface IMomCityCalculations
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @return True if the surrounding terrain has one of the tile type options that we need to construct this building
 	 */
-	public boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation, final Building building,
+	public boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation, final Building building,
 		final CoordinateSystem overlandMapCoordinateSystem);
 
 	/**
@@ -69,7 +69,7 @@ public interface IMomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 */
 	public int calculateMaxCitySize (final MapVolumeOfMemoryGridCells map,
-		final OverlandMapCoordinates cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
+		final OverlandMapCoordinatesEx cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
 		final ICommonDatabase db)
 		throws RecordNotFoundException;
 
@@ -86,7 +86,7 @@ public interface IMomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
 	public CalculateCityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final int maxCitySize, final ICommonDatabase db)
+		final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation, final int maxCitySize, final ICommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -115,7 +115,7 @@ public interface IMomCityCalculations
 	 */
 	public CalculateCityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final String taxRateID, final ICommonDatabase db)
+		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final ICommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 
 	/**
@@ -134,7 +134,7 @@ public interface IMomCityCalculations
 	 */
 	public CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
+		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
 		final ICommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 
@@ -155,7 +155,7 @@ public interface IMomCityCalculations
 	 */
 	public int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final String taxRateID, final MomSessionDescription sd,
+		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final MomSessionDescription sd,
 		final boolean includeProductionAndConsumptionFromPopulation, final ICommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 

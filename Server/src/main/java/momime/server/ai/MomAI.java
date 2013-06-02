@@ -8,13 +8,13 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.PlayerKnowledgeUtils;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.fogofwar.IFogOfWarMidTurnChanges;
@@ -71,7 +71,7 @@ public final class MomAI implements IMomAI
 					if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) &&
 						(cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 					{
-						final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());

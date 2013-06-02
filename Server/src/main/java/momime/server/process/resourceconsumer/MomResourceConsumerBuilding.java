@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CoordinatesUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
@@ -103,10 +103,10 @@ public final class MomResourceConsumerBuilding implements IMomResourceConsumer
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.entering (MomResourceConsumerBuilding.class.getName (), "kill",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (getBuilding ().getCityLocation ()), getBuilding ().getBuildingID ()});
+			new String [] {getBuilding ().getCityLocation ().toString (), getBuilding ().getBuildingID ()});
 
 		mom.getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-			getBuilding ().getCityLocation (), getBuilding ().getBuildingID (), false, false, mom.getSessionDescription (), mom.getServerDB ());
+			(OverlandMapCoordinatesEx) getBuilding ().getCityLocation (), getBuilding ().getBuildingID (), false, false, mom.getSessionDescription (), mom.getServerDB ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{

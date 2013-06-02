@@ -15,6 +15,7 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuildingUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
@@ -23,7 +24,6 @@ import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomServerCityCalculations;
@@ -71,7 +71,7 @@ public final class TestCityAI
 		final CityAI ai = new CityAI ();
 		ai.setCityCalculations (new MomCityCalculations ());
 		
-		final OverlandMapCoordinates ocean = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final OverlandMapCoordinatesEx ocean = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertNull (ocean);
 
 		// Fill map with tundra, then we can build a city anywhere but none of them are very good
@@ -80,7 +80,7 @@ public final class TestCityAI
 				for (final MemoryGridCell cell : row.getCell ())
 					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
 
-		final OverlandMapCoordinates tundra = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final OverlandMapCoordinatesEx tundra = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (0, tundra.getX ());
 		assertEquals (0, tundra.getY ());
 		assertEquals (0, tundra.getPlane ());
@@ -95,7 +95,7 @@ public final class TestCityAI
 			for (final MemoryGridCell cell : row.getCell ())
 				cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
 
-		final OverlandMapCoordinates grass = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final OverlandMapCoordinatesEx grass = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (22, grass.getX ());
 		assertEquals (12, grass.getY ());
 		assertEquals (0, grass.getPlane ());
@@ -103,7 +103,7 @@ public final class TestCityAI
 		// Putting some gems there is great
 		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF01");
 
-		final OverlandMapCoordinates gems = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final OverlandMapCoordinatesEx gems = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (22, gems.getX ());
 		assertEquals (12, gems.getY ());
 		assertEquals (0, gems.getPlane ());
@@ -112,7 +112,7 @@ public final class TestCityAI
 		// Note there's no longer a spot where can include all 3 grass tiles, so it picks the first coordinates that it encounters that includes two of the grass tiles
 		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF13");
 
-		final OverlandMapCoordinates lair = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final OverlandMapCoordinatesEx lair = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (20, lair.getX ());
 		assertEquals (11, lair.getY ());
 		assertEquals (0, lair.getPlane ());
@@ -121,7 +121,7 @@ public final class TestCityAI
 		// But we don't get the 20% gold bonus from it unless we move the city to that location, so this proves that the gold bonus is taken into account
 		map.getPlane ().get (0).getRow ().get (11).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER);
 
-		final OverlandMapCoordinates river = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final OverlandMapCoordinatesEx river = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (21, river.getX ());
 		assertEquals (11, river.getY ());
 		assertEquals (0, river.getPlane ());
@@ -135,7 +135,7 @@ public final class TestCityAI
 		map.getPlane ().get (0).getRow ().get (14).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 		map.getPlane ().get (0).getRow ().get (13).getCell ().get (23).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 
-		final OverlandMapCoordinates mountain = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final OverlandMapCoordinatesEx mountain = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (21, mountain.getX ());
 		assertEquals (12, mountain.getY ());
 		assertEquals (0, mountain.getPlane ());
@@ -144,7 +144,7 @@ public final class TestCityAI
 		// the 25% bonus from the mountains rather than the 20% + 4 from the river and iron ore
 		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF04");
 
-		final OverlandMapCoordinates ironOre = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final OverlandMapCoordinatesEx ironOre = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (21, ironOre.getX ());
 		assertEquals (12, ironOre.getY ());
 		assertEquals (0, ironOre.getPlane ());
@@ -153,7 +153,7 @@ public final class TestCityAI
 		// back to the 20% + 6 from the river and coal rather than the 25% from the mountains
 		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF05");
 
-		final OverlandMapCoordinates coal = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final OverlandMapCoordinatesEx coal = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (21, coal.getX ());
 		assertEquals (11, coal.getY ());
 		assertEquals (0, coal.getPlane ());
@@ -275,7 +275,7 @@ public final class TestCityAI
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
 
 		// Set up city
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (20);
 		cityLocation.setY (10);
 		cityLocation.setPlane (1);
@@ -303,7 +303,7 @@ public final class TestCityAI
 			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
 			{
-				final OverlandMapCoordinates buildingLocation = new OverlandMapCoordinates ();
+				final OverlandMapCoordinatesEx buildingLocation = new OverlandMapCoordinatesEx ();
 				buildingLocation.setX (20);
 				buildingLocation.setY (10);
 				buildingLocation.setPlane (1);
@@ -358,7 +358,7 @@ public final class TestCityAI
 			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
 			{
-				final OverlandMapCoordinates buildingLocation = new OverlandMapCoordinates ();
+				final OverlandMapCoordinatesEx buildingLocation = new OverlandMapCoordinatesEx ();
 				buildingLocation.setX (20);
 				buildingLocation.setY (10);
 				buildingLocation.setPlane (1);

@@ -8,13 +8,13 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.CombatMapLayerID;
 import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.IMemoryMaintainedSpellUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_4.MapRowOfCombatTiles;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomCombatTileLayer;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.utils.ICombatMapUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -68,7 +68,7 @@ public final class CombatMapGenerator
 	 * @return Newly generated combat map
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
-	public final MapAreaOfCombatTiles generateCombatMap (final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final OverlandMapCoordinates combatMapLocation)
+	public final MapAreaOfCombatTiles generateCombatMap (final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final OverlandMapCoordinatesEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		log.entering (CombatMapGenerator.class.getName (), "generateCombatMap");
@@ -254,7 +254,7 @@ public final class CombatMapGenerator
 	 * @param combatMapLocation The location that the map is being generated for (we need this in order to look for buildings, etc)
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
-	final void placeCombatMapElements (final MapAreaOfCombatTiles map, final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final OverlandMapCoordinates combatMapLocation)
+	final void placeCombatMapElements (final MapAreaOfCombatTiles map, final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final OverlandMapCoordinatesEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		log.entering (CombatMapGenerator.class.getName (), "placeCombatMapElements");

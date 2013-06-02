@@ -22,6 +22,7 @@ import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.IResourceValueUtils;
 import momime.common.messages.ISpellUtils;
 import momime.common.messages.IUnitUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage;
@@ -36,7 +37,6 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
@@ -164,7 +164,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 						(cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
 					{
 						// Calculate all productions from this city
-						final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());

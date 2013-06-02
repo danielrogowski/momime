@@ -96,6 +96,7 @@
 		<property name="serverToClientContext" ref="serverToClientJaxbContext" />
 		<property name="clientToServerContextFactoryArray">
 			<array>
+				<ref bean="objectFactoryMessages" />
 				<ref bean="clientToServerObjectFactory" />
 			</array>
 		</property>
@@ -192,6 +193,7 @@
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="cityAI" ref="cityAI" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessing">

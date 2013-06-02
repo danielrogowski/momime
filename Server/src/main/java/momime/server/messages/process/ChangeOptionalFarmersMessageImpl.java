@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CoordinatesUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeOptionalFarmersMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
@@ -40,12 +40,12 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.entering (ChangeOptionalFarmersMessageImpl.class.getName (), "process",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (getCityLocation ()), new Integer (getOptionalFarmers ()).toString ()});
+			new String [] {(getCityLocation () == null) ? "null" : getCityLocation ().toString (), new Integer (getOptionalFarmers ()).toString ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		final String error = mom.getCityServerUtils ().validateOptionalFarmers (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			getCityLocation (), getOptionalFarmers (), mom.getSessionDescription (), mom.getServerDB ());
+			(OverlandMapCoordinatesEx) getCityLocation (), getOptionalFarmers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		if (error != null)
 		{
@@ -65,7 +65,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 
 			// Send update to clients
 			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
+				mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 
 			// Tell the player how this will affect their global production
 			mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);

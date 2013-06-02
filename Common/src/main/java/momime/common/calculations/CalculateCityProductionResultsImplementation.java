@@ -21,8 +21,8 @@ import momime.common.database.v0_9_4.RacePopulationTask;
 import momime.common.database.v0_9_4.RacePopulationTaskProduction;
 import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.IPlayerPickUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.PlayerPick;
 
 /**
@@ -185,7 +185,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
-	final void addProductionFromPopulation (final Race race, final String populationTaskID, final int numberDoingTask, final OverlandMapCoordinates cityLocation,
+	final void addProductionFromPopulation (final Race race, final String populationTaskID, final int numberDoingTask, final OverlandMapCoordinatesEx cityLocation,
 		final List<MemoryBuilding> buildings, final ICommonDatabase db) throws RecordNotFoundException
 	{
 		if (numberDoingTask > 0)

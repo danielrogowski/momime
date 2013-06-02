@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CoordinatesUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
@@ -36,12 +36,12 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		log.entering (ChangeCityConstructionMessageImpl.class.getName (), "process",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (getCityLocation ()), getBuildingOrUnitID ()});
+			new String [] {(getCityLocation () == null) ? "null" : getCityLocation ().toString (), getBuildingOrUnitID ()});
 
 		final IMomSessionVariables mom = (IMomSessionVariables) thread;
 
 		final String error = mom.getCityServerUtils ().validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription (), mom.getServerDB ());
+			(OverlandMapCoordinatesEx) getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription (), mom.getServerDB ());
 
 		if (error != null)
 		{
@@ -61,7 +61,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 
 			// Send update to clients
 			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
+				mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
 
 		log.exiting (ChangeCityConstructionMessageImpl.class.getName (), "process");

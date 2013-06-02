@@ -12,11 +12,14 @@ import momime.common.calculations.CalculateCityProductionResults;
 import momime.common.calculations.IMomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CoordinatesUtils;
+import momime.common.database.v0_9_4.TaxRate;
 import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.IResourceValueUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.PlayerKnowledgeUtils;
 import momime.common.messages.servertoclient.v0_9_4.PendingSaleMessage;
+import momime.common.messages.servertoclient.v0_9_4.TaxRateChangedMessage;
+import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryBuilding;
@@ -28,10 +31,11 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.server.IMomSessionVariables;
 import momime.server.ai.ICityAI;
 import momime.server.calculations.IMomServerCityCalculations;
+import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Building;
@@ -85,6 +89,9 @@ public final class CityProcessing implements ICityProcessing
 	
 	/** AI decisions about cities */
 	private ICityAI cityAI;
+	
+	/** Resource calculations */
+	private IMomServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -140,7 +147,7 @@ public final class CityProcessing implements ICityProcessing
 					plane = db.getPlane ().get (RandomUtils.getGenerator ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
-				final OverlandMapCoordinates cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db);
+				final OverlandMapCoordinatesEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db);
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 
@@ -206,7 +213,7 @@ public final class CityProcessing implements ICityProcessing
 					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
 						{
-							final OverlandMapCoordinates buildingCoords = new OverlandMapCoordinates ();
+							final OverlandMapCoordinatesEx buildingCoords = new OverlandMapCoordinatesEx ();
 							buildingCoords.setX (cityLocation.getX ());
 							buildingCoords.setY (cityLocation.getY ());
 							buildingCoords.setPlane (cityLocation.getPlane ());
@@ -224,7 +231,7 @@ public final class CityProcessing implements ICityProcessing
 						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
 							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
 						{
-							final OverlandMapCoordinates buildingCoords = new OverlandMapCoordinates ();
+							final OverlandMapCoordinatesEx buildingCoords = new OverlandMapCoordinatesEx ();
 							buildingCoords.setX (cityLocation.getX ());
 							buildingCoords.setY (cityLocation.getY ());
 							buildingCoords.setPlane (cityLocation.getPlane ());
@@ -241,7 +248,7 @@ public final class CityProcessing implements ICityProcessing
 					if ((thisUnit.getUnitRaceID () != null) && (thisUnit.getFreeAtStartCount () != null) && (thisUnit.getUnitRaceID ().equals (city.getCityRaceID ())))
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
-							final OverlandMapCoordinates unitCoords = new OverlandMapCoordinates ();
+							final OverlandMapCoordinatesEx unitCoords = new OverlandMapCoordinatesEx ();
 							unitCoords.setX (cityLocation.getX ());
 							unitCoords.setY (cityLocation.getY ());
 							unitCoords.setPlane (cityLocation.getPlane ());
@@ -289,7 +296,7 @@ public final class CityProcessing implements ICityProcessing
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
 
-						final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
@@ -460,8 +467,8 @@ public final class CityProcessing implements ICityProcessing
 	 * deals with all the knock on effects of buildings being sold, such as paying the gold from the sale to the city owner,
 	 * making sure the current construction project is still valid, and if the building sale alters unrest or production in any way
 	 *
-	 *  Does not recalc global production (which will now be reduced from not having to pay the maintenance of the sold building),
-	 *  this has to be done by the calling routine
+	 * Does not recalc global production (which will now be reduced from not having to pay the maintenance of the sold building),
+	 * this has to be done by the calling routine
 	 *
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
@@ -479,13 +486,12 @@ public final class CityProcessing implements ICityProcessing
 	 */
 	@Override
 	public final void sellBuilding (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx cityLocation, final String buildingID,
 		final boolean pendingSale, final boolean voluntarySale,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CityProcessing.class.getName (), "sellBuilding",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
+		log.entering (CityProcessing.class.getName (), "sellBuilding", new String [] {cityLocation.toString (), buildingID});
 
 		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, tc.getCityData ().getCityOwnerID (), "sellBuilding");
@@ -543,6 +549,92 @@ public final class CityProcessing implements ICityProcessing
 		log.exiting (CityProcessing.class.getName (), "sellBuilding");
 	}
 
+	/**
+	 * Changes a player's tax rate, currently only clients can change their tax rate, but the AI should use this method too.
+	 * Although this is currently only used by human players, kept it separate from ChangeTaxRateMessageImpl in anticipation of AI players using it
+	 * 
+	 * @param player Player who is changing their tax rate
+	 * @param taxRateID New tax rate
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final IMomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.entering (CityProcessing.class.getName (), "changeTaxRate", new String [] {player.getPlayerDescription ().getPlayerName (), taxRateID});
+		
+		TaxRate newTaxRate = null;
+		try
+		{
+			newTaxRate = mom.getServerDB ().findTaxRate (taxRateID, "changeTaxRate");
+		}
+		catch (final RecordNotFoundException e)
+		{
+			// Handled below
+		}
+		
+		if (newTaxRate == null)
+		{
+			// Return error
+			log.warning (CityProcessing.class.getName () + ": " + player.getPlayerDescription ().getPlayerName () + " tried to set invalid tax rate of \"" + taxRateID + "\"");
+
+			final TextPopupMessage reply = new TextPopupMessage ();
+			reply.setText ("You tried to set an invalid tax rate!");
+			player.getConnection ().sendMessageToClient (reply);
+		}
+		else
+		{
+			// Set on server
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			priv.setTaxRateID (taxRateID);
+			
+			// Set on client
+			if (player.getPlayerDescription ().isHuman ())
+			{
+				final TaxRateChangedMessage reply = new TaxRateChangedMessage ();
+				reply.setTaxRateID (taxRateID);
+				player.getConnection ().sendMessageToClient (reply);
+			}
+			
+			// Recalc stats for all cities based on the new tax rate
+			final FogOfWarMemory trueMap = mom.getGeneralServerKnowledge ().getTrueMap ();
+			for (final Plane plane : mom.getServerDB ().getPlane ())
+				for (int x = 0; x < mom.getSessionDescription ().getMapSize ().getWidth (); x++)
+					for (int y = 0; y < mom.getSessionDescription ().getMapSize ().getHeight (); y++)
+					{
+						final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
+						if (cityData != null)
+						{
+							if ((cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) &&
+								(cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())))
+							{
+								final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+								cityLocation.setPlane (plane.getPlaneNumber ());
+								cityLocation.setX (x);
+								cityLocation.setY (y);
+								
+								cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels 
+									(mom.getPlayers (), trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, taxRateID, mom.getServerDB ()).getFinalTotal ());
+
+								getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
+
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+							}
+						}
+					}
+			
+			// Recalculate all global production based on the new tax rate
+			getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
+		}
+		
+		log.exiting (CityProcessing.class.getName (), "changeTaxRate");
+	}
+	
 	/**
 	 * @return Resource value utils
 	 */
@@ -685,5 +777,21 @@ public final class CityProcessing implements ICityProcessing
 	public final void setCityAI (final ICityAI ai)
 	{
 		cityAI = ai;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final IMomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final IMomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

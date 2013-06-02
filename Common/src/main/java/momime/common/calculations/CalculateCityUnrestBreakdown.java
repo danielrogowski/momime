@@ -83,7 +83,7 @@ public final class CalculateCityUnrestBreakdown
 	 * @param aFinalTotal Final total number of rebels
 	 * @param aBuildingsReducingUnrest List of buildings that are reducing unrest and how much each is reducing it by
 	 */
-	CalculateCityUnrestBreakdown (final int aTaxPercentage, final int aRacialPercentage, final int aTotalPercentage, final int aPopulation, final int aBaseValue,
+	public CalculateCityUnrestBreakdown (final int aTaxPercentage, final int aRacialPercentage, final int aTotalPercentage, final int aPopulation, final int aBaseValue,
 		final int aRacialLiteral, final int aReligiousBuildingRetortPercentage, final int aReligiousBuildingReduction, final int aReligiousBuildingRetortValue,
 		final int aUnitCount, final int aUnitReduction, final int aBaseTotal,
 		final boolean aForcePositive, final boolean aForceAll, final int aMinimumFarmers, final int aTotalAfterFarmers, final int aFinalTotal,

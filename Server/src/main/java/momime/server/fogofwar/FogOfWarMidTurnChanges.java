@@ -15,12 +15,12 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
-import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.IMemoryCombatAreaEffectUtils;
 import momime.common.messages.IMemoryGridCellUtils;
 import momime.common.messages.IMemoryMaintainedSpellUtils;
 import momime.common.messages.IUnitUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessageData;
 import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessage;
@@ -63,7 +63,6 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PendingMovement;
 import momime.common.messages.v0_9_4.UnitStatusID;
@@ -143,11 +142,11 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void updatePlayerMemoryOfTerrain (final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx coords,
 		final FogOfWarValue terrainAndNodeAurasSetting)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfTerrain", CoordinatesUtils.overlandMapCoordinatesToString (coords));
+		log.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfTerrain", coords);
 
 		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
@@ -193,10 +192,10 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void updatePlayerMemoryOfCity (final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinates coords, final FogOfWarSettingData fogOfWarSettings)
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx coords, final FogOfWarSettingData fogOfWarSettings)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfCity", CoordinatesUtils.overlandMapCoordinatesToString (coords));
+		log.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfCity", coords);
 
 		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
@@ -257,7 +256,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	final boolean canSeeUnitMidTurn (final MemoryUnit unit, final List<PlayerServerDetails> players,
 		final MapVolumeOfMemoryGridCells trueTerrain, final PlayerServerDetails player,
-		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
@@ -294,7 +293,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 				if (ServerMemoryGridCellUtils.isNodeLairTower (unitLocationTerrain, db))
 				{
 					// Monster in a node/lair/tower - the only way we can see it is if we're in combat with it
-					canSee = ((combatLocation != null) && (CoordinatesUtils.overlandMapCoordinatesEqual (combatLocation, unit.getCombatLocation (), true)) &&
+					canSee = ((combatLocation != null) && (combatLocation.equals (unit.getCombatLocation ())) &&
 						((player == combatAttackingPlayer) || (player == combatDefendingPlayer)));
 				}
 				else
@@ -305,7 +304,8 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 			else
 			{
 				// Regular unit - is it in a tower of wizardy?
-				canSee = getFogOfWarCalculations ().canSeeMidTurnOnAnyPlaneIfTower (unit.getUnitLocation (), sd.getFogOfWarSetting ().getUnits (), trueTerrain, priv.getFogOfWar (), db);
+				canSee = getFogOfWarCalculations ().canSeeMidTurnOnAnyPlaneIfTower
+					((OverlandMapCoordinatesEx) unit.getUnitLocation (), sd.getFogOfWarSetting ().getUnits (), trueTerrain, priv.getFogOfWar (), db);
 			}
 		}
 
@@ -329,7 +329,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	final boolean canSeeSpellMidTurn (final MemoryMaintainedSpell spell, final List<PlayerServerDetails> players,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final PlayerServerDetails player,
-		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
@@ -408,7 +408,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final String unitID, final OverlandMapCoordinates locationToAddUnit, final OverlandMapCoordinates buildingsLocation, final OverlandMapCoordinates combatLocation,
+		final String unitID, final OverlandMapCoordinatesEx locationToAddUnit, final OverlandMapCoordinatesEx buildingsLocation, final OverlandMapCoordinatesEx combatLocation,
 		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
@@ -474,7 +474,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final OverlandMapCoordinates locationToAddUnit,
+	public final void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final OverlandMapCoordinatesEx locationToAddUnit,
 		final PlayerServerDetails unitOwner, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
@@ -482,7 +482,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		log.entering (FogOfWarMidTurnChanges.class.getName (), "updateUnitStatusToAliveOnServerAndClients", trueUnit.getUnitURN ());
 
 		// Update on server
-		final OverlandMapCoordinates unitLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (locationToAddUnit.getX ());
 		unitLocation.setY (locationToAddUnit.getY ());
 		unitLocation.setPlane (locationToAddUnit.getPlane ());
@@ -650,7 +650,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -709,8 +709,8 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	@Override
 	public final void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final boolean castInCombat, final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -718,12 +718,12 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 			new String [] {new Integer (castingPlayerID).toString (), spellID});
 
 		// First add on server
-		final OverlandMapCoordinates spellLocation;
+		final OverlandMapCoordinatesEx spellLocation;
 		if (cityLocation == null)
 			spellLocation = null;
 		else
 		{
-			spellLocation = new OverlandMapCoordinates ();
+			spellLocation = new OverlandMapCoordinatesEx ();
 			spellLocation.setX (cityLocation.getX ());
 			spellLocation.setY (cityLocation.getY ());
 			spellLocation.setPlane (cityLocation.getPlane ());
@@ -770,8 +770,8 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	@Override
 	public final void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final OverlandMapCoordinates cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final OverlandMapCoordinates combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final boolean castInCombat, final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -833,19 +833,19 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
+		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinatesEx mapLocation,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		log.entering (FogOfWarMidTurnChanges.class.getName (), "addCombatAreaEffectOnServerAndClients", combatAreaEffectID);
 
 		// First add on server
-		final OverlandMapCoordinates caeLocation;
+		final OverlandMapCoordinatesEx caeLocation;
 		if (mapLocation == null)
 			caeLocation = null;
 		else
 		{
-			caeLocation = new OverlandMapCoordinates ();
+			caeLocation = new OverlandMapCoordinatesEx ();
 			caeLocation.setX (mapLocation.getX ());
 			caeLocation.setY (mapLocation.getY ());
 			caeLocation.setPlane (mapLocation.getPlane ());
@@ -896,7 +896,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
-		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinates mapLocation,
+		final String combatAreaEffectID, final Integer castingPlayerID, final OverlandMapCoordinatesEx mapLocation,
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -950,13 +950,13 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
-		final OverlandMapCoordinates cityLocation, final String firstBuildingID, final String secondBuildingID,
+		final OverlandMapCoordinatesEx cityLocation, final String firstBuildingID, final String secondBuildingID,
 		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.entering (FogOfWarMidTurnChanges.class.getName (), "addBuildingOnServerAndClients",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), firstBuildingID, secondBuildingID, buildingCreatedFromSpellID});
+			new String [] {cityLocation.toString (), firstBuildingID, secondBuildingID, buildingCreatedFromSpellID});
 
 		// First add on server
 		final MemoryBuilding firstTrueBuilding;
@@ -964,7 +964,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 			firstTrueBuilding = null;
 		else
 		{
-			final OverlandMapCoordinates firstBuildingLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx firstBuildingLocation = new OverlandMapCoordinatesEx ();
 			firstBuildingLocation.setX (cityLocation.getX ());
 			firstBuildingLocation.setY (cityLocation.getY ());
 			firstBuildingLocation.setPlane (cityLocation.getPlane ());
@@ -980,7 +980,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 			secondTrueBuilding = null;
 		else
 		{
-			final OverlandMapCoordinates secondBuildingLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx secondBuildingLocation = new OverlandMapCoordinatesEx ();
 			secondBuildingLocation.setX (cityLocation.getX ());
 			secondBuildingLocation.setY (cityLocation.getY ());
 			secondBuildingLocation.setPlane (cityLocation.getPlane ());
@@ -1049,12 +1049,11 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID, final boolean updateBuildingSoldThisTurn,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx cityLocation, final String buildingID, final boolean updateBuildingSoldThisTurn,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarMidTurnChanges.class.getName (), "destroyBuildingOnServerAndClients",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), buildingID});
+		log.entering (FogOfWarMidTurnChanges.class.getName (), "destroyBuildingOnServerAndClients", new String [] {cityLocation.toString (), buildingID});
 
 		// First destroy on server
 		getMemoryBuildingUtils ().destroyBuilding (trueMap.getBuilding (), cityLocation, buildingID);
@@ -1306,12 +1305,12 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final OverlandMapCoordinates moveFrom, final OverlandMapCoordinates moveTo, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinatesEx moveFrom, final OverlandMapCoordinatesEx moveTo, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		log.entering (FogOfWarMidTurnChanges.class.getName (), "moveUnitStackOneCellOnServerAndClients", new String [] {unitStack.toString (),
-			unitStackOwner.getPlayerDescription ().getPlayerID ().toString (), CoordinatesUtils.overlandMapCoordinatesToString (moveFrom), CoordinatesUtils.overlandMapCoordinatesToString (moveTo)});
+			unitStackOwner.getPlayerDescription ().getPlayerID ().toString (), moveFrom.toString (), moveTo.toString ()});
 
 		// Fill out bulk of the messages
 		final MoveUnitStackOverlandMessage movementUnitMessage = new MoveUnitStackOverlandMessage ();
@@ -1399,7 +1398,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		// Move units on true map
 		for (final MemoryUnit thisUnit : unitStack)
 		{
-			final OverlandMapCoordinates newLocation = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx newLocation = new OverlandMapCoordinatesEx ();
 			newLocation.setX (moveTo.getX ());
 			newLocation.setY (moveTo.getY ());
 			newLocation.setPlane (moveTo.getPlane ());
@@ -1411,8 +1410,8 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, unitStackOwner, players, false, "moveUnitStackOneCellOnServerAndClients", sd, db);
 
 		// If we moved out of or into a city, then need to recalc rebels, production, etc.
-		final OverlandMapCoordinates [] cityLocations = new OverlandMapCoordinates [] {moveFrom, moveTo};
-		for (final OverlandMapCoordinates cityLocation : cityLocations)
+		final OverlandMapCoordinatesEx [] cityLocations = new OverlandMapCoordinatesEx [] {moveFrom, moveTo};
+		for (final OverlandMapCoordinatesEx cityLocation : cityLocations)
 		{
 			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 			if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () > 0))
@@ -1444,16 +1443,15 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @return Direction to make one cell move in
 	 * @throws MomException If we can't find a route from moveFrom to moveTo
 	 */
-	final int determineMovementDirection (final OverlandMapCoordinates moveFrom, final OverlandMapCoordinates moveTo,
+	final int determineMovementDirection (final OverlandMapCoordinatesEx moveFrom, final OverlandMapCoordinatesEx moveTo,
 		final int [] [] [] movementDirections, final CoordinateSystem sys) throws MomException
 	{
-		log.entering (FogOfWarMidTurnChanges.class.getName (), "determineMovementDirection",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (moveFrom), CoordinatesUtils.overlandMapCoordinatesToString (moveTo)});
+		log.entering (FogOfWarMidTurnChanges.class.getName (), "determineMovementDirection", new String [] {moveFrom.toString (), moveTo.toString ()});
 
 		// The value at each cell of the directions grid is the direction we need to have come FROM to get there
 		// So we need to start at the destinationand follow backwards down the movement path until we
 		// get back to the From location, and the direction we want is the one that led us to the From location
-		final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (moveTo.getX ());
 		coords.setY (moveTo.getY ());
 		coords.setPlane (moveTo.getPlane ());
@@ -1530,13 +1528,13 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void moveUnitStack (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final OverlandMapCoordinates originalMoveFrom, final OverlandMapCoordinates moveTo,
+		final OverlandMapCoordinatesEx originalMoveFrom, final OverlandMapCoordinatesEx moveTo,
 		final boolean forceAsPendingMovement, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		log.entering (FogOfWarMidTurnChanges.class.getName (), "moveUnitStack", new String [] {unitStack.toString (),
-			unitStackOwner.getPlayerDescription ().getPlayerID ().toString (), CoordinatesUtils.overlandMapCoordinatesToString (originalMoveFrom), CoordinatesUtils.overlandMapCoordinatesToString (moveTo)});
+			unitStackOwner.getPlayerDescription ().getPlayerID ().toString (), originalMoveFrom.toString (), moveTo.toString ()});
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 		final List<String> unitStackSkills = getServerUnitCalculations ().listAllSkillsInUnitStack (unitStack, priv.getFogOfWarMemory ().getMaintainedSpell (), db);
@@ -1547,7 +1545,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		int doubleMovementRemaining = 0;
 		int [] [] [] movementDirections = null;
 
-		OverlandMapCoordinates moveFrom = originalMoveFrom;
+		OverlandMapCoordinatesEx moveFrom = originalMoveFrom;
 		MoveResultsInAttackTypeID typeOfCombatInitiated = MoveResultsInAttackTypeID.NO;
 
 		while (keepGoing)
@@ -1578,7 +1576,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 				final int movementDirection = determineMovementDirection (moveFrom, moveTo, movementDirections, sd.getMapSize ());
 
 				// Work out where this moves us to
-				final OverlandMapCoordinates oneStep = new OverlandMapCoordinates ();
+				final OverlandMapCoordinatesEx oneStep = new OverlandMapCoordinatesEx ();
 				oneStep.setX (moveFrom.getX ());
 				oneStep.setY (moveFrom.getY ());
 				oneStep.setPlane (moveFrom.getPlane ());
@@ -1668,7 +1666,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 					pending.getUnitURN ().add (thisUnit.getUnitURN ());
 
 				// Record the movement path
-				final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+				final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 				coords.setX (moveTo.getX ());
 				coords.setY (moveTo.getY ());
 				coords.setPlane (moveTo.getPlane ());

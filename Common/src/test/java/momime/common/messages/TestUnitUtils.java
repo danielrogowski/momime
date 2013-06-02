@@ -23,7 +23,6 @@ import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.UnitStatusID;
 
@@ -596,7 +595,7 @@ public final class TestUnitUtils
 	{
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		unit.setUnitLocation (new OverlandMapCoordinates ());
+		unit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		unit.setOwningPlayerID (1);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -617,12 +616,12 @@ public final class TestUnitUtils
 	{
 		final AvailableUnit ourUnit = new AvailableUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new OverlandMapCoordinates ());
+		ourUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new OverlandMapCoordinates ());
+		theirUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -635,7 +634,7 @@ public final class TestUnitUtils
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units - should still apply
-		effect.setMapLocation (new OverlandMapCoordinates ());
+		effect.setMapLocation (new OverlandMapCoordinatesEx ());
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -654,12 +653,12 @@ public final class TestUnitUtils
 	{
 		final AvailableUnit ourUnit = new AvailableUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new OverlandMapCoordinates ());
+		ourUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new OverlandMapCoordinates ());
+		theirUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -672,7 +671,7 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units - however for Caster Only, this means the units also have to be in combat, which they aren't so it still doesn't apply
-		effect.setMapLocation (new OverlandMapCoordinates ());
+		effect.setMapLocation (new OverlandMapCoordinatesEx ());
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -691,12 +690,12 @@ public final class TestUnitUtils
 	{
 		final AvailableUnit ourUnit = new AvailableUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new OverlandMapCoordinates ());
+		ourUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new OverlandMapCoordinates ());
+		theirUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -711,7 +710,7 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units
-		effect.setMapLocation (new OverlandMapCoordinates ());
+		effect.setMapLocation (new OverlandMapCoordinatesEx ());
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -730,12 +729,12 @@ public final class TestUnitUtils
 	{
 		final AvailableUnit ourUnit = new AvailableUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new OverlandMapCoordinates ());
+		ourUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new OverlandMapCoordinates ());
+		theirUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -750,7 +749,7 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units
-		effect.setMapLocation (new OverlandMapCoordinates ());
+		effect.setMapLocation (new OverlandMapCoordinatesEx ());
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -769,7 +768,7 @@ public final class TestUnitUtils
 	{
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		unit.setUnitLocation (new OverlandMapCoordinates ());
+		unit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		unit.setOwningPlayerID (1);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -790,12 +789,12 @@ public final class TestUnitUtils
 	{
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new OverlandMapCoordinates ());
+		ourUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new OverlandMapCoordinates ());
+		theirUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -808,7 +807,7 @@ public final class TestUnitUtils
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units - should still apply
-		effect.setMapLocation (new OverlandMapCoordinates ());
+		effect.setMapLocation (new OverlandMapCoordinatesEx ());
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -818,9 +817,9 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
-		ourUnit.setCombatLocation (new OverlandMapCoordinates ());
+		ourUnit.setCombatLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.getCombatLocation ().setX (1);
-		theirUnit.setCombatLocation (new OverlandMapCoordinates ());
+		theirUnit.setCombatLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.getCombatLocation ().setX (1);
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
@@ -840,12 +839,12 @@ public final class TestUnitUtils
 	{
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new OverlandMapCoordinates ());
+		ourUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new OverlandMapCoordinates ());
+		theirUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -858,7 +857,7 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units - however for Caster Only, this means the units also have to be in combat, which they aren't so it still doesn't apply
-		effect.setMapLocation (new OverlandMapCoordinates ());
+		effect.setMapLocation (new OverlandMapCoordinatesEx ());
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -868,9 +867,9 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
-		ourUnit.setCombatLocation (new OverlandMapCoordinates ());
+		ourUnit.setCombatLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.getCombatLocation ().setX (1);
-		theirUnit.setCombatLocation (new OverlandMapCoordinates ());
+		theirUnit.setCombatLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.getCombatLocation ().setX (1);
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
@@ -890,12 +889,12 @@ public final class TestUnitUtils
 	{
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new OverlandMapCoordinates ());
+		ourUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new OverlandMapCoordinates ());
+		theirUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -910,7 +909,7 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units
-		effect.setMapLocation (new OverlandMapCoordinates ());
+		effect.setMapLocation (new OverlandMapCoordinatesEx ());
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -920,9 +919,9 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
-		ourUnit.setCombatLocation (new OverlandMapCoordinates ());
+		ourUnit.setCombatLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.getCombatLocation ().setX (1);
-		theirUnit.setCombatLocation (new OverlandMapCoordinates ());
+		theirUnit.setCombatLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.getCombatLocation ().setX (1);
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
@@ -942,12 +941,12 @@ public final class TestUnitUtils
 	{
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new OverlandMapCoordinates ());
+		ourUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new OverlandMapCoordinates ());
+		theirUnit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -962,7 +961,7 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units
-		effect.setMapLocation (new OverlandMapCoordinates ());
+		effect.setMapLocation (new OverlandMapCoordinatesEx ());
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -972,9 +971,9 @@ public final class TestUnitUtils
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
-		ourUnit.setCombatLocation (new OverlandMapCoordinates ());
+		ourUnit.setCombatLocation (new OverlandMapCoordinatesEx ());
 		ourUnit.getCombatLocation ().setX (1);
-		theirUnit.setCombatLocation (new OverlandMapCoordinates ());
+		theirUnit.setCombatLocation (new OverlandMapCoordinatesEx ());
 		theirUnit.getCombatLocation ().setX (1);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
@@ -1061,7 +1060,7 @@ public final class TestUnitUtils
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		unit.setOwningPlayerID (1);
-		unit.setUnitLocation (new OverlandMapCoordinates ());
+		unit.setUnitLocation (new OverlandMapCoordinatesEx ());
 
 		final UnitHasSkill experience = new UnitHasSkill ();
 		experience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
@@ -1117,7 +1116,7 @@ public final class TestUnitUtils
 
 		// Put a CAE in the wrong location
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
-		final OverlandMapCoordinates caeCoords = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx caeCoords = new OverlandMapCoordinatesEx ();
 		caeCoords.setX (1);
 		cae.setMapLocation (caeCoords);
 		cae.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_ALL);
@@ -1143,7 +1142,7 @@ public final class TestUnitUtils
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		unit.setOwningPlayerID (1);
-		unit.setUnitLocation (new OverlandMapCoordinates ());
+		unit.setUnitLocation (new OverlandMapCoordinatesEx ());
 		unit.setUnitURN (1);
 
 		final UnitHasSkill experience = new UnitHasSkill ();
@@ -1196,7 +1195,7 @@ public final class TestUnitUtils
 
 		// Put a CAE in the wrong location
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
-		final OverlandMapCoordinates caeCoords = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx caeCoords = new OverlandMapCoordinatesEx ();
 		caeCoords.setX (1);
 		cae.setMapLocation (caeCoords);
 		cae.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_ALL);
@@ -1410,7 +1409,7 @@ public final class TestUnitUtils
 		units.add (u1);
 
 		// Wrong location
-		final OverlandMapCoordinates u2location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 		u2location.setX (2);
 		u2location.setY (3);
 		u2location.setPlane (0);
@@ -1422,7 +1421,7 @@ public final class TestUnitUtils
 		units.add (u2);
 
 		// Wrong player (i.e. player matches)
-		final OverlandMapCoordinates u3location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u3location = new OverlandMapCoordinatesEx ();
 		u3location.setX (2);
 		u3location.setY (3);
 		u3location.setPlane (1);
@@ -1434,7 +1433,7 @@ public final class TestUnitUtils
 		units.add (u3);
 
 		// Null status
-		final OverlandMapCoordinates u4location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u4location = new OverlandMapCoordinatesEx ();
 		u4location.setX (2);
 		u4location.setY (3);
 		u4location.setPlane (1);
@@ -1445,7 +1444,7 @@ public final class TestUnitUtils
 		units.add (u4);
 
 		// Unit is dead
-		final OverlandMapCoordinates u5location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u5location = new OverlandMapCoordinatesEx ();
 		u5location.setX (2);
 		u5location.setY (3);
 		u5location.setPlane (1);
@@ -1460,7 +1459,7 @@ public final class TestUnitUtils
 		assertNull (utils.findFirstAliveEnemyAtLocation (units, 2, 3, 1, 4));
 
 		// Now add one that actually matches
-		final OverlandMapCoordinates u6location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u6location = new OverlandMapCoordinatesEx ();
 		u6location.setX (2);
 		u6location.setY (3);
 		u6location.setPlane (1);
@@ -1490,7 +1489,7 @@ public final class TestUnitUtils
 		units.add (u1);
 
 		// Wrong location
-		final OverlandMapCoordinates u2location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 		u2location.setX (2);
 		u2location.setY (3);
 		u2location.setPlane (0);
@@ -1502,7 +1501,7 @@ public final class TestUnitUtils
 		units.add (u2);
 
 		// Wrong player (i.e. player matches)
-		final OverlandMapCoordinates u3location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u3location = new OverlandMapCoordinatesEx ();
 		u3location.setX (2);
 		u3location.setY (3);
 		u3location.setPlane (1);
@@ -1514,7 +1513,7 @@ public final class TestUnitUtils
 		units.add (u3);
 
 		// Null status
-		final OverlandMapCoordinates u4location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u4location = new OverlandMapCoordinatesEx ();
 		u4location.setX (2);
 		u4location.setY (3);
 		u4location.setPlane (1);
@@ -1525,7 +1524,7 @@ public final class TestUnitUtils
 		units.add (u4);
 
 		// Unit is dead
-		final OverlandMapCoordinates u5location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u5location = new OverlandMapCoordinatesEx ();
 		u5location.setX (2);
 		u5location.setY (3);
 		u5location.setPlane (1);
@@ -1540,7 +1539,7 @@ public final class TestUnitUtils
 		assertEquals (0, utils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4));
 
 		// Now add one that actually matches
-		final OverlandMapCoordinates u6location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u6location = new OverlandMapCoordinatesEx ();
 		u6location.setX (2);
 		u6location.setY (3);
 		u6location.setPlane (1);
@@ -1554,7 +1553,7 @@ public final class TestUnitUtils
 		assertEquals (1, utils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4));
 
 		// Add second matching unit
-		final OverlandMapCoordinates u7location = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx u7location = new OverlandMapCoordinatesEx ();
 		u7location.setX (2);
 		u7location.setY (3);
 		u7location.setPlane (1);

@@ -12,8 +12,8 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.UnitSettingData;
 import momime.common.database.v0_9_4.UnitHasSkill;
-import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.IUnitUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.SetSpecialOrderMessage;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -22,7 +22,6 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
@@ -213,11 +212,11 @@ public final class UnitServerUtils implements IUnitServerUtils
 	 * @return Whether unit can be added here or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	final boolean canUnitBeAddedHere (final OverlandMapCoordinates addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
+	final boolean canUnitBeAddedHere (final OverlandMapCoordinatesEx addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
 		final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (UnitServerUtils.class.getName (), "canUnitBeAddedHere", CoordinatesUtils.overlandMapCoordinatesToString (addLocation));
+		log.entering (UnitServerUtils.class.getName (), "canUnitBeAddedHere", addLocation);
 
 		// Any other units here?
 		final boolean unitCheckOk;
@@ -280,12 +279,12 @@ public final class UnitServerUtils implements IUnitServerUtils
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	@Override
-	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final OverlandMapCoordinates desiredLocation, final String unitID, final int playerID,
+	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final OverlandMapCoordinatesEx desiredLocation, final String unitID, final int playerID,
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
 		log.entering (UnitServerUtils.class.getName (), "findNearestLocationWhereUnitCanBeAdded", new String []
-			{CoordinatesUtils.overlandMapCoordinatesToString (desiredLocation), unitID, new Integer (playerID).toString ()});
+			{desiredLocation.toString (), unitID, new Integer (playerID).toString ()});
 
 		// Create test unit
 		final AvailableUnit testUnit = new AvailableUnit ();
@@ -296,7 +295,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 		final List<String> emptySkillList = new ArrayList<String> ();
 
 		// First try the centre
-		OverlandMapCoordinates addLocation = null;
+		OverlandMapCoordinatesEx addLocation = null;
 		UnitAddBumpTypeID bumpType = UnitAddBumpTypeID.NO_ROOM;
 
 		if (canUnitBeAddedHere (desiredLocation, testUnit, emptySkillList, trueMap, sd.getUnitSetting (), db))
@@ -309,7 +308,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 			int direction = 1;
 			while ((addLocation == null) && (direction <= CoordinateSystemUtils.getMaxDirection (sd.getMapSize ().getCoordinateSystemType ())))
 			{
-				final OverlandMapCoordinates adjacentLocation = new OverlandMapCoordinates ();
+				final OverlandMapCoordinatesEx adjacentLocation = new OverlandMapCoordinatesEx ();
 				adjacentLocation.setX (desiredLocation.getX ());
 				adjacentLocation.setY (desiredLocation.getY ());
 				adjacentLocation.setPlane (desiredLocation.getPlane ());

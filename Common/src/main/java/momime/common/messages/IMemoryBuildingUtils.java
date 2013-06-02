@@ -9,7 +9,6 @@ import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 
 /**
  * Methods for working with list of MemoryBuildings
@@ -24,7 +23,7 @@ public interface IMemoryBuildingUtils
 	 * @return Whether or not the specified building exists
 	 */
 	public boolean findBuilding (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final String buildingID);
+		final OverlandMapCoordinatesEx cityLocation, final String buildingID);
 
 	/**
 	 * Removes a building from a list
@@ -34,7 +33,7 @@ public interface IMemoryBuildingUtils
 	 * @throws RecordNotFoundException If we can't find the requested building
 	 */
 	public void destroyBuilding (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final String buildingID)
+		final OverlandMapCoordinatesEx cityLocation, final String buildingID)
 		throws RecordNotFoundException;
 
 	/**
@@ -44,7 +43,7 @@ public interface IMemoryBuildingUtils
 	 * @param buildings Known buildings
 	 * @return Location of the first of this type of building we find for this player, or null if they don't have one anywhere (or at least, one we can see)
 	 */
-	public OverlandMapCoordinates findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
+	public OverlandMapCoordinatesEx findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
 		final List<MemoryBuilding> buildings);
 
 	/**
@@ -55,7 +54,7 @@ public interface IMemoryBuildingUtils
 	 * @return Whether or not the city has the necessary pre-requisite buildings
 	 */
 	public boolean meetsBuildingRequirements (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final Building building);
+		final OverlandMapCoordinatesEx cityLocation, final Building building);
 
 	/**
 	 * Checks to see if this city has the necessary pre-requisite buildings in order to build a particular unit, e.g. to build Halbardiers we may need an Armoury
@@ -65,7 +64,7 @@ public interface IMemoryBuildingUtils
 	 * @return Whether or not the city has the necessary pre-requisite buildings
 	 */
 	public boolean meetsUnitRequirements (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final Unit unit);
+		final OverlandMapCoordinatesEx cityLocation, final Unit unit);
 
 	/**
 	 * Checks to see if any of the other buildings in a city depend on the specified one, e.g. Armoury will return true if we have a Fighter's Guild- used to test if we can sell it
@@ -76,7 +75,7 @@ public interface IMemoryBuildingUtils
 	 * @return Building that depends on the specified building, or null if there is none
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
-	public String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinates cityLocation,
+	public String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinatesEx cityLocation,
 		final String buildingID, final ICommonDatabase db) throws RecordNotFoundException;
 
 	/**
@@ -96,7 +95,7 @@ public interface IMemoryBuildingUtils
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	public int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final ICommonDatabase db) throws RecordNotFoundException;
+		final OverlandMapCoordinatesEx cityLocation, final ICommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * Checks to see if any buildings give a bonus to production produced from population
@@ -110,7 +109,7 @@ public interface IMemoryBuildingUtils
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	public int totalBonusProductionPerPersonFromBuildings (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinates cityLocation, final String populationTaskID, final String productionTypeID,
+		final OverlandMapCoordinatesEx cityLocation, final String populationTaskID, final String productionTypeID,
 		final ICommonDatabase db) throws RecordNotFoundException;
 
 	/**

@@ -4,9 +4,9 @@ import java.util.List;
 
 import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.PlayerPick;
 
 import com.ndg.map.CoordinateSystem;
@@ -27,6 +27,6 @@ public interface IMomUnitCalculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 */
 	public int calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
+		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
 		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db) throws RecordNotFoundException;
 }

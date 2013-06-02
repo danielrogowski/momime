@@ -13,14 +13,13 @@ import momime.common.database.v0_9_4.BuildingPrerequisite;
 import momime.common.database.v0_9_4.RaceCannotBuild;
 import momime.common.database.v0_9_4.RacePopulationTask;
 import momime.common.database.v0_9_4.RacePopulationTaskProduction;
-import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.IMemoryBuildingUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CitySize;
@@ -90,7 +89,7 @@ public final class MomServerCityCalculations implements IMomServerCityCalculatio
 	 */
 	@Override
 	public final int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation, final ServerDatabaseEx db)
+		final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException
 	{
 		log.entering (MomServerCityCalculations.class.getName (), "calculateDoubleFarmingRate", cityLocation);
@@ -159,7 +158,7 @@ public final class MomServerCityCalculations implements IMomServerCityCalculatio
 	 */
 	@Override
 	public final void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final OverlandMapCoordinates cityLocation,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -255,14 +254,14 @@ public final class MomServerCityCalculations implements IMomServerCityCalculatio
 	 */
 	@Override
 	public final int calculateCityScoutingRange (final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final ServerDatabaseEx db) throws RecordNotFoundException
+		final OverlandMapCoordinatesEx cityLocation, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (MomServerCityCalculations.class.getName (), "calculateCityScoutingRange", CoordinatesUtils.overlandMapCoordinatesToString (cityLocation));
+		log.entering (MomServerCityCalculations.class.getName (), "calculateCityScoutingRange", cityLocation);
 
 		// Check all buildings at this location
 		int result = -1;
 		for (final MemoryBuilding thisBuilding : buildings)
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisBuilding.getCityLocation (), true))
+			if (cityLocation.equals (thisBuilding.getCityLocation ()))
 			{
 				final Integer scoutingRange = db.findBuilding (thisBuilding.getBuildingID (), "calculateCityScoutingRange").getBuildingScoutingRange ();
 
@@ -291,12 +290,12 @@ public final class MomServerCityCalculations implements IMomServerCityCalculatio
 	 */
 	@Override
 	public final boolean canEventuallyConstructBuilding (final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinates cityLocation, final Building building,
+		final OverlandMapCoordinatesEx cityLocation, final Building building,
 		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
 		log.entering (MomServerCityCalculations.class.getName (), "canEventuallyConstructBuilding",
-			new String [] {CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), building.getBuildingID ()});
+			new String [] {cityLocation.toString (), building.getBuildingID ()});
 
 		// Need to get the city race
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();

@@ -8,10 +8,10 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.RaceCannotBuild;
 import momime.common.messages.IMemoryBuildingUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Race;
@@ -46,7 +46,7 @@ public final class CityServerUtils implements ICityServerUtils
 	 * @throws RecordNotFoundException If the race inhabiting the city cannot be found
 	 */
 	@Override
-	public final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinates cityLocation,
+	public final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinatesEx cityLocation,
 		final String buildingOrUnitID, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
@@ -142,7 +142,7 @@ public final class CityServerUtils implements ICityServerUtils
 	 * @return null if choice is acceptable; message to send back to client if choices isn't acceptable
 	 */
 	@Override
-	public final String validateOptionalFarmers (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinates cityLocation,
+	public final String validateOptionalFarmers (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinatesEx cityLocation,
 		final int optionalFarmers, final MomSessionDescription sd, final ServerDatabaseEx db)
 	{
 		log.entering (CityServerUtils.class.getName (), "validateOptionalFarmers", new Integer [] {player.getPlayerDescription ().getPlayerID (), optionalFarmers});

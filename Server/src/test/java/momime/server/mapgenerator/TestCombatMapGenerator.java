@@ -16,6 +16,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.CombatMapLayerID;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.MemoryMaintainedSpellUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_4.MapRowOfCombatTiles;
@@ -26,7 +27,6 @@ import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ICombatMapUtils;
@@ -141,7 +141,7 @@ public final class TestCombatMapGenerator
 		trueTerrain.setMap (trueMap);
 		
 		// Overland map location to test
-		final OverlandMapCoordinates combatMapLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx combatMapLocation = new OverlandMapCoordinatesEx ();
 		combatMapLocation.setPlane (1);
 		combatMapLocation.setX (20);
 		combatMapLocation.setY (15);
@@ -366,7 +366,7 @@ public final class TestCombatMapGenerator
 		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
 		
 		// Location
-		final OverlandMapCoordinates combatMapLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx combatMapLocation = new OverlandMapCoordinatesEx ();
 		combatMapLocation.setPlane (1);
 		combatMapLocation.setX (20);
 		combatMapLocation.setY (15);

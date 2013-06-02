@@ -5,16 +5,16 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.server.database.ServerDatabaseEx;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Server side only helper methods for dealing with units
@@ -71,7 +71,7 @@ public interface IUnitServerUtils
 	 * @return Location + bump type; note class and bump type will always be filled in, but location may be null if the unit cannot fit anywhere
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	public UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final OverlandMapCoordinates desiredLocation, final String unitID, final int playerID,
+	public UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final OverlandMapCoordinatesEx desiredLocation, final String unitID, final int playerID,
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException;
 }

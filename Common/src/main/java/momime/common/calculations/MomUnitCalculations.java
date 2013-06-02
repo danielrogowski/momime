@@ -5,11 +5,10 @@ import java.util.logging.Logger;
 
 import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CoordinatesUtils;
 import momime.common.messages.IPlayerPickUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
 
@@ -40,7 +39,7 @@ public final class MomUnitCalculations implements IMomUnitCalculations
 	 */
 	@Override
 	public final int calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinates cityLocation,
+		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
 		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (MomUnitCalculations.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", cityLocation);
@@ -48,7 +47,7 @@ public final class MomUnitCalculations implements IMomUnitCalculations
 		// First look for a building that grants magical weapons, i.e. an Alchemists' Guild
 		int bestWeaponGrade = 0;
 		for (final MemoryBuilding thisBuilding : buildings)
-			if (CoordinatesUtils.overlandMapCoordinatesEqual (thisBuilding.getCityLocation (), cityLocation, true))
+			if (thisBuilding.getCityLocation ().equals (cityLocation))
 			{
 				final Integer weaponGradeFromBuilding = db.findBuilding (thisBuilding.getBuildingID (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort").getBuildingMagicWeapons ();
 				if ((weaponGradeFromBuilding != null) && (weaponGradeFromBuilding > bestWeaponGrade))
@@ -59,7 +58,7 @@ public final class MomUnitCalculations implements IMomUnitCalculations
 		// We can only use these if we found a building that granted some level of magic weapons
 		if (bestWeaponGrade > 0)
 		{
-			final OverlandMapCoordinates coords = new OverlandMapCoordinates ();
+			final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 			coords.setX (cityLocation.getX ());
 			coords.setY (cityLocation.getY ());
 			coords.setPlane (cityLocation.getPlane ());

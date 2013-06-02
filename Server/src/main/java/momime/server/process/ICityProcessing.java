@@ -7,9 +7,10 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
+import momime.server.IMomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
@@ -65,8 +66,8 @@ public interface ICityProcessing
 	 * deals with all the knock on effects of buildings being sold, such as paying the gold from the sale to the city owner,
 	 * making sure the current construction project is still valid, and if the building sale alters unrest or production in any way
 	 *
-	 *  Does not recalc global production (which will now be reduced from not having to pay the maintenance of the sold building),
-	 *  this has to be done by the calling routine
+	 * Does not recalc global production (which will now be reduced from not having to pay the maintenance of the sold building),
+	 * this has to be done by the calling routine
 	 *
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
@@ -83,8 +84,24 @@ public interface ICityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void sellBuilding (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinates cityLocation, final String buildingID,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx cityLocation, final String buildingID,
 		final boolean pendingSale, final boolean voluntarySale,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+
+	/**
+	 * Changes a player's tax rate, currently only clients can change their tax rate, but the AI should use this method too.
+	 * Although this is currently only used by human players, kept it separate from ChangeTaxRateMessageImpl in anticipation of AI players using it
+	 * 
+	 * @param player Player who is changing their tax rate
+	 * @param taxRateID New tax rate
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final IMomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 }

@@ -13,7 +13,6 @@ import momime.common.database.v0_9_4.SpellHasCityEffect;
 import momime.common.database.v0_9_4.UnitSpellEffect;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.utils.CompareUtils;
 import momime.common.utils.TargetUnitSpellResult;
 
@@ -49,12 +48,11 @@ public final class MemoryMaintainedSpellUtils implements IMemoryMaintainedSpellU
 	@Override
 	public final MemoryMaintainedSpell findMaintainedSpell (final List<MemoryMaintainedSpell> spells,
 		final Integer castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final OverlandMapCoordinates cityLocation, final String citySpellEffectID)
+		final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID)
 	{
 		log.entering (MemoryMaintainedSpellUtils.class.getName (), "findMaintainedSpell", new String []
 			{(castingPlayerID == null) ? "null" : castingPlayerID.toString (), spellID,
-			(unitURN == null) ? "null" : unitURN.toString (), unitSkillID,
-			CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), citySpellEffectID});
+			(unitURN == null) ? "null" : unitURN.toString (), unitSkillID, (cityLocation == null) ? "null" : cityLocation.toString (), citySpellEffectID});
 
 		MemoryMaintainedSpell match = null;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
@@ -67,7 +65,7 @@ public final class MemoryMaintainedSpellUtils implements IMemoryMaintainedSpellU
 				((spellID == null) || (spellID.equals (thisSpell.getSpellID ()))) &&
 				(CompareUtils.safeIntegerCompare (unitURN,  thisSpell.getUnitURN ())) &&
 				((unitSkillID == null) || (unitSkillID.equals (thisSpell.getUnitSkillID ()))) &&
-				(CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisSpell.getCityLocation (), true)) &&
+				(CompareUtils.safeOverlandMapCoordinatesCompare (cityLocation, (OverlandMapCoordinatesEx) thisSpell.getCityLocation ())) &&
 				((citySpellEffectID == null) || (citySpellEffectID.equals (thisSpell.getCitySpellEffectID ()))))
 
 				match = thisSpell;
@@ -92,13 +90,12 @@ public final class MemoryMaintainedSpellUtils implements IMemoryMaintainedSpellU
 	@Override
 	public final void switchOffMaintainedSpell (final List<MemoryMaintainedSpell> spells,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final OverlandMapCoordinates cityLocation, final String citySpellEffectID)
+		final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID)
 		throws RecordNotFoundException
 	{
 		log.entering (MemoryMaintainedSpellUtils.class.getName (), "switchOffMaintainedSpell", new String []
 			{new Integer (castingPlayerID).toString (), spellID,
-			(unitURN == null) ? "null" : unitURN.toString (), unitSkillID,
-			CoordinatesUtils.overlandMapCoordinatesToString (cityLocation), citySpellEffectID});
+			(unitURN == null) ? "null" : unitURN.toString (), unitSkillID, (cityLocation == null) ? "null" : cityLocation.toString (), citySpellEffectID});
 
 		boolean found = false;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
@@ -110,7 +107,7 @@ public final class MemoryMaintainedSpellUtils implements IMemoryMaintainedSpellU
 				(spellID.equals (thisSpell.getSpellID ())) &&
 				(CompareUtils.safeIntegerCompare (unitURN,  thisSpell.getUnitURN ())) &&
 				((unitSkillID == null) || (unitSkillID.equals (thisSpell.getUnitSkillID ()))) &&
-				(CoordinatesUtils.overlandMapCoordinatesEqual (cityLocation, thisSpell.getCityLocation (), true)) &&
+				(CompareUtils.safeOverlandMapCoordinatesCompare (cityLocation, (OverlandMapCoordinatesEx) thisSpell.getCityLocation ())) &&
 				((citySpellEffectID == null) || (citySpellEffectID.equals (thisSpell.getCitySpellEffectID ()))))
 			{
 				iter.remove ();
@@ -197,10 +194,9 @@ public final class MemoryMaintainedSpellUtils implements IMemoryMaintainedSpellU
 	 */
 	@Override
 	public final List<String> listCitySpellEffectsNotYetCastAtLocation (final List<MemoryMaintainedSpell> spells, final Spell spell,
-		final int castingPlayerID, final OverlandMapCoordinates cityLocation)
+		final int castingPlayerID, final OverlandMapCoordinatesEx cityLocation)
 	{
-    	log.entering (MemoryMaintainedSpellUtils.class.getName (), "listCitySpellEffectsNotYetCastAtLocation", new String [] {spell.getSpellID (),
-    		CoordinatesUtils.overlandMapCoordinatesToString (cityLocation)});
+    	log.entering (MemoryMaintainedSpellUtils.class.getName (), "listCitySpellEffectsNotYetCastAtLocation", new String [] {spell.getSpellID (), cityLocation.toString ()});
     	
     	final List<String> citySpellEffectIDs;
     	

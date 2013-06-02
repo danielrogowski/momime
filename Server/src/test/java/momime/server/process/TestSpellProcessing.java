@@ -15,6 +15,7 @@ import momime.common.calculations.MomSpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.MemoryMaintainedSpellUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.ResourceValueUtils;
 import momime.common.messages.SpellUtils;
@@ -33,7 +34,6 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
@@ -283,7 +283,7 @@ public final class TestSpellProcessing
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		// Set location of summoning circle
-		final OverlandMapCoordinates summoningCircleLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx summoningCircleLocation = new OverlandMapCoordinatesEx ();
 		summoningCircleLocation.setX (15);
 		summoningCircleLocation.setY (25);
 		summoningCircleLocation.setPlane (0);
@@ -372,7 +372,7 @@ public final class TestSpellProcessing
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		// Set location of summoning circle
-		final OverlandMapCoordinates summoningCircleLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx summoningCircleLocation = new OverlandMapCoordinatesEx ();
 		summoningCircleLocation.setX (15);
 		summoningCircleLocation.setY (25);
 		summoningCircleLocation.setPlane (0);
@@ -487,7 +487,7 @@ public final class TestSpellProcessing
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		// Set location of summoning circle
-		final OverlandMapCoordinates summoningCircleLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx summoningCircleLocation = new OverlandMapCoordinatesEx ();
 		summoningCircleLocation.setX (15);
 		summoningCircleLocation.setY (25);
 		summoningCircleLocation.setPlane (0);
@@ -695,7 +695,7 @@ public final class TestSpellProcessing
 		proc.setSpellUtils (new SpellUtils ());
 
 		// Run test
-		proc.requestCastSpell (player3, "SP123", new OverlandMapCoordinates (), null, null, mom);
+		proc.requestCastSpell (player3, "SP123", new OverlandMapCoordinatesEx (), null, null, mom);
 		
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());

@@ -26,7 +26,6 @@ import momime.common.database.v0_9_4.UnitPrerequisite;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 
 import org.junit.Test;
 
@@ -43,9 +42,9 @@ public final class TestMemoryBuildingUtils
 	 * @param offset If 0 generates city at standard location; set this to a non-zero value to generate a different location
 	 * @return City location
 	 */
-	private final OverlandMapCoordinates createCityLocation (final int offset)
+	private final OverlandMapCoordinatesEx createCityLocation (final int offset)
 	{
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (15 + offset);
 		cityLocation.setY (10);
 		cityLocation.setPlane (1);
@@ -223,7 +222,7 @@ public final class TestMemoryBuildingUtils
 	@Test
 	public final void testFindCityWithBuilding ()
 	{
-		final OverlandMapCoordinates buildingLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx buildingLocation = new OverlandMapCoordinatesEx ();
 		buildingLocation.setX (2);
 		buildingLocation.setY (2);
 		buildingLocation.setPlane (0);

@@ -40,6 +40,7 @@
     			<value>momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.DismissUnitMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.ChatMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -103,6 +104,7 @@
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.RemoveQueuedSpellMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.PendingMovementMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.TaxRateChangedMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage</value>
@@ -121,6 +123,8 @@
     		</list>
    		</constructor-arg>
 	</bean>
+
+	<bean id="objectFactoryMessages" class="momime.common.messages.ObjectFactoryMessages" />	<!-- Creates Ex versions of coordinates -->
 
 	<bean id="cityCalculations" class="momime.common.calculations.MomCityCalculations">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />

@@ -10,10 +10,10 @@ import javax.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
 import momime.common.messages.MemoryGridCellUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -71,14 +71,14 @@ public final class TestMomFogOfWarCalculations
 		towerData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (2).setTerrainData (towerData);
 
-		final OverlandMapCoordinates towerOnMyrror = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx towerOnMyrror = new OverlandMapCoordinatesEx ();
 		towerOnMyrror.setX (2);
 		towerOnMyrror.setY (2);
 		towerOnMyrror.setPlane (1);
 
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (3).setTerrainData (new OverlandMapTerrainData ());
 
-		final OverlandMapCoordinates otherLocationOnMyrror = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx otherLocationOnMyrror = new OverlandMapCoordinatesEx ();
 		otherLocationOnMyrror.setX (3);
 		otherLocationOnMyrror.setY (2);
 		otherLocationOnMyrror.setPlane (1);

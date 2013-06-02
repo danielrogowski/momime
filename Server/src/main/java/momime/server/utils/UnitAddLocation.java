@@ -1,7 +1,6 @@
 package momime.server.utils;
 
-import momime.common.messages.CoordinatesUtils;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 
 /**
@@ -10,7 +9,7 @@ import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 public final class UnitAddLocation
 {
 	/** Location to add unit; null if it won't fit */
-	private final OverlandMapCoordinates unitLocation;
+	private final OverlandMapCoordinatesEx unitLocation;
 
 	/** Whether this is the requested location or not */
 	private final UnitAddBumpTypeID bumpType;
@@ -19,7 +18,7 @@ public final class UnitAddLocation
 	 * @param aUnitLocation Location to add unit; null if it won't fit
 	 * @param aBumpType Whether this is the requested location or not
 	 */
-	UnitAddLocation (final OverlandMapCoordinates aUnitLocation, final UnitAddBumpTypeID aBumpType)
+	UnitAddLocation (final OverlandMapCoordinatesEx aUnitLocation, final UnitAddBumpTypeID aBumpType)
 	{
 		super ();
 
@@ -30,7 +29,7 @@ public final class UnitAddLocation
 	/**
 	 * @return Location to add unit; null if it won't fit
 	 */
-	public final OverlandMapCoordinates getUnitLocation ()
+	public final OverlandMapCoordinatesEx getUnitLocation ()
 	{
 		return unitLocation;
 	}
@@ -49,6 +48,6 @@ public final class UnitAddLocation
 	@Override
 	public final String toString ()
 	{
-		return CoordinatesUtils.overlandMapCoordinatesToString (getUnitLocation ()) + "-" + getBumpType ();
+		return getUnitLocation () + "-" + getBumpType ();
 	}
 }

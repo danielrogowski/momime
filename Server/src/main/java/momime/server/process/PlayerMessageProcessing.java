@@ -17,6 +17,7 @@ import momime.common.database.v0_9_4.WizardPick;
 import momime.common.messages.IMemoryGridCellUtils;
 import momime.common.messages.IResourceValueUtils;
 import momime.common.messages.IUnitUtils;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.PlayerKnowledgeUtils;
 import momime.common.messages.servertoclient.v0_9_4.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage;
@@ -904,7 +905,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 						(mom.getPlayers (), unitStack.get (0).getOwningPlayerID (), "continueMovement");
 					
 					getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, unitStackOwner,
-						thisMove.getMoveFrom (), thisMove.getMoveTo (), false,
+						(OverlandMapCoordinatesEx) thisMove.getMoveFrom (), (OverlandMapCoordinatesEx) thisMove.getMoveTo (), false,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 				}
 			}

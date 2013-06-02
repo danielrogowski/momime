@@ -8,10 +8,10 @@ import java.util.List;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.PlayerPickUtils;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.OverlandMapCoordinates;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
 
@@ -42,7 +42,7 @@ public final class TestMomUnitCalculations
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		// Location
-		final OverlandMapCoordinates cityLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setPlane (0);
@@ -70,7 +70,7 @@ public final class TestMomUnitCalculations
 		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Add the wrong type of building, to prove that it doesn't help
-		final OverlandMapCoordinates sagesGuildLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx sagesGuildLocation = new OverlandMapCoordinatesEx ();
 		sagesGuildLocation.setX (2);
 		sagesGuildLocation.setY (2);
 		sagesGuildLocation.setPlane (0);
@@ -83,7 +83,7 @@ public final class TestMomUnitCalculations
 		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Add an alchemists' guild, in the wrong place
-		final OverlandMapCoordinates alchemistsGuildLocation = new OverlandMapCoordinates ();
+		final OverlandMapCoordinatesEx alchemistsGuildLocation = new OverlandMapCoordinatesEx ();
 		alchemistsGuildLocation.setX (2);
 		alchemistsGuildLocation.setY (2);
 		alchemistsGuildLocation.setPlane (1);

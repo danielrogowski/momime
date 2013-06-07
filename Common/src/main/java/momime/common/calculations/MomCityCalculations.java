@@ -955,6 +955,28 @@ public final class MomCityCalculations implements IMomCityCalculations
 	}
 
 	/**
+	 * @param totalCost Total production cost of the building/unit
+	 * @param builtSoFar Amount of production we've put towards it so far
+	 * @return Gold to rush buy a particular construction project
+	 */
+	@Override
+	public final int goldToRushBuy (final int totalCost, final int builtSoFar)
+	{
+		// See p200 in the strategy guide
+		final int result;
+		if (builtSoFar <= 0)
+			result = totalCost * 4;
+		
+		else if (builtSoFar < totalCost/2)
+			result = (totalCost - builtSoFar) * 3;
+		
+		else
+			result = (totalCost - builtSoFar) * 2;
+		
+		return result;
+	}
+	
+	/**
 	 * @return Memory building utils
 	 */
 	public final IMemoryBuildingUtils getMemoryBuildingUtils ()

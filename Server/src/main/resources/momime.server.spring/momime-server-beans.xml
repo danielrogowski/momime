@@ -306,6 +306,7 @@
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="spellUtils" ref="spellUtils" />

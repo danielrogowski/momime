@@ -180,4 +180,11 @@ public interface IMomCityCalculations
 	 */
 	public BooleanMapArea2DArray markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
 		final int plane, final MapSizeData mapSize);
+
+	/**
+	 * @param totalCost Total production cost of the building/unit
+	 * @param builtSoFar Amount of production we've put towards it so far
+	 * @return Gold to rush buy a particular construction project
+	 */
+	public int goldToRushBuy (final int totalCost, final int builtSoFar);
 }

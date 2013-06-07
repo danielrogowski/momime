@@ -230,7 +230,9 @@ Server uses standard updateCity to reply.</xsd:documentation>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID">
+						    <xsd:annotation><xsd:documentation>null = Cancel pending sale</xsd:documentation></xsd:annotation>
+						</xsd:element>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

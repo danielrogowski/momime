@@ -2,6 +2,7 @@ package momime.server;
 
 import java.util.logging.Logger;
 
+import momime.common.calculations.IMomCityCalculations;
 import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.IMemoryMaintainedSpellUtils;
 import momime.common.messages.IPlayerPickUtils;
@@ -90,6 +91,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** City processing methods */
 	private ICityProcessing cityProcessing;
+	
+	/** City calculations */
+	private IMomCityCalculations cityCalculations;
 	
 	/** Database converters */
 	private IServerDatabaseConverters serverDatabaseConverters;
@@ -492,6 +496,23 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		cityProcessing = obj;
 	}
 
+	/**
+	 * @return City calculations
+	 */
+	@Override
+	public final IMomCityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final IMomCityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+	
 	/**
 	 * @return Database converters
 	 */

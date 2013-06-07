@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.calculations.IMomCityCalculations;
 import momime.common.messages.IMemoryBuildingUtils;
 import momime.common.messages.IMemoryMaintainedSpellUtils;
 import momime.common.messages.IPlayerPickUtils;
@@ -93,6 +94,11 @@ public interface IMomSessionVariables
 	 */
 	public ICityProcessing getCityProcessing ();
 
+	/**
+	 * @return City calculcations
+	 */
+	public IMomCityCalculations getCityCalculations ();
+	
 	/**
 	 * @return Resource calculations
 	 */

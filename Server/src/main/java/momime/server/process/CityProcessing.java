@@ -312,7 +312,7 @@ public final class CityProcessing implements ICityProcessing
 							Integer productionCost = null;
 							try
 							{
-								building = db.findBuilding (cityData.getCurrentlyConstructingBuildingOrUnitID (), "validateCityConstruction");
+								building = db.findBuilding (cityData.getCurrentlyConstructingBuildingOrUnitID (), "growCitiesAndProgressConstructionProjects");
 								productionCost = building.getProductionCost ();
 							}
 							catch (final RecordNotFoundException e)
@@ -323,7 +323,7 @@ public final class CityProcessing implements ICityProcessing
 							Unit unit = null;
 							try
 							{
-								unit = db.findUnit (cityData.getCurrentlyConstructingBuildingOrUnitID (), "validateCityConstruction");
+								unit = db.findUnit (cityData.getCurrentlyConstructingBuildingOrUnitID (), "growCitiesAndProgressConstructionProjects");
 								productionCost = unit.getProductionCost ();
 							}
 							catch (final RecordNotFoundException e)

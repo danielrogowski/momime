@@ -1596,4 +1596,20 @@ public final class TestMomCityCalculations
 		final BooleanMapArea2DArray three = calc.markWithinExistingCityRadius (map, 1, mapSize);
 		assertEquals (49 + 49 + 35, three.countCellsEqualTo (true));
 	}
+
+	/**
+	 * Tests the goldToRushBuy method
+	 */
+	@Test
+	public final void testGoldToRushBuy ()
+	{
+		final MomCityCalculations calc = new MomCityCalculations ();
+		assertEquals (240, calc.goldToRushBuy (60, 0));
+		assertEquals (177, calc.goldToRushBuy (60, 1));		// The above 2 are the actual examples in the strategy guide
+		
+		assertEquals (93, calc.goldToRushBuy (60, 29));
+		assertEquals (60, calc.goldToRushBuy (60, 30));
+		assertEquals (2, calc.goldToRushBuy (60, 59));
+	}
+
 }

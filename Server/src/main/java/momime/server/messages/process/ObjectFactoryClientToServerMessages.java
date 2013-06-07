@@ -21,6 +21,8 @@ import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_4.RushBuyMessage;
+import momime.common.messages.clienttoserver.v0_9_4.SellBuildingMessage;
 import momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
@@ -218,5 +220,23 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	public final ChangeTaxRateMessage createChangeTaxRateMessage ()
 	{
 		return new ChangeTaxRateMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created RushBuyMessage
+	 */
+	@Override
+	public final RushBuyMessage createRushBuyMessage ()
+	{
+		return new RushBuyMessageImpl ();
+	}
+	
+	/**
+	 * @return Newly created SellBuildingMessage
+	 */
+	@Override
+	public final SellBuildingMessage createSellBuildingMessage ()
+	{
+		return new SellBuildingMessageImpl ();
 	}
 }

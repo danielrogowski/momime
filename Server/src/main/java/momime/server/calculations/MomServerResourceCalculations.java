@@ -323,6 +323,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 		log.entering (MomServerResourceCalculations.class.getName (), "findInsufficientProductionAndSellSomething",
 			new String [] {player.getPlayerDescription ().getPlayerID ().toString (), enforceType.toString ()});
 
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge (); 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// Search through different types of production looking for ones matching the required enforce type
@@ -334,7 +335,8 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 			if (enforceType.equals (productionType.getEnforceProduction ()))
 			{
 				// Check how much of this type of production the player has
-				int valueToCheck = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), productionType.getProductionTypeID ());
+				int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (),
+					productionType.getProductionTypeID (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 
 				log.finest ("findInsufficientProductionAndSellSomething: PlayerID " + player.getPlayerDescription ().getPlayerID () + " is generating " + valueToCheck +
 					" per turn of productionType " + productionType.getProductionTypeID () + " which has enforceType " + enforceType);

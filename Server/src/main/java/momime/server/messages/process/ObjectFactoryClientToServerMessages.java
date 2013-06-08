@@ -3,6 +3,7 @@ package momime.server.messages.process;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.common.messages.clienttoserver.v0_9_4.AlchemyMessage;
+import momime.common.messages.clienttoserver.v0_9_4.CancelTargetSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeOptionalFarmersMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage;
@@ -195,6 +196,15 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 		return new TargetSpellMessageImpl ();
 	}
 
+	/**
+	 * @return Newly created CancelTargetSpellMessage
+	 */
+	@Override
+	public final CancelTargetSpellMessage createCancelTargetSpellMessage ()
+	{
+		return new CancelTargetSpellMessageImpl ();
+	}
+	
 	/**
 	 * @return Newly created DismissUnitMessage
 	 */

@@ -38,6 +38,7 @@
     			<value>momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.CancelTargetSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.DismissUnitMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.ChatMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage</value>

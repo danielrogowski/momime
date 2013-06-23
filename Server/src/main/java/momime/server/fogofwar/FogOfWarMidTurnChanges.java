@@ -187,12 +187,13 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param coords Location of the city that has been updated
 	 * @param fogOfWarSettings Fog of War settings from session description
+	 * @param newlyAddedCity Whether the reason we're seeing this city is because it has just been built (used so that client asks the player who built it to name the city)
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	@Override
 	public final void updatePlayerMemoryOfCity (final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx coords, final FogOfWarSettingData fogOfWarSettings)
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx coords, final FogOfWarSettingData fogOfWarSettings, final boolean newlyAddedCity)
 		throws JAXBException, XMLStreamException
 	{
 		log.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfCity", coords);
@@ -232,6 +233,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 						// Note unlike the terrain msg which we can build once and send to each applicable player, the data for the city msg
 						// needs to be reset for each player, since their visibility of the currentlyConstructing value may be different
 						cityMsg.setCityData (mc.getCityData ());
+						cityMsg.setAskForCityName (newlyAddedCity && (thisPlayer.getPlayerDescription ().getPlayerID ().equals (tc.getCityData ().getCityOwnerID ())));
 						thisPlayer.getConnection ().sendMessageToClient (cityMsgContainer);
 					}
 			}
@@ -1424,7 +1426,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 
 				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
-				updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+				updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 			}
 		}
 

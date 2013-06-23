@@ -1,12 +1,21 @@
 package momime.server.utils;
 
+import java.util.List;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
+import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Server side only helper methods for dealing with cities
@@ -42,4 +51,21 @@ public interface ICityServerUtils
 	 */
 	public String validateOptionalFarmers (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinatesEx cityLocation,
 		final int optionalFarmers, final MomSessionDescription sd, final ServerDatabaseEx db);
+
+	/**
+	 * @param gsk Server knowledge data structure
+	 * @param player The player who owns the settler
+	 * @param settler The settler being converted into a city
+	 * @param players List of players in the session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void buildCityFromSettler (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final MemoryUnit settler,
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

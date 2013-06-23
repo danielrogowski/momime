@@ -348,7 +348,7 @@ public final class TestFogOfWarMidTurnChanges
 		calc.setFogOfWarDuplication (dup);
 
 		// Run test
-		calc.updatePlayerMemoryOfCity (trueTerrain, players, coords, sd.getFogOfWarSetting ());
+		calc.updatePlayerMemoryOfCity (trueTerrain, players, coords, sd.getFogOfWarSetting (), false);
 		
 		// 3rd player is only one who should actually receive a message
 		// (The other players don't even have dummy connections created for them, so would fall over with null pointer exception

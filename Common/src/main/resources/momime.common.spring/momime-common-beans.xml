@@ -44,6 +44,7 @@
     			<value>momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.RushBuyMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.SellBuildingMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.SpecialOrderButtonMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>

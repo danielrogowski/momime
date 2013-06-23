@@ -44,6 +44,7 @@ import momime.server.process.IPlayerMessageProcessing;
 import momime.server.process.ISpellProcessing;
 import momime.server.ui.MomServerUI;
 import momime.server.utils.ICityServerUtils;
+import momime.server.utils.IOverlandMapServerUtils;
 import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.ISpellServerUtils;
 import momime.server.utils.IUnitServerUtils;
@@ -133,6 +134,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** Overland map generator for this session */
 	private IOverlandMapGenerator overlandMapGenerator;	
+	
+	/** Server-only overland map utils */
+	private IOverlandMapServerUtils overlandMapServerUtils;
 	
 	/**
 	 * @return Logger for logging key messages relating to this session
@@ -731,5 +735,22 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final void setOverlandMapGenerator (final IOverlandMapGenerator mapGen)
 	{
 		overlandMapGenerator = mapGen;
+	}
+
+	/**
+	 * @return Server-only overland map utils
+	 */
+	@Override
+	public final IOverlandMapServerUtils getOverlandMapServerUtils ()
+	{
+		return overlandMapServerUtils;
+	}
+	
+	/**
+	 * @param utils Server-only overland map utils
+	 */
+	public final void setOverlandMapServerUtils (final IOverlandMapServerUtils utils)
+	{
+		overlandMapServerUtils = utils;
 	}
 }

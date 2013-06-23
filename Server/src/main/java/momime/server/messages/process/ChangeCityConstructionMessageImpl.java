@@ -61,7 +61,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 
 			// Send update to clients
 			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
+				mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), false);
 		}
 
 		log.exiting (ChangeCityConstructionMessageImpl.class.getName (), "process");

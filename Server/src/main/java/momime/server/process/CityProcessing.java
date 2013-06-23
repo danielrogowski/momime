@@ -351,7 +351,7 @@ public final class CityProcessing implements ICityProcessing
 											// This is a leftover from when NTMs showed up instantly, since the mmAddBuilding message would cause the
 											// client to immediately show the 'completed construction' window so we needed to send other data that appears in that window first
 											cityData.setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-											getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+											getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())
@@ -454,7 +454,7 @@ public final class CityProcessing implements ICityProcessing
 
 							getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 						}
 					}
 				}
@@ -543,7 +543,7 @@ public final class CityProcessing implements ICityProcessing
 			getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
 
 			// Send the updated city stats to any clients that can see the city
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 		}
 
 		log.exiting (CityProcessing.class.getName (), "sellBuilding");
@@ -623,7 +623,7 @@ public final class CityProcessing implements ICityProcessing
 
 								getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
-								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
 							}
 						}
 					}

@@ -188,8 +188,8 @@ public final class CommonDatabaseConstants
 	//public static final String VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS            = "UA06";
 	//public static final String VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK         = "UA07";
 
-	//public static final String VALUE_UNIT_SKILL_ID_CREATE_OUTPOST            = "US017";
-	//public static final String VALUE_UNIT_SKILL_ID_MELD_WITH_NODE            = "US040";
+	public static final String VALUE_UNIT_SKILL_ID_CREATE_OUTPOST            = "US017";
+	public static final String VALUE_UNIT_SKILL_ID_MELD_WITH_NODE            = "US040";
 	//public static final String VALUE_UNIT_SKILL_ID_CASTER_UNIT               = "US051";
 	//public static final String VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO        = "US132";
 

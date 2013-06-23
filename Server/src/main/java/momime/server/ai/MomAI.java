@@ -77,7 +77,7 @@ public final class MomAI implements IMomAI
 						cityLocation.setPlane (plane.getPlaneNumber ());
 
 						getCityAI ().decideWhatToBuild (cityLocation, cityData, trueMap.getMap (), trueMap.getBuilding (), sd, db);
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 					}
 				}
 

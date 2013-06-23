@@ -308,7 +308,7 @@ public final class CityAI implements ICityAI
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
 
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 					}
 				}
 

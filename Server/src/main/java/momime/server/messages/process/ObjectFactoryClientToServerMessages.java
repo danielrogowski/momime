@@ -24,6 +24,7 @@ import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDista
 import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RushBuyMessage;
 import momime.common.messages.clienttoserver.v0_9_4.SellBuildingMessage;
+import momime.common.messages.clienttoserver.v0_9_4.SpecialOrderButtonMessage;
 import momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
@@ -249,4 +250,13 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	{
 		return new SellBuildingMessageImpl ();
 	}
+
+	/**
+	 * @return Newly created SpecialOrderButtonMessage
+	 */
+	@Override
+	public final SpecialOrderButtonMessage createSpecialOrderButtonMessage ()
+	{
+		return new SpecialOrderButtonMessageImpl ();
+	}	
 }

@@ -53,11 +53,12 @@ public interface IFogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param coords Location of the city that has been updated
 	 * @param fogOfWarSettings Fog of War settings from session description
+	 * @param newlyAddedCity Whether the reason we're seeing this city is because it has just been built (used so that client asks the player who built it to name the city)
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void updatePlayerMemoryOfCity (final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx coords, final FogOfWarSettingData fogOfWarSettings)
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx coords, final FogOfWarSettingData fogOfWarSettings, final boolean newlyAddedCity)
 		throws JAXBException, XMLStreamException;
 
 	/**

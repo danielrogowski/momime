@@ -25,6 +25,7 @@ import momime.server.process.ICityProcessing;
 import momime.server.process.IPlayerMessageProcessing;
 import momime.server.process.ISpellProcessing;
 import momime.server.utils.ICityServerUtils;
+import momime.server.utils.IOverlandMapServerUtils;
 import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.ISpellServerUtils;
 import momime.server.utils.IUnitServerUtils;
@@ -163,6 +164,11 @@ public interface IMomSessionVariables
 	 * @return Overland map generator for this session
 	 */
 	public IOverlandMapGenerator getOverlandMapGenerator ();
+	
+	/**
+	 * @return Server-only overland map utils
+	 */
+	public IOverlandMapServerUtils getOverlandMapServerUtils ();
 	
 	/**
 	 * Adds an AI player

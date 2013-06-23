@@ -50,6 +50,12 @@
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="lairWeak" type="xsd:boolean"/>
 					<xsd:element minOccurs="0" maxOccurs="1" name="nodeLairTowerPowerProportion" type="xsd:double"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="nodeSpiritUnitID" type="momimecommon:unitID">
+					    <xsd:annotation>
+    						<xsd:documentation>Records whether it was a magic spirit or guardian spirit that captured this node.  Guardian spirits are harder to
+    														displace when someone else tries to take over the node.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="raiderCityAdditionalPopulationCap" type="xsd:int">
 					    <xsd:annotation>
     						<xsd:documentation>Raiders have a special population cap that prevents cities expanding by more than a certain value, see strategy guide p426.</xsd:documentation>

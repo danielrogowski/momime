@@ -3,11 +3,11 @@
 	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_4" xmlns:map="http://www.ndg.com/map" 
 	xmlns:momimegfx="http://momime/client/graphics/database/v0_9_4" targetNamespace="http://momime/client/graphics/database/v0_9_4">
 	
-	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../NdgMap/src/main/resources/Map.xsd" />
-	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../NdgMultiplayerSessionBase/src/main/resources/MultiplayerSession.xsd" />
-	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="../../../../MoMIMECommon/src/main/resources/MoMIMENewGameDatabase.xsd" />
-	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../../../../MoMIMECommon/src/main/resources/MoMIMECommonDatabase.xsd" />
-	<xsd:import namespace="http://momime/server/database/v0_9_4" schemaLocation="../../../../MoMIMEServerDatabase/src/main/resources/MoMIMEServerDatabase.xsd" />
+	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../../NdgMap/src/main/resources/com.ndg.map/Map.xsd" />
+	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" schemaLocation="../../../../../NdgMultiplayerSessionBase/src/main/resources/com.ndg.multiplayer.sessionbase/MultiplayerSession.xsd" />
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="../../../../../MoMIMECommon/src/main/resources/momime.common.database/MoMIMENewGameDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../../../../../MoMIMECommon/src/main/resources/momime.common.database/MoMIMECommonDatabase.xsd" />
+	<xsd:import namespace="http://momime/server/database/v0_9_4" schemaLocation="../../../../../MoMIMEServerDatabase/src/main/resources/momime.server.database/MoMIMEServerDatabase.xsd" />
 
     <xsd:annotation>
 		<xsd:appinfo>

@@ -17,4 +17,12 @@ public interface IPendingMovementUtils
 	 * @param unitURN Unit to remove from pending movements
 	 */
 	public void removeUnitFromAnyPendingMoves (final List<PendingMovement> moves, final int unitURN);
+
+	/**
+	 * Cancels any pending moves for this unit, and any other units stacked with it
+	 * 
+	 * @param moves List of pending movements to work with
+	 * @param unitURN Unit to remove from pending movements
+	 */
+	public void removeAnyPendingMovesThatIncludeUnit (final List<PendingMovement> moves, final int unitURN);
 }

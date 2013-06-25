@@ -30,6 +30,7 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
+import momime.common.utils.IPendingMovementUtils;
 import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.IServerDatabaseConverters;
@@ -110,6 +111,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 
 	/** Builiding utils */
 	private IMemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Pending movement utils */
+	private IPendingMovementUtils pendingMovementUtils;
 	
 	/** Unit utils */
 	private IUnitUtils unitUtils;
@@ -591,6 +595,23 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
+	}
+	
+	/**
+	 * @return Pending movement utils
+	 */
+	@Override
+	public final IPendingMovementUtils getPendingMovementUtils ()
+	{
+		return pendingMovementUtils;
+	}
+
+	/**
+	 * @param utils Pending movement utils
+	 */
+	public final void setPendingMovementUtils (final IPendingMovementUtils utils)
+	{
+		pendingMovementUtils = utils;
 	}
 	
 	/**

@@ -3,6 +3,7 @@ package momime.server.messages.process;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.common.messages.clienttoserver.v0_9_4.AlchemyMessage;
+import momime.common.messages.clienttoserver.v0_9_4.CancelPendingMovementAndSpecialOrdersMessage;
 import momime.common.messages.clienttoserver.v0_9_4.CancelTargetSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeOptionalFarmersMessage;
@@ -258,5 +259,14 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	public final SpecialOrderButtonMessage createSpecialOrderButtonMessage ()
 	{
 		return new SpecialOrderButtonMessageImpl ();
-	}	
+	}
+
+	/**
+	 * @return Newly created CancelPendingMovementAndSpecialOrdersMessage
+	 */
+	@Override
+	public final CancelPendingMovementAndSpecialOrdersMessage createCancelPendingMovementAndSpecialOrdersMessage ()
+	{
+		return new CancelPendingMovementAndSpecialOrdersMessageImpl ();
+	}
 }

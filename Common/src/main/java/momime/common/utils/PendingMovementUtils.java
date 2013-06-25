@@ -50,4 +50,26 @@ public final class PendingMovementUtils implements IPendingMovementUtils
 		
 		log.exiting (PendingMovementUtils.class.getName (), "removeUnitFromAnyPendingMoves");
 	}
+	
+	/**
+	 * Cancels any pending moves for this unit, and any other units stacked with it
+	 * 
+	 * @param moves List of pending movements to work with
+	 * @param unitURN Unit to remove from pending movements
+	 */
+	@Override
+	public final void removeAnyPendingMovesThatIncludeUnit (final List<PendingMovement> moves, final int unitURN)
+	{
+		log.entering (PendingMovementUtils.class.getName (), "removeUnitFromAnyPendingMoves", unitURN);
+		
+		final Iterator<PendingMovement> movesIter = moves.iterator ();
+		while (movesIter.hasNext ())
+		{
+			final PendingMovement thisMove = movesIter.next ();
+			if (thisMove.getUnitURN ().contains (unitURN))
+				movesIter.remove ();
+		}
+		
+		log.exiting (PendingMovementUtils.class.getName (), "removeUnitFromAnyPendingMoves");
+	}
 }

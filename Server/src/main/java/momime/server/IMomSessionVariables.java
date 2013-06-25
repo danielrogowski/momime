@@ -15,6 +15,7 @@ import momime.common.messages.ISpellUtils;
 import momime.common.messages.IUnitUtils;
 import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.utils.IPendingMovementUtils;
 import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -134,6 +135,11 @@ public interface IMomSessionVariables
 	 * @return Builiding utils 
 	 */
 	public IMemoryBuildingUtils getMemoryBuildingUtils ();
+	
+	/**
+	 * @return Pending movement utils
+	 */
+	public IPendingMovementUtils getPendingMovementUtils (); 
 	
 	/**
 	 * @return Server-only city utils

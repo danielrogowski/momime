@@ -575,13 +575,12 @@ Note because spells don't get allocated any kind of spellURN, we basically have 
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 		        		<!-- Could import most of this from momimemsgs:maintainedSpell; decided not to because of castInCombat element, and expect might add spellURNs later -->
-						<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
-			
 						<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-						<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID"/>
-			
 						<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+			
+						<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectID" type="momimecommon:citySpellEffectID"/>
 		        	</xsd:sequence>
 				</xsd:extension>

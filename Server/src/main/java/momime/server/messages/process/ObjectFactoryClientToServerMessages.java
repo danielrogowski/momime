@@ -23,6 +23,7 @@ import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_4.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RushBuyMessage;
 import momime.common.messages.clienttoserver.v0_9_4.SellBuildingMessage;
 import momime.common.messages.clienttoserver.v0_9_4.SpecialOrderButtonMessage;
@@ -268,5 +269,14 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	public final CancelPendingMovementAndSpecialOrdersMessage createCancelPendingMovementAndSpecialOrdersMessage ()
 	{
 		return new CancelPendingMovementAndSpecialOrdersMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created RequestSwitchOffMaintainedSpellMessage
+	 */
+	@Override
+	public final RequestSwitchOffMaintainedSpellMessage createRequestSwitchOffMaintainedSpellMessage ()
+	{
+		return new RequestSwitchOffMaintainedSpellMessageImpl ();
 	}
 }

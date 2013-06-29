@@ -299,6 +299,24 @@ public interface IFogOfWarMidTurnChanges
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
+	 * After setting new unit name on server, updates player memories and clients who can see the unit
+	 *
+	 * @param tu True unit details
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	public void updatePlayerMemoryOfUnit_UnitName (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
 	 * @param trueUnits True list of units to heal/gain experience
 	 * @param onlyOnePlayerID If zero, will heal/exp units belonging to all players; if specified will heal/exp only units belonging to the specified player
 	 * @param trueTerrain True terrain map

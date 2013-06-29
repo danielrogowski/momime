@@ -47,6 +47,7 @@
     			<value>momime.common.messages.clienttoserver.v0_9_4.SpecialOrderButtonMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.CancelPendingMovementAndSpecialOrdersMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.RequestSwitchOffMaintainedSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestUpdateUnitNameMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -126,6 +127,7 @@
     			<value>momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.FogOfWarVisibleAreaChangedMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateDamageTakenAndExperienceMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateUnitNameMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>

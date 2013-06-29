@@ -1210,7 +1210,7 @@ Server sends this to clients to tell them about a new unit that already existed 
 	
 	<xsd:element name="updateUnitNameMessage">
 	    <xsd:annotation>
-    		<xsd:documentation>Message client sends to server to tell them what name we want to rename a hero to.</xsd:documentation>
+    		<xsd:documentation>Message server sends to clients to tell them that a hero was renamed.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>

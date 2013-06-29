@@ -24,6 +24,7 @@ import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStack
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestSwitchOffMaintainedSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_4.RequestUpdateUnitNameMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RushBuyMessage;
 import momime.common.messages.clienttoserver.v0_9_4.SellBuildingMessage;
 import momime.common.messages.clienttoserver.v0_9_4.SpecialOrderButtonMessage;
@@ -278,5 +279,14 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	public final RequestSwitchOffMaintainedSpellMessage createRequestSwitchOffMaintainedSpellMessage ()
 	{
 		return new RequestSwitchOffMaintainedSpellMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created RequestUpdateUnitNameMessage
+	 */
+	@Override
+	public final RequestUpdateUnitNameMessage createRequestUpdateUnitNameMessage ()
+	{
+		return new RequestUpdateUnitNameMessageImpl ();
 	}
 }

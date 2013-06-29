@@ -47,6 +47,7 @@ import momime.common.messages.servertoclient.v0_9_4.UpdateOverlandMovementRemain
 import momime.common.messages.servertoclient.v0_9_4.UpdateOverlandMovementRemainingUnit;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessageData;
+import momime.common.messages.servertoclient.v0_9_4.UpdateUnitNameMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateUnitToAliveMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
@@ -1141,6 +1142,53 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 		log.exiting (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience");
 	}
 
+	/**
+	 * After setting new unit name on server, updates player memories and clients who can see the unit
+	 *
+	 * @param tu True unit details
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	@Override
+	public final void updatePlayerMemoryOfUnit_UnitName (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.entering (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfUnit_UnitName", tu.getUnitURN ());
+
+		// First build the message
+		final UpdateUnitNameMessage msg = new UpdateUnitNameMessage ();
+		msg.setUnitURN (tu.getUnitURN ());
+		msg.setUnitName (tu.getUnitName ());
+
+		// Check which players can see the unit
+		// Note it isn't enough to say "Is the Unit URN in the player's memory" - maybe they've seen the unit before and are remembering
+		// what they saw, but cannot see it now - in that case they shouldn't receive any updates about the unit
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			if (canSeeUnitMidTurn (tu, players, trueTerrain, thisPlayer, null, null, null, db, sd))
+			{
+				// Update player's memory on server
+				final MemoryUnit mu = getUnitUtils ().findUnitURN (tu.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "updatePlayerMemoryOfUnit_UnitName");
+				mu.setUnitName (msg.getUnitName ());
+
+				// Update player's memory on client
+				if (thisPlayer.getPlayerDescription ().isHuman ())
+					thisPlayer.getConnection ().sendMessageToClient (msg);
+			}
+		}
+
+		log.exiting (FogOfWarMidTurnChanges.class.getName (), "updatePlayerMemoryOfUnit_UnitName");
+	}
+	
 	/**
 	 * @param trueUnits True list of units to heal/gain experience
 	 * @param onlyOnePlayerID If zero, will heal/exp units belonging to all players; if specified will heal/exp only units belonging to the specified player

@@ -19,6 +19,9 @@ import javax.imageio.stream.ImageOutputStream;
  */
 public final class NdgBmpWriter extends ImageWriter
 {
+    /** The output stream where written to */
+    private ImageOutputStream ios = null;
+
 	/**
 	 * Creates a new NdgBmpWriter object
 	 * @param anOriginatingProvider The service provider object which created this writer
@@ -28,6 +31,25 @@ public final class NdgBmpWriter extends ImageWriter
 		super (anOriginatingProvider);
 	}
 
+	/**
+	 * Copied from the way the .bmp, .jpg, .png, etc readers in the JDK handle their streams
+	 */
+	@Override
+	public final void setOutput (final Object out)
+	{
+		super.setOutput (out);
+		if (out != null)
+		{
+			if (!(out instanceof ImageOutputStream))
+				throw new IllegalArgumentException ("NdgBmpWriter: Output not an ImageOutputStream!");
+			
+			ios = (ImageOutputStream) out;
+			ios.setByteOrder (ByteOrder.LITTLE_ENDIAN);
+		}
+		else
+			ios = null;
+	}
+	
 	/**
 	 * Encodes an image in .ndgbmp format
 	 * @param streamMetadata Stream metadata, ignored
@@ -40,10 +62,8 @@ public final class NdgBmpWriter extends ImageWriter
 		throws IOException
 	{
 		// Get stream
-		if (!(getOutput () instanceof ImageOutputStream))
+		if (ios == null)
 			throw new IOException ("com.ndg.ndgbmp.NdgBmpReader.read: Don't have ImageOutputStream to write to");
-
-		final ImageOutputStream stream = (ImageOutputStream) getOutput ();
 
 		// Get at the image data
 		final Raster raster = image.getRenderedImage ().getData ();
@@ -171,24 +191,23 @@ public final class NdgBmpWriter extends ImageWriter
 
 		// FIFTH PASS - actually output the image, starting with the header
 		// Format identifier
-		stream.setByteOrder (ByteOrder.LITTLE_ENDIAN);
-		stream.write (NdgBmpCommon.NDGBMP_FORMAT_IDENTIFIER);
+		ios.write (NdgBmpCommon.NDGBMP_FORMAT_IDENTIFIER);
 
 		// Major and minor version
-		stream.writeByte (NdgBmpCommon.NDGBMP_MAJOR_VERSION);
-		stream.writeByte (NdgBmpCommon.NDGBMP_MINOR_VERSION);
+		ios.writeByte (NdgBmpCommon.NDGBMP_MAJOR_VERSION);
+		ios.writeByte (NdgBmpCommon.NDGBMP_MINOR_VERSION);
 
 		// Write remaining header values
-		stream.writeInt (raster.getWidth ());
-		stream.writeInt (raster.getHeight ());
-		stream.writeInt (parseDirection.convertToExternalValue ());
-		stream.writeInt (rleBitLength);
-		stream.writeInt (colourTable.size ());
-		stream.writeInt (bitsPerPaletteComponent);
+		ios.writeInt (raster.getWidth ());
+		ios.writeInt (raster.getHeight ());
+		ios.writeInt (parseDirection.convertToExternalValue ());
+		ios.writeInt (rleBitLength);
+		ios.writeInt (colourTable.size ());
+		ios.writeInt (bitsPerPaletteComponent);
 
 		// Write the colour table and actual image data
-		compress (colourTable, colourIndices, bitsPerPaletteComponent, raster.getWidth (), raster.getHeight (), rleBitLength, parseDirection, stream);
-		stream.flush ();
+		compress (colourTable, colourIndices, bitsPerPaletteComponent, raster.getWidth (), raster.getHeight (), rleBitLength, parseDirection, ios);
+		ios.flush ();
 	}
 
 	/**

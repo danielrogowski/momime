@@ -20,12 +20,13 @@ import javax.imageio.stream.ImageInputStream;
  * Class for decoding LBX format images into images
  * This knows nothing of the LBX archive format - must have already positioned the stream to the correct subfile
  */
-public class LbxImageReader extends ImageReader
+public final class LbxImageReader extends ImageReader
 {
-	/**
-	 * True if the header has been read from the stream
-	 */
-	private boolean headerRead;
+    /** The input stream where reads from */
+    private ImageInputStream iis = null;
+
+	/** True if the header has been read from the stream */
+	private boolean headerRead = false;
 	
 	/**
 	 * Header: The width of the encoded image
@@ -39,14 +40,10 @@ public class LbxImageReader extends ImageReader
 	 */
 	private int height;
 	
-	/**
-	 * Header: The number of frames in this LBX image
-	 */
+	/** Header: The number of frames in this LBX image */
 	private int frameCount;
 	
-	/**
-	 * Header: The offset to the location of the palette info
-	 */
+	/** Header: The offset to the location of the palette info */
 	private int paletteInfoOffset;
 	
 	/**
@@ -55,9 +52,7 @@ public class LbxImageReader extends ImageReader
 	 */
 	private int RLE_val;
 	
-	/**
-	 * Size of the LBX image header
-	 */
+	/** Size of the LBX image header */
 	public static int LBX_IMAGE_HEADER_SIZE = 18;
 	
 	/**
@@ -337,19 +332,33 @@ public class LbxImageReader extends ImageReader
 	 * Creates a new LbxImageReader object
 	 * @param anOriginatingProvider The service provider object which created this reader
 	 */
-	public LbxImageReader (ImageReaderSpi anOriginatingProvider)
+	public LbxImageReader (final ImageReaderSpi anOriginatingProvider)
 	{
 		super (anOriginatingProvider);
-		headerRead = false;
 	}
 
+    /**
+     * Copied from the way the .bmp, .jpg, .png, etc readers in the JDK handle their streams
+     * NB. The iis read here intentionally never gets closed - the contracts for ImageIO.read and ImageIO.write state that they should not close the streams
+     */
+	@Override
+    public final void setInput (final Object anInput, final boolean aSeekForwardOnly, final boolean anIgnoreMetadata)
+	{
+		super.setInput (anInput, aSeekForwardOnly, anIgnoreMetadata);
+		
+		iis = (ImageInputStream) input; // Always works
+		if (iis != null)
+			iis.setByteOrder (ByteOrder.LITTLE_ENDIAN);
+		headerRead = false;
+    }
+	
 	/**
 	 * @param allowSearch Whether to proceed with determining the number of images even if it will be an expensive operation - which it isn't, so this is ignored
 	 * @return Number of images in the LBX image
 	 * @throws IOException If there is a problem reading the image header
 	 */
 	@Override
-	public int getNumImages (boolean allowSearch)
+	public final int getNumImages (final boolean allowSearch)
 		throws IOException
 	{
 		ensureHeaderRead ();
@@ -362,7 +371,7 @@ public class LbxImageReader extends ImageReader
 	 * @throws IOException If there is a problem reading the image header
 	 */
 	@Override
-	public Iterator<ImageTypeSpecifier> getImageTypes (int imageIndex)
+	public final Iterator<ImageTypeSpecifier> getImageTypes (final int imageIndex)
 		throws IOException
 	{
 		if ((imageIndex < 0) || (imageIndex >= getNumImages (true)))
@@ -386,7 +395,7 @@ public class LbxImageReader extends ImageReader
 	 * @throws IOException If there is a problem reading the image header
 	 */
 	@Override
-	public int getWidth (int imageIndex)
+	public final int getWidth (final int imageIndex)
 		throws IOException
 	{
 		if ((imageIndex < 0) || (imageIndex >= getNumImages (true)))
@@ -403,7 +412,7 @@ public class LbxImageReader extends ImageReader
 	 * @throws IOException If there is a problem reading the image header
 	 */
 	@Override
-	public int getHeight (int imageIndex)
+	public final int getHeight (final int imageIndex)
 		throws IOException
 	{
 		if ((imageIndex < 0) || (imageIndex >= getNumImages (true)))
@@ -418,29 +427,26 @@ public class LbxImageReader extends ImageReader
 	 * Reads in the LBX image header from the stream, if we haven't done so already
 	 * @throws IOException If there is a problem reading the image header
 	 */
-	protected void ensureHeaderRead ()
+	protected final void ensureHeaderRead ()
 		throws IOException
 	{
 		if (!headerRead)
 		{
-			// Get stream
-			if (!(getInput () instanceof ImageInputStream))
+			// Check stream
+			if (iis == null)
 				throw new IOException ("com.ndg.graphics.lbx.LbxImageReader.ensureHeaderRead: Don't have ImageInputStream to read from");
 			
-			ImageInputStream stream = (ImageInputStream) getInput ();
-			
 			// Read header values
-			stream.setByteOrder (ByteOrder.LITTLE_ENDIAN);
-			width = stream.readUnsignedShort ();
-			height = stream.readUnsignedShort ();
-			stream.readUnsignedShort ();
-			frameCount = stream.readUnsignedShort ();
+			width = iis.readUnsignedShort ();
+			height = iis.readUnsignedShort ();
+			iis.readUnsignedShort ();
+			frameCount = iis.readUnsignedShort ();
 
 			for (int skip = 0; skip < 3; skip++)
-				stream.readUnsignedShort ();
+				iis.readUnsignedShort ();
 			
-			paletteInfoOffset = stream.readUnsignedShort ();
-			stream.readUnsignedShort ();
+			paletteInfoOffset = iis.readUnsignedShort ();
+			iis.readUnsignedShort ();
 			
 			// Ensure we only read the header once
 			headerRead = true;
@@ -455,7 +461,7 @@ public class LbxImageReader extends ImageReader
 	 * @throws IOException If there is a problem reading from the stream
 	 */
 	@Override
-	public BufferedImage read (int imageIndex, ImageReadParam param)
+	public final BufferedImage read (final int imageIndex, final ImageReadParam param)
 		throws IOException
 	{
 		if ((imageIndex < 0) || (imageIndex >= getNumImages (true)))
@@ -464,18 +470,15 @@ public class LbxImageReader extends ImageReader
 		
 		ensureHeaderRead ();
 		
-		// Get stream
-		if (!(getInput () instanceof ImageInputStream))
+		// Check stream
+		if (iis == null)
 			throw new IOException ("com.ndg.graphics.lbx.LbxImageReader.read: Don't have ImageInputStream to read from");
 		
-		ImageInputStream stream = (ImageInputStream) getInput ();
-		stream.setByteOrder (ByteOrder.LITTLE_ENDIAN);
-
 		// Read all the frame offsets into an array - we need all of them up to the frame we want to decode, since they must be decoded progressively
 		// Technically we don't need the later ones, but may as well read them just to skip over the bytes in the stream
 		List<Integer> frameOffsets = new ArrayList<Integer> ();
 		for (int frameNo = 0; frameNo <= frameCount; frameNo++)
-			frameOffsets.add (new Integer (stream.readInt ()));		
+			frameOffsets.add (new Integer (iis.readInt ()));		
 
 		// Keep track of how many bytes we've read from the stream, because the offsets are based from the start of the file
 		long bytesRead = LBX_IMAGE_HEADER_SIZE + ((frameCount + 1) * 4); 
@@ -514,15 +517,15 @@ public class LbxImageReader extends ImageReader
 
 			for (long n = 0; n < bytesToSkip; n++)
 			{
-				stream.read ();
+				iis.read ();
 				bytesRead++;
 			}
 
 			// Read palette header
-			int paletteOffset				= stream.readUnsignedShort ();
-			firstPaletteColourIndex	= stream.readUnsignedShort ();
-			paletteColourCount			= stream.readUnsignedShort ();
-			stream.readUnsignedShort ();
+			int paletteOffset				= iis.readUnsignedShort ();
+			firstPaletteColourIndex	= iis.readUnsignedShort ();
+			paletteColourCount			= iis.readUnsignedShort ();
+			iis.readUnsignedShort ();
 			bytesRead = bytesRead + (4 * 2);
 			
 			// Jump to actual palette data
@@ -532,16 +535,16 @@ public class LbxImageReader extends ImageReader
 			
 			for (long n = 0; n < bytesToSkip; n++)
 			{
-				stream.read ();
+				iis.read ();
 				bytesRead++;
 			}
 
 			// Read custom palette
 			for (int colourNumber = 0; colourNumber < paletteColourCount; colourNumber++)
 			{
-				int red		= stream.readUnsignedByte ();
-				int green	= stream.readUnsignedByte ();
-				int blue		= stream.readUnsignedByte ();
+				int red		= iis.readUnsignedByte ();
+				int green	= iis.readUnsignedByte ();
+				int blue		= iis.readUnsignedByte ();
 				bytesRead = bytesRead + 3;
 				
 				// Multiply colour values up by 4 (so e.g. << 18 instead of << 16)
@@ -574,7 +577,7 @@ public class LbxImageReader extends ImageReader
 			throw new IOException ("LBX graphics image file is ordered such that we need to skip backwards to read first frame");
 
 		for (long n = 0; n < bytesToSkip; n++)
-			stream.read ();
+			iis.read ();
 		
 		// Convert each frame up to and including the one we want
 		for (int frameNo = 0; frameNo <= imageIndex; frameNo++)
@@ -585,7 +588,7 @@ public class LbxImageReader extends ImageReader
 				throw new IOException ("LBX graphics image file is ordered such that frame " + frameNo + "/" + frameCount + " has data size " + frameDataSize);
 			
 			byte [] byteBuffer = new byte [frameDataSize];
-			stream.read (byteBuffer);
+			iis.read (byteBuffer);
 			
 			// Special debug setting to force only a single frame to be decoded
 			if ((!decodeRequestedFrameOnly) || (frameNo == imageIndex))
@@ -620,8 +623,8 @@ public class LbxImageReader extends ImageReader
 	 * @param paletteColourCount Number of colours in the custom palette supplied with this image
 	 * @throws IOException If there is a problem decoding the frame, i.e. the data does not represent a properly encoded LBX frame
 	 */
-	protected void decodeLbxFrame (BufferedImage image, int [] imageBuffer, int [] palette,
-		int frameNo, int firstPaletteColourIndex, int paletteColourCount)
+	protected void decodeLbxFrame (final BufferedImage image, final int [] imageBuffer, final int [] palette,
+		final int frameNo, final int firstPaletteColourIndex, final int paletteColourCount)
 		throws IOException
 	{
 		// Byte 0 tells us whether to reset the image to transparent half way through an animation

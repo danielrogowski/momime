@@ -26,8 +26,11 @@ public final class NdgBmpReader extends ImageReader
 	/** Image type for 24 bit colour RGB images (no transparency) */
 	public static final ImageTypeSpecifier IMAGE_TYPE_RGB = ImageTypeSpecifier.createInterleaved (ColorSpace.getInstance (ColorSpace.CS_sRGB), new int [] {2, 1, 0}, DataBuffer.TYPE_BYTE, false, false);
 
+    /** The input stream where reads from */
+    private ImageInputStream iis = null;
+	
 	/** True if the header has been read from the stream */
-	private boolean headerRead;
+	private boolean headerRead = false;
 
 	/** Header: The width of the encodded image */
 	private int width;
@@ -79,9 +82,23 @@ public final class NdgBmpReader extends ImageReader
 	public NdgBmpReader (final ImageReaderSpi anOriginatingProvider)
 	{
 		super (anOriginatingProvider);
-		headerRead = false;
 	}
 
+    /**
+     * Copied from the way the .bmp, .jpg, .png, etc readers in the JDK handle their streams
+     * NB. The iis read here intentionally never gets closed - the contracts for ImageIO.read and ImageIO.write state that they should not close the streams
+     */
+	@Override
+    public final void setInput (final Object anInput, final boolean aSeekForwardOnly, final boolean anIgnoreMetadata)
+	{
+		super.setInput (anInput, aSeekForwardOnly, anIgnoreMetadata);
+		
+		iis = (ImageInputStream) input; // Always works
+		if (iis != null)
+			iis.setByteOrder (ByteOrder.LITTLE_ENDIAN);
+		headerRead = false;
+    }
+	
 	/**
 	 * @param allowSearch Whether to proceed with determining the number of images even if it will be an expensive operation - which it isn't, so this is ignored
 	 * @return Number of images in the .ndgbmp file (always 1)
@@ -171,34 +188,31 @@ public final class NdgBmpReader extends ImageReader
 	{
 		if (!headerRead)
 		{
-			// Get stream
-			if (!(getInput () instanceof ImageInputStream))
+			// Check stream
+			if (iis == null)
 				throw new IOException ("com.ndg.ndgbmp.NdgBmpReader.ensureHeaderRead: Don't have ImageInputStream to read from");
-
-			final ImageInputStream stream = (ImageInputStream) getInput ();
-			stream.setByteOrder (ByteOrder.LITTLE_ENDIAN);
 
 			// Read and check fhe format identifier
 			final byte [] formatIdentifier = new byte [NdgBmpCommon.NDGBMP_FORMAT_IDENTIFIER.length];
 
-			stream.readFully (formatIdentifier);
+			iis.readFully (formatIdentifier);
 			if (!NdgBmpCommon.equalsFormatIdentifier (formatIdentifier))
 				throw new NdgBmpException ("com.ndg.ndgbmp.NdgBmpReader.ensureHeaderRead: Stream does not begin with expected .ndgbmp format identifier");
 
 			// Read and check major and minor versions
-			final int majorVersion = stream.readUnsignedByte ();
-			final int minorVersion = stream.readUnsignedByte ();
+			final int majorVersion = iis.readUnsignedByte ();
+			final int minorVersion = iis.readUnsignedByte ();
 
 			if ((majorVersion != NdgBmpCommon.NDGBMP_MAJOR_VERSION) || (minorVersion != NdgBmpCommon.NDGBMP_MINOR_VERSION))
 				throw new NdgBmpException ("com.ndg.ndgbmp.NdgBmpReader.ensureHeaderRead: Stream is not a supported major/minor version");
 
 			// Read remaining header values
-			width = stream.readInt ();
-			height = stream.readInt ();
-			parseDirection = NdgBmpParseDirection.convertFromExternalValue (stream.readInt ());
-			rleBitLength = stream.readInt ();
-			uniqueColours = stream.readInt ();
-			bitsPerPaletteComponent = stream.readInt ();
+			width = iis.readInt ();
+			height = iis.readInt ();
+			parseDirection = NdgBmpParseDirection.convertFromExternalValue (iis.readInt ());
+			rleBitLength = iis.readInt ();
+			uniqueColours = iis.readInt ();
+			bitsPerPaletteComponent = iis.readInt ();
 
 			// Find the number of bits we need to use for palette indexes
 			// Not length-1, because colour 'length' is the RLE indicator
@@ -220,11 +234,9 @@ public final class NdgBmpReader extends ImageReader
 		{
 			ensureHeaderRead ();
 
-			// Get stream
-			if (!(getInput () instanceof ImageInputStream))
+			// Check stream
+			if (iis == null)
 				throw new IOException ("com.ndg.ndgbmp.NdgBmpReader.ensureColourTableRead: Don't have ImageInputStream to read from");
-
-			final ImageInputStream stream = (ImageInputStream) getInput ();
 
 			// The bitmask we need to isolate the colour components in the palette is not the same as the bitmask
 			// we need to reduce colours during compression
@@ -234,7 +246,7 @@ public final class NdgBmpReader extends ImageReader
 			colourTable = new long [uniqueColours];
 			for (int colourNo = 0; colourNo < uniqueColours; colourNo++)
 			{
-				long c = stream.readBits (4 * bitsPerPaletteComponent);
+				long c = iis.readBits (4 * bitsPerPaletteComponent);
 
 				// Fiddle palette order, and deal with bitsPerPaletteComponent at the same time if need be
 				final long c1 = (c & colourBitmask) << (8 - bitsPerPaletteComponent);
@@ -266,11 +278,9 @@ public final class NdgBmpReader extends ImageReader
 
 		ensureColourTableRead ();
 
-		// Get stream
-		if (!(getInput () instanceof ImageInputStream))
+		// Check stream
+		if (iis == null)
 			throw new IOException ("com.ndg.ndgbmp.NdgBmpReader.read: Don't have ImageInputStream to read from");
-
-		final ImageInputStream stream = (ImageInputStream) getInput ();
 
 		// Create image
 		final BufferedImage image = getDestination (param, getImageTypes (imageIndex), width, height);
@@ -284,14 +294,14 @@ public final class NdgBmpReader extends ImageReader
 			case NDGBMP_PARSE_DIRECTION_ROW_FIRST:
 				for (int y = 0; y < height; y++)
 					for (int x = 0; x < width; x++)
-						image.setRGB (x, y, (int) getNextPixelColour (stream));
+						image.setRGB (x, y, (int) getNextPixelColour (iis));
 
 				break;
 
 			case NDGBMP_PARSE_DIRECTION_COLUMN_FIRST:
 				for (int x = 0; x < width; x++)
 					for (int y = 0; y < height; y++)
-						image.setRGB (x, y, (int) getNextPixelColour (stream));
+						image.setRGB (x, y, (int) getNextPixelColour (iis));
 
 				break;
 

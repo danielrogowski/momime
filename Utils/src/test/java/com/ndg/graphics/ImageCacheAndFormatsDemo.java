@@ -104,18 +104,28 @@ public class ImageCacheAndFormatsDemo
 			 */
 
 			// Test the encoder on an image with no transparency
-			final ByteArrayOutputStream sampleEncodeNoTransparency = new ByteArrayOutputStream ();
-			if (!ImageIO.write (sampleImageNoTransparency, "ndg bmp", sampleEncodeNoTransparency))
-				throw new IOException ("Failed to encode sample .ndgbmp image with no transparency");
+			final BufferedImage decodedImageNoTransparency;
+			try (final ByteArrayOutputStream sampleEncodeNoTransparency = new ByteArrayOutputStream ())
+			{
+				if (!ImageIO.write (sampleImageNoTransparency, "ndg bmp", sampleEncodeNoTransparency))
+					throw new IOException ("Failed to encode sample .ndgbmp image with no transparency");
+				sampleEncodeNoTransparency.close ();
 
+				// Decode the encodes
+				decodedImageNoTransparency = ImageIO.read (new ByteArrayInputStream (sampleEncodeNoTransparency.toByteArray ()));
+			}
+			
 			// Test the encoder on an image with transparency
-			final ByteArrayOutputStream sampleEncodeWithTransparency = new ByteArrayOutputStream ();
-			if (!ImageIO.write (sampleImageWithTransparency, "ndg bmp", sampleEncodeWithTransparency))
-				throw new IOException ("Failed to encode sample .ndgbmp image with transparency");
+			final BufferedImage decodedImageWithTransparency;
+			try (final ByteArrayOutputStream sampleEncodeWithTransparency = new ByteArrayOutputStream ())
+			{
+				if (!ImageIO.write (sampleImageWithTransparency, "ndg bmp", sampleEncodeWithTransparency))
+					throw new IOException ("Failed to encode sample .ndgbmp image with transparency");
+				sampleEncodeWithTransparency.close ();
 
-			// Decode the encodes
-			final BufferedImage decodedImageNoTransparency = ImageIO.read (new ByteArrayInputStream (sampleEncodeNoTransparency.toByteArray ()));
-			final BufferedImage decodedImageWithTransparency = ImageIO.read (new ByteArrayInputStream (sampleEncodeWithTransparency.toByteArray ()));
+				// Decode the encodes
+				decodedImageWithTransparency = ImageIO.read (new ByteArrayInputStream (sampleEncodeWithTransparency.toByteArray ()));
+			}
 
 			// Display them
 			{

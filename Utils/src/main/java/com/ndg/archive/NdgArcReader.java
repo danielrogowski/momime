@@ -96,8 +96,7 @@ public final class NdgArcReader
 
 		final List<ArchivedFile> contents = new ArrayList<ArchivedFile> ();
 
-		final InputStream stream = new BufferedInputStream (new FileInputStream (archiveName));
-		try
+		try (final InputStream stream = new BufferedInputStream (new FileInputStream (archiveName)))
 		{
 			// File identifier
 			StreamUtils.readLengthAndStringFromStream (stream, ".ndgarc file identifier");
@@ -131,9 +130,6 @@ public final class NdgArcReader
 				// Deal with the final file
 				contents.add (new ArchivedFile (fileNames.get (subFileCount - 1), archiveFolder + fileNames.get (subFileCount - 1), previousOffset, archiveFile.length () - previousOffset, subFileCount - 1));
 			}
-		}
-		finally
-		{
 			stream.close ();
 		}
 
@@ -149,11 +145,9 @@ public final class NdgArcReader
 	public final static void extractFromArchiveToFile (final InputStream stream, final ArchivedFile archivedFile)
 		throws IOException
 	{
-		final InputStream in = getSubFileInputStream (stream, null, archivedFile.getSubFileNumber ());
-		try
+		try (final InputStream in = getSubFileInputStream (stream, null, archivedFile.getSubFileNumber ()))
 		{
-			final BufferedOutputStream out = new BufferedOutputStream (new FileOutputStream (archivedFile.getFullPath ()));
-			try
+			try (final BufferedOutputStream out = new BufferedOutputStream (new FileOutputStream (archivedFile.getFullPath ())))
 			{
 				// Convert .ndgbmps to .pngs as they are extracted from the archive
 				// The reason I decided to switch to using .pngs is because they can save out the Alpha channel whereas .bmps cannot
@@ -177,14 +171,9 @@ public final class NdgArcReader
 					// Standard file, just dump it out directly
 					StreamUtils.copyBetweenStreams (in, out, false, false, archivedFile.getFileSize ());
 				}
-			}
-			finally
-			{
+				out.flush ();
 				out.close ();
 			}
-		}
-		finally
-		{
 			in.close ();
 		}
 	}

@@ -81,6 +81,8 @@ public final class MomServer extends MultiplayerSessionServer
 	@Override
 	protected final MultiplayerBaseServerThread createAndStartClientThread (final Socket socket) throws InterruptedException, JAXBException, XMLStreamException
 	{
+		log.entering (MomServer.class.getName (), "createAndStartClientThread");
+		
 		final Object readyForMessagesMonitor = new Object ();
 		final MultiplayerClientConnection conn = new MultiplayerClientConnection (this, getMessageProcesser (), socket,
 			getClientToServerContext (), getClientToServerContextFactoryArray (), getServerToClientContext (), readyForMessagesMonitor);
@@ -93,6 +95,8 @@ public final class MomServer extends MultiplayerSessionServer
 		}
 
 		conn.sendMessageToClient (newGameDatabaseMessage);
+		
+		log.exiting (MomServer.class.getName (), "createAndStartClientThread");
 		return conn;
 	}
 
@@ -106,6 +110,8 @@ public final class MomServer extends MultiplayerSessionServer
 	@Override
 	protected final MultiplayerSessionThread createSessionThread (final SessionDescription sessionDescription) throws JAXBException, IOException
 	{
+		log.entering (MomServer.class.getName (), "createSessionThread", sessionDescription.getSessionID ());
+
 		final MomSessionThread thread = getSessionThreadFactory ().createThread ();
 		thread.setMessageProcesser (getMessageProcesser ());
 		thread.setSessionDescription (sessionDescription);
@@ -134,6 +140,7 @@ public final class MomServer extends MultiplayerSessionServer
 		mapGen.setTrueTerrain (thread.getGeneralServerKnowledge ().getTrueMap ());		// See comment in spring XML for why this isn't just injected
 		mapGen.generateOverlandTerrain ();
 
+		log.exiting (MomServer.class.getName (), "createSessionThread", thread);
 		return thread;
 	}
 
@@ -267,6 +274,7 @@ public final class MomServer extends MultiplayerSessionServer
 	 * @param args Command line arguments, following are allowed but all optional:
 	 *		-debug, to turn on writing the full debug log out to a text file; without this, only messages of level INFO and higher are viewable on screen
 	 */
+	@SuppressWarnings ("resource")
 	public final static void main (final String [] args)
 	{
 		try
@@ -281,12 +289,14 @@ public final class MomServer extends MultiplayerSessionServer
 					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
 			
 			// Initialize logging first, in case debug logging for spring itself is enabled
-			final FileInputStream in = new FileInputStream ("MoMIMEServerLogging.properties");
-			LogManager.getLogManager ().readConfiguration (in);
-			in.close ();
+			try (final FileInputStream in = new FileInputStream ("MoMIMEServerLogging.properties"))
+			{
+				LogManager.getLogManager ().readConfiguration (in);
+				in.close ();
+			}
 
 			// Everything is now set to start with spring
-			new ClassPathXmlApplicationContext("/momime.server.spring/momime-server-beans.xml");			
+			new ClassPathXmlApplicationContext ("/momime.server.spring/momime-server-beans.xml");			
 		}
 		catch (final Exception e)
 		{

@@ -13,14 +13,14 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.IMomSessionVariables;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Client sends this to server if they decide to cancel a pending movement and/or special orders
  */
-public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends CancelPendingMovementAndSpecialOrdersMessage implements IProcessableClientToServerMessage
+public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends CancelPendingMovementAndSpecialOrdersMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CancelPendingMovementAndSpecialOrdersMessageImpl.class.getName ());

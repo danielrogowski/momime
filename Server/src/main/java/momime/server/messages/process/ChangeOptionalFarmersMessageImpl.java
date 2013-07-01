@@ -13,7 +13,7 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.server.IMomSessionVariables;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -21,7 +21,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Clients send this to set what they want to build in a city
  */
-public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmersMessage implements IProcessableClientToServerMessage
+public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmersMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChangeOptionalFarmersMessageImpl.class.getName ());

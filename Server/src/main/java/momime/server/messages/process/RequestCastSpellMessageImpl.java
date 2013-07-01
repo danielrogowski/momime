@@ -12,7 +12,7 @@ import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
 import momime.server.IMomSessionVariables;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
@@ -27,7 +27,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
  * 
  * If in combat, and casting at a location (e.g. summoning), combatTargetLocation will specify the target location.
  */
-public class RequestCastSpellMessageImpl extends RequestCastSpellMessage implements IProcessableClientToServerMessage
+public class RequestCastSpellMessageImpl extends RequestCastSpellMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestCastSpellMessageImpl.class.getName ());

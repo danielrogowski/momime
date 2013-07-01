@@ -1,0 +1,1 @@
+PUBLIC "http://momime/client/database/v0_9_4" "MoMIMEClientDatabase.xsd"

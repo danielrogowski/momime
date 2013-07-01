@@ -17,14 +17,14 @@ import momime.server.IMomSessionVariables;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Unit;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Message client sends to server when they want to rush buy the current construction project in a particular city
  */
-public final class RushBuyMessageImpl extends RushBuyMessage implements IProcessableClientToServerMessage
+public final class RushBuyMessageImpl extends RushBuyMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RushBuyMessageImpl.class.getName ());

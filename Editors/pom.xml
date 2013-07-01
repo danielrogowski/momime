@@ -10,14 +10,14 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.0.5</version>
+		<version>0.0.6</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.ndg.common</groupId>
 			<artifactId>xmleditor</artifactId>
-			<version>0.0.4-SNAPSHOT</version>
+			<version>0.0.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>

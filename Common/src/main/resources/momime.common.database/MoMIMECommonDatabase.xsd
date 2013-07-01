@@ -3,8 +3,8 @@
 	xmlns:momimecommon="http://momime/common/database/v0_9_4" targetNamespace="http://momime/common/database/v0_9_4"
 	jaxb:version="2.0">
 	
-	<xsd:import namespace="http://www.ndg.com/map" schemaLocation="../../../../../NdgMap/src/main/resources/com.ndg.map/Map.xsd" />
-	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4" schemaLocation="MoMIMENewGameDatabase.xsd" />
+	<xsd:import namespace="http://www.ndg.com/map"/>
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4"/>
 	
     <xsd:annotation>
     	<xsd:documentation>Defines the portions of the main data XML file that are needed both by the client and server.

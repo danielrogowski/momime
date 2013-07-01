@@ -11,7 +11,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChatMessage;
 import momime.common.messages.servertoclient.v0_9_4.BroadcastChatMessage;
 import momime.server.IMomSessionVariables;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -19,7 +19,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Client sends to server to send a chat message to other players
  */
-public final class ChatMessageImpl extends ChatMessage implements IProcessableClientToServerMessage
+public final class ChatMessageImpl extends ChatMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChatMessageImpl.class.getName ());

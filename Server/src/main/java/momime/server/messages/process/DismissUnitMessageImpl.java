@@ -16,7 +16,7 @@ import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.server.IMomSessionVariables;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -24,7 +24,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Client can send this to request that a unit of theirs be killed off
  */
-public final class DismissUnitMessageImpl extends DismissUnitMessage implements IProcessableClientToServerMessage
+public final class DismissUnitMessageImpl extends DismissUnitMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (DismissUnitMessageImpl.class.getName ());

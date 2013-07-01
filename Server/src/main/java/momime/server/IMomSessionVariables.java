@@ -31,7 +31,7 @@ import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.ISpellServerUtils;
 import momime.server.utils.IUnitServerUtils;
 
-import com.ndg.multiplayer.server.IMultiplayerServerUtils;
+import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -69,7 +69,7 @@ public interface IMomSessionVariables
 	/**
 	 * @return Server-side multiplayer utils
 	 */
-	public IMultiplayerServerUtils getMultiplayerServerUtils ();
+	public MultiplayerServerUtils getMultiplayerServerUtils ();
 	
 	/**
 	 * @return Logger for logging key messages relating to this session

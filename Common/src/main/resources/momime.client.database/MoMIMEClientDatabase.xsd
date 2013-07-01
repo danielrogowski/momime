@@ -2,7 +2,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:momimecommon="http://momime/common/database/v0_9_4"
 	xmlns:momimeclient="http://momime/client/database/v0_9_4" targetNamespace="http://momime/client/database/v0_9_4">
 
-	<xsd:import namespace="http://momime/common/database/v0_9_4" schemaLocation="../momime.common.database/MoMIMECommonDatabase.xsd" />
+	<xsd:import namespace="http://momime/common/database/v0_9_4"/>
 	
     <xsd:annotation>
     	<xsd:documentation>Defines the portions of the main data XML file that are needed only on the client, although they still have to be declared within

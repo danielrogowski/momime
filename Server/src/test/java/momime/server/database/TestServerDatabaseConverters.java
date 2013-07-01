@@ -76,7 +76,9 @@ public final class TestServerDatabaseConverters
 
 		// This tests not only that the objects are assembled correctly, but that they are marshalled correctly when we send the message - as common not server versions,
 		// i.e. that the generated XML does not contain any descriptions, which are server-only
+		@SuppressWarnings ("resource")
 		final ApplicationContext applicationContext = new ClassPathXmlApplicationContext("/momime.common.spring/momime-common-beans.xml");
+		
 		final JAXBContext serverToClientJaxbContext  = (JAXBContext) applicationContext.getBean ("serverToClientJaxbContext");
 		final Marshaller marshaller = serverToClientJaxbContext.createMarshaller ();
 

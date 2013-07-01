@@ -10,7 +10,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage;
 import momime.server.IMomSessionVariables;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -19,7 +19,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  * Message clients send out when the next turn button is clicked.
  * Server figures out the effect, based on the type of game (one-at-a-time or simultaneous).
  */
-public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage implements IProcessableClientToServerMessage
+public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (NextTurnButtonMessageImpl.class.getName ());

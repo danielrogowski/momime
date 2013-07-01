@@ -152,45 +152,50 @@ public class HeroNameGrid extends MoMLanguageEditorGridWithImport
 		throws IOException, XmlEditorException
 	{
 		// NAMES.LBX only has a single subfile in it
-		final InputStream lbxStream = LbxArchiveReader.getSubFileInputStream (new FileInputStream (lbxFilename), 0);
+		try (final InputStream lbxStream = new FileInputStream (lbxFilename))
+		{
+			LbxArchiveReader.positionToSubFile (lbxStream, 0);
 
-		// Read number and size of records
-		StreamUtils.readUnsigned2ByteIntFromStream (lbxStream, ByteOrder.LITTLE_ENDIAN, "Number of Records");
-		final int recordSize = StreamUtils.readUnsigned2ByteIntFromStream (lbxStream, ByteOrder.LITTLE_ENDIAN, "Record Size");
+			// Read number and size of records
+			StreamUtils.readUnsigned2ByteIntFromStream (lbxStream, ByteOrder.LITTLE_ENDIAN, "Number of Records");
+			final int recordSize = StreamUtils.readUnsigned2ByteIntFromStream (lbxStream, ByteOrder.LITTLE_ENDIAN, "Record Size");
 
-		for (int heroNameNo = 1; heroNameNo <= 5; heroNameNo++)
-			for (int unitNo = 1; unitNo <= 35; unitNo++)
-			{
-				String heroName = StreamUtils.readNullTerminatedFixedLengthStringFromStream (lbxStream, recordSize, "Name " + heroNameNo + " for hero " + unitNo);
+			for (int heroNameNo = 1; heroNameNo <= 5; heroNameNo++)
+				for (int unitNo = 1; unitNo <= 35; unitNo++)
+				{
+					String heroName = StreamUtils.readNullTerminatedFixedLengthStringFromStream (lbxStream, recordSize, "Name " + heroNameNo + " for hero " + unitNo);
 
-				// Look up the hero class, e.g. Dwarf, Assassin, Chosen
-				final String unitId = "UN" + StringUtils.padStart (new Integer (unitNo).toString (), "0", 3);
-				final String heroClass = JdomUtils.findDomChildNodeWithTextAttribute (getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_UNIT,
-					ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_ID, unitId).getChildText (ServerEditorDatabaseConstants.TAG_VALUE_UNIT_NAME);
+					// Look up the hero class, e.g. Dwarf, Assassin, Chosen
+					final String unitId = "UN" + StringUtils.padStart (new Integer (unitNo).toString (), "0", 3);
+					final String heroClass = JdomUtils.findDomChildNodeWithTextAttribute (getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_UNIT,
+						ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_ID, unitId).getChildText (ServerEditorDatabaseConstants.TAG_VALUE_UNIT_NAME);
 
-				final String firstChar = heroClass.substring (0, 1).toUpperCase ();
-				if ("AEIOU".indexOf (firstChar) >= 0)
-					heroName = heroName + vowelConjunction.getText () + heroClass;
+					final String firstChar = heroClass.substring (0, 1).toUpperCase ();
+					if ("AEIOU".indexOf (firstChar) >= 0)
+						heroName = heroName + vowelConjunction.getText () + heroClass;
 
-				else if ((unitNo ==6) || (unitNo ==8) || (unitNo ==9) || (unitNo ==10) || (unitNo ==19) || (unitNo ==23) || (unitNo ==26) || (unitNo ==28) || (unitNo ==31))
-					heroName = heroName + femaleConjunction.getText () + heroClass;
+					else if ((unitNo ==6) || (unitNo ==8) || (unitNo ==9) || (unitNo ==10) || (unitNo ==19) || (unitNo ==23) || (unitNo ==26) || (unitNo ==28) || (unitNo ==31))
+						heroName = heroName + femaleConjunction.getText () + heroClass;
 
-				else
-					heroName = heroName + maleConjunction.getText () + heroClass;
+					else
+						heroName = heroName + maleConjunction.getText () + heroClass;
 
-				// Add to XML
-				final Element heroElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_HERO);
-				heroElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_HERO_NAME_ID, unitId + "_HN0" + heroNameNo);
+					// Add to XML
+					final Element heroElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_HERO);
+					heroElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_HERO_NAME_ID, unitId + "_HN0" + heroNameNo);
 
-				final Element heroNameElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_HERO_NAME);
-				heroNameElement.setText (heroName);
-				heroElement.addContent (heroNameElement);
+					final Element heroNameElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_HERO_NAME);
+					heroNameElement.setText (heroName);
+					heroElement.addContent (heroNameElement);
 
-				// Be careful about where we add it
-				final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
-					(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_HERO);
-				getContainer ().addContent (insertionPoint, heroElement);
-			}
+					// Be careful about where we add it
+					final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
+							(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_HERO);
+					getContainer ().addContent (insertionPoint, heroElement);
+				}
+			
+			lbxStream.close ();
+		}
 	}
 
 }

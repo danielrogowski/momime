@@ -16,14 +16,14 @@ import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.server.IMomSessionVariables;
 import momime.server.database.v0_9_4.Spell;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Client sends this when they want to pick which spell they want to research
  */
-public final class RequestResearchSpellMessageImpl extends RequestResearchSpellMessage implements IProcessableClientToServerMessage
+public final class RequestResearchSpellMessageImpl extends RequestResearchSpellMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestResearchSpellMessageImpl.class.getName ());

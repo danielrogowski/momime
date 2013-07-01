@@ -12,14 +12,14 @@ import momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.server.IMomSessionVariables;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Message we send to the server when we've chosen a custom wizard and then which standard (wizard) photo we want
  */
-public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMessage implements IProcessableClientToServerMessage
+public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseStandardPhotoMessageImpl.class.getName ());

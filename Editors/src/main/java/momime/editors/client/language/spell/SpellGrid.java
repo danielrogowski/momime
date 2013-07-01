@@ -89,83 +89,94 @@ public class SpellGrid extends MoMLanguageEditorGridWithImport
 		{
 			// Open all 3 files
 			// SPELLDAT.LBX only has a single subfile in it
-			final InputStream namesStream = LbxArchiveReader.getSubFileInputStream (new FileInputStream (lbxFilename), 0);
-			final int numberOfNames = StreamUtils.readUnsigned2ByteIntFromStream (namesStream, ByteOrder.LITTLE_ENDIAN, "Number of Records (Names)");
-			final int namesRecordSize = StreamUtils.readUnsigned2ByteIntFromStream (namesStream, ByteOrder.LITTLE_ENDIAN, "Record Size (Names)");
-			final int nameLength = namesRecordSize - SPELL_DATA_LENGTH;
-
-			// DESC.LBX only has a single subfile in it
-			final InputStream descriptionsStream = LbxArchiveReader.getSubFileInputStream (new FileInputStream (descriptionsLbxChooser.getSelectedFile ()), 0);
-			StreamUtils.readUnsigned2ByteIntFromStream (descriptionsStream, ByteOrder.LITTLE_ENDIAN, "Number of Records (Descriptions)");
-			final int descriptionsRecordSize = StreamUtils.readUnsigned2ByteIntFromStream (descriptionsStream, ByteOrder.LITTLE_ENDIAN, "Record Size (Descriptions)");
-
-			// HELP.LBX has 3 subfiles in it, and we need the 3rd one
-			final InputStream helpTextStream = LbxArchiveReader.getSubFileInputStream (new FileInputStream (helpTextLbxChooser.getSelectedFile ()), 2);
-			StreamUtils.readUnsigned2ByteIntFromStream (helpTextStream, ByteOrder.LITTLE_ENDIAN, "Number of Records (Help Text)");
-			final int helpTextRecordSize = StreamUtils.readUnsigned2ByteIntFromStream (helpTextStream, ByteOrder.LITTLE_ENDIAN, "Record Size (Help Text)");
-
-			// Read each record
-			for (int recordNo = 0; recordNo < numberOfNames; recordNo++)
+			try (final InputStream namesStream = new FileInputStream (lbxFilename))
 			{
-				// Get the name and description
-				final String spellName = StreamUtils.readNullTerminatedFixedLengthStringFromStream (namesStream, nameLength, "Spell " + recordNo + " of " + numberOfNames + " Name");
-				final String spellDescription = StreamUtils.readNullTerminatedFixedLengthStringFromStream (descriptionsStream, descriptionsRecordSize, "Spell " + recordNo + " of " + numberOfNames + " Description");
+				LbxArchiveReader.positionToSubFile (namesStream, 0);
+				final int numberOfNames = StreamUtils.readUnsigned2ByteIntFromStream (namesStream, ByteOrder.LITTLE_ENDIAN, "Number of Records (Names)");
+				final int namesRecordSize = StreamUtils.readUnsigned2ByteIntFromStream (namesStream, ByteOrder.LITTLE_ENDIAN, "Record Size (Names)");
+				final int nameLength = namesRecordSize - SPELL_DATA_LENGTH;
 
-				// Skip over the spell data
-				StreamUtils.readByteArrayFromStream (namesStream, SPELL_DATA_LENGTH, "Spell " + recordNo + " of " + numberOfNames + " Data");
-
-				// Ignore the first dummy record
-				if (recordNo > 0)
+				// DESC.LBX only has a single subfile in it
+				try (final InputStream descriptionsStream = new FileInputStream (descriptionsLbxChooser.getSelectedFile ()))
 				{
-					// Help text - Finding the entry is a little tricky, especially since there are multiple help text entries for things like 'War Bears'
-					// First spell is 'Earth to Mud' which only appears once, so best way is to position to the right entry on the first spell, and thereafter just keep reading down the file
-					String helpText;
-					if (recordNo == 1)
+					LbxArchiveReader.positionToSubFile (descriptionsStream, 0);
+					StreamUtils.readUnsigned2ByteIntFromStream (descriptionsStream, ByteOrder.LITTLE_ENDIAN, "Number of Records (Descriptions)");
+					final int descriptionsRecordSize = StreamUtils.readUnsigned2ByteIntFromStream (descriptionsStream, ByteOrder.LITTLE_ENDIAN, "Record Size (Descriptions)");
+
+					// HELP.LBX has 3 subfiles in it, and we need the 3rd one
+					try (final InputStream helpTextStream = new FileInputStream (helpTextLbxChooser.getSelectedFile ()))
 					{
-						String helpTextId;
-						do
+						LbxArchiveReader.positionToSubFile (helpTextStream, 2);
+						StreamUtils.readUnsigned2ByteIntFromStream (helpTextStream, ByteOrder.LITTLE_ENDIAN, "Number of Records (Help Text)");
+						final int helpTextRecordSize = StreamUtils.readUnsigned2ByteIntFromStream (helpTextStream, ByteOrder.LITTLE_ENDIAN, "Record Size (Help Text)");
+
+						// Read each record
+						for (int recordNo = 0; recordNo < numberOfNames; recordNo++)
 						{
-							helpTextId = StreamUtils.readNullTerminatedFixedLengthStringFromStream (helpTextStream, HELP_TEXT_ID_LENGTH, "Skip help text ID");
-							helpText = StreamUtils.readNullTerminatedFixedLengthStringFromStream (helpTextStream, helpTextRecordSize - HELP_TEXT_ID_LENGTH, "Skip help text");
-						} while (!spellName.toUpperCase ().equals (helpTextId));
+							// Get the name and description
+							final String spellName = StreamUtils.readNullTerminatedFixedLengthStringFromStream (namesStream, nameLength, "Spell " + recordNo + " of " + numberOfNames + " Name");
+							final String spellDescription = StreamUtils.readNullTerminatedFixedLengthStringFromStream (descriptionsStream, descriptionsRecordSize, "Spell " + recordNo + " of " + numberOfNames + " Description");
+
+							// Skip over the spell data
+							StreamUtils.readByteArrayFromStream (namesStream, SPELL_DATA_LENGTH, "Spell " + recordNo + " of " + numberOfNames + " Data");
+
+							// Ignore the first dummy record
+							if (recordNo > 0)
+							{
+								// Help text - Finding the entry is a little tricky, especially since there are multiple help text entries for things like 'War Bears'
+								// First spell is 'Earth to Mud' which only appears once, so best way is to position to the right entry on the first spell, and thereafter just keep reading down the file
+								String helpText;
+								if (recordNo == 1)
+								{
+									String helpTextId;
+									do
+									{
+										helpTextId = StreamUtils.readNullTerminatedFixedLengthStringFromStream (helpTextStream, HELP_TEXT_ID_LENGTH, "Skip help text ID");
+										helpText = StreamUtils.readNullTerminatedFixedLengthStringFromStream (helpTextStream, helpTextRecordSize - HELP_TEXT_ID_LENGTH, "Skip help text");
+									} while (!spellName.toUpperCase ().equals (helpTextId));
+								}
+								else
+								{
+									StreamUtils.readNullTerminatedFixedLengthStringFromStream (helpTextStream, HELP_TEXT_ID_LENGTH, "Spell " + recordNo + " of " + numberOfNames + " Help Text ID");
+									helpText = StreamUtils.readNullTerminatedFixedLengthStringFromStream (helpTextStream, helpTextRecordSize - HELP_TEXT_ID_LENGTH, "Spell " + recordNo + " of " + numberOfNames + " Help Text");
+								}
+
+								// Eliminate the upkeep/target/etc crap from the start of the help text
+								final int crapPos = helpText.lastIndexOf ('\u0014');
+								if (crapPos >= 0)
+									helpText = helpText.substring (crapPos + 1);
+
+								helpText = helpText.replaceAll ("\\.  ", "\\. ");
+								helpText = helpText.replaceAll ("\\. ", "\\.\n\n");	// Have verified with a hex editor that this does generate CR+LF, in fact if you include the \r you get garbage in the generated XML
+
+								// Add to XML
+								final Element spellElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_SPELL);
+								spellElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_SPELL_ID, "SP" + StringUtils.padStart (new Integer (recordNo).toString (), "0", 3));
+
+								final Element nameElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_SPELL_NAME);
+								nameElement.setText (spellName);
+								spellElement.addContent (nameElement);
+
+								final Element descriptionElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_SPELL_DESCRIPTION);
+								descriptionElement.setText (spellDescription);
+								spellElement.addContent (descriptionElement);
+
+								final Element helpTextElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_SPELL_HELP_TEXT);
+								helpTextElement.setText (helpText);
+								spellElement.addContent (helpTextElement);
+
+								// Be careful about where we add it
+								final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
+									(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_SPELL);
+								getContainer ().addContent (insertionPoint, spellElement);
+							}
+						}
+						helpTextStream.close ();
 					}
-					else
-					{
-						StreamUtils.readNullTerminatedFixedLengthStringFromStream (helpTextStream, HELP_TEXT_ID_LENGTH, "Spell " + recordNo + " of " + numberOfNames + " Help Text ID");
-						helpText = StreamUtils.readNullTerminatedFixedLengthStringFromStream (helpTextStream, helpTextRecordSize - HELP_TEXT_ID_LENGTH, "Spell " + recordNo + " of " + numberOfNames + " Help Text");
-					}
-
-					// Eliminate the upkeep/target/etc crap from the start of the help text
-					final int crapPos = helpText.lastIndexOf ('\u0014');
-					if (crapPos >= 0)
-						helpText = helpText.substring (crapPos + 1);
-
-					helpText = helpText.replaceAll ("\\.  ", "\\. ");
-					helpText = helpText.replaceAll ("\\. ", "\\.\n\n");	// Have verified with a hex editor that this does generate CR+LF, in fact if you include the \r you get garbage in the generated XML
-
-					// Add to XML
-					final Element spellElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_SPELL);
-					spellElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_SPELL_ID, "SP" + StringUtils.padStart (new Integer (recordNo).toString (), "0", 3));
-
-					final Element nameElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_SPELL_NAME);
-					nameElement.setText (spellName);
-					spellElement.addContent (nameElement);
-
-					final Element descriptionElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_SPELL_DESCRIPTION);
-					descriptionElement.setText (spellDescription);
-					spellElement.addContent (descriptionElement);
-
-					final Element helpTextElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_SPELL_HELP_TEXT);
-					helpTextElement.setText (helpText);
-					spellElement.addContent (helpTextElement);
-
-					// Be careful about where we add it
-					final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
-						(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_SPELL);
-					getContainer ().addContent (insertionPoint, spellElement);
+					descriptionsStream.close ();
 				}
+				namesStream.close ();
 			}
 		}
 	}
-
 }

@@ -76,7 +76,7 @@
 	
 	<bean id="clientToServerObjectFactory" class="momime.server.messages.process.ObjectFactoryClientToServerMessages" />	<!-- Creates Impl versions of msgs -->
 	
-	<bean id="multiplayerServerUtils" class="com.ndg.multiplayer.server.MultiplayerServerUtils" />
+	<bean id="multiplayerServerUtils" class="com.ndg.multiplayer.server.MultiplayerServerUtilsImpl" />
 	
 	<bean id="userRegistry" class="com.ndg.multiplayer.server.users.MultiplayerSessionUserRegistryImpl">
 		<constructor-arg value="#{serverConfig.userRegistryFilename}" />

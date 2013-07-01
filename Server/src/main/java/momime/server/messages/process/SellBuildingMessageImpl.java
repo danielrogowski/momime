@@ -15,7 +15,7 @@ import momime.common.messages.v0_9_4.TurnSystem;
 import momime.server.IMomSessionVariables;
 import momime.server.database.v0_9_4.Building;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -23,7 +23,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Clients send this when they want to sell a building from a city, or cancel a pending sale
  */
-public final class SellBuildingMessageImpl extends SellBuildingMessage implements IProcessableClientToServerMessage
+public final class SellBuildingMessageImpl extends SellBuildingMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (SellBuildingMessageImpl.class.getName ());

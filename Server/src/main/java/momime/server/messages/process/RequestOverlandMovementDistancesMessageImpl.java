@@ -22,14 +22,14 @@ import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.IMomSessionVariables;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Client sends this to server to request coordinates where this unit stack can move to
  */
-public final class RequestOverlandMovementDistancesMessageImpl extends RequestOverlandMovementDistancesMessage implements IProcessableClientToServerMessage
+public final class RequestOverlandMovementDistancesMessageImpl extends RequestOverlandMovementDistancesMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestOverlandMovementDistancesMessageImpl.class.getName ());

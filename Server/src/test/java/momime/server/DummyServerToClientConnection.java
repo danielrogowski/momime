@@ -3,13 +3,13 @@ package momime.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ndg.multiplayer.base.IServerToClientConnection;
+import com.ndg.multiplayer.base.ServerToClientConnection;
 import com.ndg.multiplayer.base.ServerToClientMessage;
 
 /**
  * Dummy connection object that captures all messages sent to the client in a list instead of actually sending them
  */
-public final class DummyServerToClientConnection implements IServerToClientConnection
+public final class DummyServerToClientConnection implements ServerToClientConnection
 {
 	/** List of all messages that have been sent over this 'connection' */
 	private final List<ServerToClientMessage> messages;

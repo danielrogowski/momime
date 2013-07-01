@@ -64,7 +64,7 @@ import momime.server.utils.IPlayerPickServerUtils;
 import momime.server.utils.IUnitServerUtils;
 import momime.server.utils.RandomUtils;
 
-import com.ndg.multiplayer.server.IMultiplayerServerUtils;
+import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -122,7 +122,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	private ICityAI cityAI;
 	
 	/** Player list utils */
-	private IMultiplayerServerUtils multiplayerServerUtils;
+	private MultiplayerServerUtils multiplayerServerUtils;
 	
 	/**
 	 * Message we send to the server when we choose which wizard we want to be; AI players also call this to do their wizard, picks and spells setup
@@ -1140,7 +1140,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @return Player list utils
 	 */
-	public final IMultiplayerServerUtils getMultiplayerServerUtils ()
+	public final MultiplayerServerUtils getMultiplayerServerUtils ()
 	{
 		return multiplayerServerUtils;
 	}
@@ -1148,7 +1148,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @param obj Player list utils
 	 */
-	public final void setMultiplayerServerUtils (final IMultiplayerServerUtils obj)
+	public final void setMultiplayerServerUtils (final MultiplayerServerUtils obj)
 	{
 		multiplayerServerUtils = obj;
 	}

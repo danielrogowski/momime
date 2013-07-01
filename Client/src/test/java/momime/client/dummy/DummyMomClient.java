@@ -946,6 +946,7 @@ public final class DummyMomClient
 		}
 
 		// Create frame
+		@SuppressWarnings ("resource")
 		final ApplicationContext applicationContext = new ClassPathXmlApplicationContext("/momime.common.spring/momime-common-beans.xml");
 		new DummyMomClient ().setApplicationContext (applicationContext);
 	}

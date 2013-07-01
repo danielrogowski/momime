@@ -31,9 +31,11 @@ public final class DateTimeAndMessageOnlyFormatter extends Formatter
 			try
 			{
 				final StringWriter sw = new StringWriter ();
-				final PrintWriter pw = new PrintWriter (sw);
-				record.getThrown ().printStackTrace (pw);
-				pw.close ();
+				try (final PrintWriter pw = new PrintWriter (sw))
+				{
+					record.getThrown ().printStackTrace (pw);
+					pw.close ();
+				}
 				sb.append (sw.toString ());
 			}
 			catch (final Exception ex)

@@ -67,29 +67,34 @@ public class BuildingGrid extends MoMLanguageEditorGridWithImport
 		throws IOException, XmlEditorException
 	{
 		// BUILDESC.LBX only has a single subfile in it
-		final InputStream lbxStream = LbxArchiveReader.getSubFileInputStream (new FileInputStream (lbxFilename), 0);
-
-		// Read number and size of records
-		final int numberOfRecords = StreamUtils.readUnsigned2ByteIntFromStream (lbxStream, ByteOrder.LITTLE_ENDIAN, "Number of Records");
-		final int recordSize = StreamUtils.readUnsigned2ByteIntFromStream (lbxStream, ByteOrder.LITTLE_ENDIAN, "Record Size");
-
-		// Read each record
-		for (int recordNo = 0; recordNo < numberOfRecords; recordNo++)
+		try (final InputStream lbxStream = new FileInputStream (lbxFilename))
 		{
-			final String buildingHelpText = StreamUtils.readNullTerminatedFixedLengthStringFromStream (lbxStream, recordSize, "Building " + recordNo + " of " + numberOfRecords + " Help Text");
+			LbxArchiveReader.positionToSubFile (lbxStream, 0);
+			
+			// Read number and size of records
+			final int numberOfRecords = StreamUtils.readUnsigned2ByteIntFromStream (lbxStream, ByteOrder.LITTLE_ENDIAN, "Number of Records");
+			final int recordSize = StreamUtils.readUnsigned2ByteIntFromStream (lbxStream, ByteOrder.LITTLE_ENDIAN, "Record Size");
 
-			// Add to XML
-			final Element buildingElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_BUILDING);
-			buildingElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_BUILDING_ID, "BL" + StringUtils.padStart (new Integer (recordNo).toString (), "0", 2));
+			// Read each record
+			for (int recordNo = 0; recordNo < numberOfRecords; recordNo++)
+			{
+				final String buildingHelpText = StreamUtils.readNullTerminatedFixedLengthStringFromStream (lbxStream, recordSize, "Building " + recordNo + " of " + numberOfRecords + " Help Text");
 
-			final Element helpTextElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_BUILDING_HELP_TEXT);
-			helpTextElement.setText (buildingHelpText);
-			buildingElement.addContent (helpTextElement);
+				// Add to XML
+				final Element buildingElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_BUILDING);
+				buildingElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_BUILDING_ID, "BL" + StringUtils.padStart (new Integer (recordNo).toString (), "0", 2));
 
-			// Be careful about where we add it
-			final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
-				(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_BUILDING);
-			getContainer ().addContent (insertionPoint, buildingElement);
+				final Element helpTextElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_BUILDING_HELP_TEXT);
+				helpTextElement.setText (buildingHelpText);
+				buildingElement.addContent (helpTextElement);
+
+				// Be careful about where we add it
+				final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
+					(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_BUILDING);
+				getContainer ().addContent (insertionPoint, buildingElement);
+			}
+			
+			lbxStream.close ();
 		}
 	}
 

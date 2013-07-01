@@ -12,14 +12,14 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.server.IMomSessionVariables;
 
-import com.ndg.multiplayer.server.IProcessableClientToServerMessage;
+import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Clients send this to set what they want to build in a city
  */
-public final class ChangeCityConstructionMessageImpl extends ChangeCityConstructionMessage implements IProcessableClientToServerMessage
+public final class ChangeCityConstructionMessageImpl extends ChangeCityConstructionMessage implements ProcessableClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChangeCityConstructionMessageImpl.class.getName ());

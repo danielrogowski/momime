@@ -169,48 +169,50 @@ public class UnitGrid extends MoMLanguageEditorGridWithImport
 		final int namesOffset = readValueFromComboBox (namesOffsetCombo.getSelectedItem ());
 
 		// Open the file
-		final BufferedInputStream exeStream = new BufferedInputStream (new FileInputStream (exeFilename));
-
-		// How long from the start of the file is the END of the names table
-		final int dataEnd = dataOffset + (UNIT_COUNT * UNIT_DATA_BLOCK_SIZE);
-
-		// Read in the entire name offset table
-		exeStream.mark (dataEnd);
-		StreamUtils.readByteArrayFromStream (exeStream, dataOffset, "Skip to names table");
-
-		final int [] namesTable = new int [UNIT_COUNT + 1];
-		for (int unitNo = 1; unitNo <= UNIT_COUNT; unitNo++)
+		try (final BufferedInputStream exeStream = new BufferedInputStream (new FileInputStream (exeFilename)))
 		{
-			namesTable [unitNo] = StreamUtils.readUnsigned2ByteIntFromStream (exeStream, ByteOrder.LITTLE_ENDIAN, "Name offset");
-			StreamUtils.readByteArrayFromStream (exeStream, UNIT_DATA_BLOCK_SIZE - 2, "Skip data block");
-		}
+			// How long from the start of the file is the END of the names table
+			final int dataEnd = dataOffset + (UNIT_COUNT * UNIT_DATA_BLOCK_SIZE);
 
-		exeStream.reset ();
+			// Read in the entire name offset table
+			exeStream.mark (dataEnd);
+			StreamUtils.readByteArrayFromStream (exeStream, dataOffset, "Skip to names table");
 
-		// Now read each name
-		StreamUtils.readByteArrayFromStream (exeStream, namesOffset, "Skip to names table");
-		for (int unitNo = 1; unitNo <= UNIT_COUNT; unitNo++)
-		{
-			exeStream.mark (namesTable [unitNo] + 100);
-			StreamUtils.readByteArrayFromStream (exeStream, namesTable [unitNo], "Skip to name " + unitNo + " of " + UNIT_COUNT);
-			final String unitName = StreamUtils.readNullTerminatedFixedLengthStringFromStream (exeStream, 100, "Unit name " + unitNo + " of " + UNIT_COUNT);
+			final int [] namesTable = new int [UNIT_COUNT + 1];
+			for (int unitNo = 1; unitNo <= UNIT_COUNT; unitNo++)
+			{
+				namesTable [unitNo] = StreamUtils.readUnsigned2ByteIntFromStream (exeStream, ByteOrder.LITTLE_ENDIAN, "Name offset");
+				StreamUtils.readByteArrayFromStream (exeStream, UNIT_DATA_BLOCK_SIZE - 2, "Skip data block");
+			}
 
-			// Add to XML
-			final Element unitElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_UNIT);
-			unitElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_ID, "UN" + StringUtils.padStart (new Integer (unitNo).toString (), "0", 3));
-
-			final Element nameElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_UNIT_NAME);
-			nameElement.setText (unitName);
-			unitElement.addContent (nameElement);
-
-			// Be careful about where we add it
-			final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
-				(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_UNIT);
-			getContainer ().addContent (insertionPoint, unitElement);
-
-			// Position back to name offset location
 			exeStream.reset ();
+
+			// Now read each name
+			StreamUtils.readByteArrayFromStream (exeStream, namesOffset, "Skip to names table");
+			for (int unitNo = 1; unitNo <= UNIT_COUNT; unitNo++)
+			{
+				exeStream.mark (namesTable [unitNo] + 100);
+				StreamUtils.readByteArrayFromStream (exeStream, namesTable [unitNo], "Skip to name " + unitNo + " of " + UNIT_COUNT);
+				final String unitName = StreamUtils.readNullTerminatedFixedLengthStringFromStream (exeStream, 100, "Unit name " + unitNo + " of " + UNIT_COUNT);
+
+				// Add to XML
+				final Element unitElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_UNIT);
+				unitElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_ID, "UN" + StringUtils.padStart (new Integer (unitNo).toString (), "0", 3));
+
+				final Element nameElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_UNIT_NAME);
+				nameElement.setText (unitName);
+				unitElement.addContent (nameElement);
+
+				// Be careful about where we add it
+				final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
+					(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_UNIT);
+				getContainer ().addContent (insertionPoint, unitElement);
+
+				// Position back to name offset location
+				exeStream.reset ();
+			}
+			
+			exeStream.close ();
 		}
 	}
-
 }

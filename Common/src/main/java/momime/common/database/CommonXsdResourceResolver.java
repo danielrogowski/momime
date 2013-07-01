@@ -46,6 +46,7 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 	 * @param baseURI The absolute base URI of the resource being parsed (in this case, null)
 	 * @return Stream to the located resource
 	 */
+	@SuppressWarnings ("resource")
 	protected InputStream resolveResourceToStream (final String type, final String namespaceURI, final String publicId, final String systemId, final String baseURI)
 	{
 		log.entering (CommonXsdResourceResolver.class.getName (), "resolveResourceToStream",
@@ -104,6 +105,7 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 	 * @return Located XSD file
 	 */
 	@Override
+	@SuppressWarnings ("resource")
 	public final LSInput resolveResource (final String type, final String namespaceURI, final String publicId, final String systemId, final String baseURI)
 	{
 		log.entering (CommonXsdResourceResolver.class.getName (), "resolveResource",

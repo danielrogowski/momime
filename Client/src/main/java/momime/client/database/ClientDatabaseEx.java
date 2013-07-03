@@ -6,7 +6,7 @@ import java.util.Map;
 import momime.client.database.v0_9_4.ClientDatabase;
 import momime.client.database.v0_9_4.MapFeature;
 import momime.client.database.v0_9_4.Wizard;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.CombatAreaEffect;
@@ -28,7 +28,7 @@ import momime.common.database.v0_9_4.WeaponGrade;
 /**
  * Adds client-side specific extensions to the common database lookup class
  */
-public final class ClientDatabaseEx extends ClientDatabase implements ICommonDatabase
+public final class ClientDatabaseEx extends ClientDatabase implements CommonDatabase
 {
 	/** Map of plane numbers to plane XML objects */
 	private Map<Integer, Plane> planesMap;

@@ -25,7 +25,7 @@ import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IMemoryGridCellUtils;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.MapFeature;
@@ -68,7 +68,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 
 	/** MemoryGridCell utils */
-	private IMemoryGridCellUtils memoryGridCellUtils;
+	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/** Blobs expand out only in north/south/east/west directions - no diagonals */
 	private static final int [] BLOB_EXPANSION_DIRECTIONS = new int [] {1, 3, 5, 7};
@@ -1817,7 +1817,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	/**
 	 * @return MemoryGridCell utils
 	 */
-	public final IMemoryGridCellUtils getMemoryGridCellUtils ()
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
 	{
 		return memoryGridCellUtils;
 	}
@@ -1825,7 +1825,7 @@ public final class OverlandMapGenerator implements IOverlandMapGenerator
 	/**
 	 * @param utils MemoryGridCell utils
 	 */
-	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
 	}

@@ -7,7 +7,7 @@ import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Pick;
 import momime.common.database.v0_9_4.PickExclusiveFrom;
@@ -214,7 +214,7 @@ public final class TestPlayerPickUtilsImpl
 	public final void testMeetsPickRequirements () throws RecordNotFoundException
 	{
 		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		// Divine power needs 4 life books; Archmage needs 4 of any book; so both should return false with 3 life books
@@ -257,7 +257,7 @@ public final class TestPlayerPickUtilsImpl
 	public final void testCanSafelyRemove () throws RecordNotFoundException
 	{
 		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		// Archmage needs 4 of any book so should return false if we try to remove a life book
@@ -297,7 +297,7 @@ public final class TestPlayerPickUtilsImpl
 	public final void testGetHighestWeaponGradeGrantedByPicks () throws RecordNotFoundException
 	{
 		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Ariel at 20 picks - she has a pile of retorts, but Alchemy isn't one of them
 		final List<PlayerPick> picks = createAriel20PicksList ();
@@ -315,7 +315,7 @@ public final class TestPlayerPickUtilsImpl
 	public final void testTotalReligiousBuildingBonus () throws RecordNotFoundException
 	{
 		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		utils.updatePickQuantity (picks, GenerateTestData.LIFE_BOOK, 5);
@@ -337,7 +337,7 @@ public final class TestPlayerPickUtilsImpl
 	public final void testTotalProductionBonus () throws RecordNotFoundException
 	{
 		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		// Archmage gives +50% to magic power spent on improving skill; whatever unit type we pass in is irrelevant

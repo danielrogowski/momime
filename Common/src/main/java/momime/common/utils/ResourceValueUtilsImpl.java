@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.MomException;
-import momime.common.calculations.IMomSkillCalculations;
-import momime.common.calculations.IMomSpellCalculations;
+import momime.common.calculations.MomSkillCalculations;
+import momime.common.calculations.MomSpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.Spell;
@@ -19,19 +19,19 @@ import momime.common.messages.v0_9_4.PlayerPick;
 /**
  * Methods for working with list of MomResourceValues
  */
-public final class ResourceValueUtilsImpl implements IResourceValueUtils
+public final class ResourceValueUtilsImpl implements ResourceValueUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ResourceValueUtilsImpl.class.getName ());
 	
 	/** Skill calculations */
-	private IMomSkillCalculations skillCalculations;
+	private MomSkillCalculations skillCalculations;
 
 	/** Spell calculations */
-	private IMomSpellCalculations spellCalculations;
+	private MomSpellCalculations spellCalculations;
 	
 	/** Player pick utils */
-	private IPlayerPickUtils playerPickUtils;
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * @param resourceList List of resources to search through
@@ -213,7 +213,7 @@ public final class ResourceValueUtilsImpl implements IResourceValueUtils
      */
 	@Override
 	public final int calculateAmountPerTurnForProductionType (final MomPersistentPlayerPrivateKnowledge privateInfo, final List<PlayerPick> picks,
-		final String productionTypeID, final SpellSettingData spellSettings, final ICommonDatabase db)
+		final String productionTypeID, final SpellSettingData spellSettings, final CommonDatabase db)
     	throws MomException, RecordNotFoundException
 	{
 		log.entering (ResourceValueUtilsImpl.class.getName (), "calculateAmountPerTurnForProductionType", productionTypeID);
@@ -312,7 +312,7 @@ public final class ResourceValueUtilsImpl implements IResourceValueUtils
 	/**
 	 * @return Skill calculations
 	 */
-	public final IMomSkillCalculations getSkillCalculations ()
+	public final MomSkillCalculations getSkillCalculations ()
 	{
 		return skillCalculations;
 	}
@@ -320,7 +320,7 @@ public final class ResourceValueUtilsImpl implements IResourceValueUtils
 	/**
 	 * @param calc Skill calculations
 	 */
-	public final void setSkillCalculations (final IMomSkillCalculations calc)
+	public final void setSkillCalculations (final MomSkillCalculations calc)
 	{
 		skillCalculations = calc;
 	}
@@ -328,7 +328,7 @@ public final class ResourceValueUtilsImpl implements IResourceValueUtils
 	/**
 	 * @return Spell calculations
 	 */
-	public final IMomSpellCalculations getSpellCalculations ()
+	public final MomSpellCalculations getSpellCalculations ()
 	{
 		return spellCalculations;
 	}
@@ -336,7 +336,7 @@ public final class ResourceValueUtilsImpl implements IResourceValueUtils
 	/**
 	 * @param calc Spell calculations
 	 */
-	public final void setSpellCalculations (final IMomSpellCalculations calc)
+	public final void setSpellCalculations (final MomSpellCalculations calc)
 	{
 		spellCalculations = calc;
 	}
@@ -344,7 +344,7 @@ public final class ResourceValueUtilsImpl implements IResourceValueUtils
 	/**
 	 * @return Player pick utils
 	 */
-	public final IPlayerPickUtils getPlayerPickUtils ()
+	public final PlayerPickUtils getPlayerPickUtils ()
 	{
 		return playerPickUtils;
 	}
@@ -352,7 +352,7 @@ public final class ResourceValueUtilsImpl implements IResourceValueUtils
 	/**
 	 * @param utils Player pick utils
 	 */
-	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
 	}

@@ -29,8 +29,8 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
-import momime.common.utils.IPendingMovementUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
@@ -407,10 +407,10 @@ public final class TestUnitServerUtils
 		memoryUnit.setUnitURN (5);
 		
 		// Set up object to test
-		final IUnitUtils unitUtils = mock (IUnitUtils.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (5, priv.getFogOfWarMemory ().getUnit (), "setAndSendSpecialOrder")).thenReturn (memoryUnit);
 		
-		final IPendingMovementUtils pendingMovementUtils = mock (IPendingMovementUtils.class);
+		final PendingMovementUtils pendingMovementUtils = mock (PendingMovementUtils.class);
 		
 		final UnitServerUtils utils = new UnitServerUtils ();
 		utils.setUnitUtils (unitUtils);

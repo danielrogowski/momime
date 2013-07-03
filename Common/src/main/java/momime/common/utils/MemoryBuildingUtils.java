@@ -3,7 +3,7 @@ package momime.common.utils;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.Unit;
@@ -14,7 +14,7 @@ import momime.common.messages.v0_9_4.MemoryBuilding;
 /**
  * Methods for working with list of MemoryBuildings
  */
-public interface IMemoryBuildingUtils
+public interface MemoryBuildingUtils
 {
 	/**
 	 * Checks to see if the specified building exists
@@ -77,7 +77,7 @@ public interface IMemoryBuildingUtils
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	public String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinatesEx cityLocation,
-		final String buildingID, final ICommonDatabase db) throws RecordNotFoundException;
+		final String buildingID, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param buildingID Building that is being removed from a city
@@ -85,7 +85,7 @@ public interface IMemoryBuildingUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return True if buildingID is a prerequisite for buildingOrUnitID
 	 */
-	public boolean isBuildingAPrerequisiteFor (final String buildingID, final String buildingOrUnitID, final ICommonDatabase db);
+	public boolean isBuildingAPrerequisiteFor (final String buildingID, final String buildingOrUnitID, final CommonDatabase db);
 
 	/**
 	 * Checks to see if this city contains any buildings that grant free experience to units constructed there (Fighters' Guild or War College)
@@ -96,7 +96,7 @@ public interface IMemoryBuildingUtils
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	public int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinatesEx cityLocation, final ICommonDatabase db) throws RecordNotFoundException;
+		final OverlandMapCoordinatesEx cityLocation, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * Checks to see if any buildings give a bonus to production produced from population
@@ -111,7 +111,7 @@ public interface IMemoryBuildingUtils
 	 */
 	public int totalBonusProductionPerPersonFromBuildings (final List<MemoryBuilding> buildingsList,
 		final OverlandMapCoordinatesEx cityLocation, final String populationTaskID, final String productionTypeID,
-		final ICommonDatabase db) throws RecordNotFoundException;
+		final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param building Building we want the consumption of

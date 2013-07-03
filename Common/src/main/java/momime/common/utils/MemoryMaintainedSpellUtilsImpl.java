@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.SpellHasCityEffect;
@@ -18,16 +18,16 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 /**
  * Methods for working with list of MemoryMaintainedSpells
  */
-public final class MemoryMaintainedSpellUtilsImpl implements IMemoryMaintainedSpellUtils
+public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpellUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MemoryMaintainedSpellUtilsImpl.class.getName ());
 	
 	/** Spell utils */
-	private ISpellUtils spellUtils;
+	private SpellUtils spellUtils;
 	
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -227,7 +227,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements IMemoryMaintainedSp
 	 */
 	@Override
 	public final TargetUnitSpellResult isUnitValidTargetForSpell (final List<MemoryMaintainedSpell> spells,
-		final Spell spell, final int castingPlayerID, final MemoryUnit unit, final ICommonDatabase db) throws RecordNotFoundException
+		final Spell spell, final int castingPlayerID, final MemoryUnit unit, final CommonDatabase db) throws RecordNotFoundException
 	{
     	log.entering (MemoryMaintainedSpellUtilsImpl.class.getName (), "isUnitValidTargetForSpell", new String [] {spell.getSpellID (),
     		new Integer (castingPlayerID).toString ()});
@@ -266,7 +266,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements IMemoryMaintainedSp
 	/**
 	 * @return Spell utils
 	 */
-	public final ISpellUtils getSpellUtils ()
+	public final SpellUtils getSpellUtils ()
 	{
 		return spellUtils;
 	}
@@ -274,7 +274,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements IMemoryMaintainedSp
 	/**
 	 * @param utils Spell utils
 	 */
-	public final void setSpellUtils (final ISpellUtils utils)
+	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
 	}
@@ -282,7 +282,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements IMemoryMaintainedSp
 	/**
 	 * @return Unit utils
 	 */
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -290,7 +290,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements IMemoryMaintainedSp
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}

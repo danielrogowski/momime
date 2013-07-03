@@ -3,7 +3,7 @@ package momime.common.calculations;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.database.v0_9_4.Building;
@@ -21,7 +21,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Common calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public interface IMomCityCalculations
+public interface MomCityCalculations
 {
 	/**
 	 * @param map Known terrain
@@ -32,7 +32,7 @@ public interface IMomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
 	public int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
+		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -44,7 +44,7 @@ public interface IMomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
 	public int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
+		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -70,7 +70,7 @@ public interface IMomCityCalculations
 	 */
 	public int calculateMaxCitySize (final MapVolumeOfMemoryGridCells map,
 		final OverlandMapCoordinatesEx cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
-		final ICommonDatabase db)
+		final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -86,7 +86,7 @@ public interface IMomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
 	public CalculateCityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation, final int maxCitySize, final ICommonDatabase db)
+		final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation, final int maxCitySize, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -115,7 +115,7 @@ public interface IMomCityCalculations
 	 */
 	public CalculateCityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final ICommonDatabase db)
+		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 
 	/**
@@ -135,7 +135,7 @@ public interface IMomCityCalculations
 	public CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final ICommonDatabase db)
+		final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**
@@ -156,7 +156,7 @@ public interface IMomCityCalculations
 	public int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final MomSessionDescription sd,
-		final boolean includeProductionAndConsumptionFromPopulation, final ICommonDatabase db, final String productionTypeID)
+		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**

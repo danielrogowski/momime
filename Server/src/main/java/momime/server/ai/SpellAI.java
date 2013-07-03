@@ -9,7 +9,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.ISpellUtils;
+import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.utils.RandomUtils;
@@ -25,7 +25,7 @@ public final class SpellAI implements ISpellAI
 	private final Logger log = Logger.getLogger (SpellAI.class.getName ());
 	
 	/** Spell utils */
-	private ISpellUtils spellUtils;
+	private SpellUtils spellUtils;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -144,7 +144,7 @@ public final class SpellAI implements ISpellAI
 	/**
 	 * @return Spell utils
 	 */
-	public final ISpellUtils getSpellUtils ()
+	public final SpellUtils getSpellUtils ()
 	{
 		return spellUtils;
 	}
@@ -152,7 +152,7 @@ public final class SpellAI implements ISpellAI
 	/**
 	 * @param utils Spell utils
 	 */
-	public final void setSpellUtils (final ISpellUtils utils)
+	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
 	}

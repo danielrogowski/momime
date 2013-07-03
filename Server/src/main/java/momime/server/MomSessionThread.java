@@ -2,7 +2,7 @@ package momime.server;
 
 import java.util.logging.Logger;
 
-import momime.common.calculations.IMomCityCalculations;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MagicPowerDistribution;
@@ -24,13 +24,13 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IMemoryMaintainedSpellUtils;
-import momime.common.utils.IPendingMovementUtils;
-import momime.common.utils.IPlayerPickUtils;
-import momime.common.utils.IResourceValueUtils;
-import momime.common.utils.ISpellUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.IServerDatabaseConverters;
@@ -95,31 +95,31 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	private ICityProcessing cityProcessing;
 	
 	/** City calculations */
-	private IMomCityCalculations cityCalculations;
+	private MomCityCalculations cityCalculations;
 	
 	/** Database converters */
 	private IServerDatabaseConverters serverDatabaseConverters;
 
 	/** Resource value utils */
-	private IResourceValueUtils resourceValueUtils;
+	private ResourceValueUtils resourceValueUtils;
 
 	/** Spell utils */
-	private ISpellUtils spellUtils;
+	private SpellUtils spellUtils;
 	
 	/** Maintained spell utils */
-	private IMemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 
 	/** Builiding utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** Pending movement utils */
-	private IPendingMovementUtils pendingMovementUtils;
+	private PendingMovementUtils pendingMovementUtils;
 	
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 	
 	/** Player pick utils */
-	private IPlayerPickUtils playerPickUtils;
+	private PlayerPickUtils playerPickUtils;
 
 	/** Server-only pick utils */
 	private IPlayerPickServerUtils playerPickServerUtils;
@@ -508,7 +508,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return City calculations
 	 */
 	@Override
-	public final IMomCityCalculations getCityCalculations ()
+	public final MomCityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -516,7 +516,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final IMomCityCalculations calc)
+	public final void setCityCalculations (final MomCityCalculations calc)
 	{
 		cityCalculations = calc;
 	}
@@ -541,7 +541,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Resource value utils
 	 */
 	@Override
-	public final IResourceValueUtils getResourceValueUtils ()
+	public final ResourceValueUtils getResourceValueUtils ()
 	{
 		return resourceValueUtils;
 	}
@@ -549,7 +549,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Resource value utils
 	 */
-	public final void setResourceValueUtils (final IResourceValueUtils utils)
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
 	{
 		resourceValueUtils = utils;
 	}
@@ -558,7 +558,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Spell utils
 	 */
 	@Override
-	public final ISpellUtils getSpellUtils ()
+	public final SpellUtils getSpellUtils ()
 	{
 		return spellUtils;
 	}
@@ -566,7 +566,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Spell utils
 	 */
-	public final void setSpellUtils (final ISpellUtils utils)
+	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
 	}
@@ -575,7 +575,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Maintained spell utils
 	 */
 	@Override
-	public final IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
 	{
 		return memoryMaintainedSpellUtils;
 	}
@@ -583,7 +583,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Maintained spell utils
 	 */
-	public final void setMemoryMaintainedSpellUtils (final IMemoryMaintainedSpellUtils utils)
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
 	{
 		memoryMaintainedSpellUtils = utils;
 	}	
@@ -592,7 +592,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Builiding utils 
 	 */
 	@Override
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -601,7 +601,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Pending movement utils
 	 */
 	@Override
-	public final IPendingMovementUtils getPendingMovementUtils ()
+	public final PendingMovementUtils getPendingMovementUtils ()
 	{
 		return pendingMovementUtils;
 	}
@@ -609,7 +609,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Pending movement utils
 	 */
-	public final void setPendingMovementUtils (final IPendingMovementUtils utils)
+	public final void setPendingMovementUtils (final PendingMovementUtils utils)
 	{
 		pendingMovementUtils = utils;
 	}
@@ -617,7 +617,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Builiding utils 
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -626,7 +626,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Unit utils
 	 */
 	@Override
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -634,7 +634,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}
@@ -643,7 +643,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Player pick utils
 	 */
 	@Override
-	public final IPlayerPickUtils getPlayerPickUtils ()
+	public final PlayerPickUtils getPlayerPickUtils ()
 	{
 		return playerPickUtils;
 	}
@@ -651,7 +651,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Player pick utils
 	 */
-	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
 	}

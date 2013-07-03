@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import momime.common.MomException;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.CombatAreaAffectsPlayersID;
 import momime.common.database.v0_9_4.CombatAreaEffect;
@@ -36,16 +36,16 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Simple unit lookups and calculations
  */
-public final class UnitUtilsImpl implements IUnitUtils
+public final class UnitUtilsImpl implements UnitUtils
 {
 	/** Class logger */
 	final Logger log = Logger.getLogger (UnitUtilsImpl.class.getName ());
 	
 	/** Player pick utils */
-	private IPlayerPickUtils playerPickUtils;
+	private PlayerPickUtils playerPickUtils;
 	
 	/** Memory CAE utils */
-	private IMemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
 	/**
 	 * @param unitURN Unit URN to search for
@@ -132,7 +132,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	 */
 	@Override
 	public final Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
-		final ICommonDatabase db) throws RecordNotFoundException
+		final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "initializeUnitSkills", unit.getUnitID ());
 
@@ -181,7 +181,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	 */
 	@Override
 	public final MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final int startingExperience,
-		final boolean loadDefaultSkillsFromXML, final ICommonDatabase db) throws RecordNotFoundException
+		final boolean loadDefaultSkillsFromXML, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "createMemoryUnit", new String [] {unitID, new Integer (unitURN).toString ()});
 
@@ -339,7 +339,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	 */
 	@Override
 	public final ExperienceLevel getExperienceLevel (final AvailableUnit unit, final boolean includeBonuses, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db)
+		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "getExperienceLevel", unit.getUnitID ());
@@ -419,7 +419,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	 * @throws RecordNotFoundException If we can't find the definition for the CAE
 	 */
 	@Override
-	public final boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final ICommonDatabase db)
+	public final boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "doesCombatAreaEffectApplyToUnit", new String [] {unit.getUnitID (), effect.getCombatAreaEffectID ()});
@@ -503,7 +503,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	 */
 	@Override
 	public final String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitHasSkill> skills,
-		final List<MemoryMaintainedSpell> spells, final ICommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "getModifiedUnitMagicRealmLifeformTypeID", unit);
@@ -545,7 +545,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	 */
 	@Override
 	public final int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "getModifiedSkillValue", new String [] {unit.getUnitID (), unitSkillID});
@@ -616,7 +616,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	@Override
-	public final int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final ICommonDatabase db)
+	public final int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "getBasicUpkeepValue", new String [] {unit.getUnitID (), productionTypeID});
@@ -645,7 +645,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	 */
 	@Override
 	public final int getModifiedUpkeepValue (final AvailableUnit unit, final String productionTypeID, final List<? extends PlayerPublicDetails> players,
-		final ICommonDatabase db)
+		final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "getModifiedUpkeepValue", new String [] {unit.getUnitID (), productionTypeID});
@@ -688,7 +688,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	 * @throws RecordNotFoundException If we can't find the definition for one of the units
 	 */
 	@Override
-	public final void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final ICommonDatabase db)
+	public final void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "resetUnitOverlandMovement", onlyOnePlayerID);
@@ -804,7 +804,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	/**
 	 * @return Player pick utils
 	 */
-	public final IPlayerPickUtils getPlayerPickUtils ()
+	public final PlayerPickUtils getPlayerPickUtils ()
 	{
 		return playerPickUtils;
 	}
@@ -812,7 +812,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	/**
 	 * @param utils Player pick utils
 	 */
-	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
 	}
@@ -820,7 +820,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	/**
 	 * @return Memory CAE utils
 	 */
-	public final IMemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
 	{
 		return memoryCombatAreaEffectUtils;
 	}
@@ -828,7 +828,7 @@ public final class UnitUtilsImpl implements IUnitUtils
 	/**
 	 * @param utils Memory CAE utils
 	 */
-	public final void setMemoryCombatAreaEffectUtils (final IMemoryCombatAreaEffectUtils utils)
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
 	}

@@ -2,7 +2,7 @@ package momime.common.calculations;
 
 import java.util.List;
 
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
@@ -14,7 +14,7 @@ import com.ndg.map.CoordinateSystem;
 /**
  * Common calculations pertaining to units
  */
-public interface IMomUnitCalculations
+public interface MomUnitCalculations
 {
 	/**
 	 * @param map Our knowledge of the surrounding terrain
@@ -28,5 +28,5 @@ public interface IMomUnitCalculations
 	 */
 	public int calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
-		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db) throws RecordNotFoundException;
+		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db) throws RecordNotFoundException;
 }

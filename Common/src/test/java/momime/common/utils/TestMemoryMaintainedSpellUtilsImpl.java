@@ -10,7 +10,7 @@ import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.SpellHasCityEffect;
@@ -663,7 +663,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	@Test
 	public final void testIsUnitValidTargetForSpell () throws Exception
 	{
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		
 		final Spell spell = new Spell ();
@@ -673,8 +673,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		unit.setUnitURN (10);
 		
 		// Set up object to test
-		final ISpellUtils spellUtils = mock (ISpellUtils.class);
-		final IUnitUtils unitUtils = mock (IUnitUtils.class);
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);

@@ -25,7 +25,7 @@ import momime.common.database.v0_9_4.Wizard;
  * Interface describing lookups that are needed by the utils in MoMIMECommon 
  * Both the server and client databases then provide implementations of these
  */
-public interface ICommonDatabase
+public interface CommonDatabase
 {
 	/**
 	 * @return Complete list of all planes in game

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.MomException;
-import momime.common.calculations.IMomCityCalculations;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
@@ -19,7 +19,7 @@ import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.utils.IMemoryBuildingUtils;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CitySize;
@@ -39,10 +39,10 @@ public final class MomServerCityCalculations implements IMomServerCityCalculatio
 	private final Logger log = Logger.getLogger (MomServerCityCalculations.class.getName ());
 	
 	/** Memory building utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
-	private IMomCityCalculations cityCalculations;
+	private MomCityCalculations cityCalculations;
 	
 	/**
 	 * Could do this inside chooseCityLocation, however declaring it separately avoids having to repeat this over
@@ -328,7 +328,7 @@ public final class MomServerCityCalculations implements IMomServerCityCalculatio
 	/**
 	 * @return Memory building utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -336,7 +336,7 @@ public final class MomServerCityCalculations implements IMomServerCityCalculatio
 	/**
 	 * @param utils Memory building utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -344,7 +344,7 @@ public final class MomServerCityCalculations implements IMomServerCityCalculatio
 	/**
 	 * @return City calculations
 	 */
-	public final IMomCityCalculations getCityCalculations ()
+	public final MomCityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -352,7 +352,7 @@ public final class MomServerCityCalculations implements IMomServerCityCalculatio
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final IMomCityCalculations calc)
+	public final void setCityCalculations (final MomCityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

@@ -7,7 +7,7 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.GenerateTestData;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.CastingReductionCombination;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
@@ -84,7 +84,7 @@ public final class TestMomSpellCalculationsImpl
 	{
 		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
 		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
@@ -145,7 +145,7 @@ public final class TestMomSpellCalculationsImpl
 	{
 		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
 		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
@@ -206,7 +206,7 @@ public final class TestMomSpellCalculationsImpl
 	{
 		final SpellSettingData spellSettings = GenerateTestData.createRecommendedSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
 		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
@@ -267,7 +267,7 @@ public final class TestMomSpellCalculationsImpl
 	{
 		final SpellSettingData spellSettings = createSpecialSpellSettings ();
 		final List<PlayerPick> picks = createPlayerPicks ();
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
 		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();

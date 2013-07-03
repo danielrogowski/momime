@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.IMomCityCalculations;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.RaceCannotBuild;
@@ -20,7 +20,7 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.utils.IMemoryBuildingUtils;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.server.calculations.IMomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -43,10 +43,10 @@ public final class CityServerUtils implements ICityServerUtils
 	private final Logger log = Logger.getLogger (CityServerUtils.class.getName ());
 	
 	/** MemoryBuilding utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
-	private IMomCityCalculations cityCalculations;
+	private MomCityCalculations cityCalculations;
 	
 	/** Server-only overland map utils */
 	private IOverlandMapServerUtils overlandMapServerUtils;
@@ -249,7 +249,7 @@ public final class CityServerUtils implements ICityServerUtils
 	/**
 	 * @return MemoryBuilding utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -257,7 +257,7 @@ public final class CityServerUtils implements ICityServerUtils
 	/**
 	 * @param utils MemoryBuilding utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -265,7 +265,7 @@ public final class CityServerUtils implements ICityServerUtils
 	/**
 	 * @return City calculations
 	 */
-	public final IMomCityCalculations getCityCalculations ()
+	public final MomCityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -273,7 +273,7 @@ public final class CityServerUtils implements ICityServerUtils
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final IMomCityCalculations calc)
+	public final void setCityCalculations (final MomCityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

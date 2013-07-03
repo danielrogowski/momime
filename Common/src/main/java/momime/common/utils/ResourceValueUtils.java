@@ -3,7 +3,7 @@ package momime.common.utils;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
@@ -13,7 +13,7 @@ import momime.common.messages.v0_9_4.PlayerPick;
 /**
  * Methods for working with list of MomResourceValues
  */
-public interface IResourceValueUtils
+public interface ResourceValueUtils
 {
 	/**
 	 * Careful, there is a Delphi method named TMomPlayerResourceValues.FindAmountPerTurnForProductionType, but that does more than
@@ -84,6 +84,6 @@ public interface IResourceValueUtils
 	 * @throws RecordNotFoundException If we look for a particular record that we expect to be present in the XML file and we can't find it
      */
 	public int calculateAmountPerTurnForProductionType (final MomPersistentPlayerPrivateKnowledge privateInfo, final List<PlayerPick> picks,
-		final String productionTypeID, final SpellSettingData spellSettings, final ICommonDatabase db)
+		final String productionTypeID, final SpellSettingData spellSettings, final CommonDatabase db)
     	throws MomException, RecordNotFoundException;
 }

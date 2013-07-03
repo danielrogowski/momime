@@ -19,10 +19,10 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.utils.CompareUtils;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IMemoryCombatAreaEffectUtils;
-import momime.common.utils.IMemoryMaintainedSpellUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 
 /**
@@ -35,16 +35,16 @@ import momime.server.database.ServerDatabaseEx;
 public final class FogOfWarDuplication implements IFogOfWarDuplication
 {
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 	
 	/** MemoryBuilding utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** MemoryMaintainedSpell utils */
-	private IMemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Memory CAE utils */
-	private IMemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
 	/**
 	 * Copies all the terrain and node aura related data items from source to destination
@@ -503,7 +503,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	/**
 	 * @return Unit utils
 	 */
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -511,7 +511,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}
@@ -519,7 +519,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	/**
 	 * @return MemoryBuilding utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -527,7 +527,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	/**
 	 * @param utils MemoryBuilding utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -535,7 +535,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	/**
 	 * @return MemoryMaintainedSpell utils
 	 */
-	public final IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
 	{
 		return memoryMaintainedSpellUtils;
 	}
@@ -543,7 +543,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	/**
 	 * @param utils MemoryMaintainedSpell utils
 	 */
-	public final void setMemoryMaintainedSpellUtils (final IMemoryMaintainedSpellUtils utils)
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
 	{
 		memoryMaintainedSpellUtils = utils;
 	}
@@ -551,7 +551,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	/**
 	 * @return Memory CAE utils
 	 */
-	public final IMemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
 	{
 		return memoryCombatAreaEffectUtils;
 	}
@@ -559,7 +559,7 @@ public final class FogOfWarDuplication implements IFogOfWarDuplication
 	/**
 	 * @param utils Memory CAE utils
 	 */
-	public final void setMemoryCombatAreaEffectUtils (final IMemoryCombatAreaEffectUtils utils)
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
 	}

@@ -9,7 +9,7 @@ import momime.common.messages.v0_9_4.PendingMovement;
 /**
  * Helper methods for dealing with pending movement paths
  */
-public final class PendingMovementUtilsImpl implements IPendingMovementUtils
+public final class PendingMovementUtilsImpl implements PendingMovementUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (PendingMovementUtilsImpl.class.getName ());

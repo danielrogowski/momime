@@ -4,7 +4,7 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitHasSkillMergedList;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.ExperienceLevel;
 import momime.common.database.v0_9_4.Unit;
@@ -21,7 +21,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Simple unit lookups and calculations
  */
-public interface IUnitUtils
+public interface UnitUtils
 {
 	/**
 	 * @param unitURN Unit URN to search for
@@ -58,7 +58,7 @@ public interface IUnitUtils
 	 * @return Unit definition
 	 */
 	public Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
-		final ICommonDatabase db) throws RecordNotFoundException;
+		final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * Creates and initializes a new unit - this is the equivalent of the TMomUnit.Create constructor in Delphi (except that it doesn't add the created unit into the unit list)
@@ -72,7 +72,7 @@ public interface IUnitUtils
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	public MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final int startingExperience,
-		final boolean loadDefaultSkillsFromXML, final ICommonDatabase db) throws RecordNotFoundException;
+		final boolean loadDefaultSkillsFromXML, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param unit Unit to test
@@ -121,7 +121,7 @@ public interface IUnitUtils
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public ExperienceLevel getExperienceLevel (final AvailableUnit unit, final boolean includeBonuses, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db)
+		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -140,7 +140,7 @@ public interface IUnitUtils
 	 * @return True if this combat area effect affects this unit
 	 * @throws RecordNotFoundException If we can't find the definition for the CAE
 	 */
-	public boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final ICommonDatabase db)
+	public boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -152,7 +152,7 @@ public interface IUnitUtils
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
 	public String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitHasSkill> skills,
-		final List<MemoryMaintainedSpell> spells, final ICommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -169,7 +169,7 @@ public interface IUnitUtils
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public int getModifiedSkillValue (final AvailableUnit unit, final List<UnitHasSkill> skills, final String unitSkillID, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ICommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -179,7 +179,7 @@ public interface IUnitUtils
 	 * @return Base upkeep value, before any reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
-	public int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final ICommonDatabase db)
+	public int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -192,7 +192,7 @@ public interface IUnitUtils
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	public int getModifiedUpkeepValue (final AvailableUnit unit, final String productionTypeID, final List<? extends PlayerPublicDetails> players,
-		final ICommonDatabase db)
+		final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 
 	/**
@@ -203,7 +203,7 @@ public interface IUnitUtils
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the definition for one of the units
 	 */
-	public void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final ICommonDatabase db)
+	public void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**

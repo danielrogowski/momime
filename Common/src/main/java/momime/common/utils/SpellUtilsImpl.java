@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.MomException;
-import momime.common.calculations.IMomSpellCalculations;
+import momime.common.calculations.MomSpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.Spell;
@@ -22,16 +22,16 @@ import momime.common.messages.v0_9_4.SpellResearchStatusID;
 /**
  * Simple spell lookups and calculations
  */
-public final class SpellUtilsImpl implements ISpellUtils
+public final class SpellUtilsImpl implements SpellUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (SpellUtilsImpl.class.getName ());
 
 	/** Player pick utils */
-	private IPlayerPickUtils playerPickUtils;
+	private PlayerPickUtils playerPickUtils;
 	
 	/** Spell calculations */
-	private IMomSpellCalculations spellCalculations;
+	private MomSpellCalculations spellCalculations;
 	
 	// Methods dealing with a single spell
 
@@ -71,7 +71,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 * @throws RecordNotFoundException If we encounter a unit or unit magic realm that cannot be found
 	 */
 	@Override
-	public final String spellSummonsUnitTypeID (final Spell spell, final ICommonDatabase db)
+	public final String spellSummonsUnitTypeID (final Spell spell, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "calculateCastingCostReduction", spell.getSpellID ());
@@ -144,7 +144,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public final int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final ICommonDatabase db)
+	public final int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		return getReducedCastingCostForCastingType (spell, MomSpellCastType.COMBAT, picks, spellSettings, db);
@@ -160,7 +160,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public final int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final ICommonDatabase db)
+	public final int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		return getReducedCastingCostForCastingType (spell, MomSpellCastType.OVERLAND, picks, spellSettings, db);
@@ -177,7 +177,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	private final int getReducedCastingCostForCastingType (final Spell spell, final MomSpellCastType castType, final List<PlayerPick> picks,
-		final SpellSettingData spellSettings, final ICommonDatabase db)
+		final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "getReducedCastingCostForCastingType", new String [] {spell.getSpellID (), castType.toString ()});
@@ -315,7 +315,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	private final List<Spell> getSpellsForRealmRankStatusInternal (final List<SpellResearchStatus> spells,
-		final String desiredMagicRealmID, final String spellRankID, final List<SpellResearchStatusID> statuses, final ICommonDatabase db)
+		final String desiredMagicRealmID, final String spellRankID, final List<SpellResearchStatusID> statuses, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForRealmRankStatusInternal",
@@ -357,7 +357,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 */
 	@Override
 	public final List<Spell> getSpellsForRealmRankStatus (final List<SpellResearchStatus> spells, final String magicRealmID,
-		final String spellRankID, final SpellResearchStatusID status, final ICommonDatabase db)
+		final String spellRankID, final SpellResearchStatusID status, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForRealmRankStatus",
@@ -385,7 +385,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 */
 	@Override
 	public final List<Spell> getSpellsForStatus (final List<SpellResearchStatus> spells,
-		final SpellResearchStatusID status, final ICommonDatabase db)
+		final SpellResearchStatusID status, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForStatus", status);
@@ -413,7 +413,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 */
 	@Override
 	public final List<Spell> getSpellsForRealmAndRank (final List<SpellResearchStatus> spells, final String magicRealmID,
-		final String spellRankID, final ICommonDatabase db) throws RecordNotFoundException
+		final String spellRankID, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForRealmAndRank", new String [] {magicRealmID, spellRankID});
 
@@ -436,7 +436,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 */
 	@Override
 	public final List<Spell> getSpellsForRankAndStatus (final List<SpellResearchStatus> spells,
-		final String spellRankID, final SpellResearchStatusID status, final ICommonDatabase db) throws RecordNotFoundException
+		final String spellRankID, final SpellResearchStatusID status, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForRankAndStatus", new String [] {spellRankID, status.toString ()});
 
@@ -460,7 +460,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 */
 	@Override
 	public final List<Spell> getSpellsNotInBookForRealmAndRank (final List<SpellResearchStatus> spells,
-		final String magicRealmID, final String spellRankID, final ICommonDatabase db) throws RecordNotFoundException
+		final String magicRealmID, final String spellRankID, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "getSpellsNotInBookForRealmAndRank", new String [] {magicRealmID, spellRankID});
 
@@ -488,7 +488,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 */
 	@Override
 	public final List<String> getSpellRanksForStatus (final List<SpellResearchStatus> spells,
-		final SpellResearchStatusID status, final ICommonDatabase db) throws RecordNotFoundException
+		final SpellResearchStatusID status, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "getSpellRanksForStatus", status.toString ());
 
@@ -548,7 +548,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	 */
 	@Override
 	public final List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final String desiredSectionID,
-		final MomSpellCastType castType, final ICommonDatabase db) throws MomException, RecordNotFoundException
+		final MomSpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException
 	{
 		log.entering (SpellUtilsImpl.class.getName (), "getSortedSpellsInSection", new String [] {desiredSectionID, castType.toString ()});
 
@@ -615,7 +615,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	/**
 	 * @return Player pick utils
 	 */
-	public final IPlayerPickUtils getPlayerPickUtils ()
+	public final PlayerPickUtils getPlayerPickUtils ()
 	{
 		return playerPickUtils;
 	}
@@ -623,7 +623,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	/**
 	 * @param utils Player pick utils
 	 */
-	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
 	}
@@ -631,7 +631,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	/**
 	 * @return Spell calculations
 	 */
-	public final IMomSpellCalculations getSpellCalculations ()
+	public final MomSpellCalculations getSpellCalculations ()
 	{
 		return spellCalculations;
 	}
@@ -639,7 +639,7 @@ public final class SpellUtilsImpl implements ISpellUtils
 	/**
 	 * @param calc Spell calculations
 	 */
-	public final void setSpellCalculations (final IMomSpellCalculations calc)
+	public final void setSpellCalculations (final MomSpellCalculations calc)
 	{
 		spellCalculations = calc;
 	}

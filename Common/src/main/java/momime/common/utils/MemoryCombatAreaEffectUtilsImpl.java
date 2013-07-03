@@ -11,7 +11,7 @@ import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 /**
  * Helper methods for dealing with MemoryCombatAreaEffect objects
  */
-public final class MemoryCombatAreaEffectUtilsImpl implements IMemoryCombatAreaEffectUtils
+public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEffectUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MemoryCombatAreaEffectUtilsImpl.class.getName ());

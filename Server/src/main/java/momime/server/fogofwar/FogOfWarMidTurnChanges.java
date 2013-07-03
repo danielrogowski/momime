@@ -9,8 +9,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.IMomCityCalculations;
-import momime.common.calculations.IMomUnitCalculations;
+import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
@@ -63,12 +63,12 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PendingMovement;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.CompareUtils;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IMemoryCombatAreaEffectUtils;
-import momime.common.utils.IMemoryGridCellUtils;
-import momime.common.utils.IMemoryMaintainedSpellUtils;
-import momime.common.utils.IPendingMovementUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.IMomFogOfWarCalculations;
 import momime.server.calculations.IMomServerCityCalculations;
 import momime.server.calculations.IMomServerUnitCalculations;
@@ -101,25 +101,25 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	private IFogOfWarProcessing fogOfWarProcessing;
 	
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 	
 	/** MemoryBuilding utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** Memory CAE utils */
-	private IMemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
 	/** MemoryMaintainedSpell utils */
-	private IMemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** MemoryGridCell utils */
-	private IMemoryGridCellUtils memoryGridCellUtils;
+	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/** Unit calculations */
-	private IMomUnitCalculations unitCalculations;
+	private MomUnitCalculations unitCalculations;
 	
 	/** City calculations */
-	private IMomCityCalculations cityCalculations;
+	private MomCityCalculations cityCalculations;
 
 	/** Server-only city calculations */
 	private IMomServerCityCalculations serverCityCalculations;
@@ -128,7 +128,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	private IMomServerUnitCalculations serverUnitCalculations;
 	
 	/** Pending movement utils */
-	private IPendingMovementUtils pendingMovementUtils;
+	private PendingMovementUtils pendingMovementUtils;
 	
 	/**
 	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
@@ -1805,7 +1805,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @return Unit utils
 	 */
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -1813,7 +1813,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}
@@ -1821,7 +1821,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @return MemoryBuilding utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -1829,7 +1829,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @param utils MemoryBuilding utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -1837,7 +1837,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @return Memory CAE utils
 	 */
-	public final IMemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
 	{
 		return memoryCombatAreaEffectUtils;
 	}
@@ -1845,7 +1845,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @param utils Memory CAE utils
 	 */
-	public final void setMemoryCombatAreaEffectUtils (final IMemoryCombatAreaEffectUtils utils)
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
 	}
@@ -1853,7 +1853,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @return MemoryMaintainedSpell utils
 	 */
-	public final IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
 	{
 		return memoryMaintainedSpellUtils;
 	}
@@ -1861,7 +1861,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @param utils MemoryMaintainedSpell utils
 	 */
-	public final void setMemoryMaintainedSpellUtils (final IMemoryMaintainedSpellUtils utils)
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
 	{
 		memoryMaintainedSpellUtils = utils;
 	}
@@ -1869,7 +1869,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @return MemoryGridCell utils
 	 */
-	public final IMemoryGridCellUtils getMemoryGridCellUtils ()
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
 	{
 		return memoryGridCellUtils;
 	}
@@ -1877,7 +1877,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @param utils MemoryGridCell utils
 	 */
-	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
 	}
@@ -1885,7 +1885,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @return Unit calculations
 	 */
-	public final IMomUnitCalculations getUnitCalculations ()
+	public final MomUnitCalculations getUnitCalculations ()
 	{
 		return unitCalculations;
 	}
@@ -1893,7 +1893,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @param calc Unit calculations
 	 */
-	public final void setUnitCalculations (final IMomUnitCalculations calc)
+	public final void setUnitCalculations (final MomUnitCalculations calc)
 	{
 		unitCalculations = calc;
 	}
@@ -1901,7 +1901,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @return City calculations
 	 */
-	public final IMomCityCalculations getCityCalculations ()
+	public final MomCityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -1909,7 +1909,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final IMomCityCalculations calc)
+	public final void setCityCalculations (final MomCityCalculations calc)
 	{
 		cityCalculations = calc;
 	}
@@ -1949,7 +1949,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @return Pending movement utils
 	 */
-	public final IPendingMovementUtils getPendingMovementUtils ()
+	public final PendingMovementUtils getPendingMovementUtils ()
 	{
 		return pendingMovementUtils;
 	}
@@ -1957,7 +1957,7 @@ public final class FogOfWarMidTurnChanges implements IFogOfWarMidTurnChanges
 	/**
 	 * @param utils Pending movement utils
 	 */
-	public final void setPendingMovementUtils (final IPendingMovementUtils utils)
+	public final void setPendingMovementUtils (final PendingMovementUtils utils)
 	{
 		pendingMovementUtils = utils;
 	}

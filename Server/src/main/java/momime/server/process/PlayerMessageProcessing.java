@@ -10,7 +10,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.IMomSkillCalculations;
+import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.WizardPick;
@@ -43,9 +43,9 @@ import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IMemoryGridCellUtils;
-import momime.common.utils.IResourceValueUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.UnitUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.server.IMomSessionVariables;
 import momime.server.ai.ICityAI;
@@ -80,16 +80,16 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	private final Logger log = Logger.getLogger (PlayerMessageProcessing.class.getName ());
 
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 	
 	/** MemoryGridCell utils */
-	private IMemoryGridCellUtils memoryGridCellUtils;
+	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/** Skill calculations */
-	private IMomSkillCalculations skillCalculations;
+	private MomSkillCalculations skillCalculations;
 	
 	/** Resource value utils */
-	private IResourceValueUtils resourceValueUtils;
+	private ResourceValueUtils resourceValueUtils;
 	
 	/** Methods for updating true map + players' memory */
 	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -916,7 +916,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @return Unit utils
 	 */
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -924,7 +924,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}
@@ -932,7 +932,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @return MemoryGridCell utils
 	 */
-	public final IMemoryGridCellUtils getMemoryGridCellUtils ()
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
 	{
 		return memoryGridCellUtils;
 	}
@@ -940,7 +940,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @param utils MemoryGridCell utils
 	 */
-	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
 	}
@@ -948,7 +948,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @return Skill calculations
 	 */
-	public final IMomSkillCalculations getSkillCalculations ()
+	public final MomSkillCalculations getSkillCalculations ()
 	{
 		return skillCalculations;
 	}
@@ -956,7 +956,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @param calc Skill calculations
 	 */
-	public final void setSkillCalculations (final IMomSkillCalculations calc)
+	public final void setSkillCalculations (final MomSkillCalculations calc)
 	{
 		skillCalculations = calc;
 	}
@@ -964,7 +964,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @return Resource value utils
 	 */
-	public final IResourceValueUtils getResourceValueUtils ()
+	public final ResourceValueUtils getResourceValueUtils ()
 	{
 		return resourceValueUtils;
 	}
@@ -972,7 +972,7 @@ public final class PlayerMessageProcessing implements IPlayerMessageProcessing
 	/**
 	 * @param utils Resource value utils
 	 */
-	public final void setResourceValueUtils (final IResourceValueUtils utils)
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
 	{
 		resourceValueUtils = utils;
 	}

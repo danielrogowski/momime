@@ -11,7 +11,7 @@ package momime.common.calculations;
  *    into skill in order to attain their casting skill, i.e.
  *    this is the amount of stored RE10 production the wizard has
  */
-public interface IMomSkillCalculations
+public interface MomSkillCalculations
 {
 	/**
 	 * @param currentSkill Current casting skill of the wizard

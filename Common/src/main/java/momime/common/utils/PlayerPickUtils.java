@@ -3,7 +3,7 @@ package momime.common.utils;
 import java.security.InvalidParameterException;
 import java.util.List;
 
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Pick;
 import momime.common.messages.v0_9_4.PlayerPick;
@@ -11,7 +11,7 @@ import momime.common.messages.v0_9_4.PlayerPick;
 /**
  * Methods for working with list of PlayerPicks
  */
-public interface IPlayerPickUtils
+public interface PlayerPickUtils
 {
 	/**
 	 * @param picks List of picks to check
@@ -19,7 +19,7 @@ public interface IPlayerPickUtils
 	 * @return Total cost of all of this player's picks
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public int getTotalPickCost (final List<PlayerPick> picks, final ICommonDatabase db)
+	public int getTotalPickCost (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -49,7 +49,7 @@ public interface IPlayerPickUtils
 	 * @return Number of picks in list of the requested pick type, e.g. count total number of all spell books
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public int countPicksOfType (final List<PlayerPick> picks, final String pickTypeID, final boolean original, final ICommonDatabase db)
+	public int countPicksOfType (final List<PlayerPick> picks, final String pickTypeID, final boolean original, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -62,7 +62,7 @@ public interface IPlayerPickUtils
 	 * @return True if player has the necessary pre-requisites for this pick
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public boolean meetsPickRequirements (final Pick pick, final List<PlayerPick> picks, final ICommonDatabase db)
+	public boolean meetsPickRequirements (final Pick pick, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -75,7 +75,7 @@ public interface IPlayerPickUtils
 	 * @return True if the player can remove the pick without violating any pre-requisites of remaining picks
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public boolean canSafelyRemove (final String pickID, final List<PlayerPick> picks, final ICommonDatabase db)
+	public boolean canSafelyRemove (final String pickID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -97,7 +97,7 @@ public interface IPlayerPickUtils
 	 * @return Best weapon grade granted by all the picks the player has
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public int getHighestWeaponGradeGrantedByPicks (final List<PlayerPick> picks, final ICommonDatabase db)
+	public int getHighestWeaponGradeGrantedByPicks (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -108,7 +108,7 @@ public interface IPlayerPickUtils
 	 * @return Total percentage bonus that any picks we have increase the effectiveness of religious buildings
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public int totalReligiousBuildingBonus (final List<PlayerPick> picks, final ICommonDatabase db)
+	public int totalReligiousBuildingBonus (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -119,7 +119,7 @@ public interface IPlayerPickUtils
 	 * @return List of pick IDs that provide any percentage bonus to the effectiveness of religious building
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public List<String> pickIdsContributingToReligiousBuildingBonus (final List<PlayerPick> picks, final ICommonDatabase db)
+	public List<String> pickIdsContributingToReligiousBuildingBonus (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -134,6 +134,6 @@ public interface IPlayerPickUtils
 	 * @throws InvalidParameterException If we request a production type ID whose special bonus can't be calculated by this routine
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public int totalProductionBonus (final String productionTypeID, final String unitTypeID, final List<PlayerPick> picks, final ICommonDatabase db)
+	public int totalProductionBonus (final String productionTypeID, final String unitTypeID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException;
 }

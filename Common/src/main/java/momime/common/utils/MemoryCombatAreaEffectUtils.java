@@ -9,7 +9,7 @@ import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 /**
  * Helper methods for dealing with MemoryCombatAreaEffect objects
  */
-public interface IMemoryCombatAreaEffectUtils
+public interface MemoryCombatAreaEffectUtils
 {
 	/**
 	 * Checks to see if the specified CAE exists

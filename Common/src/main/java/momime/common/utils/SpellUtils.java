@@ -3,7 +3,7 @@ package momime.common.utils;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.Spell;
@@ -14,7 +14,7 @@ import momime.common.messages.v0_9_4.SpellResearchStatusID;
 /**
  * Simple spell lookups and calculations
  */
-public interface ISpellUtils
+public interface SpellUtils
 {
 	// Methods dealing with a single spell
 
@@ -34,7 +34,7 @@ public interface ISpellUtils
 	 * @throws MomException If the spell can summon units with different unit types
 	 * @throws RecordNotFoundException If we encounter a unit or unit magic realm that cannot be found
 	 */
-	public String spellSummonsUnitTypeID (final Spell spell, final ICommonDatabase db)
+	public String spellSummonsUnitTypeID (final Spell spell, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -61,7 +61,7 @@ public interface ISpellUtils
 	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final ICommonDatabase db)
+	public int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -73,7 +73,7 @@ public interface ISpellUtils
 	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final ICommonDatabase db)
+	public int getReducedOverlandCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -112,7 +112,7 @@ public interface ISpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public List<Spell> getSpellsForRealmRankStatus (final List<SpellResearchStatus> spells, final String magicRealmID,
-		final String spellRankID, final SpellResearchStatusID status, final ICommonDatabase db)
+		final String spellRankID, final SpellResearchStatusID status, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -123,7 +123,7 @@ public interface ISpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public List<Spell> getSpellsForStatus (final List<SpellResearchStatus> spells,
-		final SpellResearchStatusID status, final ICommonDatabase db)
+		final SpellResearchStatusID status, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -138,7 +138,7 @@ public interface ISpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public List<Spell> getSpellsForRealmAndRank (final List<SpellResearchStatus> spells, final String magicRealmID,
-		final String spellRankID, final ICommonDatabase db) throws RecordNotFoundException;
+		final String spellRankID, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param spells Research status of every spell for this player
@@ -149,7 +149,7 @@ public interface ISpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public List<Spell> getSpellsForRankAndStatus (final List<SpellResearchStatus> spells,
-		final String spellRankID, final SpellResearchStatusID status, final ICommonDatabase db) throws RecordNotFoundException;
+		final String spellRankID, final SpellResearchStatusID status, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param spells Research status of every spell for this player
@@ -160,7 +160,7 @@ public interface ISpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public List<Spell> getSpellsNotInBookForRealmAndRank (final List<SpellResearchStatus> spells,
-		final String magicRealmID, final String spellRankID, final ICommonDatabase db) throws RecordNotFoundException;
+		final String magicRealmID, final String spellRankID, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param spells Research status of every spell for this player
@@ -170,7 +170,7 @@ public interface ISpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public List<String> getSpellRanksForStatus (final List<SpellResearchStatus> spells,
-		final SpellResearchStatusID status, final ICommonDatabase db) throws RecordNotFoundException;
+		final SpellResearchStatusID status, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param spells List of all the spells defined in the XML file
@@ -196,5 +196,5 @@ public interface ISpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final String desiredSectionID,
-		final MomSpellCastType castType, final ICommonDatabase db) throws MomException, RecordNotFoundException;
+		final MomSpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException;
 }

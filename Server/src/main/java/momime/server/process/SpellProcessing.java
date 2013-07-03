@@ -30,11 +30,11 @@ import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IMemoryCombatAreaEffectUtils;
-import momime.common.utils.IMemoryMaintainedSpellUtils;
-import momime.common.utils.IResourceValueUtils;
-import momime.common.utils.ISpellUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
 import momime.common.utils.MomSpellCastType;
 import momime.server.IMomSessionVariables;
 import momime.server.calculations.IMomServerResourceCalculations;
@@ -60,19 +60,19 @@ public final class SpellProcessing implements ISpellProcessing
 	private final Logger log = Logger.getLogger (SpellProcessing.class.getName ());
 
 	/** Spell utils */
-	private ISpellUtils spellUtils;
+	private SpellUtils spellUtils;
 	
 	/** Memory building utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** MemoryMaintainedSpell utils */
-	private IMemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Memory CAE utils */
-	private IMemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
 	/** Resource value utils */
-	private IResourceValueUtils resourceValueUtils;
+	private ResourceValueUtils resourceValueUtils;
 	
 	/** Server-only unit utils */
 	private IUnitServerUtils unitServerUtils;
@@ -505,7 +505,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @return Spell utils
 	 */
-	public final ISpellUtils getSpellUtils ()
+	public final SpellUtils getSpellUtils ()
 	{
 		return spellUtils;
 	}
@@ -513,7 +513,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @param utils Spell utils
 	 */
-	public final void setSpellUtils (final ISpellUtils utils)
+	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
 	}
@@ -521,7 +521,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @return Memory building utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -529,7 +529,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @param utils Memory building utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -537,7 +537,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @return MemoryMaintainedSpell utils
 	 */
-	public final IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
 	{
 		return memoryMaintainedSpellUtils;
 	}
@@ -545,7 +545,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @param utils MemoryMaintainedSpell utils
 	 */
-	public final void setMemoryMaintainedSpellUtils (final IMemoryMaintainedSpellUtils utils)
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
 	{
 		memoryMaintainedSpellUtils = utils;
 	}
@@ -553,7 +553,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @return Memory CAE utils
 	 */
-	public final IMemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
 	{
 		return memoryCombatAreaEffectUtils;
 	}
@@ -561,7 +561,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @param utils Memory CAE utils
 	 */
-	public final void setMemoryCombatAreaEffectUtils (final IMemoryCombatAreaEffectUtils utils)
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
 	}
@@ -569,7 +569,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @return Resource value utils
 	 */
-	public final IResourceValueUtils getResourceValueUtils ()
+	public final ResourceValueUtils getResourceValueUtils ()
 	{
 		return resourceValueUtils;
 	}
@@ -577,7 +577,7 @@ public final class SpellProcessing implements ISpellProcessing
 	/**
 	 * @param utils Resource value utils
 	 */
-	public final void setResourceValueUtils (final IResourceValueUtils utils)
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
 	{
 		resourceValueUtils = utils;
 	}

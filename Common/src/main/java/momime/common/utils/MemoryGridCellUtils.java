@@ -11,7 +11,7 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
  *
  * public final static boolean isNodeLairTower (final OverlandMapTerrainData terrainData)
  */
-public interface IMemoryGridCellUtils
+public interface MemoryGridCellUtils
 {
 	/**
 	 * This is used because the data structures hold blank for an unknown tile type that we can't see, but the XML files

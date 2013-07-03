@@ -24,8 +24,8 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IMemoryGridCellUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.MovementRateRule;
@@ -54,10 +54,10 @@ public final class MomServerUnitCalculations implements IMomServerUnitCalculatio
 	private static final int MOVEMENT_DISTANCE_CANNOT_MOVE_HERE = -2;
 
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 	
 	/** MemoryGridCell utils */
-	private IMemoryGridCellUtils memoryGridCellUtils;
+	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/**
 	 * @param unit The unit to check
@@ -504,7 +504,7 @@ public final class MomServerUnitCalculations implements IMomServerUnitCalculatio
 	/**
 	 * @return Unit utils
 	 */
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -512,7 +512,7 @@ public final class MomServerUnitCalculations implements IMomServerUnitCalculatio
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}
@@ -520,7 +520,7 @@ public final class MomServerUnitCalculations implements IMomServerUnitCalculatio
 	/**
 	 * @return MemoryGridCell utils
 	 */
-	public final IMemoryGridCellUtils getMemoryGridCellUtils ()
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
 	{
 		return memoryGridCellUtils;
 	}
@@ -528,7 +528,7 @@ public final class MomServerUnitCalculations implements IMomServerUnitCalculatio
 	/**
 	 * @param utils MemoryGridCell utils
 	 */
-	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
 	}

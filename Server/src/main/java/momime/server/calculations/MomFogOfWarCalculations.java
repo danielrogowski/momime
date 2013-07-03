@@ -7,7 +7,7 @@ import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.utils.IMemoryGridCellUtils;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Plane;
 
@@ -18,7 +18,7 @@ import momime.server.database.v0_9_4.Plane;
 public final class MomFogOfWarCalculations implements IMomFogOfWarCalculations
 {
 	/** MemoryGridCell utils */
-	private IMemoryGridCellUtils memoryGridCellUtils;
+	private MemoryGridCellUtils memoryGridCellUtils;
 
 	/**
 	 * This is used outside of updateAndSendFogOfWar () method, while the player's FOW area is set to the normal 3 state values indicating what the player can see.
@@ -94,7 +94,7 @@ public final class MomFogOfWarCalculations implements IMomFogOfWarCalculations
 	/**
 	 * @return MemoryGridCell utils
 	 */
-	public final IMemoryGridCellUtils getMemoryGridCellUtils ()
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
 	{
 		return memoryGridCellUtils;
 	}
@@ -102,7 +102,7 @@ public final class MomFogOfWarCalculations implements IMomFogOfWarCalculations
 	/**
 	 * @param utils MemoryGridCell utils
 	 */
-	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
 	}

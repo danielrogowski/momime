@@ -7,7 +7,7 @@ import momime.common.messages.v0_9_4.PendingMovement;
 /**
  * Helper methods for dealing with pending movement paths
  */
-public interface IPendingMovementUtils
+public interface PendingMovementUtils
 {
 	/**
 	 * Cancels any pending moves for this unit

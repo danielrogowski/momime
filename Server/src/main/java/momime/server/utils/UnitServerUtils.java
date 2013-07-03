@@ -24,8 +24,8 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IPendingMovementUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Unit;
@@ -44,10 +44,10 @@ public final class UnitServerUtils implements IUnitServerUtils
 	private final Logger log = Logger.getLogger (UnitServerUtils.class.getName ());
 	
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 
 	/** Pending movement utils */
-	private IPendingMovementUtils pendingMovementUtils;
+	private PendingMovementUtils pendingMovementUtils;
 	
 	/** Server-only unit calculations */
 	private IMomServerUnitCalculations serverUnitCalculations;
@@ -333,7 +333,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 	/**
 	 * @return Unit utils
 	 */
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -341,7 +341,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}
@@ -349,7 +349,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 	/**
 	 * @return Pending movement utils
 	 */
-	public final IPendingMovementUtils getPendingMovementUtils ()
+	public final PendingMovementUtils getPendingMovementUtils ()
 	{
 		return pendingMovementUtils;
 	}
@@ -357,7 +357,7 @@ public final class UnitServerUtils implements IUnitServerUtils
 	/**
 	 * @param utils Pending movement utils
 	 */
-	public final void setPendingMovementUtils (final IPendingMovementUtils utils)
+	public final void setPendingMovementUtils (final PendingMovementUtils utils)
 	{
 		pendingMovementUtils = utils;
 	}

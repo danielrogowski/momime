@@ -3,7 +3,7 @@ package momime.server.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.TaxRate;
 import momime.server.database.v0_9_4.Building;
@@ -29,7 +29,7 @@ import momime.server.database.v0_9_4.Wizard;
 /**
  * Adds maps for faster key lookups over the server-side database read in via JAXB
  */
-public final class ServerDatabaseEx extends ServerDatabase implements ICommonDatabase
+public final class ServerDatabaseEx extends ServerDatabase implements CommonDatabase
 {
 	/** Map of city size IDs to city size XML objects */
 	private Map<String, CitySize> citySizesMap;

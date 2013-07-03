@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.CalculateCityProductionResult;
-import momime.common.calculations.IMomCityCalculations;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
@@ -36,11 +36,11 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IPlayerPickUtils;
-import momime.common.utils.IResourceValueUtils;
-import momime.common.utils.ISpellUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.IMomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
@@ -72,22 +72,22 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	private ISpellProcessing spellProcessing;
 	
 	/** Resource value utils */
-	private IResourceValueUtils resourceValueUtils;
+	private ResourceValueUtils resourceValueUtils;
 
 	/** Spell utils */
-	private ISpellUtils spellUtils;
+	private SpellUtils spellUtils;
 	
 	/** Memory building utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** Player pick utils */
-	private IPlayerPickUtils playerPickUtils;
+	private PlayerPickUtils playerPickUtils;
 	
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 
 	/** City calculations */
-	private IMomCityCalculations cityCalculations;
+	private MomCityCalculations cityCalculations;
 	
 	/** Server-only unit utils */
 	private IUnitServerUtils unitServerUtils;
@@ -631,7 +631,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @return Resource value utils
 	 */
-	public final IResourceValueUtils getResourceValueUtils ()
+	public final ResourceValueUtils getResourceValueUtils ()
 	{
 		return resourceValueUtils;
 	}
@@ -639,7 +639,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @param utils Resource value utils
 	 */
-	public final void setResourceValueUtils (final IResourceValueUtils utils)
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
 	{
 		resourceValueUtils = utils;
 	}
@@ -647,7 +647,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @return Spell utils
 	 */
-	public final ISpellUtils getSpellUtils ()
+	public final SpellUtils getSpellUtils ()
 	{
 		return spellUtils;
 	}
@@ -655,7 +655,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @param utils Spell utils
 	 */
-	public final void setSpellUtils (final ISpellUtils utils)
+	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
 	}
@@ -663,7 +663,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @return Memory building utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -671,7 +671,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @param utils Memory building utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -679,7 +679,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @return Player pick utils
 	 */
-	public final IPlayerPickUtils getPlayerPickUtils ()
+	public final PlayerPickUtils getPlayerPickUtils ()
 	{
 		return playerPickUtils;
 	}
@@ -687,7 +687,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @param utils Player pick utils
 	 */
-	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
 	}
@@ -695,7 +695,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @return Unit utils
 	 */
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -703,7 +703,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}
@@ -711,7 +711,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @return City calculations
 	 */
-	public final IMomCityCalculations getCityCalculations ()
+	public final MomCityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -719,7 +719,7 @@ public final class MomServerResourceCalculations implements IMomServerResourceCa
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final IMomCityCalculations calc)
+	public final void setCityCalculations (final MomCityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

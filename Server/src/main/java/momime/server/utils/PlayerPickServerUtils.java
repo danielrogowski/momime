@@ -17,8 +17,8 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.IPlayerPickUtils;
-import momime.common.utils.ISpellUtils;
+import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.SpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.server.ai.ISpellAI;
 import momime.server.database.ServerDatabaseEx;
@@ -42,10 +42,10 @@ public final class PlayerPickServerUtils implements IPlayerPickServerUtils
 	private final Logger log = Logger.getLogger (PlayerPickServerUtils.class.getName ());
 	
 	/** Player pick utils */
-	private IPlayerPickUtils playerPickUtils;
+	private PlayerPickUtils playerPickUtils;
 	
 	/** Spell utils */
-	private ISpellUtils spellUtils;
+	private SpellUtils spellUtils;
 	
 	/** AI decisions about spells */
 	private ISpellAI spellAI;
@@ -554,7 +554,7 @@ public final class PlayerPickServerUtils implements IPlayerPickServerUtils
 	/**
 	 * @return Player pick utils
 	 */
-	public final IPlayerPickUtils getPlayerPickUtils ()
+	public final PlayerPickUtils getPlayerPickUtils ()
 	{
 		return playerPickUtils;
 	}
@@ -562,7 +562,7 @@ public final class PlayerPickServerUtils implements IPlayerPickServerUtils
 	/**
 	 * @param utils Player pick utils
 	 */
-	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
 	}
@@ -570,7 +570,7 @@ public final class PlayerPickServerUtils implements IPlayerPickServerUtils
 	/**
 	 * @return Spell utils
 	 */
-	public final ISpellUtils getSpellUtils ()
+	public final SpellUtils getSpellUtils ()
 	{
 		return spellUtils;
 	}
@@ -578,7 +578,7 @@ public final class PlayerPickServerUtils implements IPlayerPickServerUtils
 	/**
 	 * @param utils Spell utils
 	 */
-	public final void setSpellUtils (final ISpellUtils utils)
+	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
 	}

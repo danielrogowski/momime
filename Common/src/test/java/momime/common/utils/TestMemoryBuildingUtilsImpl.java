@@ -16,7 +16,7 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
@@ -520,7 +520,7 @@ public final class TestMemoryBuildingUtilsImpl
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
 
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
@@ -556,7 +556,7 @@ public final class TestMemoryBuildingUtilsImpl
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
 
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
@@ -592,7 +592,7 @@ public final class TestMemoryBuildingUtilsImpl
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
 
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
@@ -638,7 +638,7 @@ public final class TestMemoryBuildingUtilsImpl
 		final Unit dbUnitTwo = new Unit ();
 		dbUnitTwo.setUnitID ("UN002");
 
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (dbUnitOne);
@@ -674,7 +674,7 @@ public final class TestMemoryBuildingUtilsImpl
 	{
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants null exp, BL02 grants 0 exp, BL03 grants 10 exp
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building dbBuilding = new Building ();
@@ -710,7 +710,7 @@ public final class TestMemoryBuildingUtilsImpl
 	{
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants no exp, BL02 grants 10 exp, BL03 grants 20 exp
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building dbBuilding = new Building ();
@@ -741,7 +741,7 @@ public final class TestMemoryBuildingUtilsImpl
 	{
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants no exp, BL02 grants 10 exp, BL03 grants 20 exp
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building dbBuilding = new Building ();
@@ -772,7 +772,7 @@ public final class TestMemoryBuildingUtilsImpl
 	{
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants no exp, BL02 grants 10 exp, BL03 grants 20 exp
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building dbBuilding = new Building ();
@@ -817,7 +817,7 @@ public final class TestMemoryBuildingUtilsImpl
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
 
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
@@ -853,7 +853,7 @@ public final class TestMemoryBuildingUtilsImpl
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
 
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
@@ -889,7 +889,7 @@ public final class TestMemoryBuildingUtilsImpl
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
 
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
@@ -925,7 +925,7 @@ public final class TestMemoryBuildingUtilsImpl
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
 
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
@@ -961,7 +961,7 @@ public final class TestMemoryBuildingUtilsImpl
 		dbBuildingTwo.setBuildingID ("BL02");
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
 
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
@@ -985,7 +985,7 @@ public final class TestMemoryBuildingUtilsImpl
 	public final void testTotalBonusProductionPerPersonFromBuildings_TwoBuildings () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Building BL02 grants a +4 bonus; building BL03 grants a +6 bonus
 		final Building dbBuildingOne = new Building ();
@@ -1093,7 +1093,7 @@ public final class TestMemoryBuildingUtilsImpl
 	@Test
 	public final void testGoldFromSellingBuilding () throws RecordNotFoundException
 	{
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (100, utils.goldFromSellingBuilding (db.findBuilding (GenerateTestData.ANIMISTS_GUILD, "testGoldFromSellingBuilding")));

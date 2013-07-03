@@ -21,7 +21,7 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.utils.CombatMapUtilsImpl;
-import momime.common.utils.ICombatMapUtils;
+import momime.common.utils.CombatMapUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.server.ServerTestData;
@@ -296,7 +296,7 @@ public final class TestCombatMapGenerator
 	 * @return Two letter to output for this tile type ID
 	 * @throws MomException If we don't know the letter to output for the requested tile type
 	 */
-	private final String outputCombatTile (final MomCombatTile tile, final ICombatMapUtils utils) throws MomException
+	private final String outputCombatTile (final MomCombatTile tile, final CombatMapUtils utils) throws MomException
 	{
 		// Terrain layer
 		final String terrainTileTypeID = utils.getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN);

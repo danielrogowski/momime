@@ -306,7 +306,7 @@ public final class GenerateTestData
 	 * @return Selected data required by the tests
 	 * @throws RecordNotFoundException If an entry expected in the database can't be found; though this is here because of the mocking and shouldn't be triggered
 	 */
-	public final static ICommonDatabase createDB () throws RecordNotFoundException
+	public final static CommonDatabase createDB () throws RecordNotFoundException
 	{
 		// Planes
 		final List<Plane> planes = new ArrayList<Plane> ();
@@ -1096,7 +1096,7 @@ public final class GenerateTestData
 		taxRates.add (tr07);
 
 		// Now have all the lists, mock the results accordingly
-		final ICommonDatabase db = mock (ICommonDatabase.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		for (final Plane plane : planes)
 			when (db.findPlane (eq (plane.getPlaneNumber ()), anyString ())).thenReturn (plane);
 

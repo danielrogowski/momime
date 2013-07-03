@@ -31,7 +31,7 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
@@ -517,7 +517,7 @@ public final class TestFogOfWarMidTurnChanges
 		
 		// Set up test object
 		final IMomFogOfWarCalculations single = mock (IMomFogOfWarCalculations.class);
-		final IUnitUtils unitUtils = mock (IUnitUtils.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		final FogOfWarMidTurnChanges calc = new FogOfWarMidTurnChanges ();
 		calc.setFogOfWarCalculations (single);

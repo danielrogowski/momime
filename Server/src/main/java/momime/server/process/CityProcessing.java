@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResults;
-import momime.common.calculations.IMomCityCalculations;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.TaxRate;
@@ -29,8 +29,8 @@ import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IResourceValueUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.server.IMomSessionVariables;
 import momime.server.ai.ICityAI;
@@ -64,13 +64,13 @@ public final class CityProcessing implements ICityProcessing
 	private final Logger log = Logger.getLogger (CityProcessing.class.getName ());
 
 	/** Resource value utils */
-	private IResourceValueUtils resourceValueUtils;
+	private ResourceValueUtils resourceValueUtils;
 	
 	/** MemoryBuilding utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** City calculations */
-	private IMomCityCalculations cityCalculations;
+	private MomCityCalculations cityCalculations;
 
 	/** Server-only city calculations */
 	private IMomServerCityCalculations serverCityCalculations;
@@ -638,7 +638,7 @@ public final class CityProcessing implements ICityProcessing
 	/**
 	 * @return Resource value utils
 	 */
-	public final IResourceValueUtils getResourceValueUtils ()
+	public final ResourceValueUtils getResourceValueUtils ()
 	{
 		return resourceValueUtils;
 	}
@@ -646,7 +646,7 @@ public final class CityProcessing implements ICityProcessing
 	/**
 	 * @param utils Resource value utils
 	 */
-	public final void setResourceValueUtils (final IResourceValueUtils utils)
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
 	{
 		resourceValueUtils = utils;
 	}
@@ -654,7 +654,7 @@ public final class CityProcessing implements ICityProcessing
 	/**
 	 * @return MemoryBuilding utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -662,7 +662,7 @@ public final class CityProcessing implements ICityProcessing
 	/**
 	 * @param utils MemoryBuilding utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -670,7 +670,7 @@ public final class CityProcessing implements ICityProcessing
 	/**
 	 * @return City calculations
 	 */
-	public final IMomCityCalculations getCityCalculations ()
+	public final MomCityCalculations getCityCalculations ()
 	{
 		return cityCalculations;
 	}
@@ -678,7 +678,7 @@ public final class CityProcessing implements ICityProcessing
 	/**
 	 * @param calc City calculations
 	 */
-	public final void setCityCalculations (final IMomCityCalculations calc)
+	public final void setCityCalculations (final MomCityCalculations calc)
 	{
 		cityCalculations = calc;
 	}

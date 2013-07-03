@@ -41,11 +41,11 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.CompareUtils;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IMemoryCombatAreaEffectUtils;
-import momime.common.utils.IMemoryGridCellUtils;
-import momime.common.utils.IMemoryMaintainedSpellUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.IMomServerCityCalculations;
 import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -78,19 +78,19 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	private IFogOfWarDuplication fogOfWarDuplication;
 
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 	
 	/** MemoryBuilding utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** Memory CAE utils */
-	private IMemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
 	/** MemoryMaintainedSpell utils */
-	private IMemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** MemoryGridCell utils */
-	private IMemoryGridCellUtils memoryGridCellUtils;
+	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/** Server-only city calculations */
 	private IMomServerCityCalculations serverCityCalculations;
@@ -963,7 +963,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @return Unit utils
 	 */
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -971,7 +971,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}
@@ -979,7 +979,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @return MemoryBuilding utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -987,7 +987,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @param utils MemoryBuilding utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -995,7 +995,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @return Memory CAE utils
 	 */
-	public final IMemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
 	{
 		return memoryCombatAreaEffectUtils;
 	}
@@ -1003,7 +1003,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @param utils Memory CAE utils
 	 */
-	public final void setMemoryCombatAreaEffectUtils (final IMemoryCombatAreaEffectUtils utils)
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
 	}
@@ -1011,7 +1011,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @return MemoryMaintainedSpell utils
 	 */
-	public final IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
 	{
 		return memoryMaintainedSpellUtils;
 	}
@@ -1019,7 +1019,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @param utils MemoryMaintainedSpell utils
 	 */
-	public final void setMemoryMaintainedSpellUtils (final IMemoryMaintainedSpellUtils utils)
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
 	{
 		memoryMaintainedSpellUtils = utils;
 	}
@@ -1027,7 +1027,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @return MemoryGridCell utils
 	 */
-	public final IMemoryGridCellUtils getMemoryGridCellUtils ()
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
 	{
 		return memoryGridCellUtils;
 	}
@@ -1035,7 +1035,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 	/**
 	 * @param utils MemoryGridCell utils
 	 */
-	public final void setMemoryGridCellUtils (final IMemoryGridCellUtils utils)
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
 	}

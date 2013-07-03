@@ -17,7 +17,7 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
  *
  * public final static boolean isNodeLairTower (final OverlandMapTerrainData terrainData)
  */
-public final class MemoryGridCellUtilsImpl implements IMemoryGridCellUtils
+public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MemoryGridCellUtilsImpl.class.getName ());

@@ -21,7 +21,7 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.Plane;
@@ -48,7 +48,7 @@ public final class OverlandMapServerUtils implements IOverlandMapServerUtils
 	private final Logger log = Logger.getLogger (OverlandMapServerUtils.class.getName ());
 	
 	/** Unit utils */
-	private IUnitUtils unitUtils;
+	private UnitUtils unitUtils;
 	
 	/** Methods for updating true map + players' memory */
 	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -322,7 +322,7 @@ public final class OverlandMapServerUtils implements IOverlandMapServerUtils
 	/**
 	 * @return Unit utils
 	 */
-	public final IUnitUtils getUnitUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
 		return unitUtils;
 	}
@@ -330,7 +330,7 @@ public final class OverlandMapServerUtils implements IOverlandMapServerUtils
 	/**
 	 * @param utils Unit utils
 	 */
-	public final void setUnitUtils (final IUnitUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
 	}

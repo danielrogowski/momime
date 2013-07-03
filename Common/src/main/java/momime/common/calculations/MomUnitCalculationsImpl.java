@@ -3,14 +3,14 @@ package momime.common.calculations;
 import java.util.List;
 import java.util.logging.Logger;
 
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.utils.IPlayerPickUtils;
+import momime.common.utils.PlayerPickUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
@@ -19,13 +19,13 @@ import com.ndg.map.SquareMapDirection;
 /**
  * Common calculations pertaining to units
  */
-public final class MomUnitCalculationsImpl implements IMomUnitCalculations
+public final class MomUnitCalculationsImpl implements MomUnitCalculations
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomUnitCalculationsImpl.class.getName ());
 	
 	/** Player pick utils */
-	private IPlayerPickUtils playerPickUtils;
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * @param map Our knowledge of the surrounding terrain
@@ -40,7 +40,7 @@ public final class MomUnitCalculationsImpl implements IMomUnitCalculations
 	@Override
 	public final int calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
-		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db) throws RecordNotFoundException
+		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (MomUnitCalculationsImpl.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", cityLocation);
 
@@ -90,7 +90,7 @@ public final class MomUnitCalculationsImpl implements IMomUnitCalculations
 	/**
 	 * @return Player pick utils
 	 */
-	public final IPlayerPickUtils getPlayerPickUtils ()
+	public final PlayerPickUtils getPlayerPickUtils ()
 	{
 		return playerPickUtils;
 	}
@@ -98,7 +98,7 @@ public final class MomUnitCalculationsImpl implements IMomUnitCalculations
 	/**
 	 * @param utils Player pick utils
 	 */
-	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
 	}

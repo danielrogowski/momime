@@ -39,8 +39,8 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IResourceValueUtils;
-import momime.common.utils.ISpellUtils;
+import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.PlayerPickUtilsImpl;
 import momime.common.utils.ResourceValueUtilsImpl;
@@ -526,7 +526,7 @@ public final class TestMomServerResourceCalculations
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 
 		// Set up test object
-		final IResourceValueUtils utils = mock (IResourceValueUtils.class); 
+		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
 
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
 		calc.setResourceValueUtils (utils);
@@ -590,7 +590,7 @@ public final class TestMomServerResourceCalculations
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 
 		// Set up test object
-		final IResourceValueUtils utils = mock (IResourceValueUtils.class);
+		final ResourceValueUtils utils = mock (ResourceValueUtils.class);
 		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
 		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
@@ -622,7 +622,7 @@ public final class TestMomServerResourceCalculations
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 
 		// Set up test object
-		final IResourceValueUtils utils = mock (IResourceValueUtils.class); 
+		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
 		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
 		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
@@ -659,8 +659,8 @@ public final class TestMomServerResourceCalculations
 		
 		// Set up test object
 		final IMomServerSpellCalculations serverSpellCalculations = mock (IMomServerSpellCalculations.class);
-		final ISpellUtils spellUtils = mock (ISpellUtils.class);
-		final IResourceValueUtils resourceValueUtils = mock (IResourceValueUtils.class);
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
 		calc.setResourceValueUtils (resourceValueUtils);

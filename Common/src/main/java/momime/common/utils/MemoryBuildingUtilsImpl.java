@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.MomException;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
@@ -20,7 +20,7 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 /**
  * Methods for working with list of MemoryBuildings
  */
-public final class MemoryBuildingUtilsImpl implements IMemoryBuildingUtils
+public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MemoryBuildingUtilsImpl.class.getName ());
@@ -170,7 +170,7 @@ public final class MemoryBuildingUtilsImpl implements IMemoryBuildingUtils
 	 */
 	@Override
 	public final String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinatesEx cityLocation,
-		final String buildingID, final ICommonDatabase db) throws RecordNotFoundException
+		final String buildingID, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "doAnyBuildingsDependOn", new String [] {cityLocation.toString (), buildingID});
 
@@ -204,7 +204,7 @@ public final class MemoryBuildingUtilsImpl implements IMemoryBuildingUtils
 	 */
 	@Override
 	public final boolean isBuildingAPrerequisiteFor (final String buildingID, final String buildingOrUnitID,
-		final ICommonDatabase db)
+		final CommonDatabase db)
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "isBuildingAPrerequisiteFor", new String [] {buildingID, buildingOrUnitID});
 
@@ -251,7 +251,7 @@ public final class MemoryBuildingUtilsImpl implements IMemoryBuildingUtils
 	 */
 	@Override
 	public final int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinatesEx cityLocation, final ICommonDatabase db) throws RecordNotFoundException
+		final OverlandMapCoordinatesEx cityLocation, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "experienceFromBuildings", cityLocation);
 
@@ -283,7 +283,7 @@ public final class MemoryBuildingUtilsImpl implements IMemoryBuildingUtils
 	@Override
 	public final int totalBonusProductionPerPersonFromBuildings (final List<MemoryBuilding> buildingsList,
 		final OverlandMapCoordinatesEx cityLocation, final String populationTaskID, final String productionTypeID,
-		final ICommonDatabase db) throws RecordNotFoundException
+		final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "totalBonusProductionPerPersonFromBuildings", cityLocation);
 

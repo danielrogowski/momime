@@ -11,7 +11,7 @@ import momime.common.database.v0_9_4.Spell;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.ISpellUtils;
+import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
@@ -31,7 +31,7 @@ public final class MomServerSpellCalculations implements IMomServerSpellCalculat
 	private static final int SPELL_COUNT_TO_PICK_RESEARCH_FROM = 8;
 
 	/** Spell utils */
-	private ISpellUtils spellUtils;
+	private SpellUtils spellUtils;
 	
 	/**
 	 * For all the spells that we did NOT get for free at the start of the game, decides whether or not they are in our spell book to be available to be researched
@@ -172,7 +172,7 @@ public final class MomServerSpellCalculations implements IMomServerSpellCalculat
 	/**
 	 * @return Spell utils
 	 */
-	public final ISpellUtils getSpellUtils ()
+	public final SpellUtils getSpellUtils ()
 	{
 		return spellUtils;
 	}
@@ -180,7 +180,7 @@ public final class MomServerSpellCalculations implements IMomServerSpellCalculat
 	/**
 	 * @param utils Spell utils
 	 */
-	public final void setSpellUtils (final ISpellUtils utils)
+	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
 	}

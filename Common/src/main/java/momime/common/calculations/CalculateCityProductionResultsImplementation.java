@@ -6,7 +6,7 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
@@ -22,8 +22,8 @@ import momime.common.database.v0_9_4.RacePopulationTaskProduction;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IPlayerPickUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.PlayerPickUtils;
 
 /**
  * Internal implementation of the list of all types of production generated from a city returned from calculateAllCityProductions ()
@@ -35,10 +35,10 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	private final List<CalculateCityProductionResult> results;
 
 	/** Memory building utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** Player pick utils */
-	private IPlayerPickUtils playerPickUtils;
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * Creates underlying list
@@ -186,7 +186,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	final void addProductionFromPopulation (final Race race, final String populationTaskID, final int numberDoingTask, final OverlandMapCoordinatesEx cityLocation,
-		final List<MemoryBuilding> buildings, final ICommonDatabase db) throws RecordNotFoundException
+		final List<MemoryBuilding> buildings, final CommonDatabase db) throws RecordNotFoundException
 	{
 		if (numberDoingTask > 0)
 
@@ -219,7 +219,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	final void addProductionAndConsumptionFromBuilding (final Building building, final List<PlayerPick> picks, final ICommonDatabase db)
+	final void addProductionAndConsumptionFromBuilding (final Building building, final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		// Go through each type of production/consumption from this building
@@ -346,7 +346,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	/**
 	 * @return Memory building utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -354,7 +354,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	/**
 	 * @param utils Memory building utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -362,7 +362,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	/**
 	 * @return Player pick utils
 	 */
-	public final IPlayerPickUtils getPlayerPickUtils ()
+	public final PlayerPickUtils getPlayerPickUtils ()
 	{
 		return playerPickUtils;
 	}
@@ -370,7 +370,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	/**
 	 * @param utils Player pick utils
 	 */
-	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
 	}

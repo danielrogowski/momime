@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  *    into skill in order to attain their casting skill, i.e.
  *    this is the amount of stored RE10 production the wizard has
  */
-public final class MomSkillCalculationsImpl implements IMomSkillCalculations
+public final class MomSkillCalculationsImpl implements MomSkillCalculations
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomSkillCalculationsImpl.class.getName ());

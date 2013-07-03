@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.database.v0_9_4.Building;
@@ -34,8 +34,8 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IPlayerPickUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.PlayerPickUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
@@ -48,16 +48,16 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Common calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public final class MomCityCalculationsImpl implements IMomCityCalculations
+public final class MomCityCalculationsImpl implements MomCityCalculations
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomCityCalculationsImpl.class.getName ());
 	
 	/** Memory building utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** Player pick utils */
-	private IPlayerPickUtils playerPickUtils;
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * A list of directions for traversing from a city's coordinates through all the map cells within that city's radius
@@ -86,7 +86,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	 */
 	@Override
 	public final int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
+		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateProductionBonus", cityLocation);
@@ -125,7 +125,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	 */
 	@Override
 	public final int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
+		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateGoldBonus", cityLocation);
@@ -275,7 +275,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	@Override
 	public final int calculateMaxCitySize (final MapVolumeOfMemoryGridCells map,
 		final OverlandMapCoordinatesEx cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
-		final ICommonDatabase db)
+		final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateMaxCitySize", new String [] {cityLocation.toString (),
@@ -337,7 +337,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	 */
 	@Override
 	public final CalculateCityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation, final int maxCitySize, final ICommonDatabase db)
+		final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation, final int maxCitySize, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateCityGrowthRate", cityLocation);
@@ -470,7 +470,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	@Override
 	public final CalculateCityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final ICommonDatabase db)
+		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateCityRebels", cityLocation);
@@ -677,7 +677,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	public final CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final ICommonDatabase db)
+		final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateAllCityProductions", cityLocation);
@@ -878,7 +878,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	public final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final MomSessionDescription sd,
-		final boolean includeProductionAndConsumptionFromPopulation, final ICommonDatabase db, final String productionTypeID)
+		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateSingleCityProduction", cityLocation);
@@ -979,7 +979,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	/**
 	 * @return Memory building utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -987,7 +987,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	/**
 	 * @param utils Memory building utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -995,7 +995,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	/**
 	 * @return Player pick utils
 	 */
-	public final IPlayerPickUtils getPlayerPickUtils ()
+	public final PlayerPickUtils getPlayerPickUtils ()
 	{
 		return playerPickUtils;
 	}
@@ -1003,7 +1003,7 @@ public final class MomCityCalculationsImpl implements IMomCityCalculations
 	/**
 	 * @param utils Player pick utils
 	 */
-	public final void setPlayerPickUtils (final IPlayerPickUtils utils)
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
 	}

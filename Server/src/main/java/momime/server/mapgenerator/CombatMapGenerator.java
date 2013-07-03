@@ -13,9 +13,9 @@ import momime.common.messages.v0_9_4.MapRowOfCombatTiles;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomCombatTileLayer;
-import momime.common.utils.ICombatMapUtils;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IMemoryMaintainedSpellUtils;
+import momime.common.utils.CombatMapUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.CombatMapElement;
@@ -53,13 +53,13 @@ public final class CombatMapGenerator
 	private final static int COMBAT_MAP_ZONES_VERTICALLY = 8;
 	
 	/** MemoryBuilding utils */
-	private IMemoryBuildingUtils memoryBuildingUtils;
+	private MemoryBuildingUtils memoryBuildingUtils;
 
 	/** MemoryMaintainedSpell utils */
-	private IMemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Combat map utils */
-	private ICombatMapUtils combatMapUtils;
+	private CombatMapUtils combatMapUtils;
 	
 	/**
 	 * @param db Server database XML
@@ -320,7 +320,7 @@ public final class CombatMapGenerator
 	/**
 	 * @return MemoryBuilding utils
 	 */
-	public final IMemoryBuildingUtils getMemoryBuildingUtils ()
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
 	{
 		return memoryBuildingUtils;
 	}
@@ -328,7 +328,7 @@ public final class CombatMapGenerator
 	/**
 	 * @param utils MemoryBuilding utils
 	 */
-	public final void setMemoryBuildingUtils (final IMemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
 	}
@@ -336,7 +336,7 @@ public final class CombatMapGenerator
 	/**
 	 * @return MemoryMaintainedSpell utils
 	 */
-	public final IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
 	{
 		return memoryMaintainedSpellUtils;
 	}
@@ -344,7 +344,7 @@ public final class CombatMapGenerator
 	/**
 	 * @param utils MemoryMaintainedSpell utils
 	 */
-	public final void setMemoryMaintainedSpellUtils (final IMemoryMaintainedSpellUtils utils)
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
 	{
 		memoryMaintainedSpellUtils = utils;
 	}
@@ -352,7 +352,7 @@ public final class CombatMapGenerator
 	/**
 	 * @return Combat map utils
 	 */
-	public final ICombatMapUtils getCombatMapUtils ()
+	public final CombatMapUtils getCombatMapUtils ()
 	{
 		return combatMapUtils;
 	}
@@ -360,7 +360,7 @@ public final class CombatMapGenerator
 	/**
 	 * @param utils Combat map utils
 	 */
-	public final void setCombatMapUtils (final ICombatMapUtils utils)
+	public final void setCombatMapUtils (final CombatMapUtils utils)
 	{
 		combatMapUtils = utils;
 	}

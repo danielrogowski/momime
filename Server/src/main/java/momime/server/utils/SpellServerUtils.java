@@ -7,7 +7,7 @@ import momime.common.database.newgame.v0_9_4.SwitchResearch;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.ISpellUtils;
+import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 
@@ -22,7 +22,7 @@ public final class SpellServerUtils implements ISpellServerUtils
 	private final Logger log = Logger.getLogger (SpellServerUtils.class.getName ());
 	
 	/** Spell utils */
-	private ISpellUtils spellUtils;
+	private SpellUtils spellUtils;
 	
 	/**
 	 * @param player Player who wants to switch research
@@ -84,7 +84,7 @@ public final class SpellServerUtils implements ISpellServerUtils
 	/**
 	 * @return Spell utils
 	 */
-	public final ISpellUtils getSpellUtils ()
+	public final SpellUtils getSpellUtils ()
 	{
 		return spellUtils;
 	}
@@ -92,7 +92,7 @@ public final class SpellServerUtils implements ISpellServerUtils
 	/**
 	 * @param utils Spell utils
 	 */
-	public final void setSpellUtils (final ISpellUtils utils)
+	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
 	}

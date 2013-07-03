@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Pick;
 import momime.common.database.v0_9_4.PickExclusiveFrom;
@@ -18,7 +18,7 @@ import momime.common.messages.v0_9_4.PlayerPick;
 /**
  * Methods for working with list of PlayerPicks
  */
-public final class PlayerPickUtilsImpl implements IPlayerPickUtils
+public final class PlayerPickUtilsImpl implements PlayerPickUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (PlayerPickUtilsImpl.class.getName ());
@@ -49,7 +49,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final int getTotalPickCost (final List<PlayerPick> picks, final ICommonDatabase db)
+	public final int getTotalPickCost (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "getTotalPickCost");
@@ -147,7 +147,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final int countPicksOfType (final List<PlayerPick> picks, final String pickTypeID, final boolean original, final ICommonDatabase db)
+	public final int countPicksOfType (final List<PlayerPick> picks, final String pickTypeID, final boolean original, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "countPicksOfType", pickTypeID);
@@ -176,7 +176,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @return Most appropriate pick to use to satisfy pre-requisite, or null if we don't have enough books of any type
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
  	 */
-	private final String findMostAppropriatePickToSatisfy (final List<PlayerPick> picks, final String desiredPickTypeID, final int desiredCount, final ICommonDatabase db)
+	private final String findMostAppropriatePickToSatisfy (final List<PlayerPick> picks, final String desiredPickTypeID, final int desiredCount, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "findMostAppropriatePickToSatisfy", new String [] {desiredPickTypeID, new Integer (desiredCount).toString ()});
@@ -212,7 +212,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final boolean meetsPickRequirements (final Pick pick, final List<PlayerPick> picks, final ICommonDatabase db)
+	public final boolean meetsPickRequirements (final Pick pick, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "meetsPickRequirements", pick.getPickID ());
@@ -273,7 +273,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @return True if requirements of all picks in list are met, e.g. will return False if list includes Divine Power but doesn't include 4 Life Books
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	private final boolean allRequirementsMet (final List<PlayerPick> picks, final ICommonDatabase db)
+	private final boolean allRequirementsMet (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "allRequirementsMet");
@@ -300,7 +300,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final boolean canSafelyRemove (final String pickID, final List<PlayerPick> picks, final ICommonDatabase db)
+	public final boolean canSafelyRemove (final String pickID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "canSafelyRemove", pickID);
@@ -363,7 +363,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final int getHighestWeaponGradeGrantedByPicks (final List<PlayerPick> picks, final ICommonDatabase db)
+	public final int getHighestWeaponGradeGrantedByPicks (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "getHighestWeaponGradeGrantedByPicks");
@@ -389,7 +389,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final int totalReligiousBuildingBonus (final List<PlayerPick> picks, final ICommonDatabase db)
+	public final int totalReligiousBuildingBonus (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "totalReligiousBuildingBonus");
@@ -415,7 +415,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final List<String> pickIdsContributingToReligiousBuildingBonus (final List<PlayerPick> picks, final ICommonDatabase db)
+	public final List<String> pickIdsContributingToReligiousBuildingBonus (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "pickIdsContributingToReligiousBuildingBonus");
@@ -445,7 +445,7 @@ public final class PlayerPickUtilsImpl implements IPlayerPickUtils
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final int totalProductionBonus (final String productionTypeID, final String unitTypeID, final List<PlayerPick> picks, final ICommonDatabase db)
+	public final int totalProductionBonus (final String productionTypeID, final String unitTypeID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickUtilsImpl.class.getName (), "totalProductionBonus", new String [] {productionTypeID, unitTypeID});

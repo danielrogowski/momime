@@ -11,7 +11,7 @@ import momime.common.calculations.MomSkillCalculationsImpl;
 import momime.common.calculations.MomSpellCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.messages.v0_9_4.MagicPowerDistribution;
@@ -347,7 +347,7 @@ public final class TestResourceValueUtilsImpl
 		
 		final MomPersistentPlayerPrivateKnowledge privateInfo = new MomPersistentPlayerPrivateKnowledge ();
 		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();
-		final ICommonDatabase db = GenerateTestData.createDB ();
+		final CommonDatabase db = GenerateTestData.createDB ();
 
 		// Add some production
 		utils.addToAmountPerTurn (privateInfo.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, 20);

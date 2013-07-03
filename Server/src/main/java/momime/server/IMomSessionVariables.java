@@ -6,16 +6,16 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.calculations.IMomCityCalculations;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IMemoryMaintainedSpellUtils;
-import momime.common.utils.IPendingMovementUtils;
-import momime.common.utils.IPlayerPickUtils;
-import momime.common.utils.IResourceValueUtils;
-import momime.common.utils.ISpellUtils;
-import momime.common.utils.IUnitUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.IMomServerResourceCalculations;
 import momime.server.calculations.IMomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -99,7 +99,7 @@ public interface IMomSessionVariables
 	/**
 	 * @return City calculcations
 	 */
-	public IMomCityCalculations getCityCalculations ();
+	public MomCityCalculations getCityCalculations ();
 	
 	/**
 	 * @return Resource calculations
@@ -109,37 +109,37 @@ public interface IMomSessionVariables
 	/**
 	 * @return Resource value utils
 	 */
-	public IResourceValueUtils getResourceValueUtils ();
+	public ResourceValueUtils getResourceValueUtils ();
 	
 	/**
 	 * @return Player pick utils
 	 */
-	public IPlayerPickUtils getPlayerPickUtils ();
+	public PlayerPickUtils getPlayerPickUtils ();
 	
 	/**
 	 * @return Unit utils
 	 */
-	public IUnitUtils getUnitUtils ();
+	public UnitUtils getUnitUtils ();
 	
 	/**
 	 * @return Spell utils
 	 */
-	public ISpellUtils getSpellUtils ();
+	public SpellUtils getSpellUtils ();
 
 	/**
 	 * @return Maintained spell utils 
 	 */
-	public IMemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ();
+	public MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ();
 
 	/**
 	 * @return Builiding utils 
 	 */
-	public IMemoryBuildingUtils getMemoryBuildingUtils ();
+	public MemoryBuildingUtils getMemoryBuildingUtils ();
 	
 	/**
 	 * @return Pending movement utils
 	 */
-	public IPendingMovementUtils getPendingMovementUtils (); 
+	public PendingMovementUtils getPendingMovementUtils (); 
 	
 	/**
 	 * @return Server-only city utils

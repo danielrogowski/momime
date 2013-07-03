@@ -2,7 +2,7 @@ package momime.common.utils;
 
 import java.util.List;
 
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.messages.OverlandMapCoordinatesEx;
@@ -12,7 +12,7 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 /**
  * Methods for working with list of MemoryMaintainedSpells
  */
-public interface IMemoryMaintainedSpellUtils
+public interface MemoryMaintainedSpellUtils
 {
 	/**
 	 * Searches for a maintained spell in a list
@@ -98,5 +98,5 @@ public interface IMemoryMaintainedSpellUtils
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
 	public TargetUnitSpellResult isUnitValidTargetForSpell (final List<MemoryMaintainedSpell> spells,
-		final Spell spell, final int castingPlayerID, final MemoryUnit unit, final ICommonDatabase db) throws RecordNotFoundException; 
+		final Spell spell, final int castingPlayerID, final MemoryUnit unit, final CommonDatabase db) throws RecordNotFoundException; 
 }

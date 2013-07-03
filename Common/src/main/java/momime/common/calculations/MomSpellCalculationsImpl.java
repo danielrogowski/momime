@@ -6,18 +6,18 @@ import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ICommonDatabase;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.PickProductionBonus;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.utils.ISpellUtils;
+import momime.common.utils.SpellUtils;
 
 /**
  * Calculations for dealing with spell casting cost reductions and research bonuses
  */
-public final class MomSpellCalculationsImpl implements IMomSpellCalculations
+public final class MomSpellCalculationsImpl implements MomSpellCalculations
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomSpellCalculationsImpl.class.getName ());
@@ -26,7 +26,7 @@ public final class MomSpellCalculationsImpl implements IMomSpellCalculations
 	private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat ("0.000");
 	
 	/** Spell utils */
-	private ISpellUtils spellUtils;
+	private SpellUtils spellUtils;
 
 	/**
 	 * @param bookCount The number of books we have in the magic realm of the spell for which we want to calculate the reduction, e.g. to calculate reductions for life spells, pass in how many life books we have
@@ -40,7 +40,7 @@ public final class MomSpellCalculationsImpl implements IMomSpellCalculations
 	 */
 	@Override
 	public final double calculateCastingCostReduction (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
-		final List<PlayerPick> picks, final ICommonDatabase db)
+		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		log.entering (MomSpellCalculationsImpl.class.getName (), "calculateCastingCostReduction", new String [] {new Integer (bookCount).toString (),
@@ -154,7 +154,7 @@ public final class MomSpellCalculationsImpl implements IMomSpellCalculations
 	 */
 	@Override
 	public final double calculateResearchBonus (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
-		final List<PlayerPick> picks, final ICommonDatabase db)
+		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		log.entering (MomSpellCalculationsImpl.class.getName (), "calculateResearchBonus", new String [] {new Integer (bookCount).toString (),
@@ -259,7 +259,7 @@ public final class MomSpellCalculationsImpl implements IMomSpellCalculations
 	/**
 	 * @return Spell utils
 	 */
-	public final ISpellUtils getSpellUtils ()
+	public final SpellUtils getSpellUtils ()
 	{
 		return spellUtils;
 	}
@@ -267,7 +267,7 @@ public final class MomSpellCalculationsImpl implements IMomSpellCalculations
 	/**
 	 * @param utils Spell utils
 	 */
-	public final void setSpellUtils (final ISpellUtils utils)
+	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
 	}

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.calculations.CalculateCityUnrestBreakdown;
-import momime.common.calculations.IMomCityCalculations;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.PendingSaleMessage;
@@ -22,8 +22,8 @@ import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.utils.IMemoryBuildingUtils;
-import momime.common.utils.IResourceValueUtils;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.IMomSessionVariables;
 import momime.server.ServerTestData;
@@ -95,11 +95,11 @@ public final class TestCityProcessing
 		tc.setCityData (cityData);
 		
 		// Set up object to test
-		final IMemoryBuildingUtils memoryBuildingUtils = mock (IMemoryBuildingUtils.class);
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
-		final IResourceValueUtils resourceValueUtils = mock (IResourceValueUtils.class);
+		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		final IMomServerCityCalculations serverCityCalculations = mock (IMomServerCityCalculations.class);
-		final IMomCityCalculations cityCalculations = mock (IMomCityCalculations.class);
+		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
 		
 		final CityProcessing proc = new CityProcessing ();
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
@@ -172,11 +172,11 @@ public final class TestCityProcessing
 		tc.setCityData (cityData);
 		
 		// Set up object to test
-		final IMemoryBuildingUtils memoryBuildingUtils = mock (IMemoryBuildingUtils.class);
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
-		final IResourceValueUtils resourceValueUtils = mock (IResourceValueUtils.class);
+		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		final IMomServerCityCalculations serverCityCalculations = mock (IMomServerCityCalculations.class);
-		final IMomCityCalculations cityCalculations = mock (IMomCityCalculations.class);
+		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
 		
 		final CityProcessing proc = new CityProcessing ();
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
@@ -249,11 +249,11 @@ public final class TestCityProcessing
 		tc.setCityData (cityData);
 		
 		// Set up object to test
-		final IMemoryBuildingUtils memoryBuildingUtils = mock (IMemoryBuildingUtils.class);
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
-		final IResourceValueUtils resourceValueUtils = mock (IResourceValueUtils.class);
+		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		final IMomServerCityCalculations serverCityCalculations = mock (IMomServerCityCalculations.class);
-		final IMomCityCalculations cityCalculations = mock (IMomCityCalculations.class);
+		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
 		
 		final CityProcessing proc = new CityProcessing ();
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
@@ -422,7 +422,7 @@ public final class TestCityProcessing
 		final IMomServerResourceCalculations serverResourceCalculations = mock (IMomServerResourceCalculations.class);
 
 		// Have to use anyObject () for location since .equals () doesn't give correct result
-		final IMomCityCalculations cityCalculations = mock (IMomCityCalculations.class);
+		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation1, "TR03", db)).thenReturn (breakdown1);
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation2, "TR03", db)).thenReturn (breakdown2);
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation3, "TR03", db)).thenReturn (breakdown3);

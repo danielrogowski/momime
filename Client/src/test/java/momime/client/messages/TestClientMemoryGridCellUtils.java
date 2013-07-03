@@ -2,9 +2,8 @@ package momime.client.messages;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
+import momime.client.ClientTestData;
 import momime.client.database.ClientDatabaseEx;
-import momime.client.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 
@@ -24,7 +23,7 @@ public final class TestClientMemoryGridCellUtils
 	{
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 
-		final ClientDatabaseEx db = GenerateTestData.createDB ();
+		final ClientDatabaseEx db = ClientTestData.createDB ();
 
 		assertFalse (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
@@ -39,7 +38,7 @@ public final class TestClientMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
 
-		final ClientDatabaseEx db = GenerateTestData.createDB ();
+		final ClientDatabaseEx db = ClientTestData.createDB ();
 
 		assertFalse (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
@@ -54,7 +53,7 @@ public final class TestClientMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT02");
 
-		final ClientDatabaseEx db = GenerateTestData.createDB ();
+		final ClientDatabaseEx db = ClientTestData.createDB ();
 
 		assertTrue (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
@@ -69,7 +68,7 @@ public final class TestClientMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("MF01");
 
-		final ClientDatabaseEx db = GenerateTestData.createDB ();
+		final ClientDatabaseEx db = ClientTestData.createDB ();
 
 		assertFalse (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
@@ -84,7 +83,7 @@ public final class TestClientMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("MF02");
 
-		final ClientDatabaseEx db = GenerateTestData.createDB ();
+		final ClientDatabaseEx db = ClientTestData.createDB ();
 
 		assertTrue (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
@@ -100,7 +99,7 @@ public final class TestClientMemoryGridCellUtils
 		terrainData.setTileTypeID ("TT01");
 		terrainData.setMapFeatureID ("MF02");
 
-		final ClientDatabaseEx db = GenerateTestData.createDB ();
+		final ClientDatabaseEx db = ClientTestData.createDB ();
 
 		assertTrue (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}

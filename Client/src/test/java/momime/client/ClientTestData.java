@@ -1,4 +1,4 @@
-package momime.client.database;
+package momime.client;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import momime.client.database.ClientDatabaseEx;
 import momime.client.database.v0_9_4.MapFeature;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.database.LanguageDatabaseConstants;
@@ -17,7 +18,7 @@ import momime.common.database.v0_9_4.TileType;
  * JAXB to load the server XML are server side only) yet many of the client-side tests need it, this manufactures pieces
  * of test data that are used by more than one test
  */
-public final class GenerateTestData
+public final class ClientTestData
 {
 	/**
 	 * Path and name to locate the server XML file on the classpath
@@ -101,7 +102,7 @@ public final class GenerateTestData
 	/**
 	 * Prevent instantiation
 	 */
-	private GenerateTestData ()
+	private ClientTestData ()
 	{
 	}
 }

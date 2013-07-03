@@ -3,6 +3,6 @@
 	<portNumber>12345</portNumber>
 	<userRegistryFilename>C:\Some Path\MoM IME server\MoM IME server user registry.xml</userRegistryFilename>
 	<createUserRegistry>false</createUserRegistry>
-	<pathToServerXmlDatabases>C:\Your Eclipse Workspace\MoMIMEServer\src\external\resources\momime.server.database\</pathToServerXmlDatabases>
+	<pathToServerXmlDatabases>C:\Your Eclipse Workspace\MoMIMEServerDatabase\src\main\resources\momime.server.database\</pathToServerXmlDatabases>
 	<uiClassName>momime.server.ui.OneWindowPerGameUI</uiClassName>
 </config:momImeServerConfig>

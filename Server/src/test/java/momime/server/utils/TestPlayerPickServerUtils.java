@@ -6,15 +6,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
-import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
 import momime.common.database.v0_9_4.WizardPick;
 import momime.common.messages.PlayerPickUtils;
@@ -45,12 +40,10 @@ public final class TestPlayerPickServerUtils
 {
 	/**
 	 * Tests the getTotalInitialSkill method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGetTotalInitialSkill () throws IOException, JAXBException, RecordNotFoundException
+	public final void testGetTotalInitialSkill () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -186,11 +179,10 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the validateCustomPicks method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateCustomPicks () throws IOException, JAXBException
+	public final void testValidateCustomPicks () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -415,12 +407,10 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the validateInitialSpellSelection method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateInitialSpellSelection () throws IOException, JAXBException, RecordNotFoundException
+	public final void testValidateInitialSpellSelection () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -478,12 +468,10 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the validateRaceChoice method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we choose a race whose native plane can't be found
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateRaceChoice () throws IOException, JAXBException, RecordNotFoundException
+	public final void testValidateRaceChoice () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -620,11 +608,10 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the listWizardsForAIPlayers method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListWizardsForAIPlayers () throws IOException, JAXBException
+	public final void testListWizardsForAIPlayers () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -668,11 +655,10 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the startingPlaneForWizard method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testStartingPlaneForWizard () throws IOException, JAXBException
+	public final void testStartingPlaneForWizard () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -704,12 +690,10 @@ public final class TestPlayerPickServerUtils
 
 	/**
 	 * Tests the chooseRandomRaceForPlane method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If there are no races defined in the database that inhabit this plane
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testChooseRandomRaceForPlane () throws IOException, JAXBException, MomException
+	public final void testChooseRandomRaceForPlane () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

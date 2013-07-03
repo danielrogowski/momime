@@ -7,7 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.RoundingDirectionID;
@@ -60,7 +58,6 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
@@ -70,14 +67,10 @@ public final class TestMomServerResourceCalculations
 {
 	/**
 	 * Tests the recalculateAmountsPerTurn method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
-	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
-	 * @throws MomException If there are any issues with data or calculation logic
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testRecalculateAmountsPerTurn () throws IOException, JAXBException, RecordNotFoundException, PlayerNotFoundException, MomException
+	public final void testRecalculateAmountsPerTurn () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -515,14 +508,10 @@ public final class TestMomServerResourceCalculations
 
 	/**
 	 * Tests the accumulateGlobalProductionValues method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
-	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAccumulateGlobalProductionValues ()
-		throws IOException, JAXBException, RecordNotFoundException, MomException
+	public final void testAccumulateGlobalProductionValues () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
@@ -581,14 +570,10 @@ public final class TestMomServerResourceCalculations
 
 	/**
 	 * Tests the accumulateGlobalProductionValues method when we have a +ve production amount that should be a multiple of 2 but isn't
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
-	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
+	 * @throws Exception If there is a problem
 	 */
 	@Test(expected=MomException.class)
-	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive ()
-		throws IOException, JAXBException, RecordNotFoundException, MomException
+	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here
@@ -617,14 +602,10 @@ public final class TestMomServerResourceCalculations
 
 	/**
 	 * Tests the accumulateGlobalProductionValues method when we have a -ve production amount that should be a multiple of 2 but isn't
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
-	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
+	 * @throws Exception If there is a problem
 	 */
 	@Test(expected=MomException.class)
-	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative ()
-		throws IOException, JAXBException, RecordNotFoundException, MomException
+	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final SpellSettingData spellSettings = new SpellSettingData ();	// Only used by mock, so don't really care what's actually in here

@@ -6,11 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.MemoryBuildingUtils;
@@ -302,11 +299,10 @@ public final class TestFogOfWarDuplication
 
 	/**
 	 * Tests the copyUnit method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCopyUnit () throws IOException, JAXBException
+	public final void testCopyUnit () throws Exception
 	{
 		final FogOfWarDuplication dup = new FogOfWarDuplication ();
 		final UnitUtils utils = new UnitUtils ();

@@ -3,13 +3,9 @@ package momime.server.calculations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.SpellUtils;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
@@ -27,12 +23,10 @@ public final class TestMomServerSpellCalculations
 {
 	/**
 	 * Tests the randomizeResearchableSpells method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we encounter a pick or other item that we can't find in the cache
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testRandomizeResearchableSpells () throws IOException, JAXBException, RecordNotFoundException
+	public final void testRandomizeResearchableSpells () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -154,12 +148,10 @@ public final class TestMomServerSpellCalculations
 
 	/**
 	 * Tests the randomizeSpellsResearchableNow method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testRandomizeSpellsResearchableNow () throws IOException, JAXBException, RecordNotFoundException
+	public final void testRandomizeSpellsResearchableNow () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

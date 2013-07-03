@@ -2,11 +2,6 @@ package momime.server.utils;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import java.io.IOException;
-
-import javax.xml.bind.JAXBException;
-
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -34,11 +29,10 @@ public final class TestCityServerUtils
 {
 	/**
 	 * Tests the validateCityConstruction method for constructing buildings
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateCityConstruction_Building () throws IOException, JAXBException
+	public final void testValidateCityConstruction_Building () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -121,11 +115,10 @@ public final class TestCityServerUtils
 
 	/**
 	 * Tests the validateCityConstruction method for constructing units
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateCityConstruction_Unit () throws IOException, JAXBException
+	public final void testValidateCityConstruction_Unit () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -197,11 +190,10 @@ public final class TestCityServerUtils
 
 	/**
 	 * Tests the validateCityConstruction method when the ID requested is neither a valid building or unit
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateCityConstruction_InvalidConstructionProject () throws IOException, JAXBException
+	public final void testValidateCityConstruction_InvalidConstructionProject () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -239,11 +231,10 @@ public final class TestCityServerUtils
 
 	/**
 	 * Tests the validateCityConstruction method when we have an invalid race
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testValidateCityConstruction_InvalidRace () throws IOException, JAXBException
+	public final void testValidateCityConstruction_InvalidRace () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -282,11 +273,10 @@ public final class TestCityServerUtils
 
 	/**
 	 * Tests the validateOptionalFarmers method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateOptionalFarmers () throws IOException, JAXBException
+	public final void testValidateOptionalFarmers () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

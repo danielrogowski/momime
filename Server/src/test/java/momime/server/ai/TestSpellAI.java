@@ -3,14 +3,10 @@ package momime.server.ai;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.SpellUtils;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
@@ -27,12 +23,10 @@ public final class TestSpellAI
 {
 	/**
 	 * Tests the chooseSpellToResearchAI method with a valid spell list
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If the list was empty
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testChooseSpellToResearchAI_Valid () throws IOException, JAXBException, MomException
+	public final void testChooseSpellToResearchAI_Valid () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final SpellAI ai = new SpellAI ();
@@ -59,13 +53,10 @@ public final class TestSpellAI
 
 	/**
 	 * Tests the chooseFreeSpellAI method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If no eligible spells are available (e.g. player has them all researched already)
-	 * @throws RecordNotFoundException If the spell chosen couldn't be found in the player's spell list
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testChooseFreeSpellAI () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testChooseFreeSpellAI () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		

@@ -87,7 +87,6 @@
 	
 	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
 		<constructor-arg value="#{serverConfig.pathToServerXmlDatabases}" />
-		<constructor-arg ref="serverDatabaseSchema" />
 		<constructor-arg ref="serverDatabaseUnmarshaller" />
 	</bean>
 	

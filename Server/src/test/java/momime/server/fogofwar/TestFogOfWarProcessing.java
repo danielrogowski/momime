@@ -4,11 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
@@ -140,12 +137,11 @@ public final class TestFogOfWarProcessing
 
 	/**
 	 * Tests the markVisibleArea method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 * @throws InvalidFormatException If the excel spreadsheet containing the expected results can't be loaded
 	 */
 	@Test
-	public final void testMarkVisibleArea () throws IOException, JAXBException, InvalidFormatException
+	public final void testMarkVisibleArea () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final UnitUtils unitUtils = new UnitUtils ();

@@ -1359,4 +1359,20 @@ However we still need to record negative skill modification values, e.g. True Li
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 	
+	<xsd:simpleType name="languageCategoryID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="languageEntryID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="ipAddress">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="knownServerID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
 </xsd:schema>

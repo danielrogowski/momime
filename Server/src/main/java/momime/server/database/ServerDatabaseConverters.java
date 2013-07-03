@@ -2,17 +2,18 @@ package momime.server.database;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.Validator;
 
 import momime.client.database.v0_9_4.AvailableDatabase;
 import momime.client.database.v0_9_4.ClientDatabase;
@@ -50,8 +51,6 @@ import momime.server.database.v0_9_4.UnitSkill;
 import momime.server.database.v0_9_4.UnitType;
 import momime.server.database.v0_9_4.WeaponGrade;
 import momime.server.database.v0_9_4.WizardPickCount;
-
-import org.xml.sax.SAXException;
 
 /**
  * Converters for building derivative XML files from the server XML file
@@ -102,15 +101,15 @@ public final class ServerDatabaseConverters implements IServerDatabaseConverters
 	/**
 	 * Finds all the compatible (i.e. correct namespace) XML databases on the server and extracts a small portion of each needed for setting up new games
 	 * @param xmlFolder Folder in which to look for server XML files, e.g. F:\Workspaces\Delphi\Master of Magic\XML Files\Server\
-	 * @param serverDatabaseSchema XSD validator created for the server XSD file
 	 * @param serverDatabaseUnmarshaller JAXB Unmarshaller for loading server XML files
 	 * @return Info extracted from all available XML databases
 	 * @throws JAXBException If there is a problem creating the server XML unmarshaller
 	 * @throws MomException If there are no compatible server XML databases
+	 * @throws IOException If there is a problem reading the XML databases
 	 */
 	@Override
-	public final NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Schema serverDatabaseSchema, final Unmarshaller serverDatabaseUnmarshaller)
-		throws JAXBException, MomException
+	public final NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Unmarshaller serverDatabaseUnmarshaller)
+		throws JAXBException, MomException, IOException
 	{
 		log.entering (ServerDatabaseConverters.class.getName (), "buildNewGameDatabase");
 
@@ -135,41 +134,52 @@ public final class ServerDatabaseConverters implements IServerDatabaseConverters
 		// Sort the filenames
 		Collections.sort (xmlFilenames);
 		
-		// Create validator
-		final Validator xsdValidator = serverDatabaseSchema.newValidator ();
+		// Put them into a map
+		final Map<String, URL> map = new HashMap<String, URL> ();
+		for (final String thisFilename : xmlFilenames)
+		{
+			final File thisFile = new File (xmlFolder, thisFilename + SERVER_XML_FILE_EXTENSION);
+			map.put (thisFilename, thisFile.toURI ().toURL ());
+		}
+		
+		// Call other method to do the guts of the work
+		return buildNewGameDatabase (map, serverDatabaseUnmarshaller);
+	}
+	
+	/**
+	 * Finds all the compatible (i.e. correct namespace) XML databases on the server and extracts a small portion of each needed for setting up new games
+	 * 
+	 * The reason the input takes a URL is so that this can be tested from the MoMIMEServer project, when the XML file is in the MoMIMEServerDatabase project,
+	 * so in a command line build there is no physical folder on disk to pass into the method signature declared in the interface.
+	 * 
+	 * @param xmlFiles Map of database names to URLs to locate them
+	 * @param serverDatabaseUnmarshaller JAXB Unmarshaller for loading server XML files
+	 * @return Info extracted from all available XML databases
+	 * @throws JAXBException If there is a problem creating the server XML unmarshaller
+	 * @throws MomException If there are no compatible server XML databases
+	 */
+	final NewGameDatabaseMessage buildNewGameDatabase (final Map<String, URL> xmlFiles, final Unmarshaller serverDatabaseUnmarshaller)
+		throws JAXBException, MomException
+	{
+		log.entering (ServerDatabaseConverters.class.getName (), "buildNewGameDatabase");
 
 		// Now open up each one to check if it is compatible
 		final NewGameDatabase newGameDatabase = new NewGameDatabase ();
 
-		for (final String thisFilename : xmlFilenames)
-		{
-			final File fullFilename = new File (xmlFolder, thisFilename + SERVER_XML_FILE_EXTENSION);
-
+		for (final Entry<String, URL> thisXmlFile : xmlFiles.entrySet ())
 			try
 			{
-				// Validate XML file against server XSD
-				xsdValidator.validate (new StreamSource (fullFilename));
-
-				// Looks ok - attempt to load it in
-				final ServerDatabaseEx db = (ServerDatabaseEx) serverDatabaseUnmarshaller.unmarshal (fullFilename);
+				// Attempt to load it in
+				final ServerDatabaseEx db = (ServerDatabaseEx) serverDatabaseUnmarshaller.unmarshal (thisXmlFile.getValue ());
 				db.buildMaps ();
 
 				// Loaded ok, add relevant parts to the new game database
-				newGameDatabase.getMomimeXmlDatabase ().add (convertServerToAvailableDatabase (db, thisFilename));
-			}
-			catch (final IOException e)
-			{
-				log.warning ("Server XML database \"" + thisFilename + "\" can't be used because of an error while trying to read it: " + e.getMessage ());
-			}
-			catch (final SAXException e)
-			{
-				log.warning ("Server XML database \"" + thisFilename + "\" can't be used because it doesn't validate against the XSD: " + e.getMessage ());
+				newGameDatabase.getMomimeXmlDatabase ().add (convertServerToAvailableDatabase (db, thisXmlFile.getKey ()));
 			}
 			catch (final JAXBException e)
 			{
-				log.warning ("Server XML database \"" + thisFilename + "\" can't be used because it couldn't be loaded in correctly: " + e.getMessage ());
+				log.warning ("Server XML database \"" + thisXmlFile.getKey () + "\" can't be used because of: " + e.getMessage ());
 			}
-		}
 
 		if (newGameDatabase.getMomimeXmlDatabase ().size () == 0)
 			throw new MomException ("No XML Databases found compatible with this version of MoM IME");

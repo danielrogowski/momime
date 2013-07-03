@@ -4,16 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-
-import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryCombatAreaEffectUtils;
 import momime.common.messages.MemoryGridCellUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
@@ -43,7 +38,6 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
@@ -53,14 +47,10 @@ public final class TestMomServerUnitCalculations
 {
 	/**
 	 * Tests the calculateUnitScoutingRange class
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we can't find the player who owns the unit, or the unit has a skill that we can't find in the cache
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateUnitScoutingRange () throws IOException, JAXBException, RecordNotFoundException, PlayerNotFoundException, MomException
+	public final void testCalculateUnitScoutingRange () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -111,11 +101,10 @@ public final class TestMomServerUnitCalculations
 
 	/**
 	 * Tests the countOurAliveUnitsAtEveryLocation method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCountOurAliveUnitsAtEveryLocation () throws IOException, JAXBException
+	public final void testCountOurAliveUnitsAtEveryLocation () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -213,11 +202,10 @@ public final class TestMomServerUnitCalculations
 
 	/**
 	 * Tests the willMovingHereResultInAnAttack method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testWillMovingHereResultInAnAttack () throws IOException, JAXBException
+	public final void testWillMovingHereResultInAnAttack () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -418,11 +406,10 @@ public final class TestMomServerUnitCalculations
 
 	/**
 	 * Tests the listAllSkillsInUnitStack method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListAllSkillsInUnitStack () throws IOException, JAXBException
+	public final void testListAllSkillsInUnitStack () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -511,11 +498,10 @@ public final class TestMomServerUnitCalculations
 
 	/**
 	 * Tests the calculateDoubleMovementToEnterTileType method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateDoubleMovementToEnterTileType () throws IOException, JAXBException
+	public final void testCalculateDoubleMovementToEnterTileType () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -660,11 +646,10 @@ public final class TestMomServerUnitCalculations
 
 	/**
 	 * Tests the calculateDoubleMovementRatesForUnitStack method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateDoubleMovementRatesForUnitStack () throws IOException, JAXBException
+	public final void testCalculateDoubleMovementRatesForUnitStack () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

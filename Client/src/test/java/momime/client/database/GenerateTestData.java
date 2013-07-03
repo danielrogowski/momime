@@ -1,7 +1,10 @@
 package momime.client.database;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import momime.client.database.v0_9_4.MapFeature;
@@ -17,25 +20,21 @@ import momime.common.database.v0_9_4.TileType;
 public final class GenerateTestData
 {
 	/**
-	 * @return Location of "Original Master of Magic 1.31 rules.Master of Magic Server.xml" to test with
+	 * Path and name to locate the server XML file on the classpath
+	 * Note the server XML in src/main/resource and hence on the classpath is only there to allow unit tests to access it - hence this constant
+	 * must only exist in test classes.  Running for real, the XML is read from a folder outside of the JARs so it can be edited.
+	 */
+	public static final String SERVER_XML_LOCATION = "/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml";
+	
+	/**
+	 * @return Input stream to "Original Master of Magic 1.31 rules.Master of Magic Server.xml" to test with
 	 * @throws IOException If we are unable to locate the server XML file
 	 */
-	public final static File locateServerXmlFile () throws IOException
+	public final static InputStream locateServerXmlFile () throws IOException
 	{
-		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
-
-		// Moreover, if we search for something that is on the classpath of the MoMIMEServerDatabase project, and run this test as part of
-		// a maven command line build, we get a URL back of the form jar:file:<maven repository>MoMIMEServerDatabase.jar!/momime.server.database/MoMIMEServerDatabase.xsd
-
-		// We can't alter that URL to locate the server XML file within the JAR, simply because the server XML is intentionally not in the JAR or anywhere in Maven at all
-
-		// So only way to do this is locate some resource in *this* project, and modify the location from there
-		// This makes the assumption that the MoMIMEServerDatabase project is called as such and hasn't been checked out under a different name
-		final URL languageXsd = new Object ().getClass ().getResource (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION);
-		final File languageXsdFile = new File (languageXsd.getFile ());
-		final File serverXmlFile = new File (languageXsdFile, "../../../../../MoMIMEServerDatabase/src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
-
-		return serverXmlFile.getCanonicalFile ();
+		final InputStream xmlStream = new Object ().getClass ().getResourceAsStream (SERVER_XML_LOCATION);
+		assertNotNull ("MoM IME Server XML could not be found on classpath", xmlStream);
+		return xmlStream;
 	}
 
 	/**

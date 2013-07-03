@@ -1,24 +1,9 @@
 package momime.server.database;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-
-import momime.common.database.CommonXsdResourceResolver;
-import momime.server.database.v0_9_4.ServerDatabase;
+import momime.server.ServerTestData;
 
 import org.junit.Test;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
  * Tests reading the server XSD and XML files
@@ -26,48 +11,14 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 public final class TestServerDatabase
 {
 	/**
-	 * @return Location of Original Master of Magic 1.31 rules.Master of Magic Server.xml to test with
-	 * @throws IOException If we are unable to locate the server XML file
-	 */
-	public final static File locateServerXmlFile () throws IOException
-	{
-		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
-		// So instead find something that is on the classpath of the MoMIMEServerDatabase project, then modify that location
-		final URL serverXsd = new Object ().getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
-		final File serverXsdFile = new File (serverXsd.getFile ());
-		final File serverXmlFile = new File (serverXsdFile, "../../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
-		return serverXmlFile.getCanonicalFile ();
-	}
-
-	/**
-	 * Tests that the default XML file conforms to the server XSD
+	 * Tests reading the database XML in using JAXB
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDatabaseConformsToXSD () throws Exception
+	public final void testReadDatabase () throws Exception
 	{
-		final URL xsdResource = getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
-		assertNotNull ("MoM IME Server XSD could not be found on classpath", xsdResource);
-
-		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
-
-		final Validator xsd = schemaFactory.newSchema (xsdResource).newValidator ();
-		xsd.validate (new StreamSource (locateServerXmlFile ()));
-	}
-
-	/**
-	 * Tests reading the database XML in using JAXB
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If we are unable to read the server XML file
-	 */
-	@Test
-	public final void testReadDatabase () throws IOException, JAXBException
-	{
-		// Note this is in the MoMIMEServerDatabase project not MoMIMEServer and so can't use ServerDatabaseEx
-		final JAXBContext serverDatabaseContext = JAXBContext.newInstance (ServerDatabase.class);
-		final ServerDatabase serverDB = (ServerDatabase) serverDatabaseContext.createUnmarshaller ().unmarshal (locateServerXmlFile ());
-
+		final ServerDatabaseEx serverDB = ServerTestData.loadServerDatabase ();
+		
 		// This doesn't exhaustively test that every element of the database is loaded correctly, it only checks that the right number of records of each type are loaded
 		// Common entities
 		assertEquals ("Failed to load correct number of planes",									2,					serverDB.getPlane ().size ());

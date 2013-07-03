@@ -2,13 +2,7 @@ package momime.server.messages;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-
-import javax.xml.bind.JAXBException;
-
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -23,12 +17,10 @@ public final class TestServerMemoryGridCellUtils
 {
 	/**
 	 * Tests the isNodeLairTower method when both the whole terrain data is null
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we find a map feature or tile type that isn't in the database
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsNodeLairTower_TerrainDataNull () throws IOException, JAXBException, RecordNotFoundException
+	public final void testIsNodeLairTower_TerrainDataNull () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -37,12 +29,10 @@ public final class TestServerMemoryGridCellUtils
 
 	/**
 	 * Tests the isNodeLairTower method when both the terrain data exists, but has tile type and map feature both null
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we find a map feature or tile type that isn't in the database
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsNodeLairTower_BothNull () throws IOException, JAXBException, RecordNotFoundException
+	public final void testIsNodeLairTower_BothNull () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -53,12 +43,10 @@ public final class TestServerMemoryGridCellUtils
 
 	/**
 	 * Tests the isNodeLairTower method when the tile type has no magic realm defined, and map feature is null
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we find a map feature or tile type that isn't in the database
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsNodeLairTower_TileTypeNo () throws IOException, JAXBException, RecordNotFoundException
+	public final void testIsNodeLairTower_TileTypeNo () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -70,12 +58,10 @@ public final class TestServerMemoryGridCellUtils
 
 	/**
 	 * Tests the isNodeLairTower method when the tile type does have a magic realm defined, and map feature is null
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we find a map feature or tile type that isn't in the database
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsNodeLairTower_TileTypeYes () throws IOException, JAXBException, RecordNotFoundException
+	public final void testIsNodeLairTower_TileTypeYes () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -87,12 +73,10 @@ public final class TestServerMemoryGridCellUtils
 
 	/**
 	 * Tests the isNodeLairTower method when the map feature has no magic realm defined, and tile type is null
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we find a map feature or tile type that isn't in the database
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsNodeLairTower_MapFeatureNo () throws IOException, JAXBException, RecordNotFoundException
+	public final void testIsNodeLairTower_MapFeatureNo () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -104,12 +88,10 @@ public final class TestServerMemoryGridCellUtils
 
 	/**
 	 * Tests the isNodeLairTower method when the map feature does have a magic realm defined, and tile type is null
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we find a map feature or tile type that isn't in the database
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsNodeLairTower_MapFeatureYes () throws IOException, JAXBException, RecordNotFoundException
+	public final void testIsNodeLairTower_MapFeatureYes () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -121,12 +103,10 @@ public final class TestServerMemoryGridCellUtils
 
 	/**
 	 * Tests the isNodeLairTower method when the map feature does have a magic realm defined, and tile type doesn't
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we find a map feature or tile type that isn't in the database
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsNodeLairTower_MapFeatureYes_WithTileType () throws IOException, JAXBException, RecordNotFoundException
+	public final void testIsNodeLairTower_MapFeatureYes_WithTileType () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

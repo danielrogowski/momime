@@ -1,33 +1,26 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
 	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
-	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_4" 
+	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" 
 	xmlns:momimelang="http://momime/client/language/database/v0_9_4" targetNamespace="http://momime/client/language/database/v0_9_4">
 	
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
 	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4"/>
 	<xsd:import namespace="http://momime/common/database/v0_9_4"/>
-	<xsd:import namespace="http://momime/server/database/v0_9_4"/>
 
     <xsd:annotation>
-		<xsd:appinfo>
-			<nxe:backuponopen>Y</nxe:backuponopen>
-			<nxe:database namespaceprefix="momimelang">
-				<nxe:title>Master of Magic Language File</nxe:title>
-				<nxe:xmlfilename>%MY_DOCUMENTS%\Master of Magic - Implode's Multiplayer Edition\Client\Languages\English.Master of Magic Language.xml</nxe:xmlfilename>
-			</nxe:database>
-			<nxe:database namespaceprefix="momimesvr">
-				<nxe:title>Master of Magic Server Database</nxe:title>
-				<nxe:xmlfilename>%MY_DOCUMENTS%\Master of Magic - Implode's Multiplayer Edition\Server\DB\Original Master of Magic 1.31 rules.Master of Magic Server.xml</nxe:xmlfilename>
-			</nxe:database>
-		</xsd:appinfo>
+    	<xsd:documentation>
+    		This is to get around an issue with the client XSDs needing a reference to the server XSD.  Its necessary so that within the client XSDs we can automatically
+    		verify via the schema that, e.g., a raceID declared in the English XML does indeed correspond to a valid race from the Server XML.  The editor also needs
+    		to be aware of the server XSD to make these links work, i.e. so when adding a race to the English XML the drop down list in the editor correctly shows all the
+    		races from the Server XML.  So the link to the server XSD is necessary to avoid masses of hand coding to supplement the validation performed naturally by the
+    		XSDs and to the editor - but we desperately don't want the Server XSD POJOs visible to the client module.  So as a workaround, the client XSDs are copied
+    		into secondary versions which are identical except that all the references to the Server XSD have been stripped out - that's the version we then run xsd2java on.
+    	</xsd:documentation>
 	</xsd:annotation>
 
 	<xsd:element name="languageDatabase">
 	<xsd:complexType>
 		<xsd:sequence>
-			<!-- Placeholder to insert server DB -->
-			<xsd:element ref="momimesvr:serverDatabase"/>
-			
 			<!-- Language entities -->
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="createAccountFailedReason" type="momimelang:createAccountFailedReason" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="loginFailedReason" type="momimelang:loginFailedReason" />
@@ -242,142 +235,6 @@
 			<xsd:field xpath="@shortcut" />
 		</xsd:key>
 		
-<!-- Foreign keys -->
-
-		<xsd:keyref refer="momimesvr:planePK" name="planeFKplane">
-			<xsd:selector xpath="plane" />
-			<xsd:field xpath="@planeNumber" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:productionTypePK" name="productionTypeFKproductionType">
-			<xsd:selector xpath="productionType" />
-			<xsd:field xpath="@productionTypeID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:mapFeaturePK" name="mapFeatureFKmapFeature">
-			<xsd:selector xpath="mapFeature" />
-			<xsd:field xpath="@mapFeatureID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:tileTypePK" name="tileTypeFKtileType">
-			<xsd:selector xpath="tileType" />
-			<xsd:field xpath="@tileTypeID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:pickTypePK" name="pickTypeFKpickType">
-			<xsd:selector xpath="pickType" />
-			<xsd:field xpath="@pickTypeID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:pickPK" name="pickFKpick">
-			<xsd:selector xpath="pick" />
-			<xsd:field xpath="@pickID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:wizardPK" name="wizardFKwizard">
-			<xsd:selector xpath="wizard" />
-			<xsd:field xpath="@wizardID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:populationTaskPK" name="populationTaskFKpopulationTask">
-			<xsd:selector xpath="populationTask" />
-			<xsd:field xpath="@populationTaskID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:racePK" name="raceFKrace">
-			<xsd:selector xpath="race" />
-			<xsd:field xpath="@raceID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:buildingPK" name="buildingFKbuilding">
-			<xsd:selector xpath="building" />
-			<xsd:field xpath="@buildingID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:citySizePK" name="citySizeFKcitySize">
-			<xsd:selector xpath="citySize" />
-			<xsd:field xpath="@citySizeID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitTypePK" name="unitTypeFKunitType">
-			<xsd:selector xpath="unitType" />
-			<xsd:field xpath="@unitTypeID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitSkillPK" name="unitSkillFKunitSkill">
-			<xsd:selector xpath="unitSkill" />
-			<xsd:field xpath="@unitSkillID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitAttributePK" name="unitAttributeFKunitAttribute">
-			<xsd:selector xpath="unitAttribute" />
-			<xsd:field xpath="@unitAttributeID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitMagicRealmPK" name="unitMagicRealmFKunitMagicRealm">
-			<xsd:selector xpath="unitMagicRealm" />
-			<xsd:field xpath="@unitMagicRealmID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:rangedAttackTypePK" name="rangedAttackTypeFKrangedAttackType">
-			<xsd:selector xpath="rangedAttackType" />
-			<xsd:field xpath="@rangedAttackTypeID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitPK" name="unitFKunit">
-			<xsd:selector xpath="unit" />
-			<xsd:field xpath="@unitID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:experienceLevelPK" name="experienceLevelFKexperienceLevel">
-			<xsd:selector xpath="multilevelFKtosecondaryDB/unitType/experienceLevel" />
-			<xsd:field xpath="@levelNumber" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:combatAreaEffectPK" name="combatAreaEffectFKcombatAreaEffect">
-			<xsd:selector xpath="combatAreaEffect" />
-			<xsd:field xpath="@combatAreaEffectID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:spellRankPK" name="spellRankFKspellRank">
-			<xsd:selector xpath="spellRank" />
-			<xsd:field xpath="@spellRankID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:spellBookSectionPK" name="spellBookSectionFKspellBookSection">
-			<xsd:selector xpath="spellBookSection" />
-			<xsd:field xpath="@spellBookSectionID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:spellPK" name="spellFKspell">
-			<xsd:selector xpath="spell" />
-			<xsd:field xpath="@spellID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:citySpellEffectPK" name="citySpellEffectFKcitySpellEffect">
-			<xsd:selector xpath="citySpellEffect" />
-			<xsd:field xpath="@citySpellEffectID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:languageCategoryPK" name="languageCategoryFKlanguageCategory">
-			<xsd:selector xpath="languageCategory" />
-			<xsd:field xpath="@languageCategoryID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:languageEntryPK" name="languageEntryFKlanguageEntry">
-			<xsd:selector xpath="multilevelFKtosecondaryDB/languageCategory/languageEntry" />
-			<xsd:field xpath="@languageEntryID" />
-		</xsd:keyref>
-
-		<!-- New game form settings, new for 0.9.2 -->
-		<xsd:keyref refer="momimesvr:mapSizePK" name="mapSizeFKmapSize">
-			<xsd:selector xpath="mapSize" />
-			<xsd:field xpath="@mapSizeID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:landProportionPK" name="landProportionFKlandProportion">
-			<xsd:selector xpath="landProportion" />
-			<xsd:field xpath="@landProportionID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:nodeStrengthPK" name="nodeStrengthFKnodeStrength">
-			<xsd:selector xpath="nodeStrength" />
-			<xsd:field xpath="@nodeStrengthID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:difficultyLevelPK" name="difficultyLevelFKdifficultyLevel">
-			<xsd:selector xpath="difficultyLevel" />
-			<xsd:field xpath="@difficultyLevelID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:fogOfWarSettingPK" name="fogOfWarSettingFKfogOfWarSetting">
-			<xsd:selector xpath="fogOfWarSetting" />
-			<xsd:field xpath="@fogOfWarSettingID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:unitSettingPK" name="unitSettingFKunitSetting">
-			<xsd:selector xpath="unitSetting" />
-			<xsd:field xpath="@unitSettingID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:spellSettingPK" name="spellSettingFKspellSetting">
-			<xsd:selector xpath="spellSetting" />
-			<xsd:field xpath="@spellSettingID" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:knownServerPK" name="knownServerFKknownServer">
-			<xsd:selector xpath="knownServer" />
-			<xsd:field xpath="@knownServerID" />
-		</xsd:keyref>
 	</xsd:element>
 		
 <!-- Complex types -->

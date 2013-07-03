@@ -4,16 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
@@ -33,7 +29,6 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
@@ -43,12 +38,10 @@ public final class TestMomServerCityCalculations
 {
 	/**
 	 * Tests the calculateTotalFoodBonusFromBuildings method with the default XML database
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If the food production values from the XML database aren't multiples of 2
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateTotalFoodBonusFromBuildings_Valid () throws IOException, JAXBException, MomException
+	public final void testCalculateTotalFoodBonusFromBuildings_Valid () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final MomServerCityCalculations calc = new MomServerCityCalculations ();
@@ -58,13 +51,10 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the calculateTotalFoodBonusFromBuildings method with an edited XML database in order to cause an error
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If the food production values from the XML database aren't multiples of 2
-	 * @throws RecordNotFoundException If we can't find the value we want to update
+	 * @throws Exception If there is a problem
 	 */
 	@Test(expected=MomException.class)
-	public final void testCalculateTotalFoodBonusFromBuildings_Invalid () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testCalculateTotalFoodBonusFromBuildings_Invalid () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -79,13 +69,10 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the calculateDoubleFarmingRate method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
-	 * @throws MomException If the city's race has no farmers defined or those farmers have no ration production defined
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateDoubleFarmingRate () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testCalculateDoubleFarmingRate () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -158,14 +145,10 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the calculateCitySizeIDAndMinimumFarmers method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we can't find the player who owns the city
-	 * @throws MomException If any of a number of expected items aren't found in the database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateCitySizeIDAndMinimumFarmers () throws IOException, JAXBException, RecordNotFoundException, MomException, PlayerNotFoundException
+	public final void testCalculateCitySizeIDAndMinimumFarmers () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -294,12 +277,10 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the calculateCityScoutingRange cmethod
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateCityScoutingRange () throws IOException, JAXBException, RecordNotFoundException
+	public final void testCalculateCityScoutingRange () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -372,11 +353,10 @@ public final class TestMomServerCityCalculations
 
 	/**
 	 * Tests the canEventuallyConstructBuilding method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCanEventuallyConstructBuilding () throws IOException, JAXBException
+	public final void testCanEventuallyConstructBuilding () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

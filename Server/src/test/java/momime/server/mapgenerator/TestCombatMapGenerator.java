@@ -5,14 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-
-import javax.xml.bind.JAXBException;
-
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.CombatMapLayerID;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.MemoryMaintainedSpellUtils;
@@ -124,11 +118,10 @@ public final class TestCombatMapGenerator
 	
 	/**
 	 * Tests the placeCombatMapElements method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testPlaceCombatMapElements () throws JAXBException, IOException
+	public final void testPlaceCombatMapElements () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final MapAreaOfCombatTiles map = ServerTestData.createCombatMap ();
@@ -342,13 +335,10 @@ public final class TestCombatMapGenerator
 
 	/**
 	 * Tests the generateCombatMap method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If some fatal error happens during map generation
-	 * @throws RecordNotFoundException If some entry isn't found in the db during map generation, or one of the smoothing borders isn't found in the fixed arrays
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGenerateCombatMap () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateCombatMap () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

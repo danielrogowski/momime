@@ -1,13 +1,17 @@
 package momime.server;
 
-import java.io.File;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.net.URL;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
+import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.DifficultyLevelNodeStrength;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
@@ -25,7 +29,7 @@ import momime.common.messages.v0_9_4.MapVolumeOfStrings;
 import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.server.config.ServerConfigConstants;
+import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseFactory;
 import momime.server.database.v0_9_4.DifficultyLevel;
@@ -42,6 +46,7 @@ import momime.server.messages.v0_9_4.ServerGridCell;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
@@ -52,38 +57,36 @@ import com.ndg.map.CoordinateSystemType;
 public final class ServerTestData
 {
 	/**
-	 * @return Location of Original Master of Magic 1.31 rules.Master of Magic Server.xml to test with
-	 * @throws IOException If we are unable to locate the server XML file
+	 * Path and name to locate the server XML file on the classpath
+	 * Note the server XML in src/main/resource and hence on the classpath is only there to allow unit tests to access it - hence this constant
+	 * must only exist in test classes.  Running for real, the XML is read from a folder outside of the JARs so it can be edited.
 	 */
-	public final static File locateServerXmlFile () throws IOException
-	{
-		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
-
-		// Moreover, if we search for something that is on the classpath of the MoMIMEServerDatabase project, and run this test as part of
-		// a maven command line build, we get a URL back of the form jar:file:<maven repository>MoMIMEServerDatabase.jar!/momime.server.database/MoMIMEServerDatabase.xsd
-
-		// We can't alter that URL to locate the server XML file within the JAR, simply because the server XML is intentionally not in the JAR or anywhere in Maven at all
-
-		// So only way to do this is locate some resource in *this* project, and modify the location from there
-		// This makes the assumption that the MoMIMEServerDatabase project is called as such and hasn't been checked out under a different name
-		final URL configXsd = new Object ().getClass ().getResource (ServerConfigConstants.CONFIG_XSD_LOCATION);
-		final File configXsdFile = new File (configXsd.getFile ());
-		final File serverXmlFile = new File (configXsdFile, "../../../../../MoMIMEServerDatabase/src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
-
-		return serverXmlFile.getCanonicalFile ();
-	}
-
+	public static final String SERVER_XML_LOCATION = "/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml";
+	
 	/**
 	 * @return Parsed server database with all the hash maps built, needed by most of the tests 
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
-	public final static ServerDatabaseEx loadServerDatabase () throws IOException, JAXBException
+	public final static ServerDatabaseEx loadServerDatabase () throws Exception
 	{
+		// XSD
+		final URL xsdResource = new Object ().getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
+		assertNotNull ("MoM IME Server XSD could not be found on classpath", xsdResource);
+
+		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
+		
+		final Schema schema = schemaFactory.newSchema (xsdResource);
+
 		final Unmarshaller unmarshaller = JAXBContext.newInstance (ServerDatabase.class).createUnmarshaller ();		
 		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
+		unmarshaller.setSchema (schema);
+		
+		// XML
+		final URL xmlResource = new Object ().getClass ().getResource (SERVER_XML_LOCATION);
+		assertNotNull ("MoM IME Server XML could not be found on classpath", xmlResource);
 
-		final ServerDatabaseEx serverDB = (ServerDatabaseEx) unmarshaller.unmarshal (locateServerXmlFile ());
+		final ServerDatabaseEx serverDB = (ServerDatabaseEx) unmarshaller.unmarshal (xmlResource);
 		serverDB.buildMaps ();
 		return serverDB;
 	}

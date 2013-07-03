@@ -6,13 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
@@ -44,6 +43,7 @@ public final class TestServerDatabaseConverters
 	@Test
 	public final void testBuildNewGameDatabase () throws Exception
 	{
+		// Read XSD
 		final URL xsdResource = getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
 		assertNotNull ("MoM IME Server XSD could not be found on classpath", xsdResource);
 
@@ -52,6 +52,13 @@ public final class TestServerDatabaseConverters
 
 		final Schema xsd = schemaFactory.newSchema (xsdResource);
 		
+		// Locate XML
+		final URL xmlResource = getClass ().getResource (ServerTestData.SERVER_XML_LOCATION);
+		assertNotNull ("MoM IME Server XML could not be found on classpath", xmlResource);
+		
+		final Map<String, URL> map = new HashMap<String, URL> ();
+		map.put ("Original Master of Magic 1.31 rules", xmlResource);
+		
 		// Set up object to test
 		final ServerDatabaseConverters conv = new ServerDatabaseConverters ();
 
@@ -59,9 +66,9 @@ public final class TestServerDatabaseConverters
 		// Locate the server XML file, then go one level up to the folder that it is in
 		final Unmarshaller serverDatabaseUnmarshaller = JAXBContext.newInstance (ServerDatabase.class).createUnmarshaller ();
 		serverDatabaseUnmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
+		serverDatabaseUnmarshaller.setSchema (xsd);
 		
-		final NewGameDatabaseMessage msg = conv.buildNewGameDatabase
-			(new File (ServerTestData.locateServerXmlFile (), "..").getCanonicalFile (), xsd, serverDatabaseUnmarshaller);
+		final NewGameDatabaseMessage msg = conv.buildNewGameDatabase (map, serverDatabaseUnmarshaller);
 		assertEquals (1, msg.getNewGameDatabase ().getMomimeXmlDatabase ().size ());
 
 		final AvailableDatabase db = msg.getNewGameDatabase ().getMomimeXmlDatabase ().get (0);
@@ -90,12 +97,10 @@ public final class TestServerDatabaseConverters
 
 	/**
 	 * Tests the buildClientDatabase method on valid numbers of spell picks
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem loading the server XML file
-	 * @throws RecordNotFoundException If one of the wizards does not have picks for the specified number of human picks defined
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testBuildClientDatabase_Valid () throws IOException, JAXBException, RecordNotFoundException
+	public final void testBuildClientDatabase_Valid () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final ServerDatabaseConverters conv = new ServerDatabaseConverters ();
@@ -114,12 +119,10 @@ public final class TestServerDatabaseConverters
 
 	/**
 	 * Tests the buildClientDatabase method on a number of spell picks that doesn't exist
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem loading the server XML file
-	 * @throws RecordNotFoundException If one of the wizards does not have picks for the specified number of human picks defined
+	 * @throws Exception If there is a problem
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testBuildClientDatabase_PickCountDoesntExist () throws IOException, JAXBException, RecordNotFoundException
+	public final void testBuildClientDatabase_PickCountDoesntExist () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final ServerDatabaseConverters conv = new ServerDatabaseConverters ();

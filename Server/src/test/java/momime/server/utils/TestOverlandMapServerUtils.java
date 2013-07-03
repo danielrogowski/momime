@@ -6,13 +6,11 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
@@ -56,13 +54,10 @@ public class TestOverlandMapServerUtils
 {
 	/**
 	 * Tests the chooseRandomRaceForPlane method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
- 	 * @throws MomException If no races are defined with the requested plane
- 	 * @throws RecordNotFoundException If we can't find the returned race ID in the database
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testChooseRandomRaceForPlane () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testChooseRandomRaceForPlane () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -81,12 +76,10 @@ public class TestOverlandMapServerUtils
 
 	/**
 	 * Tests the setContinentalRace method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testSetContinentalRace () throws IOException, JAXBException, RecordNotFoundException
+	public final void testSetContinentalRace () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -132,13 +125,10 @@ public class TestOverlandMapServerUtils
 
 	/**
 	 * Tests the decideAllContinentalRaces method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
- 	 * @throws MomException If no races are defined for a particular plane
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDecideAllContinentalRaces () throws IOException, JAXBException, RecordNotFoundException, MomException
+	public final void testDecideAllContinentalRaces () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

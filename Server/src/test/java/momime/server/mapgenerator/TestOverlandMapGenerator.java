@@ -6,8 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
 import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
@@ -34,13 +32,10 @@ public final class TestOverlandMapGenerator
 {
 	/**
 	 * Tests the setAllToWater method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If some fatal error happens during map generation
-	 * @throws RecordNotFoundException If there is a problem building the session description
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testSetAllToWater () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testSetAllToWater () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -110,13 +105,10 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the checkAllDirectionsLeadToGrass method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If some fatal error happens during map generation
-	 * @throws RecordNotFoundException If there is a problem building the session description
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCheckAllDirectionsLeadToGrass () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testCheckAllDirectionsLeadToGrass () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -168,13 +160,10 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the chooseRandomNodeTileTypeID method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If some fatal error happens during map generation
-	 * @throws RecordNotFoundException If we can't find the returned tile type in the DB
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testChooseRandomNodeTileTypeID () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testChooseRandomNodeTileTypeID () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -194,13 +183,10 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the chooseRandomLairFeatureID method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If some fatal error happens during map generation
-	 * @throws RecordNotFoundException If we can't find the returned map feature in the DB
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testChooseRandomLairFeatureID () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testChooseRandomLairFeatureID () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -220,11 +206,10 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the findMostExpensiveMonster method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testFindMostExpensiveMonster () throws IOException, JAXBException
+	public final void testFindMostExpensiveMonster () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		final OverlandMapGenerator mapGen = new OverlandMapGenerator ();
@@ -279,13 +264,10 @@ public final class TestOverlandMapGenerator
 
 	/**
 	 * Tests the generateOverlandTerrain method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws MomException If some fatal error happens during map generation
-	 * @throws RecordNotFoundException If some entry isn't found in the db during map generation, or one of the smoothing borders isn't found in the fixed arrays
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGenerateOverlandTerrain () throws IOException, JAXBException, MomException, RecordNotFoundException
+	public final void testGenerateOverlandTerrain () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

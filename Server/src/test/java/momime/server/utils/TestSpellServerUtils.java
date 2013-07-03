@@ -2,11 +2,6 @@ package momime.server.utils;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import java.io.IOException;
-
-import javax.xml.bind.JAXBException;
-
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.messages.SpellUtils;
@@ -28,11 +23,10 @@ public final class TestSpellServerUtils
 {
 	/**
 	 * Tests the validateResearch method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateResearch () throws IOException, JAXBException
+	public final void testValidateResearch () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

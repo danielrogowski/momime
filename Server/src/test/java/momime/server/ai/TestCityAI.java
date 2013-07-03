@@ -4,16 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
-import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -42,13 +37,10 @@ public final class TestCityAI
 {
 	/**
 	 * Tests the chooseCityLocation method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
-	 * @throws MomException If the food production values from the XML database aren't multiples of 2
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testChooseCityLocation () throws IOException, JAXBException, RecordNotFoundException, MomException
+	public final void testChooseCityLocation () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -161,13 +153,10 @@ public final class TestCityAI
 
 	/**
 	 * Tests the findWorkersToConvertToFarmers method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
-	 * @throws RecordNotFoundException If there is a building that cannot be found in the DB
-	 * @throws MomException If a city's race has no farmers defined or those farmers have no ration production defined
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testFindWorkersToConvertToFarmers () throws IOException, JAXBException, RecordNotFoundException, MomException
+	public final void testFindWorkersToConvertToFarmers () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
@@ -248,11 +237,10 @@ public final class TestCityAI
 
 	/**
 	 * Tests the decideWhatToBuild method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDecideWhatToBuild () throws IOException, JAXBException
+	public final void testDecideWhatToBuild () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

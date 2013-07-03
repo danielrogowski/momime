@@ -25,6 +25,7 @@
 						<goals><goal>generate</goal></goals>
 						<configuration>
 							<schemaDirectory>src/main/resources/momime.client.graphics</schemaDirectory>
+							<schemaIncludes><include>MoMIMEGraphicsDatabase_NoServerXsdLink.xsd</include></schemaIncludes>
 							<generateDirectory>target/generated-sources/xjc-momime-graphicsdb</generateDirectory>
 							<episodeFile>target/generated-sources/xjc-momime-graphicsdb/META-INF/momime-graphicsdb.episode</episodeFile>
 							<extension>true</extension>
@@ -57,27 +58,6 @@
 										<resource>META-INF/momime-commondb.episode</resource>
 									</dependencyResource>
 								</binding>
-								<binding>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-common</artifactId>
-										<resource>META-INF/momime-clientdb.episode</resource>
-									</dependencyResource>
-								</binding>
-								<binding>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-common</artifactId>
-										<resource>META-INF/momime-commonmsgs.episode</resource>
-									</dependencyResource>
-								</binding>
-								<binding>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-serverdatabase</artifactId>
-										<resource>META-INF/momime-serverdb.episode</resource>
-									</dependencyResource>
-								</binding>
 							</bindings>
 							<catalogs>
 								<catalog>
@@ -108,27 +88,6 @@
 										<resource>momime.common.database/catalog.txt</resource>
 									</dependencyResource>
 								</catalog>
-								<catalog>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-common</artifactId>
-										<resource>momime.client.database/catalog.txt</resource>
-									</dependencyResource>
-								</catalog>
-								<catalog>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-common</artifactId>
-										<resource>momime.common.messages/catalog.txt</resource>
-									</dependencyResource>
-								</catalog>
-								<catalog>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-serverdatabase</artifactId>
-										<resource>momime.server.database/catalog.txt</resource>
-									</dependencyResource>
-								</catalog>
 							</catalogs>
 						</configuration>
 					</execution>
@@ -138,6 +97,7 @@
 						<goals><goal>generate</goal></goals>
 						<configuration>
 							<schemaDirectory>src/main/resources/momime.client.language</schemaDirectory>
+							<schemaIncludes><include>MoMIMELanguageDatabase_NoServerXsdLink.xsd</include></schemaIncludes>
 							<generateDirectory>target/generated-sources/xjc-momime-languagedb</generateDirectory>
 							<episodeFile>target/generated-sources/xjc-momime-languagedb/META-INF/momime-languagedb.episode</episodeFile>
 							<extension>true</extension>
@@ -170,27 +130,6 @@
 										<resource>META-INF/momime-commondb.episode</resource>
 									</dependencyResource>
 								</binding>
-								<binding>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-common</artifactId>
-										<resource>META-INF/momime-clientdb.episode</resource>
-									</dependencyResource>
-								</binding>
-								<binding>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-common</artifactId>
-										<resource>META-INF/momime-commonmsgs.episode</resource>
-									</dependencyResource>
-								</binding>
-								<binding>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-serverdatabase</artifactId>
-										<resource>META-INF/momime-serverdb.episode</resource>
-									</dependencyResource>
-								</binding>
 							</bindings>
 							<catalogs>
 								<catalog>
@@ -219,27 +158,6 @@
 										<groupId>com.ndg.momime</groupId>
 										<artifactId>momime-common</artifactId>
 										<resource>momime.common.database/catalog.txt</resource>
-									</dependencyResource>
-								</catalog>
-								<catalog>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-common</artifactId>
-										<resource>momime.client.database/catalog.txt</resource>
-									</dependencyResource>
-								</catalog>
-								<catalog>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-common</artifactId>
-										<resource>momime.common.messages/catalog.txt</resource>
-									</dependencyResource>
-								</catalog>
-								<catalog>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-serverdatabase</artifactId>
-										<resource>momime.server.database/catalog.txt</resource>
 									</dependencyResource>
 								</catalog>
 							</catalogs>

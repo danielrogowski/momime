@@ -2,11 +2,6 @@ package momime.server.calculations;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-
-import javax.xml.bind.JAXBException;
-
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
 import momime.common.messages.MemoryGridCellUtils;
@@ -51,11 +46,10 @@ public final class TestMomFogOfWarCalculations
 
 	/**
 	 * Tests the canSeeMidTurnOnAnyPlaneIfTower method
-	 * @throws IOException If we are unable to locate the server XML file
-	 * @throws JAXBException If there is a problem reading the XML file
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCanSeeMidTurnOnAnyPlaneIfTower () throws IOException, JAXBException
+	public final void testCanSeeMidTurnOnAnyPlaneIfTower () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 

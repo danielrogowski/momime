@@ -20,7 +20,6 @@ import momime.common.database.v0_9_4.SpellValidUnitTarget;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.player.MomSpellCastType;
 
 import org.junit.Test;
 

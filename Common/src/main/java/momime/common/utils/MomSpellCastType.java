@@ -1,4 +1,4 @@
-package momime.common.player;
+package momime.common.utils;
 
 /**
  * adapted from TMomSpellCastType in Components\MomPlayerSpells.pas

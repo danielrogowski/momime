@@ -18,7 +18,6 @@ import momime.common.database.v0_9_4.SummonedUnit;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.player.MomSpellCastType;
 
 /**
  * Simple spell lookups and calculations

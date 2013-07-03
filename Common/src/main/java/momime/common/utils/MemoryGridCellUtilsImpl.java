@@ -17,10 +17,10 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
  *
  * public final static boolean isNodeLairTower (final OverlandMapTerrainData terrainData)
  */
-public final class MemoryGridCellUtils implements IMemoryGridCellUtils
+public final class MemoryGridCellUtilsImpl implements IMemoryGridCellUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MemoryGridCellUtils.class.getName ());
+	private final Logger log = Logger.getLogger (MemoryGridCellUtilsImpl.class.getName ());
 	
 	/**
 	 * This is used because the data structures hold blank for an unknown tile type that we can't see, but the XML files
@@ -73,13 +73,13 @@ public final class MemoryGridCellUtils implements IMemoryGridCellUtils
 	@Override
 	public final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map)
 	{
-		log.entering (MemoryGridCellUtils.class.getName (), "blankBuildingsSoldThisTurn");
+		log.entering (MemoryGridCellUtilsImpl.class.getName (), "blankBuildingsSoldThisTurn");
 
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 					cell.setBuildingIdSoldThisTurn (null);
 
-		log.exiting (MemoryGridCellUtils.class.getName (), "blankBuildingsSoldThisTurn");
+		log.exiting (MemoryGridCellUtilsImpl.class.getName (), "blankBuildingsSoldThisTurn");
 	}
 }

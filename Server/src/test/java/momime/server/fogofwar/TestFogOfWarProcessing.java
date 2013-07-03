@@ -23,11 +23,11 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.utils.MemoryCombatAreaEffectUtils;
-import momime.common.utils.MemoryGridCellUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
+import momime.common.utils.MemoryGridCellUtilsImpl;
+import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
+import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerUnitCalculations;
@@ -144,7 +144,7 @@ public final class TestFogOfWarProcessing
 	public final void testMarkVisibleArea () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 
 		// Map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
@@ -320,15 +320,15 @@ public final class TestFogOfWarProcessing
 		trueMap.getMaintainedSpell ().add (naturesEye);
 
 		// Set up test object
-		unitUtils.setPlayerPickUtils (new PlayerPickUtils ());
-		unitUtils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtils ());
+		unitUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		unitUtils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
 		
 		final MomServerUnitCalculations serverUnitCalculations = new MomServerUnitCalculations ();
 		serverUnitCalculations.setUnitUtils (unitUtils);
 		
 		final FogOfWarProcessing proc = new FogOfWarProcessing ();
-		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
-		proc.setMemoryGridCellUtils (new MemoryGridCellUtils ());
+		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
+		proc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		proc.setServerCityCalculations (new MomServerCityCalculations ());
 		proc.setServerUnitCalculations (serverUnitCalculations);
 

@@ -17,10 +17,10 @@ import momime.common.utils.ISpellUtils;
 /**
  * Calculations for dealing with spell casting cost reductions and research bonuses
  */
-public final class MomSpellCalculations implements IMomSpellCalculations
+public final class MomSpellCalculationsImpl implements IMomSpellCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomSpellCalculations.class.getName ());
+	private final Logger log = Logger.getLogger (MomSpellCalculationsImpl.class.getName ());
 	
 	/** Format used for doubles in debug messages */
 	private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat ("0.000");
@@ -43,7 +43,7 @@ public final class MomSpellCalculations implements IMomSpellCalculations
 		final List<PlayerPick> picks, final ICommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (MomSpellCalculations.class.getName (), "calculateCastingCostReduction", new String [] {new Integer (bookCount).toString (),
+		log.entering (MomSpellCalculationsImpl.class.getName (), "calculateCastingCostReduction", new String [] {new Integer (bookCount).toString (),
 			new Integer (spellSettings.getSpellBooksToObtainFirstReduction ()).toString (),
 			new Integer (spellSettings.getSpellBooksCastingReduction ()).toString (),
 			spellSettings.getSpellBooksCastingReductionCombination ().toString (), new Integer (spellSettings.getSpellBooksCastingReductionCap ()).toString (),
@@ -138,7 +138,7 @@ public final class MomSpellCalculations implements IMomSpellCalculations
 		else
 			log.finest ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) + "%");
 
-		log.exiting (MomSpellCalculations.class.getName (), "calculateCastingCostReduction", castingCostPercentageReduction);
+		log.exiting (MomSpellCalculationsImpl.class.getName (), "calculateCastingCostReduction", castingCostPercentageReduction);
 		return castingCostPercentageReduction;
 	}
 
@@ -157,7 +157,7 @@ public final class MomSpellCalculations implements IMomSpellCalculations
 		final List<PlayerPick> picks, final ICommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (MomSpellCalculations.class.getName (), "calculateResearchBonus", new String [] {new Integer (bookCount).toString (),
+		log.entering (MomSpellCalculationsImpl.class.getName (), "calculateResearchBonus", new String [] {new Integer (bookCount).toString (),
 			new Integer (spellSettings.getSpellBooksToObtainFirstReduction ()).toString (),
 			new Integer (spellSettings.getSpellBooksResearchBonus ()).toString (),
 			spellSettings.getSpellBooksResearchBonusCombination ().toString (), new Integer (spellSettings.getSpellBooksResearchBonusCap ()).toString (),
@@ -252,7 +252,7 @@ public final class MomSpellCalculations implements IMomSpellCalculations
 		else
 			log.finest ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) + "%");
 
-		log.exiting (MomSpellCalculations.class.getName (), "calculateResearchBonus", researchPercentageBonus);
+		log.exiting (MomSpellCalculationsImpl.class.getName (), "calculateResearchBonus", researchPercentageBonus);
 		return researchPercentageBonus;
 	}
 

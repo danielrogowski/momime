@@ -13,14 +13,14 @@ import momime.common.database.newgame.v0_9_4.CastingReductionCombination;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
 import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.utils.SpellUtils;
+import momime.common.utils.SpellUtilsImpl;
 
 import org.junit.Test;
 
 /**
  * Tests the calculations in the MomSpellCalculations class
  */
-public final class TestMomSpellCalculations
+public final class TestMomSpellCalculationsImpl
 {
 	/** How much we tolerate floating point results to be wrong by because of rounding errors */
 	private static final double DOUBLE_TOLERANCE = 0.0000000000001;
@@ -87,8 +87,8 @@ public final class TestMomSpellCalculations
 		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
-		final MomSpellCalculations calc = new MomSpellCalculations ();
-		calc.setSpellUtils (new SpellUtils ());
+		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		calc.setSpellUtils (new SpellUtilsImpl ());
 		
 		// Tests for different spells and whether we pass in the retort list or not
 		assertEquals ("10 books at standard settings should give 3x casting cost reduction", 30, calc.calculateCastingCostReduction (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
@@ -148,8 +148,8 @@ public final class TestMomSpellCalculations
 		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
-		final MomSpellCalculations calc = new MomSpellCalculations ();
-		calc.setSpellUtils (new SpellUtils ());
+		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		calc.setSpellUtils (new SpellUtilsImpl ());
 		
 		// Tests for different spells and whether we pass in the retort list or not
 		assertEquals ("10 books at standard settings should give 3x research bonus", 30, calc.calculateResearchBonus (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
@@ -209,8 +209,8 @@ public final class TestMomSpellCalculations
 		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
-		final MomSpellCalculations calc = new MomSpellCalculations ();
-		calc.setSpellUtils (new SpellUtils ());
+		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		calc.setSpellUtils (new SpellUtilsImpl ());
 		
 		// Tests for different spells and whether we pass in the retort list or not
 		assertEquals ("10 books at standard settings should give 3x casting cost reduction", 22.1312, calc.calculateCastingCostReduction (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);
@@ -270,8 +270,8 @@ public final class TestMomSpellCalculations
 		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Set up object to test
-		final MomSpellCalculations calc = new MomSpellCalculations ();
-		calc.setSpellUtils (new SpellUtils ());
+		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		calc.setSpellUtils (new SpellUtilsImpl ());
 		
 		// Tests for different spells and whether we pass in the retort list or not
 		assertEquals ("10 books at standard settings should give 3x research bonus", 25.9712, calc.calculateResearchBonus (10, spellSettings, null, null, db), DOUBLE_TOLERANCE);

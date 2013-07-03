@@ -18,10 +18,10 @@ import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.MemoryCombatAreaEffectUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.MemoryBuildingUtilsImpl;
+import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
+import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
+import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 
@@ -249,7 +249,7 @@ public final class TestFogOfWarDuplication
 	public final void testCopyBuilding ()
 	{
 		final FogOfWarDuplication dup = new FogOfWarDuplication ();
-		dup.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		dup.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 
 		final List<MemoryBuilding> destination = new ArrayList<MemoryBuilding> ();
 
@@ -305,7 +305,7 @@ public final class TestFogOfWarDuplication
 	public final void testCopyUnit () throws Exception
 	{
 		final FogOfWarDuplication dup = new FogOfWarDuplication ();
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		dup.setUnitUtils (utils);
 
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
@@ -366,7 +366,7 @@ public final class TestFogOfWarDuplication
 	public final void testCopyMaintainedSpell ()
 	{
 		final FogOfWarDuplication dup = new FogOfWarDuplication ();
-		dup.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
+		dup.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
 
 		final List<MemoryMaintainedSpell> destination = new ArrayList<MemoryMaintainedSpell> ();
 
@@ -425,7 +425,7 @@ public final class TestFogOfWarDuplication
 	public final void testCopyCombatAreaEffect ()
 	{
 		final FogOfWarDuplication dup = new FogOfWarDuplication ();
-		dup.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtils ());
+		dup.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
 
 		final List<MemoryCombatAreaEffect> destination = new ArrayList<MemoryCombatAreaEffect> ();
 

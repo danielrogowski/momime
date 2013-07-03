@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSkillCalculations;
-import momime.common.calculations.MomSpellCalculations;
+import momime.common.calculations.MomSkillCalculationsImpl;
+import momime.common.calculations.MomSpellCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.ICommonDatabase;
@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * Tests the ResourceValueUtils class
  */
-public final class TestResourceValueUtils
+public final class TestResourceValueUtilsImpl
 {
 	/**
 	 * Tests the findResourceValue method where the resource value does exist
@@ -40,7 +40,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		assertEquals ("RE02", utils.findResourceValue (resourceValues, "RE02").getProductionTypeID ());
 	}
 
@@ -58,7 +58,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		assertNull (utils.findResourceValue (resourceValues, "RE04"));
 	}
 
@@ -77,7 +77,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		assertEquals (20, utils.findAmountPerTurnForProductionType (resourceValues, "RE02"));
 	}
 
@@ -96,7 +96,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		assertEquals (0, utils.findAmountPerTurnForProductionType (resourceValues, "RE04"));
 	}
 
@@ -115,7 +115,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		assertEquals (20, utils.findAmountStoredForProductionType (resourceValues, "RE02"));
 	}
 
@@ -134,7 +134,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		assertEquals (0, utils.findAmountStoredForProductionType (resourceValues, "RE04"));
 	}
 
@@ -154,7 +154,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.addToAmountPerTurn (resourceValues, "RE02", 5);
 
 		assertEquals (2, resourceValues.size ());
@@ -182,7 +182,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.addToAmountPerTurn (resourceValues, "RE03", 5);
 
 		assertEquals (3, resourceValues.size ());
@@ -213,7 +213,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.addToAmountStored (resourceValues, "RE02", 5);
 
 		assertEquals (2, resourceValues.size ());
@@ -241,7 +241,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.addToAmountStored (resourceValues, "RE03", 5);
 
 		assertEquals (3, resourceValues.size ());
@@ -272,7 +272,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.zeroAmountsPerTurn (resourceValues);
 
 		assertEquals (2, resourceValues.size ());
@@ -300,7 +300,7 @@ public final class TestResourceValueUtils
 			resourceValues.add (newValue);
 		}
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.zeroAmountsStored (resourceValues);
 
 		assertEquals (2, resourceValues.size ());
@@ -325,8 +325,8 @@ public final class TestResourceValueUtils
 		skillImprovement.setAmountStored (10);
 		resourceValues.add (skillImprovement);
 
-		final ResourceValueUtils utils = new ResourceValueUtils ();
-		utils.setSkillCalculations (new MomSkillCalculations ());
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setSkillCalculations (new MomSkillCalculationsImpl ());
 		assertEquals (3, utils.calculateCastingSkillOfPlayer (resourceValues));
 	}
 
@@ -338,12 +338,12 @@ public final class TestResourceValueUtils
 	@Test
 	public final void testCalculateAmountPerTurnForProductionType () throws MomException, RecordNotFoundException
 	{
-		final ResourceValueUtils utils = new ResourceValueUtils ();
-		final PlayerPickUtils playerPickUtils = new PlayerPickUtils ();
-		final MomSpellCalculations spellCalculations = new MomSpellCalculations ();
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		final PlayerPickUtilsImpl playerPickUtils = new PlayerPickUtilsImpl ();
+		final MomSpellCalculationsImpl spellCalculations = new MomSpellCalculationsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
 		utils.setSpellCalculations (spellCalculations);
-		spellCalculations.setSpellUtils (new SpellUtils ());
+		spellCalculations.setSpellUtils (new SpellUtilsImpl ());
 		
 		final MomPersistentPlayerPrivateKnowledge privateInfo = new MomPersistentPlayerPrivateKnowledge ();
 		final SpellSettingData spellSettings = GenerateTestData.createOriginalSpellSettings ();

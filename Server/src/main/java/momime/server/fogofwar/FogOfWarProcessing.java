@@ -9,7 +9,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
@@ -229,7 +229,7 @@ public class FogOfWarProcessing implements IFogOfWarProcessing
 								else
 								{
 									// Standard city pattern
-									for (final SquareMapDirection direction : MomCityCalculations.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+									for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 										if (CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
 											canSee (priv.getFogOfWar (), coords.getX (), coords.getY (), coords.getPlane ());
 								}

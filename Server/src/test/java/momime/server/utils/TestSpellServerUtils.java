@@ -7,7 +7,7 @@ import momime.common.database.v0_9_4.Spell;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.SpellUtils;
+import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 
@@ -52,7 +52,7 @@ public final class TestSpellServerUtils
 		
 		// Set up object to test
 		final SpellServerUtils utils = new SpellServerUtils ();
-		final SpellUtils spellUtils = new SpellUtils ();
+		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 
 		// Can't research anything if its unavailable

@@ -9,10 +9,10 @@ import momime.common.messages.v0_9_4.PendingMovement;
 /**
  * Helper methods for dealing with pending movement paths
  */
-public final class PendingMovementUtils implements IPendingMovementUtils
+public final class PendingMovementUtilsImpl implements IPendingMovementUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (PendingMovementUtils.class.getName ());
+	private final Logger log = Logger.getLogger (PendingMovementUtilsImpl.class.getName ());
 	
 	/**
 	 * Cancels any pending moves for this unit
@@ -24,7 +24,7 @@ public final class PendingMovementUtils implements IPendingMovementUtils
 	@Override
 	public final void removeUnitFromAnyPendingMoves (final List<PendingMovement> moves, final int unitURN)
 	{
-		log.entering (PendingMovementUtils.class.getName (), "removeUnitFromAnyPendingMoves", unitURN);
+		log.entering (PendingMovementUtilsImpl.class.getName (), "removeUnitFromAnyPendingMoves", unitURN);
 		
 		final Iterator<PendingMovement> movesIter = moves.iterator ();
 		while (movesIter.hasNext ())
@@ -48,7 +48,7 @@ public final class PendingMovementUtils implements IPendingMovementUtils
 				movesIter.remove ();
 		}
 		
-		log.exiting (PendingMovementUtils.class.getName (), "removeUnitFromAnyPendingMoves");
+		log.exiting (PendingMovementUtilsImpl.class.getName (), "removeUnitFromAnyPendingMoves");
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public final class PendingMovementUtils implements IPendingMovementUtils
 	@Override
 	public final void removeAnyPendingMovesThatIncludeUnit (final List<PendingMovement> moves, final int unitURN)
 	{
-		log.entering (PendingMovementUtils.class.getName (), "removeUnitFromAnyPendingMoves", unitURN);
+		log.entering (PendingMovementUtilsImpl.class.getName (), "removeUnitFromAnyPendingMoves", unitURN);
 		
 		final Iterator<PendingMovement> movesIter = moves.iterator ();
 		while (movesIter.hasNext ())
@@ -70,6 +70,6 @@ public final class PendingMovementUtils implements IPendingMovementUtils
 				movesIter.remove ();
 		}
 		
-		log.exiting (PendingMovementUtils.class.getName (), "removeUnitFromAnyPendingMoves");
+		log.exiting (PendingMovementUtilsImpl.class.getName (), "removeUnitFromAnyPendingMoves");
 	}
 }

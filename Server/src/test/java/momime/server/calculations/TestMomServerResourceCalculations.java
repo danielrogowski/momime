@@ -14,8 +14,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
-import momime.common.calculations.MomSkillCalculations;
+import momime.common.calculations.MomCityCalculationsImpl;
+import momime.common.calculations.MomSkillCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
@@ -41,10 +41,10 @@ import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.IResourceValueUtils;
 import momime.common.utils.ISpellUtils;
-import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.MemoryBuildingUtilsImpl;
+import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.ResourceValueUtilsImpl;
+import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -93,16 +93,16 @@ public final class TestMomServerResourceCalculations
 		players.add (player);
 		
 		// Set up test object
-		final UnitUtils unitUtils = new UnitUtils ();
-		final PlayerPickUtils playerPickUtils = new PlayerPickUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+		final PlayerPickUtilsImpl playerPickUtils = new PlayerPickUtilsImpl ();
 		unitUtils.setPlayerPickUtils (playerPickUtils);
 		
-		final MomCityCalculations cityCalculations = new MomCityCalculations ();
-		cityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		final MomCityCalculationsImpl cityCalculations = new MomCityCalculationsImpl ();
+		cityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		cityCalculations.setPlayerPickUtils (playerPickUtils);
 		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
-		calc.setResourceValueUtils (new ResourceValueUtils ());
+		calc.setResourceValueUtils (new ResourceValueUtilsImpl ());
 		calc.setUnitServerUtils (new UnitServerUtils ());
 		calc.setCityCalculations (cityCalculations);
 		calc.setUnitUtils (unitUtils);
@@ -474,11 +474,11 @@ public final class TestMomServerResourceCalculations
 		trueMap.getMaintainedSpell ().add (natureAwarenessOtherPlayer);
 
 		// Set up test object
-		final UnitUtils unitUtils = new UnitUtils ();
-		unitUtils.setPlayerPickUtils (new PlayerPickUtils ());
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+		unitUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
@@ -803,8 +803,8 @@ public final class TestMomServerResourceCalculations
 		priv.getResourceValue ().add (skillImprovement);
 		
 		// Set up test object
-		final ResourceValueUtils resourceValueUtils = new ResourceValueUtils ();
-		resourceValueUtils.setSkillCalculations (new MomSkillCalculations ());
+		final ResourceValueUtilsImpl resourceValueUtils = new ResourceValueUtilsImpl ();
+		resourceValueUtils.setSkillCalculations (new MomSkillCalculationsImpl ());
 		
 		final MomServerResourceCalculations calc = new MomServerResourceCalculations ();
 		calc.setResourceValueUtils (resourceValueUtils);

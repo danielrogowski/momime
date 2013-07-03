@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSpellCalculations;
+import momime.common.calculations.MomSpellCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.ICommonDatabase;
@@ -26,7 +26,7 @@ import org.junit.Test;
 /**
  * Tests the SpellUtils class
  */
-public final class TestSpellUtils
+public final class TestSpellUtilsImpl
 {
 	/** Life creature */
 	private static final String LIFE_CREATURE = "LT01";
@@ -60,7 +60,7 @@ public final class TestSpellUtils
 			statuses.add (thisStatus);
 		}
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (GenerateTestData.MAGIC_SPIRIT_SPELL, utils.findSpellResearchStatus (statuses, GenerateTestData.MAGIC_SPIRIT_SPELL).getSpellID ());
 	}
 
@@ -82,7 +82,7 @@ public final class TestSpellUtils
 			statuses.add (thisStatus);
 		}
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		utils.findSpellResearchStatus (statuses, "X");
 	}
 
@@ -95,7 +95,7 @@ public final class TestSpellUtils
 	public final void testSpellSummonsUnitTypeID () throws MomException, RecordNotFoundException
 	{
 		final ICommonDatabase db = GenerateTestData.createDB ();
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 
 		assertNull (utils.spellSummonsUnitTypeID (GenerateTestData.createArcaneNormalSpell (), db));
 		assertEquals ("S", utils.spellSummonsUnitTypeID (GenerateTestData.createArcaneSummoningSpell (), db));
@@ -116,7 +116,7 @@ public final class TestSpellUtils
 		final Spell spell = new Spell ();
 		spell.setOverlandCastingCost (1);
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertTrue (utils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND));
 		assertFalse (utils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT));
 	}
@@ -131,7 +131,7 @@ public final class TestSpellUtils
 		final Spell spell = new Spell ();
 		spell.setCombatCastingCost (1);
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertFalse (utils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND));
 		assertTrue (utils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT));
 	}
@@ -147,7 +147,7 @@ public final class TestSpellUtils
 		spell.setOverlandCastingCost (1);
 		spell.setCombatCastingCost (1);
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertTrue (utils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND));
 		assertTrue (utils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT));
 	}
@@ -161,9 +161,9 @@ public final class TestSpellUtils
 	public final void testGetReducedOverlandCastingCost () throws MomException, RecordNotFoundException
 	{
 		final ICommonDatabase db = GenerateTestData.createDB ();
-		final SpellUtils utils = new SpellUtils ();
-		final MomSpellCalculations calc = new MomSpellCalculations ();
-		final PlayerPickUtils playerPickUtils = new PlayerPickUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		final PlayerPickUtilsImpl playerPickUtils = new PlayerPickUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
 		utils.setSpellCalculations (calc);
 		calc.setSpellUtils (utils);
@@ -198,9 +198,9 @@ public final class TestSpellUtils
 	public final void testGetReducedCombatCastingCost () throws MomException, RecordNotFoundException
 	{
 		final ICommonDatabase db = GenerateTestData.createDB ();
-		final SpellUtils utils = new SpellUtils ();
-		final MomSpellCalculations calc = new MomSpellCalculations ();
-		final PlayerPickUtils playerPickUtils = new PlayerPickUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		final PlayerPickUtilsImpl playerPickUtils = new PlayerPickUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
 		utils.setSpellCalculations (calc);
 		calc.setSpellUtils (utils);
@@ -246,7 +246,7 @@ public final class TestSpellUtils
 		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
 
 		// This also proves that passing in null doesn't throw a NullPointerException if we pass in false
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING, utils.getModifiedSectionID (spell, null, false));
 	}
 
@@ -264,7 +264,7 @@ public final class TestSpellUtils
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.UNAVAILABLE);
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK, utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
@@ -282,7 +282,7 @@ public final class TestSpellUtils
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.NOT_IN_SPELL_BOOK);
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK, utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
@@ -300,7 +300,7 @@ public final class TestSpellUtils
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE);
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS, utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
@@ -318,7 +318,7 @@ public final class TestSpellUtils
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS, utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
@@ -336,7 +336,7 @@ public final class TestSpellUtils
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING, utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
@@ -347,7 +347,7 @@ public final class TestSpellUtils
 	@Test
 	public final void testSpellCanTargetMagicRealmLifeformType ()
 	{
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		
 		// Resist elements can be cast on anything (has no Targets defined)
 		final Spell resistElements = new Spell ();
@@ -421,7 +421,7 @@ public final class TestSpellUtils
 			statuses.add (thisStatus);
 		}
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		
 		// Do a count while they're all still unavailable
 		assertEquals (2, utils.getSpellsForRealmRankStatus (statuses, GenerateTestData.CHAOS_BOOK, GenerateTestData.COMMON, SpellResearchStatusID.UNAVAILABLE, db).size ());
@@ -463,7 +463,7 @@ public final class TestSpellUtils
 		statuses.get (1).setStatus (SpellResearchStatusID.AVAILABLE);
 		statuses.get (3).setStatus (SpellResearchStatusID.AVAILABLE);
 
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (2, utils.getSpellsForStatus (statuses, SpellResearchStatusID.AVAILABLE, db).size ());
 		assertEquals (db.getSpell ().size () - 2, utils.getSpellsForStatus (statuses, SpellResearchStatusID.UNAVAILABLE, db).size ());
 	}
@@ -476,7 +476,7 @@ public final class TestSpellUtils
 	public final void testGetSpellsForRealmAndRank () throws RecordNotFoundException
 	{
 		final ICommonDatabase db = GenerateTestData.createDB ();
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 
 		final List<SpellResearchStatus> statuses = new ArrayList<SpellResearchStatus> ();
 		for (final Spell thisSpell : db.getSpell ())
@@ -512,7 +512,7 @@ public final class TestSpellUtils
 		}
 
 		// Do a count while they're all still unavailable
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (6, utils.getSpellsForRankAndStatus (statuses, GenerateTestData.COMMON, SpellResearchStatusID.UNAVAILABLE, db).size ());
 		assertEquals (1, utils.getSpellsForRankAndStatus (statuses, GenerateTestData.UNCOMMON, SpellResearchStatusID.UNAVAILABLE, db).size ());
 
@@ -545,7 +545,7 @@ public final class TestSpellUtils
 		}
 
 		// Do a count while they're all still unavailable
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (2, utils.getSpellsNotInBookForRealmAndRank (statuses, GenerateTestData.CHAOS_BOOK, GenerateTestData.COMMON, db).size ());
 		assertEquals (3, utils.getSpellsNotInBookForRealmAndRank (statuses, null, GenerateTestData.COMMON, db).size ());
 
@@ -576,7 +576,7 @@ public final class TestSpellUtils
 		}
 
 		// Do a count while they're all still unavailable
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		assertEquals (2, utils.getSpellRanksForStatus (statuses, SpellResearchStatusID.UNAVAILABLE, db).size ());
 
 		// Only 1 uncommon spell in the test data, so changing its status should reduce the count
@@ -592,7 +592,7 @@ public final class TestSpellUtils
 	public final void testGetSpellRanksForMagicRealm () throws RecordNotFoundException
 	{
 		final ICommonDatabase db = GenerateTestData.createDB ();
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 
 		assertEquals (2, utils.getSpellRanksForMagicRealm (db.getSpell (), GenerateTestData.NATURE_BOOK).size ());
 		assertEquals (1, utils.getSpellRanksForMagicRealm (db.getSpell (), GenerateTestData.CHAOS_BOOK).size ());
@@ -620,7 +620,7 @@ public final class TestSpellUtils
 
 		// Sort on overland casting cost
 		// Test data contains 7 spells, but 2 are combat only
-		final SpellUtils utils = new SpellUtils ();
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		final List<Spell> overlandOrder = utils.getSortedSpellsInSection (statuses, CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK, MomSpellCastType.OVERLAND, db);
 		assertEquals (5, overlandOrder.size ());
 		assertEquals (GenerateTestData.GIANT_SPIDERS_SPELL, overlandOrder.get (0).getSpellID ());	// 3

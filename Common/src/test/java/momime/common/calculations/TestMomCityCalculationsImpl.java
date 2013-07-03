@@ -27,8 +27,8 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.MemoryBuildingUtilsImpl;
+import momime.common.utils.PlayerPickUtilsImpl;
 
 import org.junit.Test;
 
@@ -41,7 +41,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 /**
  * Tests the calculations in the MomCityCalculations class
  */
-public final class TestMomCityCalculations
+public final class TestMomCityCalculationsImpl
 {
 	/**
 	 * Tests the calculateProductionBonus method
@@ -51,7 +51,7 @@ public final class TestMomCityCalculations
 	public final void testCalculateProductionBonus () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
@@ -90,7 +90,7 @@ public final class TestMomCityCalculations
 	public final void testCalculateGoldBonus () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
@@ -136,7 +136,7 @@ public final class TestMomCityCalculations
 	public final void testBuildingPassesTileTypeRequirements_DistanceTwo () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
@@ -171,7 +171,7 @@ public final class TestMomCityCalculations
 	public final void testBuildingPassesTileTypeRequirements_DistanceOne () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
@@ -208,7 +208,7 @@ public final class TestMomCityCalculations
 	public final void testCalculateMaxCitySize () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
@@ -289,7 +289,7 @@ public final class TestMomCityCalculations
 	public final void testCalculateCityGrowthRate () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
@@ -492,9 +492,9 @@ public final class TestMomCityCalculations
 	public final void testCalculateCityRebels () throws PlayerNotFoundException, RecordNotFoundException
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
-		calc.setPlayerPickUtils (new PlayerPickUtils ());
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
@@ -842,9 +842,9 @@ public final class TestMomCityCalculations
 	public final void testCalculateAllCityProductions () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
-		calc.setPlayerPickUtils (new PlayerPickUtils ());
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
@@ -1384,8 +1384,8 @@ public final class TestMomCityCalculations
 	public final void testCalculateSingleCityProduction () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		// This is the same initial setup as the calculateAllCityProductions test
 		// Location
@@ -1471,7 +1471,7 @@ public final class TestMomCityCalculations
 	public final void testBlankBuildingsSoldThisTurn_OnePlayer ()
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -1507,7 +1507,7 @@ public final class TestMomCityCalculations
 	public final void testBlankBuildingsSoldThisTurn_AllPlayers ()
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -1540,7 +1540,7 @@ public final class TestMomCityCalculations
 	public final void testMarkWithinExistingCityRadius ()
 	{
 		// Set up object to test
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -1603,7 +1603,7 @@ public final class TestMomCityCalculations
 	@Test
 	public final void testGoldToRushBuy ()
 	{
-		final MomCityCalculations calc = new MomCityCalculations ();
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		assertEquals (240, calc.goldToRushBuy (60, 0));
 		assertEquals (177, calc.goldToRushBuy (60, 1));		// The above 2 are the actual examples in the strategy guide
 		

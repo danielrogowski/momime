@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.IMomCityCalculations;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.BuildingPrerequisite;
@@ -129,7 +129,7 @@ public final class CityAI implements ICityAI
 						coords.setY (y);
 						coords.setPlane (plane);
 
-						for (final SquareMapDirection direction : MomCityCalculations.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+						for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 							if (CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
 							{
 								final OverlandMapTerrainData checkFeatureData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();

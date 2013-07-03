@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomSpellCalculations;
+import momime.common.calculations.MomSpellCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.OverlandCastQueuedMessage;
@@ -33,12 +33,12 @@ import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.MemoryBuildingUtilsImpl;
+import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
+import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.ResourceValueUtilsImpl;
+import momime.common.utils.SpellUtilsImpl;
+import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.IMomSessionVariables;
 import momime.server.ServerTestData;
@@ -97,7 +97,7 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setSpellUtils (new SpellUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
 
 		// Run test
 		proc.castOverlandNow (null, player3, spell, players, db, sd);
@@ -164,8 +164,8 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setSpellUtils (new SpellUtils ());
-		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
+		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
@@ -255,8 +255,8 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setSpellUtils (new SpellUtils ());
-		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
+		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
@@ -336,13 +336,13 @@ public final class TestSpellProcessing
 		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
 		
 		final UnitServerUtils unitServerUtils = new UnitServerUtils ();
-		unitServerUtils.setUnitUtils (new UnitUtils ());
+		unitServerUtils.setUnitUtils (new UnitUtilsImpl ());
 		unitServerUtils.setServerUnitCalculations (new MomServerUnitCalculations ());
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setSpellUtils (new SpellUtils ());
-		proc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
+		proc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		proc.setUnitServerUtils (unitServerUtils);
 
 		// Run test
@@ -451,13 +451,13 @@ public final class TestSpellProcessing
 		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
 
 		final UnitServerUtils unitServerUtils = new UnitServerUtils ();
-		unitServerUtils.setUnitUtils (new UnitUtils ());
+		unitServerUtils.setUnitUtils (new UnitUtilsImpl ());
 		unitServerUtils.setServerUnitCalculations (new MomServerUnitCalculations ());
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setSpellUtils (new SpellUtils ());
-		proc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
+		proc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		proc.setUnitServerUtils (unitServerUtils);
 
 		// Run test
@@ -541,8 +541,8 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setSpellUtils (new SpellUtils ());
-		proc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
+		proc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
@@ -598,7 +598,7 @@ public final class TestSpellProcessing
 		
 		final SpellProcessing proc = new SpellProcessing ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setSpellUtils (new SpellUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
@@ -649,7 +649,7 @@ public final class TestSpellProcessing
 		
 		// Set up test object
 		final SpellProcessing proc = new SpellProcessing ();
-		proc.setSpellUtils (new SpellUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
 
 		// Run test
 		proc.requestCastSpell (player3, "SP123", null, null, null, mom);
@@ -692,7 +692,7 @@ public final class TestSpellProcessing
 		
 		// Set up test object
 		final SpellProcessing proc = new SpellProcessing ();
-		proc.setSpellUtils (new SpellUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
 
 		// Run test
 		proc.requestCastSpell (player3, "SP123", new OverlandMapCoordinatesEx (), null, null, mom);
@@ -737,7 +737,7 @@ public final class TestSpellProcessing
 		
 		// Set up test object
 		final SpellProcessing proc = new SpellProcessing ();
-		proc.setSpellUtils (new SpellUtils ());
+		proc.setSpellUtils (new SpellUtilsImpl ());
 
 		// Run test
 		proc.requestCastSpell (player3, "SP123", null, null, 1, mom);
@@ -804,10 +804,10 @@ public final class TestSpellProcessing
 		final IPlayerMessageProcessing msgProc = mock (IPlayerMessageProcessing.class);
 		final IMomServerResourceCalculations calc = mock (IMomServerResourceCalculations.class);
 		
-		final SpellUtils spellUtils = new SpellUtils ();
-		spellUtils.setPlayerPickUtils (new PlayerPickUtils ());
+		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
+		spellUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
-		final MomSpellCalculations spellCalculations = new MomSpellCalculations ();
+		final MomSpellCalculationsImpl spellCalculations = new MomSpellCalculationsImpl ();
 		spellUtils.setSpellCalculations (spellCalculations);
 		spellCalculations.setSpellUtils (spellUtils);
 		
@@ -815,7 +815,7 @@ public final class TestSpellProcessing
 		proc.setPlayerMessageProcessing (msgProc);
 		proc.setServerResourceCalculations (calc);
 		proc.setSpellUtils (spellUtils);
-		proc.setResourceValueUtils (new ResourceValueUtils ());
+		proc.setResourceValueUtils (new ResourceValueUtilsImpl ());
 
 		// Run test
 		proc.requestCastSpell (player3, "SP123", null, null, null, mom);
@@ -903,10 +903,10 @@ public final class TestSpellProcessing
 		final IPlayerMessageProcessing msgProc = mock (IPlayerMessageProcessing.class);
 		final IMomServerResourceCalculations calc = mock (IMomServerResourceCalculations.class);
 		
-		final SpellUtils spellUtils = new SpellUtils ();
-		spellUtils.setPlayerPickUtils (new PlayerPickUtils ());
+		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
+		spellUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
-		final MomSpellCalculations spellCalculations = new MomSpellCalculations ();
+		final MomSpellCalculationsImpl spellCalculations = new MomSpellCalculationsImpl ();
 		spellUtils.setSpellCalculations (spellCalculations);
 		spellCalculations.setSpellUtils (spellUtils);
 		
@@ -914,7 +914,7 @@ public final class TestSpellProcessing
 		proc.setPlayerMessageProcessing (msgProc);
 		proc.setServerResourceCalculations (calc);
 		proc.setSpellUtils (spellUtils);
-		proc.setResourceValueUtils (new ResourceValueUtils ());
+		proc.setResourceValueUtils (new ResourceValueUtilsImpl ());
 
 		// Run test
 		proc.requestCastSpell (player3, "SP123", null, null, null, mom);

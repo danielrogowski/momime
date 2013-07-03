@@ -7,7 +7,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -19,7 +19,7 @@ import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -61,7 +61,7 @@ public final class TestCityAI
 
 		// Set up test object
 		final CityAI ai = new CityAI ();
-		ai.setCityCalculations (new MomCityCalculations ());
+		ai.setCityCalculations (new MomCityCalculationsImpl ());
 		
 		final OverlandMapCoordinatesEx ocean = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertNull (ocean);
@@ -175,7 +175,7 @@ public final class TestCityAI
 
 		// Set up test object
 		final MomServerCityCalculations serverCityCalculations = new MomServerCityCalculations ();
-		serverCityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		serverCityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		final CityAI ai = new CityAI ();
 		ai.setServerCityCalculations (serverCityCalculations);
@@ -272,10 +272,10 @@ public final class TestCityAI
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
 		// Set up test object
-		final MemoryBuildingUtils memoryBuildingUtils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl memoryBuildingUtils = new MemoryBuildingUtilsImpl ();
 		
 		final MomServerCityCalculations serverCityCalculations = new MomServerCityCalculations ();
-		serverCityCalculations.setCityCalculations (new MomCityCalculations ());
+		serverCityCalculations.setCityCalculations (new MomCityCalculationsImpl ());
 		serverCityCalculations.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		final CityAI ai = new CityAI ();

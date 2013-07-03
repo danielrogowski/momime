@@ -36,7 +36,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 /**
  * Tests the UnitUtils class
  */
-public final class TestUnitUtils
+public final class TestUnitUtilsImpl
 {
 	/**
 	 * Tests the findUnitURN method on a unit that does exist
@@ -53,7 +53,7 @@ public final class TestUnitUtils
 			units.add (unit);
 		}
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertEquals (2, utils.findUnitURN (2, units).getUnitURN ());
 		assertEquals (2, utils.findUnitURN (2, units, "testFindUnitURN_Exists").getUnitURN ());
 	}
@@ -73,7 +73,7 @@ public final class TestUnitUtils
 			units.add (unit);
 		}
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertNull (utils.findUnitURN (4, units));
 		utils.findUnitURN (4, units, "testFindUnitURN_NotExists");
 	}
@@ -93,7 +93,7 @@ public final class TestUnitUtils
 			units.add (unit);
 		}
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.removeUnitURN (2, units);
 		assertEquals (2, units.size ());
 		assertEquals (1, units.get (0).getUnitURN ());
@@ -115,7 +115,7 @@ public final class TestUnitUtils
 			units.add (unit);
 		}
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.removeUnitURN (4, units);
 	}
 
@@ -126,7 +126,7 @@ public final class TestUnitUtils
 	@Test
 	public final void testInitializeUnitSkills_NoSkills () throws RecordNotFoundException
 	{
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
@@ -144,7 +144,7 @@ public final class TestUnitUtils
 	@Test
 	public final void testInitializeUnitSkills_ExpOnUnitThatCannotHaveAny () throws RecordNotFoundException
 	{
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID (GenerateTestData.MAGIC_SPIRIT_UNIT);
@@ -162,7 +162,7 @@ public final class TestUnitUtils
 	@Test
 	public final void testInitializeUnitSkills_ExpOnly () throws RecordNotFoundException
 	{
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
@@ -182,7 +182,7 @@ public final class TestUnitUtils
 	@Test
 	public final void testInitializeUnitSkills_SkillsOnly () throws RecordNotFoundException
 	{
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID (GenerateTestData.DARK_ELF_WARLOCKS);
@@ -204,7 +204,7 @@ public final class TestUnitUtils
 	@Test
 	public final void testInitializeUnitSkills_ExpAndSkills () throws RecordNotFoundException
 	{
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID (GenerateTestData.DARK_ELF_WARLOCKS);
@@ -230,7 +230,7 @@ public final class TestUnitUtils
 	@Test
 	public final void testCreateMemoryUnit () throws RecordNotFoundException
 	{
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		final MemoryUnit unit = utils.createMemoryUnit (GenerateTestData.DARK_ELF_WARLOCKS, 1, 3, 100, true, GenerateTestData.createDB ());
 
 		assertEquals (3, unit.getUnitHasSkill ().size ());
@@ -252,7 +252,7 @@ public final class TestUnitUtils
 	@Test
 	public final void testGetFullFigureCount ()
 	{
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 
 		final Unit unit = new Unit ();
 		unit.setFigureCount (1);
@@ -285,7 +285,7 @@ public final class TestUnitUtils
 		skills.add (skillWithoutValue);
 
 		// Test values
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertEquals (5, utils.getBasicSkillValue (skills, "US001"));
 		assertEquals (0, utils.getBasicSkillValue (skills, "US002"));
 		assertEquals (-1, utils.getBasicSkillValue (skills, "US004"));
@@ -313,7 +313,7 @@ public final class TestUnitUtils
 		unit.getUnitHasSkill ().add (skillWithoutValue);
 
 		// Run method
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setBasicSkillValue (unit, "US002", 3);
 
 		// Check results
@@ -346,7 +346,7 @@ public final class TestUnitUtils
 		unit.getUnitHasSkill ().add (skillWithoutValue);
 
 		// Run method
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setBasicSkillValue (unit, "US003", 3);
 	}
 
@@ -371,7 +371,7 @@ public final class TestUnitUtils
 		unit.getUnitHasSkill ().add (skillWithoutValue);
 
 		// Run test
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertEquals ("5xUS001, US002", utils.describeBasicSkillValuesInDebugString (unit));
 	}
 
@@ -409,7 +409,7 @@ public final class TestUnitUtils
 		spells.add (nonUnitSpell);
 
 		// Merge in spell skills
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		final UnitHasSkillMergedList mergedSkills = utils.mergeSpellEffectsIntoSkillList (spells, unit);
 
 		// Test values
@@ -440,9 +440,9 @@ public final class TestUnitUtils
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 
 		// Set up object to test
-		final UnitUtils utils = new UnitUtils ();
-		utils.setPlayerPickUtils (new PlayerPickUtils ());
-		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtils ());
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
 
 		// Create normal unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -502,9 +502,9 @@ public final class TestUnitUtils
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 
 		// Set up object to test
-		final UnitUtils utils = new UnitUtils ();
-		utils.setPlayerPickUtils (new PlayerPickUtils ());
-		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtils ());
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
 		
 		// Create normal unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -573,7 +573,7 @@ public final class TestUnitUtils
 		unit.setUnitID (GenerateTestData.WAR_BEARS_UNIT);
 		unit.setOwningPlayerID (1);
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertNull (utils.getExperienceLevel (unit, false, players, combatAreaEffects, GenerateTestData.createDB ()));
 		assertNull (utils.getExperienceLevel (unit, true, players, combatAreaEffects, GenerateTestData.createDB ()));
 
@@ -604,7 +604,7 @@ public final class TestUnitUtils
 		effect.setCastingPlayerID (1);
 
 		// Even though CAE is global and for the right player, with affects blank it shouldn't apply
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (unit, effect, GenerateTestData.createDB ()));
 	}
 
@@ -630,7 +630,7 @@ public final class TestUnitUtils
 		effect.setCastingPlayerID (1);
 
 		// Global all players CAE should affect all players - don't need to worry about in combat or not, since available units can't be in combat
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -667,7 +667,7 @@ public final class TestUnitUtils
 		effect.setCastingPlayerID (1);
 
 		// Global caster CAE should affect only the caster
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -706,7 +706,7 @@ public final class TestUnitUtils
 		// Any settings make no difference, since available units cannot be in combat
 
 		// Global both CAE should affect both combat players, but available units can't be in combat
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -745,7 +745,7 @@ public final class TestUnitUtils
 		// Any settings make no difference, since available units cannot be in combat so there can be no opponent
 
 		// Global opponent CAE should only combat opponent, but available units can't be in combat
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -777,7 +777,7 @@ public final class TestUnitUtils
 		effect.setCastingPlayerID (1);
 
 		// Even though CAE is global and for the right player, with affects blank it shouldn't apply
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (unit, effect, GenerateTestData.createDB ()));
 	}
 
@@ -803,7 +803,7 @@ public final class TestUnitUtils
 		effect.setCastingPlayerID (1);
 
 		// Global all CAE should affect all players regardless of location or whether in combat or not
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -853,7 +853,7 @@ public final class TestUnitUtils
 		effect.setCastingPlayerID (1);
 
 		// Global caster CAE should affect only the caster
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -905,7 +905,7 @@ public final class TestUnitUtils
 		// Any settings make no difference until we put the unit into combat
 
 		// Global both CAE should affect both combat players, but available units can't be in combat
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -957,7 +957,7 @@ public final class TestUnitUtils
 		// Any settings make no difference until we put the unit into combat
 
 		// Global opponent CAE should only combat opponent, but available units can't be in combat
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
@@ -1001,7 +1001,7 @@ public final class TestUnitUtils
 
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, utils.getModifiedUnitMagicRealmLifeformTypeID
 			(unit, unit.getUnitHasSkill (), spells, GenerateTestData.createDB ()));
 	}
@@ -1022,7 +1022,7 @@ public final class TestUnitUtils
 
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertEquals (GenerateTestData.LIFEFORM_TYPE_CC, utils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, GenerateTestData.createDB ()));
 	}
 
@@ -1044,7 +1044,7 @@ public final class TestUnitUtils
 		flight.setUnitURN (1);
 		spells.add (flight);
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertEquals (GenerateTestData.LIFEFORM_TYPE_CC, utils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, GenerateTestData.createDB ()));
 	}
 
@@ -1091,9 +1091,9 @@ public final class TestUnitUtils
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 
 		// Set up object to test
-		final UnitUtils utils = new UnitUtils ();
-		utils.setPlayerPickUtils (new PlayerPickUtils ());
-		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtils ());
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
 		
 		// Test with no modifications
 		assertEquals (2, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
@@ -1170,9 +1170,9 @@ public final class TestUnitUtils
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 
 		// Set up object to test
-		final UnitUtils utils = new UnitUtils ();
-		utils.setPlayerPickUtils (new PlayerPickUtils ());
-		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtils ());
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
 		
 		// Test with no modifications
 		assertEquals (2, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
@@ -1231,7 +1231,7 @@ public final class TestUnitUtils
 		final AvailableUnit stoneGiant = new AvailableUnit ();
 		stoneGiant.setUnitID (GenerateTestData.STONE_GIANT_UNIT);
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertEquals (1, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, GenerateTestData.createDB ()));
 		assertEquals (5, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, GenerateTestData.createDB ()));
 		assertEquals (0, utils.getBasicUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, GenerateTestData.createDB ()));
@@ -1266,8 +1266,8 @@ public final class TestUnitUtils
 		players.add (ppd);
 
 		// Set up object to test
-		final UnitUtils utils = new UnitUtils ();
-		utils.setPlayerPickUtils (new PlayerPickUtils ());
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
 		// Before any reductions
 		assertEquals (1, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));
@@ -1317,7 +1317,7 @@ public final class TestUnitUtils
 			units.add (hellHounds);
 		}
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.resetUnitOverlandMovement (units, 0, GenerateTestData.createDB ());
 
 		assertEquals (2, units.get (0).getDoubleOverlandMovesLeft ());
@@ -1352,7 +1352,7 @@ public final class TestUnitUtils
 			units.add (hellHounds);
 		}
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.resetUnitOverlandMovement (units, 2, GenerateTestData.createDB ());
 
 		assertEquals (0, units.get (0).getDoubleOverlandMovesLeft ());
@@ -1369,7 +1369,7 @@ public final class TestUnitUtils
 	@Test
 	public final void testListUnitURNs ()
 	{
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		
 		// Test on null list
 		assertEquals ("()", utils.listUnitURNs (null));
@@ -1456,7 +1456,7 @@ public final class TestUnitUtils
 		u5.setUnitLocation (u5location);
 		units.add (u5);
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertNull (utils.findFirstAliveEnemyAtLocation (units, 2, 3, 1, 4));
 
 		// Now add one that actually matches
@@ -1536,7 +1536,7 @@ public final class TestUnitUtils
 		u5.setUnitLocation (u5location);
 		units.add (u5);
 
-		final UnitUtils utils = new UnitUtils ();
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertEquals (0, utils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4));
 
 		// Now add one that actually matches
@@ -1589,7 +1589,7 @@ public final class TestUnitUtils
 		mem.getMaintainedSpell ().add (noUnit);
 		
 		// Run test
-		new UnitUtils ().beforeKillingUnit (mem, 5);
+		new UnitUtilsImpl ().beforeKillingUnit (mem, 5);
 		
 		// Check results
 		assertEquals (2, mem.getMaintainedSpell ().size ());

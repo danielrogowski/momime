@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * Tests the calculations in the MomSkillCalculations class
  */
-public final class TestMomSkillCalculations
+public final class TestMomSkillCalculationsImpl
 {
 	/**
 	 * Tests the getSkillPointsRequiredToImproveSkillFrom method
@@ -15,7 +15,7 @@ public final class TestMomSkillCalculations
 	@Test
 	public final void testGetSkillPointsRequiredToImproveSkillFrom_Zero ()
 	{
-		final MomSkillCalculations calc = new MomSkillCalculations ();
+		final MomSkillCalculationsImpl calc = new MomSkillCalculationsImpl ();
 		assertEquals ("Special case for zero", 1, calc.getSkillPointsRequiredToImproveSkillFrom (0));
 	}
 
@@ -25,7 +25,7 @@ public final class TestMomSkillCalculations
 	@Test
 	public final void testGetSkillPointsRequiredToImproveSkillFrom_NonZero ()
 	{
-		final MomSkillCalculations calc = new MomSkillCalculations ();
+		final MomSkillCalculationsImpl calc = new MomSkillCalculationsImpl ();
 		assertEquals ("Should take 2x current skill level to progress to the next casting skill", 24, calc.getSkillPointsRequiredToImproveSkillFrom (12));
 	}
 
@@ -35,7 +35,7 @@ public final class TestMomSkillCalculations
 	@Test
 	public final void testGetSkillPointsRequiredForCastingSkill ()
 	{
-		final MomSkillCalculations calc = new MomSkillCalculations ();
+		final MomSkillCalculationsImpl calc = new MomSkillCalculationsImpl ();
 		
 		// This test assumes that getSkillPointsRequiredToImproveSkillFrom has tested OK
 		// Totals up how many skill points we need per level using this function, but then tests we can compute the same value in one hit rather than iteratively
@@ -54,7 +54,7 @@ public final class TestMomSkillCalculations
 	@Test
 	public final void testGetCastingSkillForSkillPoints ()
 	{
-		final MomSkillCalculations calc = new MomSkillCalculations ();
+		final MomSkillCalculationsImpl calc = new MomSkillCalculationsImpl ();
 		
 		// This test assumes that getSkillPointsRequiredToImproveSkillFrom has tested OK
 		// 10,000 tests up to about casting skill 100

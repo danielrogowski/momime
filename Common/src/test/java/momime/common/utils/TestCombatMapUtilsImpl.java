@@ -12,7 +12,7 @@ import org.junit.Test;
 /**
  * Tests the CombatMapUtils class
  */
-public final class TestCombatMapUtils
+public final class TestCombatMapUtilsImpl
 {
 	/**
 	 * Tests the getCombatTileTypeForLayer method
@@ -34,7 +34,7 @@ public final class TestCombatMapUtils
 		tile.getTileLayer ().add (layer2);
 		
 		// Check all the layers
-		final CombatMapUtils utils = new CombatMapUtils ();
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 		assertEquals ("A", utils.getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN));
 		assertEquals ("B", utils.getCombatTileTypeForLayer (tile, CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES));
 		assertNull (utils.getCombatTileTypeForLayer (tile, CombatMapLayerID.ROAD));
@@ -60,7 +60,7 @@ public final class TestCombatMapUtils
 		tile.getTileLayer ().add (layer2);
 		
 		// Update tile in the 2nd layer
-		new CombatMapUtils ().setCombatTileTypeForLayer (tile, CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES, "C");
+		new CombatMapUtilsImpl ().setCombatTileTypeForLayer (tile, CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES, "C");
 		
 		// Check results
 		assertEquals (2, tile.getTileLayer ().size ());
@@ -90,7 +90,7 @@ public final class TestCombatMapUtils
 		tile.getTileLayer ().add (layer2);
 		
 		// Update tile in the 3rd layer
-		new CombatMapUtils ().setCombatTileTypeForLayer (tile, CombatMapLayerID.ROAD, "C");
+		new CombatMapUtilsImpl ().setCombatTileTypeForLayer (tile, CombatMapLayerID.ROAD, "C");
 		
 		// Check results
 		assertEquals (3, tile.getTileLayer ().size ());

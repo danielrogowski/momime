@@ -9,7 +9,7 @@ import java.util.List;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.SpellUtils;
+import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
@@ -42,7 +42,7 @@ public final class TestMomServerSpellCalculations
 		
 		// Set up object to test
 		final MomServerSpellCalculations calc = new MomServerSpellCalculations ();
-		calc.setSpellUtils (new SpellUtils ());
+		calc.setSpellUtils (new SpellUtilsImpl ());
 
 		// With only 1 book, we get 3 common and 1 uncommon spell researchable
 		// That also means the rest of the common and uncommon spells are obtainable, but rare and very rares aren't
@@ -167,7 +167,7 @@ public final class TestMomServerSpellCalculations
 
 		// Set up object to test
 		final MomServerSpellCalculations calc = new MomServerSpellCalculations ();
-		calc.setSpellUtils (new SpellUtils ());
+		calc.setSpellUtils (new SpellUtilsImpl ());
 		
 		// The key part of this is that it will exhaust lower spell ranks first before moving onto higher ones
 		// So lets set 2 spells to already be "researchable", 4 commons and 4 uncommons

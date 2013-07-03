@@ -11,10 +11,10 @@ import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 /**
  * Helper methods for dealing with MemoryCombatAreaEffect objects
  */
-public final class MemoryCombatAreaEffectUtils implements IMemoryCombatAreaEffectUtils
+public final class MemoryCombatAreaEffectUtilsImpl implements IMemoryCombatAreaEffectUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MemoryCombatAreaEffectUtils.class.getName ());
+	private final Logger log = Logger.getLogger (MemoryCombatAreaEffectUtilsImpl.class.getName ());
 	
 	/**
 	 * Checks to see if the specified CAE exists
@@ -28,7 +28,7 @@ public final class MemoryCombatAreaEffectUtils implements IMemoryCombatAreaEffec
 	public final boolean findCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
 		final OverlandMapCoordinatesEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID)
 	{
-		log.entering (MemoryCombatAreaEffectUtils.class.getName (), "findCombatAreaEffect",
+		log.entering (MemoryCombatAreaEffectUtilsImpl.class.getName (), "findCombatAreaEffect",
 			new String [] {(mapLocation == null) ? "Global" : mapLocation.toString (), combatAreaEffectID});
 
 		boolean found = false;
@@ -44,7 +44,7 @@ public final class MemoryCombatAreaEffectUtils implements IMemoryCombatAreaEffec
 				found = true;
 		}
 
-		log.exiting (MemoryCombatAreaEffectUtils.class.getName (), "findCombatAreaEffect", found);
+		log.exiting (MemoryCombatAreaEffectUtilsImpl.class.getName (), "findCombatAreaEffect", found);
 		return found;
 	}
 
@@ -60,7 +60,7 @@ public final class MemoryCombatAreaEffectUtils implements IMemoryCombatAreaEffec
 	public final void cancelCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
 		final OverlandMapCoordinatesEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID) throws RecordNotFoundException
 	{
-		log.entering (MemoryCombatAreaEffectUtils.class.getName (), "cancelCombatAreaEffect",
+		log.entering (MemoryCombatAreaEffectUtilsImpl.class.getName (), "cancelCombatAreaEffect",
 			new String [] {(mapLocation == null) ? "Global" : mapLocation.toString (), combatAreaEffectID});
 
 		boolean found = false;
@@ -80,6 +80,6 @@ public final class MemoryCombatAreaEffectUtils implements IMemoryCombatAreaEffec
 		if (!found)
 			throw new RecordNotFoundException (MemoryCombatAreaEffect.class.getName (), combatAreaEffectID + " - " + castingPlayerID, "cancelCombatAreaEffect");
 
-		log.exiting (MemoryCombatAreaEffectUtils.class.getName (), "cancelCombatAreaEffect");
+		log.exiting (MemoryCombatAreaEffectUtilsImpl.class.getName (), "cancelCombatAreaEffect");
 	}
 }

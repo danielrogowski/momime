@@ -22,10 +22,10 @@ import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.MemoryCombatAreaEffectUtils;
-import momime.common.utils.MemoryGridCellUtils;
-import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
+import momime.common.utils.MemoryGridCellUtilsImpl;
+import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -67,9 +67,9 @@ public final class TestMomServerUnitCalculations
 		players.add (new PlayerServerDetails (pd, ppk, null, null, null));
 		
 		// Set up object to test
-		final UnitUtils unitUtils = new UnitUtils ();
-		unitUtils.setPlayerPickUtils (new PlayerPickUtils ());
-		unitUtils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtils ());
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+		unitUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		unitUtils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
 		
 		final MomServerUnitCalculations calc = new MomServerUnitCalculations ();
 		calc.setUnitUtils (unitUtils);
@@ -219,8 +219,8 @@ public final class TestMomServerUnitCalculations
 
 		// Set up object to test
 		final MomServerUnitCalculations calc = new MomServerUnitCalculations ();
-		calc.setMemoryGridCellUtils (new MemoryGridCellUtils ());
-		calc.setUnitUtils (new UnitUtils ());
+		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
+		calc.setUnitUtils (new UnitUtilsImpl ());
 		
 		// Null terrain and city data
 		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
@@ -418,7 +418,7 @@ public final class TestMomServerUnitCalculations
 
 		// Set up object to test
 		final MomServerUnitCalculations calc = new MomServerUnitCalculations ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Null stack
@@ -510,7 +510,7 @@ public final class TestMomServerUnitCalculations
 
 		// Set up object to test
 		final MomServerUnitCalculations calc = new MomServerUnitCalculations ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		calc.setUnitUtils (unitUtils);
 
 		// Regular spearmen unit by itself
@@ -658,7 +658,7 @@ public final class TestMomServerUnitCalculations
 
 		// Set up object to test
 		final MomServerUnitCalculations calc = new MomServerUnitCalculations ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Regular spearmen unit by itself
@@ -750,7 +750,7 @@ public final class TestMomServerUnitCalculations
 	public final void testCalculateOverlandMovementDistances_Basic () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 
 		// Create map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
@@ -792,7 +792,7 @@ public final class TestMomServerUnitCalculations
 		// Set up object to test
 		final MomServerUnitCalculations calc = new MomServerUnitCalculations ();
 		calc.setUnitUtils (unitUtils);
-		calc.setMemoryGridCellUtils (new MemoryGridCellUtils ());
+		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		
 		// Run method
 		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, nodeLairTowerKnownUnitIDs, unitStack,
@@ -882,7 +882,7 @@ public final class TestMomServerUnitCalculations
 	public final void testCalculateOverlandMovementDistances_Tower () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 
 		// Create map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
@@ -970,7 +970,7 @@ public final class TestMomServerUnitCalculations
 		// Set up object to test
 		final MomServerUnitCalculations calc = new MomServerUnitCalculations ();
 		calc.setUnitUtils (unitUtils);
-		calc.setMemoryGridCellUtils (new MemoryGridCellUtils ());
+		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		
 		// Run method
 		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, nodeLairTowerKnownUnitIDs, unitStack,

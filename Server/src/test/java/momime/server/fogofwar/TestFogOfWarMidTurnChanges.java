@@ -32,7 +32,7 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.IUnitUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.IMomFogOfWarCalculations;
@@ -427,7 +427,7 @@ public final class TestFogOfWarMidTurnChanges
 		unitLocation.setY (10);
 		unitLocation.setPlane (0);
 
-		final MemoryUnit spearmen = new UnitUtils ().createMemoryUnit ("UN105", 1, 0, 0, true, db);
+		final MemoryUnit spearmen = new UnitUtilsImpl ().createMemoryUnit ("UN105", 1, 0, 0, true, db);
 		spearmen.setOwningPlayerID (pd1.getPlayerID ());
 		spearmen.setUnitLocation (unitLocation);
 		
@@ -534,7 +534,7 @@ public final class TestFogOfWarMidTurnChanges
 		unitLocation.setY (10);
 		unitLocation.setPlane (0);
 
-		final MemoryUnit spearmen = new UnitUtils ().createMemoryUnit ("UN105", 11, 0, 0, true, db);
+		final MemoryUnit spearmen = new UnitUtilsImpl ().createMemoryUnit ("UN105", 11, 0, 0, true, db);
 		spearmen.setOwningPlayerID (pd1.getPlayerID ());
 		spearmen.setUnitLocation (unitLocation);
 		

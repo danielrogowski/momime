@@ -31,7 +31,7 @@ import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.utils.IPendingMovementUtils;
 import momime.common.utils.IUnitUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomServerUnitCalculations;
@@ -59,7 +59,7 @@ public final class TestUnitServerUtils
 		
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 
 		// Dwarf hero
@@ -92,7 +92,7 @@ public final class TestUnitServerUtils
 
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
 		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
@@ -132,7 +132,7 @@ public final class TestUnitServerUtils
 
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
 		// Healer hero - gets 1 mage pick
@@ -170,7 +170,7 @@ public final class TestUnitServerUtils
 
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
 		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
@@ -197,7 +197,7 @@ public final class TestUnitServerUtils
 
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
 		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
@@ -238,7 +238,7 @@ public final class TestUnitServerUtils
 
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
 		// Warrior Mage - gets 1 pick of any type, and has HS05
@@ -275,7 +275,7 @@ public final class TestUnitServerUtils
 
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
 		// Unknown hero - gets 5 picks of any type, and has HS05
@@ -311,7 +311,7 @@ public final class TestUnitServerUtils
 
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
 		// Unknown hero - gets 5 picks of any type
@@ -469,7 +469,7 @@ public final class TestUnitServerUtils
 
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		utils.setServerUnitCalculations (new MomServerUnitCalculations ());
 		
@@ -574,7 +574,7 @@ public final class TestUnitServerUtils
 
 		// Set up object to test
 		final UnitServerUtils utils = new UnitServerUtils ();
-		final UnitUtils unitUtils = new UnitUtils ();
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		utils.setServerUnitCalculations (new MomServerUnitCalculations ());
 		

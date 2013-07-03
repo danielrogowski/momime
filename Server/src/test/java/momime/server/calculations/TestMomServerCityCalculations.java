@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.messages.OverlandMapCoordinatesEx;
@@ -19,7 +19,7 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -93,7 +93,7 @@ public final class TestMomServerCityCalculations
 
 		// Set up object to test
 		final MomServerCityCalculations calc = new MomServerCityCalculations ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		// Halflings farmers produce 1 extra food
 		cityData.setCityRaceID ("RC03");
@@ -181,8 +181,8 @@ public final class TestMomServerCityCalculations
 
 		// Set up object to test
 		final MomServerCityCalculations calc = new MomServerCityCalculations ();
-		calc.setCityCalculations (new MomCityCalculations ());
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		calc.setCityCalculations (new MomCityCalculationsImpl ());
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		// Starter size city - with no wild game and no granary, we need 2 farmers to feed the 4 population
 		cityData.setCityPopulation (4900);
@@ -389,8 +389,8 @@ public final class TestMomServerCityCalculations
 
 		// Set up object to test
 		final MomServerCityCalculations calc = new MomServerCityCalculations ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtils ());
-		calc.setCityCalculations (new MomCityCalculations ());
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		calc.setCityCalculations (new MomCityCalculationsImpl ());
 		
 		// Orcs can build absolutely everything
 		cityData.setCityRaceID ("RC09");

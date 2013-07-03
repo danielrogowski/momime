@@ -9,7 +9,7 @@ import momime.common.messages.v0_9_4.MomCombatTileLayer;
 /**
  * Helper utils for dealing with combat maps
  */
-public final class CombatMapUtils implements ICombatMapUtils
+public final class CombatMapUtilsImpl implements ICombatMapUtils
 {
 	/**
 	 * @param tile Tile to search

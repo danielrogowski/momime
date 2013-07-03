@@ -20,7 +20,7 @@ import com.ndg.map.CoordinateSystem;
 /**
  * Tests the MemoryGridCellUtils class
  */
-public final class TestMemoryGridCellUtils
+public final class TestMemoryGridCellUtilsImpl
 {
 	/**
 	 * Tests the convertNullTileTypeToFOW method with a non-null value
@@ -31,7 +31,7 @@ public final class TestMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("A");
 
-		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertEquals ("A", utils.convertNullTileTypeToFOW (terrainData));
 	}
 
@@ -41,7 +41,7 @@ public final class TestMemoryGridCellUtils
 	@Test
 	public final void testConvertNullTileTypeToFOW_NullTileTypeID ()
 	{
-		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (new OverlandMapTerrainData ()));
 	}
 
@@ -51,7 +51,7 @@ public final class TestMemoryGridCellUtils
 	@Test
 	public final void testConvertNullTileTypeToFOW_NullTerrainData ()
 	{
-		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertEquals (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (null));
 	}
 
@@ -64,7 +64,7 @@ public final class TestMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 
-		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertTrue (utils.isTerrainTowerOfWizardry (terrainData));
 	}
 
@@ -77,7 +77,7 @@ public final class TestMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 
-		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertTrue (utils.isTerrainTowerOfWizardry (terrainData));
 	}
 
@@ -90,7 +90,7 @@ public final class TestMemoryGridCellUtils
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("A");
 
-		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertFalse (utils.isTerrainTowerOfWizardry (terrainData));
 	}
 
@@ -100,7 +100,7 @@ public final class TestMemoryGridCellUtils
 	@Test
 	public final void testIsTerrainTowerOfWizardry_NullMapFeature ()
 	{
-		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertFalse (utils.isTerrainTowerOfWizardry (new OverlandMapTerrainData ()));
 	}
 
@@ -110,7 +110,7 @@ public final class TestMemoryGridCellUtils
 	@Test
 	public final void testIsTerrainTowerOfWizardry_NullTerrainData ()
 	{
-		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		assertFalse (utils.isTerrainTowerOfWizardry (null));
 	}
 
@@ -129,7 +129,7 @@ public final class TestMemoryGridCellUtils
 				map.getPlane ().get (plane).getRow ().get (n).getCell ().get (n * 2).setBuildingIdSoldThisTurn ("BL" + n);
 
 		// Run method
-		final MemoryGridCellUtils utils = new MemoryGridCellUtils ();
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
 		utils.blankBuildingsSoldThisTurn (map);
 
 		// Ensure they all get blanked

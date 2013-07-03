@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * Tests the MemoryMaintainedSpellUtils class
  */
-public final class TestMemoryMaintainedSpellUtils
+public final class TestMemoryMaintainedSpellUtilsImpl
 {
 	/**
 	 * Tests the findMaintainedSpell method with only the spell ID specified
@@ -47,7 +47,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, "SP004", null, null, null, null).getSpellID ());
 		assertNull (utils.findMaintainedSpell (spells, null, "SP006", null, null, null, null));
 	}
@@ -71,7 +71,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals (14, utils.findMaintainedSpell (spells, 14, null, null, null, null, null).getCastingPlayerID ());
 		assertNull (utils.findMaintainedSpell (spells, 16, null, null, null, null, null));
 	}
@@ -95,7 +95,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals (14, utils.findMaintainedSpell (spells, 14, "SP001", null, null, null, null).getCastingPlayerID ());
 		assertNull (utils.findMaintainedSpell (spells, 16, "SP001", null, null, null, null));
 	}
@@ -121,7 +121,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertNull (utils.findMaintainedSpell (spells, null, "SP004", null, null, null, null));
 	}
 
@@ -146,7 +146,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertNull (utils.findMaintainedSpell (spells, null, "SP004", null, null, null, null));
 	}
 
@@ -170,7 +170,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals (44, utils.findMaintainedSpell (spells, null, null, 44, null, null, null).getUnitURN ().intValue ());
 		assertNull (utils.findMaintainedSpell (spells, null, null, 46, null, null, null));
 	}
@@ -195,7 +195,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SS024", utils.findMaintainedSpell (spells, null, "SP004", 44, "SS024", null, null).getUnitSkillID ());
 		assertNull (utils.findMaintainedSpell (spells, null, "SP004", 44, "SS025", null, null));
 	}
@@ -220,7 +220,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SS024", utils.findMaintainedSpell (spells, null, null, 44, "SS024", null, null).getUnitSkillID ());
 		assertNull (utils.findMaintainedSpell (spells, null, null, 44, "SS025", null, null));
 	}
@@ -255,7 +255,7 @@ public final class TestMemoryMaintainedSpellUtils
 		cityLocation.setY (204);
 		cityLocation.setPlane (304);
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, null).getSpellID ());
 
 		cityLocation.setPlane (305);
@@ -292,7 +292,7 @@ public final class TestMemoryMaintainedSpellUtils
 		cityLocation.setY (204);
 		cityLocation.setPlane (304);
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, "SP004", null, null, cityLocation, "CSE034").getSpellID ());
 		assertNull (utils.findMaintainedSpell (spells, null, "SP004", null, null, cityLocation, "CSE035"));
 	}
@@ -327,7 +327,7 @@ public final class TestMemoryMaintainedSpellUtils
 		cityLocation.setY (204);
 		cityLocation.setPlane (304);
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE034").getSpellID ());
 		assertNull (utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE035"));
 	}
@@ -350,7 +350,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, null, null);
 		assertEquals (4, spells.size ());
 		assertEquals ("SP001", spells.get (0).getSpellID ());
@@ -389,7 +389,7 @@ public final class TestMemoryMaintainedSpellUtils
 		switchOffLocation.setY (14);
 		switchOffLocation.setPlane (4);
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, switchOffLocation, "CSE004");
 		assertEquals (4, spells.size ());
 		assertEquals ("SP001", spells.get (0).getSpellID ());
@@ -418,7 +418,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.switchOffMaintainedSpell (spells, 14, "SP004", 104, "US004", null, null);
 		assertEquals (4, spells.size ());
 		assertEquals ("SP001", spells.get (0).getSpellID ());
@@ -445,7 +445,7 @@ public final class TestMemoryMaintainedSpellUtils
 			spells.add (spell);
 		}
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.switchOffMaintainedSpell (spells, 15, "SP004", null, null, null, null);
 	}
 
@@ -477,7 +477,7 @@ public final class TestMemoryMaintainedSpellUtils
 		unitURNs.add (2);
 		unitURNs.add (4);
 
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.removeSpellsCastOnUnitStack (spells, unitURNs);
 
 		assertEquals (8, spells.size ());
@@ -497,7 +497,7 @@ public final class TestMemoryMaintainedSpellUtils
 	@Test
 	public final void testListUnitSpellEffectsNotYetCastOnUnit ()
 	{
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		
 		final Spell spell = new Spell ();
@@ -572,7 +572,7 @@ public final class TestMemoryMaintainedSpellUtils
 	@Test
 	public final void testListCitySpellEffectsNotYetCastAtLocation ()
 	{
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		
 		final Spell spell = new Spell ();
@@ -676,7 +676,7 @@ public final class TestMemoryMaintainedSpellUtils
 		final ISpellUtils spellUtils = mock (ISpellUtils.class);
 		final IUnitUtils unitUtils = mock (IUnitUtils.class);
 		
-		final MemoryMaintainedSpellUtils utils = new MemoryMaintainedSpellUtils ();
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
 	

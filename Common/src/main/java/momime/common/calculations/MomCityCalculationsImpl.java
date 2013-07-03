@@ -48,10 +48,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Common calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public final class MomCityCalculations implements IMomCityCalculations
+public final class MomCityCalculationsImpl implements IMomCityCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomCityCalculations.class.getName ());
+	private final Logger log = Logger.getLogger (MomCityCalculationsImpl.class.getName ());
 	
 	/** Memory building utils */
 	private IMemoryBuildingUtils memoryBuildingUtils;
@@ -89,7 +89,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.entering (MomCityCalculations.class.getName (), "calculateProductionBonus", cityLocation);
+		log.entering (MomCityCalculationsImpl.class.getName (), "calculateProductionBonus", cityLocation);
 
 		int productionBonus = 0;
 		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
@@ -111,7 +111,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 			}
 		}
 
-		log.exiting (MomCityCalculations.class.getName (), "calculateProductionBonus", productionBonus);
+		log.exiting (MomCityCalculationsImpl.class.getName (), "calculateProductionBonus", productionBonus);
 		return productionBonus;
 	}
 
@@ -128,7 +128,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 		final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.entering (MomCityCalculations.class.getName (), "calculateGoldBonus", cityLocation);
+		log.entering (MomCityCalculationsImpl.class.getName (), "calculateGoldBonus", cityLocation);
 
 		// Deal with centre square
 		int goldBonus = 0;
@@ -164,7 +164,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 			d++;
 		}
 
-		log.exiting (MomCityCalculations.class.getName (), "calculateGoldBonus", goldBonus);
+		log.exiting (MomCityCalculationsImpl.class.getName (), "calculateGoldBonus", goldBonus);
 		return goldBonus;
 	}
 
@@ -179,7 +179,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 	public final boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation, final Building building,
 		final CoordinateSystem overlandMapCoordinateSystem)
 	{
-		log.entering (MomCityCalculations.class.getName (), "buildingPassesTileTypeRequirements", new String [] {cityLocation.toString (), building.getBuildingID ()});
+		log.entering (MomCityCalculationsImpl.class.getName (), "buildingPassesTileTypeRequirements", new String [] {cityLocation.toString (), building.getBuildingID ()});
 
 		// If there are no requirements then we're automatically fine
 		final boolean passes;
@@ -257,7 +257,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 			passes = anyRequirementPassed;
 		}
 
-		log.exiting (MomCityCalculations.class.getName (), "buildingPassesTileTypeRequirements", passes);
+		log.exiting (MomCityCalculationsImpl.class.getName (), "buildingPassesTileTypeRequirements", passes);
 		return passes;
 	}
 
@@ -278,7 +278,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 		final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.entering (MomCityCalculations.class.getName (), "calculateMaxCitySize", new String [] {cityLocation.toString (),
+		log.entering (MomCityCalculationsImpl.class.getName (), "calculateMaxCitySize", new String [] {cityLocation.toString (),
 			new Integer (sessionDescription.getDifficultyLevel ().getCityMaxSize ()).toString (), new Boolean (includeBonusesFromMapFeatures).toString (), new Boolean (halveAndCapResult).toString ()});
 
 		int maxCitySize = 0;
@@ -319,7 +319,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 				maxCitySize = sessionDescription.getDifficultyLevel ().getCityMaxSize ();
 		}
 
-		log.exiting (MomCityCalculations.class.getName (), "calculateMaxCitySize", maxCitySize);
+		log.exiting (MomCityCalculationsImpl.class.getName (), "calculateMaxCitySize", maxCitySize);
 		return maxCitySize;
 	}
 
@@ -340,7 +340,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 		final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation, final int maxCitySize, final ICommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.entering (MomCityCalculations.class.getName (), "calculateCityGrowthRate", cityLocation);
+		log.entering (MomCityCalculationsImpl.class.getName (), "calculateCityGrowthRate", cityLocation);
 
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -439,7 +439,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 			baseGrowthRate, racialGrowthModifier, buildingsModifyingGrowthRateArray, totalGrowthRate, cappedGrowthRate,
 			baseDeathRate, cityDeathRate, finalTotal);
 
-		log.exiting (MomCityCalculations.class.getName (), "calculateCityGrowthRate", finalTotal);
+		log.exiting (MomCityCalculationsImpl.class.getName (), "calculateCityGrowthRate", finalTotal);
 		return breakdown;
 	}
 
@@ -473,7 +473,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final ICommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
-		log.entering (MomCityCalculations.class.getName (), "calculateCityRebels", cityLocation);
+		log.entering (MomCityCalculationsImpl.class.getName (), "calculateCityRebels", cityLocation);
 
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
@@ -655,7 +655,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 			racialLiteral, religiousBuildingRetortPercentage, religiousBuildingReduction, religiousBuildingRetortValue, unitCount, unitReduction, baseTotal,
 			forcePositive, forceAll, minimumFarmers, totalAfterFarmers, finalTotal, buildingsReducingUnrestArray, pickIdsContributingToReligiousBuildingBonus);
 
-		log.entering (MomCityCalculations.class.getName (), "calculateCityRebels", finalTotal);
+		log.entering (MomCityCalculationsImpl.class.getName (), "calculateCityRebels", finalTotal);
 		return breakdown;
 	}
 
@@ -680,7 +680,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 		final ICommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.entering (MomCityCalculations.class.getName (), "calculateAllCityProductions", cityLocation);
+		log.entering (MomCityCalculationsImpl.class.getName (), "calculateAllCityProductions", cityLocation);
 
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
@@ -855,7 +855,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 		// Sort the list
 		Collections.sort (productionValues.getResults ());
 
-		log.exiting (MomCityCalculations.class.getName (), "calculateAllCityProductions", productionValues);
+		log.exiting (MomCityCalculationsImpl.class.getName (), "calculateAllCityProductions", productionValues);
 		return productionValues;
 	}
 
@@ -881,7 +881,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 		final boolean includeProductionAndConsumptionFromPopulation, final ICommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.entering (MomCityCalculations.class.getName (), "calculateSingleCityProduction", cityLocation);
+		log.entering (MomCityCalculationsImpl.class.getName (), "calculateSingleCityProduction", cityLocation);
 
 		// This is a right pain - ideally we want a cut down routine that scans only for this production type - however the Miners' Guild really
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
@@ -896,7 +896,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 		else
 			netGain = singleProductionValue.getModifiedProductionAmount () - singleProductionValue.getConsumptionAmount ();
 
-		log.exiting (MomCityCalculations.class.getName (), "calculateSingleCityProduction", netGain);
+		log.exiting (MomCityCalculationsImpl.class.getName (), "calculateSingleCityProduction", netGain);
 		return netGain;
 	}
 
@@ -908,7 +908,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 	@Override
 	public final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map, final int onlyOnePlayerID)
 	{
-		log.entering (MomCityCalculations.class.getName (), "blankBuildingsSoldThisTurn", onlyOnePlayerID);
+		log.entering (MomCityCalculationsImpl.class.getName (), "blankBuildingsSoldThisTurn", onlyOnePlayerID);
 
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
@@ -920,7 +920,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 						mc.setBuildingIdSoldThisTurn (null);
 				}
 
-		log.exiting (MomCityCalculations.class.getName (), "blankBuildingsSoldThisTurn");
+		log.exiting (MomCityCalculationsImpl.class.getName (), "blankBuildingsSoldThisTurn");
 	}
 
 	/**
@@ -939,7 +939,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 	public final BooleanMapArea2DArray markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
 		final int plane, final MapSizeData mapSize)
 	{
-		log.entering (MomCityCalculations.class.getName (), "markWithinExistingCityRadius", plane);
+		log.entering (MomCityCalculationsImpl.class.getName (), "markWithinExistingCityRadius", plane);
 
 		final BooleanMapArea2DArray result = new BooleanMapArea2DArray (mapSize);
 		for (int x = 0; x < mapSize.getWidth (); x++)
@@ -950,7 +950,7 @@ public final class MomCityCalculations implements IMomCityCalculations
 					result.selectRadius (x, y, mapSize.getCitySeparation ());
 			}
 
-		log.exiting (MomCityCalculations.class.getName (), "markWithinExistingCityRadius");
+		log.exiting (MomCityCalculationsImpl.class.getName (), "markWithinExistingCityRadius");
 		return result;
 	}
 

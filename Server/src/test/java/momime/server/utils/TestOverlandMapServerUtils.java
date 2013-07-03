@@ -11,7 +11,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
@@ -115,7 +115,7 @@ public class TestOverlandMapServerUtils
 		coords.setX (20);
 		coords.setY (10);
 
-		for (final SquareMapDirection d : MomCityCalculations.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+		for (final SquareMapDirection d : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			if (CoordinateSystemUtils.moveCoordinates (sys, coords, d.getDirectionID ()))
 				map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 

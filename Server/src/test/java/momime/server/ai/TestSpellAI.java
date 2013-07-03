@@ -9,7 +9,7 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.SpellUtils;
+import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
@@ -62,7 +62,7 @@ public final class TestSpellAI
 		
 		// Set up test object
 		final SpellAI ai = new SpellAI ();
-		ai.setSpellUtils (new SpellUtils ());
+		ai.setSpellUtils (new SpellUtilsImpl ());
 
 		// Player knows no spells yet
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();

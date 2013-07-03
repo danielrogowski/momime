@@ -13,10 +13,10 @@ import java.util.logging.Logger;
  *    into skill in order to attain their casting skill, i.e.
  *    this is the amount of stored RE10 production the wizard has
  */
-public final class MomSkillCalculations implements IMomSkillCalculations
+public final class MomSkillCalculationsImpl implements IMomSkillCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomSkillCalculations.class.getName ());
+	private final Logger log = Logger.getLogger (MomSkillCalculationsImpl.class.getName ());
 	
 	/**
 	 * @param currentSkill Current casting skill of the wizard
@@ -25,7 +25,7 @@ public final class MomSkillCalculations implements IMomSkillCalculations
 	@Override
 	public final int getSkillPointsRequiredToImproveSkillFrom (final int currentSkill)
 	{
-		log.entering (MomSkillCalculations.class.getName (), "getSkillPointsRequiredToImproveSkillFrom", currentSkill);
+		log.entering (MomSkillCalculationsImpl.class.getName (), "getSkillPointsRequiredToImproveSkillFrom", currentSkill);
 
 		final int result;
 		if (currentSkill <= 0)
@@ -33,7 +33,7 @@ public final class MomSkillCalculations implements IMomSkillCalculations
 		else
 			result = currentSkill * 2;		// Strategy guide p31
 
-		log.exiting (MomSkillCalculations.class.getName(), "getSkillPointsRequiredToImproveSkillFrom", result);
+		log.exiting (MomSkillCalculationsImpl.class.getName(), "getSkillPointsRequiredToImproveSkillFrom", result);
 		return result;
 	}
 
@@ -44,7 +44,7 @@ public final class MomSkillCalculations implements IMomSkillCalculations
 	@Override
 	public final int getSkillPointsRequiredForCastingSkill (final int castingSkill)
 	{
-		log.entering (MomSkillCalculations.class.getName(), "getSkillPointsRequiredForCastingSkill", castingSkill);
+		log.entering (MomSkillCalculationsImpl.class.getName(), "getSkillPointsRequiredForCastingSkill", castingSkill);
 
 	    /*
 	     * To get from casting skill (x) to casting skill (x + 1) we need
@@ -58,7 +58,7 @@ public final class MomSkillCalculations implements IMomSkillCalculations
 		else
 			result = (castingSkill * castingSkill) - castingSkill + 1;
 
-		log.exiting (MomSkillCalculations.class.getName(), "getSkillPointsRequiredForCastingSkill", result);
+		log.exiting (MomSkillCalculationsImpl.class.getName(), "getSkillPointsRequiredForCastingSkill", result);
 		return result;
 	}
 
@@ -69,7 +69,7 @@ public final class MomSkillCalculations implements IMomSkillCalculations
 	@Override
 	public final int getCastingSkillForSkillPoints (final int skillPoints)
 	{
-		log.entering (MomSkillCalculations.class.getName(), "getCastingSkillForSkillPoints", skillPoints);
+		log.entering (MomSkillCalculationsImpl.class.getName(), "getCastingSkillForSkillPoints", skillPoints);
 
 		/*
 		 * Odd formula but it works
@@ -82,7 +82,7 @@ public final class MomSkillCalculations implements IMomSkillCalculations
 		final int skillPointsPlusRoundedSquareRootOfSkillPoints = skillPoints + roundedSquareRootOfSkillPoints;
 		final int result = (int) Math.sqrt (skillPointsPlusRoundedSquareRootOfSkillPoints);
 
-		log.exiting (MomSkillCalculations.class.getName(), "getCastingSkillForSkillPoints", result);
+		log.exiting (MomSkillCalculationsImpl.class.getName(), "getCastingSkillForSkillPoints", result);
 		return result;
 	}
 }

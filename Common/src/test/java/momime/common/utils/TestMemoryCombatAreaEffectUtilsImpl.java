@@ -15,7 +15,7 @@ import org.junit.Test;
 /**
  * Tests the MemoryCombatAreaEffectUtils class
  */
-public final class TestMemoryCombatAreaEffectUtils
+public final class TestMemoryCombatAreaEffectUtilsImpl
 {
 	/**
 	 * Tests the findCombatAreaEffect method with a player specific, but a null map location (i.e. an overland enchantment spell)
@@ -33,7 +33,7 @@ public final class TestMemoryCombatAreaEffectUtils
 			CAEs.add (newCAE);
 		}
 
-		final MemoryCombatAreaEffectUtils utils = new MemoryCombatAreaEffectUtils ();
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		assertTrue (utils.findCombatAreaEffect (CAEs, null, "CAE02", 2));
 	}
 
@@ -65,7 +65,7 @@ public final class TestMemoryCombatAreaEffectUtils
 		desiredLocation.setY (22);
 		desiredLocation.setPlane (32);
 
-		final MemoryCombatAreaEffectUtils utils = new MemoryCombatAreaEffectUtils ();
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		assertTrue (utils.findCombatAreaEffect (CAEs, desiredLocation, "CAE02", 2));
 	}
 
@@ -84,7 +84,7 @@ public final class TestMemoryCombatAreaEffectUtils
 			CAEs.add (newCAE);
 		}
 
-		final MemoryCombatAreaEffectUtils utils = new MemoryCombatAreaEffectUtils ();
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		assertTrue (utils.findCombatAreaEffect (CAEs, null, "CAE02", null));
 	}
 
@@ -115,7 +115,7 @@ public final class TestMemoryCombatAreaEffectUtils
 		desiredLocation.setY (22);
 		desiredLocation.setPlane (32);
 
-		final MemoryCombatAreaEffectUtils utils = new MemoryCombatAreaEffectUtils ();
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		assertTrue (utils.findCombatAreaEffect (CAEs, desiredLocation, "CAE02", null));
 	}
 
@@ -136,7 +136,7 @@ public final class TestMemoryCombatAreaEffectUtils
 			CAEs.add (newCAE);
 		}
 
-		final MemoryCombatAreaEffectUtils utils = new MemoryCombatAreaEffectUtils ();
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.cancelCombatAreaEffect (CAEs, null, "CAE02", 2);
 		assertEquals (2, CAEs.size ());
 		assertEquals ("CAE01", CAEs.get (0).getCombatAreaEffectID ());
@@ -172,7 +172,7 @@ public final class TestMemoryCombatAreaEffectUtils
 		desiredLocation.setY (22);
 		desiredLocation.setPlane (32);
 
-		final MemoryCombatAreaEffectUtils utils = new MemoryCombatAreaEffectUtils ();
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.cancelCombatAreaEffect (CAEs, desiredLocation, "CAE02", 2);
 		assertEquals (2, CAEs.size ());
 		assertEquals ("CAE01", CAEs.get (0).getCombatAreaEffectID ());
@@ -195,7 +195,7 @@ public final class TestMemoryCombatAreaEffectUtils
 			CAEs.add (newCAE);
 		}
 
-		final MemoryCombatAreaEffectUtils utils = new MemoryCombatAreaEffectUtils ();
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.cancelCombatAreaEffect (CAEs, null, "CAE02", null);
 		assertEquals (2, CAEs.size ());
 		assertEquals ("CAE01", CAEs.get (0).getCombatAreaEffectID ());
@@ -230,7 +230,7 @@ public final class TestMemoryCombatAreaEffectUtils
 		desiredLocation.setY (22);
 		desiredLocation.setPlane (32);
 
-		final MemoryCombatAreaEffectUtils utils = new MemoryCombatAreaEffectUtils ();
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.cancelCombatAreaEffect (CAEs, desiredLocation, "CAE02", null);
 		assertEquals (2, CAEs.size ());
 		assertEquals ("CAE01", CAEs.get (0).getCombatAreaEffectID ());
@@ -253,7 +253,7 @@ public final class TestMemoryCombatAreaEffectUtils
 			CAEs.add (newCAE);
 		}
 
-		final MemoryCombatAreaEffectUtils utils = new MemoryCombatAreaEffectUtils ();
+		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.cancelCombatAreaEffect (CAEs, null, "CAE04", null);
 	}
 }

@@ -19,10 +19,10 @@ import momime.common.messages.v0_9_4.PlayerPick;
 /**
  * Methods for working with list of MomResourceValues
  */
-public final class ResourceValueUtils implements IResourceValueUtils
+public final class ResourceValueUtilsImpl implements IResourceValueUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ResourceValueUtils.class.getName ());
+	private final Logger log = Logger.getLogger (ResourceValueUtilsImpl.class.getName ());
 	
 	/** Skill calculations */
 	private IMomSkillCalculations skillCalculations;
@@ -66,7 +66,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 	@Override
 	public final int findAmountPerTurnForProductionType (final List<MomResourceValue> resourceList, final String productionTypeID)
 	{
-		log.entering (ResourceValueUtils.class.getName (), "findAmountPerTurnForProductionType", productionTypeID);
+		log.entering (ResourceValueUtilsImpl.class.getName (), "findAmountPerTurnForProductionType", productionTypeID);
 
 		final MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 
@@ -76,7 +76,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 		else
 			result = playerResourceValue.getAmountPerTurn ();
 
-		log.exiting (ResourceValueUtils.class.getName (), "findAmountPerTurnForProductionType", result);
+		log.exiting (ResourceValueUtilsImpl.class.getName (), "findAmountPerTurnForProductionType", result);
 		return result;
 	}
 
@@ -88,7 +88,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 	@Override
 	public final int findAmountStoredForProductionType (final List<MomResourceValue> resourceList, final String productionTypeID)
 	{
-		log.entering (ResourceValueUtils.class.getName (), "findAmountStoredForProductionType", productionTypeID);
+		log.entering (ResourceValueUtilsImpl.class.getName (), "findAmountStoredForProductionType", productionTypeID);
 
 		final MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 
@@ -98,7 +98,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 		else
 			result = playerResourceValue.getAmountStored ();
 
-		log.exiting (ResourceValueUtils.class.getName (), "findAmountStoredForProductionType", result);
+		log.exiting (ResourceValueUtilsImpl.class.getName (), "findAmountStoredForProductionType", result);
 		return result;
 	}
 
@@ -110,7 +110,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 	@Override
 	public final void addToAmountPerTurn (final List<MomResourceValue> resourceList, final String productionTypeID, final int amountToAdd)
 	{
-		log.entering (ResourceValueUtils.class.getName (), "addToAmountPerTurn", new String [] {productionTypeID, new Integer (amountToAdd).toString ()});
+		log.entering (ResourceValueUtilsImpl.class.getName (), "addToAmountPerTurn", new String [] {productionTypeID, new Integer (amountToAdd).toString ()});
 
 		MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 		if (playerResourceValue == null)
@@ -122,7 +122,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 
 		playerResourceValue.setAmountPerTurn (playerResourceValue.getAmountPerTurn () + amountToAdd);
 
-		log.exiting (ResourceValueUtils.class.getName (), "addToAmountPerTurn");
+		log.exiting (ResourceValueUtilsImpl.class.getName (), "addToAmountPerTurn");
 	}
 
 	/**
@@ -133,7 +133,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 	@Override
 	public final void addToAmountStored (final List<MomResourceValue> resourceList, final String productionTypeID, final int amountToAdd)
 	{
-		log.entering (ResourceValueUtils.class.getName (), "addToAmountStored", new String [] {productionTypeID, new Integer (amountToAdd).toString ()});
+		log.entering (ResourceValueUtilsImpl.class.getName (), "addToAmountStored", new String [] {productionTypeID, new Integer (amountToAdd).toString ()});
 
 		MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 		if (playerResourceValue == null)
@@ -145,7 +145,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 
 		playerResourceValue.setAmountStored (playerResourceValue.getAmountStored () + amountToAdd);
 
-		log.exiting (ResourceValueUtils.class.getName (), "addToAmountStored");
+		log.exiting (ResourceValueUtilsImpl.class.getName (), "addToAmountStored");
 	}
 
 	/**
@@ -157,12 +157,12 @@ public final class ResourceValueUtils implements IResourceValueUtils
 	@Override
 	public final void zeroAmountsPerTurn (final List<MomResourceValue> resourceList)
 	{
-		log.entering (ResourceValueUtils.class.getName (), "zeroAmountsPerTurn");
+		log.entering (ResourceValueUtilsImpl.class.getName (), "zeroAmountsPerTurn");
 
 		for (final MomResourceValue playerResourceValue : resourceList)
 			playerResourceValue.setAmountPerTurn (0);
 
-		log.exiting (ResourceValueUtils.class.getName (), "zeroAmountsPerTurn");
+		log.exiting (ResourceValueUtilsImpl.class.getName (), "zeroAmountsPerTurn");
 	}
 
 	/**
@@ -174,12 +174,12 @@ public final class ResourceValueUtils implements IResourceValueUtils
 	@Override
 	public final void zeroAmountsStored (final List<MomResourceValue> resourceList)
 	{
-		log.entering (ResourceValueUtils.class.getName (), "zeroAmountsStored");
+		log.entering (ResourceValueUtilsImpl.class.getName (), "zeroAmountsStored");
 
 		for (final MomResourceValue playerResourceValue : resourceList)
 			playerResourceValue.setAmountStored (0);
 
-		log.exiting (ResourceValueUtils.class.getName (), "zeroAmountsStored");
+		log.exiting (ResourceValueUtilsImpl.class.getName (), "zeroAmountsStored");
 	}
 
     /**
@@ -189,12 +189,12 @@ public final class ResourceValueUtils implements IResourceValueUtils
 	@Override
 	public final int calculateCastingSkillOfPlayer (final List<MomResourceValue> resourceList)
 	{
-		log.entering (ResourceValueUtils.class.getName (), "calculateCastingSkillOfPlayer");
+		log.entering (ResourceValueUtilsImpl.class.getName (), "calculateCastingSkillOfPlayer");
 
 		final int playerSkillPoints = findAmountStoredForProductionType (resourceList, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 		final int result = getSkillCalculations ().getCastingSkillForSkillPoints (playerSkillPoints);
 
-		log.exiting (ResourceValueUtils.class.getName (), "calculateCastingSkillOfPlayer", result);
+		log.exiting (ResourceValueUtilsImpl.class.getName (), "calculateCastingSkillOfPlayer", result);
 		return result;
 	}
 
@@ -216,7 +216,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 		final String productionTypeID, final SpellSettingData spellSettings, final ICommonDatabase db)
     	throws MomException, RecordNotFoundException
 	{
-		log.entering (ResourceValueUtils.class.getName (), "calculateAmountPerTurnForProductionType", productionTypeID);
+		log.entering (ResourceValueUtilsImpl.class.getName (), "calculateAmountPerTurnForProductionType", productionTypeID);
 
 		// Find directly produced values - for research, this will give the amounts produced by libraries, universities, etc.
 		final MomResourceValue playerResourceValue = findResourceValue (privateInfo.getResourceValue (), productionTypeID);
@@ -305,7 +305,7 @@ public final class ResourceValueUtils implements IResourceValueUtils
 
 		final int result = rawAmountPerTurn + amountPerTurnFromMagicPower + amountPerTurnFromPercentageBonuses;
 
-		log.exiting (ResourceValueUtils.class.getName (), "calculateAmountPerTurnForProductionType", result);
+		log.exiting (ResourceValueUtilsImpl.class.getName (), "calculateAmountPerTurnForProductionType", result);
 		return result;
 	}
 

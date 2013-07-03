@@ -12,7 +12,7 @@ import org.junit.Test;
 /**
  * Tests the PendingMovementUtils class
  */
-public final class TestPendingMovementUtils
+public final class TestPendingMovementUtilsImpl
 {
 	/**
 	 * Tests the removeUnitFromAnyPendingMoves method
@@ -34,7 +34,7 @@ public final class TestPendingMovementUtils
 		}
 		
 		// Run method
-		new PendingMovementUtils ().removeUnitFromAnyPendingMoves (moves, 4);
+		new PendingMovementUtilsImpl ().removeUnitFromAnyPendingMoves (moves, 4);
 		
 		// Check results
 		assertEquals (4, moves.size ());
@@ -72,7 +72,7 @@ public final class TestPendingMovementUtils
 		}
 		
 		// Run method
-		new PendingMovementUtils ().removeAnyPendingMovesThatIncludeUnit (moves, 4);
+		new PendingMovementUtilsImpl ().removeAnyPendingMovesThatIncludeUnit (moves, 4);
 		
 		// Check results
 		assertEquals (2, moves.size ());

@@ -9,7 +9,7 @@ import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 
@@ -58,7 +58,7 @@ public final class TestMomFogOfWarCalculations
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
 
 		final MomFogOfWarCalculations calc = new MomFogOfWarCalculations ();
-		calc.setMemoryGridCellUtils (new MemoryGridCellUtils ());
+		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		
 		// Test two locations, one with a tower and one without
 		final OverlandMapTerrainData towerData = new OverlandMapTerrainData ();

@@ -19,10 +19,10 @@ import com.ndg.map.SquareMapDirection;
 /**
  * Common calculations pertaining to units
  */
-public final class MomUnitCalculations implements IMomUnitCalculations
+public final class MomUnitCalculationsImpl implements IMomUnitCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomUnitCalculations.class.getName ());
+	private final Logger log = Logger.getLogger (MomUnitCalculationsImpl.class.getName ());
 	
 	/** Player pick utils */
 	private IPlayerPickUtils playerPickUtils;
@@ -42,7 +42,7 @@ public final class MomUnitCalculations implements IMomUnitCalculations
 		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
 		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final ICommonDatabase db) throws RecordNotFoundException
 	{
-		log.entering (MomUnitCalculations.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", cityLocation);
+		log.entering (MomUnitCalculationsImpl.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", cityLocation);
 
 		// First look for a building that grants magical weapons, i.e. an Alchemists' Guild
 		int bestWeaponGrade = 0;
@@ -63,7 +63,7 @@ public final class MomUnitCalculations implements IMomUnitCalculations
 			coords.setY (cityLocation.getY ());
 			coords.setPlane (cityLocation.getPlane ());
 
-			for (final SquareMapDirection direction : MomCityCalculations.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+			for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			{
 				if (CoordinateSystemUtils.moveCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 				{
@@ -83,7 +83,7 @@ public final class MomUnitCalculations implements IMomUnitCalculations
 		if (weaponGradeFromPicks > bestWeaponGrade)
 			bestWeaponGrade = weaponGradeFromPicks;
 
-		log.exiting (MomUnitCalculations.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", bestWeaponGrade);
+		log.exiting (MomUnitCalculationsImpl.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", bestWeaponGrade);
 		return bestWeaponGrade;
 	}
 

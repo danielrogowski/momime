@@ -35,7 +35,7 @@ import com.ndg.map.CoordinateSystem;
 /**
  * Tests the MemoryBuildingUtils class
  */
-public final class TestMemoryBuildingUtils
+public final class TestMemoryBuildingUtilsImpl
 {
 	/**
 	 * Lots of methods need a city location, so this is just a helper method to create one
@@ -61,7 +61,7 @@ public final class TestMemoryBuildingUtils
 	{
 		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.findBuilding (buildingsList, createCityLocation (0), "BL01"));
 	}
 
@@ -77,7 +77,7 @@ public final class TestMemoryBuildingUtils
 		building.setCityLocation (createCityLocation (0));
 		buildingsList.add (building);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.findBuilding (buildingsList, createCityLocation (0), "BL02"));
 	}
 
@@ -93,7 +93,7 @@ public final class TestMemoryBuildingUtils
 		building.setCityLocation (createCityLocation (0));
 		buildingsList.add (building);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.findBuilding (buildingsList, createCityLocation (1), "BL01"));
 	}
 
@@ -109,7 +109,7 @@ public final class TestMemoryBuildingUtils
 		building.setCityLocation (createCityLocation (0));
 		buildingsList.add (building);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.findBuilding (buildingsList, createCityLocation (0), "BL01"));
 	}
 
@@ -128,7 +128,7 @@ public final class TestMemoryBuildingUtils
 			buildingsList.add (building);
 		}
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.findBuilding (buildingsList, createCityLocation (0), "BL02"));
 	}
 
@@ -141,7 +141,7 @@ public final class TestMemoryBuildingUtils
 	{
 		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		utils.destroyBuilding (buildingsList, createCityLocation (0), "BL01");
 	}
 
@@ -157,7 +157,7 @@ public final class TestMemoryBuildingUtils
 		building.setCityLocation (createCityLocation (0));
 		buildingsList.add (building);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		utils.destroyBuilding (buildingsList, createCityLocation (0), "BL02");
 	}
 
@@ -174,7 +174,7 @@ public final class TestMemoryBuildingUtils
 		building.setCityLocation (createCityLocation (0));
 		buildingsList.add (building);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		utils.destroyBuilding (buildingsList, createCityLocation (1), "BL01");
 	}
 
@@ -191,7 +191,7 @@ public final class TestMemoryBuildingUtils
 		building.setCityLocation (createCityLocation (0));
 		buildingsList.add (building);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		utils.destroyBuilding (buildingsList, createCityLocation (0), "BL01");
 	}
 
@@ -211,7 +211,7 @@ public final class TestMemoryBuildingUtils
 			buildingsList.add (building);
 		}
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		utils.destroyBuilding (buildingsList, createCityLocation (0), "BL02");
 		assertEquals (1, buildingsList.size ());
 		assertEquals ("BL01", buildingsList.get (0).getBuildingID ());
@@ -239,7 +239,7 @@ public final class TestMemoryBuildingUtils
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
 		// City has the building, but we can't see it
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertNull (utils.findCityWithBuilding (1, "BL01", map, buildings));
 
 		// Wrong owner
@@ -264,7 +264,7 @@ public final class TestMemoryBuildingUtils
 
 		final Building building = new Building ();
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsBuildingRequirements (buildingsList, createCityLocation (0), building));
 	}
 
@@ -281,7 +281,7 @@ public final class TestMemoryBuildingUtils
 		req.setPrerequisiteID ("BL01");
 		building.getBuildingPrerequisite ().add (req);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsBuildingRequirements (buildingsList, createCityLocation (0), building));
 	}
 
@@ -302,7 +302,7 @@ public final class TestMemoryBuildingUtils
 		req.setPrerequisiteID ("BL01");
 		building.getBuildingPrerequisite ().add (req);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsBuildingRequirements (buildingsList, createCityLocation (1), building));
 	}
 
@@ -323,7 +323,7 @@ public final class TestMemoryBuildingUtils
 		req.setPrerequisiteID ("BL01");
 		building.getBuildingPrerequisite ().add (req);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsBuildingRequirements (buildingsList, createCityLocation (0), building));
 	}
 
@@ -347,7 +347,7 @@ public final class TestMemoryBuildingUtils
 			building.getBuildingPrerequisite ().add (req);
 		}
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsBuildingRequirements (buildingsList, createCityLocation (0), building));
 	}
 
@@ -374,7 +374,7 @@ public final class TestMemoryBuildingUtils
 			building.getBuildingPrerequisite ().add (req);
 		}
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsBuildingRequirements (buildingsList, createCityLocation (0), building));
 	}
 
@@ -388,7 +388,7 @@ public final class TestMemoryBuildingUtils
 
 		final Unit unit = new Unit ();
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsUnitRequirements (buildingsList, createCityLocation (0), unit));
 	}
 
@@ -405,7 +405,7 @@ public final class TestMemoryBuildingUtils
 		req.setPrerequisiteID ("BL01");
 		unit.getUnitPrerequisite ().add (req);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsUnitRequirements (buildingsList, createCityLocation (0), unit));
 	}
 
@@ -426,7 +426,7 @@ public final class TestMemoryBuildingUtils
 		req.setPrerequisiteID ("BL01");
 		unit.getUnitPrerequisite ().add (req);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsUnitRequirements (buildingsList, createCityLocation (1), unit));
 	}
 
@@ -447,7 +447,7 @@ public final class TestMemoryBuildingUtils
 		req.setPrerequisiteID ("BL01");
 		unit.getUnitPrerequisite ().add (req);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsUnitRequirements (buildingsList, createCityLocation (0), unit));
 	}
 
@@ -471,7 +471,7 @@ public final class TestMemoryBuildingUtils
 			unit.getUnitPrerequisite ().add (req);
 		}
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsUnitRequirements (buildingsList, createCityLocation (0), unit));
 	}
 
@@ -498,7 +498,7 @@ public final class TestMemoryBuildingUtils
 			unit.getUnitPrerequisite ().add (req);
 		}
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsUnitRequirements (buildingsList, createCityLocation (0), unit));
 	}
 
@@ -534,7 +534,7 @@ public final class TestMemoryBuildingUtils
 			memBuildings.add (memBuilding);
 		}
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertNull (utils.doAnyBuildingsDependOn (memBuildings, createCityLocation (0), "BL01", db));
 	}
 
@@ -570,7 +570,7 @@ public final class TestMemoryBuildingUtils
 			memBuildings.add (memBuilding);
 		}
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertNotNull (utils.doAnyBuildingsDependOn (memBuildings, createCityLocation (0), "BL02", db));
 	}
 
@@ -607,7 +607,7 @@ public final class TestMemoryBuildingUtils
 		}
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertNull (utils.doAnyBuildingsDependOn (memBuildings, createCityLocation (1), "BL02", db));
 	}
 
@@ -653,7 +653,7 @@ public final class TestMemoryBuildingUtils
 		when (db.findUnit (eq ("Y"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
 
 		// Building tests
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.isBuildingAPrerequisiteFor ("BL02", "BL01", db));
 		assertFalse (utils.isBuildingAPrerequisiteFor ("BL01", "BL02", db));
 
@@ -697,7 +697,7 @@ public final class TestMemoryBuildingUtils
 		}
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (0, utils.experienceFromBuildings (memBuildings, createCityLocation (0), db));
 	}
 
@@ -728,7 +728,7 @@ public final class TestMemoryBuildingUtils
 		memBuildings.add (memBuilding);
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (0, utils.experienceFromBuildings (memBuildings, createCityLocation (1), db));
 	}
 
@@ -759,7 +759,7 @@ public final class TestMemoryBuildingUtils
 		memBuildings.add (memBuilding);
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (10, utils.experienceFromBuildings (memBuildings, createCityLocation (0), db));
 	}
 
@@ -793,7 +793,7 @@ public final class TestMemoryBuildingUtils
 		}
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (20, utils.experienceFromBuildings (memBuildings, createCityLocation (0), db));
 	}
 
@@ -829,7 +829,7 @@ public final class TestMemoryBuildingUtils
 		memBuildings.add (memBuilding);
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (0, utils.totalBonusProductionPerPersonFromBuildings (memBuildings, createCityLocation (0), "PT01", "RE01", db));
 	}
 
@@ -865,7 +865,7 @@ public final class TestMemoryBuildingUtils
 		memBuildings.add (memBuilding);
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (0, utils.totalBonusProductionPerPersonFromBuildings (memBuildings, createCityLocation (1), "PT01", "RE01", db));
 	}
 
@@ -901,7 +901,7 @@ public final class TestMemoryBuildingUtils
 		memBuildings.add (memBuilding);
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (0, utils.totalBonusProductionPerPersonFromBuildings (memBuildings, createCityLocation (0), "PT02", "RE01", db));
 	}
 
@@ -937,7 +937,7 @@ public final class TestMemoryBuildingUtils
 		memBuildings.add (memBuilding);
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (0, utils.totalBonusProductionPerPersonFromBuildings (memBuildings, createCityLocation (0), "PT01", "RE02", db));
 	}
 
@@ -973,7 +973,7 @@ public final class TestMemoryBuildingUtils
 		memBuildings.add (memBuilding);
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (6, utils.totalBonusProductionPerPersonFromBuildings (memBuildings, createCityLocation (0), "PT01", "RE01", db));
 	}
 
@@ -1017,7 +1017,7 @@ public final class TestMemoryBuildingUtils
 		}
 
 		// Do test
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (10, utils.totalBonusProductionPerPersonFromBuildings (memBuildings, createCityLocation (0), "PT01", "RE01", db));
 	}
 
@@ -1052,7 +1052,7 @@ public final class TestMemoryBuildingUtils
 		building.getBuildingPopulationProductionModifier ().add (population);
 
 		// Production that isn't even listed
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (0, utils.findBuildingConsumption (building, "RE05"));
 
 		// Production
@@ -1082,7 +1082,7 @@ public final class TestMemoryBuildingUtils
 		consumption.setDoubleAmount (-5);
 		building.getBuildingPopulationProductionModifier ().add (consumption);
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		utils.findBuildingConsumption (building, "RE02");
 	}
 
@@ -1095,7 +1095,7 @@ public final class TestMemoryBuildingUtils
 	{
 		final ICommonDatabase db = GenerateTestData.createDB ();
 
-		final MemoryBuildingUtils utils = new MemoryBuildingUtils ();
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertEquals (100, utils.goldFromSellingBuilding (db.findBuilding (GenerateTestData.ANIMISTS_GUILD, "testGoldFromSellingBuilding")));
 		assertEquals (0, utils.goldFromSellingBuilding (db.findBuilding (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, "testGoldFromSellingBuilding")));
 	}

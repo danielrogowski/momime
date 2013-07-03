@@ -19,7 +19,7 @@ import org.junit.Test;
 /**
  * Tests the PlayerPickUtils class
  */
-public final class TestPlayerPickUtils
+public final class TestPlayerPickUtilsImpl
 {
 	/**
 	 * @return Death book with its exclusivities
@@ -143,7 +143,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testGetTotalPickCost () throws RecordNotFoundException
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		assertEquals ("Ariel's standard 20 picks did not total 20", 20, utils.getTotalPickCost (createAriel20PicksList (), GenerateTestData.createDB ()));
 	}
 
@@ -153,7 +153,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testGetQuantityOfPick ()
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		assertEquals ("Ariel's standard 20 picks did include 14 life books", 14, utils.getQuantityOfPick (createAriel20PicksList (), "MB01"));
 	}
 
@@ -163,7 +163,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testUpdatePickQuantity ()
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		// Add one
@@ -202,7 +202,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testCountPicksOfType () throws RecordNotFoundException
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		assertEquals ("Ariel's standard 20 picks did include 14 books", 14, utils.countPicksOfType (createAriel20PicksList (), "B", false, GenerateTestData.createDB ()));
 	}
 
@@ -213,7 +213,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testMeetsPickRequirements () throws RecordNotFoundException
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		final ICommonDatabase db = GenerateTestData.createDB ();
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
@@ -256,7 +256,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testCanSafelyRemove () throws RecordNotFoundException
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		final ICommonDatabase db = GenerateTestData.createDB ();
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
@@ -277,7 +277,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testCanSafelyAdd ()
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		// Can't add a death book if we have a life book
@@ -296,7 +296,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testGetHighestWeaponGradeGrantedByPicks () throws RecordNotFoundException
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		final ICommonDatabase db = GenerateTestData.createDB ();
 
 		// Ariel at 20 picks - she has a pile of retorts, but Alchemy isn't one of them
@@ -314,7 +314,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testTotalReligiousBuildingBonus () throws RecordNotFoundException
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		final ICommonDatabase db = GenerateTestData.createDB ();
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
@@ -336,7 +336,7 @@ public final class TestPlayerPickUtils
 	@Test
 	public final void testTotalProductionBonus () throws RecordNotFoundException
 	{
-		final PlayerPickUtils utils = new PlayerPickUtils (); 
+		final PlayerPickUtilsImpl utils = new PlayerPickUtilsImpl (); 
 		final ICommonDatabase db = GenerateTestData.createDB ();
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 

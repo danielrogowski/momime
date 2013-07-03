@@ -2,7 +2,7 @@ package momime.server.utils;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
@@ -12,7 +12,7 @@ import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -57,8 +57,8 @@ public final class TestCityServerUtils
 		
 		// Set up object
 		final CityServerUtils utils = new CityServerUtils ();
-		utils.setMemoryBuildingUtils (new MemoryBuildingUtils ());
-		utils.setCityCalculations (new MomCityCalculations ());
+		utils.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		utils.setCityCalculations (new MomCityCalculationsImpl ());
 
 		// Blacksmith - can't yet because we didn't set the city player yet so ANY change is invalid, even one with no prerequisities
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sd, db));
@@ -148,7 +148,7 @@ public final class TestCityServerUtils
 
 		// Set up object
 		final CityServerUtils utils = new CityServerUtils ();
-		utils.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		utils.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		// Barbarian spearmen - city must be correct race
 		cityData.setCityRaceID ("RC09");
@@ -265,7 +265,7 @@ public final class TestCityServerUtils
 
 		// Set up object
 		final CityServerUtils utils = new CityServerUtils ();
-		utils.setMemoryBuildingUtils (new MemoryBuildingUtils ());
+		utils.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		// Run test
 		utils.validateCityConstruction (player, trueMap, cityLocation, CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS, sd, db);

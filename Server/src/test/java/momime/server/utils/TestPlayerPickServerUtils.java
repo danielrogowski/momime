@@ -20,8 +20,8 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.SpellUtils;
+import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.ai.SpellAI;
 import momime.server.database.ServerDatabaseEx;
@@ -276,7 +276,7 @@ public final class TestPlayerPickServerUtils
 
 		// Set up object to test
 		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
-		utils.setSpellUtils (new SpellUtils ());
+		utils.setSpellUtils (new SpellUtilsImpl ());
 		
 		// So far we have no books, so we get no free spells
 		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
@@ -359,7 +359,7 @@ public final class TestPlayerPickServerUtils
 
 		// Set up object to test
 		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
-		final SpellUtils spellUtils = new SpellUtils ();
+		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
 		final SpellAI spellAI = new SpellAI ();
 		utils.setSpellUtils (spellUtils);
 		utils.setSpellAI (spellAI);
@@ -426,7 +426,7 @@ public final class TestPlayerPickServerUtils
 
 		// Set up object to test
 		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
-		utils.setSpellUtils (new SpellUtils ());
+		utils.setSpellUtils (new SpellUtilsImpl ());
 		
 		// Ask for a pick ID that we have none of
 		final List<String> spellIDs = new ArrayList<String> ();
@@ -486,7 +486,7 @@ public final class TestPlayerPickServerUtils
 
 		// Set up object to test
 		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
-		utils.setPlayerPickUtils (new PlayerPickUtils ());
+		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
 		// Invalid race
 		assertNotNull (utils.validateRaceChoice (player, "RC15", db));
@@ -666,7 +666,7 @@ public final class TestPlayerPickServerUtils
 
 		// Set up object to test
 		final PlayerPickServerUtils utils = new PlayerPickServerUtils ();
-		utils.setPlayerPickUtils (new PlayerPickUtils ());
+		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
 		// No picks
 		assertEquals (0, utils.startingPlaneForWizard (picks, db));

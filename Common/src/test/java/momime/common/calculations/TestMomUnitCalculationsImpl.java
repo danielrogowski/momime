@@ -13,7 +13,7 @@ import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.PlayerPickUtilsImpl;
 
 import org.junit.Test;
 
@@ -22,7 +22,7 @@ import com.ndg.map.CoordinateSystem;
 /**
  * Tests the calculations in the MomUnitCalculations class
  */
-public final class TestMomUnitCalculations
+public final class TestMomUnitCalculationsImpl
 {
 	/**
 	 * Tests the calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort method
@@ -32,8 +32,8 @@ public final class TestMomUnitCalculations
 	public final void testCalculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort () throws RecordNotFoundException
 	{
 		// Set up object to test
-		final MomUnitCalculations calc = new MomUnitCalculations ();
-		calc.setPlayerPickUtils (new PlayerPickUtils ());
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();

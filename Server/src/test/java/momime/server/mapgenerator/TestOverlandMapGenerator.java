@@ -17,7 +17,7 @@ import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -279,7 +279,7 @@ public final class TestOverlandMapGenerator
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (db);
 		
-		mapGen.setMemoryGridCellUtils (new MemoryGridCellUtils ());
+		mapGen.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 
 		mapGen.generateOverlandTerrain ();
 

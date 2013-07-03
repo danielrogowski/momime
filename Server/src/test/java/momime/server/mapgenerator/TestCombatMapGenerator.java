@@ -20,10 +20,10 @@ import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.ICombatMapUtils;
-import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.MemoryBuildingUtilsImpl;
+import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -78,7 +78,7 @@ public final class TestCombatMapGenerator
 	{
 		final CombatMapGenerator mapGen = new CombatMapGenerator ();
 		final MapAreaOfCombatTiles map = ServerTestData.createCombatMap ();
-		final CombatMapUtils utils = new CombatMapUtils ();
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 
 		// Test none
 		mapGen.setTerrainFeaturesRandomly (map, "A", 0);
@@ -142,12 +142,12 @@ public final class TestCombatMapGenerator
 		final MemoryGridCell mc = trueTerrain.getMap ().getPlane ().get (1).getRow ().get (15).getCell ().get (20);
 		
 		// Set up class
-		final CombatMapUtils utils = new CombatMapUtils ();
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 		
 		final CombatMapGenerator mapGen = new CombatMapGenerator ();
 		mapGen.setCombatMapUtils (utils);
-		mapGen.setMemoryBuildingUtils (new MemoryBuildingUtils ());
-		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
+		mapGen.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
 		
 		// If we have no population, no buildings, no tile type, no map feature or anything at all - then method should just run through and do nothing
 		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
@@ -348,12 +348,12 @@ public final class TestCombatMapGenerator
 		fow.setMap (ServerTestData.createOverlandMap (sd.getMapSize ()));
 		
 		// Set up class
-		final CombatMapUtils utils = new CombatMapUtils ();
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 		
 		final CombatMapGenerator mapGen = new CombatMapGenerator ();
 		mapGen.setCombatMapUtils (utils);
-		mapGen.setMemoryBuildingUtils (new MemoryBuildingUtils ());
-		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtils ());
+		mapGen.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
 		
 		// Location
 		final OverlandMapCoordinatesEx combatMapLocation = new OverlandMapCoordinatesEx ();

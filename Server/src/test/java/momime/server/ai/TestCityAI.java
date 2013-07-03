@@ -9,7 +9,6 @@ import java.util.List;
 
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.MemoryBuildingUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
@@ -20,6 +19,7 @@ import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;

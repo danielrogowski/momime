@@ -1,8 +1,9 @@
-package momime.common.messages;
+package momime.common.utils;
 
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 
 /**

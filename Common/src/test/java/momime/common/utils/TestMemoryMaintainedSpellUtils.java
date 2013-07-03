@@ -1,4 +1,4 @@
-package momime.common.messages;
+package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -15,9 +15,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.SpellHasCityEffect;
 import momime.common.database.v0_9_4.UnitSpellEffect;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.utils.TargetUnitSpellResult;
 
 import org.junit.Test;
 

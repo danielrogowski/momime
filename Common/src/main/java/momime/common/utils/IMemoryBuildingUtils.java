@@ -1,4 +1,4 @@
-package momime.common.messages;
+package momime.common.utils;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.Unit;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 

@@ -14,9 +14,7 @@ import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
-import momime.common.messages.IUnitUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.UnitUtils;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -33,6 +31,8 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.IUnitUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.IMomFogOfWarCalculations;

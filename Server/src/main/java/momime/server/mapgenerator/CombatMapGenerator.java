@@ -6,8 +6,6 @@ import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.CombatMapLayerID;
-import momime.common.messages.IMemoryBuildingUtils;
-import momime.common.messages.IMemoryMaintainedSpellUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
@@ -16,6 +14,8 @@ import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomCombatTileLayer;
 import momime.common.utils.ICombatMapUtils;
+import momime.common.utils.IMemoryBuildingUtils;
+import momime.common.utils.IMemoryMaintainedSpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.CombatMapElement;

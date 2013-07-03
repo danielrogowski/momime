@@ -7,10 +7,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.IMemoryBuildingUtils;
-import momime.common.messages.IMemoryCombatAreaEffectUtils;
-import momime.common.messages.IMemoryMaintainedSpellUtils;
-import momime.common.messages.IUnitUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessageData;
@@ -23,6 +19,10 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.utils.CompareUtils;
+import momime.common.utils.IMemoryBuildingUtils;
+import momime.common.utils.IMemoryCombatAreaEffectUtils;
+import momime.common.utils.IMemoryMaintainedSpellUtils;
+import momime.common.utils.IUnitUtils;
 import momime.server.database.ServerDatabaseEx;
 
 /**

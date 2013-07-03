@@ -1,13 +1,13 @@
-package momime.common.messages;
+package momime.common.utils;
 
 import java.util.List;
 
 import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Spell;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.utils.TargetUnitSpellResult;
 
 /**
  * Methods for working with list of MemoryMaintainedSpells

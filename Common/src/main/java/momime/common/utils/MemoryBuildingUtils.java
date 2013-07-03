@@ -1,4 +1,4 @@
-package momime.common.messages;
+package momime.common.utils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +12,7 @@ import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.BuildingPrerequisite;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitPrerequisite;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.OverlandMapCityData;

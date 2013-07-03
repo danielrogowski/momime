@@ -4,10 +4,10 @@ import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
-import momime.common.messages.ISpellUtils;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
+import momime.common.utils.ISpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 

@@ -12,8 +12,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.CastingReductionCombination;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
-import momime.common.messages.SpellUtils;
 import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.utils.SpellUtils;
 
 import org.junit.Test;
 

@@ -5,12 +5,12 @@ import java.util.logging.Logger;
 
 import momime.common.database.ICommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.utils.IPlayerPickUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;

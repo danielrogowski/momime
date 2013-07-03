@@ -10,11 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.v0_9_4.UnitHasSkill;
-import momime.common.messages.MemoryBuildingUtils;
-import momime.common.messages.MemoryCombatAreaEffectUtils;
-import momime.common.messages.MemoryMaintainedSpellUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.UnitUtils;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_4.MemoryGridCell;
@@ -22,6 +18,10 @@ import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 

@@ -21,8 +21,6 @@ import momime.common.database.v0_9_4.RaceUnrest;
 import momime.common.database.v0_9_4.RoundingDirectionID;
 import momime.common.database.v0_9_4.TaxRate;
 import momime.common.database.v0_9_4.TileType;
-import momime.common.messages.IMemoryBuildingUtils;
-import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
@@ -36,6 +34,8 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.IMemoryBuildingUtils;
+import momime.common.utils.IPlayerPickUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;

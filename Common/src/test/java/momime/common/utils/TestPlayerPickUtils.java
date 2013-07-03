@@ -1,4 +1,4 @@
-package momime.common.messages;
+package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
 

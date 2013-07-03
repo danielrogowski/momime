@@ -149,31 +149,31 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 
-	<bean id="memoryBuildingUtils" class="momime.common.messages.MemoryBuildingUtils" />
+	<bean id="memoryBuildingUtils" class="momime.common.utils.MemoryBuildingUtils" />
 	
-	<bean id="memoryCombatAreaEffectUtils" class="momime.common.messages.MemoryCombatAreaEffectUtils" />
+	<bean id="memoryCombatAreaEffectUtils" class="momime.common.utils.MemoryCombatAreaEffectUtils" />
 	
-	<bean id="memoryGridCellUtils" class="momime.common.messages.MemoryGridCellUtils" />
+	<bean id="memoryGridCellUtils" class="momime.common.utils.MemoryGridCellUtils" />
 	
-	<bean id="memoryMaintainedSpellUtils" class="momime.common.messages.MemoryMaintainedSpellUtils">
+	<bean id="memoryMaintainedSpellUtils" class="momime.common.utils.MemoryMaintainedSpellUtils">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
-	<bean id="playerPickUtils" class="momime.common.messages.PlayerPickUtils" />
+	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtils" />
 	
-	<bean id="resourceValueUtils" class="momime.common.messages.ResourceValueUtils">
+	<bean id="resourceValueUtils" class="momime.common.utils.ResourceValueUtils">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="skillCalculations" ref="skillCalculations" />
 		<property name="spellCalculations" ref="spellCalculations" />
 	</bean>
 	
-	<bean id="spellUtils" class="momime.common.messages.SpellUtils">
+	<bean id="spellUtils" class="momime.common.utils.SpellUtils">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="spellCalculations" ref="spellCalculations" />
 	</bean>
 	
-	<bean id="unitUtils" class="momime.common.messages.UnitUtils">
+	<bean id="unitUtils" class="momime.common.utils.UnitUtils">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>

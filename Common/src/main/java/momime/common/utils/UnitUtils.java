@@ -1,5 +1,4 @@
-package momime.common.messages;
-
+package momime.common.utils;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -19,6 +18,7 @@ import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.database.v0_9_4.UnitType;
 import momime.common.database.v0_9_4.UnitUpkeep;
 import momime.common.database.v0_9_4.WeaponGradeSkillBonus;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
@@ -31,6 +31,7 @@ import momime.common.messages.v0_9_4.UnitStatusID;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 
 /**
  * Simple unit lookups and calculations

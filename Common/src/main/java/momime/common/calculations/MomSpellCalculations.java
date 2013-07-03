@@ -11,8 +11,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.PickProductionBonus;
 import momime.common.database.v0_9_4.Spell;
-import momime.common.messages.ISpellUtils;
 import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.utils.ISpellUtils;
 
 /**
  * Calculations for dealing with spell casting cost reductions and research bonuses

@@ -1,12 +1,12 @@
-package momime.common.messages;
+package momime.common.utils;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.utils.CompareUtils;
 
 /**
  * Helper methods for dealing with MemoryCombatAreaEffect objects

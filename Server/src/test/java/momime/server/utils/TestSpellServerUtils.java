@@ -4,10 +4,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
 import momime.common.database.v0_9_4.Spell;
-import momime.common.messages.SpellUtils;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
+import momime.common.utils.SpellUtils;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 

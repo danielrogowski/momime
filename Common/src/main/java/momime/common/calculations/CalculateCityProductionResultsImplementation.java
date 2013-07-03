@@ -19,11 +19,11 @@ import momime.common.database.v0_9_4.Plane;
 import momime.common.database.v0_9_4.Race;
 import momime.common.database.v0_9_4.RacePopulationTask;
 import momime.common.database.v0_9_4.RacePopulationTaskProduction;
-import momime.common.messages.IMemoryBuildingUtils;
-import momime.common.messages.IPlayerPickUtils;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.utils.IMemoryBuildingUtils;
+import momime.common.utils.IPlayerPickUtils;
 
 /**
  * Internal implementation of the list of all types of production generated from a city returned from calculateAllCityProductions ()

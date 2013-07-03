@@ -1,4 +1,4 @@
-package momime.common.messages;
+package momime.common.utils;
 
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;

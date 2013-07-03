@@ -1,4 +1,4 @@
-package momime.common.messages;
+package momime.common.utils;
 
 import momime.common.database.CommonDatabaseConstants;
 

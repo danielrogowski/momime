@@ -16,9 +16,9 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.database.IServerDatabaseConverters;
-import momime.server.database.ServerDatabaseConverters;
+import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.mapgenerator.OverlandMapGenerator;
+import momime.server.mapgenerator.OverlandMapGeneratorImpl;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.SessionWindow;
 
@@ -123,7 +123,7 @@ public final class MomServer extends MultiplayerSessionServer
 		thread.setSessionLogger (ui.createLoggerForNewSession (sd, sessionWindow));
 
 		// Load server XML
-		final File fullFilename = new File (getPathToServerXmlDatabases () + sd.getXmlDatabaseName () + ServerDatabaseConverters.SERVER_XML_FILE_EXTENSION);
+		final File fullFilename = new File (getPathToServerXmlDatabases () + sd.getXmlDatabaseName () + ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
 		thread.setServerDB ((ServerDatabaseEx) getServerDatabaseUnmarshaller ().unmarshal (fullFilename));
 
 		// Create hash maps to look up all the values from the DB
@@ -134,7 +134,7 @@ public final class MomServer extends MultiplayerSessionServer
 			(thread.getServerDB (), sd.getDifficultyLevel ().getHumanSpellPicks ()));
 		
 		// Generate the overland map
-		final OverlandMapGenerator mapGen = (OverlandMapGenerator) thread.getOverlandMapGenerator ();
+		final OverlandMapGeneratorImpl mapGen = (OverlandMapGeneratorImpl) thread.getOverlandMapGenerator ();
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (thread.getServerDB ());
 		mapGen.setTrueTerrain (thread.getGeneralServerKnowledge ().getTrueMap ());		// See comment in spring XML for why this isn't just injected

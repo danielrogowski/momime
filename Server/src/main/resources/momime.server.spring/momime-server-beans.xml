@@ -83,7 +83,7 @@
 		<constructor-arg value="#{serverConfig.createUserRegistry}" />
 	</bean>
 
-	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConverters" />
+	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConvertersImpl" />
 	
 	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
 		<constructor-arg value="#{serverConfig.pathToServerXmlDatabases}" />
@@ -111,24 +111,24 @@
 
 	<!-- Utils -->
 
-	<bean id="playerPickServerUtils" class="momime.server.utils.PlayerPickServerUtils">
+	<bean id="playerPickServerUtils" class="momime.server.utils.PlayerPickServerUtilsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="spellAI" ref="spellAI" />
 	</bean>
 
-	<bean id="overlandMapServerUtils" class="momime.server.utils.OverlandMapServerUtils">
+	<bean id="overlandMapServerUtils" class="momime.server.utils.OverlandMapServerUtilsImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 	</bean>
 
-	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtils">
+	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtilsImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 
-	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtils">
+	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtilsImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
@@ -137,27 +137,27 @@
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 	</bean>
 
-	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtils">
+	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 	
 	<!-- Calculations -->
 	
-	<bean id="serverSpellCalculations" class="momime.server.calculations.MomServerSpellCalculations">
+	<bean id="serverSpellCalculations" class="momime.server.calculations.MomServerSpellCalculationsImpl">
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
-	<bean id="serverCityCalculations" class="momime.server.calculations.MomServerCityCalculations">
+	<bean id="serverCityCalculations" class="momime.server.calculations.MomServerCityCalculationsImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 	</bean>
 
-	<bean id="serverUnitCalculations" class="momime.server.calculations.MomServerUnitCalculations">
+	<bean id="serverUnitCalculations" class="momime.server.calculations.MomServerUnitCalculationsImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
 
-	<bean id="serverResourceCalculations" class="momime.server.calculations.MomServerResourceCalculations">
+	<bean id="serverResourceCalculations" class="momime.server.calculations.MomServerResourceCalculationsImpl">
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="spellUtils" ref="spellUtils" />
@@ -171,7 +171,7 @@
 
 	<!-- Processing -->
 
-	<bean id="playerMessageProcessing" class="momime.server.process.PlayerMessageProcessing">
+	<bean id="playerMessageProcessing" class="momime.server.process.PlayerMessageProcessingImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="skillCalculations" ref="skillCalculations" />
@@ -189,7 +189,7 @@
 		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
 	</bean>
 
-	<bean id="cityProcessing" class="momime.server.process.CityProcessing">
+	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
@@ -202,7 +202,7 @@
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 	</bean>
 
-	<bean id="spellProcessing" class="momime.server.process.SpellProcessing">
+	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
@@ -216,11 +216,11 @@
 	
 	<!-- AI -->
 	
-	<bean id="spellAI" class="momime.server.ai.SpellAI">
+	<bean id="spellAI" class="momime.server.ai.SpellAIImpl">
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
-	<bean id="cityAI" class="momime.server.ai.CityAI">
+	<bean id="cityAI" class="momime.server.ai.CityAIImpl">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
@@ -228,7 +228,7 @@
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 	</bean>
 
-	<bean id="momAI" class="momime.server.ai.MomAI">
+	<bean id="momAI" class="momime.server.ai.MomAIImpl">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="spellAI" ref="spellAI" />
 		<property name="cityAI" ref="cityAI" />
@@ -236,18 +236,18 @@
 	
 	<!-- Fog of War -->
 
-	<bean id="fogOfWarCalculations" class="momime.server.calculations.MomFogOfWarCalculations">
+	<bean id="fogOfWarCalculations" class="momime.server.calculations.MomFogOfWarCalculationsImpl">
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
 
-	<bean id="fogOfWarDuplication" class="momime.server.fogofwar.FogOfWarDuplication">
+	<bean id="fogOfWarDuplication" class="momime.server.fogofwar.FogOfWarDuplicationImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
-	<bean id="fogOfWarMidTurnChanges" class="momime.server.fogofwar.FogOfWarMidTurnChanges">
+	<bean id="fogOfWarMidTurnChanges" class="momime.server.fogofwar.FogOfWarMidTurnChangesImpl">
 		<property name="fogOfWarCalculations" ref="fogOfWarCalculations" />
 		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
@@ -263,7 +263,7 @@
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 	</bean>
 
-	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessing">
+	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">
 		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
@@ -295,7 +295,7 @@
 
 	<bean id="gpk" class="momime.common.messages.v0_9_4.MomGeneralPublicKnowledge" scope="prototype" />
 	
-	<bean id="overlandMapGenerator" class="momime.server.mapgenerator.OverlandMapGenerator" scope="prototype">
+	<bean id="overlandMapGenerator" class="momime.server.mapgenerator.OverlandMapGeneratorImpl" scope="prototype">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<!-- <property name="trueTerrain" ref="trueMap" /> see comment above, this is done in the code instead -->

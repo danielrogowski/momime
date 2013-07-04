@@ -21,14 +21,14 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
-import momime.server.calculations.IMomServerCityCalculations;
+import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Race;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
-import momime.server.fogofwar.IFogOfWarProcessing;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -37,7 +37,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server side only helper methods for dealing with cities
  */
-public final class CityServerUtilsImpl implements ICityServerUtils
+public final class CityServerUtilsImpl implements CityServerUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CityServerUtilsImpl.class.getName ());
@@ -49,16 +49,16 @@ public final class CityServerUtilsImpl implements ICityServerUtils
 	private MomCityCalculations cityCalculations;
 	
 	/** Server-only overland map utils */
-	private IOverlandMapServerUtils overlandMapServerUtils;
+	private OverlandMapServerUtils overlandMapServerUtils;
 	
 	/** Server-only city calculations */
-	private IMomServerCityCalculations serverCityCalculations;
+	private MomServerCityCalculations serverCityCalculations;
 	
 	/** Methods for updating true map + players' memory */
-	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** Fog of war update methods */
-	private IFogOfWarProcessing fogOfWarProcessing;
+	private FogOfWarProcessing fogOfWarProcessing;
 	
 	/**
 	 * Validates that a building or unit that we want to construct at a particular city is a valid choice
@@ -281,7 +281,7 @@ public final class CityServerUtilsImpl implements ICityServerUtils
 	/**
 	 * @return Server-only overland map utils
 	 */
-	public final IOverlandMapServerUtils getOverlandMapServerUtils ()
+	public final OverlandMapServerUtils getOverlandMapServerUtils ()
 	{
 		return overlandMapServerUtils;
 	}
@@ -289,7 +289,7 @@ public final class CityServerUtilsImpl implements ICityServerUtils
 	/**
 	 * @param utils Server-only overland map utils
 	 */
-	public final void setOverlandMapServerUtils (final IOverlandMapServerUtils utils)
+	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
 	{
 		overlandMapServerUtils = utils;
 	}
@@ -297,7 +297,7 @@ public final class CityServerUtilsImpl implements ICityServerUtils
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final IMomServerCityCalculations getServerCityCalculations ()
+	public final MomServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -305,7 +305,7 @@ public final class CityServerUtilsImpl implements ICityServerUtils
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final IMomServerCityCalculations calc)
+	public final void setServerCityCalculations (final MomServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}
@@ -313,7 +313,7 @@ public final class CityServerUtilsImpl implements ICityServerUtils
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
 		return fogOfWarMidTurnChanges;
 	}
@@ -321,7 +321,7 @@ public final class CityServerUtilsImpl implements ICityServerUtils
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
 	}
@@ -329,7 +329,7 @@ public final class CityServerUtilsImpl implements ICityServerUtils
 	/**
 	 * @return Fog of war update methods
 	 */
-	public final IFogOfWarProcessing getFogOfWarProcessing ()
+	public final FogOfWarProcessing getFogOfWarProcessing ()
 	{
 		return fogOfWarProcessing;
 	}
@@ -337,7 +337,7 @@ public final class CityServerUtilsImpl implements ICityServerUtils
 	/**
 	 * @param obj Fog of war update methods
 	 */
-	public final void setFogOfWarProcessing (final IFogOfWarProcessing obj)
+	public final void setFogOfWarProcessing (final FogOfWarProcessing obj)
 	{
 		fogOfWarProcessing = obj;
 	}

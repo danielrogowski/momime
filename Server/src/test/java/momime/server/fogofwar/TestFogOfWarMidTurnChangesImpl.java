@@ -35,7 +35,7 @@ import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
-import momime.server.calculations.IMomFogOfWarCalculations;
+import momime.server.calculations.MomFogOfWarCalculations;
 import momime.server.database.ServerDatabaseEx;
 
 import org.junit.Test;
@@ -174,11 +174,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 		players.add (player5);
 		
 		// Set up test object
-		final IMomFogOfWarCalculations single = mock (IMomFogOfWarCalculations.class);
+		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (true);
 		
-		final IFogOfWarDuplication dup = mock (IFogOfWarDuplication.class);
+		final FogOfWarDuplication dup = mock (FogOfWarDuplication.class);
 		when (dup.copyTerrainAndNodeAura (tc, mc3)).thenReturn (true);
 		when (dup.copyTerrainAndNodeAura (tc, mc4)).thenReturn (true);
 		when (dup.copyTerrainAndNodeAura (tc, mc5)).thenReturn (false);
@@ -334,11 +334,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 		players.add (player5);
 		
 		// Set up test object
-		final IMomFogOfWarCalculations single = mock (IMomFogOfWarCalculations.class);
+		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (true);
 		
-		final IFogOfWarDuplication dup = mock (IFogOfWarDuplication.class);
+		final FogOfWarDuplication dup = mock (FogOfWarDuplication.class);
 		when (dup.copyCityData (tc, mc3, false)).thenReturn (true);
 		when (dup.copyCityData (tc, mc4, false)).thenReturn (true);
 		when (dup.copyCityData (tc, mc5, false)).thenReturn (false);
@@ -415,7 +415,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		players.add (player3);
 		
 		// Set up test object
-		final IMomFogOfWarCalculations single = mock (IMomFogOfWarCalculations.class);
+		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
 		calc.setFogOfWarCalculations (single);
@@ -516,7 +516,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		players.add (player2);
 		
 		// Set up test object
-		final IMomFogOfWarCalculations single = mock (IMomFogOfWarCalculations.class);
+		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
@@ -578,7 +578,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		spell.setCityLocation (spellLocation);
 
 		// Set up test object
-		final IMomFogOfWarCalculations single = mock (IMomFogOfWarCalculations.class);
+		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (true);
 
@@ -638,7 +638,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
 
 		// Set up test object
-		final IMomFogOfWarCalculations fow = mock (IMomFogOfWarCalculations.class);
+		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
 		
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
 		calc.setFogOfWarCalculations (fow);

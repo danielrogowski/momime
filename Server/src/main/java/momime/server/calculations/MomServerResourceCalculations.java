@@ -5,7 +5,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -14,7 +14,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  * Server side methods for dealing with calculating and updating the global economy
  * e.g. gold being produced, cities growing, buildings progressing construction, spells being researched and so on
  */
-public interface IMomServerResourceCalculations
+public interface MomServerResourceCalculations
 {
 	/**
 	 * Sends one player's global production values to them
@@ -43,6 +43,6 @@ public interface IMomServerResourceCalculations
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 */
 	public void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase,
-		final IMomSessionVariables mom)
+		final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

@@ -10,7 +10,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -46,7 +46,7 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 		log.entering (RequestCastSpellMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getSpellID ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		mom.getSpellProcessing ().requestCastSpell (sender, getSpellID (),
 			(OverlandMapCoordinatesEx) getCombatLocation (), (CombatMapCoordinatesEx) getCombatTargetLocation (), getCombatTargetUnitURN (), mom);

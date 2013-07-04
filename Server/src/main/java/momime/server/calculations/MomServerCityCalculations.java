@@ -19,7 +19,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server only calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
  */
-public interface IMomServerCityCalculations
+public interface MomServerCityCalculations
 {
 	/**
 	 * Could do this inside chooseCityLocation, however declaring it separately avoids having to repeat this over

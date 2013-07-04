@@ -3,7 +3,7 @@ package momime.server;
 /**
  * Factory interface for creating MomSessionThreads
  */
-public interface IMomSessionThreadFactory
+public interface MomSessionThreadFactory
 {
 	/**
 	 * @return Newly created thread

@@ -11,7 +11,7 @@ import momime.server.database.ServerDatabaseEx;
  * Isolated methods used in fog of war routines by MomTrueMap
  * In the Delphi code most of these are on MomServerPlayer, but that doesn't make sense here since we have to pass in the pre-locked FOW area
  */
-public interface IMomFogOfWarCalculations
+public interface MomFogOfWarCalculations
 {
 	/**
 	 * This is used outside of updateAndSendFogOfWar () method, while the player's FOW area is set to the normal 3 state values indicating what the player can see.

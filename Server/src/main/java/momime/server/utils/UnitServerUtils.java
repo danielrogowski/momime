@@ -19,7 +19,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Server side only helper methods for dealing with units
  */
-public interface IUnitServerUtils
+public interface UnitServerUtils
 {
 	/**
 	 * Chooses a name for this hero (out of 5 possibilities) and rolls their random skills

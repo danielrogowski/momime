@@ -25,13 +25,13 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.DummyServerToClientConnection;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
-import momime.server.calculations.IMomServerCityCalculations;
-import momime.server.calculations.IMomServerResourceCalculations;
+import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
 import org.junit.Test;
@@ -96,9 +96,9 @@ public final class TestCityProcessingImpl
 		
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		final IMomServerCityCalculations serverCityCalculations = mock (IMomServerCityCalculations.class);
+		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
 		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
@@ -173,9 +173,9 @@ public final class TestCityProcessingImpl
 		
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		final IMomServerCityCalculations serverCityCalculations = mock (IMomServerCityCalculations.class);
+		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
 		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
@@ -250,9 +250,9 @@ public final class TestCityProcessingImpl
 		
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		final IMomServerCityCalculations serverCityCalculations = mock (IMomServerCityCalculations.class);
+		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
 		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
@@ -413,13 +413,13 @@ public final class TestCityProcessingImpl
 		player.setConnection (msgs);
 		
 		// Set up object to test
-		final IMomSessionVariables mom = mock (IMomSessionVariables.class);
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		
-		final IMomServerResourceCalculations serverResourceCalculations = mock (IMomServerResourceCalculations.class);
+		final MomServerResourceCalculations serverResourceCalculations = mock (MomServerResourceCalculations.class);
 
 		// Have to use anyObject () for location since .equals () doesn't give correct result
 		final MomCityCalculations cityCalculations = mock (MomCityCalculations.class);
@@ -427,8 +427,8 @@ public final class TestCityProcessingImpl
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation2, "TR03", db)).thenReturn (breakdown2);
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation3, "TR03", db)).thenReturn (breakdown3);
 		
-		final IMomServerCityCalculations serverCityCalculations = mock (IMomServerCityCalculations.class);
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final MomServerCityCalculations serverCityCalculations = mock (MomServerCityCalculations.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setServerResourceCalculations (serverResourceCalculations);

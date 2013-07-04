@@ -17,7 +17,7 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Plane;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -25,19 +25,19 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Overall AI strategy + control
  */
-public final class MomAIImpl implements IMomAI
+public final class MomAIImpl implements MomAI
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomAIImpl.class.getName ());
 	
 	/** Methods for updating true map + players' memory */
-	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** AI decisions about cities */
-	private ICityAI cityAI;
+	private CityAI cityAI;
 
 	/** AI decisions about spells */
-	private ISpellAI spellAI;
+	private SpellAI spellAI;
 	
 	/**
 	 *
@@ -97,7 +97,7 @@ public final class MomAIImpl implements IMomAI
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
 		return fogOfWarMidTurnChanges;
 	}
@@ -105,7 +105,7 @@ public final class MomAIImpl implements IMomAI
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
 	}
@@ -113,7 +113,7 @@ public final class MomAIImpl implements IMomAI
 	/**
 	 * @return AI decisions about cities
 	 */
-	public final ICityAI getCityAI ()
+	public final CityAI getCityAI ()
 	{
 		return cityAI;
 	}
@@ -121,7 +121,7 @@ public final class MomAIImpl implements IMomAI
 	/**
 	 * @param ai AI decisions about cities
 	 */
-	public final void setCityAI (final ICityAI ai)
+	public final void setCityAI (final CityAI ai)
 	{
 		cityAI = ai;
 	}
@@ -129,7 +129,7 @@ public final class MomAIImpl implements IMomAI
 	/**
 	 * @return AI decisions about spells
 	 */
-	public final ISpellAI getSpellAI ()
+	public final SpellAI getSpellAI ()
 	{
 		return spellAI;
 	}
@@ -137,7 +137,7 @@ public final class MomAIImpl implements IMomAI
 	/**
 	 * @param ai AI decisions about spells
 	 */
-	public final void setSpellAI (final ISpellAI ai)
+	public final void setSpellAI (final SpellAI ai)
 	{
 		spellAI = ai;
 	}

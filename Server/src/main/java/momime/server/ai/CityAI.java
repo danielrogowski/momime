@@ -21,7 +21,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for AI players making decisions about where to place cities and what to build in them
  */
-public interface ICityAI
+public interface CityAI
 {
 	/**
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their

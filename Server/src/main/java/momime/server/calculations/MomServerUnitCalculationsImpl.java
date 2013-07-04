@@ -42,7 +42,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
  */
-public final class MomServerUnitCalculationsImpl implements IMomServerUnitCalculations
+public final class MomServerUnitCalculationsImpl implements MomServerUnitCalculations
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomServerUnitCalculationsImpl.class.getName ());

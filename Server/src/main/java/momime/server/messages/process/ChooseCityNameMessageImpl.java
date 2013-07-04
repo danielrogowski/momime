@@ -9,7 +9,7 @@ import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -35,7 +35,7 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 	{
 		log.entering (ChooseCityNameMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Check and update true map cell
 		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (getCityLocation ().getPlane ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());

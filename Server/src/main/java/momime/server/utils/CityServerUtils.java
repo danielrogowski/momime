@@ -20,7 +20,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server side only helper methods for dealing with cities
  */
-public interface ICityServerUtils
+public interface CityServerUtils
 {
 	/**
 	 * Validates that a building or unit that we want to construct at a particular city is a valid choice

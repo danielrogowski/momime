@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.messages.clienttoserver.v0_9_4.CancelTargetSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -37,7 +37,7 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 		log.entering (CancelTargetSpellMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getSpellID ()});
 		
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// Spell should already exist, but not targetted
 		final MemoryMaintainedSpell maintainedSpell = mom.getMemoryMaintainedSpellUtils ().findMaintainedSpell

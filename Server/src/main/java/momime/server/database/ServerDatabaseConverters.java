@@ -15,7 +15,7 @@ import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
  * Converters for building derivative XML files from the server XML file
  * Old Delphi unit: MomServerDB.pas
  */
-public interface IServerDatabaseConverters
+public interface ServerDatabaseConverters
 {
 	/**
 	 * Finds all the compatible (i.e. correct namespace) XML databases on the server and extracts a small portion of each needed for setting up new games

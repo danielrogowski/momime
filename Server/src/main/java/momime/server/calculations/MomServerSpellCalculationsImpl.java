@@ -22,7 +22,7 @@ import momime.server.utils.RandomUtils;
 /**
  * Calculations pertaining to spells that are only used on the server
  */
-public final class MomServerSpellCalculationsImpl implements IMomServerSpellCalculations
+public final class MomServerSpellCalculationsImpl implements MomServerSpellCalculations
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomServerSpellCalculationsImpl.class.getName ());

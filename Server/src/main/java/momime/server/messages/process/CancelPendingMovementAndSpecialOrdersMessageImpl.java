@@ -11,7 +11,7 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -39,7 +39,7 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 		log.entering (CancelPendingMovementAndSpecialOrdersMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), new Integer (getUnitURN ()).toString ()});
 		
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Find the unit and do some basic validation
 		final String error;

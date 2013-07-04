@@ -18,7 +18,7 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.TileType;
 
@@ -51,7 +51,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		log.entering (SpecialOrderButtonMessageImpl.class.getName (), "process",
 			new String [] {getMapLocation ().toString (), getSpecialOrder ().name (), new Integer (getUnitURN ().size ()).toString ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// What skill do we need
 		final String necessarySkillID;

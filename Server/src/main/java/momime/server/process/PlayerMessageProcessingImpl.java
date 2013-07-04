@@ -47,21 +47,21 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
-import momime.server.IMomSessionVariables;
-import momime.server.ai.ICityAI;
-import momime.server.ai.IMomAI;
-import momime.server.calculations.IMomServerResourceCalculations;
-import momime.server.calculations.IMomServerSpellCalculations;
+import momime.server.MomSessionVariables;
+import momime.server.ai.CityAI;
+import momime.server.ai.MomAI;
+import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.MomServerSpellCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.PickFreeSpell;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.Wizard;
 import momime.server.database.v0_9_4.WizardPickCount;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
-import momime.server.fogofwar.IFogOfWarProcessing;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.utils.IPlayerPickServerUtils;
-import momime.server.utils.IUnitServerUtils;
+import momime.server.utils.PlayerPickServerUtils;
+import momime.server.utils.UnitServerUtils;
 import momime.server.utils.RandomUtils;
 
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
@@ -74,7 +74,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 /**
  * Methods for any significant message processing to do with game startup and the turn system that isn't done in the message implementations
  */
-public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessing
+public final class PlayerMessageProcessingImpl implements PlayerMessageProcessing
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (PlayerMessageProcessingImpl.class.getName ());
@@ -92,34 +92,34 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	private ResourceValueUtils resourceValueUtils;
 	
 	/** Methods for updating true map + players' memory */
-	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** City processing methods */
-	private ICityProcessing cityProcessing;
+	private CityProcessing cityProcessing;
 
 	/** Spell processing methods */
-	private ISpellProcessing spellProcessing;
+	private SpellProcessing spellProcessing;
 	
 	/** Fog of war update methods */
-	private IFogOfWarProcessing fogOfWarProcessing;
+	private FogOfWarProcessing fogOfWarProcessing;
 	
 	/** Resource calculations */
-	private IMomServerResourceCalculations serverResourceCalculations;
+	private MomServerResourceCalculations serverResourceCalculations;
 	
 	/** Server-only pick utils */
-	private IPlayerPickServerUtils playerPickServerUtils;
+	private PlayerPickServerUtils playerPickServerUtils;
 	
 	/** Server-only spell calculations */
-	private IMomServerSpellCalculations serverSpellCalculations;
+	private MomServerSpellCalculations serverSpellCalculations;
 
 	/** Server-only unit utils */
-	private IUnitServerUtils unitServerUtils;
+	private UnitServerUtils unitServerUtils;
 	
 	/** AI player turns */
-	private IMomAI momAI;
+	private MomAI momAI;
 	
 	/** AI decisions about cities */
-	private ICityAI cityAI;
+	private CityAI cityAI;
 	
 	/** Player list utils */
 	private MultiplayerServerUtils multiplayerServerUtils;
@@ -391,7 +391,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
 	 */
 	@Override
-	public final void checkIfCanStartGame (final IMomSessionVariables mom)
+	public final void checkIfCanStartGame (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		log.entering (PlayerMessageProcessingImpl.class.getName (), "checkIfCanStartGame");
@@ -602,7 +602,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final void startPhase (final IMomSessionVariables mom, final int onlyOnePlayerID)
+	private final void startPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.entering (PlayerMessageProcessingImpl.class.getName (), "startPhase", onlyOnePlayerID);
@@ -653,7 +653,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	@Override
-	public final void switchToNextPlayer (final IMomSessionVariables mom)
+	public final void switchToNextPlayer (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.entering (PlayerMessageProcessingImpl.class.getName (), "switchToNextPlayer",
@@ -785,7 +785,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final void endPhase (final IMomSessionVariables mom, final int onlyOnePlayerID)
+	private final void endPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.entering (PlayerMessageProcessingImpl.class.getName (), "endPhase", onlyOnePlayerID);
@@ -827,7 +827,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void nextTurnButton (final IMomSessionVariables mom, final PlayerServerDetails player)
+	public final void nextTurnButton (final MomSessionVariables mom, final PlayerServerDetails player)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.entering (PlayerMessageProcessingImpl.class.getName (), "nextTurnButton", player.getPlayerDescription ().getPlayerID ());
@@ -872,7 +872,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final void continueMovement (final int onlyOnePlayerID, final IMomSessionVariables mom)
+	private final void continueMovement (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		log.entering (PlayerMessageProcessingImpl.class.getName (), "continueMovement", onlyOnePlayerID);
@@ -980,7 +980,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
 		return fogOfWarMidTurnChanges;
 	}
@@ -988,7 +988,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
 	}
@@ -996,7 +996,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return City processing methods
 	 */
-	public final ICityProcessing getCityProcessing ()
+	public final CityProcessing getCityProcessing ()
 	{
 		return cityProcessing;
 	}
@@ -1004,7 +1004,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param obj City processing methods
 	 */
-	public final void setCityProcessing (final ICityProcessing obj)
+	public final void setCityProcessing (final CityProcessing obj)
 	{
 		cityProcessing = obj;
 	}
@@ -1012,7 +1012,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return Spell processing methods
 	 */
-	public final ISpellProcessing getSpellProcessing ()
+	public final SpellProcessing getSpellProcessing ()
 	{
 		return spellProcessing;
 	}
@@ -1020,7 +1020,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param obj Spell processing methods
 	 */
-	public final void setSpellProcessing (final ISpellProcessing obj)
+	public final void setSpellProcessing (final SpellProcessing obj)
 	{
 		spellProcessing = obj;
 	}
@@ -1028,7 +1028,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return Fog of war update methods
 	 */
-	public final IFogOfWarProcessing getFogOfWarProcessing ()
+	public final FogOfWarProcessing getFogOfWarProcessing ()
 	{
 		return fogOfWarProcessing;
 	}
@@ -1036,7 +1036,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param obj Fog of war update methods
 	 */
-	public final void setFogOfWarProcessing (final IFogOfWarProcessing obj)
+	public final void setFogOfWarProcessing (final FogOfWarProcessing obj)
 	{
 		fogOfWarProcessing = obj;
 	}
@@ -1044,7 +1044,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return Resource calculations
 	 */
-	public final IMomServerResourceCalculations getServerResourceCalculations ()
+	public final MomServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -1052,7 +1052,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final IMomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}
@@ -1060,7 +1060,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return Server-only pick utils
 	 */
-	public final IPlayerPickServerUtils getPlayerPickServerUtils ()
+	public final PlayerPickServerUtils getPlayerPickServerUtils ()
 	{
 		return playerPickServerUtils;
 	}
@@ -1068,7 +1068,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param utils Server-only pick utils
 	 */
-	public final void setPlayerPickServerUtils (final IPlayerPickServerUtils utils)
+	public final void setPlayerPickServerUtils (final PlayerPickServerUtils utils)
 	{
 		playerPickServerUtils = utils;
 	}
@@ -1076,7 +1076,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return Server-only spell calculations
 	 */
-	public final IMomServerSpellCalculations getServerSpellCalculations ()
+	public final MomServerSpellCalculations getServerSpellCalculations ()
 	{
 		return serverSpellCalculations;
 	}
@@ -1084,7 +1084,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param calc Server-only spell calculations
 	 */
-	public final void setServerSpellCalculations (final IMomServerSpellCalculations calc)
+	public final void setServerSpellCalculations (final MomServerSpellCalculations calc)
 	{
 		serverSpellCalculations = calc;
 	}
@@ -1092,7 +1092,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return Server-only unit utils
 	 */
-	public final IUnitServerUtils getUnitServerUtils ()
+	public final UnitServerUtils getUnitServerUtils ()
 	{
 		return unitServerUtils;
 	}
@@ -1100,7 +1100,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param utils Server-only unit utils
 	 */
-	public final void setUnitServerUtils (final IUnitServerUtils utils)
+	public final void setUnitServerUtils (final UnitServerUtils utils)
 	{
 		unitServerUtils = utils;
 	}
@@ -1108,7 +1108,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return AI player turns
 	 */
-	public final IMomAI getMomAI ()
+	public final MomAI getMomAI ()
 	{
 		return momAI;
 	}
@@ -1116,7 +1116,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param ai AI player turns
 	 */
-	public final void setMomAI (final IMomAI ai)
+	public final void setMomAI (final MomAI ai)
 	{
 		momAI = ai;
 	}
@@ -1124,7 +1124,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @return AI decisions about cities
 	 */
-	public final ICityAI getCityAI ()
+	public final CityAI getCityAI ()
 	{
 		return cityAI;
 	}
@@ -1132,7 +1132,7 @@ public final class PlayerMessageProcessingImpl implements IPlayerMessageProcessi
 	/**
 	 * @param ai AI decisions about cities
 	 */
-	public final void setCityAI (final ICityAI ai)
+	public final void setCityAI (final CityAI ai)
 	{
 		cityAI = ai;
 	}

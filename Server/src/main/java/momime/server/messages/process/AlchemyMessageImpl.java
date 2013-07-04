@@ -10,7 +10,7 @@ import momime.common.messages.clienttoserver.v0_9_4.AlchemyMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -37,7 +37,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements Processa
 		log.entering (AlchemyMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getFromProductionTypeID (), new Integer (getFromValue ()).toString ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		String error = null;
 		String toProductionTypeID = null;

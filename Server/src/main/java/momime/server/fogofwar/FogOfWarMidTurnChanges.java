@@ -27,7 +27,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  * This contains all methods that allow changes in the server's true memory to be replicated into each player's memory and send update messages to each client
  * i.e. methods for when the true values change (or are added or removed) but the visible area that each player can see does not change
  */
-public interface IFogOfWarMidTurnChanges
+public interface FogOfWarMidTurnChanges
 {
 	/**
 	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it

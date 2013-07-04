@@ -9,7 +9,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Server side methods dealing with researching and casting spells
  */
-public interface ISpellServerUtils
+public interface SpellServerUtils
 {
 	/**
 	 * @param player Player who wants to switch research

@@ -9,7 +9,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.ChatMessage;
 import momime.common.messages.servertoclient.v0_9_4.BroadcastChatMessage;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -39,7 +39,7 @@ public final class ChatMessageImpl extends ChatMessage implements ProcessableCli
 	{
 		log.entering (ChatMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerName ());
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final BroadcastChatMessage msg = new BroadcastChatMessage ();
 		msg.setPlayerName (sender.getPlayerDescription ().getPlayerName ());

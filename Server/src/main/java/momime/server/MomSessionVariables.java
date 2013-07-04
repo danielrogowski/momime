@@ -16,20 +16,20 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.IMomServerResourceCalculations;
-import momime.server.calculations.IMomServerUnitCalculations;
+import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
-import momime.server.mapgenerator.IOverlandMapGenerator;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.process.ICityProcessing;
-import momime.server.process.IPlayerMessageProcessing;
-import momime.server.process.ISpellProcessing;
-import momime.server.utils.ICityServerUtils;
-import momime.server.utils.IOverlandMapServerUtils;
-import momime.server.utils.IPlayerPickServerUtils;
-import momime.server.utils.ISpellServerUtils;
-import momime.server.utils.IUnitServerUtils;
+import momime.server.process.CityProcessing;
+import momime.server.process.PlayerMessageProcessing;
+import momime.server.process.SpellProcessing;
+import momime.server.utils.CityServerUtils;
+import momime.server.utils.OverlandMapServerUtils;
+import momime.server.utils.PlayerPickServerUtils;
+import momime.server.utils.SpellServerUtils;
+import momime.server.utils.UnitServerUtils;
 
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -39,7 +39,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  * Container for all the values held against a session
  * Declared as an interface mainly so test methods can mock this without needing to actually create instances of MomSessionThread
  */
-public interface IMomSessionVariables
+public interface MomSessionVariables
 {
 	/**
 	 * @return Session description, typecasted to MoM specific type
@@ -79,22 +79,22 @@ public interface IMomSessionVariables
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ();
+	public FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ();
 
 	/**
 	 * @return Methods for dealing with player msgs
 	 */
-	public IPlayerMessageProcessing getPlayerMessageProcessing ();
+	public PlayerMessageProcessing getPlayerMessageProcessing ();
 	
 	/**
 	 * @return Spell processing methods
 	 */
-	public ISpellProcessing getSpellProcessing ();
+	public SpellProcessing getSpellProcessing ();
 
 	/**
 	 * @return City processing methods
 	 */
-	public ICityProcessing getCityProcessing ();
+	public CityProcessing getCityProcessing ();
 
 	/**
 	 * @return City calculcations
@@ -104,7 +104,7 @@ public interface IMomSessionVariables
 	/**
 	 * @return Resource calculations
 	 */
-	public IMomServerResourceCalculations getServerResourceCalculations ();
+	public MomServerResourceCalculations getServerResourceCalculations ();
 	
 	/**
 	 * @return Resource value utils
@@ -144,37 +144,37 @@ public interface IMomSessionVariables
 	/**
 	 * @return Server-only city utils
 	 */
-	public ICityServerUtils getCityServerUtils ();
+	public CityServerUtils getCityServerUtils ();
 
 	/**
 	 * @return Server-only unit utils
 	 */
-	public IUnitServerUtils getUnitServerUtils ();
+	public UnitServerUtils getUnitServerUtils ();
 	
 	/**
 	 * @return Server-only pick utils
 	 */
-	public IPlayerPickServerUtils getPlayerPickServerUtils ();
+	public PlayerPickServerUtils getPlayerPickServerUtils ();
 	
 	/**
 	 * @return Server-only spell utils
 	 */
-	public ISpellServerUtils getSpellServerUtils ();
+	public SpellServerUtils getSpellServerUtils ();
 	
 	/**
 	 * @return Server-only unit calculations
 	 */
-	public IMomServerUnitCalculations getServerUnitCalculations ();
+	public MomServerUnitCalculations getServerUnitCalculations ();
 	
 	/**
 	 * @return Overland map generator for this session
 	 */
-	public IOverlandMapGenerator getOverlandMapGenerator ();
+	public OverlandMapGenerator getOverlandMapGenerator ();
 	
 	/**
 	 * @return Server-only overland map utils
 	 */
-	public IOverlandMapServerUtils getOverlandMapServerUtils ();
+	public OverlandMapServerUtils getOverlandMapServerUtils ();
 	
 	/**
 	 * Adds an AI player

@@ -31,24 +31,24 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.IMomServerResourceCalculations;
-import momime.server.calculations.IMomServerUnitCalculations;
-import momime.server.database.IServerDatabaseConverters;
+import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.calculations.MomServerUnitCalculations;
+import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Spell;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
-import momime.server.mapgenerator.IOverlandMapGenerator;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.process.ICityProcessing;
-import momime.server.process.IPlayerMessageProcessing;
-import momime.server.process.ISpellProcessing;
+import momime.server.process.CityProcessing;
+import momime.server.process.PlayerMessageProcessing;
+import momime.server.process.SpellProcessing;
 import momime.server.ui.MomServerUI;
-import momime.server.utils.ICityServerUtils;
-import momime.server.utils.IOverlandMapServerUtils;
-import momime.server.utils.IPlayerPickServerUtils;
-import momime.server.utils.ISpellServerUtils;
-import momime.server.utils.IUnitServerUtils;
+import momime.server.utils.CityServerUtils;
+import momime.server.utils.OverlandMapServerUtils;
+import momime.server.utils.PlayerPickServerUtils;
+import momime.server.utils.SpellServerUtils;
+import momime.server.utils.UnitServerUtils;
 
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -60,7 +60,7 @@ import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
 /**
  * Thread that handles everything going on in one MoM session
  */
-public final class MomSessionThread extends MultiplayerSessionThread implements IMomSessionVariables
+public final class MomSessionThread extends MultiplayerSessionThread implements MomSessionVariables
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomSessionThread.class.getName ());
@@ -80,25 +80,25 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	private MultiplayerServerUtils multiplayerServerUtils;
 	
 	/** Methods for updating true map + players' memory */
-	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** Resource calculations */
-	private IMomServerResourceCalculations serverResourceCalculations;
+	private MomServerResourceCalculations serverResourceCalculations;
 	
 	/** Methods for dealing with player msgs */
-	private IPlayerMessageProcessing playerMessageProcessing;
+	private PlayerMessageProcessing playerMessageProcessing;
 
 	/** Spell processing methods */
-	private ISpellProcessing spellProcessing;
+	private SpellProcessing spellProcessing;
 	
 	/** City processing methods */
-	private ICityProcessing cityProcessing;
+	private CityProcessing cityProcessing;
 	
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
 	
 	/** Database converters */
-	private IServerDatabaseConverters serverDatabaseConverters;
+	private ServerDatabaseConverters serverDatabaseConverters;
 
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
@@ -122,25 +122,25 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	private PlayerPickUtils playerPickUtils;
 
 	/** Server-only pick utils */
-	private IPlayerPickServerUtils playerPickServerUtils;
+	private PlayerPickServerUtils playerPickServerUtils;
 	
 	/** Server-only city utils */
-	private ICityServerUtils cityServerUtils;
+	private CityServerUtils cityServerUtils;
 
 	/** Server-only unit utils */
-	private IUnitServerUtils unitServerUtils;
+	private UnitServerUtils unitServerUtils;
 	
 	/** Server-only spell utils */
-	private ISpellServerUtils spellServerUtils;
+	private SpellServerUtils spellServerUtils;
 	
 	/** Server-only unit calculations */
-	private IMomServerUnitCalculations serverUnitCalculations;
+	private MomServerUnitCalculations serverUnitCalculations;
 	
 	/** Overland map generator for this session */
-	private IOverlandMapGenerator overlandMapGenerator;	
+	private OverlandMapGenerator overlandMapGenerator;	
 	
 	/** Server-only overland map utils */
-	private IOverlandMapServerUtils overlandMapServerUtils;
+	private OverlandMapServerUtils overlandMapServerUtils;
 	
 	/**
 	 * @return Logger for logging key messages relating to this session
@@ -423,7 +423,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Methods for updating true map + players' memory
 	 */
 	@Override
-	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
 		return fogOfWarMidTurnChanges;
 	}
@@ -431,7 +431,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
 	}
@@ -440,7 +440,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Resource calculations
 	 */
 	@Override
-	public final IMomServerResourceCalculations getServerResourceCalculations ()
+	public final MomServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -448,7 +448,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final IMomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}
@@ -457,7 +457,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Methods for dealing with player msgs
 	 */
 	@Override
-	public final IPlayerMessageProcessing getPlayerMessageProcessing ()
+	public final PlayerMessageProcessing getPlayerMessageProcessing ()
 	{
 		return playerMessageProcessing;
 	}
@@ -465,7 +465,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param obj Methods for dealing with player msgs
 	 */
-	public final void setPlayerMessageProcessing (final IPlayerMessageProcessing obj)
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
 	}
@@ -474,7 +474,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Spell processing methods
 	 */
 	@Override
-	public final ISpellProcessing getSpellProcessing ()
+	public final SpellProcessing getSpellProcessing ()
 	{
 		return spellProcessing;
 	}
@@ -482,7 +482,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param obj Spell processing methods
 	 */
-	public final void setSpellProcessing (final ISpellProcessing obj)
+	public final void setSpellProcessing (final SpellProcessing obj)
 	{
 		spellProcessing = obj;
 	}
@@ -491,7 +491,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return City processing methods
 	 */
 	@Override
-	public final ICityProcessing getCityProcessing ()
+	public final CityProcessing getCityProcessing ()
 	{
 		return cityProcessing;
 	}
@@ -499,7 +499,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param obj City processing methods
 	 */
-	public final void setCityProcessing (final ICityProcessing obj)
+	public final void setCityProcessing (final CityProcessing obj)
 	{
 		cityProcessing = obj;
 	}
@@ -524,7 +524,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @return Database converters
 	 */
-	public final IServerDatabaseConverters getServerDatabaseConverters ()
+	public final ServerDatabaseConverters getServerDatabaseConverters ()
 	{
 		return serverDatabaseConverters;
 	}
@@ -532,7 +532,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param conv Database converters
 	 */
-	public final void setServerDatabaseConverters (final IServerDatabaseConverters conv)
+	public final void setServerDatabaseConverters (final ServerDatabaseConverters conv)
 	{
 		serverDatabaseConverters = conv;
 	}
@@ -660,7 +660,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Server-only pick utils
 	 */
 	@Override
-	public final IPlayerPickServerUtils getPlayerPickServerUtils ()
+	public final PlayerPickServerUtils getPlayerPickServerUtils ()
 	{
 		return playerPickServerUtils;
 	}
@@ -668,7 +668,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Server-only pick utils
 	 */
-	public final void setPlayerPickServerUtils (final IPlayerPickServerUtils utils)
+	public final void setPlayerPickServerUtils (final PlayerPickServerUtils utils)
 	{
 		playerPickServerUtils = utils;
 	}
@@ -677,7 +677,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Server-only city utils
 	 */
 	@Override
-	public final ICityServerUtils getCityServerUtils ()
+	public final CityServerUtils getCityServerUtils ()
 	{
 		return cityServerUtils;
 	}
@@ -685,7 +685,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Server-only city utils
 	 */
-	public final void setCityServerUtils (final ICityServerUtils utils)
+	public final void setCityServerUtils (final CityServerUtils utils)
 	{
 		cityServerUtils = utils;
 	}
@@ -694,7 +694,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Server-only unit utils
 	 */
 	@Override
-	public final IUnitServerUtils getUnitServerUtils ()
+	public final UnitServerUtils getUnitServerUtils ()
 	{
 		return unitServerUtils;
 	}
@@ -702,7 +702,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Server-only unit utils
 	 */
-	public final void setUnitServerUtils (final IUnitServerUtils utils)
+	public final void setUnitServerUtils (final UnitServerUtils utils)
 	{
 		unitServerUtils = utils;
 	}
@@ -711,7 +711,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Server-only spell utils
 	 */
 	@Override
-	public final ISpellServerUtils getSpellServerUtils ()
+	public final SpellServerUtils getSpellServerUtils ()
 	{
 		return spellServerUtils;
 	}
@@ -719,7 +719,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Server-only spell utils
 	 */
-	public final void setSpellServerUtils (final ISpellServerUtils utils)
+	public final void setSpellServerUtils (final SpellServerUtils utils)
 	{
 		spellServerUtils = utils;
 	}
@@ -728,7 +728,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Server-only unit calculations
 	 */
 	@Override
-	public final IMomServerUnitCalculations getServerUnitCalculations ()
+	public final MomServerUnitCalculations getServerUnitCalculations ()
 	{
 		return serverUnitCalculations;
 	}
@@ -736,7 +736,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param calc Server-only unit calculations
 	 */
-	public final void setServerUnitCalculations (final IMomServerUnitCalculations calc)
+	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
 	}
@@ -745,7 +745,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Overland map generator for this session
 	 */
 	@Override
-	public final IOverlandMapGenerator getOverlandMapGenerator ()
+	public final OverlandMapGenerator getOverlandMapGenerator ()
 	{
 		return overlandMapGenerator;
 	}
@@ -753,7 +753,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param mapGen Overland map generator for this session
 	 */
-	public final void setOverlandMapGenerator (final IOverlandMapGenerator mapGen)
+	public final void setOverlandMapGenerator (final OverlandMapGenerator mapGen)
 	{
 		overlandMapGenerator = mapGen;
 	}
@@ -762,7 +762,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Server-only overland map utils
 	 */
 	@Override
-	public final IOverlandMapServerUtils getOverlandMapServerUtils ()
+	public final OverlandMapServerUtils getOverlandMapServerUtils ()
 	{
 		return overlandMapServerUtils;
 	}
@@ -770,7 +770,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param utils Server-only overland map utils
 	 */
-	public final void setOverlandMapServerUtils (final IOverlandMapServerUtils utils)
+	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
 	{
 		overlandMapServerUtils = utils;
 	}

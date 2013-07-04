@@ -15,7 +15,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  *
  * There's no need to run this in a separate thread like in Delphi, because with the entire server XML file cached this version runs considerably faster
  */
-public interface IOverlandMapGenerator
+public interface OverlandMapGenerator
 {
 	/**
 	 * Main routine to generate the overland terrain map

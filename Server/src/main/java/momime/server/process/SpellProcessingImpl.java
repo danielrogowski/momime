@@ -36,14 +36,14 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.MomSpellCastType;
-import momime.server.IMomSessionVariables;
-import momime.server.calculations.IMomServerResourceCalculations;
+import momime.server.MomSessionVariables;
+import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.utils.IUnitServerUtils;
+import momime.server.utils.UnitServerUtils;
 import momime.server.utils.RandomUtils;
 import momime.server.utils.UnitAddLocation;
 
@@ -54,7 +54,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for any significant message processing to do with spells that isn't done in the message implementations
  */
-public final class SpellProcessingImpl implements ISpellProcessing
+public final class SpellProcessingImpl implements SpellProcessing
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (SpellProcessingImpl.class.getName ());
@@ -75,16 +75,16 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	private ResourceValueUtils resourceValueUtils;
 	
 	/** Server-only unit utils */
-	private IUnitServerUtils unitServerUtils;
+	private UnitServerUtils unitServerUtils;
 	
 	/** Methods for updating true map + players' memory */
-	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** Methods for dealing with player msgs */
-	private IPlayerMessageProcessing playerMessageProcessing;
+	private PlayerMessageProcessing playerMessageProcessing;
 	
 	/** Resource calculations */
-	private IMomServerResourceCalculations serverResourceCalculations;
+	private MomServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -276,7 +276,7 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	@Override
 	public final void requestCastSpell (final PlayerServerDetails player, final String spellID,
 		final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatTargetLocation, final Integer combatTargetUnitURN,
-		final IMomSessionVariables mom)
+		final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.entering (SpellProcessingImpl.class.getName (), "requestCastSpell", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), spellID});
@@ -585,7 +585,7 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	/**
 	 * @return Server-only unit utils
 	 */
-	public final IUnitServerUtils getUnitServerUtils ()
+	public final UnitServerUtils getUnitServerUtils ()
 	{
 		return unitServerUtils;
 	}
@@ -593,7 +593,7 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	/**
 	 * @param utils Server-only unit utils
 	 */
-	public final void setUnitServerUtils (final IUnitServerUtils utils)
+	public final void setUnitServerUtils (final UnitServerUtils utils)
 	{
 		unitServerUtils = utils;
 	}
@@ -601,7 +601,7 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
 		return fogOfWarMidTurnChanges;
 	}
@@ -609,7 +609,7 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
 	}
@@ -617,7 +617,7 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	/**
 	 * @return Methods for dealing with player msgs
 	 */
-	public IPlayerMessageProcessing getPlayerMessageProcessing ()
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
 	{
 		return playerMessageProcessing;
 	}
@@ -625,7 +625,7 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	/**
 	 * @param obj Methods for dealing with player msgs
 	 */
-	public final void setPlayerMessageProcessing (final IPlayerMessageProcessing obj)
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
 	}
@@ -633,7 +633,7 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	/**
 	 * @return Resource calculations
 	 */
-	public final IMomServerResourceCalculations getServerResourceCalculations ()
+	public final MomServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -641,7 +641,7 @@ public final class SpellProcessingImpl implements ISpellProcessing
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final IMomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

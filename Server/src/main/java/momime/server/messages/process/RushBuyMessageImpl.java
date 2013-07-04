@@ -13,7 +13,7 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Unit;
 
@@ -45,7 +45,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements Processa
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (),
 			(getCityLocation () == null) ? "null" : getCityLocation ().toString ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		Integer productionCost = null;
 		final MemoryGridCell tc;

@@ -284,7 +284,7 @@
 			once here and then deal with copying the reference within the code -->
 			
 	<bean id="sessionThreadFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
-		<property name="serviceLocatorInterface" value="momime.server.IMomSessionThreadFactory" />
+		<property name="serviceLocatorInterface" value="momime.server.MomSessionThreadFactory" />
 	</bean>			
 
 	<bean id="trueMap" class="momime.common.messages.v0_9_4.FogOfWarMemory" scope="prototype" />

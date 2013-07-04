@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -37,7 +37,7 @@ public final class ChooseWizardMessageImpl extends ChooseWizardMessage implement
 		log.entering (ChooseWizardMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getWizardID ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		mom.getPlayerMessageProcessing ().chooseWizard
 			(getWizardID (), sender, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());

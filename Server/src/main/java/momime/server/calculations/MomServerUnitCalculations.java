@@ -21,7 +21,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
  */
-public interface IMomServerUnitCalculations
+public interface MomServerUnitCalculations
 {
 	/**
 	 * @param unit The unit to check

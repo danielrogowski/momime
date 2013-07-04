@@ -32,21 +32,21 @@ import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
-import momime.server.IMomSessionVariables;
-import momime.server.ai.ICityAI;
-import momime.server.calculations.IMomServerCityCalculations;
-import momime.server.calculations.IMomServerResourceCalculations;
+import momime.server.MomSessionVariables;
+import momime.server.ai.CityAI;
+import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
-import momime.server.utils.IOverlandMapServerUtils;
-import momime.server.utils.IPlayerPickServerUtils;
-import momime.server.utils.IUnitServerUtils;
+import momime.server.utils.OverlandMapServerUtils;
+import momime.server.utils.PlayerPickServerUtils;
+import momime.server.utils.UnitServerUtils;
 import momime.server.utils.RandomUtils;
 import momime.server.utils.UnitAddLocation;
 
@@ -58,7 +58,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for any significant message processing to do with cities that isn't done in the message implementations
  */
-public final class CityProcessingImpl implements ICityProcessing
+public final class CityProcessingImpl implements CityProcessing
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CityProcessingImpl.class.getName ());
@@ -73,25 +73,25 @@ public final class CityProcessingImpl implements ICityProcessing
 	private MomCityCalculations cityCalculations;
 
 	/** Server-only city calculations */
-	private IMomServerCityCalculations serverCityCalculations;
+	private MomServerCityCalculations serverCityCalculations;
 	
 	/** Methods for updating true map + players' memory */
-	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** Server-only pick utils */
-	private IPlayerPickServerUtils playerPickServerUtils;
+	private PlayerPickServerUtils playerPickServerUtils;
 	
 	/** Server-only overland map utils */
-	private IOverlandMapServerUtils overlandMapServerUtils;
+	private OverlandMapServerUtils overlandMapServerUtils;
 
 	/** Server-only unit utils */
-	private IUnitServerUtils unitServerUtils;
+	private UnitServerUtils unitServerUtils;
 	
 	/** AI decisions about cities */
-	private ICityAI cityAI;
+	private CityAI cityAI;
 	
 	/** Resource calculations */
-	private IMomServerResourceCalculations serverResourceCalculations;
+	private MomServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -563,7 +563,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final IMomSessionVariables mom)
+	public final void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.entering (CityProcessingImpl.class.getName (), "changeTaxRate", new String [] {player.getPlayerDescription ().getPlayerName (), taxRateID});
@@ -686,7 +686,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final IMomServerCityCalculations getServerCityCalculations ()
+	public final MomServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -694,7 +694,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final IMomServerCityCalculations calc)
+	public final void setServerCityCalculations (final MomServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}
@@ -702,7 +702,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
 		return fogOfWarMidTurnChanges;
 	}
@@ -710,7 +710,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
 	}
@@ -718,7 +718,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @return Server-only pick utils
 	 */
-	public final IPlayerPickServerUtils getPlayerPickServerUtils ()
+	public final PlayerPickServerUtils getPlayerPickServerUtils ()
 	{
 		return playerPickServerUtils;
 	}
@@ -726,7 +726,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @param utils Server-only pick utils
 	 */
-	public final void setPlayerPickServerUtils (final IPlayerPickServerUtils utils)
+	public final void setPlayerPickServerUtils (final PlayerPickServerUtils utils)
 	{
 		playerPickServerUtils = utils;
 	}
@@ -734,7 +734,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @return Server-only overland map utils
 	 */
-	public final IOverlandMapServerUtils getOverlandMapServerUtils ()
+	public final OverlandMapServerUtils getOverlandMapServerUtils ()
 	{
 		return overlandMapServerUtils;
 	}
@@ -742,7 +742,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @param utils Server-only overland map utils
 	 */
-	public final void setOverlandMapServerUtils (final IOverlandMapServerUtils utils)
+	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
 	{
 		overlandMapServerUtils = utils;
 	}
@@ -750,7 +750,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @return Server-only unit utils
 	 */
-	public final IUnitServerUtils getUnitServerUtils ()
+	public final UnitServerUtils getUnitServerUtils ()
 	{
 		return unitServerUtils;
 	}
@@ -758,7 +758,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @param utils Server-only unit utils
 	 */
-	public final void setUnitServerUtils (final IUnitServerUtils utils)
+	public final void setUnitServerUtils (final UnitServerUtils utils)
 	{
 		unitServerUtils = utils;
 	}
@@ -766,7 +766,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @return AI decisions about cities
 	 */
-	public final ICityAI getCityAI ()
+	public final CityAI getCityAI ()
 	{
 		return cityAI;
 	}
@@ -774,7 +774,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @param ai AI decisions about cities
 	 */
-	public final void setCityAI (final ICityAI ai)
+	public final void setCityAI (final CityAI ai)
 	{
 		cityAI = ai;
 	}
@@ -782,7 +782,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @return Resource calculations
 	 */
-	public final IMomServerResourceCalculations getServerResourceCalculations ()
+	public final MomServerResourceCalculations getServerResourceCalculations ()
 	{
 		return serverResourceCalculations;
 	}
@@ -790,7 +790,7 @@ public final class CityProcessingImpl implements ICityProcessing
 	/**
 	 * @param calc Resource calculations
 	 */
-	public final void setServerResourceCalculations (final IMomServerResourceCalculations calc)
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
 	}

@@ -16,7 +16,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Server side only helper methods for dealing with picks
  */
-public interface IPlayerPickServerUtils
+public interface PlayerPickServerUtils
 {
 	/**
 	 * @param picks Player's picks to count up

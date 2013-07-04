@@ -41,66 +41,62 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.process.ISpellProcessing;
-import momime.server.process.resourceconsumer.IMomResourceConsumer;
+import momime.server.process.SpellProcessing;
+import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
-import momime.server.utils.IUnitServerUtils;
+import momime.server.utils.UnitServerUtils;
 import momime.server.utils.RandomUtils;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
- * Server side methods for dealing with calculating and updating the global economy
- * e.g. gold being produced, cities growing, buildings progressing construction, spells being researched and so on
+ * Server side methods for dealing with calculating and updating the global economy e.g. gold being produced, cities growing, buildings progressing construction, spells being researched and so on
  */
-public final class MomServerResourceCalculationsImpl implements IMomServerResourceCalculations
+public final class MomServerResourceCalculationsImpl implements MomServerResourceCalculations
 {
-	/** Class logger*/
+	/** Class logger */
 	private final Logger log = Logger.getLogger (MomServerResourceCalculationsImpl.class.getName ());
-	
+
 	/** Spell processing methods */
-	private ISpellProcessing spellProcessing;
-	
+	private SpellProcessing spellProcessing;
+
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
 
 	/** Spell utils */
 	private SpellUtils spellUtils;
-	
+
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
-	
+
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
-	
+
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
-	
+
 	/** Server-only unit utils */
-	private IUnitServerUtils unitServerUtils;
-	
+	private UnitServerUtils unitServerUtils;
+
 	/** Server-only spell calculations */
-	private IMomServerSpellCalculations serverSpellCalculations;
-	
+	private MomServerSpellCalculations serverSpellCalculations;
+
 	/**
-	 * Recalculates all per turn production values
-	 *
-	 * Note Delphi version could either calculate the values for one player or all players and was named RecalcProductionValues
-	 * Java version operates only on one player because each player now has their own resource list; the loop is in the outer calling method recalculateGlobalProductionValues
-	 *
+	 * Recalculates all per turn production values Note Delphi version could either calculate the values for one player or all players and was named RecalcProductionValues Java version operates only on one player because each player now has their own resource list; the loop is in the outer calling method recalculateGlobalProductionValues
+	 * 
 	 * @param player Player to recalculate production for
 	 * @param players List of all players in the session
 	 * @param trueMap Server true knowledge of everything on the map
@@ -110,9 +106,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.entering (MomServerResourceCalculationsImpl.class.getName (), "recalculateAmountsPerTurn", player.getPlayerDescription ().getPlayerID ());
 
@@ -124,13 +118,11 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 
 		// Subtract the amount of gold, food and mana that units are eating up in upkeep from the amount of resources that we'll make this turn
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
-			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
-				(!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
+			if ( (thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
 			{
 				final Unit unitDetails = db.findUnit (thisUnit.getUnitID (), "recalculateAmountsPerTurn");
 				for (final UnitUpkeep upkeep : unitDetails.getUnitUpkeep ())
-					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (),
-						-getUnitUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), players, db));
+					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -getUnitUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), players, db));
 			}
 
 		// Subtract the mana maintenance of all spells from the economy
@@ -148,7 +140,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 		// At this point, the only Mana recorded is consumption - so we can halve consumption if the wizard has Channeler
 		// Round up, so 1 still = 1
 		final int manaConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
-		if ((manaConsumption < -1) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER) > 0))
+		if ( (manaConsumption < -1) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER) > 0))
 			getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, (-manaConsumption) / 2);
 
 		// The gist of the ordering here is that, now we've dealt with mana consumption, we can now add on things that *might* generate mana
@@ -160,8 +152,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) &&
-						(cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
+					if ( (cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
 					{
 						// Calculate all productions from this city
 						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
@@ -169,11 +160,9 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 						cityLocation.setY (y);
 						cityLocation.setPlane (plane.getPlaneNumber ());
 
-						for (final CalculateCityProductionResult cityProduction : getCityCalculations ().calculateAllCityProductions
-							(players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db))
+						for (final CalculateCityProductionResult cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db))
 
-							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (),
-								cityProduction.getModifiedProductionAmount () - cityProduction.getConsumptionAmount ());
+							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (), cityProduction.getModifiedProductionAmount () - cityProduction.getConsumptionAmount ());
 					}
 				}
 
@@ -184,15 +173,14 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
 					final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-					if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					if ( (terrainData != null) && (terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 						nodeAuraSquares++;
 				}
 
 		// How much magic power does each square generate?
 		final int nodeAuraMagicPower = (nodeAuraSquares * sd.getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 2;
 		if (nodeAuraMagicPower > 0)
-			getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER,
-				nodeAuraMagicPower);
+			getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, nodeAuraMagicPower);
 
 		// We never explicitly add Mana from Magic Power, this is calculated on the fly by getResourceValueUtils ().calculateAmountPerTurnForProductionType
 
@@ -200,19 +188,15 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	}
 
 	/**
-	 * Sends one player's global production values to them
-	 *
-	 * Note Delphi version could either send the values to one player or all players
-	 * Java version operates only on one player because each player now has their own resource list
-	 *
+	 * Sends one player's global production values to them Note Delphi version could either send the values to one player or all players Java version operates only on one player because each player now has their own resource list
+	 * 
 	 * @param player Player whose values to send
 	 * @param castingSkillRemainingThisCombat Only specified when this is called as a result of a combat spell being cast, thereby reducing skill and mana
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat)
-		throws JAXBException, XMLStreamException
+	public final void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat) throws JAXBException, XMLStreamException
 	{
 		log.entering (MomServerResourceCalculationsImpl.class.getName (), "sendGlobalProductionValues", player.getPlayerDescription ().getPlayerID ());
 
@@ -233,7 +217,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 
 	/**
 	 * Find everything that this player has that uses the specified type of consumption
-	 *
+	 * 
 	 * @param player Player whose productions we need to check
 	 * @param players List of players in the session
 	 * @param productionTypeID Production type to look for
@@ -244,18 +228,15 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	 * @throws RecordNotFoundException If the unitID, buildingID or spellID doesn't exist
 	 * @throws MomException If we find a building consumption that isn't a multiple of 2
 	 */
-	final List<IMomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseEx db)
-		throws PlayerNotFoundException, RecordNotFoundException, MomException
+	final List<MomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players, final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseEx db) throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "listConsumersOfProductionType",
-			new String [] {player.getPlayerDescription ().getPlayerID ().toString (), productionTypeID});
+		log.entering (MomServerResourceCalculationsImpl.class.getName (), "listConsumersOfProductionType", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), productionTypeID});
 
-		final List<IMomResourceConsumer> consumers = new ArrayList<IMomResourceConsumer> ();
+		final List<MomResourceConsumer> consumers = new ArrayList<MomResourceConsumer> ();
 
 		// Units
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
-			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+			if ( (thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
 				final int consumptionAmount = getUnitUtils ().getModifiedUpkeepValue (thisUnit, productionTypeID, players, db);
 				if (consumptionAmount > 0)
@@ -265,10 +246,9 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 		// Buildings
 		for (final MemoryBuilding thisBuilding : trueMap.getBuilding ())
 		{
-			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (thisBuilding.getCityLocation ().getPlane ()).getRow ().get
-				(thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ()).getCityData ();
+			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (thisBuilding.getCityLocation ().getPlane ()).getRow ().get (thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ()).getCityData ();
 
-			if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+			if ( (cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 			{
 				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
 				final int consumptionAmount = getMemoryBuildingUtils ().findBuildingConsumption (building, productionTypeID);
@@ -285,7 +265,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 
 				boolean found = false;
 				final Iterator<SpellUpkeep> upkeepIter = spell.getSpellUpkeep ().iterator ();
-				while ((!found) && (upkeepIter.hasNext ()))
+				while ( (!found) && (upkeepIter.hasNext ()))
 				{
 					final SpellUpkeep upkeep = upkeepIter.next ();
 					if (upkeep.getProductionTypeID ().equals (productionTypeID))
@@ -303,7 +283,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 
 	/**
 	 * Searches through the production amounts to see if any which aren't allowed to go below zero are - if they are, we have to kill/sell something
-	 *
+	 * 
 	 * @param player Player whose productions we need to check
 	 * @param enforceType Type of production enforcement to check
 	 * @param addOnStoredAmount True if OK for the per turn production amount to be negative as long as we have some in reserve (e.g. ok to make -5 gold per turn if we have 1000 gold already); False if per turn must be positive
@@ -315,32 +295,26 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player,
-		final EnforceProductionID enforceType, final boolean addOnStoredAmount,
-		final IMomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	private final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final EnforceProductionID enforceType, final boolean addOnStoredAmount, final MomSessionVariables mom) throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "findInsufficientProductionAndSellSomething",
-			new String [] {player.getPlayerDescription ().getPlayerID ().toString (), enforceType.toString ()});
+		log.entering (MomServerResourceCalculationsImpl.class.getName (), "findInsufficientProductionAndSellSomething", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), enforceType.toString ()});
 
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge (); 
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// Search through different types of production looking for ones matching the required enforce type
 		boolean found = false;
 		final Iterator<ProductionType> productionTypeIter = mom.getServerDB ().getProductionType ().iterator ();
-		while ((!found) && (productionTypeIter.hasNext ()))
+		while ( (!found) && (productionTypeIter.hasNext ()))
 		{
 			final ProductionType productionType = productionTypeIter.next ();
 			if (enforceType.equals (productionType.getEnforceProduction ()))
 			{
 				// Check how much of this type of production the player has
-				int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (),
-					productionType.getProductionTypeID (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+				int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionType.getProductionTypeID (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 
-				log.finest ("findInsufficientProductionAndSellSomething: PlayerID " + player.getPlayerDescription ().getPlayerID () + " is generating " + valueToCheck +
-					" per turn of productionType " + productionType.getProductionTypeID () + " which has enforceType " + enforceType);
-				
+				log.finest ("findInsufficientProductionAndSellSomething: PlayerID " + player.getPlayerDescription ().getPlayerID () + " is generating " + valueToCheck + " per turn of productionType " + productionType.getProductionTypeID () + " which has enforceType " + enforceType);
+
 				if (addOnStoredAmount)
 				{
 					final int amountStored = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), productionType.getProductionTypeID ());
@@ -350,23 +324,21 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 
 				if (valueToCheck < 0)
 				{
-					final List<IMomResourceConsumer> consumers = listConsumersOfProductionType
-						(player, mom.getPlayers (), productionType.getProductionTypeID (), mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getServerDB ());
+					final List<MomResourceConsumer> consumers = listConsumersOfProductionType (player, mom.getPlayers (), productionType.getProductionTypeID (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 					log.finest ("findInsufficientProductionAndSellSomething: Found " + consumers.size () + " consumers of productionType " + productionType.getProductionTypeID ());
-					
+
 					// Want random choice to be weighted, e.g. if something consumes 4 gold then it should be 4x more likely to be chosen than something that only consumes 1 gold
 					int totalConsumption = 0;
-					for (final IMomResourceConsumer consumer : consumers)
+					for (final MomResourceConsumer consumer : consumers)
 						totalConsumption = totalConsumption + consumer.getConsumptionAmount ();
 
 					int randomConsumption = RandomUtils.getGenerator ().nextInt (totalConsumption);
-					IMomResourceConsumer chosenConsumer = null;
-					final Iterator<IMomResourceConsumer> consumerIter = consumers.iterator ();
-					while ((chosenConsumer == null) && (consumerIter.hasNext ()))
+					MomResourceConsumer chosenConsumer = null;
+					final Iterator<MomResourceConsumer> consumerIter = consumers.iterator ();
+					while ( (chosenConsumer == null) && (consumerIter.hasNext ()))
 					{
-						final IMomResourceConsumer thisConsumer = consumerIter.next ();
+						final MomResourceConsumer thisConsumer = consumerIter.next ();
 						if (randomConsumption < thisConsumer.getConsumptionAmount ())
 							chosenConsumer = thisConsumer;
 						else
@@ -389,14 +361,14 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 
 	/**
 	 * Adds production generated this turn to the permanent values
+	 * 
 	 * @param player Player that production amounts are being accumulated for
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
 	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
 	 */
-	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException
+	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
 		log.entering (MomServerResourceCalculationsImpl.class.getName (), "accumulateGlobalProductionValues", player.getPlayerDescription ().getPlayerID ());
 
@@ -408,7 +380,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 			{
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				
+
 				final int amountPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionType.getProductionTypeID (), spellSettings, db);
 				if (amountPerTurn != 0)
 				{
@@ -429,8 +401,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 								if (amountToAdd % 2 == 0)
 									amountToAdd = amountToAdd / 2;
 								else
-									throw new MomException ("accumulateGlobalProductionValues: Expect value for " + productionType.getProductionTypeID () + " being accumulated into " +
-										productionType.getAccumulatesInto () + " to be exact multiple of 2 but was " + amountToAdd);
+									throw new MomException ("accumulateGlobalProductionValues: Expect value for " + productionType.getProductionTypeID () + " being accumulated into " + productionType.getAccumulatesInto () + " to be exact multiple of 2 but was " + amountToAdd);
 								break;
 
 							default:
@@ -447,6 +418,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 
 	/**
 	 * Checks how much research we generate this turn and puts it towards the current spell
+	 * 
 	 * @param player Player to progress research for
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
@@ -455,34 +427,31 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 * @throws MomException If we find an invalid casting reduction type
 	 */
-	final void progressResearch (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException
+	final void progressResearch (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db) throws RecordNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		log.entering (MomServerResourceCalculationsImpl.class.getName (), "progressResearch");
-		
+
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-		
+
 		if (priv.getSpellIDBeingResearched () != null)
 		{
-			final int researchAmount = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-				(priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db);
-			
+			final int researchAmount = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db);
+
 			log.finest ("Player generated " + researchAmount + " RPs this turn in spell research");
-			
+
 			// Put research points towards current spell
 			if (researchAmount > 0)
 			{
-				final SpellResearchStatus spellBeingResarched = getSpellUtils ().findSpellResearchStatus
-					(priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched ());
-				
+				final SpellResearchStatus spellBeingResarched = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched ());
+
 				// Put some research towards it
 				if (spellBeingResarched.getRemainingResearchCost () < researchAmount)
 					spellBeingResarched.setRemainingResearchCost (0);
 				else
 					spellBeingResarched.setRemainingResearchCost (spellBeingResarched.getRemainingResearchCost () - researchAmount);
-				
+
 				// If finished, then grant spell and blank out research
 				log.finest ("Player has " + spellBeingResarched.getRemainingResearchCost () + " RPs left before completing researching spell " + priv.getSpellIDBeingResearched ());
 				if (spellBeingResarched.getRemainingResearchCost () == 0)
@@ -492,14 +461,14 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 					researchedSpell.setMsgType (NewTurnMessageTypeID.RESEARCHED_SPELL);
 					researchedSpell.setSpellID (priv.getSpellIDBeingResearched ());
 					trans.getNewTurnMessage ().add (researchedSpell);
-					
+
 					// Update on server
 					spellBeingResarched.setStatus (SpellResearchStatusID.AVAILABLE);
 					priv.setSpellIDBeingResearched (null);
-					
+
 					// Pick another random spell to add to the 8 spells researchable now
 					getServerSpellCalculations ().randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
-					
+
 					// And send this info to the client
 					if (player.getPlayerDescription ().isHuman ())
 					{
@@ -520,12 +489,13 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 				}
 			}
 		}
-		
+
 		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "progressResearch");
 	}
-	
+
 	/**
 	 * Resets the casting skill the wizard(s) have left to spend this turn back to their full skill
+	 * 
 	 * @param player Player who's overlandCastingSkillRemainingThisTurn to set
 	 */
 	final void resetCastingSkillRemainingThisTurnToFull (final PlayerServerDetails player)
@@ -534,15 +504,15 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-		
+
 		trans.setOverlandCastingSkillRemainingThisTurn (getResourceValueUtils ().calculateCastingSkillOfPlayer (priv.getResourceValue ()));
-		
+
 		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "resetCastingSkillRemainingThisTurnToFull");
 	}
-	
+
 	/**
 	 * Recalculates the amount of production of all types that we make each turn and sends the updated figures to the player(s)
-	 *
+	 * 
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
 	 * @param duringStartPhase If true does additional work around enforcing that we are producing enough, and progresses city construction, spell research & casting and so on
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -553,27 +523,23 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 */
 	@Override
-	public final void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase,
-		final IMomSessionVariables mom)
+	public final void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "recalculateGlobalProductionValues",
-			new String [] {new Integer (onlyOnePlayerID).toString (), new Boolean (duringStartPhase).toString ()});
+		log.entering (MomServerResourceCalculationsImpl.class.getName (), "recalculateGlobalProductionValues", new String [] {new Integer (onlyOnePlayerID).toString (), new Boolean (duringStartPhase).toString ()});
 
 		for (final PlayerServerDetails player : mom.getPlayers ())
-			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
+			if ( (onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
 			{
 				// Don't calc production for the Rampaging Monsters player, or the routine spots that they have lots of units
 				// that take a lot of mana to maintain, and no buildings generating any mana to support them, and kills them all off
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				if (!pub.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
-				{				
-					log.finest ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () +
-						" (" + player.getPlayerDescription ().getPlayerName () + ")");
-				
+				{
+					log.finest ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () + " (" + player.getPlayerDescription ().getPlayerName () + ")");
+
 					// Calculate base amounts
-					recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-						mom.getSessionDescription (), mom.getServerDB ());
+					recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 
 					// If during the start phase, use these per turn production amounts as the amounts to add to the stored totals
 					if (duringStartPhase)
@@ -596,11 +562,9 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 
 						// Continue casting spells
 						// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used
-						if (getSpellProcessing ().progressOverlandCasting (mom.getGeneralServerKnowledge (),
-							player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
-						
-							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-								mom.getSessionDescription (), mom.getServerDB ());
+						if (getSpellProcessing ().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
+
+							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 					}
 					else if (player.getPlayerDescription ().isHuman ())
 
@@ -615,7 +579,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	/**
 	 * @return Spell processing methods
 	 */
-	public final ISpellProcessing getSpellProcessing ()
+	public final SpellProcessing getSpellProcessing ()
 	{
 		return spellProcessing;
 	}
@@ -623,7 +587,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	/**
 	 * @param obj Spell processing methods
 	 */
-	public final void setSpellProcessing (final ISpellProcessing obj)
+	public final void setSpellProcessing (final SpellProcessing obj)
 	{
 		spellProcessing = obj;
 	}
@@ -675,7 +639,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	{
 		memoryBuildingUtils = utils;
 	}
-	
+
 	/**
 	 * @return Player pick utils
 	 */
@@ -691,7 +655,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	{
 		playerPickUtils = utils;
 	}
-	
+
 	/**
 	 * @return Unit utils
 	 */
@@ -723,11 +687,11 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	{
 		cityCalculations = calc;
 	}
-	
+
 	/**
 	 * @return Server-only unit utils
 	 */
-	public final IUnitServerUtils getUnitServerUtils ()
+	public final UnitServerUtils getUnitServerUtils ()
 	{
 		return unitServerUtils;
 	}
@@ -735,15 +699,15 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	/**
 	 * @param utils Server-only unit utils
 	 */
-	public final void setUnitServerUtils (final IUnitServerUtils utils)
+	public final void setUnitServerUtils (final UnitServerUtils utils)
 	{
 		unitServerUtils = utils;
 	}
-	
+
 	/**
 	 * @return Server-only spell calculations
 	 */
-	public final IMomServerSpellCalculations getServerSpellCalculations ()
+	public final MomServerSpellCalculations getServerSpellCalculations ()
 	{
 		return serverSpellCalculations;
 	}
@@ -751,7 +715,7 @@ public final class MomServerResourceCalculationsImpl implements IMomServerResour
 	/**
 	 * @param calc Server-only spell calculations
 	 */
-	public final void setServerSpellCalculations (final IMomServerSpellCalculations calc)
+	public final void setServerSpellCalculations (final MomServerSpellCalculations calc)
 	{
 		serverSpellCalculations = calc;
 	}

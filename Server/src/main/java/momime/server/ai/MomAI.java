@@ -17,7 +17,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Overall AI strategy + control
  */
-public interface IMomAI
+public interface MomAI
 {
 	/**
 	 *

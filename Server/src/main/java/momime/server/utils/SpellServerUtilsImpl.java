@@ -16,7 +16,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Server side methods dealing with researching and casting spells
  */
-public final class SpellServerUtilsImpl implements ISpellServerUtils
+public final class SpellServerUtilsImpl implements SpellServerUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (SpellServerUtilsImpl.class.getName ());

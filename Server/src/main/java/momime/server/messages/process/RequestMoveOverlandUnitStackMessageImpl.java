@@ -15,7 +15,7 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -44,7 +44,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getUnitURN ().toString (),
 			(getMoveFrom () == null) ? "null" : getMoveFrom ().toString (), (getMoveTo () == null) ? "null" : getMoveTo ().toString ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Process through all the units
 		String error = null;

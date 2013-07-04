@@ -19,7 +19,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Methods for AI players making decisions about spells
  */
-public final class SpellAIImpl implements ISpellAI
+public final class SpellAIImpl implements SpellAI
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (SpellAIImpl.class.getName ());

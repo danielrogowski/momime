@@ -5,7 +5,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -14,7 +14,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  * Generic interface for all things in MOM that consume resources, i.e. units, buildings and maintained spells
  * This allows the server to cancel them via a common interface if a player has insufficient resources
  */
-public interface IMomResourceConsumer
+public interface MomResourceConsumer
 {
 	/**
 	 * @return The player who's resources are being consumed
@@ -43,6 +43,6 @@ public interface IMomResourceConsumer
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void kill (final IMomSessionVariables mom)
+	public void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

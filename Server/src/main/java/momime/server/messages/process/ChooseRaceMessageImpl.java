@@ -11,7 +11,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -41,7 +41,7 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Pr
 	{
 		log.entering (ChooseRaceMessageImpl.class.getName (), "process", new String [] {new Integer (sender.getPlayerDescription ().getPlayerID ()).toString (), getRaceID ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final String error = mom.getPlayerPickServerUtils ().validateRaceChoice (sender, getRaceID (), mom.getServerDB ());
 		if (error != null)

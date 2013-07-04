@@ -12,7 +12,7 @@ import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -20,7 +20,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Building that consumes a particular type of resource
  */
-public final class MomResourceConsumerBuilding implements IMomResourceConsumer
+public final class MomResourceConsumerBuilding implements MomResourceConsumer
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomResourceConsumerBuilding.class.getName ());
@@ -99,7 +99,7 @@ public final class MomResourceConsumerBuilding implements IMomResourceConsumer
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void kill (final IMomSessionVariables mom)
+	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.entering (MomResourceConsumerBuilding.class.getName (), "kill",

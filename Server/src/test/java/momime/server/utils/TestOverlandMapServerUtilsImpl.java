@@ -33,7 +33,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Race;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
 
@@ -291,7 +291,7 @@ public class TestOverlandMapServerUtilsImpl
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
 		
 		// Set up object to test
-		final IFogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
 		
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);

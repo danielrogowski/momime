@@ -12,7 +12,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Methods for AI players making decisions about spells
  */
-public interface ISpellAI
+public interface SpellAI
 {
 	/**
 	 * @param player AI player who needs to choose what to research

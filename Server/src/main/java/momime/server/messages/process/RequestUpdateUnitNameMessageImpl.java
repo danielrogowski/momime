@@ -10,7 +10,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.RequestUpdateUnitNameMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -41,7 +41,7 @@ public final class RequestUpdateUnitNameMessageImpl extends RequestUpdateUnitNam
 		log.entering (RequestUpdateUnitNameMessageImpl.class.getName (), "process",
 			new Integer [] {sender.getPlayerDescription ().getPlayerID (), getUnitURN ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// Find the unit being dismissed
 		final MemoryUnit trueUnit = mom.getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());

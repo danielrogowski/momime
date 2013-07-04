@@ -20,7 +20,7 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -48,7 +48,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		log.entering (RequestOverlandMovementDistancesMessageImpl.class.getName (), "process", new Integer []
 			{getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getPlane (), sender.getPlayerDescription ().getPlayerID ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 
 		// Process through all the units

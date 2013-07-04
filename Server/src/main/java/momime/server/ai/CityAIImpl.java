@@ -27,13 +27,13 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.IMomServerCityCalculations;
+import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.AiBuildingTypeID;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Race;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.RandomUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
@@ -45,13 +45,13 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for AI players making decisions about where to place cities and what to build in them
  */
-public final class CityAIImpl implements ICityAI
+public final class CityAIImpl implements CityAI
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CityAIImpl.class.getName ());
 	
 	/** Methods for updating true map + players' memory */
-	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -63,7 +63,7 @@ public final class CityAIImpl implements ICityAI
 	private MomCityCalculations cityCalculations;
 
 	/** Server-only city calculations */
-	private IMomServerCityCalculations serverCityCalculations;
+	private MomServerCityCalculations serverCityCalculations;
 	
 	/**
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
@@ -421,7 +421,7 @@ public final class CityAIImpl implements ICityAI
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
 		return fogOfWarMidTurnChanges;
 	}
@@ -429,7 +429,7 @@ public final class CityAIImpl implements ICityAI
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
 	}
@@ -485,7 +485,7 @@ public final class CityAIImpl implements ICityAI
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final IMomServerCityCalculations getServerCityCalculations ()
+	public final MomServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -493,7 +493,7 @@ public final class CityAIImpl implements ICityAI
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final IMomServerCityCalculations calc)
+	public final void setServerCityCalculations (final MomServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}

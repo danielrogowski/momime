@@ -20,7 +20,7 @@ import momime.server.database.ServerDatabaseEx;
  * Note these must always make deep copies - if an object includes another object (e.g. OverlandMapCoordinates or UnitHasSkill) then
  * we need to make a copy of the child object and reference that as well, we can't just copy the reference from source
  */
-public interface IFogOfWarDuplication
+public interface FogOfWarDuplication
 {
 	/**
 	 * Copies all the terrain and node aura related data items from source to destination

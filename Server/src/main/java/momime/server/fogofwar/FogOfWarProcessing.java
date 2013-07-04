@@ -22,7 +22,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  *
  * i.e. methods for when the true values remain the same but the visible area changes
  */
-public interface IFogOfWarProcessing
+public interface FogOfWarProcessing
 {
 	/**
 	 * This routine handles when the area that a player can see changes; it:

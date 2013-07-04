@@ -11,7 +11,7 @@ import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
@@ -21,7 +21,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for any significant message processing to do with spells that isn't done in the message implementations
  */
-public interface ISpellProcessing
+public interface SpellProcessing
 {
 	/**
 	 * Client wants to cast a spell, either overland or in combat
@@ -42,7 +42,7 @@ public interface ISpellProcessing
 	 */
 	public void requestCastSpell (final PlayerServerDetails player, final String spellID,
 		final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatTargetLocation, final Integer combatTargetUnitURN,
-		final IMomSessionVariables mom)
+		final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**

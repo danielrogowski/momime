@@ -26,7 +26,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Race;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
 
@@ -41,7 +41,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server side only helper methods for dealing with the overland map
  */
-public final class OverlandMapServerUtilsImpl implements IOverlandMapServerUtils
+public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (OverlandMapServerUtilsImpl.class.getName ());
@@ -50,7 +50,7 @@ public final class OverlandMapServerUtilsImpl implements IOverlandMapServerUtils
 	private UnitUtils unitUtils;
 	
 	/** Methods for updating true map + players' memory */
-	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/**
 	 * @param plane Plane that we want to choose a race for
@@ -337,7 +337,7 @@ public final class OverlandMapServerUtilsImpl implements IOverlandMapServerUtils
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
 		return fogOfWarMidTurnChanges;
 	}
@@ -345,7 +345,7 @@ public final class OverlandMapServerUtilsImpl implements IOverlandMapServerUtils
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
 	}

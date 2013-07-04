@@ -40,13 +40,13 @@ import momime.common.utils.ResourceValueUtilsImpl;
 import momime.common.utils.SpellUtilsImpl;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
-import momime.server.calculations.IMomServerResourceCalculations;
+import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.calculations.MomServerUnitCalculationsImpl;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.utils.UnitServerUtilsImpl;
 
@@ -93,7 +93,7 @@ public final class TestSpellProcessingImpl
 		priv3.getSpellResearchStatus ().add (researchStatus);
 		
 		// Set up test object
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
@@ -160,7 +160,7 @@ public final class TestSpellProcessingImpl
 		priv3.getSpellResearchStatus ().add (researchStatus);
 		
 		// Set up test object
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
@@ -251,7 +251,7 @@ public final class TestSpellProcessingImpl
 		priv3.getSpellResearchStatus ().add (researchStatus);
 		
 		// Set up test object
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
@@ -333,7 +333,7 @@ public final class TestSpellProcessingImpl
 		priv3.getSpellResearchStatus ().add (researchStatus);
 		
 		// Set up test object
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();
 		unitServerUtils.setUnitUtils (new UnitUtilsImpl ());
@@ -448,7 +448,7 @@ public final class TestSpellProcessingImpl
 		priv3.getSpellResearchStatus ().add (researchStatus);
 		
 		// Set up test object
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();
 		unitServerUtils.setUnitUtils (new UnitUtilsImpl ());
@@ -537,7 +537,7 @@ public final class TestSpellProcessingImpl
 		priv3.getSpellResearchStatus ().add (researchStatus);
 		
 		// Set up test object
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
@@ -594,7 +594,7 @@ public final class TestSpellProcessingImpl
 		priv3.getSpellResearchStatus ().add (researchStatus);
 		
 		// Set up test object
-		final IFogOfWarMidTurnChanges midTurn = mock (IFogOfWarMidTurnChanges.class);
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
@@ -626,7 +626,7 @@ public final class TestSpellProcessingImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		
-		final IMomSessionVariables mom = mock (IMomSessionVariables.class);
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Human player, who is also the one casting the spell
@@ -669,7 +669,7 @@ public final class TestSpellProcessingImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		
-		final IMomSessionVariables mom = mock (IMomSessionVariables.class);
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Human player, who is also the one casting the spell
@@ -714,7 +714,7 @@ public final class TestSpellProcessingImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		
-		final IMomSessionVariables mom = mock (IMomSessionVariables.class);
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Human player, who is also the one casting the spell
@@ -795,14 +795,14 @@ public final class TestSpellProcessingImpl
 		priv3.getResourceValue ().add (mana);
 		
 		// Set up test object
-		final IMomSessionVariables mom = mock (IMomSessionVariables.class);
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 
-		final IPlayerMessageProcessing msgProc = mock (IPlayerMessageProcessing.class);
-		final IMomServerResourceCalculations calc = mock (IMomServerResourceCalculations.class);
+		final PlayerMessageProcessing msgProc = mock (PlayerMessageProcessing.class);
+		final MomServerResourceCalculations calc = mock (MomServerResourceCalculations.class);
 		
 		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
 		spellUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
@@ -894,14 +894,14 @@ public final class TestSpellProcessingImpl
 		priv3.getResourceValue ().add (mana);
 		
 		// Set up test object
-		final IMomSessionVariables mom = mock (IMomSessionVariables.class);
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 
-		final IPlayerMessageProcessing msgProc = mock (IPlayerMessageProcessing.class);
-		final IMomServerResourceCalculations calc = mock (IMomServerResourceCalculations.class);
+		final PlayerMessageProcessing msgProc = mock (PlayerMessageProcessing.class);
+		final MomServerResourceCalculations calc = mock (MomServerResourceCalculations.class);
 		
 		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
 		spellUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());

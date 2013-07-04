@@ -10,7 +10,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
@@ -20,7 +20,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for any significant message processing to do with cities that isn't done in the message implementations
  */
-public interface ICityProcessing
+public interface CityProcessing
 {
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -102,6 +102,6 @@ public interface ICityProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final IMomSessionVariables mom)
+	public void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 }

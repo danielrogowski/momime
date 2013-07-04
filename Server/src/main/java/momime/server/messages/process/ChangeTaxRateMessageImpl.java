@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -39,7 +39,7 @@ public final class ChangeTaxRateMessageImpl extends ChangeTaxRateMessage impleme
 		log.entering (ChangeTaxRateMessageImpl.class.getName (), "process",
 			new String [] {sender.getPlayerDescription ().getPlayerName (), getTaxRateID ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		mom.getCityProcessing ().changeTaxRate (sender, getTaxRateID (), mom);
 

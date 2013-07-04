@@ -69,9 +69,9 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.IMomFogOfWarCalculations;
-import momime.server.calculations.IMomServerCityCalculations;
-import momime.server.calculations.IMomServerUnitCalculations;
+import momime.server.calculations.MomFogOfWarCalculations;
+import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
@@ -86,19 +86,19 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  * This contains all methods that allow changes in the server's true memory to be replicated into each player's memory and send update messages to each client
  * i.e. methods for when the true values change (or are added or removed) but the visible area that each player can see does not change
  */
-public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
+public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (FogOfWarMidTurnChangesImpl.class.getName ());
 	
 	/** Single cell FOW calculations */
-	private IMomFogOfWarCalculations fogOfWarCalculations;
+	private MomFogOfWarCalculations fogOfWarCalculations;
 
 	/** FOW duplication utils */
-	private IFogOfWarDuplication fogOfWarDuplication;
+	private FogOfWarDuplication fogOfWarDuplication;
 	
 	/** Main FOW update routine */
-	private IFogOfWarProcessing fogOfWarProcessing;
+	private FogOfWarProcessing fogOfWarProcessing;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -122,10 +122,10 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	private MomCityCalculations cityCalculations;
 
 	/** Server-only city calculations */
-	private IMomServerCityCalculations serverCityCalculations;
+	private MomServerCityCalculations serverCityCalculations;
 	
 	/** Server-only unit calculations */
-	private IMomServerUnitCalculations serverUnitCalculations;
+	private MomServerUnitCalculations serverUnitCalculations;
 	
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
@@ -1757,7 +1757,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @return Single cell FOW calculations
 	 */
-	public final IMomFogOfWarCalculations getFogOfWarCalculations ()
+	public final MomFogOfWarCalculations getFogOfWarCalculations ()
 	{
 		return fogOfWarCalculations;
 	}
@@ -1765,7 +1765,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @param calc Single cell FOW calculations
 	 */
-	public final void setFogOfWarCalculations (final IMomFogOfWarCalculations calc)
+	public final void setFogOfWarCalculations (final MomFogOfWarCalculations calc)
 	{
 		fogOfWarCalculations = calc;
 	}
@@ -1773,7 +1773,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @return FOW duplication utils
 	 */
-	public final IFogOfWarDuplication getFogOfWarDuplication ()
+	public final FogOfWarDuplication getFogOfWarDuplication ()
 	{
 		return fogOfWarDuplication;
 	}
@@ -1781,7 +1781,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @param dup FOW duplication utils
 	 */
-	public final void setFogOfWarDuplication (final IFogOfWarDuplication dup)
+	public final void setFogOfWarDuplication (final FogOfWarDuplication dup)
 	{
 		fogOfWarDuplication = dup;
 	}
@@ -1789,7 +1789,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @return Main FOW update routine
 	 */
-	public final IFogOfWarProcessing getFogOfWarProcessing ()
+	public final FogOfWarProcessing getFogOfWarProcessing ()
 	{
 		return fogOfWarProcessing;
 	}
@@ -1797,7 +1797,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @param obj Main FOW update routine
 	 */
-	public final void setFogOfWarProcessing (final IFogOfWarProcessing obj)
+	public final void setFogOfWarProcessing (final FogOfWarProcessing obj)
 	{
 		fogOfWarProcessing = obj;
 	}
@@ -1917,7 +1917,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final IMomServerCityCalculations getServerCityCalculations ()
+	public final MomServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -1925,7 +1925,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final IMomServerCityCalculations calc)
+	public final void setServerCityCalculations (final MomServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}
@@ -1933,7 +1933,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @return Server-only unit calculations
 	 */
-	public final IMomServerUnitCalculations getServerUnitCalculations ()
+	public final MomServerUnitCalculations getServerUnitCalculations ()
 	{
 		return serverUnitCalculations;
 	}
@@ -1941,7 +1941,7 @@ public final class FogOfWarMidTurnChangesImpl implements IFogOfWarMidTurnChanges
 	/**
 	 * @param calc Server-only unit calculations
 	 */
-	public final void setServerUnitCalculations (final IMomServerUnitCalculations calc)
+	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
 	}

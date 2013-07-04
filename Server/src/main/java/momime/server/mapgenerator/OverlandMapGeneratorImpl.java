@@ -34,7 +34,7 @@ import momime.server.database.v0_9_4.TileType;
 import momime.server.database.v0_9_4.TileTypeAreaEffect;
 import momime.server.database.v0_9_4.TileTypeFeatureChance;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.fogofwar.IFogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
 import momime.server.utils.RandomUtils;
@@ -50,7 +50,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  *
  * There's no need to run this in a separate thread like in Delphi, because with the entire server XML file cached this version runs considerably faster
  */
-public final class OverlandMapGeneratorImpl implements IOverlandMapGenerator
+public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (OverlandMapGeneratorImpl.class.getName ());
@@ -65,7 +65,7 @@ public final class OverlandMapGeneratorImpl implements IOverlandMapGenerator
 	private ServerDatabaseEx db;
 
 	/** Methods for updating true map + players' memory */
-	private IFogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
@@ -1801,7 +1801,7 @@ public final class OverlandMapGeneratorImpl implements IOverlandMapGenerator
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
-	public final IFogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
 	{
 		return fogOfWarMidTurnChanges;
 	}
@@ -1809,7 +1809,7 @@ public final class OverlandMapGeneratorImpl implements IOverlandMapGenerator
 	/**
 	 * @param obj Methods for updating true map + players' memory
 	 */
-	public final void setFogOfWarMidTurnChanges (final IFogOfWarMidTurnChanges obj)
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
 	}

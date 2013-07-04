@@ -12,7 +12,7 @@ import momime.common.messages.clienttoserver.v0_9_4.SellBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.TurnSystem;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_4.Building;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
@@ -45,7 +45,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (),
 			(getCityLocation () == null) ? "null" : getCityLocation ().toString (), getBuildingID ()});
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final MemoryGridCell tc;
 		if (getCityLocation () == null)

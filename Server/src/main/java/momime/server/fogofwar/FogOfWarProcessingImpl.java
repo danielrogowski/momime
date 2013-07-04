@@ -46,8 +46,8 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.IMomServerCityCalculations;
-import momime.server.calculations.IMomServerUnitCalculations;
+import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
@@ -69,13 +69,13 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  *
  * i.e. methods for when the true values remain the same but the visible area changes
  */
-public class FogOfWarProcessingImpl implements IFogOfWarProcessing
+public class FogOfWarProcessingImpl implements FogOfWarProcessing
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (FogOfWarProcessingImpl.class.getName ());
 	
 	/** FOW duplication utils */
-	private IFogOfWarDuplication fogOfWarDuplication;
+	private FogOfWarDuplication fogOfWarDuplication;
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -93,10 +93,10 @@ public class FogOfWarProcessingImpl implements IFogOfWarProcessing
 	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/** Server-only city calculations */
-	private IMomServerCityCalculations serverCityCalculations;
+	private MomServerCityCalculations serverCityCalculations;
 	
 	/** Server-only unit calculations */
-	private IMomServerUnitCalculations serverUnitCalculations;
+	private MomServerUnitCalculations serverUnitCalculations;
 	
 	/**
 	 * Marks that we can see a particular cell
@@ -947,7 +947,7 @@ public class FogOfWarProcessingImpl implements IFogOfWarProcessing
 	/**
 	 * @return FOW duplication utils
 	 */
-	public final IFogOfWarDuplication getFogOfWarDuplication ()
+	public final FogOfWarDuplication getFogOfWarDuplication ()
 	{
 		return fogOfWarDuplication;
 	}
@@ -955,7 +955,7 @@ public class FogOfWarProcessingImpl implements IFogOfWarProcessing
 	/**
 	 * @param dup FOW duplication utils
 	 */
-	public final void setFogOfWarDuplication (final IFogOfWarDuplication dup)
+	public final void setFogOfWarDuplication (final FogOfWarDuplication dup)
 	{
 		fogOfWarDuplication = dup;
 	}
@@ -1043,7 +1043,7 @@ public class FogOfWarProcessingImpl implements IFogOfWarProcessing
 	/**
 	 * @return Server-only city calculations
 	 */
-	public final IMomServerCityCalculations getServerCityCalculations ()
+	public final MomServerCityCalculations getServerCityCalculations ()
 	{
 		return serverCityCalculations;
 	}
@@ -1051,7 +1051,7 @@ public class FogOfWarProcessingImpl implements IFogOfWarProcessing
 	/**
 	 * @param calc Server-only city calculations
 	 */
-	public final void setServerCityCalculations (final IMomServerCityCalculations calc)
+	public final void setServerCityCalculations (final MomServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
 	}
@@ -1059,7 +1059,7 @@ public class FogOfWarProcessingImpl implements IFogOfWarProcessing
 	/**
 	 * @return Server-only unit calculations
 	 */
-	public final IMomServerUnitCalculations getServerUnitCalculations ()
+	public final MomServerUnitCalculations getServerUnitCalculations ()
 	{
 		return serverUnitCalculations;
 	}
@@ -1067,7 +1067,7 @@ public class FogOfWarProcessingImpl implements IFogOfWarProcessing
 	/**
 	 * @param calc Server-only unit calculations
 	 */
-	public final void setServerUnitCalculations (final IMomServerUnitCalculations calc)
+	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
 	}

@@ -15,7 +15,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.server.database.IServerDatabaseConverters;
+import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.mapgenerator.OverlandMapGeneratorImpl;
@@ -51,7 +51,7 @@ public final class MomServer extends MultiplayerSessionServer
 	private MomServerUI ui;
 
 	/** Database converters */
-	private IServerDatabaseConverters serverDatabaseConverters;
+	private ServerDatabaseConverters serverDatabaseConverters;
 	
 	/** Path to where all the server database XMLs are - from config file */
 	private String pathToServerXmlDatabases;
@@ -60,7 +60,7 @@ public final class MomServer extends MultiplayerSessionServer
 	private Unmarshaller serverDatabaseUnmarshaller;
 	
 	/** Factory interface for creating MomSessionThreads */
-	private IMomSessionThreadFactory sessionThreadFactory;
+	private MomSessionThreadFactory sessionThreadFactory;
 
 	/**
 	 * @throws DatatypeConfigurationException If there is a problem creating the DatatypeFactory
@@ -209,7 +209,7 @@ public final class MomServer extends MultiplayerSessionServer
 	/**
 	 * @return Database converters
 	 */
-	public final IServerDatabaseConverters getServerDatabaseConverters ()
+	public final ServerDatabaseConverters getServerDatabaseConverters ()
 	{
 		return serverDatabaseConverters;
 	}
@@ -217,7 +217,7 @@ public final class MomServer extends MultiplayerSessionServer
 	/**
 	 * @param conv Database converters
 	 */
-	public final void setServerDatabaseConverters (final IServerDatabaseConverters conv)
+	public final void setServerDatabaseConverters (final ServerDatabaseConverters conv)
 	{
 		serverDatabaseConverters = conv;
 	}
@@ -257,7 +257,7 @@ public final class MomServer extends MultiplayerSessionServer
 	/** 
 	 * @return Factory interface for creating MomSessionThreads
 	 */
-	public final IMomSessionThreadFactory getSessionThreadFactory ()
+	public final MomSessionThreadFactory getSessionThreadFactory ()
 	{
 		return sessionThreadFactory;
 	}
@@ -265,7 +265,7 @@ public final class MomServer extends MultiplayerSessionServer
 	/**
 	 * @param factory Factory interface for creating MomSessionThreads
 	 */
-	public final void setSessionThreadFactory (final IMomSessionThreadFactory factory)
+	public final void setSessionThreadFactory (final MomSessionThreadFactory factory)
 	{
 		sessionThreadFactory = factory;
 	}

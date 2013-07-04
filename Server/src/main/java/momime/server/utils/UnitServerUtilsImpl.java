@@ -26,7 +26,7 @@ import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.IMomServerUnitCalculations;
+import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.UnitSkill;
@@ -38,7 +38,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Server side only helper methods for dealing with units
  */
-public final class UnitServerUtilsImpl implements IUnitServerUtils
+public final class UnitServerUtilsImpl implements UnitServerUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (UnitServerUtilsImpl.class.getName ());
@@ -50,7 +50,7 @@ public final class UnitServerUtilsImpl implements IUnitServerUtils
 	private PendingMovementUtils pendingMovementUtils;
 	
 	/** Server-only unit calculations */
-	private IMomServerUnitCalculations serverUnitCalculations;
+	private MomServerUnitCalculations serverUnitCalculations;
 	
 	/**
 	 * Chooses a name for this hero (out of 5 possibilities) and rolls their random skills
@@ -365,7 +365,7 @@ public final class UnitServerUtilsImpl implements IUnitServerUtils
 	/**
 	 * @return Server-only unit calculations
 	 */
-	public final IMomServerUnitCalculations getServerUnitCalculations ()
+	public final MomServerUnitCalculations getServerUnitCalculations ()
 	{
 		return serverUnitCalculations;
 	}
@@ -373,7 +373,7 @@ public final class UnitServerUtilsImpl implements IUnitServerUtils
 	/**
 	 * @param calc Server-only unit calculations
 	 */
-	public final void setServerUnitCalculations (final IMomServerUnitCalculations calc)
+	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
 	}

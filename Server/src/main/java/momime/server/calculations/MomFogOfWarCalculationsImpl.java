@@ -15,7 +15,7 @@ import momime.server.database.v0_9_4.Plane;
  * Isolated methods used in fog of war routines by MomTrueMap
  * In the Delphi code most of these are on MomServerPlayer, but that doesn't make sense here since we have to pass in the pre-locked FOW area
  */
-public final class MomFogOfWarCalculationsImpl implements IMomFogOfWarCalculations
+public final class MomFogOfWarCalculationsImpl implements MomFogOfWarCalculations
 {
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;

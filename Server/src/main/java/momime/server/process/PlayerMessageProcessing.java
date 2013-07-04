@@ -10,7 +10,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.TurnSystem;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -19,7 +19,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Methods for any significant message processing to do with game startup and the turn system that isn't done in the message implementations
  */
-public interface IPlayerMessageProcessing
+public interface PlayerMessageProcessing
 {
 	/**
 	 * Message we send to the server when we choose which wizard we want to be; AI players also call this to do their wizard, picks and spells setup
@@ -48,7 +48,7 @@ public interface IPlayerMessageProcessing
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
 	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
 	 */
-	public void checkIfCanStartGame (final IMomSessionVariables mom)
+	public void checkIfCanStartGame (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException;
 
 	/**
@@ -61,7 +61,7 @@ public interface IPlayerMessageProcessing
 	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void switchToNextPlayer (final IMomSessionVariables mom)
+	public void switchToNextPlayer (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -88,6 +88,6 @@ public interface IPlayerMessageProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void nextTurnButton (final IMomSessionVariables mom, final PlayerServerDetails player)
+	public void nextTurnButton (final MomSessionVariables mom, final PlayerServerDetails player)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 }

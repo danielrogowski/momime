@@ -48,7 +48,7 @@ import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.process.resourceconsumer.IMomResourceConsumer;
+import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
@@ -482,7 +482,7 @@ public final class TestMomServerResourceCalculationsImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		final List<IMomResourceConsumer> consumptions = calc.listConsumersOfProductionType
+		final List<MomResourceConsumer> consumptions = calc.listConsumersOfProductionType
 			(player, players, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, trueMap, db);
 
 		assertEquals (3, consumptions.size ());
@@ -658,7 +658,7 @@ public final class TestMomServerResourceCalculationsImpl
 		player.setConnection (msgs);
 		
 		// Set up test object
-		final IMomServerSpellCalculations serverSpellCalculations = mock (IMomServerSpellCalculations.class);
+		final MomServerSpellCalculations serverSpellCalculations = mock (MomServerSpellCalculations.class);
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		

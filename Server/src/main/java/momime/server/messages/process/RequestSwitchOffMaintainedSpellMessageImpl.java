@@ -11,7 +11,7 @@ import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.server.IMomSessionVariables;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -42,7 +42,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	{
 		log.entering (RequestSwitchOffMaintainedSpellMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
 
-		final IMomSessionVariables mom = (IMomSessionVariables) thread;
+		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Look for the spell
 		final MemoryMaintainedSpell trueSpell = mom.getMemoryMaintainedSpellUtils ().findMaintainedSpell

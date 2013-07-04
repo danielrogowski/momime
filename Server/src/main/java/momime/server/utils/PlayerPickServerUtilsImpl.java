@@ -20,7 +20,7 @@ import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
-import momime.server.ai.ISpellAI;
+import momime.server.ai.SpellAI;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
@@ -36,7 +36,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 /**
  * Server side only helper methods for dealing with picks
  */
-public final class PlayerPickServerUtilsImpl implements IPlayerPickServerUtils
+public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (PlayerPickServerUtilsImpl.class.getName ());
@@ -48,7 +48,7 @@ public final class PlayerPickServerUtilsImpl implements IPlayerPickServerUtils
 	private SpellUtils spellUtils;
 	
 	/** AI decisions about spells */
-	private ISpellAI spellAI;
+	private SpellAI spellAI;
 	
 	/**
 	 * @param picks Player's picks to count up
@@ -586,7 +586,7 @@ public final class PlayerPickServerUtilsImpl implements IPlayerPickServerUtils
 	/**
 	 * @return AI decisions about spells
 	 */
-	public final ISpellAI getSpellAI ()
+	public final SpellAI getSpellAI ()
 	{
 		return spellAI;
 	}
@@ -594,7 +594,7 @@ public final class PlayerPickServerUtilsImpl implements IPlayerPickServerUtils
 	/**
 	 * @param ai AI decisions about spells
 	 */
-	public final void setSpellAI (final ISpellAI ai)
+	public final void setSpellAI (final SpellAI ai)
 	{
 		spellAI = ai;
 	}

@@ -56,7 +56,7 @@ import momime.server.database.v0_9_4.WizardPickCount;
  * Converters for building derivative XML files from the server XML file
  * Old Delphi unit: MomServerDB.pas
  */
-public final class ServerDatabaseConvertersImpl implements IServerDatabaseConverters
+public final class ServerDatabaseConvertersImpl implements ServerDatabaseConverters
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ServerDatabaseConvertersImpl.class.getName ());

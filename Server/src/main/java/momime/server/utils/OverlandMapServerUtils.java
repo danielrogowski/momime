@@ -23,7 +23,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 /**
  * Server side only helper methods for dealing with the overland map
  */
-public interface IOverlandMapServerUtils
+public interface OverlandMapServerUtils
 {
 	/**
 	 * Sets the continental race (mostly likely race raiders cities at each location will choose) for every land tile on the map

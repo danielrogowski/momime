@@ -165,6 +165,26 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- This outputs the classpath into a file, so that it can be read in by .bat script -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>build-classpath</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>build-classpath</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<prefix>lib</prefix>
+							<attach>true</attach>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

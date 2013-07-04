@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.ndg.momime</groupId>
+	<artifactId>momime-assembly</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>momimeEditors</name>
+	<description>MoM IME zip assembly</description>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>com.ndg.common</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.0.6</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- Get the actual JARs included as dependencies -->
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-editors</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-server</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Get the classpath artifacts included as 'dependencies' -->
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-editors</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<classifier>classpath</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-server</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<classifier>classpath</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-client</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<classifier>classpath</classifier>
+		</dependency>
+	</dependencies>
+
+</project>

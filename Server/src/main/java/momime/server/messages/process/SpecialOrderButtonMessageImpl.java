@@ -22,15 +22,15 @@ import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.TileType;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Client sends this to server when a special order button is clicked with a particular unit stack
  */
-public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessage implements ProcessableClientToServerMessage
+public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (SpecialOrderButtonMessageImpl.class.getName ());

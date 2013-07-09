@@ -10,14 +10,14 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
 import momime.server.MomSessionVariables;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Message we send to the server when we choose which wizard we want to be
  */
-public final class ChooseWizardMessageImpl extends ChooseWizardMessage implements ProcessableClientToServerMessage
+public final class ChooseWizardMessageImpl extends ChooseWizardMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseWizardMessageImpl.class.getName ());

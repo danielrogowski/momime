@@ -17,14 +17,14 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.server.MomSessionVariables;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Client telling Server about all the custom picks they've chosen
  */
-public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage implements ProcessableClientToServerMessage
+public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseCustomPicksMessageImpl.class.getName ());

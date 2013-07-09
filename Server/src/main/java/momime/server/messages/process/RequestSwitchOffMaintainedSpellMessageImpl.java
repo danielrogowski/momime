@@ -13,16 +13,16 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.server.MomSessionVariables;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Client sends this when they want to switch off a maintained spell (overland, unit or city).
  * Note because spells don't get allocated any kind of spellURN, we basically have to pass the full details of the spell to the server to make sure that it can find it.
  */
-public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwitchOffMaintainedSpellMessage implements ProcessableClientToServerMessage
+public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwitchOffMaintainedSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestSwitchOffMaintainedSpellMessageImpl.class.getName ());

@@ -16,14 +16,14 @@ import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.MomSessionVariables;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Tells server which spell choices we made, e.g. that 11 books grants 1 free rare spell.
  */
-public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMessage implements ProcessableClientToServerMessage
+public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseInitialSpellsMessageImpl.class.getName ());

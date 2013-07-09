@@ -21,15 +21,15 @@ import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.utils.RandomUtils;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Client sends this to specify where they want to cast a spell they've completed casting overland.
  * (combat spells' targets are sent in the original requestCastSpellMessage).
  */
-public final class TargetSpellMessageImpl extends TargetSpellMessage implements ProcessableClientToServerMessage
+public final class TargetSpellMessageImpl extends TargetSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (TargetSpellMessageImpl.class.getName ());

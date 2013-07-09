@@ -17,14 +17,14 @@ import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.MomSessionVariables;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Client sends this to server to request a unit stack be moved on the overland map
  */
-public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOverlandUnitStackMessage implements ProcessableClientToServerMessage
+public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOverlandUnitStackMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestMoveOverlandUnitStackMessageImpl.class.getName ());

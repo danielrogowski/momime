@@ -9,14 +9,14 @@ import momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistribution
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Client sends updated slider bar positions when clicking OK from the magic screen
  */
-public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPowerDistributionMessage implements ProcessableClientToServerMessage
+public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPowerDistributionMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (UpdateMagicPowerDistributionMessageImpl.class.getName ());

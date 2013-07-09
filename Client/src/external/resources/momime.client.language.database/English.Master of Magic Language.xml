@@ -4531,6 +4531,12 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="InvalidNumberOfPlayers">
 			<languageEntryText>The total number of Human and AI opponents must be between 1 and 13</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Cancel">
+			<languageEntryText>Cancel</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmNewGameCustomMapSize">
 		<languageEntry languageEntryID="Title">
@@ -4954,11 +4960,6 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="SessionsColumn2">
 			<languageEntryText>Map Size</languageEntryText>
-		</languageEntry>
-	</languageCategory>
-	<languageCategory languageCategoryID="frmNewJoinGamePlayer">
-		<languageEntry languageEntryID="Title">
-			<languageEntryText>Player/Wizard's Name</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Refresh">
 			<languageEntryText>Refresh</languageEntryText>

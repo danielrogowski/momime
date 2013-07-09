@@ -9,14 +9,14 @@ import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Message clients send to the server when they choose a custom photo
  */
-public final class UploadCustomPhotoMessageImpl extends UploadCustomPhotoMessage implements ProcessableClientToServerMessage
+public final class UploadCustomPhotoMessageImpl extends UploadCustomPhotoMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (UploadCustomPhotoMessageImpl.class.getName ());

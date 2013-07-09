@@ -84,7 +84,7 @@ public final class MomServer extends MultiplayerSessionServer
 		log.entering (MomServer.class.getName (), "createAndStartClientThread");
 		
 		final Object readyForMessagesMonitor = new Object ();
-		final MultiplayerClientConnection conn = new MultiplayerClientConnection (this, getMessageProcesser (), socket,
+		final MultiplayerClientConnection conn = new MultiplayerClientConnection (this, socket,
 			getClientToServerContext (), getClientToServerContextFactoryArray (), getServerToClientContext (), readyForMessagesMonitor);
 		conn.start ();
 
@@ -108,12 +108,11 @@ public final class MomServer extends MultiplayerSessionServer
 	 * @throws IOException If there is a problem generating the client database for this session
 	 */
 	@Override
-	protected final MultiplayerSessionThread createSessionThread (final SessionDescription sessionDescription) throws JAXBException, IOException
+	public final MultiplayerSessionThread createSessionThread (final SessionDescription sessionDescription) throws JAXBException, IOException
 	{
 		log.entering (MomServer.class.getName (), "createSessionThread", sessionDescription.getSessionID ());
 
 		final MomSessionThread thread = getSessionThreadFactory ().createThread ();
-		thread.setMessageProcesser (getMessageProcesser ());
 		thread.setSessionDescription (sessionDescription);
 
 		final MomSessionDescription sd = (MomSessionDescription) sessionDescription;

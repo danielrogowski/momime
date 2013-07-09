@@ -11,14 +11,14 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.server.MomSessionVariables;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Client sends this to specify that, after bothering to finish casting an overland spell, they don't want to pick a target for it after all
  */
-public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage implements ProcessableClientToServerMessage
+public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CancelTargetSpellMessageImpl.class.getName ());

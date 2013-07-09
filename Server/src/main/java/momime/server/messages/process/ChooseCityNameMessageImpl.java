@@ -11,14 +11,14 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.server.MomSessionVariables;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Message client sends to server to tell them what name we chose for a city
  */
-public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage implements ProcessableClientToServerMessage
+public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseCityNameMessageImpl.class.getName ());

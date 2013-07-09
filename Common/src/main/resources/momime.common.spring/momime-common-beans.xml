@@ -70,6 +70,7 @@
     			<value>com.ndg.multiplayer.sessionbase.AdditionalPlayerJoined</value>
     			<value>com.ndg.multiplayer.sessionbase.SessionEnding</value>
     			<value>com.ndg.multiplayer.sessionbase.KickedByAnotherLogin</value>
+    			<value>com.ndg.multiplayer.sessionbase.LeaveSessionFailed</value>
     			
     			<!-- MoM multiplayer structures -->
     			<value>momime.common.messages.v0_9_4.MomSessionDescription</value>

@@ -74,7 +74,8 @@
 	
 	<!-- Singleton beans for server -->
 	
-	<bean id="clientToServerObjectFactory" class="momime.server.messages.process.ObjectFactoryClientToServerMessages" />	<!-- Creates Impl versions of msgs -->
+	<bean id="multiplayerSessionServerClientToServerObjectFactory" class="com.ndg.multiplayer.server.messages.process.MultiplayerSessionServerClientToServerObjectFactory" />
+	<bean id="momServerClientToServerObjectFactory" class="momime.server.messages.process.ObjectFactoryClientToServerMessages" />
 	
 	<bean id="multiplayerServerUtils" class="com.ndg.multiplayer.server.MultiplayerServerUtilsImpl" />
 	
@@ -95,8 +96,9 @@
 		<property name="serverToClientContext" ref="serverToClientJaxbContext" />
 		<property name="clientToServerContextFactoryArray">
 			<array>
+				<ref bean="multiplayerSessionServerClientToServerObjectFactory" />
+				<ref bean="momServerClientToServerObjectFactory" />
 				<ref bean="objectFactoryMessages" />
-				<ref bean="clientToServerObjectFactory" />
 			</array>
 		</property>
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />

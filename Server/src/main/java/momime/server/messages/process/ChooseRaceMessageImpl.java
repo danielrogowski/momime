@@ -13,15 +13,15 @@ import momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.server.MomSessionVariables;
 
-import com.ndg.multiplayer.server.ProcessableClientToServerMessage;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Message we send to the server when we choose which race we want to be
  */
-public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements ProcessableClientToServerMessage
+public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseRaceMessageImpl.class.getName ());

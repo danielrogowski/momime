@@ -9,12 +9,10 @@ import java.util.logging.Logger;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.logging.DateTimeAndMessageOnlyFormatter;
 
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-
 /**
  * Similar to the old Delphi MoM IME server, opens up a new window for each game in progress, and msgs relating to that game appear in that window
  */
-public class OneWindowPerGameUI extends SingleWindowUI
+public final class OneWindowPerGameUI extends SingleWindowUI
 {
 	// Inherited code sorts out creating the main window, outputting the debugLogger to the main window, and showing the session list
 	// So we just have to deal with the individual session windows here
@@ -24,7 +22,7 @@ public class OneWindowPerGameUI extends SingleWindowUI
 	 * @return Window created to display log messages for this session if using the OneWindowPerGameUI; if using a different UI then just returns null
 	 */
 	@Override
-	public SessionWindow createWindowForNewSession (final MomSessionDescription session)
+	public final SessionWindow createWindowForNewSession (final MomSessionDescription session)
 	{
 		return new SessionWindow (session);
 	}
@@ -35,10 +33,11 @@ public class OneWindowPerGameUI extends SingleWindowUI
 	 * @return Logger created and configured for this session
 	 */
 	@Override
-	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
+	public final Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
 	{
 		// Every window gets its own logger
-		final Logger sessionLogger = Logger.getLogger ("Session" + session.getSessionID ());
+		// Disconnect it from the parent logger, since the parent logger logs messages to the main window
+		final Logger sessionLogger = super.createLoggerForNewSession (session, sessionWindow);
 		sessionLogger.setLevel (Level.INFO);
 		sessionLogger.setUseParentHandlers (false);
 
@@ -47,25 +46,7 @@ public class OneWindowPerGameUI extends SingleWindowUI
 		sessionHandler.setFormatter (new DateTimeAndMessageOnlyFormatter ());
 		sessionLogger.addHandler (sessionHandler);
 
-		// Also make sure anything written to the session log gets logged to the disk file too, if enabled
-/*		if (fileLogger != null)
-		{
-			final Handler copySessionLoggerToFileLogger = new WriteToOtherLogHandler (fileLogger, "[Session " + session.getSessionID () + "] ");
-			copySessionLoggerToFileLogger.setLevel (Level.INFO);
-			sessionLogger.addHandler (copySessionLoggerToFileLogger);
-		} */
-
 		return sessionLogger;
-	}
-
-	/**
-	 * Close out the session window when a session has no players left in it and is just about to end
-	 * @param session The ending session
-	 */
-	@Override
-	public void doSessionEnded (final MultiplayerSessionThread session)
-	{
-		// session.getSessionWindow ().close ();
 	}
 
 	/**

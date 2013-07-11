@@ -114,6 +114,7 @@ public final class MomServer extends MultiplayerSessionServer
 
 		final MomSessionThread thread = getSessionThreadFactory ().createThread ();
 		thread.setSessionDescription (sessionDescription);
+		thread.setUI (ui);
 
 		final MomSessionDescription sd = (MomSessionDescription) sessionDescription;
 		
@@ -122,23 +123,28 @@ public final class MomServer extends MultiplayerSessionServer
 		thread.setSessionLogger (ui.createLoggerForNewSession (sd, sessionWindow));
 
 		// Load server XML
+		thread.getSessionLogger ().info ("Loading server XML...");
 		final File fullFilename = new File (getPathToServerXmlDatabases () + sd.getXmlDatabaseName () + ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
 		thread.setServerDB ((ServerDatabaseEx) getServerDatabaseUnmarshaller ().unmarshal (fullFilename));
 
 		// Create hash maps to look up all the values from the DB
+		thread.getSessionLogger ().info ("Building maps over XML data...");
 		thread.getServerDB ().buildMaps ();
 		
 		// Create client database
+		thread.getSessionLogger ().info ("Generating client XML...");
 		thread.getGeneralPublicKnowledge ().setClientDatabase (getServerDatabaseConverters ().buildClientDatabase
 			(thread.getServerDB (), sd.getDifficultyLevel ().getHumanSpellPicks ()));
 		
 		// Generate the overland map
+		thread.getSessionLogger ().info ("Generating overland map...");
 		final OverlandMapGeneratorImpl mapGen = (OverlandMapGeneratorImpl) thread.getOverlandMapGenerator ();
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (thread.getServerDB ());
 		mapGen.setTrueTerrain (thread.getGeneralServerKnowledge ().getTrueMap ());		// See comment in spring XML for why this isn't just injected
 		mapGen.generateOverlandTerrain ();
 
+		thread.getSessionLogger ().info ("Session startup completed");
 		log.exiting (MomServer.class.getName (), "createSessionThread", thread);
 		return thread;
 	}
@@ -148,6 +154,7 @@ public final class MomServer extends MultiplayerSessionServer
 	 */
 	public final void setUiClassName (final String uiClassName)
 	{
+		log.info ("Initializing UI " + uiClassName + "...");
 		final Object uiObject;
 		try
 		{

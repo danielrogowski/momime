@@ -141,6 +141,22 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** Server-only overland map utils */
 	private OverlandMapServerUtils overlandMapServerUtils;
+
+	/**
+	 * @return UI being used by server
+	 */
+	public final MomServerUI getUI ()
+	{
+		return ui;
+	}		
+
+	/**
+	 * @param newUI UI being used by server
+	 */
+	public final void setUI (final MomServerUI newUI)
+	{
+		ui = newUI;
+	}
 	
 	/**
 	 * @return Logger for logging key messages relating to this session
@@ -167,50 +183,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	{
 		return (MomSessionDescription) super.getSessionDescription ();
 	}
-
-	/**
-	 * @return Load XML file specified in session description
-	 * @throws JAXBException If there is a problem loading the server XML file
-	 */ 
-/*	protected final GeneralServerKnowledge createGeneralServerKnowledge (final MomServerUI ui,
-		final MomImeServerConfig config, final Logger fileLogger) throws JAXBException
-	{
-		log.entering (MomSessionThread.class.getName (), "createGeneralServerKnowledge", getSessionDescription ().getXmlDatabaseName ());
-
-		// Start up UI for this session
-		final SessionWindow sessionWindow = ui.createWindowForNewSession (getSessionDescription ());
-		sessionLogger = ui.createLoggerForNewSession (getSessionDescription (), sessionWindow, fileLogger);
-
-		// Generate map
-		sessionLogger.info ("Generating overland map...");
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-
-		try
-		{
-			final OverlandMapGenerator mapGen = new OverlandMapGenerator (trueMap, getSessionDescription (), db);
-			mapGen.generateOverlandTerrain ();
-		}
-		catch (final MomException e)
-		{
-			e.printStackTrace ();
-			throw new JAXBException (e.getMessage ());
-		}
-		catch (final RecordNotFoundException e)
-		{
-			e.printStackTrace ();
-			throw new JAXBException (e.getMessage ());
-		}
-
-		// Put into server knowledge structure
-		sessionLogger.info ("Creating server side knowledge structure...");
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setServerDatabase (db);
-		gsk.setTrueMap (trueMap);
-		gsk.setNextFreeUnitURN (1);
-
-		log.exiting (MomSessionThread.class.getName (), "createGeneralServerKnowledge", gsk);
-		return gsk;
-	} */
 
 	/**
 	 * @return Server general knowledge, typecasted to MoM specific type
@@ -280,6 +252,8 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	protected final PersistentPlayerPrivateKnowledge createPersistentPlayerPrivateKnowledge ()
 	{
+		log.entering (MomSessionThread.class.getName (), "createPersistentPlayerPrivateKnowledge");
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
 		// Initialize all spell research statuses
@@ -381,6 +355,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		fogOfWarMemory.setMap (fogOfWarMap);
 		priv.setFogOfWarMemory (fogOfWarMemory);
 
+		log.exiting (MomSessionThread.class.getName (), "createPersistentPlayerPrivateKnowledge", priv);
 		return priv;
 	}
 
@@ -402,6 +377,24 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		return new MomTransientPlayerPrivateKnowledge ();
 	}
 
+	/**
+	 * Let the UI know when sessions are added
+	 */
+	@Override
+	public final void sessionAdded ()
+	{
+		getUI ().sessionAdded (this);
+	}
+
+	/**
+	 * Let the UI know when sessions are removed
+	 */
+	@Override
+	public final void sessionRemoved ()
+	{
+		getUI ().sessionRemoved (this);
+	}
+	
 	/**
 	 * @return Server-side multiplayer utils
 	 */

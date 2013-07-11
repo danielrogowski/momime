@@ -1,13 +1,12 @@
 package momime.server.ui;
 
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.MomServer;
+
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 
 /**
  * The MoM IME server supports switchable user interfaces, so can run in a window, to the console, etc.
@@ -16,12 +15,6 @@ import momime.server.MomServer;
 public interface MomServerUI
 {
 	// NB. These interfaces are declared in the same order that MomServer calls them during startup
-
-	/**
-	 * If writing the debug log to a text file is switched off, this is used to set the level of the whole debugLogger, so all the finer log level calls can be thrown out more quickly
-	 * @return The log level above which the UI will directly display messages written to the debugLogger
-	 */
-	public Level getMinimumDebugLoggerLogLevel ();
 
 	/**
 	 * Placeholder where the UI can perform any work startup work necessary, typically creating the main window
@@ -51,8 +44,14 @@ public interface MomServerUI
 	public void doSessionListUpdatedProcessing (final MomServer server, final List<MultiplayerSessionThread> sessions);
 
 	/**
-	 * Allows the UI to perform some action when a session has no players left in it and is just about to end
-	 * @param session The ending session
+	 * Allows the UI to perform some action when a session has been added to the server's session list
+	 * @param session The new session
 	 */
-	public void doSessionEnded (final MultiplayerSessionThread session);
+	public void sessionAdded (final MultiplayerSessionThread session);
+	
+	/**
+	 * Allows the UI to perform some action when a session has been removed from the server's session list
+	 * @param session The removed session
+	 */
+	public void sessionRemoved (final MultiplayerSessionThread session);
 }

@@ -115,7 +115,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 
 		// First put the list of all compatibly named XML databases in a string list, so we can sort it before we start trying to load them in and check them
 		// Strip the suffix off each one as we add it
-		log.finest ("buildNewGameDatabase searching for XML files in \"" + xmlFolder + "\"");
+		log.info ("Generating list of all available server XML files in \"" + xmlFolder + "\"...");
 		final File [] xmlFiles = xmlFolder.listFiles (new SuffixFilenameFilter (SERVER_XML_FILE_EXTENSION));
 		if (xmlFiles == null)
 			throw new MomException ("Unable to search folder \"" + xmlFolder + "\" for server XML files - check path specified in config file is valid");
@@ -188,6 +188,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		final NewGameDatabaseMessage msg = new NewGameDatabaseMessage ();
 		msg.setNewGameDatabase (newGameDatabase);
 
+		log.info ("Found " + newGameDatabase.getMomimeXmlDatabase ().size () + " compatible server XML files");
 		log.exiting (ServerDatabaseConvertersImpl.class.getName (), "buildNewGameDatabase", newGameDatabase.getMomimeXmlDatabase ().size ());
 		return msg;
 	}

@@ -4,11 +4,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.ErrorManager;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -21,13 +24,17 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.TurnSystem;
 import momime.server.MomServer;
+import momime.server.logging.LoggingConstants;
+import momime.server.logging.SingleLineFormatter;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -36,7 +43,7 @@ import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 /**
  * Single window so all msgs from all games appear in the same window
  */
-public class SingleWindowUI extends PrefixSessionIDsUI
+public class SingleWindowUI implements MomServerUI
 {
 	/** The text area on the form to write log messages to */
 	private JTextArea textArea;
@@ -49,16 +56,6 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 
 	/** The table model for displaying the list of sessions */
 	private SingleWindowTableModel tableModel;
-
-	/**
-	 * If writing the debug log to a text file is switched off, this is used to set the level of the whole debugLogger, so all the finer log level calls can be thrown out more quickly
-	 * @return The log level above which the UI will directly display messages written to the debugLogger
-	 */
-	@Override
-	public final Level getMinimumDebugLoggerLogLevel ()
-	{
-		return Level.INFO;
-	}
 
 	/**
 	 * Placeholder where the UI can perform any work startup work necessary, typically creating the main window
@@ -81,7 +78,7 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 		final JFrame frame = new JFrame ();
 		frame.setSize (900, 500);
 		frame.setTitle ("Master of Magic - Implode's Multiplayer Edition - Server " + CommonDatabaseConstants.MOM_IME_VERSION);
-		frame.setDefaultCloseOperation (JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		// Closing the main window kills the server, so ask for confirmation before doing so
 		frame.addWindowListener (new WindowAdapter ()
@@ -137,17 +134,53 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 		tableScroll.setPreferredSize (new Dimension (100, 50));
 		contentPane.add (tableScroll);
 
-		// Debug to the text area
-		/* final Handler debugHandler = new SingleWindowHandler ();
-		debugHandler.setLevel (getMinimumDebugLoggerLogLevel ());
-		debugHandler.setFormatter (new DateTimeAndMessageOnlyFormatter ());
-		aDebugLogger.addHandler (debugHandler); */
+		// Route the default logger to the UI as well as the console
+		final SingleLineFormatter defaultFormatter = new SingleLineFormatter (true, false);
+		
+		final Handler defaultHandler = new SingleWindowHandler ();
+		defaultHandler.setFormatter (defaultFormatter);
 
+		final Logger defaultLogger = Logger.getLogger ("");
+		defaultLogger.addHandler (defaultHandler);
+		
+		// Set up parent logger
+		final SingleLineFormatter sessionFormatter = new SingleLineFormatter (false, true);
+		
+		final Handler sessionHandler = new SingleWindowHandler ();
+		sessionHandler.setFormatter (sessionFormatter);
+
+		final Logger sessionLoggerParent = Logger.getLogger (ConsoleUI.MOM_SESSION_LOGGER_PREFIX);
+		sessionLoggerParent.setLevel (Level.INFO);
+		sessionLoggerParent.setUseParentHandlers (false);
+		sessionLoggerParent.addHandler (sessionHandler);
+		
 		// Show frame
 		frame.setContentPane (contentPane);
 		frame.setVisible (true);
 	}
 
+	/**
+	 * @param session Newly created session
+	 * @return Window created to display log messages for this session if using the OneWindowPerGameUI; if using a different UI then just returns null
+	 */
+	@Override
+	public SessionWindow createWindowForNewSession (final MomSessionDescription session)
+	{
+		return null;
+	}
+
+	/**
+	 * @param session Newly created session
+	 * @param sessionWindow The session window created by createWindowForNewSession
+	 * @return Logger created and configured for this session
+	 */
+	@Override
+	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
+	{
+		// The name chains the session logger up to sessionLoggerParent, so nothing else to do here
+		return Logger.getLogger (ConsoleUI.MOM_SESSION_LOGGER_PREFIX + "." + session.getSessionID ());
+	}
+	
 	/**
 	 * Update the list of sessions when a session is either added or closed
 	 * This method is already synchronized by the fact that whatever is calling it must obtain a write lock on the session list
@@ -181,6 +214,35 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 	}
 
 	/**
+	 * Allows the UI to perform some action when a session has been added to the server's session list
+	 * @param session The new session
+	 */
+	@Override
+	public final void sessionAdded (final MultiplayerSessionThread session)
+	{
+		final SessionAndPlayerDescriptions spd = new SessionAndPlayerDescriptions ();
+		spd.setSessionDescription (session.getSessionDescription ());
+		spd.getPlayer ().add (session.getPlayers ().get (0).getPlayerDescription ());
+		tableModel.sessions.add (spd);
+		tableModel.fireTableDataChanged ();
+	}
+	
+	/**
+	 * Allows the UI to perform some action when a session has been removed from the server's session list
+	 * @param session The removed session
+	 */
+	@Override
+	public final void sessionRemoved (final MultiplayerSessionThread session)
+	{
+		final Iterator<SessionAndPlayerDescriptions> iter = tableModel.sessions.iterator ();
+		while (iter.hasNext ())
+			if (iter.next ().getSessionDescription ().getSessionID ().equals (session.getSessionDescription ().getSessionID ()))
+				iter.remove ();
+		
+		tableModel.fireTableDataChanged ();
+	}
+	
+	/**
 	 * Log handler which outputs to the text area on the form
 	 */
 	private final class SingleWindowHandler extends Handler
@@ -196,7 +258,7 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 			// This is pretty much copied from StreamHandler
 			if (isLoggable (record))
 			{
-				String msg;
+				final String msg;
 				try
 				{
 					msg = getFormatter ().format (record);
@@ -254,15 +316,11 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 	 */
 	private final class SingleWindowTableModel extends AbstractTableModel
 	{
-		/**
-		 * Unique value for serialization
-		 */
+		/** Unique value for serialization */
 		private static final long serialVersionUID = -3021595934938811021L;
 
-		/**
-		 * Local copy of the list of sessions
-		 */
-		private SessionAndPlayerDescriptions [] sessions;
+		/** Local copy of the list of sessions */
+		private final List<SessionAndPlayerDescriptions> sessions;
 
 		/**
 		 * Creates a table model which displays all the sessions currently running on the server
@@ -271,25 +329,14 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 		{
 			super ();
 
-			// Initially there won't be any sessions running, so create an empty array
-			sessions = new SessionAndPlayerDescriptions [0];
-		}
-
-		/**
-		 * Allows replacing the list of sessions being displayed
-		 * @param aSessions Local copy of the list of sessions
-		 */
-		private final void setSessions (final SessionAndPlayerDescriptions [] aSessions)
-		{
-			sessions = aSessions;
-			fireTableDataChanged ();
+			sessions = new ArrayList<SessionAndPlayerDescriptions> ();
 		}
 
 		/**
 		 * @return Number of columns to display in the table
 		 */
 		@Override
-		public int getColumnCount ()
+		public final int getColumnCount ()
 		{
 			return 6;
 		}
@@ -298,9 +345,9 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 		 * @return Number of rows to display in the table
 		 */
 		@Override
-		public int getRowCount ()
+		public final int getRowCount ()
 		{
-			return sessions.length;
+			return sessions.size ();
 		}
 
 		/**
@@ -308,7 +355,7 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 		 * @return Title to display for each column
 		 */
 		@Override
-		public String getColumnName (final int columnIndex)
+		public final String getColumnName (final int columnIndex)
 		{
 			String result = null;
 			switch (columnIndex)
@@ -341,13 +388,13 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 		 * @return Value to display in this cell
 		 */
 		@Override
-		public Object getValueAt (final int rowIndex, final int columnIndex)
+		public final Object getValueAt (final int rowIndex, final int columnIndex)
 		{
 			Object result = null;
 
-			if ((rowIndex >= 0) && (rowIndex < sessions.length))
+			if ((rowIndex >= 0) && (rowIndex < sessions.size ()))
 			{
-				final SessionAndPlayerDescriptions thisSession = sessions [rowIndex];
+				final SessionAndPlayerDescriptions thisSession = sessions.get (rowIndex);
 				final MomSessionDescription sd = (MomSessionDescription) thisSession.getSessionDescription ();
 
 				switch (columnIndex)
@@ -356,7 +403,7 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 						result = sd.getSessionName ();
 						break;
 					case 1:
-						result = sd.getStartedAt ();
+						result = LoggingConstants.FULL_DATE_TIME_FORMAT.format (sd.getStartedAt ().toGregorianCalendar ().getTime ());
 						break;
 					case 2:
 						for (final PlayerDescription thisPlayer : thisSession.getPlayer ())
@@ -371,7 +418,10 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 						result = sd.getMapSize ().getWidth () + " x " + sd.getMapSize ().getHeight ();
 						break;
 					case 4:
-						result = sd.getTurnSystem ();
+						if (sd.getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME)
+							result = "One at a time";
+						else
+							result = "Simultaneous";
 						break;
 					case 5:
 						result = sd.getXmlDatabaseName ();
@@ -409,19 +459,19 @@ public class SingleWindowUI extends PrefixSessionIDsUI
 					width = 135; // Session name
 					break;
 				case 1:
-					width = 165; // Started at
+					width = 125; // Started at
 					break;
 				case 2:
 					width = 150; // Players
 					break;
 				case 3:
-					width = 60; // Map size
+					width = 80; // Map size
 					break;
 				case 4:
-					width = 80; // Turn system
+					width = 100; // Turn system
 					break;
 				case 5:
-					width = 180; // Database used
+					width = 200; // Database used
 					break;
 			}
 

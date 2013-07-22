@@ -15,6 +15,7 @@ import momime.common.database.v0_9_4.RaceCannotBuild;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
+import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
@@ -244,6 +245,32 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), player, players, false, "buildCityFromSettler", sd, db);
 		
 		log.exiting (CityServerUtilsImpl.class.getName (), "buildCityFromSettler");
+	}
+	
+	/**
+	 * @param cityLocation City location
+	 * @param buildings List of known buildings
+	 * @param db Lookup lists built over the XML database
+	 * @return Total production cost of all buildings at this location
+	 * @throws RecordNotFoundException If one of the buildings can't be found in the db
+	 */
+	@Override
+	public final int totalCostOfBuildingsAtLocation (final OverlandMapCoordinatesEx cityLocation, final List<MemoryBuilding> buildings, final ServerDatabaseEx db)
+		throws RecordNotFoundException
+	{
+		log.entering (CityServerUtilsImpl.class.getName (), "totalCostOfBuildingsAtLocation", cityLocation);
+		
+		int total = 0;
+		for (final MemoryBuilding thisBuilding : buildings)
+			if (cityLocation.equals (thisBuilding.getCityLocation ()))
+			{
+				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "totalCostOfBuildingsAtLocation");
+				if (building.getProductionCost () != null)
+					total = total + building.getProductionCost ();
+			}
+		
+		log.exiting (CityServerUtilsImpl.class.getName (), "totalCostOfBuildingsAtLocation", total);
+		return total;
 	}
 	
 	/**

@@ -755,12 +755,39 @@ we might be lucky and get it through trading, conquering nodes or banishing a wi
 
 	<xsd:simpleType name="unitStatusID">
 	    <xsd:annotation>
-    		<xsd:documentation>Different statuses that a unit can have.
-Normally, normal and summoned units are mphsAlive, however if they die in combat they temporarily go to mphsDead, so that they still exist to allow the Raise Dead spell.
-Heroes are a little more complicated - they have persistent unit stats that must exist even before the hero has ever been summoned, hence the additional values.
-The client doesn't learn about heroes until they've been summoned.
-With Fog of War, units that walk out of visible range are removed entirely from clients' unit lists entirely (for now, v0.9.4) this includes
-enemy heroes - of course we'll never lose our own heroes like this, since they'll always be able to see themselves :)</xsd:documentation>
+    		<xsd:documentation>Different statuses that a unit can have.  This is extremely complicated now that there are 2 copies of the unit data to worry about
+(the server's true memory, and the player's memory both as held on the server and client which should be identical) plus that the monsters player has its own special rules.
+
+The server's true memory always knows about all units - they can never go out of sight.  So:
+- Heroes start at "Not Generated" or "Generated" depending on settings, then move to "Alive" when summoned.
+- Regular units are created at "Alive".
+- Units and heroes dying in combat move to status "Dead".
+- At the end of combat, units at staus "Dead" are removed entirely.
+- Even after the end of combat, heroes at status "Dead" are kept forever (since while dead heroes cannot be re-summoned,
+	they can be brought back with the life spell "Resurrection").
+- Combat summons (like fire elementals or phantom warriors) go to status "Dead" when killed, and are removed entirely when the combat ends whether they were alive or not.
+
+The player's memory (both server and client side) never has "Not Generated" or "Generated" heroes - heroes are only added once summoned.  Players' memory of their
+own units otherwise works as per the server's true memory, since players can always see and retain up to date info on their own units.  So:
+- Our units and heroes dying go to status "Dead", and after combat dead units are removed entirely but dead heroes are kept, same as in server's true memory.
+- Enemy units that we kill in combat (i.e. we're involved in the combat) are retained at "Dead" for the duration of the combat and then removed entirely.
+- Enemy heroes that we kill in combat are removed immediately since we can't Raise Dead or Resurrect them.
+- Enemy units and heroes that somebody else kills in a combat for which we are an outside observer (e.g. standing next to 2 unit stacks
+	both owned by other players watching them fight) are removed immediately since we can't Raise Dead or Resurrect them.  And therefore by implication,
+	if one of the players involved in the combat -does- Raise Dead the unit, for any outside observers to the combat, its treated like a re-add.
+- Combat summons (like fire elementals or phantom warriors) go to status "Dead" when killed, and are removed entirely when the combat ends whether they were alive or not.
+- Player's memory only contains monsters in nodes/lairs/towers when we are in a combat with them, so the monsters are added to the player's memory on the server
+	and sent to the client in the StartCombat message, go to status "Dead" when killed, and are removed from the player's memory when the combat ends
+	whether they were still alive (monsters won) or not.
+- Outside observers to a node/lair/tower combat never get to see the monsters - they'll just see the attacking units taking damage.
+- Combat summons are visible by outside observers, unless they are summoned into nodes/lairs/towers by the monsters player (e.g. Demon Lords summoning Demons). 
+- Enemy units that we can no longer see on the overland map if the units FOW setting = forget are removed entirely.
+- Enemy units that we can no longer see on the overland map if the units FOW setting = remember are retained as we last saw them, including that if they get killed,
+	we don't know about it and will continue to remember the last place we saw that unit.
+	
+The monsters player (who owns the units guarding nodes/lairs/towers as well as rampaging monsters walking around the map) has a the exception that
+they obviously are aware of their own units, so are the only player who knows the exact units in nodes/lairs/towers even when not involved in a combat there.
+</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="N"><xsd:annotation>

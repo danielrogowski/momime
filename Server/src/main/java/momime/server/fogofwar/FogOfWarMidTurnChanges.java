@@ -220,6 +220,47 @@ public interface FogOfWarMidTurnChanges
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param combatLocation Location of combat that just ended
+	 * @param combatAttackingPlayer Player attacking combatLocation
+	 * @param combatDefendingPlayer Player defending combatLocation
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
+		final ServerDatabaseEx db, final MomSessionDescription sd)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
+	
+	/**
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param cityLocation Location to turn spells off from
+	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
+	 * @param combatAttackingPlayer Player attacking combatLocation
+	 * @param combatDefendingPlayer Player defending combatLocation
+	 * @param castingPlayerID Which player's spells to turn off; 0 = everybodys 
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void switchOffMaintainedSpellsInLocationOnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
+		final OverlandMapCoordinatesEx cityLocation, final OverlandMapCoordinatesEx combatLocation,
+		final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer, final int castingPlayerID,
+		final ServerDatabaseEx db, final MomSessionDescription sd)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
+	
+	/**
 	 * @param gsk Server knowledge structure to add the CAE to
 	 * @param combatAreaEffectID Which CAE is it
 	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
@@ -258,10 +299,26 @@ public interface FogOfWarMidTurnChanges
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void removeCombatAreaEffectsFromLocalisedSpells (final FogOfWarMemory trueMap, final OverlandMapCoordinatesEx mapLocation,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
+	
+	/**
 	 * @param gsk Server knowledge structure to add the building(s) to
 	 * @param players List of players in the session
 	 * @param cityLocation Location of the city to add the building(s) to
-	 * @param firstBuildingID First building ID to create, or can be null
+	 * @param firstBuildingID First building ID to create, mandatory
 	 * @param secondBuildingID Second building ID to create; this is usually null, it is mainly here for casting Move Fortress, which creates both a Fortress + Summoning circle at the same time
 	 * @param buildingCreatedFromSpellID The spell that resulted in the creation of this building (e.g. casting Wall of Stone creates City Walls); null if building was constructed in the normal way
 	 * @param buildingCreationSpellCastByPlayerID The player who cast the spell that resulted in the creation of this building; null if building was constructed in the normal way
@@ -298,6 +355,23 @@ public interface FogOfWarMidTurnChanges
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
+	/**
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param cityLocation Location of the city to remove the building from
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void destroyAllBuildingsInLocationOnServerAndClients (final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx cityLocation,
+		final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	
 	/**
 	 * After setting new unit name on server, updates player memories and clients who can see the unit
 	 *

@@ -9,6 +9,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
+import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
@@ -68,4 +69,14 @@ public interface CityServerUtils
 	public void buildCityFromSettler (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final MemoryUnit settler,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+
+	/**
+	 * @param cityLocation City location
+	 * @param buildings List of known buildings
+	 * @param db Lookup lists built over the XML database
+	 * @return Total production cost of all buildings at this location
+	 * @throws RecordNotFoundException If one of the buildings can't be found in the db
+	 */
+	public int totalCostOfBuildingsAtLocation (final OverlandMapCoordinatesEx cityLocation, final List<MemoryBuilding> buildings, final ServerDatabaseEx db)
+		throws RecordNotFoundException;
 }

@@ -2,6 +2,7 @@ package momime.server.fogofwar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -15,12 +16,15 @@ import java.util.List;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
 import momime.common.messages.OverlandMapCoordinatesEx;
+import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
@@ -31,12 +35,15 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomFogOfWarCalculations;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
 import org.junit.Test;
 
@@ -45,7 +52,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
- * Tests the FogOfWarMidTurnChanges class
+ * Tests the FogOfWarMidTurnChangesImpl class
  */
 public final class TestFogOfWarMidTurnChangesImpl
 {
@@ -69,10 +76,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().set (20, tc);
 		
 		// Set up coordinates
-		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
-		coords.setX (20);
-		coords.setY (10);
-		coords.setPlane (1);
+		final OverlandMapCoordinatesEx coords = createCoordinates (20);
 		
 		// Human player who can't see the location
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -229,10 +233,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().set (20, tc);
 		
 		// Set up coordinates
-		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
-		coords.setX (20);
-		coords.setY (10);
-		coords.setPlane (1);
+		final OverlandMapCoordinatesEx coords = createCoordinates (20);
 		
 		// Human player who can't see the location
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -568,10 +569,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
 
 		// The location of the city that has the spell we're trying to see
-		final OverlandMapCoordinatesEx spellLocation = new OverlandMapCoordinatesEx ();
-		spellLocation.setX (20);
-		spellLocation.setY (10);
-		spellLocation.setPlane (1);
+		final OverlandMapCoordinatesEx spellLocation = createCoordinates (20);
 
 		// Spell to check
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
@@ -652,10 +650,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (21, FogOfWarStateID.NEVER_SEEN);
 		
 		// CAE
-		final OverlandMapCoordinatesEx caeLocation = new OverlandMapCoordinatesEx ();
-		caeLocation.setX (20);
-		caeLocation.setY (10);
-		caeLocation.setPlane (1);
+		final OverlandMapCoordinatesEx caeLocation = createCoordinates (20);
 
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
 		cae.setMapLocation (caeLocation);
@@ -664,5 +659,559 @@ public final class TestFogOfWarMidTurnChangesImpl
 		assertTrue (calc.canSeeCombatAreaEffectMidTurn (cae, fogOfWarArea, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
 		caeLocation.setX (21);
 		assertFalse (calc.canSeeCombatAreaEffectMidTurn (cae, fogOfWarArea, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN));
+	}
+	
+	/**
+	 * Tests the addBuildingOnServerAndClients method, when its from the normal completion of constructing a building
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddBuildingOnServerAndClients_RegularConstruction () throws Exception
+	{
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		// Human player who can't see the location
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (3);
+		pd1.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv1.setFogOfWarMemory (new FogOfWarMemory ());
+		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
+		players.add (player1);
+		
+		// AI player who can't see the location
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (4);
+		pd2.setHuman (false);
+		
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWarMemory (new FogOfWarMemory ());
+		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
+		
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
+		players.add (player2);
+		
+		// Human player who can see the location
+		final PlayerDescription pd3 = new PlayerDescription ();
+		pd3.setPlayerID (5);
+		pd3.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv3.setFogOfWarMemory (new FogOfWarMemory ());
+		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
+		players.add (player3);
+		
+		final DummyServerToClientConnection conn3 = new DummyServerToClientConnection ();
+		player3.setConnection (conn3);
+		
+		// AI player who can see the location
+		final PlayerDescription pd4 = new PlayerDescription ();
+		pd4.setPlayerID (6);
+		pd4.setHuman (false);
+		
+		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv4.setFogOfWarMemory (new FogOfWarMemory ());
+		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
+		players.add (player4);
+		
+		// The human player owns the city
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (pd3.getPlayerID ());
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// City location
+		final OverlandMapCoordinatesEx cityLocation = createCoordinates (20);
+		
+		// Set up test object
+		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
+		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
+		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
+		
+		final FogOfWarProcessing proc = mock (FogOfWarProcessing.class);
+		
+		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();		// Used real one here, since makes it easier to check the output than via mock
+		dup.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		midTurn.setFogOfWarCalculations (fow);
+		midTurn.setFogOfWarProcessing (proc);
+		midTurn.setFogOfWarDuplication (dup);
+		
+		// Run test
+		midTurn.addBuildingOnServerAndClients (gsk, players, cityLocation, "BL03", null, null, null, sd, db);
+		
+		// Prove that building got added to server's true map
+		assertEquals (1, trueMap.getBuilding ().size ());
+		assertEquals ("BL03", trueMap.getBuilding ().get (0).getBuildingID ());
+		assertEquals (cityLocation, trueMap.getBuilding ().get (0).getCityLocation ());
+		
+		// Prove that building got added to server's copy of each player's memory, but only the players who can see it
+		assertEquals (0, priv1.getFogOfWarMemory ().getBuilding ().size ());
+		assertEquals (0, priv2.getFogOfWarMemory ().getBuilding ().size ());
+		
+		assertEquals (1, priv3.getFogOfWarMemory ().getBuilding ().size ());
+		assertEquals ("BL03", priv3.getFogOfWarMemory ().getBuilding ().get (0).getBuildingID ());
+		assertEquals (cityLocation, priv3.getFogOfWarMemory ().getBuilding ().get (0).getCityLocation ());
+		
+		assertEquals (1, priv4.getFogOfWarMemory ().getBuilding ().size ());
+		assertEquals ("BL03", priv4.getFogOfWarMemory ().getBuilding ().get (0).getBuildingID ());
+		assertEquals (cityLocation, priv4.getFogOfWarMemory ().getBuilding ().get (0).getCityLocation ());
+		
+		// Prove that human player's client was sent update msg
+		assertEquals (1, conn3.getMessages ().size ());
+		final AddBuildingMessage msg = (AddBuildingMessage) conn3.getMessages ().get (0);
+		assertEquals (cityLocation, msg.getData ().getCityLocation ());
+		assertEquals ("BL03", msg.getData ().getFirstBuildingID ());
+		assertNull (msg.getData ().getSecondBuildingID ());
+		assertNull (msg.getData ().getBuildingCreatedFromSpellID ());
+		assertNull (msg.getData ().getBuildingCreationSpellCastByPlayerID ());
+	}
+
+	/**
+	 * Tests the addBuildingOnServerAndClients method, when its from the move fortress spell, so adds 2 buildings resulting from a spell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddBuildingOnServerAndClients_MoveFortress () throws Exception
+	{
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		// Human player who can't see the location
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (3);
+		pd1.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv1.setFogOfWarMemory (new FogOfWarMemory ());
+		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
+		players.add (player1);
+		
+		// AI player who can't see the location
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (4);
+		pd2.setHuman (false);
+		
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWarMemory (new FogOfWarMemory ());
+		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
+		
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
+		players.add (player2);
+		
+		// Human player who can see the location
+		final PlayerDescription pd3 = new PlayerDescription ();
+		pd3.setPlayerID (5);
+		pd3.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv3.setFogOfWarMemory (new FogOfWarMemory ());
+		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
+		players.add (player3);
+		
+		final DummyServerToClientConnection conn3 = new DummyServerToClientConnection ();
+		player3.setConnection (conn3);
+		
+		// AI player who can see the location
+		final PlayerDescription pd4 = new PlayerDescription ();
+		pd4.setPlayerID (6);
+		pd4.setHuman (false);
+		
+		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv4.setFogOfWarMemory (new FogOfWarMemory ());
+		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
+		players.add (player4);
+		
+		// The human player owns the city
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (pd3.getPlayerID ());
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// City location
+		final OverlandMapCoordinatesEx cityLocation = createCoordinates (20);
+		
+		// Set up test object
+		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
+		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
+		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
+		
+		final FogOfWarProcessing proc = mock (FogOfWarProcessing.class);
+		
+		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();		// Used real one here, since makes it easier to check the output than via mock
+		dup.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		midTurn.setFogOfWarCalculations (fow);
+		midTurn.setFogOfWarProcessing (proc);
+		midTurn.setFogOfWarDuplication (dup);
+		
+		// Run test
+		midTurn.addBuildingOnServerAndClients (gsk, players, cityLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS,
+			CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, "SP028", 7, sd, db);
+		
+		// Prove that building got added to server's true map
+		assertEquals (2, trueMap.getBuilding ().size ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, trueMap.getBuilding ().get (0).getBuildingID ());
+		assertEquals (cityLocation, trueMap.getBuilding ().get (0).getCityLocation ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, trueMap.getBuilding ().get (1).getBuildingID ());
+		assertEquals (cityLocation, trueMap.getBuilding ().get (1).getCityLocation ());
+		
+		// Prove that building got added to server's copy of each player's memory, but only the players who can see it
+		assertEquals (0, priv1.getFogOfWarMemory ().getBuilding ().size ());
+		assertEquals (0, priv2.getFogOfWarMemory ().getBuilding ().size ());
+		
+		assertEquals (2, priv3.getFogOfWarMemory ().getBuilding ().size ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, priv3.getFogOfWarMemory ().getBuilding ().get (0).getBuildingID ());
+		assertEquals (cityLocation, priv3.getFogOfWarMemory ().getBuilding ().get (0).getCityLocation ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, priv3.getFogOfWarMemory ().getBuilding ().get (1).getBuildingID ());
+		assertEquals (cityLocation, priv3.getFogOfWarMemory ().getBuilding ().get (1).getCityLocation ());
+		
+		assertEquals (2, priv4.getFogOfWarMemory ().getBuilding ().size ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, priv4.getFogOfWarMemory ().getBuilding ().get (0).getBuildingID ());
+		assertEquals (cityLocation, priv4.getFogOfWarMemory ().getBuilding ().get (0).getCityLocation ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, priv4.getFogOfWarMemory ().getBuilding ().get (1).getBuildingID ());
+		assertEquals (cityLocation, priv4.getFogOfWarMemory ().getBuilding ().get (1).getCityLocation ());
+		
+		// Prove that human player's client was sent update msg
+		assertEquals (1, conn3.getMessages ().size ());
+		final AddBuildingMessage msg = (AddBuildingMessage) conn3.getMessages ().get (0);
+		assertEquals (cityLocation, msg.getData ().getCityLocation ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, msg.getData ().getFirstBuildingID ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, msg.getData ().getSecondBuildingID ());
+		assertEquals ("SP028", msg.getData ().getBuildingCreatedFromSpellID ());
+		assertEquals (7, msg.getData ().getBuildingCreationSpellCastByPlayerID ().intValue ());
+	}
+	
+	/**
+	 * Tests the destroyBuildingOnServerAndClients method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testDestroyBuildingOnServerAndClients () throws Exception
+	{
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+
+		final MemoryBuilding trueBuilding = new MemoryBuilding ();		// The building being destroyed
+		trueBuilding.setBuildingID ("BL03");
+		trueBuilding.setCityLocation (createCoordinates (20));
+		trueMap.getBuilding ().add (trueBuilding);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		// Human player who can't see the location
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (3);
+		pd1.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv1.setFogOfWarMemory (new FogOfWarMemory ());
+		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
+		
+		final MemoryBuilding building1 = new MemoryBuilding ();		// Some other building, just to make the building lists unique
+		building1.setBuildingID ("BL04");
+		building1.setCityLocation (createCoordinates (21));
+		priv1.getFogOfWarMemory ().getBuilding ().add (building1);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
+		players.add (player1);
+		
+		// AI player who can't see the location
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (4);
+		pd2.setHuman (false);
+		
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWarMemory (new FogOfWarMemory ());
+		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
+
+		final MemoryBuilding building2 = new MemoryBuilding ();		// Some other building, just to make the building lists unique
+		building2.setBuildingID ("BL04");
+		building2.setCityLocation (createCoordinates (21));
+		priv2.getFogOfWarMemory ().getBuilding ().add (building2);
+		
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
+		players.add (player2);
+		
+		// Human player who can see the location
+		final PlayerDescription pd3 = new PlayerDescription ();
+		pd3.setPlayerID (5);
+		pd3.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv3.setFogOfWarMemory (new FogOfWarMemory ());
+		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		final MemoryBuilding building3 = new MemoryBuilding ();		// The building being destroyed
+		building3.setBuildingID ("BL03");
+		building3.setCityLocation (createCoordinates (20));
+		priv3.getFogOfWarMemory ().getBuilding ().add (building3);
+		
+		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
+		players.add (player3);
+		
+		final DummyServerToClientConnection conn3 = new DummyServerToClientConnection ();
+		player3.setConnection (conn3);
+		
+		// AI player who can see the location
+		final PlayerDescription pd4 = new PlayerDescription ();
+		pd4.setPlayerID (6);
+		pd4.setHuman (false);
+		
+		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv4.setFogOfWarMemory (new FogOfWarMemory ());
+		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		final MemoryBuilding building4 = new MemoryBuilding ();		// The building being destroyed
+		building4.setBuildingID ("BL03");
+		building4.setCityLocation (createCoordinates (20));
+		priv4.getFogOfWarMemory ().getBuilding ().add (building4);
+		
+		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
+		players.add (player4);
+		
+		// The human player owns the city
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (pd3.getPlayerID ());
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// City location
+		final OverlandMapCoordinatesEx cityLocation = createCoordinates (20);
+
+		// Set up test object
+		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
+		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
+		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
+
+		final FogOfWarProcessing proc = mock (FogOfWarProcessing.class);
+		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class); 
+		
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		midTurn.setFogOfWarCalculations (fow);
+		midTurn.setFogOfWarProcessing (proc);
+		midTurn.setMemoryBuildingUtils (buildingUtils);
+		
+		// Run test
+		midTurn.destroyBuildingOnServerAndClients (trueMap, players, cityLocation, "BL03", false, sd, db);
+		
+		// Prove that building got removed from server's true map
+		verify (buildingUtils, times (1)).destroyBuilding (trueMap.getBuilding (), cityLocation, "BL03");
+		
+		// Prove that building got removed from server's copy of each player's memory, but only the players who saw it disappear
+		verify (buildingUtils, times (0)).destroyBuilding (priv1.getFogOfWarMemory ().getBuilding (), cityLocation, "BL03");
+		verify (buildingUtils, times (0)).destroyBuilding (priv2.getFogOfWarMemory ().getBuilding (), cityLocation, "BL03");
+		verify (buildingUtils, times (1)).destroyBuilding (priv3.getFogOfWarMemory ().getBuilding (), cityLocation, "BL03");
+		verify (buildingUtils, times (1)).destroyBuilding (priv4.getFogOfWarMemory ().getBuilding (), cityLocation, "BL03");
+
+		// Prove that only the human player's client that saw the building disappear was sent update msg
+		assertEquals (1, conn3.getMessages ().size ());
+		final DestroyBuildingMessage msg = (DestroyBuildingMessage) conn3.getMessages ().get (0);
+		assertEquals (cityLocation, msg.getData ().getCityLocation ());
+		assertEquals ("BL03", msg.getData ().getBuildingID ());
+		assertFalse (msg.getData ().isUpdateBuildingSoldThisTurn ());
+	}
+
+	/**
+	 * Tests the destroyAllBuildingsInLocationOnServerAndClients method - this is basically a copy of the destroyBuildingOnServerAndClients test
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testDestroyAllBuildingsInLocationOnServerAndClients () throws Exception
+	{
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+
+		final MemoryBuilding trueBuilding = new MemoryBuilding ();		// The building being destroyed
+		trueBuilding.setBuildingID ("BL03");
+		trueBuilding.setCityLocation (createCoordinates (20));
+		trueMap.getBuilding ().add (trueBuilding);
+
+		final MemoryBuilding otherBuilding = new MemoryBuilding ();		// Some building in another location so it doesn't get destroyed
+		otherBuilding.setBuildingID ("BL04");
+		otherBuilding.setCityLocation (createCoordinates (21));
+		trueMap.getBuilding ().add (otherBuilding);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		// Human player who can't see the location
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (3);
+		pd1.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		priv1.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv1.setFogOfWarMemory (new FogOfWarMemory ());
+		priv1.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
+		
+		final MemoryBuilding building1 = new MemoryBuilding ();		// Some other building, just to make the building lists unique
+		building1.setBuildingID ("BL04");
+		building1.setCityLocation (createCoordinates (21));
+		priv1.getFogOfWarMemory ().getBuilding ().add (building1);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
+		players.add (player1);
+		
+		// AI player who can't see the location
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (4);
+		pd2.setHuman (false);
+		
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWarMemory (new FogOfWarMemory ());
+		priv2.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
+
+		final MemoryBuilding building2 = new MemoryBuilding ();		// Some other building, just to make the building lists unique
+		building2.setBuildingID ("BL04");
+		building2.setCityLocation (createCoordinates (21));
+		priv2.getFogOfWarMemory ().getBuilding ().add (building2);
+		
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
+		players.add (player2);
+		
+		// Human player who can see the location
+		final PlayerDescription pd3 = new PlayerDescription ();
+		pd3.setPlayerID (5);
+		pd3.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
+		priv3.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv3.setFogOfWarMemory (new FogOfWarMemory ());
+		priv3.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		final MemoryBuilding building3 = new MemoryBuilding ();		// The building being destroyed
+		building3.setBuildingID ("BL03");
+		building3.setCityLocation (createCoordinates (20));
+		priv3.getFogOfWarMemory ().getBuilding ().add (building3);
+		
+		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
+		players.add (player3);
+		
+		final DummyServerToClientConnection conn3 = new DummyServerToClientConnection ();
+		player3.setConnection (conn3);
+		
+		// AI player who can see the location
+		final PlayerDescription pd4 = new PlayerDescription ();
+		pd4.setPlayerID (6);
+		pd4.setHuman (false);
+		
+		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
+		priv4.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv4.setFogOfWarMemory (new FogOfWarMemory ());
+		priv4.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		
+		final MemoryBuilding building4 = new MemoryBuilding ();		// The building being destroyed
+		building4.setBuildingID ("BL03");
+		building4.setCityLocation (createCoordinates (20));
+		priv4.getFogOfWarMemory ().getBuilding ().add (building4);
+		
+		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
+		players.add (player4);
+		
+		// The human player owns the city
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (pd3.getPlayerID ());
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// City location
+		final OverlandMapCoordinatesEx cityLocation = createCoordinates (20);
+
+		// Set up test object
+		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
+		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
+		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
+
+		final FogOfWarProcessing proc = mock (FogOfWarProcessing.class);
+		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class); 
+		
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		midTurn.setFogOfWarCalculations (fow);
+		midTurn.setFogOfWarProcessing (proc);
+		midTurn.setMemoryBuildingUtils (buildingUtils);
+		
+		// Run test
+		midTurn.destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, cityLocation, sd, db);
+		
+		// Prove that building got removed from server's true map
+		verify (buildingUtils, times (1)).destroyBuilding (trueMap.getBuilding (), cityLocation, "BL03");
+		
+		// Prove that building got removed from server's copy of each player's memory, but only the players who saw it disappear
+		verify (buildingUtils, times (0)).destroyBuilding (priv1.getFogOfWarMemory ().getBuilding (), cityLocation, "BL03");
+		verify (buildingUtils, times (0)).destroyBuilding (priv2.getFogOfWarMemory ().getBuilding (), cityLocation, "BL03");
+		verify (buildingUtils, times (1)).destroyBuilding (priv3.getFogOfWarMemory ().getBuilding (), cityLocation, "BL03");
+		verify (buildingUtils, times (1)).destroyBuilding (priv4.getFogOfWarMemory ().getBuilding (), cityLocation, "BL03");
+
+		// Prove that only the human player's client that saw the building disappear was sent update msg
+		assertEquals (1, conn3.getMessages ().size ());
+		final DestroyBuildingMessage msg = (DestroyBuildingMessage) conn3.getMessages ().get (0);
+		assertEquals (cityLocation, msg.getData ().getCityLocation ());
+		assertEquals ("BL03", msg.getData ().getBuildingID ());
+		assertFalse (msg.getData ().isUpdateBuildingSoldThisTurn ());
+	}
+
+	/**
+	 * Just to save repeating this a dozen times in the test cases
+	 * @param x X coord
+	 * @return Coordinates object
+	 */
+	private final OverlandMapCoordinatesEx createCoordinates (final int x)
+	{
+		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
+		combatLocation.setX (x);
+		combatLocation.setY (10);
+		combatLocation.setPlane (1);
+		return combatLocation;
 	}
 }

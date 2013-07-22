@@ -25,6 +25,7 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
+import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.ServerTestData;
@@ -50,7 +51,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 /**
  * Tests the OverlandMapServerUtils class
  */
-public class TestOverlandMapServerUtilsImpl
+public final class TestOverlandMapServerUtilsImpl
 {
 	/**
 	 * Tests the chooseRandomRaceForPlane method
@@ -321,5 +322,45 @@ public class TestOverlandMapServerUtilsImpl
 		adjacentLocation.setPlane (1);
 
 		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+	}
+	
+	/**
+	 * Tests the totalPlayerPopulation method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testTotalPlayerPopulation () throws Exception
+	{
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
+		
+		final OverlandMapCityData ourCity1 = new OverlandMapCityData ();
+		ourCity1.setCityOwnerID (2);
+		ourCity1.setCityPopulation (2000);
+		map.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setCityData (ourCity1);
+
+		final OverlandMapCityData ourCity2 = new OverlandMapCityData ();
+		ourCity2.setCityOwnerID (2);
+		ourCity2.setCityPopulation (3000);
+		map.getPlane ().get (1).getRow ().get (15).getCell ().get (20).setCityData (ourCity2);
+
+		final OverlandMapCityData ourCity3 = new OverlandMapCityData ();
+		ourCity3.setCityOwnerID (2);
+		map.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (ourCity3);
+
+		final OverlandMapCityData theirCity = new OverlandMapCityData ();
+		theirCity.setCityOwnerID (3);
+		theirCity.setCityPopulation (4000);
+		map.getPlane ().get (0).getRow ().get (5).getCell ().get (20).setCityData (theirCity);
+
+		final OverlandMapCityData nobodysCity = new OverlandMapCityData ();
+		nobodysCity.setCityPopulation (5000);
+		map.getPlane ().get (0).getRow ().get (5).getCell ().get (25).setCityData (nobodysCity);
+		
+		// Run method
+		assertEquals (5000, new OverlandMapServerUtilsImpl ().totalPlayerPopulation (map, 2, sys, db));
 	}
 }

@@ -20,6 +20,7 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
+import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
@@ -318,6 +319,34 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "attemptToMeldWithNode", successful);
 	}
 
+	/**
+	 * @param map Known terrain
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param playerID Player to check for
+	 * @param db Lookup lists built over the XML database
+	 * @return Total population this player has across all their cities
+	 */
+	@Override
+	public final int totalPlayerPopulation (final MapVolumeOfMemoryGridCells map, final int playerID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
+	{
+		log.entering (OverlandMapServerUtilsImpl.class.getName (), "totalPlayerPopulation", playerID);
+		
+		int total = 0;
+		for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
+			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
+				for (final Plane plane : db.getPlane ())
+				{
+					final OverlandMapCityData cityData = map.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
+					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == playerID) &&
+						(cityData.getCityPopulation () != null))
+						
+						total = total + cityData.getCityPopulation ();
+				}
+		
+		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "totalPlayerPopulation", total);
+		return total;
+	}
+	
 	/**
 	 * @return Unit utils
 	 */

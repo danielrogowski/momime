@@ -66,4 +66,13 @@ public interface OverlandMapServerUtils
 	public void attemptToMeldWithNode (final MemoryUnit attackingSpirit, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
+	
+	/**
+	 * @param map Known terrain
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param playerID Player to check for
+	 * @param db Lookup lists built over the XML database
+	 * @return Total population this player has across all their cities
+	 */
+	public int totalPlayerPopulation (final MapVolumeOfMemoryGridCells map, final int playerID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db);
 }

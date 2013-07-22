@@ -2,6 +2,11 @@ package momime.server.utils;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -324,5 +329,67 @@ public final class TestCityServerUtilsImpl
 
 		// Try valid value
 		assertNull (utils.validateOptionalFarmers (player, trueMap, cityLocation, 2, sd, db));
+	}
+	
+	/**
+	 * Tests the totalCostOfBuildingsAtLocation method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testTotalCostOfBuildingsAtLocation () throws Exception
+	{
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		
+		// City location
+		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		cityLocation.setX (20);
+		cityLocation.setY (10);
+		cityLocation.setPlane (1);
+		
+		// Buildings list
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final OverlandMapCoordinatesEx buildersHallLocation = new OverlandMapCoordinatesEx ();
+		buildersHallLocation.setX (20);
+		buildersHallLocation.setY (10);
+		buildersHallLocation.setPlane (1);
+		
+		final MemoryBuilding buildersHall = new MemoryBuilding ();
+		buildersHall.setBuildingID ("BL32");	// costs 60
+		buildersHall.setCityLocation (buildersHallLocation);
+		buildings.add (buildersHall);
+
+		final OverlandMapCoordinatesEx bankLocation = new OverlandMapCoordinatesEx ();
+		bankLocation.setX (20);
+		bankLocation.setY (10);
+		bankLocation.setPlane (1);
+		
+		final MemoryBuilding bank = new MemoryBuilding ();
+		bank.setBuildingID ("BL27");	// costs 250
+		bank.setCityLocation (bankLocation);
+		buildings.add (bank);
+
+		final OverlandMapCoordinatesEx summoningCircleLocation = new OverlandMapCoordinatesEx ();
+		summoningCircleLocation.setX (20);
+		summoningCircleLocation.setY (10);
+		summoningCircleLocation.setPlane (1);
+		
+		final MemoryBuilding summoningCircle = new MemoryBuilding ();
+		summoningCircle.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE);	// no cost defined
+		summoningCircle.setCityLocation (summoningCircleLocation);
+		buildings.add (summoningCircle);
+		
+		final OverlandMapCoordinatesEx bankElsewhereLocation = new OverlandMapCoordinatesEx ();
+		bankElsewhereLocation.setX (20);
+		bankElsewhereLocation.setY (11);
+		bankElsewhereLocation.setPlane (1);
+		
+		final MemoryBuilding bankElsewhere = new MemoryBuilding ();
+		bankElsewhere.setBuildingID ("BL27");	// costs 250
+		bankElsewhere.setCityLocation (bankElsewhereLocation);
+		buildings.add (bankElsewhere);
+		
+		// Run method
+		assertEquals (310, new CityServerUtilsImpl ().totalCostOfBuildingsAtLocation (cityLocation, buildings, db));
 	}
 }

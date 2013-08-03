@@ -10,12 +10,14 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.CombatAreaEffect;
+import momime.common.database.v0_9_4.CombatTileBorder;
 import momime.common.database.v0_9_4.CombatTileType;
 import momime.common.database.v0_9_4.Pick;
 import momime.common.database.v0_9_4.PickType;
 import momime.common.database.v0_9_4.Plane;
 import momime.common.database.v0_9_4.ProductionType;
 import momime.common.database.v0_9_4.Race;
+import momime.common.database.v0_9_4.RangedAttackType;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.TaxRate;
 import momime.common.database.v0_9_4.TileType;
@@ -66,6 +68,9 @@ public final class ClientDatabaseEx extends ClientDatabase implements CommonData
 	/** Map of weapon grade numbers to weapon grade XML objects */
 	private Map<Integer, WeaponGrade> weaponGradesMap;
 
+	/** Map of ranged attack type IDs to ranged attack type XML objects */
+	private Map<String, RangedAttackType> rangedAttackTypesMap;
+	
 	/** Map of race IDs to race XML objects */
 	private Map<String, Race> racesMap;
 
@@ -83,6 +88,9 @@ public final class ClientDatabaseEx extends ClientDatabase implements CommonData
 	
 	/** Map of combat tile type IDs to combat tile type objects */
 	private Map<String, CombatTileType> combatTileTypesMap;
+
+	/** Map of combat tile border IDs to combat tile border objects */
+	private Map<String, CombatTileBorder> combatTileBordersMap;
 	
 	/**
 	 * Builds all the hash maps to enable finding records faster
@@ -149,6 +157,11 @@ public final class ClientDatabaseEx extends ClientDatabase implements CommonData
 		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
 			weaponGradesMap.put (thisWeaponGrade.getWeaponGradeNumber (), thisWeaponGrade);
 
+		// Create rangedAttackTypes map
+		rangedAttackTypesMap = new HashMap<String, RangedAttackType> ();
+		for (final RangedAttackType thisRangedAttackType : getRangedAttackType ())
+			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), thisRangedAttackType);
+		
 		// Create races map
 		racesMap = new HashMap<String, Race> ();
 		for (final Race thisRace : getRace ())
@@ -178,6 +191,11 @@ public final class ClientDatabaseEx extends ClientDatabase implements CommonData
 		combatTileTypesMap = new HashMap<String, CombatTileType> ();
 		for (final CombatTileType thisCombatTileType : getCombatTileType ())
 			combatTileTypesMap.put (thisCombatTileType.getCombatTileTypeID (), thisCombatTileType);
+
+		// Combat tile borders map
+		combatTileBordersMap = new HashMap<String, CombatTileBorder> ();
+		for (final CombatTileBorder thisCombatTileBorder : getCombatTileBorder ())
+			combatTileBordersMap.put (thisCombatTileBorder.getCombatTileBorderID (), thisCombatTileBorder);
 	}
 
 	/**
@@ -373,6 +391,22 @@ public final class ClientDatabaseEx extends ClientDatabase implements CommonData
 	}
 
 	/**
+	 * @param rangedAttackTypeID RAT ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return RAT object
+	 * @throws RecordNotFoundException If the RAT ID doesn't exist
+	 */
+	@Override
+	public final RangedAttackType findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException
+	{
+		final RangedAttackType found = rangedAttackTypesMap.get (rangedAttackTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (RangedAttackType.class.getName (), rangedAttackTypeID, caller);
+
+		return found;
+	}
+	
+	/**
 	 * @param raceID Race ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Race object
@@ -464,6 +498,22 @@ public final class ClientDatabaseEx extends ClientDatabase implements CommonData
 		final CombatTileType found = combatTileTypesMap.get (combatTileTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (CombatTileType.class.getName (), combatTileTypeID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param combatTileBorderID Combat tile border ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return CombatTileBorder object
+	 * @throws RecordNotFoundException If the combat tile border ID doesn't exist
+	 */
+	@Override
+	public final CombatTileBorder findCombatTileBorder (final String combatTileBorderID, final String caller) throws RecordNotFoundException
+	{
+		final CombatTileBorder found = combatTileBordersMap.get (combatTileBorderID);
+		if (found == null)
+			throw new RecordNotFoundException (CombatTileBorder.class.getName (), combatTileBorderID, caller);
 
 		return found;
 	}

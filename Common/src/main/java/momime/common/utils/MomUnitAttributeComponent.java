@@ -1,11 +1,11 @@
-package momime.common.calculations;
+package momime.common.utils;
 
 /**
  * Different things that can give a unit attribute values
  *
  * Defined so we can colour them separately on the Unit Info screen
  */
-enum MomUnitAttributeComponent
+public enum MomUnitAttributeComponent
 {
 	/** Total of all the below (this is all the server ever uses) */
 	ALL,

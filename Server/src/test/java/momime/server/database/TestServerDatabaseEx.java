@@ -7,6 +7,7 @@ import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.CitySize;
 import momime.server.database.v0_9_4.CombatAreaEffect;
+import momime.server.database.v0_9_4.CombatTileBorder;
 import momime.server.database.v0_9_4.CombatTileType;
 import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.Pick;
@@ -15,6 +16,7 @@ import momime.server.database.v0_9_4.PickTypeCountContainer;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Race;
+import momime.server.database.v0_9_4.RangedAttackType;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.TileType;
 import momime.server.database.v0_9_4.Unit;
@@ -590,6 +592,46 @@ public final class TestServerDatabaseEx
 	}
 	
 	/**
+	 * Tests the findRangedAttackType method to find a rangedAttackTypeNumber that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindRangedAttackType_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final RangedAttackType newRangedAttackType = new RangedAttackType ();
+			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
+			db.getRangedAttackType ().add (newRangedAttackType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("RAT02", db.findRangedAttackType ("RAT02", "testFindRangedAttackType_Exists").getRangedAttackTypeID ());
+	}
+
+	/**
+	 * Tests the findRangedAttackType method to find a rangedAttackTypeNumber that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindRangedAttackType_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final RangedAttackType newRangedAttackType = new RangedAttackType ();
+			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
+			db.getRangedAttackType ().add (newRangedAttackType);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findRangedAttackType ("RAT04", "testFindRangedAttackType_NotExists"));
+	}
+	
+	/**
 	 * Tests the findRaceID method to find a race ID that does exist
 	 * @throws RecordNotFoundException If we can't find it
 	 */
@@ -798,5 +840,45 @@ public final class TestServerDatabaseEx
 		db.buildMaps ();
 
 		assertNull (db.findCombatTileType ("CTL04", "testFindCombatTileType_NotExists"));
+	}
+
+	/**
+	 * Tests the findCombatTileBorder method to find a combatTileBorder ID that does exist
+	 * @throws RecordNotFoundException If we can't find it
+	 */
+	@Test
+	public final void testFindCombatTileBorder_Exists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatTileBorder newCombatTileBorder = new CombatTileBorder ();
+			newCombatTileBorder.setCombatTileBorderID ("CTB0" + n);
+			db.getCombatTileBorder ().add (newCombatTileBorder);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("CTB02", db.findCombatTileBorder ("CTB02", "testFindCombatTileBorder_Exists").getCombatTileBorderID ());
+	}
+
+	/**
+	 * Tests the findCombatTileBorder method to find a combatTileBorder ID that doesn't exist
+	 * @throws RecordNotFoundException If we can't find it as expected
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindCombatTileBorder_NotExists () throws RecordNotFoundException
+	{
+		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatTileBorder newCombatTileBorder = new CombatTileBorder ();
+			newCombatTileBorder.setCombatTileBorderID ("CTB0" + n);
+			db.getCombatTileBorder ().add (newCombatTileBorder);
+		}
+
+		db.buildMaps ();
+
+		assertNull (db.findCombatTileBorder ("CTB04", "testFindCombatTileBorder_NotExists"));
 	}
 }

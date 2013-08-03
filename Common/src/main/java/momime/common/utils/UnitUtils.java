@@ -173,6 +173,27 @@ public interface UnitUtils
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
+	 * NB. The reason there is no getBasicAttributeValue method is because this can be achieved by passing in MomUnitAttributeComponent.BASIC
+	 * 
+	 * @param unit Unit to calculate attribute value for
+	 * @param unitAttributeID Unique identifier for this attribute
+	 * @param component Which component(s) making up this attribute to calculate
+	 * @param positiveNegative Whether to only include positive effects, only negative effects, or both
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return Calculated unit attribute (e.g. swords/shields/hearts); 0 if attribute is N/A for this unit (unlike skills, which return -1)
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	public int getModifiedAttributeValue (final AvailableUnit unit, final String unitAttributeID, final MomUnitAttributeComponent component,
+		final MomUnitAttributePositiveNegative positiveNegative, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException;
+	
+	/**
 	 * @param unit Unit to look up the base upkeep for
 	 * @param productionTypeID Production type we want to look up the base upkeep for
 	 * @param db Lookup lists built over the XML database

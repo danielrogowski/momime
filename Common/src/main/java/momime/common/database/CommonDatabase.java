@@ -4,6 +4,7 @@ import java.util.List;
 
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.CombatAreaEffect;
+import momime.common.database.v0_9_4.CombatTileBorder;
 import momime.common.database.v0_9_4.CombatTileType;
 import momime.common.database.v0_9_4.MapFeature;
 import momime.common.database.v0_9_4.Pick;
@@ -11,6 +12,7 @@ import momime.common.database.v0_9_4.PickType;
 import momime.common.database.v0_9_4.Plane;
 import momime.common.database.v0_9_4.ProductionType;
 import momime.common.database.v0_9_4.Race;
+import momime.common.database.v0_9_4.RangedAttackType;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.TaxRate;
 import momime.common.database.v0_9_4.TileType;
@@ -164,6 +166,14 @@ public interface CommonDatabase
 	public WeaponGrade findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException;
 
 	/**
+	 * @param rangedAttackTypeID RAT ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return RAT object
+	 * @throws RecordNotFoundException If the RAT ID doesn't exist
+	 */
+	public RangedAttackType findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @return Complete list of all races in game
 	 */
 	public List<? extends Race> getRace ();
@@ -225,4 +235,12 @@ public interface CommonDatabase
 	 * @throws RecordNotFoundException If the combat tile type ID doesn't exist
 	 */
 	public CombatTileType findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @param  combatTileBorderID Combat tile border ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return CombatTileBorder object
+	 * @throws RecordNotFoundException If the combat tile border ID doesn't exist
+	 */
+	public CombatTileBorder findCombatTileBorder (final String combatTileBorderID, final String caller) throws RecordNotFoundException;
 }

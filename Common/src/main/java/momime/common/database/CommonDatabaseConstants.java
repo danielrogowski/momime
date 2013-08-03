@@ -143,9 +143,26 @@ public final class CommonDatabaseConstants
 
 	// unit skills
 
+	/** Skill for settlers creating new cities */
+	public static final String VALUE_UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
+	
+	/** Skill for magic and guardian spirits capturing nodes */	
+	public static final String VALUE_UNIT_SKILL_ID_MELD_WITH_NODE = "US040";
+	
 	/** the "skill" for experience levels */
 	public static final String VALUE_UNIT_SKILL_ID_EXPERIENCE = "US098";
 
+	/** Allows unit to cast spells, value of the skill specifies how MP worth of spells they can cast, e.g. Archangels able to cast 40 MP worth of life magic */
+	public static final String VALUE_UNIT_SKILL_ID_CASTER_UNIT = "US051";
+	
+	/** Skill whose value specifies how many ranged shots a unit can fire, used both for phys ammo like arrows and mag ammo like magicians' firebolts */ 
+	public static final String VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
+
+	// hero skills
+	
+	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */
+	public static final String VALUE_UNIT_SKILL_ID_CASTER_HERO = "HS05";
+	
 	// spell book sections
 
 	/** Spells in spell book but not researched and not in the list of 8 researchable spells */
@@ -180,24 +197,21 @@ public final class CommonDatabaseConstants
 	/** Crusade */
 	public static final String COMBAT_AREA_EFFECT_CRUSADE = "CSE158";
 
-	//public static final String VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK          = "UA01";
-	//public static final String VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK         = "UA02";
-	//public static final String VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT           = "UA03";
-	//public static final String VALUE_UNIT_ATTRIBUTE_ID_DEFENCE               = "UA04";
+	/** Melee attack strength */
+	public static final String VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK = "UA01";
+	
+	/** Ranged attack strength - can be either phys like bows/rocks or mag like priest blasts */
+	public static final String VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK = "UA02";
+	
+	/** Gives better chance of each sword/ranged attack striking its target */
+	public static final String VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT = "UA03";
+	
+	/** Shields for defending against phys hits */
+	public static final String VALUE_UNIT_ATTRIBUTE_ID_DEFENCE = "UA04";
+	
 	//public static final String VALUE_UNIT_ATTRIBUTE_ID_RESISTANCE            = "UA05";
 	//public static final String VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS            = "UA06";
 	//public static final String VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK         = "UA07";
-
-	/** Skill for settlers creating new cities */
-	public static final String VALUE_UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
-	
-	/** Skill for magic and guardian spirits capturing nodes */	
-	public static final String VALUE_UNIT_SKILL_ID_MELD_WITH_NODE = "US040";
-	
-	//public static final String VALUE_UNIT_SKILL_ID_CASTER_UNIT               = "US051";
-	//public static final String VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO        = "US132";
-
-	//public static final String VALUE_UNIT_SKILL_ID_CASTER_HERO               = "HS05";
 
 	//public static final String SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS        = "SC05";
 

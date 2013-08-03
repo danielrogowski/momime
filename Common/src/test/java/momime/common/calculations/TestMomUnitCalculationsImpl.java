@@ -1,23 +1,38 @@
 package momime.common.calculations;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_4.CombatMapLayerID;
+import momime.common.database.v0_9_4.ExperienceLevel;
+import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.OverlandMapCoordinatesEx;
+import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
+import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_4.MomCombatTile;
+import momime.common.messages.v0_9_4.MomCombatTileLayer;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.UnitUtils;
 
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Tests the calculations in the MomUnitCalculations class
@@ -98,5 +113,216 @@ public final class TestMomUnitCalculationsImpl
 		// Move it to the right place
 		alchemistsGuildLocation.setPlane (0);
 		assertEquals (3, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
+	}
+	
+	/**
+	 * Tests the calculateDoubleMovementToEnterCombatTile method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateDoubleMovementToEnterCombatTile () throws Exception
+	{
+		final CommonDatabase db = GenerateTestData.createDB ();
+		
+		// Set up object to test
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		calc.setCombatMapUtils (new CombatMapUtilsImpl ());		// Only search routine, easier to use the real one than mock it
+		
+		// Simplest test of a single grass layer
+		final MomCombatTileLayer grass = new MomCombatTileLayer ();
+		grass.setLayer (CombatMapLayerID.TERRAIN);
+		grass.setCombatTileTypeID ("CTL01");
+		
+		final MomCombatTile tile = new MomCombatTile ();
+		tile.getTileLayer ().add (grass);
+		
+		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		
+		// If its off the map edge, its automatically impassable
+		tile.setOffMapEdge (true);
+		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		tile.setOffMapEdge (false);
+		
+		// Borders with no blocking have no effect
+		tile.getBorderID ().add ("CTB03");
+		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		
+		// Borders with total blocking make tile impassable
+		tile.getBorderID ().set (0, "CTB02");
+		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+
+		// Borders with edge blocking have no effect
+		tile.getBorderID ().set (0, "CTB01");
+		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		
+		// Building makes it impassable
+		final MomCombatTileLayer building = new MomCombatTileLayer ();
+		building.setLayer (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
+		building.setCombatTileTypeID ("CBL03");
+		tile.getTileLayer ().add (building);
+		
+		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		
+		// Road doesn't prevent it from being impassable
+		// Note have intentionally added the layers in the wrong order here - natural order is terrain-road-building
+		// but we have terrain-building-road, to prove the routine forces the correct layer priority
+		final MomCombatTileLayer road = new MomCombatTileLayer ();
+		road.setLayer (CombatMapLayerID.ROAD);
+		road.setCombatTileTypeID ("CRL03");
+		tile.getTileLayer ().add (road);
+		
+		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		
+		// Change the building to a rock, which doesn't block movement, now the road works
+		tile.getTileLayer ().get (1).setCombatTileTypeID ("CBL01");
+		assertEquals (1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+	}
+	
+	/**
+	 * Tests the calculateFullRangedAttackAmmo method
+	 * Its a bit of a dumb test, since its only returning the value straight out of getModifiedSkillValue, but including it to be complete and as a pretest for giveUnitFullRangedAmmoAndMana
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateFullRangedAttackAmmo () throws Exception
+	{
+		// These are all only used for the mock so doesn't matter if there's anything in them
+		final List<UnitHasSkill> skills = new ArrayList<UnitHasSkill> ();
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Test a unit with ammo
+		final AvailableUnit unitWithAmmo = new AvailableUnit ();
+		when (unitUtils.getModifiedSkillValue (unitWithAmmo, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+			players, spells, combatAreaEffects, db)).thenReturn (8);
+		assertEquals (8, calc.calculateFullRangedAttackAmmo (unitWithAmmo, skills, players, spells, combatAreaEffects, db));
+		
+		// Test a unit without ammo
+		final AvailableUnit unitWithoutAmmo = new AvailableUnit ();
+		when (unitUtils.getModifiedSkillValue (unitWithoutAmmo, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+			players, spells, combatAreaEffects, db)).thenReturn (-1);
+		assertEquals (-1, calc.calculateFullRangedAttackAmmo (unitWithoutAmmo, skills, players, spells, combatAreaEffects, db));
+	}
+	
+	/**
+	 * Tests the calculateManaTotal method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateManaTotal () throws Exception
+	{
+		// These are all only used for the mock so doesn't matter if there's anything in them
+		final List<UnitHasSkill> skills = new ArrayList<UnitHasSkill> ();
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Test a non-casting unit
+		final AvailableUnit nonCaster = new AvailableUnit ();
+		when (unitUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+			players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+			players, spells, combatAreaEffects, db)).thenReturn (-1);
+		assertEquals (-1, calc.calculateManaTotal (nonCaster, skills, players, spells, combatAreaEffects, db));
+
+		// Test an archangel
+		final AvailableUnit archangel = new AvailableUnit ();
+		when (unitUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+			players, spells, combatAreaEffects, db)).thenReturn (40);
+		when (unitUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+			players, spells, combatAreaEffects, db)).thenReturn (-1);
+		assertEquals (40, calc.calculateManaTotal (archangel, skills, players, spells, combatAreaEffects, db));
+
+		// Test a low hero, lv 3 caster skill * lv 2 (+1=3) exp * 2½ = 22½
+		final ExperienceLevel level2 = new ExperienceLevel ();
+		level2.setLevelNumber (2);
+		
+		final AvailableUnit lowHero = new AvailableUnit ();
+		when (unitUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+			players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+			players, spells, combatAreaEffects, db)).thenReturn (3);
+		when (unitUtils.getExperienceLevel (lowHero, true, players, combatAreaEffects, db)).thenReturn (level2);
+		assertEquals (22, calc.calculateManaTotal (lowHero, skills, players, spells, combatAreaEffects, db));
+		
+		// Test a higher hero, lv 5 caster skill * lv 4 (+1=5) exp * 2½ = 62½, +40 from unit caster skill = 102½
+		final ExperienceLevel level4 = new ExperienceLevel ();
+		level4.setLevelNumber (4);
+		
+		final AvailableUnit highHero = new AvailableUnit ();
+		when (unitUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+			players, spells, combatAreaEffects, db)).thenReturn (40);
+		when (unitUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+			players, spells, combatAreaEffects, db)).thenReturn (5);
+		when (unitUtils.getExperienceLevel (highHero, true, players, combatAreaEffects, db)).thenReturn (level4);
+		assertEquals (102, calc.calculateManaTotal (highHero, skills, players, spells, combatAreaEffects, db));
+	}
+	
+	/**
+	 * Tests the giveUnitFullRangedAmmoAndMana method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGiveUnitFullRangedAmmoAndMana () throws Exception
+	{
+		// These are all only used for the mock so doesn't matter if there's anything in them
+		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Test a unit that has nothing
+		final MemoryUnit melee = new MemoryUnit ();
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, melee)).thenReturn (skills);
+		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+			players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+			players, spells, combatAreaEffects, db)).thenReturn (-1);
+		when (unitUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+			players, spells, combatAreaEffects, db)).thenReturn (-1);
+		calc.giveUnitFullRangedAmmoAndMana (melee, players, spells, combatAreaEffects, db);
+		
+		assertEquals (-1, melee.getRangedAttackAmmo ());
+		assertEquals (-1, melee.getManaRemaining ());
+
+		// Test a unit that has some of each
+		final ExperienceLevel level4 = new ExperienceLevel ();
+		level4.setLevelNumber (4);
+
+		final MemoryUnit rangedCaster = new MemoryUnit ();
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, rangedCaster)).thenReturn (skills);
+		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+			players, spells, combatAreaEffects, db)).thenReturn (8);
+		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_UNIT,
+			players, spells, combatAreaEffects, db)).thenReturn (40);
+		when (unitUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CASTER_HERO,
+			players, spells, combatAreaEffects, db)).thenReturn (5);
+		when (unitUtils.getExperienceLevel (rangedCaster, true, players, combatAreaEffects, db)).thenReturn (level4);
+		calc.giveUnitFullRangedAmmoAndMana (rangedCaster, players, spells, combatAreaEffects, db);
+		
+		assertEquals (8, rangedCaster.getRangedAttackAmmo ());
+		assertEquals (102, rangedCaster.getManaRemaining ());
 	}
 }

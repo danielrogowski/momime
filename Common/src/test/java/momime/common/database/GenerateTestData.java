@@ -1,14 +1,12 @@
 package momime.common.database;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.mockito.Mockito;
 
 import momime.common.database.newgame.v0_9_4.CastingReductionCombination;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
@@ -18,7 +16,12 @@ import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.BuildingRequiresTileType;
 import momime.common.database.v0_9_4.CombatAreaAffectsPlayersID;
 import momime.common.database.v0_9_4.CombatAreaEffect;
+import momime.common.database.v0_9_4.CombatAreaEffectAttributeBonus;
 import momime.common.database.v0_9_4.CombatAreaEffectSkillBonus;
+import momime.common.database.v0_9_4.CombatTileBorder;
+import momime.common.database.v0_9_4.CombatTileBorderBlocksMovementID;
+import momime.common.database.v0_9_4.CombatTileType;
+import momime.common.database.v0_9_4.ExperienceAttributeBonus;
 import momime.common.database.v0_9_4.ExperienceLevel;
 import momime.common.database.v0_9_4.ExperienceSkillBonus;
 import momime.common.database.v0_9_4.FortressPickTypeProduction;
@@ -35,23 +38,28 @@ import momime.common.database.v0_9_4.Race;
 import momime.common.database.v0_9_4.RacePopulationTask;
 import momime.common.database.v0_9_4.RacePopulationTaskProduction;
 import momime.common.database.v0_9_4.RaceUnrest;
+import momime.common.database.v0_9_4.RangedAttackType;
 import momime.common.database.v0_9_4.RoundingDirectionID;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.SummonedUnit;
 import momime.common.database.v0_9_4.TaxRate;
 import momime.common.database.v0_9_4.TileType;
 import momime.common.database.v0_9_4.Unit;
+import momime.common.database.v0_9_4.UnitHasAttributeValue;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.database.v0_9_4.UnitMagicRealm;
 import momime.common.database.v0_9_4.UnitSkill;
 import momime.common.database.v0_9_4.UnitType;
 import momime.common.database.v0_9_4.UnitUpkeep;
 import momime.common.database.v0_9_4.WeaponGrade;
+import momime.common.database.v0_9_4.WeaponGradeAttributeBonus;
 import momime.common.database.v0_9_4.WeaponGradeSkillBonus;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
+
+import org.mockito.Mockito;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
@@ -132,10 +140,13 @@ public final class GenerateTestData
 	/** Pick type for retorts */
 	public static final String RETORT = "R";
 
-	/** Typical normal unit */
+	/** Typical melee unit */
 	public static final String BARBARIAN_SPEARMEN = "UN040";
 
-	/** More expensive normal unit */
+	/** Typical ranged unit */
+	public static final String BARBARIAN_BOWMEN = "UN042";
+	
+	/** Typical magic unit */
 	public static final String DARK_ELF_WARLOCKS = "UN065";
 
 	/** Stone giant */
@@ -176,7 +187,13 @@ public final class GenerateTestData
 
 	/** Thrown weapons skill */
 	public final static String UNIT_SKILL_THROWN_WEAPONS = "US126";
+	
+	/** Hero agility skill */
+	public final static String HERO_SKILL_AGILITY = "HS01";
 
+	/** Hero blademaster skill */
+	public final static String HERO_SKILL_BLADEMASTER = "HS04";
+	
 	/** Earth to mud spell */
 	public final static String EARTH_TO_MUD = "SP001";
 
@@ -278,7 +295,13 @@ public final class GenerateTestData
 
 	/** Quantity of ranged attack ammo skill */
 	public final static String RANGED_ATTACK_AMMO = "US132";
+	
+	/** Arrows */
+	public final static String RANGED_ATTACK_TYPE_ARROWS = "RAT14";
 
+	/** Fireball */
+	public final static String RANGED_ATTACK_TYPE_FIREBALL = "RAT1F";
+	
 	/**
 	 * @return Archmage retort with its pre-requisites
 	 */
@@ -578,19 +601,71 @@ public final class GenerateTestData
 		manaFocusing.getPickProductionBonus ().add (manaFocusingBonus);
 		picks.add (manaFocusing);
 
-		// Units
+		// Typical melee unit
 		final List<Unit> units = new ArrayList<Unit> ();
 
 		final Unit spearmen = new Unit ();
 		spearmen.setUnitID (BARBARIAN_SPEARMEN);
 		spearmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		spearmen.setDoubleMovement (2);
-		units.add (spearmen);
 
+		final UnitHasAttributeValue spearmenMelee = new UnitHasAttributeValue ();
+		spearmenMelee.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
+		spearmenMelee.setAttributeValue (1);
+		spearmen.getUnitAttributeValue ().add (spearmenMelee);
+		
+		final UnitHasAttributeValue spearmenDefence = new UnitHasAttributeValue ();
+		spearmenDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		spearmenDefence.setAttributeValue (2);
+		spearmen.getUnitAttributeValue ().add (spearmenDefence);
+		units.add (spearmen);
+		
+		// Typical ranged unit
+		final Unit bowmen = new Unit ();
+		bowmen.setUnitID (BARBARIAN_BOWMEN);
+		bowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		bowmen.setDoubleMovement (2);
+		bowmen.setRangedAttackType (RANGED_ATTACK_TYPE_ARROWS);
+
+		final UnitHasAttributeValue bowmenMelee = new UnitHasAttributeValue ();
+		bowmenMelee.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
+		bowmenMelee.setAttributeValue (1);
+		bowmen.getUnitAttributeValue ().add (bowmenMelee);
+
+		final UnitHasAttributeValue bowmenRanged = new UnitHasAttributeValue ();
+		bowmenRanged.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+		bowmenRanged.setAttributeValue (1);
+		bowmen.getUnitAttributeValue ().add (bowmenRanged);
+		
+		final UnitHasAttributeValue bowmenDefence = new UnitHasAttributeValue ();
+		bowmenDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		bowmenDefence.setAttributeValue (2);
+		bowmen.getUnitAttributeValue ().add (bowmenDefence);
+		units.add (bowmen);
+
+		// Typical magic unit
 		final Unit warlocks = new Unit ();
 		warlocks.setUnitID (DARK_ELF_WARLOCKS);
 		warlocks.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		warlocks.setDoubleMovement (2);
+		warlocks.setRangedAttackType (RANGED_ATTACK_TYPE_FIREBALL);
+
+		final UnitHasAttributeValue warlocksMelee = new UnitHasAttributeValue ();
+		warlocksMelee.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
+		warlocksMelee.setAttributeValue (1);
+		warlocks.getUnitAttributeValue ().add (warlocksMelee);
+
+		final UnitHasAttributeValue warlocksRanged = new UnitHasAttributeValue ();
+		warlocksRanged.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+		warlocksRanged.setAttributeValue (7);
+		warlocks.getUnitAttributeValue ().add (warlocksRanged);
+		
+		final UnitHasAttributeValue warlocksDefence = new UnitHasAttributeValue ();
+		warlocksDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		warlocksDefence.setAttributeValue (4);
+		warlocks.getUnitAttributeValue ().add (warlocksDefence);
+		units.add (warlocks);
+		
 		final UnitUpkeep warlocksGold = new UnitUpkeep ();
 		warlocksGold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
 		warlocksGold.setUpkeepValue (5);
@@ -608,9 +683,17 @@ public final class GenerateTestData
 		warlocks.getUnitHasSkill ().add (warlocksShooting);
 		units.add (warlocks);
 
+		// Typical summoned unit
 		final Unit stoneGiant = new Unit ();
 		stoneGiant.setUnitID (STONE_GIANT_UNIT);
 		stoneGiant.setUnitMagicRealm (LIFEFORM_TYPE_NATURE);
+
+		final UnitHasAttributeValue stoneGiantDefence = new UnitHasAttributeValue ();
+		stoneGiantDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		stoneGiantDefence.setAttributeValue (8);
+		stoneGiant.getUnitAttributeValue ().add (stoneGiantDefence);
+		units.add (stoneGiant);
+		
 		final UnitUpkeep stoneGiantUpkeep = new UnitUpkeep ();
 		stoneGiantUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
 		stoneGiantUpkeep.setUpkeepValue (9);
@@ -633,11 +716,17 @@ public final class GenerateTestData
 		hellHounds.setDoubleMovement (4);
 		units.add (hellHounds);
 
-		final Unit hero = new Unit ();
-		hero.setUnitID (DWARF_HERO);
-		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
-		units.add (hero);
+		final Unit dwarf = new Unit ();
+		dwarf.setUnitID (DWARF_HERO);
+		dwarf.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		units.add (dwarf);
 
+		final UnitHasAttributeValue dwarfDefence = new UnitHasAttributeValue ();
+		dwarfDefence.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		dwarfDefence.setAttributeValue (4);
+		dwarf.getUnitAttributeValue ().add (dwarfDefence);
+		units.add (dwarf);
+		
 		final Unit giantSpidersUnit = new Unit ();
 		giantSpidersUnit.setUnitID (GIANT_SPIDERS_UNIT);
 		giantSpidersUnit.setUnitMagicRealm (LIFEFORM_TYPE_NATURE);
@@ -694,6 +783,20 @@ public final class GenerateTestData
 				bonus.setBonusValue (n);
 				expLevel.getExperienceSkillBonus ().add (bonus);
 			}
+
+			// Give bonus to defence and ranged attack
+			if (n > 0)
+			{
+				final ExperienceAttributeBonus  bonus1 = new ExperienceAttributeBonus  ();
+				bonus1.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+				bonus1.setBonusValue (n);
+				expLevel.getExperienceAttributeBonus ().add (bonus1);
+
+				final ExperienceAttributeBonus  bonus2 = new ExperienceAttributeBonus  ();
+				bonus2.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+				bonus2.setBonusValue (n);
+				expLevel.getExperienceAttributeBonus ().add (bonus2);
+			}
 		}
 
 		unitTypes.add (normalUnit);
@@ -745,6 +848,18 @@ public final class GenerateTestData
 		thrownWeapons.setUnitSkillID (UNIT_SKILL_THROWN_WEAPONS);
 		unitSkills.add (thrownWeapons);
 
+		final UnitSkill agility = new UnitSkill ();
+		agility.setUnitSkillID (HERO_SKILL_AGILITY);
+		agility.setAddsToAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		agility.setAddsToAttributeDivisor (1);
+		unitSkills.add (agility);
+
+		final UnitSkill blademaster = new UnitSkill ();
+		blademaster.setUnitSkillID (HERO_SKILL_BLADEMASTER);
+		blademaster.setAddsToAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT);
+		blademaster.setAddsToAttributeDivisor (2);
+		unitSkills.add (blademaster);
+		
 		// Weapon grades
 		final List<WeaponGrade> weaponGrades = new ArrayList<WeaponGrade> ();
 
@@ -762,8 +877,35 @@ public final class GenerateTestData
 				bonus.setBonusValue (n - 1);
 				grade.getWeaponGradeSkillBonus ().add (bonus);
 			}
-		}
 
+			// Give bonus to defence and ranged attack
+			if (n >= 2)
+			{
+				final WeaponGradeAttributeBonus bonus1 = new WeaponGradeAttributeBonus ();
+				bonus1.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+				bonus1.setBonusValue (n - 1);
+				grade.getWeaponGradeAttributeBonus ().add (bonus1);
+
+				final WeaponGradeAttributeBonus bonus2 = new WeaponGradeAttributeBonus ();
+				bonus2.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+				bonus2.setBonusValue (n - 1);
+				grade.getWeaponGradeAttributeBonus ().add (bonus2);
+			}
+		}
+		
+		// Ranged attack types
+		final List<RangedAttackType> rangedAttackTypes = new ArrayList<RangedAttackType> ();
+		
+		final RangedAttackType ratArrows = new RangedAttackType ();
+		ratArrows.setRangedAttackTypeID (RANGED_ATTACK_TYPE_ARROWS);
+		ratArrows.setMithrilAndAdamantiumVersions (true);
+		rangedAttackTypes.add (ratArrows);
+
+		final RangedAttackType ratFireball = new RangedAttackType ();
+		ratFireball.setRangedAttackTypeID (RANGED_ATTACK_TYPE_FIREBALL);
+		ratFireball.setMithrilAndAdamantiumVersions (false);
+		rangedAttackTypes.add (ratFireball);
+		
 		// Spells
 		final List<Spell> spells = new ArrayList<Spell> ();
 
@@ -840,12 +982,18 @@ public final class GenerateTestData
 		affectsAll.setCombatAreaEffectID (CAE_AFFECTS_ALL);
 		affectsAll.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.ALL_EVEN_NOT_IN_COMBAT);
 
-		final CombatAreaEffectSkillBonus caeBonus = new CombatAreaEffectSkillBonus ();
-		caeBonus.setUnitSkillID (UNIT_SKILL_THROWN_WEAPONS);
-		caeBonus.setBonusValue (1);
-		caeBonus.setEffectMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
-		affectsAll.getCombatAreaEffectSkillBonus ().add (caeBonus);
+		final CombatAreaEffectSkillBonus caeSkillBonus = new CombatAreaEffectSkillBonus ();
+		caeSkillBonus.setUnitSkillID (UNIT_SKILL_THROWN_WEAPONS);
+		caeSkillBonus.setBonusValue (1);
+		caeSkillBonus.setEffectMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		affectsAll.getCombatAreaEffectSkillBonus ().add (caeSkillBonus);
 
+		final CombatAreaEffectAttributeBonus caeAttributeBonus = new CombatAreaEffectAttributeBonus ();
+		caeAttributeBonus.setUnitAttributeID (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE);
+		caeAttributeBonus.setBonusValue (1);
+		caeAttributeBonus.setEffectMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		affectsAll.getCombatAreaEffectAttributeBonus ().add (caeAttributeBonus);
+		
 		combatAreaEffects.add (affectsAll);
 
 		final CombatAreaEffect affectsCaster = new CombatAreaEffect ();
@@ -1094,7 +1242,46 @@ public final class GenerateTestData
 		tr07.setDoubleTaxGold (6);
 		tr07.setTaxUnrestPercentage (75);
 		taxRates.add (tr07);
+		
+		// Combat tiles
+		final List<CombatTileType> combatTileTypes = new ArrayList<CombatTileType> ();
+		
+		final CombatTileType ctl01 = new CombatTileType ();
+		ctl01.setCombatTileTypeID ("CTL01");
+		ctl01.setDoubleMovement (2);
+		combatTileTypes.add (ctl01);
 
+		final CombatTileType crl03 = new CombatTileType ();
+		crl03.setCombatTileTypeID ("CRL03");
+		crl03.setDoubleMovement (1);
+		combatTileTypes.add (crl03);
+		
+		final CombatTileType cbl01 = new CombatTileType ();
+		cbl01.setCombatTileTypeID ("CBL01");
+		combatTileTypes.add (cbl01);
+
+		final CombatTileType cbl03 = new CombatTileType ();
+		cbl03.setCombatTileTypeID ("CBL03");
+		cbl03.setDoubleMovement (-1);
+		combatTileTypes.add (cbl03);
+		
+		// Combat tile borders
+		final List<CombatTileBorder> combatTileBorders = new ArrayList<CombatTileBorder> ();
+		
+		final CombatTileBorder ctb01 = new CombatTileBorder ();
+		ctb01.setCombatTileBorderID ("CTB01");
+		ctb01.setBlocksMovement (CombatTileBorderBlocksMovementID.CANNOT_CROSS_SPECIFIED_BORDERS);
+		combatTileBorders.add (ctb01);
+
+		final CombatTileBorder ctb02 = new CombatTileBorder ();
+		ctb02.setCombatTileBorderID ("CTB02");
+		ctb02.setBlocksMovement (CombatTileBorderBlocksMovementID.WHOLE_TIME_IMPASSABLE);
+		combatTileBorders.add (ctb02);
+
+		final CombatTileBorder ctb03 = new CombatTileBorder ();
+		ctb03.setCombatTileBorderID ("CTB03");
+		combatTileBorders.add (ctb03);
+		
 		// Now have all the lists, mock the results accordingly
 		final CommonDatabase db = mock (CommonDatabase.class);
 		for (final Plane plane : planes)
@@ -1125,12 +1312,16 @@ public final class GenerateTestData
 		for (final Unit unit : units)
 			when (db.findUnit (eq (unit.getUnitID ()), anyString ())).thenReturn (unit);
 
+		Mockito.doReturn (unitSkills).when (db).getUnitSkill ();
 		for (final UnitSkill unitSkill : unitSkills)
 			when (db.findUnitSkill (eq (unitSkill.getUnitSkillID ()), anyString ())).thenReturn (unitSkill);
 
 		for (final WeaponGrade weaponGrade : weaponGrades)
 			when (db.findWeaponGrade (eq (weaponGrade.getWeaponGradeNumber ()), anyString ())).thenReturn (weaponGrade);
 
+		for (final RangedAttackType rangedAttackType : rangedAttackTypes)
+			when (db.findRangedAttackType (eq (rangedAttackType.getRangedAttackTypeID ()), anyString ())).thenReturn (rangedAttackType);
+		
 		for (final Race race : races)
 			when (db.findRace (eq (race.getRaceID ()), anyString ())).thenReturn (race);
 
@@ -1146,6 +1337,12 @@ public final class GenerateTestData
 
 		for (final CombatAreaEffect combatAreaEffect : combatAreaEffects)
 			when (db.findCombatAreaEffect (eq (combatAreaEffect.getCombatAreaEffectID ()), anyString ())).thenReturn (combatAreaEffect);
+
+		for (final CombatTileType combatTileType : combatTileTypes)
+			when (db.findCombatTileType (eq (combatTileType.getCombatTileTypeID ()), anyString ())).thenReturn (combatTileType);
+
+		for (final CombatTileBorder combatTileBorder : combatTileBorders)
+			when (db.findCombatTileBorder (eq (combatTileBorder.getCombatTileBorderID ()), anyString ())).thenReturn (combatTileBorder);
 		
 		return db;
 	}

@@ -148,6 +148,8 @@
 	
 	<bean id="unitCalculations" class="momime.common.calculations.MomUnitCalculationsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="memoryBuildingUtils" class="momime.common.utils.MemoryBuildingUtilsImpl" />

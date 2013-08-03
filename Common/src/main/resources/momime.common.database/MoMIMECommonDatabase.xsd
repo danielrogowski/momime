@@ -1166,7 +1166,7 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="T"><xsd:annotation>
 				<xsd:documentation>Whole tile impassable</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="WHOLE_TIME_IMPASSABLE"/></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="WHOLE_TILE_IMPASSABLE"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
@@ -1200,7 +1200,8 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 Lowest layer contains the terrain and ridges.  All terrain is passable, but some ridges cost double to move over (some buildings are impassable).
 Middle layer contains the roads, both within the city (if applicable) and roads leading in/out of the map tile.  Roads (including enchanted roads) cost half to move over.
 Buildings and terrain featues such as trees are in the top layer.  Some are passable (e.g. housing), some are not (e.g. wizards' fortress).
-Movement rules start from the top layer and work down, i.e. check if there is an impassable building, if not then check if there is a road, if not then check if there is a ridge.  (i.e. if there is a road over a ridge, it still only costs half movement).</xsd:documentation>
+Movement rules start from the top layer and work down, i.e. check if there is an impassable building, if not then check if there is a road, if not then check if there is a ridge.
+   i.e. if there is a road over a ridge, it still only costs half movement.  NB. This means the order these constants are defined in is vitally important.</xsd:documentation>
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="T"><xsd:annotation>

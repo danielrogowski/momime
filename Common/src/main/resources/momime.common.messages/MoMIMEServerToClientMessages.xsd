@@ -547,7 +547,7 @@ Since this is only used to add monsters, ReadSkillsFromXML for unit details will
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:combatMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="combatPosition" type="momimemsgs:combatMapCoordinates"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatHeading" type="map:mapDirection"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatSide" type="momimemsgs:unitCombatSideID"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitDetails" type="momimestoc:addUnitMessageData"/>

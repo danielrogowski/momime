@@ -125,7 +125,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 			// Any types of wall here that block movement?  (not using iterator because there's going to be so few of these)
 			boolean impassableBorderFound = false;
 			for (final String borderID : tile.getBorderID ())
-				if (db.findCombatTileBorder (borderID, "calculateDoubleMovementToEnterCombatTile").getBlocksMovement () == CombatTileBorderBlocksMovementID.WHOLE_TIME_IMPASSABLE)
+				if (db.findCombatTileBorder (borderID, "calculateDoubleMovementToEnterCombatTile").getBlocksMovement () == CombatTileBorderBlocksMovementID.WHOLE_TILE_IMPASSABLE)
 					impassableBorderFound = true;
 			
 			if (!impassableBorderFound)

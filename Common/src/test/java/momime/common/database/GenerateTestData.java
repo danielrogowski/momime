@@ -1275,7 +1275,7 @@ public final class GenerateTestData
 
 		final CombatTileBorder ctb02 = new CombatTileBorder ();
 		ctb02.setCombatTileBorderID ("CTB02");
-		ctb02.setBlocksMovement (CombatTileBorderBlocksMovementID.WHOLE_TIME_IMPASSABLE);
+		ctb02.setBlocksMovement (CombatTileBorderBlocksMovementID.WHOLE_TILE_IMPASSABLE);
 		combatTileBorders.add (ctb02);
 
 		final CombatTileBorder ctb03 = new CombatTileBorder ();

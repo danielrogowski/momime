@@ -31,6 +31,7 @@ import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.SpellServerUtils;
 import momime.server.utils.UnitServerUtils;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -45,6 +46,11 @@ public interface MomSessionVariables
 	 * @return Session description, typecasted to MoM specific type
 	 */
 	public MomSessionDescription getSessionDescription ();
+	
+	/**
+	 * @return Combat map coordinate system, expect this to be merged into session desc once client is also in Java
+	 */
+	public CoordinateSystem getCombatMapCoordinateSystem ();
 
 	/**
 	 * @return Server XML in use for this session

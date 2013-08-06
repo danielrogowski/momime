@@ -38,6 +38,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.mapgenerator.CombatMapGeneratorImpl;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.process.CityProcessing;
@@ -50,6 +51,8 @@ import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.SpellServerUtils;
 import momime.server.utils.UnitServerUtils;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemType;
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
@@ -64,6 +67,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomSessionThread.class.getName ());
+	
+	/** Combat map coordinate system, expect this to be merged into session desc once client is also in Java */
+	private final CoordinateSystem combatMapCoordinateSystem;
 	
 	/** Lookup lists built over the XML database */
 	private ServerDatabaseEx db;
@@ -143,6 +149,19 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	private OverlandMapServerUtils overlandMapServerUtils;
 
 	/**
+	 * Create combat map coordinate system
+	 */
+	public MomSessionThread ()
+	{
+		super ();
+		
+		combatMapCoordinateSystem = new CoordinateSystem ();
+		combatMapCoordinateSystem.setWidth (CombatMapGeneratorImpl.COMBAT_MAP_WIDTH);
+		combatMapCoordinateSystem.setHeight (CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT);
+		combatMapCoordinateSystem.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
+	}
+	
+	/**
 	 * @return UI being used by server
 	 */
 	public final MomServerUI getUI ()
@@ -200,6 +219,15 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final void setGeneralServerKnowledge (final MomGeneralServerKnowledge gsk)
 	{
 		super.setGeneralServerKnowledge (gsk);
+	}
+
+	/**
+	 * @return Combat map coordinate system, expect this to be merged into session desc once client is also in Java
+	 */
+	@Override
+	public final CoordinateSystem getCombatMapCoordinateSystem ()
+	{
+		return combatMapCoordinateSystem;
 	}
 	
 	/**

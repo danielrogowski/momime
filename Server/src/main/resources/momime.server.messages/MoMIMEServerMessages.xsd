@@ -16,7 +16,9 @@
     
 	<xsd:complexType name="momGeneralServerKnowledge">
 	    <xsd:annotation>
-    		<xsd:documentation>Holds private server only knowledge that is not known to any players.</xsd:documentation>
+    		<xsd:documentation>Holds private server only knowledge that is not known to any players.
+    										NB. Strictly speaking only data items that need to be persisted in save game files need to be here - things that are temporary during a turn
+    										like the list of scheduled combats could just be put in MomSessionThread instead.  But will leave it here for now, it doesn't do any harm either.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="mps:generalServerKnowledge">
@@ -30,6 +32,7 @@
 					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeUnitURN" type="momimemsgs:unitURN"/>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="usedCityName" type="xsd:normalizedString"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="scheduledCombat" type="momimemsgs:momScheduledCombat"/>
 		        </xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

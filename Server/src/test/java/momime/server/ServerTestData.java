@@ -40,7 +40,7 @@ import momime.server.database.v0_9_4.NodeStrength;
 import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.SpellSetting;
 import momime.server.database.v0_9_4.UnitSetting;
-import momime.server.mapgenerator.CombatMapGenerator;
+import momime.server.mapgenerator.CombatMapGeneratorImpl;
 import momime.server.messages.v0_9_4.ServerGridCell;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -176,6 +176,18 @@ public final class ServerTestData
 	}
 
 	/**
+	 * @return Demo MoM combat map-like coordinate system with a 60x40 diamond non-wrapping map
+	 */
+	public final static CoordinateSystem createCombatMapCoordinateSystem ()
+	{
+		final CoordinateSystem sys = new CoordinateSystem ();
+		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
+		sys.setWidth (CombatMapGeneratorImpl.COMBAT_MAP_WIDTH);
+		sys.setHeight (CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT);
+		return sys;
+	}
+
+	/**
 	 * @param sys Overland map coordinate system
 	 * @return FOW area prepopulated with "Never Seen"
 	 */
@@ -306,10 +318,10 @@ public final class ServerTestData
 	public final static MapAreaOfCombatTiles createCombatMap ()
 	{
 		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
-		for (int y = 0; y < CombatMapGenerator.COMBAT_MAP_HEIGHT; y++)
+		for (int y = 0; y < CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT; y++)
 		{
 			final MapRowOfCombatTiles row = new MapRowOfCombatTiles ();
-			for (int x = 0; x < CombatMapGenerator.COMBAT_MAP_WIDTH; x++)
+			for (int x = 0; x < CombatMapGeneratorImpl.COMBAT_MAP_WIDTH; x++)
 				row.getCell ().add (new MomCombatTile ());
 
 			map.getRow ().add (row);

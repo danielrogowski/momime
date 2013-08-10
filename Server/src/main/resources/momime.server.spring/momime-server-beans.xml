@@ -171,6 +171,12 @@
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 	</bean>
 
+	<bean id="combatMapGenerator" class="momime.server.mapgenerator.CombatMapGeneratorImpl">
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
+	</bean>
+
 	<!-- Processing -->
 
 	<bean id="playerMessageProcessing" class="momime.server.process.PlayerMessageProcessingImpl">
@@ -215,7 +221,30 @@
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 	</bean>
+
+	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="serverCityCalculations" ref="serverCityCalculations" />
+		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />
+		<property name="scheduledCombatUtils" ref="scheduledCombatUtils" />
+		<property name="combatScheduler" ref="combatScheduler" />
+		<property name="combatMapGenerator" ref="combatMapGenerator" />
+	</bean>
 	
+	<bean id="combatScheduler" class="momime.server.process.CombatSchedulerImpl">
+		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
+	</bean>
+
 	<!-- AI -->
 	
 	<bean id="spellAI" class="momime.server.ai.SpellAIImpl">
@@ -263,6 +292,7 @@
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
+		<property name="combatProcessing" ref="combatProcessing" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">
@@ -314,6 +344,7 @@
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />

@@ -94,8 +94,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		{
 			// Proceed with move
 			mom.getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, (OverlandMapCoordinatesEx) getMoveFrom (), (OverlandMapCoordinatesEx) getMoveTo (),
-				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS),
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
 		}
 
 		log.exiting (RequestMoveOverlandUnitStackMessageImpl.class.getName (), "process");

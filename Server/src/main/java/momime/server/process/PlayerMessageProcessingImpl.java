@@ -905,8 +905,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						(mom.getPlayers (), unitStack.get (0).getOwningPlayerID (), "continueMovement");
 					
 					getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, unitStackOwner,
-						(OverlandMapCoordinatesEx) thisMove.getMoveFrom (), (OverlandMapCoordinatesEx) thisMove.getMoveTo (), false,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+						(OverlandMapCoordinatesEx) thisMove.getMoveFrom (), (OverlandMapCoordinatesEx) thisMove.getMoveTo (), false, mom);
 				}
 			}
 

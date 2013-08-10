@@ -17,6 +17,7 @@ import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.v0_9_4.CombatEndedMessage;
+import momime.common.messages.servertoclient.v0_9_4.FoundLairNodeTowerMessage;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitMessageData;
@@ -35,6 +36,7 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitCombatSideID;
 import momime.common.messages.v0_9_4.UnitStatusID;
@@ -149,7 +151,68 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Map generator */
 	private CombatMapGenerator combatMapGenerator;
-	
+
+	/**
+	 * Sets up a potential combat on the server.  If we're attacking an enemy unit stack or city, then all this does is calls StartCombat.
+	 * If we're attacking a node/lair/tower, then this handles scouting the node/lair/tower, sending to the client the details
+	 * of what monster we scouted, and StartCombat is only called when/if they click "Yes" they want to attack.
+	 * This is declared separately so it can be used immediately from MoveUnitStack in one-at-a-time games, or from requesting scheduled combats in Simultaneous turns games.
+	 *
+	 * @param defendingLocation Location where defending units are standing
+	 * @param attackingFrom Location where attacking units are standing (which will be a map tile adjacent to defendingLocation)
+	 * @param scheduledCombatURN Scheduled combat URN, if simultaneous turns game; null for one-at-a-time games
+	 * @param attackingPlayer Player who is attacking
+	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind
+	 * @param typeOfCombat Whether we are scouting a node/lair/tower, or actually attacking something
+	 * @param monsterUnitID If typeOfCombat=SCOUT, then this says the type of monster that the attacker can see; if typeOfCombat=something else this is null
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void initiateCombat (final OverlandMapCoordinatesEx defendingLocation, final OverlandMapCoordinatesEx attackingFrom,
+		final Integer scheduledCombatURN, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs,
+		final MoveResultsInAttackTypeID typeOfCombat, final String monsterUnitID, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		log.entering (CombatProcessingImpl.class.getName (), "initiateCombat",
+			new String [] {defendingLocation.toString (), attackingFrom.toString (), (scheduledCombatURN == null) ? "NotSched" : scheduledCombatURN.toString (),
+			attackingPlayer.getPlayerDescription ().getPlayerID ().toString (), typeOfCombat.toString ()});
+		
+		// We need to inform all players that the attacker is involved in a combat.
+		// We deal with the defender (if its a real human/human combat) within StartCombat - we deal with the attacker here so that the player is
+		// recorded as being 'in a combat' while the 'found node/lair/tower' window is displayed.
+		if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (attackingPlayer.getPlayerDescription ().isHuman ()))
+			getCombatScheduler ().informClientsOfPlayerBusyInCombat (attackingPlayer, mom.getPlayers (), true);
+		
+		if (typeOfCombat == MoveResultsInAttackTypeID.SCOUT)
+		{
+			// Show "Scouts have spotted some Sky Drakes, do you want to attack?" message
+			final FoundLairNodeTowerMessage msg = new FoundLairNodeTowerMessage ();
+			msg.setDefendingLocation (defendingLocation);
+			msg.setAttackingFrom (attackingFrom);
+			msg.setMonsterUnitID (monsterUnitID);
+			msg.setScheduledCombatURN (scheduledCombatURN);
+			msg.getUnitURN ().addAll (attackingUnitURNs);
+			attackingPlayer.getConnection ().sendMessageToClient (msg);
+			
+			// Record the scouted monster ID on the server too
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+			priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (defendingLocation.getPlane ()).getRow ().get
+				(defendingLocation.getY ()).getCell ().set (defendingLocation.getX (), monsterUnitID);
+		}
+		else
+		{
+			// Start right away
+			startCombat (defendingLocation, attackingFrom, scheduledCombatURN, attackingPlayer, attackingUnitURNs, mom);
+		}
+
+		log.exiting (CombatProcessingImpl.class.getName (), "initiateCombat");
+	}
+		
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
 	 *

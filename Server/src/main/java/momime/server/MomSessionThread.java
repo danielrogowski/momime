@@ -42,6 +42,7 @@ import momime.server.mapgenerator.CombatMapGeneratorImpl;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.process.CityProcessing;
+import momime.server.process.CombatProcessing;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.process.SpellProcessing;
 import momime.server.ui.MomServerUI;
@@ -99,6 +100,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** City processing methods */
 	private CityProcessing cityProcessing;
+
+	/** Combat processing */
+	private CombatProcessing combatProcessing;
 	
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
@@ -523,6 +527,23 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final void setCityProcessing (final CityProcessing obj)
 	{
 		cityProcessing = obj;
+	}
+
+	/**
+	 * @return Combat processing
+	 */
+	@Override
+	public final CombatProcessing getCombatProcessing ()
+	{
+		return combatProcessing;
+	}
+
+	/**
+	 * @param obj Combat processing
+	 */
+	public final void setCombatProcessing (final CombatProcessing obj)
+	{
+		combatProcessing = obj;
 	}
 
 	/**

@@ -20,34 +20,42 @@
     			<value>momime.common.messages.v0_9_4.MomSessionDescription</value>
 
 				<!-- MoM multiplayer messages -->
-    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseCustomPicksMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseCustomFlagColourMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.AlchemyMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.AttackNodeLairTowerMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.CancelPendingMovementAndSpecialOrdersMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.CancelTargetSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.CaptureCityDecisionMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.ChangeOptionalFarmersMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistributionMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.AlchemyMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChatMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseCustomFlagColourMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseCustomPicksMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.ChoseNotToDoScheduledCombatMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.CombatAutoControlMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.DismissUnitMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.EndCombatTurnMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.CancelTargetSpellMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.DismissUnitMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.ChatMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestMoveCombatUnitMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestStartScheduledCombatMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestSwitchOffMaintainedSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestUpdateUnitNameMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.RushBuyMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.SellBuildingMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_4.SpecialOrderButtonMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.CancelPendingMovementAndSpecialOrdersMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestSwitchOffMaintainedSpellMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_4.RequestUpdateUnitNameMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.UnrequestStartScheduledCombatMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistributionMessage</value>
+    			<value>momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -81,38 +89,55 @@
     			<value>momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge</value>
 
 				<!-- MoM multiplayer messages -->
-    			<value>momime.common.messages.servertoclient.v0_9_4.BroadcastChatMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.TextPopupMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.ChosenWizardMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.ChooseYourRaceNowMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.ChosenStandardPhotoMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.ChosenCustomPhotoMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.StartGameMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.ErasePendingMovementsMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.EndOfContinuedMovementMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.SetCurrentPlayerMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.StartSimultaneousTurnMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.AddNewTurnMessagesMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.OverlandMovementTypesMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateOverlandMovementRemainingMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.AddScheduledCombatMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ApplyDamageMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.AskForCaptureCityDecisionMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.BroadcastChatMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChooseYourRaceNowMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChosenCustomPhotoMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChosenStandardPhotoMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ChosenWizardMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.CombatEndedMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.DamageCalculationMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.EndOfContinuedMovementMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ErasePendingMovementsMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.FoundLairNodeTowerMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.MoveUnitInCombatMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.MoveUnitStackOverlandMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.SelectNextUnitToMoveOverlandMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.SpellResearchChangedMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.OnePlayerSimultaneousTurnDoneMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.OverlandCastQueuedMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateManaSpentOnCastingCurrentSpellMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_4.RemoveQueuedSpellMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.OverlandMovementTypesMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.PendingMovementMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.PendingSaleMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.PlayerCombatRequestStatusMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.RemoveQueuedSpellMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ScheduledCombatWalkInWithoutAFightMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SelectNextUnitToMoveOverlandMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SetCombatPlayerMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SetCurrentPlayerMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SetSpecialOrderMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SetUnitIntoOrTakeUnitOutOfCombatMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.ShowListAndOtherScheduledCombatsMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.SpellResearchChangedMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.StartCombatMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.StartGameMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.StartSimultaneousTurnMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.TaxRateChangedMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.TextPopupMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateManaSpentOnCastingCurrentSpellMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateOtherScheduledCombatsMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateOverlandMovementRemainingMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage</value>
@@ -129,6 +154,7 @@
     			<value>momime.common.messages.servertoclient.v0_9_4.FogOfWarVisibleAreaChangedMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateDamageTakenAndExperienceMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_4.UpdateUnitNameMessage</value>
+    			<value>momime.common.messages.servertoclient.v0_9_4.UpdateUnitToAliveMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -184,5 +210,7 @@
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl" />
 
 	<bean id="pendingMovementUtils" class="momime.common.utils.PendingMovementUtilsImpl" />
+
+	<bean id="scheduledCombatUtils" class="momime.common.utils.ScheduledCombatUtilsImpl" />
 
 </beans>

@@ -17,6 +17,7 @@ import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
@@ -456,10 +457,7 @@ public interface FogOfWarMidTurnChanges
 	 *			sorts the correct destination plane out for each cell that the unit stack moves
 	 *
 	 * @param forceAsPendingMovement If true, forces all generated moves to be added as pending movements rather than occurring immediately (used for simultaneous turns games)
-	 * @param players List of players in the session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -468,7 +466,6 @@ public interface FogOfWarMidTurnChanges
 	 */
 	public void moveUnitStack (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final OverlandMapCoordinatesEx originalMoveFrom, final OverlandMapCoordinatesEx moveTo,
-		final boolean forceAsPendingMovement, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 }

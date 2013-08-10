@@ -505,7 +505,11 @@ These will be the actual cells containing the units, so if either side is in a t
 						<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="momimemsgs:overlandMapCoordinates"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="monsterUnitID" type="momimecommon:unitID"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
-						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN">
+						    <xsd:annotation>
+						    	<xsd:documentation>Lists which of the attackers' units are actually attacking, since not all of their unit stack may be attacking.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

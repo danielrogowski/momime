@@ -61,6 +61,7 @@ import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PendingMovement;
+import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.CompareUtils;
 import momime.common.utils.MemoryBuildingUtils;
@@ -69,12 +70,14 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
 import momime.server.calculations.MomFogOfWarCalculations;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.process.CombatProcessing;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
@@ -129,6 +132,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
+	
+	/** Combat processing */
+	private CombatProcessing combatProcessing;
 	
 	/**
 	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
@@ -1710,10 +1716,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 *			sorts the correct destination plane out for each cell that the unit stack moves
 	 *
 	 * @param forceAsPendingMovement If true, forces all generated moves to be added as pending movements rather than occurring immediately (used for simultaneous turns games)
-	 * @param players List of players in the session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -1723,15 +1726,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	@Override
 	public final void moveUnitStack (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final OverlandMapCoordinatesEx originalMoveFrom, final OverlandMapCoordinatesEx moveTo,
-		final boolean forceAsPendingMovement, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "moveUnitStack", new String [] {unitStack.toString (),
 			unitStackOwner.getPlayerDescription ().getPlayerID ().toString (), originalMoveFrom.toString (), moveTo.toString ()});
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
-		final List<String> unitStackSkills = getServerUnitCalculations ().listAllSkillsInUnitStack (unitStack, priv.getFogOfWarMemory ().getMaintainedSpell (), db);
+		final List<String> unitStackSkills = getServerUnitCalculations ().listAllSkillsInUnitStack (unitStack, priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
 
 		// Have to define a lot of these out here so they can be used after the loop
 		boolean keepGoing = true;
@@ -1751,14 +1753,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 
 			// Find distances and route from our start point to every location on the map
-			final int [] [] [] doubleMovementDistances										= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-			movementDirections																		= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-			final boolean [] [] [] canMoveToInOneTurn										= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+			final int [] [] [] doubleMovementDistances										= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			movementDirections																		= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final boolean [] [] [] canMoveToInOneTurn										= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 
 			getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getPlane (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 				priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (), unitStack, doubleMovementRemaining,
-				doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
+				doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
 
 			// Is there a route to where we want to go?
 			validMoveFound = (doubleMovementDistances [moveTo.getPlane ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
@@ -1767,23 +1769,24 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if ((validMoveFound) && (!forceAsPendingMovement))
 			{
 				// Get the direction to make our 1 move in
-				final int movementDirection = determineMovementDirection (moveFrom, moveTo, movementDirections, sd.getMapSize ());
+				final int movementDirection = determineMovementDirection (moveFrom, moveTo, movementDirections, mom.getSessionDescription ().getMapSize ());
 
 				// Work out where this moves us to
 				final OverlandMapCoordinatesEx oneStep = new OverlandMapCoordinatesEx ();
 				oneStep.setX (moveFrom.getX ());
 				oneStep.setY (moveFrom.getY ());
 				oneStep.setPlane (moveFrom.getPlane ());
-				CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), oneStep, movementDirection);
+				CoordinateSystemUtils.moveCoordinates (mom.getSessionDescription ().getMapSize (), oneStep, movementDirection);
 
-				final MemoryGridCell oneStepTrueTile = trueMap.getMap ().getPlane ().get (oneStep.getPlane ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
+				final MemoryGridCell oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(oneStep.getPlane ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
 
 				// Does this initiate a combat?
 				typeOfCombatInitiated = movingHereResultsInAttack [oneStep.getPlane ()] [oneStep.getY ()] [oneStep.getX ()];
 
 				// Update the movement remaining for each unit
 				if (typeOfCombatInitiated == MoveResultsInAttackTypeID.NO)
-					reduceMovementRemaining (unitStack, unitStackSkills, oneStepTrueTile.getTerrainData ().getTileTypeID (), priv.getFogOfWarMemory ().getMaintainedSpell (), db);
+					reduceMovementRemaining (unitStack, unitStackSkills, oneStepTrueTile.getTerrainData ().getTileTypeID (), priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
 				else
 				{
 					// Even if attacking a node/lair/tower and click 'No' to abort the attack, still uses up their full movement
@@ -1818,7 +1821,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 						oneStep.setPlane (0);
 
 					// Actually move the units
-					moveUnitStackOneCellOnServerAndClients (unitStack, unitStackOwner, moveFrom, oneStep, players, trueMap, sd, db);
+					moveUnitStackOneCellOnServerAndClients (unitStack, unitStackOwner, moveFrom, oneStep, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 
 					// Prepare for next loop
 					moveFrom = oneStep;
@@ -1837,14 +1840,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			// best path again based on what else we learned about the terrain in our last move
 			if (!forceAsPendingMovement)
 			{
-				final int [] [] [] doubleMovementDistances										= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-				movementDirections																		= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-				final boolean [] [] [] canMoveToInOneTurn										= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-				final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+				final int [] [] [] doubleMovementDistances										= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+				movementDirections																		= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+				final boolean [] [] [] canMoveToInOneTurn										= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+				final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 
 				getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getPlane (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 					priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (), unitStack, doubleMovementRemaining,
-					doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
+					doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
 
 				validMoveFound = (doubleMovementDistances [moveTo.getPlane ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
 			}
@@ -1871,7 +1874,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 					pending.getPath ().add (direction);
 
-					if (!CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), coords, CoordinateSystemUtils.normalizeDirection (sd.getMapSize ().getCoordinateSystemType (), direction + 4)))
+					if (!CoordinateSystemUtils.moveCoordinates (mom.getSessionDescription ().getMapSize (), coords, CoordinateSystemUtils.normalizeDirection (mom.getSessionDescription ().getMapSize ().getCoordinateSystemType (), direction + 4)))
 						throw new MomException ("moveUnitStack: Server map tracing moved to a cell off the map");
 				}
 
@@ -1892,7 +1895,75 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}
 		else
 		{
-			throw new UnsupportedOperationException ("moveUnitStack doesn't include code for initiating combats yet");
+			// What plane will the monsters/defenders be on?
+			final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(moveTo.getPlane ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
+			
+			final int towerPlane;
+			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
+				towerPlane = 0;
+			else
+				towerPlane = moveTo.getPlane ();
+			
+			// Find a defending unit
+			final MemoryUnit defUnit = getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), moveTo.getX (), moveTo.getY (), towerPlane, 0);
+			final PlayerServerDetails defPlayer = (defUnit == null) ? null : MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), defUnit.getOwningPlayerID (), "moveUnitStack-DP");
+			
+			// Do we need to send a unit ID and/or player with the combat setup?
+			final String monsterUnitID;
+			final PlayerServerDetails playerBeingAttacked;
+			if (typeOfCombatInitiated == MoveResultsInAttackTypeID.SCOUT)
+			{
+				if (defUnit != null)
+				{
+					// Lair with something in it
+					monsterUnitID = defUnit.getUnitID ();
+					playerBeingAttacked = defPlayer;
+				}
+				else
+				{
+					// Empty lair
+					monsterUnitID = "";	// null = unknown; empty string = known to be empty
+					playerBeingAttacked = null;
+				}
+			}
+			else
+			{
+				monsterUnitID = null;
+				if (defUnit != null)
+				{
+					// Player unit stack or defended city
+					playerBeingAttacked = defPlayer;
+				}
+				else
+				{
+					// We're attacking *something* or typeOfCombatInitiated would not have been set to YES, yet there's no units, so it must be an unoccupied city
+					// in which case the defending player is the city owner
+					if ((tc.getCityData () == null) || (tc.getCityData ().getCityOwnerID () == null) || (tc.getCityData ().getCityPopulation () == null) ||
+						(tc.getCityData ().getCityPopulation () <= 0))
+						
+						throw new MomException ("moveUnitStack has combat set to yes but isn't attacking an empty city");
+					
+					playerBeingAttacked = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "moveUnitStack-CO");
+				}
+			}
+			
+			// Scheduled the combat or start it immediately
+			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
+				throw new UnsupportedOperationException ("moveUnitStack doesn't include code for initiating scheduled combats yet");
+			else
+			{
+				final OverlandMapCoordinatesEx defendingLocation = new OverlandMapCoordinatesEx ();
+				defendingLocation.setX (moveTo.getX ());
+				defendingLocation.setY (moveTo.getY ());
+				defendingLocation.setPlane (towerPlane);
+				
+				final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
+				for (final MemoryUnit tu : unitStack)
+					attackingUnitURNs.add (tu.getUnitURN ());
+				
+				getCombatProcessing ().initiateCombat (defendingLocation, moveFrom, null, unitStackOwner, attackingUnitURNs, typeOfCombatInitiated, monsterUnitID, mom);
+			}
 		}
 
 		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "moveUnitStack");
@@ -2104,5 +2175,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void setPendingMovementUtils (final PendingMovementUtils utils)
 	{
 		pendingMovementUtils = utils;
+	}
+
+	/**
+	 * @return Combat processing
+	 */
+	public final CombatProcessing getCombatProcessing ()
+	{
+		return combatProcessing;
+	}
+
+	/**
+	 * @param proc Combat processing
+	 */
+	public final void setCombatProcessing (final CombatProcessing proc)
+	{
+		combatProcessing = proc;
 	}
 }

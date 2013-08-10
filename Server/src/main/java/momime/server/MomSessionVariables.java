@@ -23,6 +23,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.process.CityProcessing;
+import momime.server.process.CombatProcessing;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.process.SpellProcessing;
 import momime.server.utils.CityServerUtils;
@@ -101,6 +102,11 @@ public interface MomSessionVariables
 	 * @return City processing methods
 	 */
 	public CityProcessing getCityProcessing ();
+	
+	/**
+	 * @return Combat processing
+	 */
+	public CombatProcessing getCombatProcessing ();
 
 	/**
 	 * @return City calculcations

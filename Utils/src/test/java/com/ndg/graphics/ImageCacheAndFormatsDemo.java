@@ -63,7 +63,7 @@ public class ImageCacheAndFormatsDemo
 				{
 					final InputStream stream;
 					if (fileName.endsWith (".ndgarc"))
-						stream = new FileInputStream ("F:\\Workspaces\\Delphi\\Master of Magic\\New Graphics\\" + fileName);
+						stream = new FileInputStream ("W:\\Delphi\\Master of Magic\\New Graphics\\" + fileName);
 					else if (fileName.endsWith (".LBX"))
 						stream = new FileInputStream ("C:\\32 bit Program Files\\DosBox - Master of Magic\\Magic\\" + fileName);
 					else
@@ -98,6 +98,13 @@ public class ImageCacheAndFormatsDemo
 			// Image showing the blackness/transparency in later frames bug
 			for (int frameNumber = 0; frameNumber < 8; frameNumber++)
 				addImage (cache, "CITYSCAP.LBX", 48, frameNumber, 350 + (frameNumber * 50), 300, contentPane);
+			
+			// Terrain.lbx has its own special encoding
+			for (int frameNumber = 0; frameNumber < 5; frameNumber++)
+			{
+				addImage (cache, "TERRAIN.LBX", 0, frameNumber + 2, 350 + (frameNumber * 21), 360, contentPane);
+				addImage (cache, "TERRAIN.LBX", 0, frameNumber + 30, 350 + (frameNumber * 21), 379, contentPane);
+			}
 
 			/*
 			 * ENCODING TESTS

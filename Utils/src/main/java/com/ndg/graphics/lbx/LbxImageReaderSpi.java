@@ -1,7 +1,6 @@
 package com.ndg.graphics.lbx;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
 import java.util.Locale;
 
 import javax.imageio.ImageReader;
@@ -119,7 +118,7 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 	 * @return Appropriate class for decoding .ndgbmp streams
 	 */
 	@Override
-	public ImageReader createReaderInstance (final Object extension)
+	public final ImageReader createReaderInstance (final Object extension)
 	{
 		return new LbxImageReader (this);
 	}
@@ -129,7 +128,7 @@ public class LbxImageReaderSpi extends ImageReaderSpi
 	 * @return Description of this SPI
 	 */
 	@Override
-	public String getDescription (final Locale locale)
+	public final String getDescription (final Locale locale)
 	{
 		return "LBX Reader SPI";
 	}
@@ -140,51 +139,14 @@ public class LbxImageReaderSpi extends ImageReaderSpi
      * @throws IOException If there is an error reading from the stream
      */
 	@Override
-	public boolean canDecodeInput (final Object source)
+	public final boolean canDecodeInput (final Object source)
 		throws IOException
 	{
 		boolean result = false;
-
 		if (source instanceof ImageInputStream)
 		{
 			final ImageInputStream stream = (ImageInputStream) source;
-
-			// Check the image file has enough space to hold at least the graphics header and an ending offset
-			if (stream.length () >= LbxImageReader.LBX_IMAGE_HEADER_SIZE + 4)
-			{
-				// Note this is testing one lbx image - not the whole lbx archive
-				// so this isn't as simple as looking for the LBX signature at the front of the archive
-				// We actually need to read and parse the LBX image header and check its validity
-				stream.mark ();
-
-				// Read the header
-				stream.setByteOrder (ByteOrder.LITTLE_ENDIAN);
-
-				// Skip width, height, junk value
-				for (int skip = 0; skip < 3; skip++)
-					stream.readUnsignedShort ();
-
-				final int frameCount = stream.readUnsignedShort ();
-
-				// Skip 3 junk values, palette info offset, plus the final junk value
-				for (int skip = 0; skip < 5; skip++)
-					stream.readUnsignedShort ();
-
-				// Check the file has at least enough space to hold the graphics header plus offsets
-				// for the number of bitmaps it specifies
-				if (stream.length () >= LbxImageReader.LBX_IMAGE_HEADER_SIZE + ((frameCount + 1) * 4))
-				{
-					// Skip through until we read the offset of the end of the last frame
-					long offset = 0;
-					for (int frameNo = 0; frameNo <= frameCount; frameNo++)
-						offset = stream.readUnsignedInt ();
-
-					// This should exactly equal the length of the stream
-					result = (offset == stream.length ());
-				}
-
-				stream.reset ();
-			}
+			result = (LbxImageReader.testStream (stream) != null);
 		}
 
 		return result;

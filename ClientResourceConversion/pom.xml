@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.ndg.momime</groupId>
+	<artifactId>momime-client-resourceConversion</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>momimeClientResourceConversion</name>
+	<description>MoM IME Client initial resource conversion</description>
+
+	<parent>
+		<groupId>com.ndg.common</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.0.6</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-client</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-utils</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+</project>

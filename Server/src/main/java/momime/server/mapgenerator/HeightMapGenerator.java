@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import momime.server.utils.RandomUtils;
-
 import com.ndg.map.CoordinateSystem;
+import com.ndg.random.RandomUtils;
 
 /**
  * Generates plasma fractal height maps, that are used as the basis of both the overland and combat map generators
@@ -37,6 +36,9 @@ final class HeightMapGenerator
 	/** Number of occurrences of each height on each plane - outer list contains the two planes; inner list is the list of heights */
 	private final List<Integer> heightCounts;
 
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
 	/**
 	 * Creates all of the objects leaving them unfilled, must call the generateHeightMap () method to actually do the work
 	 * This allows the unit tests to create the map generator objects without actually running it
@@ -155,13 +157,13 @@ final class HeightMapGenerator
 
 			// Set midpoints of sides to avg of side's vertices plus a random factor
 			// Unset points are null, don't reset if set
-			setMidPoints (xmid,		y0,		((val00 + val10) / 2) + RandomUtils.getGenerator ().nextInt (step) - (step / 2));
-			setMidPoints (xmid,		y1wrap,	((val01 + val11) / 2) + RandomUtils.getGenerator ().nextInt (step) - (step / 2));
-			setMidPoints (x0,		ymid,		((val00 + val01) / 2) + RandomUtils.getGenerator ().nextInt (step) - (step / 2));
-			setMidPoints (x1wrap,	ymid,		((val10 + val11) / 2) + RandomUtils.getGenerator ().nextInt (step) - (step / 2));
+			setMidPoints (xmid,		y0,		((val00 + val10) / 2) + getRandomUtils ().nextInt (step) - (step / 2));
+			setMidPoints (xmid,		y1wrap,	((val01 + val11) / 2) + getRandomUtils ().nextInt (step) - (step / 2));
+			setMidPoints (x0,		ymid,		((val00 + val01) / 2) + getRandomUtils ().nextInt (step) - (step / 2));
+			setMidPoints (x1wrap,	ymid,		((val10 + val11) / 2) + getRandomUtils ().nextInt (step) - (step / 2));
 
 			// Set middle to average of midpoints plus a random factor, if not set
-			setMidPoints (xmid, ymid, ((val00 + val01 + val10 + val11) / 4) + RandomUtils.getGenerator ().nextInt (step) - (step / 2));
+			setMidPoints (xmid, ymid, ((val00 + val01 + val10 + val11) / 4) + getRandomUtils ().nextInt (step) - (step / 2));
 
 			// Now call recursively on the four subrectangles
 			final int newStep = (2 * step) / 3;
@@ -229,7 +231,7 @@ final class HeightMapGenerator
 				final int y = (yn * yMax) / yBlocks;
 
 				// Randomize initial point
-				int thisHeight = RandomUtils.getGenerator ().nextInt (2 * step) - step;
+				int thisHeight = getRandomUtils ().nextInt (2 * step) - step;
 
 				// Avoid edges (topological singularities)
 				if (nearSingularity (x, y, 7))		// cannot find actual value for CITY_MAP_RADIUS
@@ -430,5 +432,21 @@ final class HeightMapGenerator
 	final List<Integer> getHeightCounts ()
 	{
 		return heightCounts;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

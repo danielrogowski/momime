@@ -38,6 +38,7 @@ import com.ndg.map.areas.StringMapArea2DArray;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 /**
  * Server side only helper methods for dealing with the overland map
@@ -53,32 +54,12 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
-	/**
-	 * @param plane Plane that we want to choose a race for
-	 * @param db Lookup lists built over the XML database
- 	 * @return ID of a random race who inhabits the requested plane
- 	 * @throws MomException If no races are defined with the requested plane
-	 */
-	final String chooseRandomRaceForPlane (final int plane, final ServerDatabaseEx db)
-		throws MomException
-	{
-		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "chooseRandomRaceForPlane");
-
-		// List all candidates
-		final List<String> raceIDs = new ArrayList<String> ();
-		for (final Race thisRace : db.getRace ())
-			if (thisRace.getNativePlane () == plane)
-				raceIDs.add (thisRace.getRaceID ());
-
-		if (raceIDs.size () == 0)
-			throw new MomException ("chooseRandomRaceForPlane: No races are defined who inhabit plane \"" + plane + "\"");
-
-		final String chosenRaceID = raceIDs.get (RandomUtils.getGenerator ().nextInt (raceIDs.size ()));
-
-		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "chooseRandomRaceForPlane", chosenRaceID);
-		return chosenRaceID;
-	}
-
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
+	/** Server-only pick utils */
+	private PlayerPickServerUtils playerPickServerUtils;
+	
 	/**
 	 * Sets the race for all land squares connected to x, y
 	 * @param map True terrain
@@ -155,7 +136,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 						(continentalRace.get (plane.getPlaneNumber ()).get (x, y) == null))
 
 						setContinentalRace (map, continentalRace, x, y, plane.getPlaneNumber (),
-							chooseRandomRaceForPlane (plane.getPlaneNumber (), db), db);
+							getPlayerPickServerUtils ().chooseRandomRaceForPlane (plane.getPlaneNumber (), db), db);
 				}
 
 		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "decideAllContinentalRaces", continentalRace);
@@ -195,7 +176,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 
 			// If any names are left then pick one, if not then increase the roman numeral suffix
 			if (possibleChoices.size () > 0)
-				chosenCityName = possibleChoices.get (RandomUtils.getGenerator ().nextInt (possibleChoices.size ()));
+				chosenCityName = possibleChoices.get (getRandomUtils ().nextInt (possibleChoices.size ()));
 			else
 				numeral++;
 		}
@@ -249,7 +230,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 				CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_MELD_WITH_NODE, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 			
 			// Decide who wins
-			successful = (RandomUtils.getGenerator ().nextInt (defendingStrength + attackingStrength) < attackingStrength);
+			successful = (getRandomUtils ().nextInt (defendingStrength + attackingStrength) < attackingStrength);
 		}
 		
 		// Check if successful
@@ -314,7 +295,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		}
 		
 		// Kill off the spirit
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, trueMap, players, sd, db);
+		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd, db);
 
 		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "attemptToMeldWithNode", successful);
 	}
@@ -377,5 +358,37 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
+	}
+
+	/**
+	 * @return Server-only pick utils
+	 */
+	public final PlayerPickServerUtils getPlayerPickServerUtils ()
+	{
+		return playerPickServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only pick utils
+	 */
+	public final void setPlayerPickServerUtils (final PlayerPickServerUtils utils)
+	{
+		playerPickServerUtils = utils;
 	}
 }

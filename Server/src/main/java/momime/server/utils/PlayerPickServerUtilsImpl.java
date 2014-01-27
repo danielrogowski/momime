@@ -17,9 +17,9 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.PlayerKnowledgeUtils;
 import momime.server.ai.SpellAI;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Pick;
@@ -32,6 +32,7 @@ import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Wizard;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.random.RandomUtils;
 
 /**
  * Server side only helper methods for dealing with picks
@@ -49,6 +50,9 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	
 	/** AI decisions about spells */
 	private SpellAI spellAI;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * @param picks Player's picks to count up
@@ -545,7 +549,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		if (possibleRaces.size () == 0)
 			throw new MomException ("chooseRandomRaceForPlane: No races defined for plane " + planeNumber);
 
-		final String raceID = possibleRaces.get (RandomUtils.getGenerator ().nextInt (possibleRaces.size ()));
+		final String raceID = possibleRaces.get (getRandomUtils ().nextInt (possibleRaces.size ()));
 
 		log.entering (PlayerPickServerUtilsImpl.class.getName (), "chooseRandomRaceForPlane", raceID);
 		return raceID;
@@ -597,5 +601,21 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	public final void setSpellAI (final SpellAI ai)
 	{
 		spellAI = ai;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

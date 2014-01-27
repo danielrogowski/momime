@@ -42,6 +42,7 @@ import org.junit.Test;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
 
 /**
  * Tests the UnitServerUtils class
@@ -57,8 +58,14 @@ public final class TestUnitServerUtilsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 		
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setRandomUtils (random);
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 
@@ -68,7 +75,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN001_HN0", unit.getHeroNameID ().substring (0, 9));
+		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 
 		assertEquals (4, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
@@ -90,8 +97,14 @@ public final class TestUnitServerUtilsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setRandomUtils (random);
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
@@ -106,7 +119,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN007_HN0", unit.getHeroNameID ().substring (0, 9));
+		assertEquals ("UN007_HN03", unit.getHeroNameID ());
 
 		assertEquals (5, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
@@ -130,8 +143,14 @@ public final class TestUnitServerUtilsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setRandomUtils (random);
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
@@ -146,7 +165,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN008_HN0", unit.getHeroNameID ().substring (0, 9));
+		assertEquals ("UN008_HN03", unit.getHeroNameID ());
 
 		assertEquals (4, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
@@ -168,8 +187,14 @@ public final class TestUnitServerUtilsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setRandomUtils (random);
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
@@ -195,8 +220,14 @@ public final class TestUnitServerUtilsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setRandomUtils (random);
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
@@ -212,7 +243,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN007_HN0", unit.getHeroNameID ().substring (0, 9));
+		assertEquals ("UN007_HN03", unit.getHeroNameID ());
 
 		assertEquals (5, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
@@ -236,8 +267,14 @@ public final class TestUnitServerUtilsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setRandomUtils (random);
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
@@ -253,7 +290,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN013_HN0", unit.getHeroNameID ().substring (0, 9));
+		assertEquals ("UN013_HN03", unit.getHeroNameID ());
 
 		assertEquals (3, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
@@ -273,8 +310,14 @@ public final class TestUnitServerUtilsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setRandomUtils (random);
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
@@ -289,7 +332,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN025_HN0", unit.getHeroNameID ().substring (0, 9));
+		assertEquals ("UN025_HN03", unit.getHeroNameID ());
 
 		assertEquals (3, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
@@ -309,8 +352,14 @@ public final class TestUnitServerUtilsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setRandomUtils (random);
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		
@@ -339,7 +388,7 @@ public final class TestUnitServerUtilsImpl
 		}
 
 		// We need to prove that it got as far as filling out HS03 and HS04 before it bombed out - if it bombed out right at the start, fail the test
-		assertEquals ("UN025_HN0", unit.getHeroNameID ().substring (0, 9));
+		assertEquals ("UN025_HN03", unit.getHeroNameID ());
 
 		assertEquals (5, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());

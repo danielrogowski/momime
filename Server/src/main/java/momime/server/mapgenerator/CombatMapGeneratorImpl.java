@@ -22,10 +22,10 @@ import momime.server.database.v0_9_4.CombatMapElement;
 import momime.server.database.v0_9_4.CombatTileType;
 import momime.server.database.v0_9_4.TileType;
 import momime.server.messages.v0_9_4.ServerGridCell;
-import momime.server.utils.RandomUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.MapCoordinates;
+import com.ndg.random.RandomUtils;
 
 
 /**
@@ -60,6 +60,9 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
 	
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
 	/**
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Server database XML
@@ -84,6 +87,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		
 		// Generate height-based scenery
 		final HeightMapGenerator heightMap = new HeightMapGenerator (combatMapCoordinateSystem, COMBAT_MAP_ZONES_HORIZONTALLY, COMBAT_MAP_ZONES_VERTICALLY, 0);
+		heightMap.setRandomUtils (getRandomUtils ());
 		heightMap.generateHeightMap ();
 		
 		// Set troughs and hills
@@ -226,7 +230,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		int featuresAdded = 0;
 		while ((featuresAdded < featureTileCount) && (possibleLocations.size () > 0))
 		{
-			final int index = RandomUtils.getGenerator ().nextInt (possibleLocations.size ());
+			final int index = getRandomUtils ().nextInt (possibleLocations.size ());
 			final MapCoordinates coords = possibleLocations.get (index);
 			possibleLocations.remove (index);
 			featuresAdded++;
@@ -359,5 +363,21 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	public final void setCombatMapUtils (final CombatMapUtils utils)
 	{
 		combatMapUtils = utils;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

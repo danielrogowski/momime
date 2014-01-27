@@ -20,8 +20,8 @@ import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.server.ServerTestData;
@@ -31,6 +31,8 @@ import momime.server.database.ServerDatabaseValues;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.random.RandomUtils;
+import com.ndg.random.RandomUtilsImpl;
 
 /**
  * Tests the CombatMapGeneratorImpl class
@@ -77,6 +79,8 @@ public final class TestCombatMapGeneratorImpl
 	public final void testSetTerrainFeaturesRandomly ()
 	{
 		final CombatMapGeneratorImpl mapGen = new CombatMapGeneratorImpl ();
+		mapGen.setRandomUtils (new RandomUtilsImpl ());
+		
 		final MapAreaOfCombatTiles map = ServerTestData.createCombatMap ();
 		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 
@@ -90,7 +94,7 @@ public final class TestCombatMapGeneratorImpl
 		
 		assertEquals (0, count);
 		
-		// Test small number
+		// Test small number - this could be improved by fixing the random number generator results, but its OK as a test for now
 		mapGen.setTerrainFeaturesRandomly (map, "B", 10);
 		count = 0;
 		for (final MapRowOfCombatTiles row : map.getRow ())
@@ -350,6 +354,9 @@ public final class TestCombatMapGeneratorImpl
 		// Coordinate system
 		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
 		
+		// Need real random number generator to generate a meaningful map
+		final RandomUtils random = new RandomUtilsImpl ();
+		
 		// Set up class
 		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 		
@@ -357,6 +364,7 @@ public final class TestCombatMapGeneratorImpl
 		mapGen.setCombatMapUtils (utils);
 		mapGen.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
+		mapGen.setRandomUtils (random);
 		
 		// Location
 		final OverlandMapCoordinatesEx combatMapLocation = new OverlandMapCoordinatesEx ();

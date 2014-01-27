@@ -34,13 +34,13 @@ import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Race;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.utils.RandomUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.BooleanMapArea2D;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 /**
  * Methods for AI players making decisions about where to place cities and what to build in them
@@ -64,6 +64,9 @@ public final class CityAIImpl implements CityAI
 
 	/** Server-only city calculations */
 	private MomServerCityCalculations serverCityCalculations;
+
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
@@ -207,7 +210,7 @@ public final class CityAIImpl implements CityAI
 		int modifiedDoubleRationsNeeded = doubleRationsNeeded;
 		while ((modifiedDoubleRationsNeeded > 0) && (workerCoordinates.size () > 0))
 		{
-			final int workerNo = RandomUtils.getGenerator ().nextInt (workerCoordinates.size ());
+			final int workerNo = getRandomUtils ().nextInt (workerCoordinates.size ());
 			final OverlandMapCoordinatesEx cityLocation = workerCoordinates.get (workerNo);
 			workerCoordinates.remove (workerNo);
 
@@ -496,5 +499,21 @@ public final class CityAIImpl implements CityAI
 	public final void setServerCityCalculations (final MomServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

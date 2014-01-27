@@ -17,7 +17,8 @@ import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
 import momime.server.database.v0_9_4.PickTypeCountContainer;
 import momime.server.database.v0_9_4.PickTypeGrantsSpells;
-import momime.server.utils.RandomUtils;
+
+import com.ndg.random.RandomUtils;
 
 /**
  * Calculations pertaining to spells that are only used on the server
@@ -32,6 +33,9 @@ public final class MomServerSpellCalculationsImpl implements MomServerSpellCalcu
 
 	/** Spell utils */
 	private SpellUtils spellUtils;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * For all the spells that we did NOT get for free at the start of the game, decides whether or not they are in our spell book to be available to be researched
@@ -88,7 +92,7 @@ public final class MomServerSpellCalculationsImpl implements MomServerSpellCalcu
 						// Randomly pick some to make researchable
 						while ((availableCount > 0) && (spellsToChooseFrom.size () > 0))
 						{
-							final Spell chosenSpell = spellsToChooseFrom.get (RandomUtils.getGenerator ().nextInt (spellsToChooseFrom.size ()));
+							final Spell chosenSpell = spellsToChooseFrom.get (getRandomUtils ().nextInt (spellsToChooseFrom.size ()));
 
 							spellIdsToMakeResearchable.add (chosenSpell.getSpellID ());
 							spellsToChooseFrom.remove (chosenSpell);
@@ -148,7 +152,7 @@ public final class MomServerSpellCalculationsImpl implements MomServerSpellCalcu
 				while ((researchableNow < SPELL_COUNT_TO_PICK_RESEARCH_FROM) && (spellChoices.size () > 0))
 				{
 					// Pick a random spell
-					final Spell chosenSpell = spellChoices.get (RandomUtils.getGenerator ().nextInt (spellChoices.size ()));
+					final Spell chosenSpell = spellChoices.get (getRandomUtils ().nextInt (spellChoices.size ()));
 
 					spellIdsToMakeResearchableNow.add (chosenSpell.getSpellID ());
 					spellChoices.remove (chosenSpell);
@@ -183,5 +187,21 @@ public final class MomServerSpellCalculationsImpl implements MomServerSpellCalcu
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

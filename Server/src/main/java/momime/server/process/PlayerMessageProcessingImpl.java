@@ -44,9 +44,9 @@ import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
-import momime.common.utils.PlayerKnowledgeUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CityAI;
 import momime.server.ai.MomAI;
@@ -62,7 +62,6 @@ import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.UnitServerUtils;
-import momime.server.utils.RandomUtils;
 
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -70,6 +69,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
 
 /**
  * Methods for any significant message processing to do with game startup and the turn system that isn't done in the message implementations
@@ -123,6 +123,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 	/** Player list utils */
 	private MultiplayerServerUtils multiplayerServerUtils;
+
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * Message we send to the server when we choose which wizard we want to be; AI players also call this to do their wizard, picks and spells setup
@@ -413,7 +416,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					if (availableWizards.size () == 0)
 						throw new MomException ("Not enough Wizards defined for number of AI players");
 
-					final Wizard chosenWizard = availableWizards.get (RandomUtils.getGenerator ().nextInt (availableWizards.size ()));
+					final Wizard chosenWizard = availableWizards.get (getRandomUtils ().nextInt (availableWizards.size ()));
 					availableWizards.remove (chosenWizard);
 
 					// Add AI player
@@ -1150,5 +1153,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setMultiplayerServerUtils (final MultiplayerServerUtils obj)
 	{
 		multiplayerServerUtils = obj;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

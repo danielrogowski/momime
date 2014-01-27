@@ -16,6 +16,8 @@ import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
+import momime.common.messages.servertoclient.v0_9_4.DamageCalculationMessage;
+import momime.common.messages.servertoclient.v0_9_4.DamageCalculationMessageTypeID;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_4.SetUnitIntoOrTakeUnitOutOfCombatMessage;
@@ -49,12 +51,27 @@ import org.junit.Test;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
 
 /**
  * Tests the CombatProcessingImpl class
  */
 public final class TestCombatProcessingImpl
 {
+	/**
+	 * Just to save repeating this a dozen times in the test cases
+	 * @param x X coord
+	 * @return Coordinates object
+	 */
+	private final OverlandMapCoordinatesEx createCoordinates (final int x)
+	{
+		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
+		combatLocation.setX (x);
+		combatLocation.setY (10);
+		combatLocation.setPlane (1);
+		return combatLocation;
+	}
+
 	/**
 	 * Tests the determineMaxUnitsInRow method
 	 * This does a mock setup for a defender in a city with city walls (see layout pattern in the comments of the main method)
@@ -654,14 +671,14 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -834,14 +851,14 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1008,14 +1025,14 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1154,12 +1171,12 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, sd, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1289,12 +1306,12 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, sd, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -2806,16 +2823,170 @@ public final class TestCombatProcessingImpl
 	}
 	
 	/**
-	 * Just to save repeating this a dozen times in the test cases
-	 * @param x X coord
-	 * @return Coordinates object
+	 * Tests the countUnitsInCombat method
 	 */
-	private final OverlandMapCoordinatesEx createCoordinates (final int x)
+	@Test
+	public final void testCountUnitsInCombat ()
 	{
-		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
-		combatLocation.setX (x);
-		combatLocation.setY (10);
-		combatLocation.setPlane (1);
-		return combatLocation;
+		// Set up sample units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Right
+		final MemoryUnit unit1 = new MemoryUnit ();
+		unit1.setStatus (UnitStatusID.ALIVE);
+		unit1.setCombatLocation (createCoordinates (20));
+		unit1.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit1);
+		
+		// Wrong location
+		final MemoryUnit unit2 = new MemoryUnit ();
+		unit2.setStatus (UnitStatusID.ALIVE);
+		unit2.setCombatLocation (createCoordinates (21));
+		unit2.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit2);
+		
+		// Defender
+		final MemoryUnit unit3 = new MemoryUnit ();
+		unit3.setStatus (UnitStatusID.ALIVE);
+		unit3.setCombatLocation (createCoordinates (20));
+		unit3.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit3.setCombatSide (UnitCombatSideID.DEFENDER);
+		units.add (unit3);
+		
+		// Dead
+		final MemoryUnit unit4 = new MemoryUnit ();
+		unit4.setStatus (UnitStatusID.DEAD);
+		unit4.setCombatLocation (createCoordinates (20));
+		unit4.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit4);
+		
+		// Not in combat
+		final MemoryUnit unit5 = new MemoryUnit ();
+		unit5.setStatus (UnitStatusID.ALIVE);
+		unit5.setCombatLocation (createCoordinates (20));
+		unit5.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit5);
+		
+		// Another right one
+		final MemoryUnit unit6 = new MemoryUnit ();
+		unit6.setStatus (UnitStatusID.ALIVE);
+		unit6.setCombatLocation (createCoordinates (20));
+		unit6.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit6.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit6);
+		
+		// Set up object to test
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		
+		// Run test
+		assertEquals (2, proc.countUnitsInCombat (createCoordinates (20), UnitCombatSideID.ATTACKER, units));
+	}
+	
+	/**
+	 * Tests the calculateDamage method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateDamage () throws Exception
+	{
+		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		
+		// Set up other lists
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingMsgs);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (4);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		
+		// Set up units
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitURN (22);
+		
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (33);
+		
+		// Set up attacker stats
+		final MomUnitCalculations unitCalculations = mock (MomUnitCalculations.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		when (unitCalculations.calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db)).thenReturn (6);		// Attacker has 6 figures...
+
+		when (unitUtils.getModifiedAttributeValue (attacker, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);	// ..and 3 swords, so 18 hits...
+
+		when (unitUtils.getModifiedAttributeValue (attacker, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);	// ..with 40% chance to hit on each
+		
+		// Set up defender stats
+		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);	// ..and 4 shields...
+
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (2);	// ..with 50% chance to block on each
+
+		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+		
+		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		
+		// Fix random number generator rolls
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (10)).thenReturn (0, 2, 6, 7, 3, 6, 7, 4, 2, 5, 7, 9, 2, 4, 3, 6, 6, 8,		// Attack rolls, 6 of them are <4
+			5, 8, 3, 9,		// First figure is unlucky and only blocks 1 hit, then loses its 2 HP and dies
+			1, 5, 8, 2);		// Second figure blocks 2 of the hits, then loses 1 HP
+								// So in total, 3 of the dmg went against HP (which is the overall result of the method call)
+		
+		// Set up object to test
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setUnitCalculations (unitCalculations);
+		proc.setUnitUtils (unitUtils);
+		proc.setRandomUtils (random);
+		
+		// Run test
+		final DamageCalculationMessage msg = new DamageCalculationMessage ();
+		assertEquals (3, proc.calculateDamage (attacker, defender, attackingPlayer, defendingPlayer, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+			msg, players, spells, combatAreaEffects, db));
+		
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingMsgs.getMessages ().size ());
+		assertSame (msg, attackingMsgs.getMessages ().get (0));
+		
+		assertEquals (DamageCalculationMessageTypeID.ATTACK_AND_DEFENCE_STATISTICS, msg.getMessageType ());
+		assertEquals (22, msg.getAttackerUnitURN ().intValue ());
+		assertEquals (33, msg.getDefenderUnitURN ().intValue ());
+		assertEquals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK, msg.getAttackAttributeID ());
+		
+		assertEquals (6, msg.getAttackerFigures ().intValue ());
+		assertEquals (3, msg.getAttackStrength ().intValue ());
+		assertEquals (18, msg.getPotentialDamage ().intValue ());
+		assertEquals (4, msg.getChanceToHit ().intValue ());
+		assertEquals (72, msg.getTenTimesAverageDamage ().intValue ());		// 18 hits * 0.4 chance = 7.2 average hits
+		assertEquals (6, msg.getActualDamage ().intValue ());
+		
+		assertEquals (3, msg.getDefenderFigures ().intValue ());
+		assertEquals (4, msg.getDefenceStrength ().intValue ());
+		assertEquals (5, msg.getChanceToDefend ().intValue ());
+		assertEquals (20, msg.getTenTimesAverageBlock ().intValue ());		// 4 shields * 0.5 chance = 2.0 average blocked
+		assertEquals ("1,2", msg.getActualBlockedHits ());		// 1st figure blocked 1 hit, 2nd figure blocked 2 hits
 	}
 }

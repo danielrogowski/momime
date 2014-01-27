@@ -54,6 +54,7 @@ import org.junit.Test;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
 
 /**
  * Tests the SpellProcessing class
@@ -166,6 +167,7 @@ public final class TestSpellProcessingImpl
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setSpellUtils (new SpellUtilsImpl ());
 		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
+		proc.setRandomUtils (mock (RandomUtils.class));
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
@@ -344,6 +346,7 @@ public final class TestSpellProcessingImpl
 		proc.setSpellUtils (new SpellUtilsImpl ());
 		proc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		proc.setUnitServerUtils (unitServerUtils);
+		proc.setRandomUtils (mock (RandomUtils.class));
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
@@ -459,6 +462,7 @@ public final class TestSpellProcessingImpl
 		proc.setSpellUtils (new SpellUtilsImpl ());
 		proc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		proc.setUnitServerUtils (unitServerUtils);
+		proc.setRandomUtils (mock (RandomUtils.class));
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);

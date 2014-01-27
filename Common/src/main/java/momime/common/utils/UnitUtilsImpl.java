@@ -23,6 +23,7 @@ import momime.common.database.v0_9_4.UnitType;
 import momime.common.database.v0_9_4.UnitUpkeep;
 import momime.common.database.v0_9_4.WeaponGradeAttributeBonus;
 import momime.common.database.v0_9_4.WeaponGradeSkillBonus;
+import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -967,6 +968,33 @@ public final class UnitUtilsImpl implements UnitUtils
 		}
 		
 		log.exiting (UnitUtilsImpl.class.getName (), "beforeKillingUnit");
+	}
+
+	/**
+	 * @param units List of units to check
+	 * @param combatLocation Location on overland map where the combat is taking place
+	 * @param combatPosition Position within the combat map to look at
+	 * @return Unit at this position, or null if there isn't one
+	 */
+	@Override
+	public final MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatPosition)
+	{
+		log.entering (UnitUtilsImpl.class.getName (), "findAliveUnitInCombatAt", new String [] {combatLocation.toString (), combatPosition.toString ()});
+
+		MemoryUnit found = null;
+		final Iterator<MemoryUnit> iter = units.iterator ();
+		while ((found == null) && (iter.hasNext ()))
+		{
+			final MemoryUnit thisUnit = iter.next ();
+
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) &&
+				(combatPosition.equals (thisUnit.getCombatPosition ())))
+
+				found = thisUnit;
+		}
+
+		log.exiting (UnitUtilsImpl.class.getName (), "findAliveUnitInCombatAt", found);
+		return found;
 	}
 	
 	/**

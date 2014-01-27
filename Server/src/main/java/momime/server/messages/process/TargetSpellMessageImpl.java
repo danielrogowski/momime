@@ -19,11 +19,11 @@ import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.utils.TargetUnitSpellResult;
 import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_4.Spell;
-import momime.server.utils.RandomUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.random.RandomUtils;
 
 /**
  * Client sends this to specify where they want to cast a spell they've completed casting overland.
@@ -33,6 +33,9 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (TargetSpellMessageImpl.class.getName ());
+
+	/** Random number generator */
+	private RandomUtils randomUtils;
 
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -128,7 +131,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						// In future this will need to be made choosable for Spell Ward
 						error = null;
 						if (citySpellEffectIDs != null)
-							citySpellEffectID = citySpellEffectIDs.get (RandomUtils.getGenerator ().nextInt (citySpellEffectIDs.size ()));
+							citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
 					}					
 				}				
 			}
@@ -155,7 +158,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						{
 							// Yay
 							error = null;
-							unitSkillID = unitSkillIDs.get (RandomUtils.getGenerator ().nextInt (unitSkillIDs.size ()));
+							unitSkillID = unitSkillIDs.get (getRandomUtils ().nextInt (unitSkillIDs.size ()));
 						}
 					}
 					else
@@ -246,4 +249,20 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		
 		log.exiting (TargetSpellMessageImpl.class.getName (), "process");
 	}		
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
+	}
 }

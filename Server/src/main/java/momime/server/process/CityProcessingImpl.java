@@ -30,8 +30,8 @@ import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CityAI;
 import momime.server.calculations.MomServerCityCalculations;
@@ -46,14 +46,14 @@ import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
-import momime.server.utils.UnitServerUtils;
-import momime.server.utils.RandomUtils;
 import momime.server.utils.UnitAddLocation;
+import momime.server.utils.UnitServerUtils;
 
 import com.ndg.map.areas.StringMapArea2DArray;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 /**
  * Methods for any significant message processing to do with cities that isn't done in the message implementations
@@ -92,6 +92,9 @@ public final class CityProcessingImpl implements CityProcessing
 	
 	/** Resource calculations */
 	private MomServerResourceCalculations serverResourceCalculations;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -144,7 +147,7 @@ public final class CityProcessingImpl implements CityProcessing
 					plane = getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), db);
 				else
 					// Raiders just pick a random plane
-					plane = db.getPlane ().get (RandomUtils.getGenerator ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
+					plane = db.getPlane ().get (getRandomUtils ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
 				final OverlandMapCoordinatesEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db);
@@ -170,14 +173,14 @@ public final class CityProcessingImpl implements CityProcessing
 				{
 					// Randomize population of raider cities
 					city.setCityPopulation ((sd.getDifficultyLevel ().getRaiderCityStartSizeMin () +
-						RandomUtils.getGenerator ().nextInt (sd.getDifficultyLevel ().getRaiderCityStartSizeMax () - sd.getDifficultyLevel ().getRaiderCityStartSizeMin () + 1)) * 1000);
+						getRandomUtils ().nextInt (sd.getDifficultyLevel ().getRaiderCityStartSizeMax () - sd.getDifficultyLevel ().getRaiderCityStartSizeMin () + 1)) * 1000);
 
 					// Raiders have a special population cap that prevents cities expanding by more than a certain value
 					// See strategy guide p426
 					cityCell.setRaiderCityAdditionalPopulationCap (city.getCityPopulation () + (sd.getDifficultyLevel ().getRaiderCityGrowthCap () * 1000));
 
 					// Have a good chance of just picking the continental race ID
-					if (RandomUtils.getGenerator ().nextInt (100) < sd.getMapSize ().getContinentalRaceChance ())
+					if (getRandomUtils ().nextInt (100) < sd.getMapSize ().getContinentalRaceChance ())
 					{
 						final String raceID = continentalRace.get (plane).get (cityLocation);
 						if (raceID == null)
@@ -793,5 +796,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

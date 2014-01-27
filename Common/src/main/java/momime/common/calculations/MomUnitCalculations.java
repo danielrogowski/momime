@@ -8,6 +8,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.AvailableUnit;
+import momime.common.messages.v0_9_4.FogOfWarMemory;
+import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
@@ -98,4 +100,85 @@ public interface MomUnitCalculations
 	public void giveUnitFullRangedAmmoAndMana (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
+	 * First figure will take full damage before the second figure takes any damage
+	 * 
+	 * @param unit Unit to calculate attribute value for
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return Number of figures left alive in this unit
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	public int calculateAliveFigureCount (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException;
+	
+	/**
+	 * Of course available units can never lose hitpoints, however we still need to define this so the unit info screen can use
+	 * it and draw darkened hearts for 'real' units who have taken damage.
+	 * 
+	 * @param unit Unit to calculate HP for
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How many hit points the first figure in this unit has left
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	public int calculateHitPointsRemainingOfFirstFigure (final AvailableUnit unit, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException;
+	
+	/**
+	 * This isn't as straightforward as it sounds, we either need dedicated ranged attack ammo (which can be phys or magic ranged attacks)
+	 * or caster units can spend mana to fire ranged attacks, but only magical ranged attacks
+	 * 
+	 * @param unit Unit to calculate for
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the unit can make a ranged attack in combat and has ammo to do so
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	public boolean canMakeRangedAttack (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException;
+
+	/**
+	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location in the combat map whether we can move there or not.
+	 * 
+	 * MoM is a little weird with how movement works - providing you have even 1/2 move left, you can move anywhere, even somewhere
+	 * which takes 3 movement to get to - this can happen in combat as well, especially combats in cities when units can walk on the roads.
+	 * 
+	 * Therefore knowing distances to each location is not enough - we need a separate boolean array
+	 * to mark whether we can or cannot reach each location - this is set in MovementTypes.
+	 * 
+	 * @param doubleMovementDistances Double the number of movement points it takes to move here, 0=free (enchanted road), negative=cannot reach
+	 * @param movementDirections Trace of unit directions taken to reach here
+	 * @param movementTypes Type of move (or lack of) for every location on the combat map (these correspond exactly to the X, move, attack, icons displayed in the client)
+	 * @param unitBeingMoved The unit moving in combat
+	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
+	 * @param combatMap The details of the combat terrain
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	public void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
+		final CombatMoveType [] [] movementTypes, final MemoryUnit unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
+		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 }

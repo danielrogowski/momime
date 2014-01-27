@@ -1,7 +1,8 @@
 package momime.server.ai;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,8 @@ import momime.server.database.v0_9_4.Spell;
 
 import org.junit.Test;
 
+import com.ndg.random.RandomUtils;
+
 /**
  * Tests the SpellAI class
  */
@@ -29,15 +32,21 @@ public final class TestSpellAIImpl
 	public final void testChooseSpellToResearchAI_Valid () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		
+		// Fix random result
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (2)).thenReturn (1);
+		
+		// Set up object to test
 		final SpellAIImpl ai = new SpellAIImpl ();
+		ai.setRandomUtils (random);
 
 		// List the 2nd 10 earth spells, two of these have research order 1, so the routine should pick either of them
 		final List<Spell> spells = new ArrayList<Spell> ();
 		for (int n = 10; n < 20; n++)
 			spells.add (db.getSpell ().get (n));
 
-		final Spell spell = ai.chooseSpellToResearchAI (spells, "AI Player");
-		assertTrue ("Chosen spell was " + spell.getSpellID (), (spell.getSpellID ().equals ("SP013")) || (spell.getSpellID ().equals ("SP020")));
+		assertEquals ("SP020", ai.chooseSpellToResearchAI (spells, "AI Player").getSpellID ());
 	}
 
 	/**
@@ -59,10 +68,15 @@ public final class TestSpellAIImpl
 	public final void testChooseFreeSpellAI () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+
+		// Fix random result
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (2)).thenReturn (1);
 		
 		// Set up test object
 		final SpellAIImpl ai = new SpellAIImpl ();
 		ai.setSpellUtils (new SpellUtilsImpl ());
+		ai.setRandomUtils (random);
 
 		// Player knows no spells yet
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
@@ -75,11 +89,10 @@ public final class TestSpellAIImpl
 		}
 
 		// Same magic realm/spell rank at the 10 from the previous test
-		final SpellResearchStatus spell = ai.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db);
-		assertTrue ("Chosen spell was " + spell.getSpellID (), (spell.getSpellID ().equals ("SP013")) || (spell.getSpellID ().equals ("SP020")));
+		assertEquals ("SP020", ai.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db).getSpellID ());
 
 		// If we give the player one of the spells, should always pick the other one
-		spells.get (12).setStatus (SpellResearchStatusID.AVAILABLE);
-		assertEquals ("SP020", ai.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db).getSpellID ());
+		spells.get (19).setStatus (SpellResearchStatusID.AVAILABLE);
+		assertEquals ("SP013", ai.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db).getSpellID ());
 	}
 }

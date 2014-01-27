@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import javax.xml.bind.JAXBException;
 
@@ -14,7 +16,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.utils.MemoryGridCellUtilsImpl;
@@ -24,6 +25,9 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.Plane;
 
 import org.junit.Test;
+
+import com.ndg.random.RandomUtils;
+import com.ndg.random.RandomUtilsImpl;
 
 /**
  * Tests the OverlandMapGenerator class
@@ -73,7 +77,9 @@ public final class TestOverlandMapGeneratorImpl
 	@Test
 	public final void testFindTerrainBorder8_Found () throws JAXBException, MomException, RecordNotFoundException
 	{
-		final OverlandMapGeneratorImpl gen = new OverlandMapGeneratorImpl (); 
+		final OverlandMapGeneratorImpl gen = new OverlandMapGeneratorImpl ();
+		gen.setRandomUtils (mock (RandomUtils.class));
+		
 		assertEquals (32, gen.findTerrainBorder8 ("10000011"));
 	}
 
@@ -167,18 +173,16 @@ public final class TestOverlandMapGeneratorImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		fow.setMap (map);
-
+		// Fix random result
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (3)).thenReturn (2);
+		
+		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
-		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (db);
+		mapGen.setRandomUtils (random);
 
-		assertNotNull (db.findTileType (mapGen.chooseRandomNodeTileTypeID (), "testChooseRandomNodeTileTypeID").getMagicRealmID ());
+		assertEquals ("TT14", mapGen.chooseRandomNodeTileTypeID ());
 	}
 
 	/**
@@ -190,18 +194,16 @@ public final class TestOverlandMapGeneratorImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		fow.setMap (map);
-
+		// Fix random result
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (7)).thenReturn (5);
+		
+		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setTrueTerrain (fow);
-		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (db);
+		mapGen.setRandomUtils (random);
 
-		assertTrue (db.findMapFeature (mapGen.chooseRandomLairFeatureID (), "testChooseRandomLairFeatureID").getMapFeatureMagicRealm ().size () > 0);
+		assertEquals ("MF18", mapGen.chooseRandomLairFeatureID ());
 	}
 
 	/**
@@ -281,6 +283,11 @@ public final class TestOverlandMapGeneratorImpl
 		
 		mapGen.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 
+		// Need real random number generator to get a nice map out
+		final RandomUtils random = new RandomUtilsImpl ();
+		mapGen.setRandomUtils (random);
+		
+		// Run method
 		mapGen.generateOverlandTerrain ();
 
 		// We can't 'test' the output, only that the generation doesn't fail, but interesting to dump the maps to the standard output

@@ -17,6 +17,7 @@ import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitHasSkill;
+import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -1833,5 +1834,101 @@ public final class TestUnitUtilsImpl
 		assertEquals (2, mem.getMaintainedSpell ().size ());
 		assertSame (wrongUnit, mem.getMaintainedSpell ().get (0));
 		assertSame (noUnit, mem.getMaintainedSpell ().get (1));
+	}
+	
+	/**
+	 * Tests the findAliveUnitInCombatAt method
+	 */
+	@Test
+	public final void testFindAliveUnitInCombatAt ()
+	{
+		// Put into a list units that meet every criteria except one
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		// Unit is dead
+		final OverlandMapCoordinatesEx loc1 = new OverlandMapCoordinatesEx ();
+		loc1.setX (20);
+		loc1.setY (10);
+		loc1.setPlane (1);
+		
+		final CombatMapCoordinatesEx pos1 = new CombatMapCoordinatesEx ();
+		pos1.setX (14);
+		pos1.setY (7);
+		
+		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setCombatLocation (loc1);
+		u1.setCombatPosition (pos1);
+		u1.setStatus (UnitStatusID.DEAD);
+		
+		units.add (u1);
+		
+		// Wrong combat location
+		final OverlandMapCoordinatesEx loc2 = new OverlandMapCoordinatesEx ();
+		loc2.setX (21);
+		loc2.setY (10);
+		loc2.setPlane (1);
+		
+		final CombatMapCoordinatesEx pos2 = new CombatMapCoordinatesEx ();
+		pos2.setX (14);
+		pos2.setY (7);
+		
+		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setCombatLocation (loc2);
+		u2.setCombatPosition (pos2);
+		u2.setStatus (UnitStatusID.ALIVE);
+		
+		units.add (u2);
+		
+		// Wrong combat position
+		final OverlandMapCoordinatesEx loc3 = new OverlandMapCoordinatesEx ();
+		loc3.setX (20);
+		loc3.setY (10);
+		loc3.setPlane (1);
+		
+		final CombatMapCoordinatesEx pos3 = new CombatMapCoordinatesEx ();
+		pos3.setX (15);
+		pos3.setY (7);
+		
+		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setCombatLocation (loc3);
+		u3.setCombatPosition (pos3);
+		u3.setStatus (UnitStatusID.ALIVE);
+		
+		units.add (u3);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Should get a null
+		final OverlandMapCoordinatesEx loc = new OverlandMapCoordinatesEx ();
+		loc.setX (20);
+		loc.setY (10);
+		loc.setPlane (1);
+		
+		final CombatMapCoordinatesEx pos = new CombatMapCoordinatesEx ();
+		pos.setX (14);
+		pos.setY (7);
+
+		assertNull (utils.findAliveUnitInCombatAt (units, loc, pos));
+		
+		// Add one that matches
+		final OverlandMapCoordinatesEx loc4 = new OverlandMapCoordinatesEx ();
+		loc4.setX (20);
+		loc4.setY (10);
+		loc4.setPlane (1);
+		
+		final CombatMapCoordinatesEx pos4 = new CombatMapCoordinatesEx ();
+		pos4.setX (14);
+		pos4.setY (7);
+		
+		final MemoryUnit u4 = new MemoryUnit ();
+		u4.setCombatLocation (loc4);
+		u4.setCombatPosition (pos4);
+		u4.setStatus (UnitStatusID.ALIVE);
+		
+		units.add (u4);
+		
+		// Show that we find it
+		assertSame (u4, utils.findAliveUnitInCombatAt (units, loc, pos));
 	}
 }

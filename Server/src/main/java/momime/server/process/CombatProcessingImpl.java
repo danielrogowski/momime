@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -17,10 +18,13 @@ import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.v0_9_4.CombatEndedMessage;
+import momime.common.messages.servertoclient.v0_9_4.DamageCalculationMessage;
+import momime.common.messages.servertoclient.v0_9_4.DamageCalculationMessageTypeID;
 import momime.common.messages.servertoclient.v0_9_4.FoundLairNodeTowerMessage;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitMessageData;
+import momime.common.messages.servertoclient.v0_9_4.MoveUnitInCombatMessage;
 import momime.common.messages.servertoclient.v0_9_4.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.v0_9_4.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartCombatMessage;
@@ -40,6 +44,8 @@ import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitCombatSideID;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MomUnitAttributeComponent;
@@ -55,6 +61,7 @@ import momime.server.database.v0_9_4.Plane;
 import momime.server.fogofwar.FogOfWarDuplication;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
+import momime.server.fogofwar.UntransmittedKillUnitActionID;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.messages.v0_9_4.ServerGridCell;
@@ -66,6 +73,7 @@ import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 /**
  * Routines dealing with initiating, progressing and ending combats
@@ -151,6 +159,12 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Map generator */
 	private CombatMapGenerator combatMapGenerator;
+	
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
 
 	/**
 	 * Sets up a potential combat on the server.  If we're attacking an enemy unit stack or city, then all this does is calls StartCombat.
@@ -394,6 +408,12 @@ public final class CombatProcessingImpl implements CombatProcessing
 	}
 	
 	/**
+	 * 1 = Melee heroes
+	 * 2 = Melee units
+	 * 3 = Ranged heroes
+	 * 4 = Ranged units
+	 * 5 = Settlers
+	 * 
 	 * @param unit Unit to compare
 	 * @param players Players list
 	 * @param spells Known spells
@@ -1167,7 +1187,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 						log.finest ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling defender to remove dead unit URN " + trueUnit.getUnitURN ());
 					
 					// Use regular kill routine
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.FREE, trueMap, players, sd, db);
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.FREE, null, trueMap, players, sd, db);
 				}
 				else
 				{
@@ -1346,6 +1366,462 @@ public final class CombatProcessingImpl implements CombatProcessing
 				setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueMap.getMap (), trueUnit, combatLocation, null, null, null, null, null, db);
 		
 		log.exiting (CombatProcessingImpl.class.getName (), "removeUnitsFromCombat");
+	}
+	
+	/**
+	 * @param tu Unit moving
+	 * @param doubleMovementPoints Number of movement points it is moving in combat
+	 */
+	final void reduceMovementRemaining (final MemoryUnit tu, final int doubleMovementPoints)
+	{
+		tu.setDoubleCombatMovesLeft (Math.max (0, tu.getDoubleCombatMovesLeft () - doubleMovementPoints));
+	}
+	
+	/**
+	 * Once we have mapped out the directions and distances around the combat map and verified that our desired destination is
+	 * fine, this routine actually handles sending the movement animations, performing the updates, and resolving any attacks.
+	 *  
+	 * This is separate so that it can be called directly by the AI.
+	 *  
+	 * @param tu The unit being moved
+	 * @param moveTo The position within the combat map that the unit wants to move to (or attack)
+	 * @param movementDirections The map of movement directions generated by calculateCombatMovementDistances
+	 * @param movementTypes The map of movement types generated by calculateCombatMovementDistances
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void okToMoveUnitInCombat (final MemoryUnit tu, final CombatMapCoordinatesEx moveTo,
+		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes, final MomSessionVariables mom)
+		throws MomException, PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		log.entering (CombatProcessingImpl.class.getName (), "okToMoveUnitInCombat");
+		
+		// Find who the two players are
+		final OverlandMapCoordinatesEx combatLocation = (OverlandMapCoordinatesEx) tu.getCombatLocation ();
+		final CombatPlayers combatPlayers = combatMapUtils.determinePlayersInCombatFromLocation
+			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+		
+		if (!combatPlayers.bothFound ())
+			throw new MomException ("okToMoveUnitInCombat: One or other cell has no combat units left so player could not be determined");
+		
+		final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
+		final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
+		
+		// Get the grid cell, so we can access the combat map
+		final ServerGridCell combatCell = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		
+		// Ranged attacks always reduce movement remaining to zero and never result in the unit actually moving.
+		// The value gets sent to the client by resolveAttack below.
+		if (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.RANGED)
+			tu.setDoubleCombatMovesLeft (0);
+		else
+		{
+			// The value at each cell of the directions grid is the direction we need to have come from to get there.
+			// So we need to start at the destination and follow backwards down the movement path until we get back to the From location.
+			final List<Integer> directions = new ArrayList<Integer> ();
+			final CombatMapCoordinatesEx movePath = new CombatMapCoordinatesEx ();
+			movePath.setX (moveTo.getX ());
+			movePath.setY (moveTo.getY ());
+			
+			while (!movePath.equals (tu.getCombatPosition ()))
+			{
+				final int d = movementDirections [movePath.getY ()] [movePath.getX ()];
+				directions.add (0, d);
+				
+				if (!CoordinateSystemUtils.moveCoordinates (mom.getCombatMapCoordinateSystem (), movePath,
+					CoordinateSystemUtils.normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), d+4)))
+					
+					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (B)");
+			}
+			
+			// We might not actually walk the last square if there is an enemy there - we might attack it instead, in which case we don't move.
+			// However we still use up movement, as above.
+			if ((movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE) && (directions.size () > 0))
+				directions.remove (directions.size () - 1);
+			
+			// Send direction messages to the client, reducing the unit's movement with each step
+			// (so that's why we do this even if both players are AI)
+			final MoveUnitInCombatMessage msg = new MoveUnitInCombatMessage ();
+			msg.setUnitURN (tu.getUnitURN ());
+			for (final int d : directions)
+			{
+				msg.setMoveFrom (movePath);
+				msg.setDirection (d);
+				
+				// Move to the new cell
+				// Message needs to contain the old coords, but we need the new coords to calc movementRemaining, so temporarily need both sets
+				final CombatMapCoordinatesEx moveStep = new CombatMapCoordinatesEx ();
+				moveStep.setX (movePath.getX ());
+				moveStep.setY (movePath.getY ());
+
+				if (!CoordinateSystemUtils.moveCoordinates (mom.getCombatMapCoordinateSystem (), moveStep, d))
+					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (F)");
+				
+				// How much movement did it take us to walk into this cell?
+				reduceMovementRemaining (tu, unitCalculations.calculateDoubleMovementToEnterCombatTile
+					(combatCell.getCombatMap ().getRow ().get (moveStep.getY ()).getCell ().get (moveStep.getX ()), mom.getServerDB ()));
+				msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
+				
+				// Only send this to the players involved in the combat.
+				// Players not involved in the combat don't care where the units are positioned.
+				if (attackingPlayer.getPlayerDescription ().isHuman ())
+					attackingPlayer.getConnection ().sendMessageToClient (msg);
+
+				if (defendingPlayer.getPlayerDescription ().isHuman ())
+					defendingPlayer.getConnection ().sendMessageToClient (msg);
+				
+				// Update main copy of coords
+				movePath.setX (moveStep.getX ());
+				movePath.setY (moveStep.getY ());
+			}
+			
+			// If the unit it making an attack, that takes half its total movement
+			if (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE)
+				reduceMovementRemaining (tu, mom.getServerDB ().findUnit (tu.getUnitID (), "okToMoveUnitInCombat").getDoubleMovement () / 2);
+			
+			// Actually put the units in that location on the server
+			tu.setCombatPosition (movePath);
+		
+			// Update attacker's memory on server
+			final CombatMapCoordinatesEx movePathAttackersMemory = new CombatMapCoordinatesEx ();
+			movePathAttackersMemory.setX (movePath.getX ());
+			movePathAttackersMemory.setY (movePath.getY ());
+			
+			final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+			getUnitUtils ().findUnitURN (tu.getUnitURN (), attackerPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A").setCombatPosition (movePathAttackersMemory);
+
+			// Update defender's memory on server
+			final CombatMapCoordinatesEx movePathDefendersMemory = new CombatMapCoordinatesEx ();
+			movePathDefendersMemory.setX (movePath.getX ());
+			movePathDefendersMemory.setY (movePath.getY ());
+			
+			final MomPersistentPlayerPrivateKnowledge defenderPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+			getUnitUtils ().findUnitURN (tu.getUnitURN (), defenderPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-D").setCombatPosition (movePathDefendersMemory);
+		}
+		
+		// Anything special to do?
+		switch (movementTypes [moveTo.getY ()] [moveTo.getX ()])
+		{
+			case MELEE:
+				resolveAttack (tu, getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, moveTo),
+					attackingPlayer, defendingPlayer,
+					movementDirections [moveTo.getY ()] [moveTo.getX ()],
+					false, combatLocation, mom);
+				break;
+				
+			case RANGED:
+				resolveAttack (tu, getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+					combatLocation, moveTo), attackingPlayer, defendingPlayer,
+					CoordinateSystemUtils.determineDirectionTo (mom.getCombatMapCoordinateSystem (), tu.getCombatPosition (), moveTo),
+					true, combatLocation, mom);
+				break;
+				
+			case MOVE:
+				// Nothing special to do
+				break;
+
+			case CANNOT_MOVE:
+				// Should be impossible
+				break;
+		}
+		
+		log.exiting (CombatProcessingImpl.class.getName (), "okToMoveUnitInCombat");
+	}
+	
+	/**
+	 * Just deals with making sure we only send to human players
+	 * 
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param msg Message to send
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	final void sendDamageCalculationMessage (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final DamageCalculationMessage msg)
+		throws JAXBException, XMLStreamException
+	{
+		if (attackingPlayer.getPlayerDescription ().isHuman ())
+			attackingPlayer.getConnection ().sendMessageToClient (msg);
+		
+		if (defendingPlayer.getPlayerDescription ().isHuman ())
+			defendingPlayer.getConnection ().sendMessageToClient (msg);		
+	}
+	
+	/**
+	 * Performs one attack in combat.
+	 * If a close combat attack, also resolves the defender retaliating.
+	 * Also checks to see if the attack results in either side being wiped out, in which case ends the combat.
+	 * 
+	 * @param attacker Unit making the attack
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackerDirection The direction the attacker needs to turn to in order to be facing the defender
+	 * @param isRangedAttack True for ranged attacks; false for close combat attacks
+	 * @param combatLocation Where the combat is taking place
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	final void resolveAttack (final MemoryUnit attacker, final MemoryUnit defender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final int attackerDirection, final boolean isRangedAttack,
+		final OverlandMapCoordinatesEx combatLocation, final MomSessionVariables mom)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.entering (CombatProcessingImpl.class.getName (), "resolveAttack");
+
+		// We send this a couple of times for different parts of the calculation, so initialize it here
+		final DamageCalculationMessage damageCalculationMsg = new DamageCalculationMessage ();
+		damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		
+		if (isRangedAttack)
+			damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.RANGED_ATTACK);
+		else
+			damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.MELEE_ATTACK);
+		
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		// Make the units face each other
+		attacker.setCombatHeading (attackerDirection);
+		defender.setCombatHeading (CoordinateSystemUtils.normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), attackerDirection + 4));
+		
+		// Both attack simultaneously, before damage is applied
+		// Defender only retaliates against close combat attacks, not ranged attacks
+		final int damageToDefender;
+		final int damageToAttacker;
+		if (isRangedAttack)
+		{
+			damageToDefender = calculateDamage (attacker, defender, attackingPlayer, defendingPlayer,
+				CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK, damageCalculationMsg, mom.getPlayers (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+			damageToAttacker = 0;
+		}
+		else
+		{
+			damageToDefender = calculateDamage (attacker, defender, attackingPlayer, defendingPlayer,
+				CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK, damageCalculationMsg, mom.getPlayers (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+			
+			damageToAttacker = calculateDamage (defender, attacker, defendingPlayer, attackingPlayer,
+				CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK, damageCalculationMsg, mom.getPlayers (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
+		}
+		
+		// Now apply damage
+		defender.setDamageTaken (defender.getDamageTaken () - damageToDefender);
+		attacker.setDamageTaken (attacker.getDamageTaken () - damageToAttacker);
+		
+		// Update damage taken in player's memory on server, and on all clients who can see the unit.
+		// This includes both players involved in the combat (who will queue this up as an animation), and players who aren't involved in the combat but
+		// can see the units fighting (who will update the damage immediately).
+		// This also sends the number of combat movement points the attacker has left.
+		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, defender, attackingPlayer, defendingPlayer, isRangedAttack,
+			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
+		
+		// Now we know who the COMBAT attacking and defending players are, we can work out whose
+		// is whose unit - because it could be the defending players' unit making the attack in combat.
+		// We have to know this, because if both units die at the same time, the defender wins the combat.
+		final MemoryUnit attackingPlayerUnit;
+		final MemoryUnit defendingPlayerUnit;
+		if (attacker.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ())
+		{
+			attackingPlayerUnit = attacker;
+			defendingPlayerUnit = defender;
+		}
+		else
+		{
+			attackingPlayerUnit = defender;
+			defendingPlayerUnit = attacker;
+		}
+		
+		// Kill off either unit if dead.
+		// We don't need to notify the clients of this separately, clients can tell from the damage taken values above whether the units are dead or not, whether
+		// or not they're involved in the combat.
+		boolean combatEnded = false;
+		if (getUnitCalculations ().calculateAliveFigureCount (attackingPlayerUnit, mom.getPlayers (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) == 0)
+		{
+			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			
+			getFogOfWarMidTurnChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER,
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			
+			// If the attacker is now wiped out, this is the last record we will ever have of who the attacking player was, so we have to deal with tidying up the combat now
+			if (countUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+			{
+				combatEnded = true;
+				combatEnded (combatLocation, attackingPlayer, defendingPlayer, defendingPlayer,	// <-- who won
+					null, mom);
+			}
+		}
+
+		if (getUnitCalculations ().calculateAliveFigureCount (defendingPlayerUnit, mom.getPlayers (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) == 0)
+		{
+			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			
+			getFogOfWarMidTurnChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			
+			// If the defender is now wiped out, this is the last record we will ever have of who the defending player was, so we have to deal with tidying up the combat now.
+			// If attacker was also wiped out then we've already done this - the defender won by default.
+			if ((!combatEnded) && (countUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0))
+				combatEnded (combatLocation, attackingPlayer, defendingPlayer, attackingPlayer,	// <-- who won
+					null, mom);
+		}
+		
+		log.exiting (CombatProcessingImpl.class.getName (), "resolveAttack");	
+	}
+
+	/**
+	 * @param combatLocation Location that combat is taking place
+	 * @param combatSide Which side to count
+	 * @param trueUnits List of true units
+	 * @return How many units are still left alive in combat on the requested side
+	 */
+	final int countUnitsInCombat (final OverlandMapCoordinatesEx combatLocation, final UnitCombatSideID combatSide,
+		final List<MemoryUnit> trueUnits)
+	{
+		log.entering (CombatProcessingImpl.class.getName (), "countUnitsInCombat",
+			new String [] {combatLocation.toString (), combatSide.name ()});
+			
+		int count = 0;
+		for (final MemoryUnit trueUnit : trueUnits)
+			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
+				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null))
+					
+				count++;
+
+		log.exiting (CombatProcessingImpl.class.getName (), "countUnitsInCombat", count);
+		return count;
+	}
+	
+	/**
+	 * NB. This doesn't actually apply the damage, so that both the attack and counterattack damage can be calculated and applied at the same time
+	 * 
+	 * @param attacker Unit making the attack
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackAttributeID The attribute being used to attack, i.e. UA01 (swords) or UA02 (ranged)
+	 * @param damageCalculationMsg Partially pre-filled damage calc message so that it can be reused
+	 * @param players Players list
+	 * @param spells Known spells
+	 * @param combatAreaEffects Known combat area effects
+	 * @param db Lookup lists built over the XML database
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	final int calculateDamage (final MemoryUnit attacker, final MemoryUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final String attackAttributeID, final DamageCalculationMessage damageCalculationMsg, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.entering (CombatProcessingImpl.class.getName (), "resolveAttack", new String []
+			{new Integer (attacker.getUnitURN ()).toString (), new Integer (defender.getUnitURN ()).toString (), attackAttributeID});
+		
+		// Store values straight into the message
+		// The attacker and defender may be switched, so redo the message from scratch
+		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.ATTACK_AND_DEFENCE_STATISTICS);
+		damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setAttackAttributeID (attackAttributeID);
+		
+		// How many potential hits can we make - See page 285 in the strategy guide
+		damageCalculationMsg.setAttackerFigures (getUnitCalculations ().calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setAttackStrength (getUnitUtils ().getModifiedAttributeValue (attacker, attackAttributeID,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+		
+		damageCalculationMsg.setPotentialDamage (damageCalculationMsg.getAttackerFigures () * damageCalculationMsg.getAttackStrength ());
+		
+		damageCalculationMsg.setChanceToHit (3 + getUnitUtils ().getModifiedAttributeValue (attacker, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+		
+		damageCalculationMsg.setTenTimesAverageDamage (damageCalculationMsg.getPotentialDamage () * damageCalculationMsg.getChanceToHit ());
+		
+		// How many actually hit
+		int actualDamage = 0;
+		for (int swingNo = 0; swingNo < damageCalculationMsg.getPotentialDamage (); swingNo++)
+			if (getRandomUtils ().nextInt (10) < damageCalculationMsg.getChanceToHit ())
+				actualDamage++;
+		
+		damageCalculationMsg.setActualDamage (actualDamage);
+		
+		// Set up defender stats
+		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db));
+		damageCalculationMsg.setDefenceStrength (getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+
+		damageCalculationMsg.setChanceToDefend (3 + getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db));
+		
+		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
+		
+		// Dish out damage - See page 287 in the strategy guide
+		// We can't do all defending in one go, each figure only gets to use its shields if the previous figure dies.
+		// e.g. a unit of 8 spearmen has to take 2 hits, if all 8 spearmen get to try to block the 2 hits, they might not even lose 1 figure.
+		// However only the first unit gets to use its shield, even if it blocks 1 hit it will be killed by the 2nd hit.
+		int totalHits = 0;
+		int defendingFiguresRemaining = damageCalculationMsg.getDefenderFigures ();
+		int hitPointsRemainingOfFirstFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db);
+		int hitsLeftToApply = actualDamage;
+		final StringBuffer actualBlockedHits = new StringBuffer ();
+		
+		while ((defendingFiguresRemaining > 0) && (hitsLeftToApply > 0))
+		{
+			// New figure taking damage, so it gets to try to block some hits
+			int thisBlockedHits = 0;
+			for (int blockNo = 0; blockNo < damageCalculationMsg.getDefenceStrength (); blockNo++)
+				if (getRandomUtils ().nextInt (10) < damageCalculationMsg.getChanceToDefend ())
+					thisBlockedHits++;
+			
+			hitsLeftToApply = hitsLeftToApply - thisBlockedHits;
+			
+			if (actualBlockedHits.length () > 0)
+				actualBlockedHits.append (",");
+			
+			actualBlockedHits.append (thisBlockedHits);
+			
+			// If any damage was not blocked by shields then it goes to health
+			if (hitsLeftToApply > 0)
+			{
+				// Work out how many hits the current figure will take
+				final int hitsOnThisFigure = Math.min (hitsLeftToApply, hitPointsRemainingOfFirstFigure);
+				
+				// Update counters for next figure.
+				// Note it doesn't matter that we're decreasing defendingFigures even if the figure didn't die, because in that case Hits
+				// will now be zero and the loop with exit, so the values of these variables won't matter at all, only the totalHits return value does.
+				hitsLeftToApply = hitsLeftToApply - hitsOnThisFigure;
+				totalHits = totalHits + hitsOnThisFigure;
+				defendingFiguresRemaining--;
+				hitPointsRemainingOfFirstFigure = getUnitUtils ().getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+					MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db);
+			}
+		}
+		
+		damageCalculationMsg.setActualBlockedHits (actualBlockedHits.toString ());
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		log.exiting (CombatProcessingImpl.class.getName (), "resolveAttack", totalHits);
+		return totalHits;
 	}
 	
 	/**
@@ -1602,5 +2078,37 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setCombatMapGenerator (final CombatMapGenerator gen)
 	{
 		combatMapGenerator = gen;
+	}
+
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+	
+	/**
+	 * @param utils Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils utils)
+	{
+		combatMapUtils = utils;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

@@ -10,6 +10,8 @@ import momime.server.ServerTestData;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.random.RandomUtils;
+import com.ndg.random.RandomUtilsImpl;
 
 /**
  * Tests the HeightMapGenerator class
@@ -202,7 +204,14 @@ public final class TestHeightMapGenerator
 		sys.setHeight (40);
 		sys.setWrapsLeftToRight (true);
 
+		// Need real random number generator to get any meaningful results
+		final RandomUtils random = new RandomUtilsImpl ();
+		
+		// Set up object to test
 		final HeightMapGenerator mapGen = new HeightMapGenerator (sys, 10, 10, 7);
+		mapGen.setRandomUtils (random);
+		
+		// Run test
 		mapGen.generateHeightMap ();
 
 		// Not much that can be automatically checked here, we can at least verify that the sum of all the counted heights should equal the number of cells

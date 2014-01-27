@@ -1,6 +1,8 @@
 package momime.common.calculations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -12,10 +14,15 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.CombatMapLayerID;
+import momime.common.database.v0_9_4.CombatTileBorder;
+import momime.common.database.v0_9_4.CombatTileBorderBlocksMovementID;
 import momime.common.database.v0_9_4.ExperienceLevel;
+import momime.common.database.v0_9_4.RangedAttackType;
+import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitHasSkill;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.AvailableUnit;
+import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
@@ -26,6 +33,8 @@ import momime.common.messages.v0_9_4.MomCombatTileLayer;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.utils.CombatMapUtilsImpl;
+import momime.common.utils.MomUnitAttributeComponent;
+import momime.common.utils.MomUnitAttributePositiveNegative;
 import momime.common.utils.PlayerPickUtilsImpl;
 import momime.common.utils.UnitUtils;
 
@@ -324,5 +333,260 @@ public final class TestMomUnitCalculationsImpl
 		
 		assertEquals (8, rangedCaster.getRangedAttackAmmo ());
 		assertEquals (102, rangedCaster.getManaRemaining ());
+	}
+	
+	/**
+	 * Tests the calculateAliveFigureCount method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAliveFigureCount () throws Exception
+	{
+		// These are all only used for the mock so doesn't matter if there's anything in them
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Unit defintion
+		final Unit unitDef = new Unit ();
+		when (db.findUnit ("A", "calculateAliveFigureCount")).thenReturn (unitDef);
+		
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (6);
+		
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+
+		// Unit with 1 HP per figure at full health of 6 figures
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("A");
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		
+		assertEquals (6, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
+		
+		// Now it takes 2 hits
+		unit.setDamageTaken (2);
+		assertEquals (4, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
+
+		// Now its dead
+		unit.setDamageTaken (6);
+		assertEquals (0, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
+
+		// Now its more than dead
+		unit.setDamageTaken (9);
+		assertEquals (0, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
+		
+		// Now it has 4 HP per figure, so 6x4=24 total damage
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
+		assertEquals (4, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
+		
+		// With 11 dmg taken, there's still only 2 figures dead, since it rounds down
+		unit.setDamageTaken (11);
+		assertEquals (4, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
+		
+		// With 12 dmg taken, there's 3 figures dead
+		unit.setDamageTaken (12);
+		assertEquals (3, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
+
+		// Nearly dead
+		unit.setDamageTaken (23);
+		assertEquals (1, calc.calculateAliveFigureCount (unit, players, spells, combatAreaEffects, db));
+	}
+	
+	/**
+	 * Tests the calculateHitPointsRemainingOfFirstFigure method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateHitPointsRemainingOfFirstFigure () throws Exception
+	{
+		// These are all only used for the mock so doesn't matter if there's anything in them
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
+		final MemoryUnit unit = new MemoryUnit ();
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+
+		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
+	
+		// Taking a hit makes no difference, now we're just on the same figure, with same HP
+		unit.setDamageTaken (1);
+		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
+
+		// Now it has 4 HP per figure
+		when (unitUtils.getModifiedAttributeValue (unit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);
+		assertEquals (3, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
+		
+		// Take 2 more hits
+		unit.setDamageTaken (3);
+		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
+		
+		// 1 more hit and first figure is dead, so second on full HP
+		unit.setDamageTaken (4);
+		assertEquals (4, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
+
+		// 2 and a quarter figures dead
+		unit.setDamageTaken (9);
+		assertEquals (3, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
+
+		// 2 and three-quarter figures dead
+		unit.setDamageTaken (11);
+		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, spells, combatAreaEffects, db));
+	}
+	
+	/**
+	 * Tests the canMakeRangedAttack method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCanMakeRangedAttack () throws Exception
+	{
+		// These are all only used for the mock so doesn't matter if there's anything in them
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
+		
+		// Unit without even a ranged attack skill
+		final MemoryUnit noRangedAttack = new MemoryUnit ();
+		when (unitUtils.getModifiedAttributeValue (noRangedAttack, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (0);
+		assertFalse (calc.canMakeRangedAttack (noRangedAttack, players, spells, combatAreaEffects, db));
+		
+		// Bow with no remaining ammo
+		final MemoryUnit outOfAmmo = new MemoryUnit ();
+		when (unitUtils.getModifiedAttributeValue (outOfAmmo, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		assertFalse (calc.canMakeRangedAttack (outOfAmmo, players, spells, combatAreaEffects, db));
+
+		// Bow with remaining ammo
+		final MemoryUnit hasAmmo = new MemoryUnit ();
+		hasAmmo.setRangedAttackAmmo (1);
+		when (unitUtils.getModifiedAttributeValue (hasAmmo, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		assertTrue (calc.canMakeRangedAttack (hasAmmo, players, spells, combatAreaEffects, db));
+		
+		// Ranged attack of unknown type with mana (maybe this should actually be an exception)
+		final Unit unknownRATUnitDef = new Unit ();
+		unknownRATUnitDef.setUnitID ("A");
+		
+		final MemoryUnit unknownRAT = new MemoryUnit ();
+		unknownRAT.setUnitID (unknownRATUnitDef.getUnitID ());
+		unknownRAT.setManaRemaining (3);
+		when (unitUtils.getModifiedAttributeValue (unknownRAT, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (db.findUnit (unknownRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (unknownRATUnitDef);
+		assertFalse (calc.canMakeRangedAttack (unknownRAT, players, spells, combatAreaEffects, db));
+
+		// Phys ranged attack with mana
+		final RangedAttackType physRAT = new RangedAttackType ();
+		physRAT.setRangedAttackTypeID ("Y");
+		
+		final Unit physRATUnitDef = new Unit ();
+		physRATUnitDef.setUnitID ("B");
+		physRATUnitDef.setRangedAttackType (physRAT.getRangedAttackTypeID ());
+		
+		final MemoryUnit physRATUnit = new MemoryUnit ();
+		physRATUnit.setUnitID (physRATUnitDef.getUnitID ());
+		physRATUnit.setManaRemaining (3);
+		when (unitUtils.getModifiedAttributeValue (physRATUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (db.findUnit (physRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (physRATUnitDef);
+		when (db.findRangedAttackType (physRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (physRAT);
+		assertFalse (calc.canMakeRangedAttack (physRATUnit, players, spells, combatAreaEffects, db));
+		
+		// Magic ranged attack with mana
+		final RangedAttackType magRAT = new RangedAttackType ();
+		magRAT.setRangedAttackTypeID ("Z");
+		magRAT.setMagicRealmID ("X");
+		
+		final Unit magRATUnitDef = new Unit ();
+		magRATUnitDef.setUnitID ("C");
+		magRATUnitDef.setRangedAttackType (magRAT.getRangedAttackTypeID ());
+		
+		final MemoryUnit magRATUnit = new MemoryUnit ();
+		magRATUnit.setUnitID (magRATUnitDef.getUnitID ());
+		magRATUnit.setManaRemaining (3);
+		when (unitUtils.getModifiedAttributeValue (magRATUnit, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);
+		when (db.findUnit (magRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (magRATUnitDef);
+		when (db.findRangedAttackType (magRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (magRAT);
+		assertTrue (calc.canMakeRangedAttack (magRATUnit, players, spells, combatAreaEffects, db));
+	}
+	
+	/**
+	 * Tests the okToCrossCombatTileBorder method
+	 * @throws RecordNotFoundException If the tile has a combat tile border ID that doesn't exist
+	 */
+	@Test
+	public final void testOkToCrossCombatTileBorder () throws RecordNotFoundException
+	{
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// One type of border that doesn't block movement, another that does
+		final CombatTileBorder borderA = new CombatTileBorder ();
+		borderA.setCombatTileBorderID ("A");
+		borderA.setBlocksMovement (CombatTileBorderBlocksMovementID.NO);
+		when (db.findCombatTileBorder (borderA.getCombatTileBorderID (), "okToCrossCombatTileBorder")).thenReturn (borderA);
+
+		final CombatTileBorder borderB = new CombatTileBorder ();
+		borderB.setCombatTileBorderID ("B");
+		borderB.setBlocksMovement (CombatTileBorderBlocksMovementID.CANNOT_CROSS_SPECIFIED_BORDERS);
+		when (db.findCombatTileBorder (borderB.getCombatTileBorderID (), "okToCrossCombatTileBorder")).thenReturn (borderB);
+
+		// Combat map
+		final CoordinateSystem combatMapCoordinateSystem = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles combatMap = GenerateTestData.createCombatMap (combatMapCoordinateSystem);
+
+		final MomCombatTile tile = combatMap.getRow ().get (5).getCell ().get (10);
+		
+		// Set up object to test
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		
+		// No border at all
+		assertTrue (calc.okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), 10, 5, 1, db));
+		
+		// Right direction, but a type of border that doesn't block movement
+		tile.setBorderDirections ("516");
+		tile.getBorderID ().add ("A");
+		assertTrue (calc.okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), 10, 5, 1, db));
+		
+		// Add 2nd border that does block movement
+		tile.getBorderID ().add ("B");
+		assertFalse (calc.okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), 10, 5, 1, db));
+		
+		// Test all directions
+		tile.setBorderDirections ("34567");
+		assertTrue (calc.okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), 10, 5, 1, db));
+
+		tile.setBorderDirections ("8");
+		assertFalse (calc.okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), 10, 5, 1, db));
+
+		tile.setBorderDirections ("1");
+		assertFalse (calc.okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), 10, 5, 1, db));
+
+		tile.setBorderDirections ("2");
+		assertFalse (calc.okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), 10, 5, 1, db));
 	}
 }

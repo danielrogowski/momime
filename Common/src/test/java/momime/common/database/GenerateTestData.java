@@ -54,10 +54,13 @@ import momime.common.database.v0_9_4.UnitUpkeep;
 import momime.common.database.v0_9_4.WeaponGrade;
 import momime.common.database.v0_9_4.WeaponGradeAttributeBonus;
 import momime.common.database.v0_9_4.WeaponGradeSkillBonus;
+import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MapRowOfCombatTiles;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryGridCell;
+import momime.common.messages.v0_9_4.MomCombatTile;
 
 import org.mockito.Mockito;
 
@@ -1534,6 +1537,36 @@ public final class GenerateTestData
 		return map;
 	}
 
+	/**
+	 * @return Demo MoM combat map-like coordinate system with a 60x40 diamond non-wrapping map
+	 */
+	public final static CoordinateSystem createCombatMapCoordinateSystem ()
+	{
+		final CoordinateSystem sys = new CoordinateSystem ();
+		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
+		sys.setWidth (12);
+		sys.setHeight (25);
+		return sys;
+	}
+
+	/**
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @return Map area prepopulated with empty cells
+	 */
+	public final static MapAreaOfCombatTiles createCombatMap (final CoordinateSystem combatMapCoordinateSystem)
+	{
+		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
+		for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
+		{
+			final MapRowOfCombatTiles row = new MapRowOfCombatTiles ();
+			for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
+				row.getCell ().add (new MomCombatTile ());
+
+			map.getRow ().add (row);
+		}
+
+		return map;
+	}
 
 	/**
 	 * Prevent instantiation

@@ -239,7 +239,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), true);
 		
 		// Kill off the settler
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (settler, KillUnitActionID.FREE, gsk.getTrueMap (), players, sd, db);
+		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (settler, KillUnitActionID.FREE, null, gsk.getTrueMap (), players, sd, db);
 		
 		// Update our own FOW (the city can see further than the settler could)
 		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), player, players, false, "buildCityFromSettler", sd, db);

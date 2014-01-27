@@ -33,9 +33,9 @@ import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.MomSpellCastType;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.MomSpellCastType;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -43,13 +43,13 @@ import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.utils.UnitServerUtils;
-import momime.server.utils.RandomUtils;
 import momime.server.utils.UnitAddLocation;
+import momime.server.utils.UnitServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 /**
  * Methods for any significant message processing to do with spells that isn't done in the message implementations
@@ -85,6 +85,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Resource calculations */
 	private MomServerResourceCalculations serverResourceCalculations;
+
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -137,7 +140,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (spell.getSpellHasCombatEffect ().size () > 0)
 				{
 					// Pick one at random
-					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (RandomUtils.getGenerator ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
+					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
 					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (gsk, combatAreaEffectID, player.getPlayerDescription ().getPlayerID (), null, players, db, sd);
 				}
 			}
@@ -179,7 +182,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// Pick one at random
 				if (possibleUnitIDs.size () > 0)
 				{
-					final String summonedUnitID = possibleUnitIDs.get (RandomUtils.getGenerator ().nextInt (possibleUnitIDs.size ()));
+					final String summonedUnitID = possibleUnitIDs.get (getRandomUtils ().nextInt (possibleUnitIDs.size ()));
 
 					log.finest ("Player " + player.getPlayerDescription ().getPlayerName () + " had " + possibleUnitIDs.size () + " possible units to summon from spell " +
 						spell.getSpellID () + ", randomly picked unit ID " + summonedUnitID);
@@ -644,5 +647,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

@@ -2,9 +2,9 @@ package momime.server.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,34 +47,13 @@ import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.StringMapArea2DArray;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
 
 /**
  * Tests the OverlandMapServerUtils class
  */
 public final class TestOverlandMapServerUtilsImpl
 {
-	/**
-	 * Tests the chooseRandomRaceForPlane method
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testChooseRandomRaceForPlane () throws Exception
-	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
-		// Set up object to test
-		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
-		
-		// Pick a random race for each plane
-		for (final Plane plane : db.getPlane ())
-		{
-			final String raceID = utils.chooseRandomRaceForPlane (plane.getPlaneNumber (), db);
-
-			// Verify race inhabits the correct plane
-			assertEquals (plane.getPlaneNumber (), db.findRace (raceID, "testChooseRandomRaceForPlane").getNativePlane ());
-		}
-	}
-
 	/**
 	 * Tests the setContinentalRace method
 	 * @throws Exception If there is a problem
@@ -209,33 +188,36 @@ public final class TestOverlandMapServerUtilsImpl
 			race.getCityName ().add (cont);
 		}
 
-		// But 3 of them are already used
+		// But 2 of them is already used
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.getUsedCityName ().add ("Hanna");
 		gsk.getUsedCityName ().add ("Emily");
-		gsk.getUsedCityName ().add ("Rose");
+		
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (2)).thenReturn (1);
+		when (random.nextInt (1)).thenReturn (0);
 
+		when (random.nextInt (4)).thenReturn (1);
+		when (random.nextInt (3)).thenReturn (2);
+		
 		// Set up object to test
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
+		utils.setRandomUtils (random);
 		
-		// Then there's only one possible outcome
+		// Go through the first two remaining choices without a suffix
+		assertEquals ("Rose", utils.generateCityName (gsk, race));
 		assertEquals ("Mara", utils.generateCityName (gsk, race));
 
 		// Now all 4 are used, the next 4 we generate will be suffixed with II
-		for (int n = 0; n < 4; n++)
-		{
-			final String name = utils.generateCityName (gsk, race);
-			if (!name.endsWith (" II"))
-				fail ("Second round of city names not suffixed with II, got \"" + name + "\"");
-		}
+		assertEquals ("Emily II", utils.generateCityName (gsk, race));
+		assertEquals ("Rose II", utils.generateCityName (gsk, race));
+		assertEquals ("Mara II", utils.generateCityName (gsk, race));
+		assertEquals ("Hanna II", utils.generateCityName (gsk, race));
 
 		// And the next 4 we generate will be suffixed with III
-		for (int n = 0; n < 4; n++)
-		{
-			final String name = utils.generateCityName (gsk, race);
-			if (!name.endsWith (" III"))
-				fail ("Third round of city names not suffixed with III, got \"" + name + "\"");
-		}
+		assertEquals ("Emily III", utils.generateCityName (gsk, race));
+		assertEquals ("Rose III", utils.generateCityName (gsk, race));
 	}
 	
 	/**
@@ -313,7 +295,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertNull (attackerMsg.getOtherUnitID ());
 		assertNull (attackerMsg.getOtherPlayerID ());
 
-		verify (fogOfWarMidTurnChanges).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, trueMap, players, sd, db);
+		verify (fogOfWarMidTurnChanges).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd, db);
 		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
 
 		final OverlandMapCoordinatesEx adjacentLocation = new OverlandMapCoordinatesEx ();

@@ -34,6 +34,7 @@ import momime.server.messages.ServerMemoryGridCellUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.random.RandomUtils;
 
 /**
  * Server side only helper methods for dealing with units
@@ -51,6 +52,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	
 	/** Server-only unit calculations */
 	private MomServerUnitCalculations serverUnitCalculations;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * Chooses a name for this hero (out of 5 possibilities) and rolls their random skills
@@ -71,7 +75,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		if (unitDefinition.getHeroName ().size () == 0)
 			throw new MomException ("No hero names found for unit ID \"" + unit.getUnitID () + "\"");
 
-		unit.setHeroNameID (unitDefinition.getHeroName ().get (RandomUtils.getGenerator ().nextInt (unitDefinition.getHeroName ().size ())).getHeroNameID ());
+		unit.setHeroNameID (unitDefinition.getHeroName ().get (getRandomUtils ().nextInt (unitDefinition.getHeroName ().size ())).getHeroNameID ());
 
 		// Any random skills to add?
 		if ((unitDefinition.getHeroRandomPickCount () != null) && (unitDefinition.getHeroRandomPickCount () > 0))
@@ -108,7 +112,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				if (skillChoices.size () == 0)
 					throw new MomException ("generateHeroNameAndRandomSkills: No valid hero skill choices for unit " + unit.getUnitID ());
 
-				final String skillID = skillChoices.get (RandomUtils.getGenerator ().nextInt (skillChoices.size ()));
+				final String skillID = skillChoices.get (getRandomUtils ().nextInt (skillChoices.size ()));
 				final int currentSkillValue = getUnitUtils ().getBasicSkillValue (unit.getUnitHasSkill (), skillID);
 				if (currentSkillValue >= 0)
 					getUnitUtils ().setBasicSkillValue (unit, skillID, currentSkillValue + 1);
@@ -376,5 +380,21 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

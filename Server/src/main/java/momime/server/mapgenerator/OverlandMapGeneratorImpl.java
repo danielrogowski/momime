@@ -37,13 +37,13 @@ import momime.server.database.v0_9_4.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
-import momime.server.utils.RandomUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.MapCoordinates;
 import com.ndg.map.areas.BooleanMapArea2DArray;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 /**
  * Server only class which contains all the code for generating a random overland map
@@ -69,6 +69,9 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
+
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/** Blobs expand out only in north/south/east/west directions - no diagonals */
 	private static final int [] BLOB_EXPANSION_DIRECTIONS = new int [] {1, 3, 5, 7};
@@ -459,6 +462,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			// Generate height-based scenery
 			final HeightMapGenerator heightMap = new HeightMapGenerator (sd.getMapSize (), sd.getMapSize ().getZoneWidth (), sd.getMapSize ().getZoneHeight (),
 				sd.getLandProportion ().getTundraRowCount ());
+			heightMap.setRandomUtils (getRandomUtils ());
 			heightMap.generateHeightMap ();
 
 			setHighestTiles (heightMap, plane, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS,
@@ -586,7 +590,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 						if ((d == 0) ||
 							((d < sd.getLandProportion ().getTundraRowCount ()) && (terrainData.getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS)) &&
-								(RandomUtils.getGenerator ().nextInt (sd.getLandProportion ().getTundraRowCount ()) >= d)))
+								(getRandomUtils ().nextInt (sd.getLandProportion ().getTundraRowCount ()) >= d)))
 
 							terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
 					}
@@ -624,10 +628,10 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		if (startingPositions.size () > 0)
 		{
 			// Found a centre tile
-			MapCoordinates coords = startingPositions.get (RandomUtils.getGenerator ().nextInt (startingPositions.size ()));
+			MapCoordinates coords = startingPositions.get (getRandomUtils ().nextInt (startingPositions.size ()));
 
 			// Work out how big we'll aim to make this blob, this will be +/- 50% of the average size
-			int blobSize = RandomUtils.getGenerator ().nextInt (eachAreaTileCount) + (eachAreaTileCount / 2);
+			int blobSize = getRandomUtils ().nextInt (eachAreaTileCount) + (eachAreaTileCount / 2);
 
 			// Create an area to keep track of the tiles in this blob
 			final BooleanMapArea2DArray thisBlob = new BooleanMapArea2DArray (sd.getMapSize ());
@@ -644,6 +648,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				{
 					// Create a ring around the current blob, i.e. this will tell us all the possible cells we could expand the blob into
 					final BooleanMapArea2DArray possibleNextCells = thisBlob.enlarge (BLOB_EXPANSION_DIRECTIONS);
+					possibleNextCells.setRandomUtils (getRandomUtils ());
 
 					// Deselect any that are not grass
 					for (int grassX = 0; grassX < sd.getMapSize ().getWidth (); grassX++)
@@ -652,7 +657,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 								possibleNextCells.set (grassX, grassY, false);
 
 					// Pick a cell to expand into
-					final MapCoordinates nextCoords = possibleNextCells.findRandomCellEqualTo (true, RandomUtils.getGenerator ());
+					final MapCoordinates nextCoords = possibleNextCells.findRandomCellEqualTo (true);
 					if (nextCoords == null)
 						blobSize = 0;		// No remaining adjacent grass tiles, so set to zero to force loop to exit
 					else
@@ -712,6 +717,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				// Build initial list of suitable locations - we do this on each loop because we may reduce the separation
 				// Avoid map cells which are tundra on either plane - this avoids putting towers too close to the top or bottom
 				final BooleanMapArea2DArray possibleLocations = new BooleanMapArea2DArray (sd.getMapSize ());
+				possibleLocations.setRandomUtils (getRandomUtils ());
+				
 				for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 					{
@@ -731,7 +738,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 							possibleLocations.deselectRadius (x, y, towersOfWizardrySeparation);
 
 				// Pick a location to put the wizardry tile at
-				final MapCoordinates coords = possibleLocations.findRandomCellEqualTo (true, RandomUtils.getGenerator ());
+				final MapCoordinates coords = possibleLocations.findRandomCellEqualTo (true);
 				if (coords == null)
 				{
 					// Nowhere left within the radius of existing towers - so drop the radius
@@ -775,7 +782,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		if (matches.size () == 0)
 			throw new RecordNotFoundException ("TERRAIN_BORDER8_NEIGHBOURING_TILES", neighbouringTiles, "findTerrainBorder8");
 
-		return matches.get (RandomUtils.getGenerator ().nextInt (matches.size ())).intValue ();
+		return matches.get (getRandomUtils ().nextInt (matches.size ())).intValue ();
 	}
 
 	/**
@@ -1016,7 +1023,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 			// Out of the possible maximum number of directions, randomly pick how many directions we will actually send the river
 			// 1 = Just send it back in the direction it came from, so end the river
-			directionCount = RandomUtils.getGenerator ().nextInt (directionCount) + 1;
+			directionCount = getRandomUtils ().nextInt (directionCount) + 1;
 
 			// List out all the possible directions codes which have this number of directions and include direction d2
 			final List<String> possibleBitmasks = new ArrayList<String> ();
@@ -1036,7 +1043,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				throw new MomException ("ProcessRiverTile: No river tiles are suitable - was looking for a bitmask with " + directionCount + " directions, including direction " + d2);
 
 			// Pick a random neighbouring tiles string
-			final String riverBitmask = possibleBitmasks.get (RandomUtils.getGenerator ().nextInt (possibleBitmasks.size ()));
+			final String riverBitmask = possibleBitmasks.get (getRandomUtils ().nextInt (possibleBitmasks.size ()));
 
 			// Update this tile
 			riverPending [coords.getY ()] [coords.getX ()] = false;
@@ -1127,7 +1134,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			else
 			{
 				// Pick a random start location
-				final MapCoordinates coords = startingPositions.get (RandomUtils.getGenerator ().nextInt (startingPositions.size ()));
+				final MapCoordinates coords = startingPositions.get (getRandomUtils ().nextInt (startingPositions.size ()));
 
 				// Convert river mouth tile
 				final OverlandMapTerrainData riverMouth = trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
@@ -1147,7 +1154,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				if (validRiverOptions.size () == 0)
 					throw new MomException ("momime.server.MomMapGenerator.makeRivers: Tile which we proved to be a valid possibility for a river mouth then couldn't be converted to a river mouth");
 
-				riverMouth.setRiverDirections (validRiverOptions.get (RandomUtils.getGenerator ().nextInt (validRiverOptions.size ())));
+				riverMouth.setRiverDirections (validRiverOptions.get (getRandomUtils ().nextInt (validRiverOptions.size ())));
 
 				// Now recursively generate the river
 				processRiverDirections (coords.getX (), coords.getY (), plane, riverMouth.getRiverDirections (), true, riverPending);
@@ -1193,7 +1200,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					final OverlandMapTerrainData terrainData = trueTerrain.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
 
 					// Make sure we check there are no features already placed, since we will have towers of wizardry at this stage
-					if ((terrainData.getMapFeatureID () == null) && (RandomUtils.getGenerator ().nextInt (plane.getFeatureChance ()) == 0))
+					if ((terrainData.getMapFeatureID () == null) && (getRandomUtils ().nextInt (plane.getFeatureChance ()) == 0))
 					{
 						// The cache lists the chances of getting each type of feature on this tile type
 						final List<TileTypeFeatureChance> featureChances = db.findTileType (terrainData.getTileTypeID (), "placeTerrainFeatures").getTileTypeFeatureChance ();
@@ -1207,7 +1214,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 						if (totalChance > 0)
 						{
 							// Pick a random terrain feature
-							totalChance = RandomUtils.getGenerator ().nextInt (totalChance);
+							totalChance = getRandomUtils ().nextInt (totalChance);
 
 							// Get the feature ID of the feature we picked
 							int featureNo = 0;
@@ -1325,7 +1332,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				while (squaresRequired > 0)
 				{
 					// Pick a random square
-					final int listIndex = RandomUtils.getGenerator ().nextInt (possibleLocations.size ());
+					final int listIndex = getRandomUtils ().nextInt (possibleLocations.size ());
 					final MapCoordinates auraCoords = possibleLocations.get (listIndex);
 
 					final ServerGridCell auraCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (plane).getRow ().get (auraCoords.getY ()).getCell ().get (auraCoords.getX ());
@@ -1378,7 +1385,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			for (int nodeNo = 0; nodeNo < plane.getNumberOfNodesOnPlane (); nodeNo++)
 			{
 				// Pick a random size for this node's aura
-				final double nodePowerProportion = RandomUtils.getGenerator ().nextInt (10001) / 10000;	// Make sure we can roll a 1.0, which you cannot just by using nextDouble ()
+				final double nodePowerProportion = getRandomUtils ().nextInt (10001) / 10000;	// Make sure we can roll a 1.0, which you cannot just by using nextDouble ()
 				final int nodeAuraSize = plane.getNodeAuraSquaresMinimum () + (int) Math.round
 					((plane.getNodeAuraSquaresMaximum () - plane.getNodeAuraSquaresMinimum ()) * nodePowerProportion);
 
@@ -1409,7 +1416,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				}
 				else
 				{
-					final MapCoordinates coords = possibleLocations.get (RandomUtils.getGenerator ().nextInt (possibleLocations.size ()));
+					final MapCoordinates coords = possibleLocations.get (getRandomUtils ().nextInt (possibleLocations.size ()));
 					final ServerGridCell thisCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 					thisCell.getTerrainData ().setTileTypeID (chooseRandomNodeTileTypeID ());
@@ -1445,7 +1452,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		if (nodeTileTypeIDs.size () == 0)
 			throw new MomException ("chooseRandomNodeTileTypeID: No node tile types are defined (i.e. tile types with Magic Realm IDs)");
 
-		final String chosenTileTypeID = nodeTileTypeIDs.get (RandomUtils.getGenerator ().nextInt (nodeTileTypeIDs.size ()));
+		final String chosenTileTypeID = nodeTileTypeIDs.get (getRandomUtils ().nextInt (nodeTileTypeIDs.size ()));
 
 		log.exiting (OverlandMapGeneratorImpl.class.getName (), "chooseRandomNodeTileTypeID", chosenTileTypeID);
 		return chosenTileTypeID;
@@ -1472,7 +1479,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		if (lairMapFeatureIDs.size () == 0)
 			throw new MomException ("chooseRandomLairFeatureID: No lair map feature are defined (i.e. non-tower map features with Magic Realm IDs)");
 
-		final String chosenMapFeatureID = lairMapFeatureIDs.get (RandomUtils.getGenerator ().nextInt (lairMapFeatureIDs.size ()));
+		final String chosenMapFeatureID = lairMapFeatureIDs.get (getRandomUtils ().nextInt (lairMapFeatureIDs.size ()));
 
 		log.exiting (OverlandMapGeneratorImpl.class.getName (), "chooseRandomLairFeatureID", chosenMapFeatureID);
 		return chosenMapFeatureID;
@@ -1515,7 +1522,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		int lairsPlaced =0;
 		while ((lairsPlaced < numberOfLairs) && (possibleLocations.size () > 0))
 		{
-			final int listIndex = RandomUtils.getGenerator ().nextInt (possibleLocations.size ());
+			final int listIndex = getRandomUtils ().nextInt (possibleLocations.size ());
 			final OverlandMapCoordinatesEx coords = possibleLocations.get (listIndex);
 
 			final ServerGridCell lairCell = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
@@ -1638,14 +1645,14 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		int monstersStrength = monsterStrengthMin + (int) Math.round ((monsterStrengthMax - monsterStrengthMin) * powerProportion);
 
 		// Deal with main monsters
-		final int mainMonsterBudget = monstersStrength / (RandomUtils.getGenerator ().nextInt (4) + 1);
+		final int mainMonsterBudget = monstersStrength / (getRandomUtils ().nextInt (4) + 1);
 		final Unit mainMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, mainMonsterBudget);
 
 		int mainMonsterCount = 0;
 		if (mainMonster != null)
 		{
 			mainMonsterCount = Math.min (monstersStrength / mainMonster.getProductionCost (), sd.getUnitSetting ().getUnitsPerMapCell () - 1);
-			if ((mainMonsterCount > 1) && (RandomUtils.getGenerator ().nextBoolean ()))
+			if ((mainMonsterCount > 1) && (getRandomUtils ().nextBoolean ()))
 				mainMonsterCount--;
 
 			// Actually add them
@@ -1657,7 +1664,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		}
 
 		// Deal with secondary monsters
-		final int secondaryMonsterBudget = monstersStrength / (RandomUtils.getGenerator ().nextInt (sd.getUnitSetting ().getUnitsPerMapCell () + 1 - mainMonsterCount) + 1);
+		final int secondaryMonsterBudget = monstersStrength / (getRandomUtils ().nextInt (sd.getUnitSetting ().getUnitsPerMapCell () + 1 - mainMonsterCount) + 1);
 		final Unit secondaryMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, secondaryMonsterBudget);
 
 		if (secondaryMonster != null)
@@ -1733,7 +1740,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 						if (totalChance > 0)
 						{
 							// Pick a random magic realm to pick monsters from
-							totalChance = RandomUtils.getGenerator ().nextInt (totalChance);
+							totalChance = getRandomUtils ().nextInt (totalChance);
 
 							// Get the feature ID of the feature we picked
 							final Iterator<MapFeatureMagicRealm> magicRealmIterator = feature.getMapFeatureMagicRealm ().iterator ();
@@ -1752,7 +1759,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 							// Pick random value for the strength of monsters here
 							if (magicRealmID != null)
 							{
-								thisCell.setNodeLairTowerPowerProportion (RandomUtils.getGenerator ().nextInt (10001) / 10000d);
+								thisCell.setNodeLairTowerPowerProportion (getRandomUtils ().nextInt (10001) / 10000d);
 
 								final OverlandMapCoordinatesEx lairLocation = new OverlandMapCoordinatesEx ();
 								lairLocation.setX (x);
@@ -1860,5 +1867,21 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	public final void setServerDB (final ServerDatabaseEx obj)
 	{
 		db = obj;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

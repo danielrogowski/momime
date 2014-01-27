@@ -12,9 +12,9 @@ import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
-import momime.server.utils.RandomUtils;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.random.RandomUtils;
 
 /**
  * Methods for AI players making decisions about spells
@@ -26,6 +26,9 @@ public final class SpellAIImpl implements SpellAI
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
+
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -71,7 +74,7 @@ public final class SpellAIImpl implements SpellAI
 			throw new MomException ("chooseSpellToResearchAI: No appropriate spells to pick from list of " + spells.size ());
 
 		// Pick one at random
-		final Spell chosenSpell = spellsWithBestResearchOrder.get (RandomUtils.getGenerator ().nextInt (spellsWithBestResearchOrder.size ()));
+		final Spell chosenSpell = spellsWithBestResearchOrder.get (getRandomUtils ().nextInt (spellsWithBestResearchOrder.size ()));
 
 		log.exiting (SpellAIImpl.class.getName (), "chooseSpellToResearchAI", chosenSpell.getSpellID ());
 		return chosenSpell;
@@ -155,5 +158,21 @@ public final class SpellAIImpl implements SpellAI
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

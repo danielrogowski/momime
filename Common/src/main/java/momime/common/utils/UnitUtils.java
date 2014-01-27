@@ -9,6 +9,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.ExperienceLevel;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitHasSkill;
+import momime.common.messages.CombatMapCoordinatesEx;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
@@ -261,4 +263,12 @@ public interface UnitUtils
 	 * @param unitURN Unit about to be killed
 	 */
 	public void beforeKillingUnit (final FogOfWarMemory mem, final int unitURN);
+	
+	/**
+	 * @param units List of units to check
+	 * @param combatLocation Location on overland map where the combat is taking place
+	 * @param combatPosition Position within the combat map to look at
+	 * @return Unit at this position, or null if there isn't one
+	 */
+	public MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatPosition);
 }

@@ -84,7 +84,7 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 				else
 					action = KillUnitActionID.FREE;
 				
-				mom.getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, mom.getGeneralServerKnowledge ().getTrueMap (),
+				mom.getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, null, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}
 			

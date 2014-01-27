@@ -21,6 +21,7 @@ import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessageData;
 import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.AddUnitMessage;
+import momime.common.messages.servertoclient.v0_9_4.ApplyDamageMessage;
 import momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessage;
@@ -62,6 +63,7 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.PendingMovement;
 import momime.common.messages.v0_9_4.TurnSystem;
+import momime.common.messages.v0_9_4.UnitCombatSideID;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.CompareUtils;
 import momime.common.utils.MemoryBuildingUtils;
@@ -546,7 +548,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * There are a number of different possibilities for how we need to handle this, depending on how the unit died and whether it is a regular/summoned unit or a hero
 	 *
 	 * @param trueUnit The unit to set to alive
-	 * @param action Method by which the unit is being killed
+	 * @param transmittedAction Method by which the unit is being killed, out of possible values that are sent to clients; null if untransmittedAction is filled in
+	 * @param untransmittedAction Method by which the unit is being killed, out of possible values that are not sent to clients; null if transmittedAction is filled in
 	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param sd Session description
@@ -558,7 +561,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID action,
+	public final void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID transmittedAction, final UntransmittedKillUnitActionID untransmittedAction,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
@@ -586,7 +589,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				getUnitUtils ().beforeKillingUnit (priv.getFogOfWarMemory (), trueUnit.getUnitURN ());	// Removes spells cast on unit
 				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
 
-				if (player.getPlayerDescription ().isHuman ())
+				if ((transmittedAction != null) && (player.getPlayerDescription ().isHuman ()))
 				{
 					// Edit the action appropriately for the client - the only reason this isn't always FREE is that
 					// units killed or dismissed by lack of production need to go to a special status on
@@ -594,9 +597,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				
 					// For other players and statuses, they are just killed outright
 					if ((trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ().intValue ()) &&
-							((action == KillUnitActionID.HERO_LACK_OF_PRODUCTION) || (action == KillUnitActionID.UNIT_LACK_OF_PRODUCTION)))
+							((transmittedAction == KillUnitActionID.HERO_LACK_OF_PRODUCTION) || (transmittedAction == KillUnitActionID.UNIT_LACK_OF_PRODUCTION)))
 
-						msgData.setKillUnitActionID (action);
+						msgData.setKillUnitActionID (transmittedAction);
 					else
 						msgData.setKillUnitActionID (KillUnitActionID.FREE);
 				
@@ -607,28 +610,45 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Update the true copy of the unit as appropriate
 		getUnitUtils ().beforeKillingUnit (trueMap, trueUnit.getUnitURN ());	// Removes spells cast on unit
-		switch (action)
-		{
-			// Dismissed heroes go back to Generated
-			// Heroes dismissed by lack of production go back to Generated
-			case HERO_DIMISSED_VOLUNTARILY:
-			case HERO_LACK_OF_PRODUCTION:
-				log.finest ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated");
-				trueUnit.setStatus (UnitStatusID.GENERATED);
-				break;
+		
+		if (transmittedAction != null)
+			switch (transmittedAction)
+			{
+				// Dismissed heroes go back to Generated
+				// Heroes dismissed by lack of production go back to Generated
+				case HERO_DIMISSED_VOLUNTARILY:
+				case HERO_LACK_OF_PRODUCTION:
+					log.finest ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated");
+					trueUnit.setStatus (UnitStatusID.GENERATED);
+					break;
 
-			// Units killed by lack of production are simply killed off
-			case FREE:
-			case UNIT_LACK_OF_PRODUCTION:
-				log.finest ("Permanently removing unit URN " + trueUnit.getUnitURN ());
-				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
-				break;
+					// Units killed by lack of production are simply killed off
+				case FREE:
+				case UNIT_LACK_OF_PRODUCTION:
+					log.finest ("Permanently removing unit URN " + trueUnit.getUnitURN ());
+					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
+					break;
 
-			// VISIBLE_AREA_CHANGED is only ever used in msgs sent to clients and should never be passed into this method
+					// VISIBLE_AREA_CHANGED is only ever used in msgs sent to clients and should never be passed into this method
 
-			default:
-				throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when action = " + action);
-		}
+				default:
+					throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when transmittedAction = " + transmittedAction);
+			}
+		
+		if (untransmittedAction != null)
+			switch (untransmittedAction)
+			{
+				// Killed by taking damage in combat.
+				// All units killed by combat damage are kept around for the moment, since one of the players in the combat may Raise Dead them.
+				// Heroes are kept at musDead even after the combat ends, in case the player resurrects them.
+				case COMBAT_DAMAGE:
+					log.finest ("Setting unit with unit URN " + trueUnit.getUnitURN () + " to dead");
+					trueUnit.setStatus (UnitStatusID.DEAD);
+					break;
+				
+				default:
+					throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when untransmittedAction = " + untransmittedAction);
+			}
 
 		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "killUnitOnServerAndClients");
 	}
@@ -1386,7 +1406,140 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "healUnitsAndGainExperience");
 	}
+	
+	/**
+	 * Informs clients who can see either unit of how much combat damage two units have taken - the two players in combat use this to show the animation of the attack.
+	 * If the damage is enough to kill off the unit, the client will take care of this - we don't need to send a separate KillUnitMessage.
+	 * 
+	 * @param tuAttacker Server's true memory of unit that made the attack
+	 * @param tuDefender Server's true memory of unit that got hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param isRangedAttack True if ranged attack; False if melee
+	 * @param players List of players in the session
+	 * @param trueTerrain True terrain map
+	 * @param combatLocation Where the combat is taking place
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or a player should know about one of the units but we can't find it in their memory
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void sendCombatDamageToClients (final MemoryUnit tuAttacker, final MemoryUnit tuDefender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final boolean isRangedAttack, final List<PlayerServerDetails> players,
+		final MapVolumeOfMemoryGridCells trueTerrain, final OverlandMapCoordinatesEx combatLocation,
+		final ServerDatabaseEx db, final MomSessionDescription sd)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "sendCombatDamageToClients",
+			new Integer [] {tuAttacker.getUnitURN (), tuDefender.getUnitURN (),
+			attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID ()});
 
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			
+			// We might get the interesting situation where an outside observer not involved in the combat can see one
+			// unit stack but not the other - and so know about one unit but not the other.
+			// We handle this by setting one of the UnitURNs to zero, but this means we have to build the message separately for each client.
+			final ApplyDamageMessage msg;
+			if (thisPlayer.getPlayerDescription ().isHuman ())
+				msg = new ApplyDamageMessage ();
+			else
+				msg = null;
+			
+			// Attacking unit
+			if (canSeeUnitMidTurn (tuAttacker, players, trueTerrain, thisPlayer, combatLocation, attackingPlayer, defendingPlayer, db, sd))
+			{
+				// Update player's memory of attacker on server
+				final MemoryUnit muAttacker = getUnitUtils ().findUnitURN (tuAttacker.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-a");
+				muAttacker.setDamageTaken (tuAttacker.getDamageTaken ());
+				muAttacker.setCombatHeading (tuAttacker.getCombatHeading ());
+				muAttacker.setDoubleCombatMovesLeft (tuAttacker.getDoubleCombatMovesLeft ());
+
+				// Update player's memory of attacker on client
+				if (msg != null)
+				{
+					msg.setAttackerUnitURN (tuAttacker.getUnitURN ());
+					msg.setAttackerDamageTaken (tuAttacker.getDamageTaken ());
+					msg.setAttackerDirection (tuAttacker.getCombatHeading ());
+					msg.setAttackerDoubleCombatMovesLeft (tuAttacker.getDoubleCombatMovesLeft ());
+				}
+			}
+			
+			// Defending unit
+			if (canSeeUnitMidTurn (tuDefender, players, trueTerrain, thisPlayer, combatLocation, attackingPlayer, defendingPlayer, db, sd))
+			{
+				// Update player's memory of defender on server
+				final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-d");
+				muDefender.setDamageTaken (tuDefender.getDamageTaken ());
+				muDefender.setCombatHeading (tuDefender.getCombatHeading ());
+
+				// Update player's memory of defender on client
+				if (msg != null)
+				{
+					msg.setDefenderUnitURN (tuDefender.getUnitURN ());
+					msg.setDefenderDamageTaken (tuDefender.getDamageTaken ());
+					msg.setDefenderDirection (tuDefender.getCombatHeading ());
+				}
+			}
+			
+			// Do we have a message to send?
+			if (msg != null)
+				if ((msg.getAttackerUnitURN () > 0) || (msg.getDefenderUnitURN () > 0))
+				{
+					msg.setRangedAttack (isRangedAttack);
+					thisPlayer.getConnection ().sendMessageToClient (msg);
+				}
+		}		
+
+		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "sendCombatDamageToClients");
+	}
+
+	/**
+	 * When a unit dies in combat, all the units on the opposing side gain 1 exp. 
+	 * 
+	 * @param combatLocation The location where the combat is taking place
+	 * @param combatSide Which side is to gain 1 exp
+	 * @param trueTerrain True terrain map
+	 * @param trueUnits True units list
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	@Override
+	public final void grantExperienceToUnitsInCombat (final OverlandMapCoordinatesEx combatLocation, final UnitCombatSideID combatSide,
+		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final List<PlayerServerDetails> players,
+		final ServerDatabaseEx db, final MomSessionDescription sd)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "grantExperienceToUnitsInCombat",
+			new String [] {combatLocation.toString (), combatSide.name ()});
+		
+		for (final MemoryUnit trueUnit : trueUnits)
+			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
+				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null))
+			{
+				final int exp = getUnitUtils ().getBasicSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
+				if (exp >= 0)
+				{
+					getUnitUtils ().setBasicSkillValue (trueUnit, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, exp+1);
+					
+					// This updates both the player memories on the server, and sends messages out to the clients, as needed
+					updatePlayerMemoryOfUnit_DamageTakenAndExperience (trueUnit, trueTerrain, players, db, sd);
+				}				
+			}
+
+		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "grantExperienceToUnitsInCombat");
+	}
+	
 	/**
 	 * Copies all of the listed units from source to destination, along with any unit spells (enchantments like Flame Blade or curses like Weakness)
 	 * and then sends them to the client; this is used when a unit stack comes into view when it is moving

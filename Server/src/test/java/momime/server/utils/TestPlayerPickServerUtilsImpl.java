@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,7 @@ import org.junit.Test;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
 
 /**
  * Tests the PlayerPickServerUtils class
@@ -357,6 +360,9 @@ public final class TestPlayerPickServerUtilsImpl
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
@@ -364,6 +370,7 @@ public final class TestPlayerPickServerUtilsImpl
 		utils.setSpellUtils (spellUtils);
 		utils.setSpellAI (spellAI);
 		spellAI.setSpellUtils (spellUtils);
+		spellAI.setRandomUtils (random);
 		
 		// So far we have no books, so we get no free spells
 		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
@@ -697,14 +704,17 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		// Fix results
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (9)).thenReturn (3);		// Arcanus race
+		when (random.nextInt (5)).thenReturn (2);		// Myrror race
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setRandomUtils (random);
 
 		// Run test
-		final int arcanusRaceID = Integer.parseInt (utils.chooseRandomRaceForPlane (0, db).substring (2));
-		assertTrue ((arcanusRaceID >= 1) && (arcanusRaceID <= 9));
-
-		final int myrranRaceID = Integer.parseInt (utils.chooseRandomRaceForPlane (1, db).substring (2));
-		assertTrue ((myrranRaceID >= 10) && (myrranRaceID <= 14));
+		assertEquals ("RC04", utils.chooseRandomRaceForPlane (0, db));
+		assertEquals ("RC12", utils.chooseRandomRaceForPlane (1, db));
 	}
 }

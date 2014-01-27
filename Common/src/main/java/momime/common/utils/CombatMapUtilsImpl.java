@@ -1,16 +1,28 @@
 package momime.common.utils;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 import momime.common.database.v0_9_4.CombatMapLayerID;
+import momime.common.messages.OverlandMapCoordinatesEx;
+import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomCombatTile;
 import momime.common.messages.v0_9_4.MomCombatTileLayer;
+import momime.common.messages.v0_9_4.UnitStatusID;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Helper utils for dealing with combat maps
  */
 public final class CombatMapUtilsImpl implements CombatMapUtils
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (CombatMapUtilsImpl.class.getName ());
+	
 	/**
 	 * @param tile Tile to search
 	 * @param layer Layer to look for
@@ -70,5 +82,54 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 			
 			tile.getTileLayer ().add (newLayer);
 		}
+	}
+
+	/**
+	 * Rechecks whether both sides in combat still have units left alive, and if so who the two players are.
+	 * Delphi method used to be called RecheckCountsOfUnitsInCombat_MustLockUL, and returned a true/false for whether
+	 * both values had been found.  Equivalent here is to call .bothFound () on the returned obj.
+	 *  
+	 * @param combatLocation Overland map coordinates where combat is taking place
+	 * @param units List of known units
+	 * @param players Players list
+	 * @return Who the attacking and defending players are
+	 * @throws PlayerNotFoundException If we determine the attacking or defending player ID, but that ID then can't be found in the players list
+	 */
+	@Override
+	public final CombatPlayers determinePlayersInCombatFromLocation (final OverlandMapCoordinatesEx combatLocation,
+		final List<MemoryUnit> units, final List<? extends PlayerPublicDetails> players) throws PlayerNotFoundException
+	{
+		log.entering (CombatMapUtilsImpl.class.getName (), "determinePlayersInCombatFromLocation", combatLocation);
+		
+		Integer attackingPlayerID = null;
+		Integer defendingPlayerID = null;
+		
+		// Stop as soon as we've found them both
+		final Iterator<MemoryUnit> iter = units.iterator ();
+		while ((iter.hasNext ()) && ((attackingPlayerID == null) || (defendingPlayerID == null)))
+		{
+			final MemoryUnit thisUnit = iter.next ();
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) &&
+				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null))					
+			{
+				switch (thisUnit.getCombatSide ())
+				{
+					case ATTACKER:
+						attackingPlayerID = thisUnit.getOwningPlayerID ();
+						break;
+				
+					case DEFENDER:
+						defendingPlayerID = thisUnit.getOwningPlayerID ();
+						break;
+				}
+			}
+		}
+		
+		final CombatPlayers result = new CombatPlayers
+			((attackingPlayerID == null) ? null : MultiplayerSessionUtils.findPlayerWithID (players, attackingPlayerID, "determinePlayersInCombatFromLocation-A"),
+			(defendingPlayerID == null) ? null : MultiplayerSessionUtils.findPlayerWithID (players, defendingPlayerID, "determinePlayersInCombatFromLocation-D"));
+		log.exiting (CombatMapUtilsImpl.class.getName (), "determinePlayersInCombatFromLocation", attackingPlayerID + ", " + defendingPlayerID);
+		
+		return result;
 	}
 }

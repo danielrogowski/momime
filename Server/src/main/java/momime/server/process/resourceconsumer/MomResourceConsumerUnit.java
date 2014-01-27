@@ -112,7 +112,7 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 		else
 			action = KillUnitActionID.UNIT_LACK_OF_PRODUCTION;
 
-		mom.getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (getUnit (), action,
+		mom.getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (getUnit (), action, null,
 			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())

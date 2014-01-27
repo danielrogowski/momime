@@ -3,6 +3,7 @@ package momime.server.ai;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.junit.Test;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
 
 /**
  * Tests the CityAI class
@@ -173,12 +175,16 @@ public final class TestCityAIImpl
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
+		// Fix random results - would be better to mock some non-zero values here
+		final RandomUtils random = mock (RandomUtils.class);
+		
 		// Set up test object
 		final MomServerCityCalculationsImpl serverCityCalculations = new MomServerCityCalculationsImpl ();
 		serverCityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		final CityAIImpl ai = new CityAIImpl ();
 		ai.setServerCityCalculations (serverCityCalculations);
+		ai.setRandomUtils (random);
 		
 		// If we want trade goods cities and there are none, no updates will take place
 		for (int x = 0; x < sd.getMapSize ().getWidth (); x++)

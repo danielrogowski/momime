@@ -54,10 +54,10 @@ import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
 import momime.server.utils.UnitServerUtils;
-import momime.server.utils.RandomUtils;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 /**
  * Server side methods for dealing with calculating and updating the global economy e.g. gold being produced, cities growing, buildings progressing construction, spells being researched and so on
@@ -94,6 +94,9 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	/** Server-only spell calculations */
 	private MomServerSpellCalculations serverSpellCalculations;
 
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
 	/**
 	 * Recalculates all per turn production values Note Delphi version could either calculate the values for one player or all players and was named RecalcProductionValues Java version operates only on one player because each player now has their own resource list; the loop is in the outer calling method recalculateGlobalProductionValues
 	 * 
@@ -333,7 +336,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 					for (final MomResourceConsumer consumer : consumers)
 						totalConsumption = totalConsumption + consumer.getConsumptionAmount ();
 
-					int randomConsumption = RandomUtils.getGenerator ().nextInt (totalConsumption);
+					int randomConsumption = getRandomUtils ().nextInt (totalConsumption);
 					MomResourceConsumer chosenConsumer = null;
 					final Iterator<MomResourceConsumer> consumerIter = consumers.iterator ();
 					while ( (chosenConsumer == null) && (consumerIter.hasNext ()))
@@ -718,5 +721,21 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	public final void setServerSpellCalculations (final MomServerSpellCalculations calc)
 	{
 		serverSpellCalculations = calc;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

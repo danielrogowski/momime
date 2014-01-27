@@ -239,6 +239,7 @@
 		<property name="scheduledCombatUtils" ref="scheduledCombatUtils" />
 		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
 	</bean>
 	
 	<bean id="combatScheduler" class="momime.server.process.CombatSchedulerImpl">

@@ -2,6 +2,7 @@ package momime.server.calculations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,8 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Spell;
 
 import org.junit.Test;
+
+import com.ndg.random.RandomUtils;
 
 /**
  * Tests the MomServerSpellCalculations class
@@ -40,9 +43,13 @@ public final class TestMomServerSpellCalculationsImpl
 			spells.add (status);
 		}
 		
+		// Fix random results - it would be better to put some real values here, not just roll 0s
+		final RandomUtils random = mock (RandomUtils.class);
+		
 		// Set up object to test
 		final MomServerSpellCalculationsImpl calc = new MomServerSpellCalculationsImpl ();
 		calc.setSpellUtils (new SpellUtilsImpl ());
+		calc.setRandomUtils (random);
 
 		// With only 1 book, we get 3 common and 1 uncommon spell researchable
 		// That also means the rest of the common and uncommon spells are obtainable, but rare and very rares aren't
@@ -165,9 +172,13 @@ public final class TestMomServerSpellCalculationsImpl
 			spells.add (status);
 		}
 
+		// Fix random results
+		final RandomUtils random = mock (RandomUtils.class);
+		
 		// Set up object to test
 		final MomServerSpellCalculationsImpl calc = new MomServerSpellCalculationsImpl ();
 		calc.setSpellUtils (new SpellUtilsImpl ());
+		calc.setRandomUtils (random);
 		
 		// The key part of this is that it will exhaust lower spell ranks first before moving onto higher ones
 		// So lets set 2 spells to already be "researchable", 4 commons and 4 uncommons
@@ -191,18 +202,13 @@ public final class TestMomServerSpellCalculationsImpl
 		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, spells.get (8).getStatus ());
 		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, spells.get (9).getStatus ());
 
-		int count = 0;
-		for (int n = 10; n < 14; n++)
-		{
-			if (spells.get (n).getStatus ().equals (SpellResearchStatusID.RESEARCHABLE_NOW))
-				count++;
+		// Mocked random number generator will always roll 0s, so we'll get the first 2 uncommons
+		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, spells.get (10).getStatus ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE_NOW, spells.get (11).getStatus ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, spells.get (12).getStatus ());
+		assertEquals (SpellResearchStatusID.RESEARCHABLE, spells.get (13).getStatus ());
 
-			else if (!spells.get (n).getStatus ().equals (SpellResearchStatusID.RESEARCHABLE))
-				fail ("Unexpected status");
-		}
-
-		assertEquals (2, count);
-
+		// Everything higher rank is unavailable yet
 		assertEquals (SpellResearchStatusID.UNAVAILABLE, spells.get (14).getStatus ());
 		assertEquals (SpellResearchStatusID.UNAVAILABLE, spells.get (15).getStatus ());
 		assertEquals (SpellResearchStatusID.UNAVAILABLE, spells.get (16).getStatus ());

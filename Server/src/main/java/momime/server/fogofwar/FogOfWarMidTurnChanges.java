@@ -16,6 +16,7 @@ import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.UnitCombatSideID;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
@@ -120,7 +121,8 @@ public interface FogOfWarMidTurnChanges
 	 * There are a number of different possibilities for how we need to handle this, depending on how the unit died and whether it is a regular/summoned unit or a hero
 	 *
 	 * @param trueUnit The unit to set to alive
-	 * @param action Method by which the unit is being killed
+	 * @param transmittedAction Method by which the unit is being killed, out of possible values that are sent to clients; null if untransmittedAction is filled in
+	 * @param untransmittedAction Method by which the unit is being killed, out of possible values that are not sent to clients; null if transmittedAction is filled in
 	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param sd Session description
@@ -131,7 +133,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID action,
+	public void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID transmittedAction, final UntransmittedKillUnitActionID untransmittedAction,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
@@ -408,6 +410,52 @@ public interface FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 
+	/**
+	 * Informs clients who can see either unit of how much combat damage two units have taken - the two players in combat use this to show the animation of the attack.
+	 * If the damage is enough to kill off the unit, the client will take care of this - we don't need to send a separate KillUnitMessage.
+	 * 
+	 * @param tuAttacker Server's true memory of unit that made the attack
+	 * @param tuDefender Server's true memory of unit that got hit
+	 * @param attackingPlayer Player who owns tuAttacker
+	 * @param defendingPlayer Player who owns tuDefender
+	 * @param isRangedAttack True if ranged attack; False if melee
+	 * @param players List of players in the session
+	 * @param trueTerrain True terrain map
+	 * @param combatLocation Where the combat is taking place
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or a player should know about one of the units but we can't find it in their memory
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void sendCombatDamageToClients (final MemoryUnit tuAttacker, final MemoryUnit tuDefender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final boolean isRangedAttack, final List<PlayerServerDetails> players,
+		final MapVolumeOfMemoryGridCells trueTerrain, final OverlandMapCoordinatesEx combatLocation,
+		final ServerDatabaseEx db, final MomSessionDescription sd)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * When a unit dies in combat, all the units on the opposing side gain 1 exp. 
+	 * 
+	 * @param combatLocation The location where the combat is taking place
+	 * @param combatSide Which side is to gain 1 exp
+	 * @param trueTerrain True terrain map
+	 * @param trueUnits True units list
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	public void grantExperienceToUnitsInCombat (final OverlandMapCoordinatesEx combatLocation, final UnitCombatSideID combatSide,
+		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final List<PlayerServerDetails> players,
+		final ServerDatabaseEx db, final MomSessionDescription sd)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+	
 	/**
 	 * Moves a unit stack from one location to another; the two locations are assumed to be adjacent map cells.
 	 * It deals with all the resulting knock on effects, namely:

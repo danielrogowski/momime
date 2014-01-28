@@ -117,17 +117,21 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="spellAI" ref="spellAI" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="overlandMapServerUtils" class="momime.server.utils.OverlandMapServerUtilsImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtilsImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtilsImpl">
@@ -143,10 +147,13 @@
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 	
+	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
+	
 	<!-- Calculations -->
 	
 	<bean id="serverSpellCalculations" class="momime.server.calculations.MomServerSpellCalculationsImpl">
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="serverCityCalculations" class="momime.server.calculations.MomServerCityCalculationsImpl">
@@ -169,12 +176,14 @@
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="combatMapGenerator" class="momime.server.mapgenerator.CombatMapGeneratorImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<!-- Processing -->
@@ -195,6 +204,7 @@
 		<property name="momAI" ref="momAI" />
 		<property name="cityAI" ref="cityAI" />
 		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">
@@ -208,6 +218,7 @@
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="cityAI" ref="cityAI" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">
@@ -220,6 +231,7 @@
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
@@ -240,6 +252,7 @@
 		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	
 	<bean id="combatScheduler" class="momime.server.process.CombatSchedulerImpl">
@@ -250,6 +263,7 @@
 	
 	<bean id="spellAI" class="momime.server.ai.SpellAIImpl">
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">
@@ -258,6 +272,7 @@
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="momAI" class="momime.server.ai.MomAIImpl">
@@ -331,6 +346,7 @@
 	<bean id="overlandMapGenerator" class="momime.server.mapgenerator.OverlandMapGeneratorImpl" scope="prototype">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 		<!-- <property name="trueTerrain" ref="trueMap" /> see comment above, this is done in the code instead -->
 	</bean>
 

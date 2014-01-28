@@ -570,9 +570,11 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
 					(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ();
 				
-				if ((ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))
+				if ((thisUnit.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ()) &&
+					(ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))
 				{
 					// Can't be seen by FOW change
+					// The exception, handled by checking the playerIDs in the 'if' above, is that the monsters player CAN see their own units
 				}
 				else
 				{

@@ -271,7 +271,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		tc.setScheduledCombatURN (scheduledCombatURN);
 		
-		// Find out who we're attacking - if an empty lair, we can get nil here
+		// Find out who we're attacking - if an empty lair, we can get null here
 		final MemoryUnit firstDefendingUnit = getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 			defendingLocation.getX (), defendingLocation.getY (), defendingLocation.getPlane (), 0);
 		PlayerServerDetails defendingPlayer = (firstDefendingUnit == null) ? null : MultiplayerSessionServerUtils.findPlayerWithID
@@ -680,16 +680,30 @@ public final class CombatProcessingImpl implements CombatProcessing
 				trueUnit.setCombatSide (combatSide);
 				
 				// Attacking player's memory on server
-				final CombatMapCoordinatesEx atkUnitPosition = new CombatMapCoordinatesEx ();
-				atkUnitPosition.setX (coords.getX ());
-				atkUnitPosition.setY (coords.getY ());
-
 				final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-				final MemoryUnit atkUnit = getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), atkPriv.getFogOfWarMemory ().getUnit (), "placeCombatUnits-A");
-				atkUnit.setCombatLocation (combatLocation);
-				atkUnit.setCombatPosition (atkUnitPosition);
-				atkUnit.setCombatHeading (unitHeading);
-				atkUnit.setCombatSide (combatSide);
+				
+				// createDefenders=true indicates that we're attacking monsters in a lair; these only exist in the player's memory for the duration
+				// of the combat, so that's true for the player's memory on the server as well as sending to the client.  So need to create the units here.
+				final MemoryUnit atkUnit;
+				if ((startCombatMessage != null) && (startCombatMessage.isCreateDefenders ()) && (combatSide == UnitCombatSideID.DEFENDER))
+				{
+					// Add into attacker's memory - this copies *everything*, including the combat fields, so don't need to repeat it
+					getFogOfWarDuplication ().copyUnit (trueUnit, atkPriv.getFogOfWarMemory ().getUnit ());
+				}
+				else
+				{
+					// Update values on existing unit in attacker's memory
+					atkUnit = getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), atkPriv.getFogOfWarMemory ().getUnit (), "placeCombatUnits-A");
+				
+					final CombatMapCoordinatesEx atkUnitPosition = new CombatMapCoordinatesEx ();
+					atkUnitPosition.setX (coords.getX ());
+					atkUnitPosition.setY (coords.getY ());
+				
+					atkUnit.setCombatLocation (combatLocation);
+					atkUnit.setCombatPosition (atkUnitPosition);
+					atkUnit.setCombatHeading (unitHeading);
+					atkUnit.setCombatSide (combatSide);
+				}
 				
 				// Defending player may be nil if we're attacking an empty lair
 				if (defendingPlayer != null)

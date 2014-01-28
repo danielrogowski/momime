@@ -35,7 +35,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  * AI for deciding what to do with units in combat
  * This is used for human players who put their units on 'auto' as well as actual AI players
  */
-public final class CombatAIImpl
+public final class CombatAIImpl implements CombatAI
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CombatAIImpl.class.getName ());
@@ -293,6 +293,7 @@ public final class CombatAIImpl
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
+	@Override
 	public final void aiCombatTurn (final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{

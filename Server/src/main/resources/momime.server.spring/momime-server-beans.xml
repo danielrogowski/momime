@@ -252,6 +252,7 @@
 		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="combatAI" ref="combatAI" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	
@@ -279,6 +280,12 @@
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="spellAI" ref="spellAI" />
 		<property name="cityAI" ref="cityAI" />
+	</bean>
+
+	<bean id="combatAI" class="momime.server.ai.CombatIImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="combatProcessing" ref="combatProcessing" />
 	</bean>
 	
 	<!-- Fog of War -->

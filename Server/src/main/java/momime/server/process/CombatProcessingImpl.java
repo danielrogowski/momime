@@ -26,6 +26,7 @@ import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitMessageData;
 import momime.common.messages.servertoclient.v0_9_4.MoveUnitInCombatMessage;
 import momime.common.messages.servertoclient.v0_9_4.SelectNextUnitToMoveOverlandMessage;
+import momime.common.messages.servertoclient.v0_9_4.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.v0_9_4.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartCombatMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartCombatMessageUnit;
@@ -54,6 +55,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.ai.CombatAI;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -162,6 +164,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
+	
+	/** Combat AI */
+	private CombatAI combatAI;
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -335,7 +340,26 @@ public final class CombatProcessingImpl implements CombatProcessing
 		else
 		{
 			log.finest ("Continuing combat setup");
-			throw new UnsupportedOperationException ("Real combats not implemented yet");
+			
+			// Set casting skill allocation for this combat 
+			final MomPersistentPlayerPrivateKnowledge attackingPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+			tc.setCombatAttackerCastingSkillRemaining (getResourceValueUtils ().calculateCastingSkillOfPlayer (attackingPriv.getResourceValue ()));
+			
+			if (defendingPlayer != null)
+			{
+				final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+				tc.setCombatDefenderCastingSkillRemaining (getResourceValueUtils ().calculateCastingSkillOfPlayer (defendingPriv.getResourceValue ()));
+			}
+			
+			// Finally send the message, containing all the unit positions, units (if monsters in a node/lair/tower) and combat scenery
+			if (attackingPlayer.getPlayerDescription ().isHuman ())
+				attackingPlayer.getConnection ().sendMessageToClient (startCombatMessage);
+
+			if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ()))
+				defendingPlayer.getConnection ().sendMessageToClient (startCombatMessage);
+			
+			// Kick off first turn of combat
+			progressCombat (combatLocation, true, false, mom);
 		}
 
 		log.exiting (CombatProcessingImpl.class.getName (), "startCombat");
@@ -505,7 +529,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	final void mergeRowsIfTooMany (final List<Integer> unitsInRow, final int maxRows)
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "listNumberOfEachCombatClass", new Integer [] {unitsInRow.size (), maxRows});
+		log.entering (CombatProcessingImpl.class.getName (), "mergeRowsIfTooMany", new Integer [] {unitsInRow.size (), maxRows});
 		
 		while (unitsInRow.size () > maxRows)
 		{
@@ -528,7 +552,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			unitsInRow.remove (bestRowNo+1);
 		}
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "listNumberOfEachCombatClass", unitsInRow.size ());
+		log.exiting (CombatProcessingImpl.class.getName (), "mergeRowsIfTooMany", unitsInRow.size ());
 	}
 	
 	/**
@@ -753,7 +777,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 		log.exiting (CombatProcessingImpl.class.getName (), "placeCombatUnits");
 	}
 
-	
 	/**
 	 * Sets units into combat (e.g. sets their combatLocation to put them into combat, and sets their position, heading and side within that combat)
 	 * and adds the info to the StartCombatMessage to inform the the two clients involved to do the same.
@@ -828,6 +851,112 @@ public final class CombatProcessingImpl implements CombatProcessing
 	}
 	
 	/**
+	 * Progresses the combat happening at the specified location.
+	 * Will cycle through playing out AI players' combat turns until either the combat ends or it is a human players turn, at which
+	 * point it will send a message to them to tell them to take their turn and then exit.
+	 * 
+	 * @param combatLocation Where the combat is taking place
+	 * @param initialFirstTurn True if this is the initial call from startCombat; false if it is being called by a human playing ending their combat turn or turning auto on
+	 * @param initialAutoControlHumanPlayer True if it is being called by a human player turning auto on
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	final void progressCombat (final OverlandMapCoordinatesEx combatLocation, final boolean initialFirstTurn,
+		final boolean initialAutoControlHumanPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.entering (CombatProcessingImpl.class.getName (), "progressCombat", new String []
+			{combatLocation.toString (), new Boolean (initialFirstTurn).toString (), new Boolean (initialAutoControlHumanPlayer).toString ()});
+
+		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+
+		// These get modified by the loop
+		boolean firstTurn = initialFirstTurn;
+		boolean autoControlHumanPlayer = initialAutoControlHumanPlayer;
+		
+		// We cannot safely determine the players involved until we've proved there are actually some units on each side.
+		// Keep going until one side is wiped out or a human player needs to take their turn.
+		boolean aiPlayerTurn = true;
+		CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
+			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+		while ((aiPlayerTurn) && (combatPlayers.bothFound ()))
+		{
+			// Who should take their turn next?
+			// If human player hits Auto, then we want to play their turn for them through their AI, without switching players
+			if (!autoControlHumanPlayer)
+			{
+				// Defender always goes first
+				if (firstTurn)
+				{
+					firstTurn = false;
+					tc.setCombatCurrentPlayer (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
+					log.finest ("First turn - Defender");
+				}
+				
+				// Otherwise compare against the player from the last turn
+				else if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayer ()))
+				{
+					tc.setCombatCurrentPlayer (combatPlayers.getAttackingPlayer ().getPlayerDescription ().getPlayerID ());
+					log.finest ("Attacker's turn");
+				}
+				else
+				{
+					tc.setCombatCurrentPlayer (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
+					log.finest ("Defender's turn");
+				}
+				
+				// Tell all human players involved in the combat who the new player is
+				final SetCombatPlayerMessage msg = new SetCombatPlayerMessage ();
+				msg.setCombatLocation (combatLocation);
+				msg.setPlayerID (tc.getCombatCurrentPlayer ());
+				
+				if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().isHuman ())
+					((PlayerServerDetails) combatPlayers.getDefendingPlayer ()).getConnection ().sendMessageToClient (msg);
+
+				if (combatPlayers.getAttackingPlayer ().getPlayerDescription ().isHuman ())
+					((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
+				
+				// Give this player all their movement for this turn
+				getUnitUtils ().resetUnitCombatMovement (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), tc.getCombatCurrentPlayer (), combatLocation, mom.getServerDB ());
+				
+				// Allow the player to cast a spell this turn
+				tc.setSpellCastThisCombatTurn (null);
+			}
+			
+			// AI or human player?
+			if (tc.getCombatCurrentPlayer () != null)
+			{
+				final PlayerServerDetails combatCurrentPlayer = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), tc.getCombatCurrentPlayer (), "progressCombat");
+				if ((combatCurrentPlayer.getPlayerDescription ().isHuman ()) && (!autoControlHumanPlayer))
+				{
+					// Human players' turn.
+					// Nothing to do here - we already notified them to take their turn so the loop & this method will just
+					// exit and combat will proceed when we receive messages from the player.
+					aiPlayerTurn = false;
+				}
+				else
+				{
+					// Take AI players' turn
+					getCombatAI ().aiCombatTurn (combatLocation, combatCurrentPlayer, mom);
+					aiPlayerTurn = true;
+					autoControlHumanPlayer = false;
+				}
+			}
+			
+			// Was either side wiped out yet?
+			combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
+				(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+		}
+		
+		log.exiting (CombatProcessingImpl.class.getName (), "progressCombat");
+	}
+	
+	/**
 	 * Handles tidying up when a combat ends
 	 * 
 	 * If the combat results in the attacker capturing a city, and the attacker is a human player, then this gets called twice - the first time it
@@ -845,7 +974,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public final void combatEnded (final OverlandMapCoordinatesEx combatLocation,
+	final void combatEnded (final OverlandMapCoordinatesEx combatLocation,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
 		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
@@ -2110,6 +2239,22 @@ public final class CombatProcessingImpl implements CombatProcessing
 		combatMapUtils = utils;
 	}
 
+	/**
+	 * @return Combat AI
+	 */
+	public final CombatAI getCombatAI ()
+	{
+		return combatAI;
+	}
+
+	/**
+	 * @param ai Combat AI
+	 */
+	public final void setCombatAI (final CombatAI ai)
+	{
+		combatAI = ai;
+	}
+	
 	/**
 	 * @return Random number generator
 	 */

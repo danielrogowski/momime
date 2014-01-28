@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1540,24 +1542,36 @@ public final class TestUnitUtilsImpl
 	public final void testResetUnitOverlandMovement_AllPlayers ()
 		throws RecordNotFoundException
 	{
+		// Mock some database movement values
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitA = new Unit ();
+		unitA.setDoubleMovement (2);
+		when (db.findUnit ("A", "resetUnitOverlandMovement")).thenReturn (unitA);
+		
+		final Unit unitB = new Unit ();
+		unitB.setDoubleMovement (4);
+		when (db.findUnit ("B", "resetUnitOverlandMovement")).thenReturn (unitB);
+		
+		// Set up some test units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Create units owned by 3 players
 		for (int playerID = 1; playerID <= 3; playerID++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
+			spearmen.setUnitID ("A");
 			spearmen.setOwningPlayerID (playerID);
 			units.add (spearmen);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
-			hellHounds.setUnitID (GenerateTestData.HELL_HOUNDS_UNIT);
+			hellHounds.setUnitID ("B");
 			hellHounds.setOwningPlayerID (playerID);
 			units.add (hellHounds);
 		}
 
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.resetUnitOverlandMovement (units, 0, GenerateTestData.createDB ());
+		utils.resetUnitOverlandMovement (units, 0, db);
 
 		assertEquals (2, units.get (0).getDoubleOverlandMovesLeft ());
 		assertEquals (4, units.get (1).getDoubleOverlandMovesLeft ());
@@ -1568,31 +1582,43 @@ public final class TestUnitUtilsImpl
 	}
 
 	/**
-	 * Tests the resetUnitOverlandMovement method for a single players
+	 * Tests the resetUnitOverlandMovement method for a single player
 	 * @throws RecordNotFoundException If we can't find the definition for one of the units
 	 */
 	@Test
 	public final void testResetUnitOverlandMovement_OnePlayer ()
 		throws RecordNotFoundException
 	{
+		// Mock some database movement values
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitA = new Unit ();
+		unitA.setDoubleMovement (2);
+		when (db.findUnit ("A", "resetUnitOverlandMovement")).thenReturn (unitA);
+		
+		final Unit unitB = new Unit ();
+		unitB.setDoubleMovement (4);
+		when (db.findUnit ("B", "resetUnitOverlandMovement")).thenReturn (unitB);
+		
+		// Set up some test units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Create units owned by 3 players
 		for (int playerID = 1; playerID <= 3; playerID++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
+			spearmen.setUnitID ("A");
 			spearmen.setOwningPlayerID (playerID);
 			units.add (spearmen);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
-			hellHounds.setUnitID (GenerateTestData.HELL_HOUNDS_UNIT);
+			hellHounds.setUnitID ("B");
 			hellHounds.setOwningPlayerID (playerID);
 			units.add (hellHounds);
 		}
 
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.resetUnitOverlandMovement (units, 2, GenerateTestData.createDB ());
+		utils.resetUnitOverlandMovement (units, 2, db);
 
 		assertEquals (0, units.get (0).getDoubleOverlandMovesLeft ());
 		assertEquals (0, units.get (1).getDoubleOverlandMovesLeft ());
@@ -1600,6 +1626,111 @@ public final class TestUnitUtilsImpl
 		assertEquals (4, units.get (3).getDoubleOverlandMovesLeft ());
 		assertEquals (0, units.get (4).getDoubleOverlandMovesLeft ());
 		assertEquals (0, units.get (5).getDoubleOverlandMovesLeft ());
+	}
+
+	/**
+	 * Tests the resetUnitCombatMovement method
+	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 */
+	@Test
+	public final void testResetUnitCombatMovement ()
+		throws RecordNotFoundException
+	{
+		// Mock some database movement values
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitA = new Unit ();
+		unitA.setDoubleMovement (2);
+		when (db.findUnit ("A", "resetUnitCombatMovement")).thenReturn (unitA);
+		
+		final Unit unitB = new Unit ();
+		unitB.setDoubleMovement (4);
+		when (db.findUnit ("B", "resetUnitCombatMovement")).thenReturn (unitB);
+		
+		// Set up some test units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		// Unit A that matches
+		final OverlandMapCoordinatesEx u1loc = new OverlandMapCoordinatesEx ();
+		u1loc.setX (20);
+		u1loc.setY (10);
+		u1loc.setPlane (1);
+
+		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setUnitID ("A");
+		u1.setOwningPlayerID (1);
+		u1.setCombatLocation (u1loc);
+		u1.setCombatPosition (new CombatMapCoordinatesEx ());
+		units.add (u1);
+
+		// Wrong location
+		final OverlandMapCoordinatesEx u2loc = new OverlandMapCoordinatesEx ();
+		u2loc.setX (21);
+		u2loc.setY (10);
+		u2loc.setPlane (1);
+
+		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setUnitID ("A");
+		u2.setOwningPlayerID (1);
+		u2.setCombatLocation (u2loc);
+		u2.setCombatPosition (new CombatMapCoordinatesEx ());
+		units.add (u2);
+
+		// No combat position
+		final OverlandMapCoordinatesEx u3loc = new OverlandMapCoordinatesEx ();
+		u3loc.setX (20);
+		u3loc.setY (10);
+		u3loc.setPlane (1);
+
+		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setUnitID ("A");
+		u3.setOwningPlayerID (1);
+		u3.setCombatLocation (u3loc);
+		units.add (u3);
+		
+		// Wrong player
+		final OverlandMapCoordinatesEx u4loc = new OverlandMapCoordinatesEx ();
+		u4loc.setX (20);
+		u4loc.setY (10);
+		u4loc.setPlane (1);
+
+		final MemoryUnit u4 = new MemoryUnit ();
+		u4.setUnitID ("A");
+		u4.setOwningPlayerID (2);
+		u4.setCombatLocation (u4loc);
+		u4.setCombatPosition (new CombatMapCoordinatesEx ());
+		units.add (u4);
+		
+		// Unit B that matches
+		final OverlandMapCoordinatesEx u5loc = new OverlandMapCoordinatesEx ();
+		u5loc.setX (20);
+		u5loc.setY (10);
+		u5loc.setPlane (1);
+
+		final MemoryUnit u5 = new MemoryUnit ();
+		u5.setUnitID ("B");
+		u5.setOwningPlayerID (1);
+		u5.setCombatLocation (u5loc);
+		u5.setCombatPosition (new CombatMapCoordinatesEx ());
+		units.add (u5);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		final OverlandMapCoordinatesEx loc = new OverlandMapCoordinatesEx ();
+		loc.setX (20);
+		loc.setY (10);
+		loc.setPlane (1);
+
+		utils.resetUnitCombatMovement (units, 1, loc, db);
+
+		// Check results
+		assertEquals (2, u1.getDoubleCombatMovesLeft ().intValue ());
+		assertNull (u2.getDoubleCombatMovesLeft ());
+		assertNull (u3.getDoubleCombatMovesLeft ());
+		assertNull (u4.getDoubleCombatMovesLeft ());
+		assertEquals (4, u5.getDoubleCombatMovesLeft ().intValue ());
 	}
 
 	/**

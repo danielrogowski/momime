@@ -66,6 +66,26 @@
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatMap" type="momimemsgs:mapAreaOfCombatTiles"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="combatCurrentPlayer" type="mps:playerID">
+					    <xsd:annotation>
+    						<xsd:documentation>Who's turn it is in the combat currently taking place at this location.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="spellCastThisCombatTurn" type="xsd:boolean">
+					    <xsd:annotation>
+    						<xsd:documentation>Whether combatCurrentPlayer has cast a spell yet during this combat turn (can only cast 1 spell per combat turn).</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="combatDefenderCastingSkillRemaining" type="momimecommon:spellCastingCost">
+					    <xsd:annotation>
+    						<xsd:documentation>How much casting skill the defender has left available for the duration of this combat.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="combatAttackerCastingSkillRemaining" type="momimecommon:spellCastingCost">
+					    <xsd:annotation>
+    						<xsd:documentation>How much casting skill the attacker has left available for the duration of this combat.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 		        </xsd:sequence>
 	        </xsd:extension>
 		</xsd:complexContent>

@@ -219,7 +219,7 @@ public interface UnitUtils
 		throws PlayerNotFoundException, RecordNotFoundException;
 
 	/**
-	 * Gives all units full movement back again
+	 * Gives all units full movement back again overland
 	 *
 	 * @param units List of units to update
 	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
@@ -229,6 +229,18 @@ public interface UnitUtils
 	public void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final CommonDatabase db)
 		throws RecordNotFoundException;
 
+	/**
+	 * Gives all units full movement back again for their combat turn
+	 *
+	 * @param units List of units to update
+	 * @param playerID Player whose units to update 
+	 * @param combatLocation Where the combat is taking place
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 */
+	public void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final OverlandMapCoordinatesEx combatLocation, final CommonDatabase db)
+		throws RecordNotFoundException;
+	
 	/**
 	 * @param units Unit stack
 	 * @return Comma delimited list of their unit URNs, for debug messages

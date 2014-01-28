@@ -870,6 +870,29 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
+	 * Gives all units full movement back again for their combat turn
+	 *
+	 * @param units List of units to update
+	 * @param playerID Player whose units to update 
+	 * @param combatLocation Where the combat is taking place
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If we can't find the definition for one of the units
+	 */
+	@Override
+	public final void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final OverlandMapCoordinatesEx combatLocation, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		log.entering (UnitUtilsImpl.class.getName (), "resetUnitCombatMovement", new String []
+			{new Integer (playerID).toString (), combatLocation.toString ()});
+
+		for (final MemoryUnit thisUnit : units)
+			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null))
+				thisUnit.setDoubleCombatMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitCombatMovement").getDoubleMovement ());
+
+		log.exiting (UnitUtilsImpl.class.getName (), "resetUnitCombatMovement");
+	}
+	
+	/**
 	 * @param units Unit stack
 	 * @return Comma delimited list of their unit URNs, for debug messages
 	 */

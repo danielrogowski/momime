@@ -282,7 +282,7 @@
 		<property name="cityAI" ref="cityAI" />
 	</bean>
 
-	<bean id="combatAI" class="momime.server.ai.CombatIImpl">
+	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatProcessing" ref="combatProcessing" />

@@ -65,9 +65,6 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
-	/** Unit calculations */
-	private MomUnitCalculations unitCalculations;
-	
 	/**
 	 * @param map Our knowledge of the surrounding terrain
 	 * @param buildings Pre-locked buildings list
@@ -455,7 +452,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 					
 					// Check if our type of unit can move here
 					final MomCombatTile moveToTile = combatMap.getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
-					final int doubleMovementToEnterThisTile = getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (moveToTile, db);
+					final int doubleMovementToEnterThisTile = calculateDoubleMovementToEnterCombatTile (moveToTile, db);
 					
 					// Our own units prevent us moving here - enemy units don't because by 'moving there' we'll attack them
 					if ((doubleMovementToEnterThisTile < 0) || (ourUnits [moveTo.getY ()] [moveTo.getX ()]))
@@ -642,21 +639,5 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
-	}
-
-	/**
-	 * @return Unit calculations
-	 */
-	public final MomUnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final MomUnitCalculations calc)
-	{
-		unitCalculations = calc;
 	}
 }

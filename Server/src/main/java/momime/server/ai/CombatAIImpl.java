@@ -198,8 +198,8 @@ public final class CombatAIImpl implements CombatAI
 				
 				// Check that if we select this enemy, we have a valid action to take against it - i.e. that we don't have a cunning human
 				// player box in a weak unit by surrounding it by 8 others and then get in a tizzy trying to work out a path to the unit.
-				(attacks.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()])) &&
-				(movementDirections [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] > 0))
+				((attacks.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()])) ||
+				(movementDirections [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] > 0)))
 			{
 				// Is this the first possible target we've found, or better than our current target
 				if (bestUnit == null)
@@ -208,7 +208,8 @@ public final class CombatAIImpl implements CombatAI
 					bestUnit = thisUnit;
 			}
 		
-		log.exiting (CombatAIImpl.class.getName (), "selectBestTarget", bestUnit.getUnitURN ());
+		log.exiting (CombatAIImpl.class.getName (), "selectBestTarget",
+			(bestUnit == null) ? "null" : new Integer (bestUnit.getUnitURN ()).toString ());
 		return bestUnit;
 	}
 	

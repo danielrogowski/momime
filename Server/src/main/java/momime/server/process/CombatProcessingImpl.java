@@ -1762,8 +1762,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 		}
 		
 		// Now apply damage
-		defender.setDamageTaken (defender.getDamageTaken () - damageToDefender);
-		attacker.setDamageTaken (attacker.getDamageTaken () - damageToAttacker);
+		defender.setDamageTaken (defender.getDamageTaken () + damageToDefender);
+		attacker.setDamageTaken (attacker.getDamageTaken () + damageToAttacker);
 		
 		// Update damage taken in player's memory on server, and on all clients who can see the unit.
 		// This includes both players involved in the combat (who will queue this up as an animation), and players who aren't involved in the combat but

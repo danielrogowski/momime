@@ -416,7 +416,7 @@ Auto switched on or not - this makes it easier to allow the player to switch Aut
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -431,7 +431,7 @@ Auto switched on or not - this makes it easier to allow the player to switch Aut
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="defendingPlayerID" type="mps:playerID"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="captureCityDecision" type="momimemsgs:captureCityDecisionID"/>
 		        	</xsd:sequence>

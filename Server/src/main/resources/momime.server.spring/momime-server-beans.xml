@@ -370,6 +370,7 @@
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="spellUtils" ref="spellUtils" />

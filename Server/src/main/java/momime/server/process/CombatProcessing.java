@@ -67,6 +67,25 @@ public interface CombatProcessing
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
+	 * Progresses the combat happening at the specified location.
+	 * Will cycle through playing out AI players' combat turns until either the combat ends or it is a human players turn, at which
+	 * point it will send a message to them to tell them to take their turn and then exit.
+	 * 
+	 * @param combatLocation Where the combat is taking place
+	 * @param initialFirstTurn True if this is the initial call from startCombat; false if it is being called by a human playing ending their combat turn or turning auto on
+	 * @param initialAutoControlHumanPlayer True if it is being called by a human player turning auto on
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void progressCombat (final OverlandMapCoordinatesEx combatLocation, final boolean initialFirstTurn,
+		final boolean initialAutoControlHumanPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
 	 * Once we have mapped out the directions and distances around the combat map and verified that our desired destination is
 	 * fine, this routine actually handles sending the movement animations, performing the updates, and resolving any attacks.
 	 *  

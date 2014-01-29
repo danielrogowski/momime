@@ -17,10 +17,13 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
+import momime.common.messages.clienttoserver.v0_9_4.CombatAutoControlMessage;
 import momime.common.messages.clienttoserver.v0_9_4.DismissUnitMessage;
+import momime.common.messages.clienttoserver.v0_9_4.EndCombatTurnMessage;
 import momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ObjectFactory;
 import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_4.RequestMoveCombatUnitMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
@@ -298,5 +301,32 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	public final AttackNodeLairTowerMessage createAttackNodeLairTowerMessage ()
 	{
 		return new AttackNodeLairTowerMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created EndCombatTurnMessage
+	 */
+	@Override
+	public final EndCombatTurnMessage createEndCombatTurnMessage ()
+	{
+		return new EndCombatTurnMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created CombatAutoControlMessage
+	 */
+	@Override
+	public final CombatAutoControlMessage createCombatAutoControlMessage ()
+	{
+		return new CombatAutoControlMessageImpl ();
+	}
+
+	/**
+	 * @return Newly created RequestMoveCombatUnitMessage
+	 */
+	@Override
+	public final RequestMoveCombatUnitMessage createRequestMoveCombatUnitMessage ()
+	{
+		return new RequestMoveCombatUnitMessageImpl ();
 	}
 }

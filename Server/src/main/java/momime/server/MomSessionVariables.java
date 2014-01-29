@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomUnitCalculations;
 import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.utils.MemoryBuildingUtils;
@@ -112,6 +113,11 @@ public interface MomSessionVariables
 	 * @return City calculcations
 	 */
 	public MomCityCalculations getCityCalculations ();
+
+	/**
+	 * @return City calculcations
+	 */
+	public MomUnitCalculations getUnitCalculations ();
 	
 	/**
 	 * @return Resource calculations

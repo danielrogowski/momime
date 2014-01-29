@@ -3,6 +3,7 @@ package momime.server;
 import java.util.logging.Logger;
 
 import momime.common.calculations.MomCityCalculations;
+import momime.common.calculations.MomUnitCalculations;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MagicPowerDistribution;
@@ -106,6 +107,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
+	
+	/** Unit calculations */
+	private MomUnitCalculations unitCalculations;
 	
 	/** Database converters */
 	private ServerDatabaseConverters serverDatabaseConverters;
@@ -561,6 +565,23 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final void setCityCalculations (final MomCityCalculations calc)
 	{
 		cityCalculations = calc;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	@Override
+	public final MomUnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final MomUnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 	
 	/**

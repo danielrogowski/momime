@@ -975,7 +975,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	final void combatEnded (final OverlandMapCoordinatesEx combatLocation,
+	@Override
+	public final void combatEnded (final OverlandMapCoordinatesEx combatLocation,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
 		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException

@@ -587,7 +587,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				// Remove unit from players' memory on server - this doesn't suffer from the issue described below so we can just do it
 				getPendingMovementUtils ().removeUnitFromAnyPendingMoves (trans.getPendingMovement (), trueUnit.getUnitURN ());
 				getUnitUtils ().beforeKillingUnit (priv.getFogOfWarMemory (), trueUnit.getUnitURN ());	// Removes spells cast on unit
-				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
+				
+				// If still in combat, only set to DEAD in player's memory on server, rather than removing entirely
+				if (untransmittedAction == UntransmittedKillUnitActionID.COMBAT_DAMAGE)
+					getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "killUnitOnServerAndClients").setStatus (UnitStatusID.DEAD);
+				else
+					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
 
 				if ((transmittedAction != null) && (player.getPlayerDescription ().isHuman ()))
 				{

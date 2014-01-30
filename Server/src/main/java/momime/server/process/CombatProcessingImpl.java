@@ -1300,7 +1300,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final List<MemoryUnit> copyOfTrueUnits = new ArrayList<MemoryUnit> ();
 		copyOfTrueUnits.addAll (trueMap.getUnit ());
 		for (final MemoryUnit trueUnit : copyOfTrueUnits)
-			if (combatLocation.equals (trueUnit.getCombatLocation ()))
+			if ((trueUnit.getCombatPosition () != null) && (combatLocation.equals (trueUnit.getCombatLocation ())))
 			{
 				// Permanently remove any dead regular units (which were kept around until now so they could be Animate Dead'ed)
 				// Also remove any combat summons like Phantom Warriors

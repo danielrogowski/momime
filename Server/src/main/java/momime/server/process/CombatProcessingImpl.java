@@ -994,7 +994,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			log.finest ("Undecided city capture, bulk of method will not run");
 			
 			final AskForCaptureCityDecisionMessage msg = new AskForCaptureCityDecisionMessage ();
-			msg.setCombatLocation (combatLocation);
+			msg.setCityLocation (combatLocation);
 			if (defendingPlayer != null)
 				msg.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
 			

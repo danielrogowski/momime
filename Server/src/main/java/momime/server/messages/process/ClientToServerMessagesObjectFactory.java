@@ -6,6 +6,7 @@ import momime.common.messages.clienttoserver.v0_9_4.AlchemyMessage;
 import momime.common.messages.clienttoserver.v0_9_4.AttackNodeLairTowerMessage;
 import momime.common.messages.clienttoserver.v0_9_4.CancelPendingMovementAndSpecialOrdersMessage;
 import momime.common.messages.clienttoserver.v0_9_4.CancelTargetSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_4.CaptureCityDecisionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeOptionalFarmersMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage;
@@ -17,6 +18,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
+import momime.common.messages.clienttoserver.v0_9_4.ChoseNotToDoScheduledCombatMessage;
 import momime.common.messages.clienttoserver.v0_9_4.CombatAutoControlMessage;
 import momime.common.messages.clienttoserver.v0_9_4.DismissUnitMessage;
 import momime.common.messages.clienttoserver.v0_9_4.EndCombatTurnMessage;
@@ -27,28 +29,35 @@ import momime.common.messages.clienttoserver.v0_9_4.RequestMoveCombatUnitMessage
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_4.RequestStartScheduledCombatMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RequestUpdateUnitNameMessage;
 import momime.common.messages.clienttoserver.v0_9_4.RushBuyMessage;
 import momime.common.messages.clienttoserver.v0_9_4.SellBuildingMessage;
 import momime.common.messages.clienttoserver.v0_9_4.SpecialOrderButtonMessage;
 import momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_4.UnrequestStartScheduledCombatMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
 
 /**
- * On the server, make sure we create the special versions of each message that include the processing interface
+ * On the server, make sure we create the special versions of each message that include the processing interface.
+ * This just delegates all message creation to the factory interface which creates messages from prototype bean definitions.
+ * I tried just putting @XmlRegistry straight on the interface and using it, but that didn't work
  */
 @XmlRegistry
-public final class ObjectFactoryClientToServerMessages extends ObjectFactory
+public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 {
+	/** Factory for creating prototype message beans from spring */
+	private ClientToServerMessagesFactory factory;
+	
 	/**
 	 * @return Newly created ChooseWizardMessage
 	 */
 	@Override
 	public final ChooseWizardMessage createChooseWizardMessage ()
 	{
-        return new ChooseWizardMessageImpl ();
+        return getFactory ().createChooseWizardMessage ();
 	}
 
 	/**
@@ -57,7 +66,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final UploadCustomPhotoMessage createUploadCustomPhotoMessage ()
 	{
-		return new UploadCustomPhotoMessageImpl ();
+		return getFactory ().createUploadCustomPhotoMessage ();
 	}
 
 	/**
@@ -66,7 +75,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChooseInitialSpellsMessage createChooseInitialSpellsMessage ()
 	{
-		return new ChooseInitialSpellsMessageImpl ();
+		return getFactory ().createChooseInitialSpellsMessage ();
 	}
 
 	/**
@@ -75,7 +84,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChooseCityNameMessage createChooseCityNameMessage ()
 	{
-		return new ChooseCityNameMessageImpl ();
+		return getFactory ().createChooseCityNameMessage ();
 	}
 
 	/**
@@ -84,7 +93,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChooseStandardPhotoMessage createChooseStandardPhotoMessage ()
 	{
-		return new ChooseStandardPhotoMessageImpl ();
+		return getFactory ().createChooseStandardPhotoMessage ();
 	}
 
 	/**
@@ -93,7 +102,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChooseCustomFlagColourMessage createChooseCustomFlagColourMessage ()
 	{
-		return new ChooseCustomFlagColourMessageImpl ();
+		return getFactory ().createChooseCustomFlagColourMessage ();
 	}
 
 	/**
@@ -102,7 +111,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChooseCustomPicksMessage createChooseCustomPicksMessage ()
 	{
-		return new ChooseCustomPicksMessageImpl ();
+		return getFactory ().createChooseCustomPicksMessage ();
 	}
 
 	/**
@@ -111,7 +120,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChooseRaceMessage createChooseRaceMessage ()
 	{
-		return new ChooseRaceMessageImpl ();
+		return getFactory ().createChooseRaceMessage ();
 	}
 
 	/**
@@ -120,7 +129,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChangeCityConstructionMessage createChangeCityConstructionMessage ()
 	{
-		return new ChangeCityConstructionMessageImpl ();
+		return getFactory ().createChangeCityConstructionMessage ();
 	}
 
 	/**
@@ -129,7 +138,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChangeOptionalFarmersMessage createChangeOptionalFarmersMessage ()
 	{
-		return new ChangeOptionalFarmersMessageImpl ();
+		return getFactory ().createChangeOptionalFarmersMessage ();
 	}
 
 	/**
@@ -138,7 +147,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final UpdateMagicPowerDistributionMessage createUpdateMagicPowerDistributionMessage ()
 	{
-		return new UpdateMagicPowerDistributionMessageImpl ();
+		return getFactory ().createUpdateMagicPowerDistributionMessage ();
 	}
 
 	/**
@@ -147,7 +156,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final AlchemyMessage createAlchemyMessage ()
 	{
-		return new AlchemyMessageImpl ();
+		return getFactory ().createAlchemyMessage ();
 	}
 
 	/**
@@ -156,7 +165,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final RequestOverlandMovementDistancesMessage createRequestOverlandMovementDistancesMessage ()
 	{
-		return new RequestOverlandMovementDistancesMessageImpl ();
+		return getFactory ().createRequestOverlandMovementDistancesMessage ();
 	}
 
 	/**
@@ -165,7 +174,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final RequestMoveOverlandUnitStackMessage createRequestMoveOverlandUnitStackMessage ()
 	{
-		return new RequestMoveOverlandUnitStackMessageImpl ();
+		return getFactory ().createRequestMoveOverlandUnitStackMessage ();
 	}
 
 	/**
@@ -174,7 +183,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final RequestResearchSpellMessage createRequestResearchSpellMessage ()
 	{
-		return new RequestResearchSpellMessageImpl ();
+		return getFactory ().createRequestResearchSpellMessage ();
 	}
 
 	/**
@@ -183,7 +192,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final NextTurnButtonMessage createNextTurnButtonMessage ()
 	{
-		return new NextTurnButtonMessageImpl ();
+		return getFactory ().createNextTurnButtonMessage ();
 	}
 
 	/**
@@ -192,7 +201,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final RequestCastSpellMessage createRequestCastSpellMessage ()
 	{
-		return new RequestCastSpellMessageImpl ();
+		return getFactory ().createRequestCastSpellMessage ();
 	}
 
 	/**
@@ -201,7 +210,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final TargetSpellMessage createTargetSpellMessage ()
 	{
-		return new TargetSpellMessageImpl ();
+		return getFactory ().createTargetSpellMessage ();
 	}
 
 	/**
@@ -210,7 +219,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final CancelTargetSpellMessage createCancelTargetSpellMessage ()
 	{
-		return new CancelTargetSpellMessageImpl ();
+		return getFactory ().createCancelTargetSpellMessage ();
 	}
 	
 	/**
@@ -219,7 +228,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final DismissUnitMessage createDismissUnitMessage ()
 	{
-		return new DismissUnitMessageImpl ();
+		return getFactory ().createDismissUnitMessage ();
 	}
 
 	/**
@@ -228,7 +237,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChatMessage createChatMessage ()
 	{
-		return new ChatMessageImpl ();
+		return getFactory ().createChatMessage ();
 	}
 
 	/**
@@ -237,7 +246,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final ChangeTaxRateMessage createChangeTaxRateMessage ()
 	{
-		return new ChangeTaxRateMessageImpl ();
+		return getFactory ().createChangeTaxRateMessage ();
 	}
 
 	/**
@@ -246,7 +255,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final RushBuyMessage createRushBuyMessage ()
 	{
-		return new RushBuyMessageImpl ();
+		return getFactory ().createRushBuyMessage ();
 	}
 	
 	/**
@@ -255,7 +264,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final SellBuildingMessage createSellBuildingMessage ()
 	{
-		return new SellBuildingMessageImpl ();
+		return getFactory ().createSellBuildingMessage ();
 	}
 
 	/**
@@ -264,7 +273,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final SpecialOrderButtonMessage createSpecialOrderButtonMessage ()
 	{
-		return new SpecialOrderButtonMessageImpl ();
+		return getFactory ().createSpecialOrderButtonMessage ();
 	}
 
 	/**
@@ -273,7 +282,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final CancelPendingMovementAndSpecialOrdersMessage createCancelPendingMovementAndSpecialOrdersMessage ()
 	{
-		return new CancelPendingMovementAndSpecialOrdersMessageImpl ();
+		return getFactory ().createCancelPendingMovementAndSpecialOrdersMessage ();
 	}
 
 	/**
@@ -282,7 +291,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final RequestSwitchOffMaintainedSpellMessage createRequestSwitchOffMaintainedSpellMessage ()
 	{
-		return new RequestSwitchOffMaintainedSpellMessageImpl ();
+		return getFactory ().createRequestSwitchOffMaintainedSpellMessage ();
 	}
 
 	/**
@@ -291,7 +300,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final RequestUpdateUnitNameMessage createRequestUpdateUnitNameMessage ()
 	{
-		return new RequestUpdateUnitNameMessageImpl ();
+		return getFactory ().createRequestUpdateUnitNameMessage ();
 	}
 
 	/**
@@ -300,7 +309,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final AttackNodeLairTowerMessage createAttackNodeLairTowerMessage ()
 	{
-		return new AttackNodeLairTowerMessageImpl ();
+		return getFactory ().createAttackNodeLairTowerMessage ();
 	}
 
 	/**
@@ -309,7 +318,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final EndCombatTurnMessage createEndCombatTurnMessage ()
 	{
-		return new EndCombatTurnMessageImpl ();
+		return getFactory ().createEndCombatTurnMessage ();
 	}
 
 	/**
@@ -318,7 +327,7 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final CombatAutoControlMessage createCombatAutoControlMessage ()
 	{
-		return new CombatAutoControlMessageImpl ();
+		return getFactory ().createCombatAutoControlMessage ();
 	}
 
 	/**
@@ -327,6 +336,58 @@ public final class ObjectFactoryClientToServerMessages extends ObjectFactory
 	@Override
 	public final RequestMoveCombatUnitMessage createRequestMoveCombatUnitMessage ()
 	{
-		return new RequestMoveCombatUnitMessageImpl ();
+		return getFactory ().createRequestMoveCombatUnitMessage ();
+	}
+	
+	/**
+	 * @return Newly created ChoseNotToDoScheduledCombatMessage
+	 */
+	@Override
+	public final ChoseNotToDoScheduledCombatMessage createChoseNotToDoScheduledCombatMessage ()
+	{
+		return getFactory ().createChoseNotToDoScheduledCombatMessage ();
+	}
+
+	/**
+	 * @return Newly created CaptureCityDecisionMessage
+	 */
+	@Override
+	public final CaptureCityDecisionMessage createCaptureCityDecisionMessage ()
+	{
+		return getFactory ().createCaptureCityDecisionMessage ();
+	}
+
+	/**
+	 * @return Newly created UnrequestStartScheduledCombatMessage
+	 */
+	@Override
+	public final UnrequestStartScheduledCombatMessage createUnrequestStartScheduledCombatMessage ()
+	{
+		return getFactory ().createUnrequestStartScheduledCombatMessage ();
+	}
+
+	/**
+	 * @return Newly created RequestStartScheduledCombatMessage
+	 */
+	@Override
+	public final RequestStartScheduledCombatMessage createRequestStartScheduledCombatMessage ()
+	{
+		return getFactory ().createRequestStartScheduledCombatMessage ();
+	}
+
+	/**
+	 * @return Factory for creating prototype message beans from spring
+	 */
+	public final ClientToServerMessagesFactory getFactory ()
+	{
+		return factory;
+	}
+
+	/**
+	 * @param fac Factory for creating prototype message beans from spring
+	 */
+	public final void setFactory (final ClientToServerMessagesFactory fac)
+	{
+		factory = fac;
 	}
 }

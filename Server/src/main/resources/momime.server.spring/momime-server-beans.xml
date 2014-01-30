@@ -72,10 +72,59 @@
 		</property>
 	</bean>	
 	
+	<!-- Create extended versions of client to server messages which include message implementations -->
+
+	<bean id="momServerClientToServerFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.server.messages.process.ClientToServerMessagesFactory" />
+	</bean>			
+
+	<bean id="momServerClientToServerObjectFactory" class="momime.server.messages.process.ClientToServerMessagesObjectFactory">
+		<property name="factory" ref="momServerClientToServerFactory" />
+	</bean>
+	
+	<bean id="chooseInitialSpellsMessage" class="momime.server.messages.process.ChooseInitialSpellsMessageImpl" scope="prototype" />
+	<bean id="chooseCustomFlagColourMessage" class="momime.server.messages.process.ChooseCustomFlagColourMessageImpl" scope="prototype" />
+	<bean id="nextTurnButtonMessage" class="momime.server.messages.process.NextTurnButtonMessageImpl" scope="prototype" />
+	<bean id="requestOverlandMovementDistancesMessage" class="momime.server.messages.process.RequestOverlandMovementDistancesMessageImpl" scope="prototype" />
+	<bean id="choseNotToDoScheduledCombatMessage" class="momime.server.messages.process.ChoseNotToDoScheduledCombatMessageImpl" scope="prototype" />
+	<bean id="requestMoveOverlandUnitStackMessage" class="momime.server.messages.process.RequestMoveOverlandUnitStackMessageImpl" scope="prototype" />
+	<bean id="alchemyMessage" class="momime.server.messages.process.AlchemyMessageImpl" scope="prototype" />
+	<bean id="sellBuildingMessage" class="momime.server.messages.process.SellBuildingMessageImpl" scope="prototype" />
+	<bean id="updateMagicPowerDistributionMessage" class="momime.server.messages.process.UpdateMagicPowerDistributionMessageImpl" scope="prototype" />
+	<bean id="chooseCustomPicksMessage" class="momime.server.messages.process.ChooseCustomPicksMessageImpl" scope="prototype" />
+	<bean id="specialOrderButtonMessage" class="momime.server.messages.process.SpecialOrderButtonMessageImpl" scope="prototype" />
+	<bean id="captureCityDecisionMessage" class="momime.server.messages.process.CaptureCityDecisionMessageImpl" scope="prototype" />
+	<bean id="chatMessage" class="momime.server.messages.process.ChatMessageImpl" scope="prototype" />
+	<bean id="rushBuyMessage" class="momime.server.messages.process.RushBuyMessageImpl" scope="prototype" />
+	<bean id="dismissUnitMessage" class="momime.server.messages.process.DismissUnitMessageImpl" scope="prototype" />
+	<bean id="chooseRaceMessage" class="momime.server.messages.process.ChooseRaceMessageImpl" scope="prototype" />
+	<bean id="changeTaxRateMessage" class="momime.server.messages.process.ChangeTaxRateMessageImpl" scope="prototype" />
+	<bean id="requestUpdateUnitNameMessage" class="momime.server.messages.process.RequestUpdateUnitNameMessageImpl" scope="prototype" />
+	<bean id="chooseCityNameMessage" class="momime.server.messages.process.ChooseCityNameMessageImpl" scope="prototype" />
+	<bean id="cancelTargetSpellMessage" class="momime.server.messages.process.CancelTargetSpellMessageImpl" scope="prototype" />
+	<bean id="attackNodeLairTowerMessage" class="momime.server.messages.process.AttackNodeLairTowerMessageImpl" scope="prototype" />
+	<bean id="requestSwitchOffMaintainedSpellMessage" class="momime.server.messages.process.RequestSwitchOffMaintainedSpellMessageImpl" scope="prototype" />
+	<bean id="requestResearchSpellMessage" class="momime.server.messages.process.RequestResearchSpellMessageImpl" scope="prototype" />
+	<bean id="uploadCustomPhotoMessage" class="momime.server.messages.process.UploadCustomPhotoMessageImpl" scope="prototype" />
+	<bean id="chooseStandardPhotoMessage" class="momime.server.messages.process.ChooseStandardPhotoMessageImpl" scope="prototype" />
+	<bean id="changeOptionalFarmersMessage" class="momime.server.messages.process.ChangeOptionalFarmersMessageImpl" scope="prototype" />
+	<bean id="cancelPendingMovementAndSpecialOrdersMessage" class="momime.server.messages.process.CancelPendingMovementAndSpecialOrdersMessageImpl" scope="prototype" />
+	<bean id="unrequestStartScheduledCombatMessage" class="momime.server.messages.process.UnrequestStartScheduledCombatMessageImpl" scope="prototype" />
+	<bean id="requestCastSpellMessage" class="momime.server.messages.process.RequestCastSpellMessageImpl" scope="prototype" />
+	<bean id="requestStartScheduledCombatMessage" class="momime.server.messages.process.RequestStartScheduledCombatMessageImpl" scope="prototype" />
+	<bean id="endCombatTurnMessage" class="momime.server.messages.process.EndCombatTurnMessageImpl" scope="prototype" />
+	<bean id="combatAutoControlMessage" class="momime.server.messages.process.CombatAutoControlMessageImpl" scope="prototype" />
+	<bean id="chooseWizardMessage" class="momime.server.messages.process.ChooseWizardMessageImpl" scope="prototype" />
+	<bean id="requestMoveCombatUnitMessage" class="momime.server.messages.process.RequestMoveCombatUnitMessageImpl" scope="prototype" />
+	<bean id="changeCityConstructionMessage" class="momime.server.messages.process.ChangeCityConstructionMessageImpl" scope="prototype" />
+
+	<bean id="TargetSpellMessage" class="momime.server.messages.process.TargetSpellMessageImpl" scope="prototype">
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+	
 	<!-- Singleton beans for server -->
 	
 	<bean id="multiplayerSessionServerClientToServerObjectFactory" class="com.ndg.multiplayer.server.messages.process.MultiplayerSessionServerClientToServerObjectFactory" />
-	<bean id="momServerClientToServerObjectFactory" class="momime.server.messages.process.ObjectFactoryClientToServerMessages" />
 	
 	<bean id="multiplayerServerUtils" class="com.ndg.multiplayer.server.MultiplayerServerUtilsImpl" />
 	

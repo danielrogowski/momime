@@ -760,7 +760,7 @@ already captured the target square in another combat) and they can just walk in 
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="defendingPlayerID" type="mps:playerID"/>
 					</xsd:sequence>
 				</xsd:extension>

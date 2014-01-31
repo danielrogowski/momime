@@ -1140,22 +1140,20 @@ public final class CombatProcessingImpl implements CombatProcessing
 					if (getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE))
 						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation,
 							CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, false, mom.getSessionDescription (), mom.getServerDB ());
-				}
-				else if (captureCityDecision == CaptureCityDecisionID.RAZE)
-				{
+					
 					// Deal with spells cast on the city:
 					// 1) Any spells the defender had cast on the city must be enchantments - which unfortunately we don't get - so cancel these
 					// 2) Any spells the attacker had cast on the city must be curses - we don't want to curse our own city - so cancel them
-					// 3) Any spells a 3rd player (neither the defender nor attacker) had cast on the city must be curses - and I'm sure they'd like to continue cursing the new city owner :)
+					// 3) Any spells a 3rd player (neither the defender nor attacker) had cast on the city must be curses - and I'm sure they'd like to continue cursing the new city owner :D
 					getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
 						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, combatLocation,
 						attackingPlayer, defendingPlayer, attackingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
-					
+				
 					if (defendingPlayer != null)
 						getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
 							(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, combatLocation,
 							attackingPlayer, defendingPlayer, defendingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
-					
+
 					// Take ownership of the city
 					tc.getCityData ().setCityOwnerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
 					
@@ -1170,23 +1168,26 @@ public final class CombatProcessingImpl implements CombatProcessing
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getPlayers (), combatLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
 				}
+				else if (captureCityDecision == CaptureCityDecisionID.RAZE)
+				{
+					// Cancel all spells cast on the city regardless of owner
+					getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
+						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, combatLocation,
+						attackingPlayer, defendingPlayer, 0, mom.getServerDB (), mom.getSessionDescription ());
+					
+					// Wreck all the buildings
+					getFogOfWarMidTurnChanges ().destroyAllBuildingsInLocationOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
+						combatLocation, mom.getSessionDescription (), mom.getServerDB ());
+					
+					// Wreck the city
+					tc.setCityData (null);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+						combatLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
+				}
 			}
 			else
 			{
 				log.finest ("Defender won");
-				
-				// Cancel all spells cast on the city regardless of owner
-				getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-					combatLocation, combatLocation, attackingPlayer, defendingPlayer, 0, mom.getServerDB (), mom.getSessionDescription ());
-				
-				// Wreck all the buildings
-				getFogOfWarMidTurnChanges ().destroyAllBuildingsInLocationOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-					combatLocation, mom.getSessionDescription (), mom.getServerDB ());
-				
-				// Wreck the city
-				tc.setCityData (null);
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
-					combatLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
 			}
 			
 			// Set all units CombatX, CombatY back to -1, -1 so we don't think they're in combat anymore.

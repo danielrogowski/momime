@@ -4839,6 +4839,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="UnitsAlways">
 			<languageEntryText>Always see once seen</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="UnitsRemember">
+			<languageEntryText>Remember as last seen</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="UnitsForget">
 			<languageEntryText>Forget</languageEntryText>
 		</languageEntry>

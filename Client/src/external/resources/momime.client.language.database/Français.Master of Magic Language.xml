@@ -4812,6 +4812,9 @@ Si la cité a une insuffisante fourniture de nourriture, les citoyens commencero
 		<languageentry languageentryid="UnitsAlways">
 			<languageentrytext>Toujours visible une fois vu</languageentrytext>
 		</languageentry>
+		<languageentry languageentryid="UnitsRemember">
+			<languageentrytext>Mémoriser dernier aperçu</languageentrytext>
+		</languageentry>
 		<languageentry languageentryid="UnitsForget">
 			<languageentrytext>Oublier</languageentrytext>
 		</languageentry>

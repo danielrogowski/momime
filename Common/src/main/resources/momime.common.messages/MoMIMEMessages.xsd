@@ -147,7 +147,10 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 	<xsd:complexType name="momTransientPlayerPrivateKnowledge">
 	    <xsd:annotation>
     		<xsd:documentation>Holds all private knowledge that a player only knows about themselves, they can't see the values for other players,
-    										but that is not persisted into save game files.  i.e. this is typically info we use during one turn and then discard.</xsd:documentation>
+    										but that is not persisted into save game files.  i.e. this is typically info we use during one turn and then discard.
+    										Much of this is only actually used on the client - there is e.g. no point storing a player-specific list of pending
+    										movement, or a player-specific list of scheduled combats, since there's nothing private about the server's
+    										true list for these, so those will always be used instead.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="mps:transientPlayerPrivateKnowledge">

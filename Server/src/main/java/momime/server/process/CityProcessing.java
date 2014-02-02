@@ -64,10 +64,12 @@ public interface CityProcessing
 	/**
 	 * The method in the FOW class physically removed builidngs from the server and players' memory; this method
 	 * deals with all the knock on effects of buildings being sold, such as paying the gold from the sale to the city owner,
-	 * making sure the current construction project is still valid, and if the building sale alters unrest or production in any way
+	 * making sure the current construction project is still valid, and if the building sale alters unrest or production in any way.
 	 *
 	 * Does not recalc global production (which will now be reduced from not having to pay the maintenance of the sold building),
-	 * this has to be done by the calling routine
+	 * this has to be done by the calling routine.
+	 * 
+	 * NB. Dephi method was called OkToSellBuilding.
 	 *
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session

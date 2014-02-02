@@ -74,4 +74,11 @@ public interface UnitServerUtils
 	public UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final OverlandMapCoordinatesEx desiredLocation, final String unitID, final int playerID,
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException;
+
+	/**
+	 * @param units List of units to check through
+	 * @param order Type of order to look for
+	 * @return List of all units, regardless of which player they belong to, with the requested order
+	 */
+	public List<MemoryUnit> listUnitsWithSpecialOrder (final List<MemoryUnit> units, final UnitSpecialOrder order);
 }

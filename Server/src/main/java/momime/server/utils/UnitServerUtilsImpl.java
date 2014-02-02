@@ -335,6 +335,25 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	}
 
 	/**
+	 * @param units List of units to check through
+	 * @param order Type of order to look for
+	 * @return List of all units, regardless of which player they belong to, with the requested order
+	 */
+	@Override
+	public final List<MemoryUnit> listUnitsWithSpecialOrder (final List<MemoryUnit> units, final UnitSpecialOrder order)
+	{
+		log.entering (UnitServerUtilsImpl.class.getName (), "listUnitsWithSpecialOrder", order);
+		
+		final List<MemoryUnit> matches = new ArrayList<MemoryUnit> ();
+		for (final MemoryUnit thisUnit : units)
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getSpecialOrder () == order))
+				matches.add (thisUnit);
+		
+		log.exiting (UnitServerUtilsImpl.class.getName (), "listUnitsWithSpecialOrder", matches.size ());
+		return matches;
+	}
+	
+	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()

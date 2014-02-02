@@ -24,6 +24,7 @@ import momime.common.messages.servertoclient.v0_9_4.ChosenWizardMessage;
 import momime.common.messages.servertoclient.v0_9_4.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.v0_9_4.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
+import momime.common.messages.servertoclient.v0_9_4.OnePlayerSimultaneousTurnDoneMessage;
 import momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage;
 import momime.common.messages.servertoclient.v0_9_4.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.v0_9_4.StartGameMessage;
@@ -37,6 +38,7 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.PendingMovement;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
@@ -61,6 +63,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.utils.PlayerPickServerUtils;
+import momime.server.utils.PlayerServerUtils;
 import momime.server.utils.UnitServerUtils;
 
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
@@ -124,6 +127,15 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/** Player list utils */
 	private MultiplayerServerUtils multiplayerServerUtils;
 
+	/** Player utils */
+	private PlayerServerUtils playerServerUtils;
+	
+	/** Simultaneous turns processing */
+	private SimultaneousTurnsProcessing simultaneousTurnsProcessing;
+	
+	/** Simultaneous turns combat scheduler */
+	private CombatScheduler combatScheduler;
+	
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
@@ -586,6 +598,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					switchToNextPlayer (mom);
 					break;
 
+				case SIMULTANEOUS:
+					kickOffSimultaneousTurn (mom);
+					break;
+					
 				default:
 					throw new MomException ("checkIfCanStartGame encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
 			}
@@ -703,11 +719,51 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		{
 			mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
 			getMomAI ().aiPlayerTurn (currentPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+			
+			// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 			nextTurnButton (mom, currentPlayer);
 		}
 
 		log.exiting (PlayerMessageProcessingImpl.class.getName (), "switchToNextPlayer",
 			"Player ID " + mom.getGeneralPublicKnowledge ().getCurrentPlayerID () + " turn " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
+	}
+
+	/**
+	 * Kicks off a new turn in an everybody-allocate-movement-then-move-simultaneously game
+	 *
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If an expected element cannot be found
+	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	public final void kickOffSimultaneousTurn (final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.entering (PlayerMessageProcessingImpl.class.getName (), "kickOffSimultaneousTurn", mom.getGeneralPublicKnowledge ().getTurnNumber ());
+
+		// Bump up the turn number
+		mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
+
+		// Process everybody's start phases together
+		startPhase (mom, 0);
+
+		// Tell all human players to take their go, and send each of them their New Turn Messages in the process
+		sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), mom.getSessionDescription ().getTurnSystem ());
+
+		// Every AI player has their turn
+		for (final PlayerServerDetails aiPlayer : mom.getPlayers ())
+			if (!aiPlayer.getPlayerDescription ().isHuman ())
+			{
+				mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + aiPlayer.getPlayerDescription ().getPlayerName () + "...");
+				getMomAI ().aiPlayerTurn (aiPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+			
+				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
+				nextTurnButton (mom, aiPlayer);
+			}
+
+		log.exiting (PlayerMessageProcessingImpl.class.getName (), "kickOffSimultaneousTurn", mom.getGeneralPublicKnowledge ().getTurnNumber ());
 	}
 
 	/**
@@ -811,6 +867,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			case ONE_PLAYER_AT_A_TIME:
 				switchToNextPlayer (mom);
 				break;
+				
+			case SIMULTANEOUS:
+				kickOffSimultaneousTurn (mom);
+				break;
 
 			default:
 				throw new MomException ("endPhase encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
@@ -850,6 +910,50 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					player.getConnection ().sendMessageToClient (reply);
 				}
 				break;
+				
+			case SIMULTANEOUS:
+				// In a simultaneous game, we need to check if all players have finished allocating
+				// their movement and if so, process combats, research, city growth and so on
+				
+				// First tell everyone that this player has finished
+				final OnePlayerSimultaneousTurnDoneMessage turnDoneMsg = new OnePlayerSimultaneousTurnDoneMessage ();
+				turnDoneMsg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+				getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), turnDoneMsg);
+
+				// Record on server that this player has finished
+				final MomTransientPlayerPublicKnowledge tpk = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+				tpk.setMovementAllocatedForTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber ());
+
+				// Has everyone finished now?
+				if (getPlayerServerUtils ().allPlayersFinishedAllocatingMovement (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getTurnNumber ()))
+				{
+					// Erase all pending movements on the clients, since we're about to process movement
+					getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), new ErasePendingMovementsMessage ());
+					
+					// Clear out list of combats, before movement generates more
+					mom.getGeneralServerKnowledge ().getScheduledCombat ().clear ();
+
+					// Continue the player's movement
+					continueMovement (0, mom);
+					
+					// Special orders - e.g. settlers building cities.
+					// This can generate messages about spirits capturing nodes.
+					// We want to send these now, even though we may be just about to run the EndPhase to keep consistency between whether
+					// they are considered part of the previous or new turn depending on whether there's any combats or not
+					// (Since if there are combats, there's no way to get messages generated
+					// here sent with the message block generated in the EndPhase)
+					getSimultaneousTurnsProcessing ().processSpecialOrders (mom);
+					sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);
+					
+					// Tell each player about the combats they are involved in.
+					// If there are no combats whatsoever then jump straight to the end phase.
+					if (mom.getGeneralServerKnowledge ().getScheduledCombat ().size () == 0)
+						endPhase (mom, 0);
+					else
+						getCombatScheduler ().sendScheduledCombats (mom.getPlayers (), mom.getGeneralServerKnowledge ().getScheduledCombat (), false);
+				}				
+				break;
+				
 
 			default:
 				throw new MomException ("nextTurnButton encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
@@ -1155,6 +1259,55 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		multiplayerServerUtils = obj;
 	}
 
+	/**
+	 * @return Player utils
+	 */
+	public final PlayerServerUtils getPlayerServerUtils ()
+	{
+		return playerServerUtils;
+	}
+	
+	/**
+	 * @param utils Player utils
+	 */
+	public final void setPlayerServerUtils (final PlayerServerUtils utils)
+	{
+		playerServerUtils = utils;
+	}
+
+	/**
+	 * @return Simultaneous turns processing
+	 */	
+	public final SimultaneousTurnsProcessing getSimultaneousTurnsProcessing ()
+	{
+		return simultaneousTurnsProcessing;
+	}
+
+	/**
+	 * @param proc Simultaneous turns processing
+	 */
+	public final void setSimultaneousTurnsProcessing (final SimultaneousTurnsProcessing proc)
+	{
+		simultaneousTurnsProcessing = proc;
+	}
+	
+	/**
+	 * @return Simultaneous turns combat scheduler
+	 */
+	public final CombatScheduler getCombatScheduler ()
+	{
+		return combatScheduler;
+	}
+
+	/**
+	 * @param scheduler Simultaneous turns combat scheduler
+	 */
+	public final void setCombatScheduler (final CombatScheduler scheduler)
+	{
+		combatScheduler = scheduler;
+	}
+	
+	
 	/**
 	 * @return Random number generator
 	 */

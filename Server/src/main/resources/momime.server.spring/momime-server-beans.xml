@@ -195,6 +195,8 @@
 	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
+
+	<bean id="playerServerUtils" class="momime.server.utils.PlayerServerUtilsImpl" />
 	
 	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
 	
@@ -253,6 +255,9 @@
 		<property name="momAI" ref="momAI" />
 		<property name="cityAI" ref="cityAI" />
 		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
+		<property name="playerServerUtils" ref="playerServerUtils" />
+		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
+		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
@@ -307,6 +312,13 @@
 	
 	<bean id="combatScheduler" class="momime.server.process.CombatSchedulerImpl">
 		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
+	</bean>
+
+	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<!-- AI -->
@@ -365,6 +377,7 @@
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="combatScheduler" ref="combatScheduler" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">
@@ -395,6 +408,8 @@
 
 	<bean id="gsk" class="momime.server.messages.v0_9_4.MomGeneralServerKnowledge" scope="prototype">
 		<property name="trueMap" ref="trueMap" />
+		<property name="nextFreeUnitURN" value="1" />
+		<property name="nextFreeScheduledCombatURN" value="1" />
 	</bean>
 
 	<bean id="gpk" class="momime.common.messages.v0_9_4.MomGeneralPublicKnowledge" scope="prototype" />

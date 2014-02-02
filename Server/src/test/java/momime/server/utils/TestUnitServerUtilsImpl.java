@@ -3,6 +3,7 @@ package momime.server.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -29,6 +30,7 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
+import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
@@ -714,5 +716,51 @@ public final class TestUnitServerUtilsImpl
 		final UnitAddLocation wontFit = utils.findNearestLocationWhereUnitCanBeAdded (desiredLocation, "UN105", 2, trueMap, sd, db);
 		assertNull (wontFit.getUnitLocation ());
 		assertEquals (UnitAddBumpTypeID.NO_ROOM, wontFit.getBumpType ());
+	}
+	
+	/**
+	 * Tests the listUnitsWithSpecialOrder method
+	 */
+	@Test
+	public final void testListUnitsWithSpecialOrder ()
+	{
+		// Set up some test units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Matching unit
+		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setStatus (UnitStatusID.ALIVE);
+		u1.setSpecialOrder (UnitSpecialOrder.BUILD_ROAD);
+		units.add (u1);
+		
+		// Dead unit
+		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setStatus (UnitStatusID.DEAD);
+		u2.setSpecialOrder (UnitSpecialOrder.BUILD_ROAD);
+		units.add (u2);
+		
+		// Wrong order
+		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setStatus (UnitStatusID.ALIVE);
+		u3.setSpecialOrder (UnitSpecialOrder.BUILD_CITY);
+		units.add (u3);
+		
+		// Prove nulls don't crash it
+		final MemoryUnit u4 = new MemoryUnit ();
+		units.add (u4);
+		
+		// Another matching unit
+		final MemoryUnit u5 = new MemoryUnit ();
+		u5.setStatus (UnitStatusID.ALIVE);
+		u5.setSpecialOrder (UnitSpecialOrder.BUILD_ROAD);
+		units.add (u5);
+		
+		// Run method
+		final List<MemoryUnit> out = new UnitServerUtilsImpl ().listUnitsWithSpecialOrder (units, UnitSpecialOrder.BUILD_ROAD);
+		
+		// Check results
+		assertEquals (2, out.size ());
+		assertSame (u1, out.get (0));
+		assertSame (u5, out.get (1));
 	}
 }

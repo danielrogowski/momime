@@ -80,6 +80,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.process.CombatProcessing;
+import momime.server.process.CombatScheduler;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
@@ -137,6 +138,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
+	
+	/** Simultaneous turns combat scheduler */
+	private CombatScheduler combatScheduler;
 	
 	/**
 	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
@@ -2107,19 +2111,22 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 			
 			// Scheduled the combat or start it immediately
+			final OverlandMapCoordinatesEx defendingLocation = new OverlandMapCoordinatesEx ();
+			defendingLocation.setX (moveTo.getX ());
+			defendingLocation.setY (moveTo.getY ());
+			defendingLocation.setPlane (towerPlane);
+
+			final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
+			for (final MemoryUnit tu : unitStack)
+				attackingUnitURNs.add (tu.getUnitURN ());
+
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
-				throw new UnsupportedOperationException ("moveUnitStack doesn't include code for initiating scheduled combats yet");
+			{
+				getCombatScheduler ().addScheduledCombatGeneratedURN (mom.getGeneralServerKnowledge (),
+					defendingLocation, moveFrom, playerBeingAttacked, unitStackOwner, attackingUnitURNs, typeOfCombatInitiated, monsterUnitID);
+			}
 			else
 			{
-				final OverlandMapCoordinatesEx defendingLocation = new OverlandMapCoordinatesEx ();
-				defendingLocation.setX (moveTo.getX ());
-				defendingLocation.setY (moveTo.getY ());
-				defendingLocation.setPlane (towerPlane);
-				
-				final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
-				for (final MemoryUnit tu : unitStack)
-					attackingUnitURNs.add (tu.getUnitURN ());
-				
 				getCombatProcessing ().initiateCombat (defendingLocation, moveFrom, null, unitStackOwner, attackingUnitURNs, typeOfCombatInitiated, monsterUnitID, mom);
 			}
 		}
@@ -2349,5 +2356,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void setCombatProcessing (final CombatProcessing proc)
 	{
 		combatProcessing = proc;
+	}
+
+	/**
+	 * @return Simultaneous turns combat scheduler
+	 */
+	public final CombatScheduler getCombatScheduler ()
+	{
+		return combatScheduler;
+	}
+
+	/**
+	 * @param scheduler Simultaneous turns combat scheduler
+	 */
+	public final void setCombatScheduler (final CombatScheduler scheduler)
+	{
+		combatScheduler = scheduler;
 	}
 }

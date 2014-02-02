@@ -729,7 +729,15 @@ requested a particular combat (in either situation, we can't request to play a c
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="currentlyPlayingCombat" type="xsd:boolean"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="requestedScheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="requestedScheduledCombatURN" type="momimemsgs:scheduledCombatURN">
+						    <xsd:annotation>
+    							<xsd:documentation>Only included if player has requested to play a particular combat against another human player, but it hasn't actually started.
+Players initially start with currentlyPlayingCombat = false, requestedScheduledCombatURN = null - if they request to attack a human player
+they'll then go to currentlyPlayingCombat = false, requestedScheduledCombatURN = (nbr) - then if the player accepts to play the combat now they'll
+go to currentlyPlayingCombat = true, requestedScheduledCombatURN = null (note requested requestedScheduledCombatURN is null again - effectively the instant the combat
+starts, it is no longer "scheduled" and its scheduledCombatURN no longer has any meaning).  Combats against AI players skip the middle step.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

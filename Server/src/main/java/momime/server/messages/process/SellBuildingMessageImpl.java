@@ -99,7 +99,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), (OverlandMapCoordinatesEx) getCityLocation (), getBuildingID ())))
 			msg = "This city doesn't have one of those buildings to sell.";
 		
-		else if (goldFromSellingBuilding <= 0)
+		else if ((getBuildingID () != null) && (goldFromSellingBuilding <= 0))
 			msg = "You tried to sell a building that has no value.";
 		
 		else if ((getBuildingID () != null) && (tc.getBuildingIdSoldThisTurn () != null) &&

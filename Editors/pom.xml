@@ -7,6 +7,10 @@
 	<name>momimeEditors</name>
 	<description>MoM IME Editors</description>
 
+	<scm>
+		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEEditors/trunk</connection>
+	</scm>
+
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
@@ -75,7 +79,7 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.9.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>

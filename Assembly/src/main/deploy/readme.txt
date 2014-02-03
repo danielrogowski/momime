@@ -10,7 +10,9 @@ MoM IME v${project.version} configuration instructions
     Browse to the location where your original MoM 1.31 stores all its .LBX files, select
     any .LBX file (doesn't matter which one) and click OK.
 
- 3) The server also needs configuring.  In the main folder, the same location as this
+ 3) The server requires Java (JRE) 7 to run.
+
+ 4) The server also needs configuring.  In the main folder, the same location as this
     readme.txt, you'll notice two files with -sample in the name.  Copy both of these
     to the same location, removing the -sample (so for MoMIMEServerConfig-sample.xml
     gets copied to MoMIMEServerConfig.xml, and MoMIMEServerLogging-sample.properties
@@ -20,7 +22,7 @@ MoM IME v${project.version} configuration instructions
     debug info you want to.  The MoMIMEServerConfig.xml file must be edited, you can
     use any text editor like Notepad for this.
 
-3a) The server records details of user accounts (names and passwords) created on it,
+ 5) The server records details of user accounts (names and passwords) created on it,
     you need to tell it where this is in the <userRegistryFilename> entry.  The
     installation puts an empty user registry in
 
@@ -31,7 +33,7 @@ MoM IME v${project.version} configuration instructions
     copy the XML file somewhere else you wish and point the <userRegistryFilename>
     entry to there instead.
 
-3b) The server also needs to be able to find the unit, spell and other details in
+ 6) The server also needs to be able to find the unit, spell and other details in
     'Original Master of Magic 1.31 rules.Master of Magic Server.xml', or other custom
     files.  The installation puts this in
 

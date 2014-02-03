@@ -39,17 +39,18 @@ import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.common.messages.v0_9_4.UnitStatusID;
-import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.SpellUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.ResourceValueUtilsImpl;
+import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
+import momime.server.process.resourceconsumer.MomResourceConsumerFactory;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
 import momime.server.utils.UnitServerUtilsImpl;
@@ -473,6 +474,28 @@ public final class TestMomServerResourceCalculationsImpl
 		natureAwarenessOtherPlayer.setCastingPlayerID (3);
 		trueMap.getMaintainedSpell ().add (natureAwarenessOtherPlayer);
 
+		// Create dummy implementation for the factory that is usually provided by spring
+		final MomResourceConsumerFactory factory = new MomResourceConsumerFactory ()
+		{
+			@Override
+			public final MomResourceConsumerBuilding createBuildingConsumer ()
+			{
+				return new MomResourceConsumerBuilding ();
+			}
+
+			@Override
+			public final MomResourceConsumerSpell createSpellConsumer ()
+			{
+				return new MomResourceConsumerSpell ();
+			}
+
+			@Override
+			public final MomResourceConsumerUnit createUnitConsumer ()
+			{
+				return new MomResourceConsumerUnit ();
+			}
+		};		
+		
 		// Set up test object
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		unitUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
@@ -480,6 +503,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		calc.setUnitUtils (unitUtils);
+		calc.setMomResourceConsumerFactory (factory);
 		
 		// Run test
 		final List<MomResourceConsumer> consumptions = calc.listConsumersOfProductionType

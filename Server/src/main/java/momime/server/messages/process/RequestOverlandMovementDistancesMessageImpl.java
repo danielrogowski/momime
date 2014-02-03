@@ -20,7 +20,9 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.MomServerUnitCalculations;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -34,6 +36,12 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestOverlandMovementDistancesMessageImpl.class.getName ());
 
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Server-only unit calculations */
+	private MomServerUnitCalculations serverUnitCalculations;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -63,7 +71,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		while ((error == null) && (unitUrnIterator.hasNext ()))
 		{
 			final Integer thisUnitURN = unitUrnIterator.next ();
-			final MemoryUnit thisUnit = mom.getUnitUtils ().findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+			final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 
 			if (thisUnit == null)
 				error = "Some of the units you are trying to move could not be found";
@@ -101,7 +109,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 			final boolean [] [] [] canMoveToInOneTurn										= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 
-			mom.getServerUnitCalculations ().calculateOverlandMovementDistances (getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getPlane (),
+			getServerUnitCalculations ().calculateOverlandMovementDistances (getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getPlane (),
 				sender.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (),
 				unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 				mom.getSessionDescription (), mom.getServerDB ());
@@ -139,5 +147,37 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		}
 
 		log.exiting (RequestOverlandMovementDistancesMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final MomServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

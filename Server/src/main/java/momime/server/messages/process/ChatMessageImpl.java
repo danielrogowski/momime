@@ -11,6 +11,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChatMessage;
 import momime.common.messages.servertoclient.v0_9_4.BroadcastChatMessage;
 import momime.server.MomSessionVariables;
 
+import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -24,6 +25,9 @@ public final class ChatMessageImpl extends ChatMessage implements PostSessionCli
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChatMessageImpl.class.getName ());
 
+	/** Server-side multiplayer utils */
+	private MultiplayerServerUtils multiplayerServerUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -45,9 +49,24 @@ public final class ChatMessageImpl extends ChatMessage implements PostSessionCli
 		msg.setPlayerName (sender.getPlayerDescription ().getPlayerName ());
 		msg.setText (getText ());
 		
-		mom.getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+		getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 
 		log.exiting (ChatMessageImpl.class.getName (), "process");
 	}
 
+	/**
+	 * @return Server-side multiplayer utils
+	 */
+	public final MultiplayerServerUtils getMultiplayerServerUtils ()
+	{
+		return multiplayerServerUtils;
+	}
+	
+	/**
+	 * @param utils Server-side multiplayer utils
+	 */
+	public final void setMultiplayerServerUtils (final MultiplayerServerUtils utils)
+	{
+		multiplayerServerUtils = utils;
+	}
 }

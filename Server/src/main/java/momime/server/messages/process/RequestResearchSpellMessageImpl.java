@@ -13,8 +13,10 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
+import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_4.Spell;
+import momime.server.utils.SpellServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -27,6 +29,12 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestResearchSpellMessageImpl.class.getName ());
+
+	/** Spell utils */
+	private SpellUtils spellUtils;
+	
+	/** Server-side only spell utils */
+	private SpellServerUtils spellServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -46,7 +54,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 
 		// Validate the requested picks
-		final String error = mom.getSpellServerUtils ().validateResearch (sender, spellID, mom.getSessionDescription ().getSpellSetting ().getSwitchResearch (), mom.getServerDB ());
+		final String error = getSpellServerUtils ().validateResearch (sender, spellID, mom.getSessionDescription ().getSpellSetting ().getSwitchResearch (), mom.getServerDB ());
 		if (error != null)
 		{
 			// Return error
@@ -63,7 +71,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 			{
 				// Lose on server
 				final Spell spellPreviouslyBeingResearched = mom.getServerDB ().findSpell (priv.getSpellIDBeingResearched (), "RequestResearchSpellMessageImpl");
-				final SpellResearchStatus spellPreviouslyBeingResearchedStatus = mom.getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched ());
+				final SpellResearchStatus spellPreviouslyBeingResearchedStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), priv.getSpellIDBeingResearched ());
 
 				spellPreviouslyBeingResearchedStatus.setRemainingResearchCost (spellPreviouslyBeingResearched.getResearchCost ());
 
@@ -84,5 +92,37 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 		}
 
 		log.exiting (RequestResearchSpellMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
+	}
+	
+	/**
+	 * @return Server-side only spell utils
+	 */
+	public final SpellServerUtils getSpellServerUtils ()
+	{
+		return spellServerUtils;
+	}
+
+	/**
+	 * @param utils Server-side only spell utils
+	 */
+	public final void setSpellServerUtils (final SpellServerUtils utils)
+	{
+		spellServerUtils = utils;
 	}
 }

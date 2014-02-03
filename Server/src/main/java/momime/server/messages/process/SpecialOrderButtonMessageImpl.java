@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.SpecialOrderButtonMessage;
@@ -18,9 +19,15 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.TileType;
+import momime.server.process.PlayerMessageProcessing;
+import momime.server.utils.CityServerUtils;
+import momime.server.utils.OverlandMapServerUtils;
+import momime.server.utils.UnitServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -35,6 +42,27 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	/** Class logger */
 	private final Logger log = Logger.getLogger (SpecialOrderButtonMessageImpl.class.getName ());
 
+	/** Server-only overland map utils */
+	private OverlandMapServerUtils overlandMapServerUtils;
+
+	/** City calculations */
+	private MomCityCalculations cityCalculations;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
+	
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
+
+	/** Resource calculations */
+	private MomServerResourceCalculations serverResourceCalculations;
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -87,7 +115,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		while ((error == null) && (unitUrnIterator.hasNext ()))
 		{
 			final Integer thisUnitURN = unitUrnIterator.next ();
-			final MemoryUnit thisUnit = mom.getUnitUtils ().findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+			final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 
 			if (thisUnit == null)
 				error = "Some of the units you are trying to give a special order to could not be found";
@@ -99,7 +127,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				error = "Some of the units you are trying to give a special order to are not at the right location";
 			
 			// Does it have the necessary skill?
-			else if (mom.getUnitUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), necessarySkillID, mom.getPlayers (),
+			else if (getUnitUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), necessarySkillID, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ()) >= 0)
 				
 				unitsWithNecessarySkillID.add (thisUnit);
@@ -130,7 +158,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				error = "You can't build a city on this type of terrain";
 			else if ((getSpecialOrder () == UnitSpecialOrder.BUILD_CITY) && (mapFeature != null) && (!mapFeature.isCanBuildCity ()))
 				error = "You can't build a city on top of this type of map feature";
-			else if ((getSpecialOrder () == UnitSpecialOrder.BUILD_CITY) && (mom.getCityCalculations ().markWithinExistingCityRadius
+			else if ((getSpecialOrder () == UnitSpecialOrder.BUILD_CITY) && (getCityCalculations ().markWithinExistingCityRadius
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				getMapLocation ().getPlane (), mom.getSessionDescription ().getMapSize ()).get (getMapLocation ().getX (), getMapLocation ().getY ())))
 				error = "Cities cannot be built within " + mom.getSessionDescription ().getMapSize ().getCitySeparation () + " squares of another city";
@@ -157,22 +185,22 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 			// In a simultaneous turns game, settlers are put on special orders and the city isn't built until movement resolution
 			// But we still have to confirm to the client that their unit selection/build location was fine
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
-				mom.getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, getSpecialOrder (), sender);
+				getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, getSpecialOrder (), sender);
 			else
 			{
 				// In a one-player-at-a-time game, actions take place immediately
 				switch (getSpecialOrder ())
 				{
 					case BUILD_CITY:
-						mom.getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), sender, trueUnit, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), sender, trueUnit, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						break;
 						
 					case MELD_WITH_NODE:
 						// If successful, this will generate messages about the node capture
-						mom.getOverlandMapServerUtils ().attemptToMeldWithNode (trueUnit, mom.getGeneralServerKnowledge ().getTrueMap (),
+						getOverlandMapServerUtils ().attemptToMeldWithNode (trueUnit, mom.getGeneralServerKnowledge ().getTrueMap (),
 							mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						
-						mom.getPlayerMessageProcessing ().sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);						
+						getPlayerMessageProcessing ().sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);						
 						break;
 						
 					default:
@@ -182,9 +210,121 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 			
 			// The settler was probably eating some rations and is now 'dead' so won't be eating those rations anymore
 			// Or the spirit has now melded with the node and so a) is no longer consuming mana and b) we now get the big magic power boost from capturing the node
-			mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
+			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
 		log.exiting (SpecialOrderButtonMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Server-only overland map utils
+	 */
+	public final OverlandMapServerUtils getOverlandMapServerUtils ()
+	{
+		return overlandMapServerUtils;
+	}
+	
+	/**
+	 * @param utils Server-only overland map utils
+	 */
+	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
+	{
+		overlandMapServerUtils = utils;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final MomCityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final MomCityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+	
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final MomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

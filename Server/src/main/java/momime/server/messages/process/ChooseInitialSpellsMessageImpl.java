@@ -15,6 +15,7 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
 import momime.server.MomSessionVariables;
+import momime.server.utils.PlayerPickServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -27,6 +28,9 @@ public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMes
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseInitialSpellsMessageImpl.class.getName ());
+	
+	/** Server-only pick utils */
+	private PlayerPickServerUtils playerPickServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -44,7 +48,7 @@ public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMes
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		final String error = mom.getPlayerPickServerUtils ().validateInitialSpellSelection (sender, getPickID (), getSpell (), mom.getServerDB ());
+		final String error = getPlayerPickServerUtils ().validateInitialSpellSelection (sender, getPickID (), getSpell (), mom.getServerDB ());
 		if (error != null)
 		{
 			// Return error
@@ -65,7 +69,7 @@ public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMes
 			// Does player have to pick any further free spells or are they done
 			log.finest (ChooseInitialSpellsMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " made valid selections, checking to see if need to choose more free spells");
 
-			final ChooseInitialSpellsNowMessage chooseSpellsMsg = mom.getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB ());
+			final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB ());
 			if (chooseSpellsMsg != null)
 				sender.getConnection ().sendMessageToClient (chooseSpellsMsg);
 			else
@@ -73,5 +77,21 @@ public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMes
 		}
 
 		log.exiting (ChooseInitialSpellsMessageImpl.class.getName (), "process", error);
+	}
+
+	/**
+	 * @return Server-only pick utils
+	 */
+	public final PlayerPickServerUtils getPlayerPickServerUtils ()
+	{
+		return playerPickServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only pick utils
+	 */
+	public final void setPlayerPickServerUtils (final PlayerPickServerUtils utils)
+	{
+		playerPickServerUtils = utils;
 	}
 }

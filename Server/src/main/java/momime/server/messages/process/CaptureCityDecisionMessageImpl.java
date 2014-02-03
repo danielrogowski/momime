@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.CaptureCityDecisionMessage;
 import momime.server.MomSessionVariables;
+import momime.server.process.CombatProcessing;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -23,6 +24,9 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CaptureCityDecisionMessageImpl.class.getName ());
 
+	/** Combat processing */
+	private CombatProcessing combatProcessing;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -40,8 +44,24 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		final PlayerServerDetails defendingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
-		mom.getCombatProcessing ().combatEnded ((OverlandMapCoordinatesEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
+		getCombatProcessing ().combatEnded ((OverlandMapCoordinatesEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
 
 		log.exiting (CaptureCityDecisionMessageImpl.class.getName (), "process");
 	}	
+
+	/**
+	 * @return Combat processing
+	 */
+	public final CombatProcessing getCombatProcessing ()
+	{
+		return combatProcessing;
+	}
+
+	/**
+	 * @param proc Combat processing
+	 */
+	public final void setCombatProcessing (final CombatProcessing proc)
+	{
+		combatProcessing = proc;
+	}
 }

@@ -51,6 +51,7 @@ import momime.server.database.v0_9_4.Unit;
 import momime.server.process.SpellProcessing;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
+import momime.server.process.resourceconsumer.MomResourceConsumerFactory;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
 import momime.server.utils.UnitServerUtils;
@@ -93,6 +94,9 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 
 	/** Server-only spell calculations */
 	private MomServerSpellCalculations serverSpellCalculations;
+	
+	/** Factory for creating resource consumers */
+	private MomResourceConsumerFactory momResourceConsumerFactory;
 
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -231,7 +235,8 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	 * @throws RecordNotFoundException If the unitID, buildingID or spellID doesn't exist
 	 * @throws MomException If we find a building consumption that isn't a multiple of 2
 	 */
-	final List<MomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players, final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseEx db) throws PlayerNotFoundException, RecordNotFoundException, MomException
+	final List<MomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+		final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseEx db) throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.entering (MomServerResourceCalculationsImpl.class.getName (), "listConsumersOfProductionType", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), productionTypeID});
 
@@ -243,7 +248,14 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 			{
 				final int consumptionAmount = getUnitUtils ().getModifiedUpkeepValue (thisUnit, productionTypeID, players, db);
 				if (consumptionAmount > 0)
-					consumers.add (new MomResourceConsumerUnit (player, productionTypeID, consumptionAmount, thisUnit));
+				{
+					final MomResourceConsumerUnit consumer = getMomResourceConsumerFactory ().createUnitConsumer ();
+					consumer.setPlayer (player);
+					consumer.setProductionTypeID (productionTypeID);
+					consumer.setConsumptionAmount (consumptionAmount);
+					consumer.setUnit (thisUnit);
+					consumers.add (consumer);
+				}
 			}
 
 		// Buildings
@@ -256,7 +268,14 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
 				final int consumptionAmount = getMemoryBuildingUtils ().findBuildingConsumption (building, productionTypeID);
 				if (consumptionAmount > 0)
-					consumers.add (new MomResourceConsumerBuilding (player, productionTypeID, consumptionAmount, thisBuilding));
+				{
+					final MomResourceConsumerBuilding consumer = getMomResourceConsumerFactory ().createBuildingConsumer ();
+					consumer.setPlayer (player);
+					consumer.setProductionTypeID (productionTypeID);
+					consumer.setConsumptionAmount (consumptionAmount);
+					consumer.setBuilding (thisBuilding);
+					consumers.add (consumer);
+				}
 			}
 		}
 
@@ -275,7 +294,14 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 					{
 						found = true;
 						if (upkeep.getUpkeepValue () > 0)
-							consumers.add (new MomResourceConsumerSpell (player, productionTypeID, upkeep.getUpkeepValue (), thisSpell));
+						{
+							final MomResourceConsumerSpell consumer = getMomResourceConsumerFactory ().createSpellConsumer ();
+							consumer.setPlayer (player);
+							consumer.setProductionTypeID (productionTypeID);
+							consumer.setConsumptionAmount (upkeep.getUpkeepValue ());
+							consumer.setSpell (thisSpell);
+							consumers.add (consumer);
+						}
 					}
 				}
 			}
@@ -723,6 +749,22 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 		serverSpellCalculations = calc;
 	}
 
+	/**
+	 * @return Factory for creating resource consumers
+	 */
+	public final MomResourceConsumerFactory getMomResourceConsumerFactory ()
+	{
+		return momResourceConsumerFactory;
+	}
+
+	/**
+	 * @param factory Factory for creating resource consumers
+	 */
+	public final void setMomResourceConsumerFactory (final MomResourceConsumerFactory factory)
+	{
+		momResourceConsumerFactory = factory;
+	}
+	
 	/**
 	 * @return Random number generator
 	 */

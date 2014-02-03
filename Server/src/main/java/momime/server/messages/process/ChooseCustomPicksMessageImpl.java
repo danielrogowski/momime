@@ -16,6 +16,7 @@ import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.server.MomSessionVariables;
+import momime.server.utils.PlayerPickServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -28,6 +29,9 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseCustomPicksMessageImpl.class.getName ());
+	
+	/** Server-only pick utils */
+	private PlayerPickServerUtils playerPickServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -46,7 +50,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Validate the requested picks
-		final String error = mom.getPlayerPickServerUtils ().validateCustomPicks (sender, getPick (), mom.getSessionDescription (), mom.getServerDB ());
+		final String error = getPlayerPickServerUtils ().validateCustomPicks (sender, getPick (), mom.getSessionDescription (), mom.getServerDB ());
 		if (error != null)
 		{
 			// Return error
@@ -80,7 +84,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 			// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 			// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
 			log.finest (ChooseCustomPicksMessageImpl.class.getName () + ".process: About to search for first realm (if any) where human player " + sender.getPlayerDescription ().getPlayerName () + " gets free spells");
-			final ChooseInitialSpellsNowMessage chooseSpellsMsg = mom.getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB ());
+			final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB ());
 			if (chooseSpellsMsg != null)
 				sender.getConnection ().sendMessageToClient (chooseSpellsMsg);
 			else
@@ -88,5 +92,21 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 		}
 
 		log.exiting (ChooseCustomPicksMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Server-only pick utils
+	 */
+	public final PlayerPickServerUtils getPlayerPickServerUtils ()
+	{
+		return playerPickServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only pick utils
+	 */
+	public final void setPlayerPickServerUtils (final PlayerPickServerUtils utils)
+	{
+		playerPickServerUtils = utils;
 	}
 }

@@ -7,14 +7,17 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
+import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.RequestMoveCombatUnitMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.process.CombatProcessing;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -34,6 +37,15 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestMoveCombatUnitMessageImpl.class.getName ());
 
+	/** Unit utils */
+	private UnitUtils unitUtils;
+
+	/** Unit calculations */
+	private MomUnitCalculations unitCalculations;
+
+	/** Combat processing */
+	private CombatProcessing combatProcessing;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -53,7 +65,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Find the unit being moved
-		final MemoryUnit tu = mom.getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+		final MemoryUnit tu = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 
 		// Check we're allowed to move the unit
 		String error = null;
@@ -79,7 +91,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 
 			final int [] [] doubleMovementDistances = new int [mom.getCombatMapCoordinateSystem ().getHeight ()] [mom.getCombatMapCoordinateSystem ().getWidth ()];
 			
-			mom.getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
+			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
 				tu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), mom.getCombatMapCoordinateSystem (), mom.getPlayers (), mom.getServerDB ());
 			
 			// Can we reach where we're trying to go?
@@ -99,9 +111,57 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		else
 		{
 			// Proceed with move
-			mom.getCombatProcessing ().okToMoveUnitInCombat (tu, (CombatMapCoordinatesEx) getMoveTo (), movementDirections, movementTypes, mom);
+			getCombatProcessing ().okToMoveUnitInCombat (tu, (CombatMapCoordinatesEx) getMoveTo (), movementDirections, movementTypes, mom);
 		}
 		
 		log.exiting (RequestMoveCombatUnitMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final MomUnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final MomUnitCalculations calc)
+	{
+		unitCalculations = calc;
+	}
+
+	/**
+	 * @return Combat processing
+	 */
+	public final CombatProcessing getCombatProcessing ()
+	{
+		return combatProcessing;
+	}
+
+	/**
+	 * @param proc Combat processing
+	 */
+	public final void setCombatProcessing (final CombatProcessing proc)
+	{
+		combatProcessing = proc;
 	}
 }

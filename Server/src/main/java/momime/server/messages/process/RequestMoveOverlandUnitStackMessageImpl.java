@@ -15,7 +15,9 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -28,6 +30,12 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestMoveOverlandUnitStackMessageImpl.class.getName ());
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -60,7 +68,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		while ((error == null) && (unitUrnIterator.hasNext ()))
 		{
 			final Integer thisUnitURN = unitUrnIterator.next ();
-			final MemoryUnit thisUnit = mom.getUnitUtils ().findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+			final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 
 			if (thisUnit == null)
 				error = "Some of the units you are trying to move could not be found";
@@ -93,10 +101,42 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		else
 		{
 			// Proceed with move
-			mom.getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, (OverlandMapCoordinatesEx) getMoveFrom (), (OverlandMapCoordinatesEx) getMoveTo (),
+			getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, (OverlandMapCoordinatesEx) getMoveFrom (), (OverlandMapCoordinatesEx) getMoveTo (),
 				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
 		}
 
 		log.exiting (RequestMoveOverlandUnitStackMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

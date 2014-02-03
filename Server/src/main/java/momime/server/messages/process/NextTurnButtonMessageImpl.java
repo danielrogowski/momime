@@ -9,6 +9,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.NextTurnButtonMessage;
 import momime.server.MomSessionVariables;
+import momime.server.process.PlayerMessageProcessing;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -23,6 +24,9 @@ public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage imple
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (NextTurnButtonMessageImpl.class.getName ());
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -41,8 +45,24 @@ public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage imple
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		mom.getPlayerMessageProcessing ().nextTurnButton (mom, sender);
+		getPlayerMessageProcessing ().nextTurnButton (mom, sender);
 
 		log.exiting (NextTurnButtonMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

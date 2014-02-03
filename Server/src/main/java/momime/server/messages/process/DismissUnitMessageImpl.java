@@ -14,7 +14,11 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.common.messages.v0_9_4.UnitSpecialOrder;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.utils.UnitServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -28,6 +32,18 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (DismissUnitMessageImpl.class.getName ());
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
+	
+	/** Resource calculations */
+	private MomServerResourceCalculations serverResourceCalculations;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -48,7 +64,7 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Find the unit being dismissed
-		final MemoryUnit trueUnit = mom.getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+		final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 
 		// Validation
 		String error = null;
@@ -74,7 +90,7 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 		{
 			// Do immediately or at end of turn?
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
-				mom.getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.DISMISS, sender);
+				getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.DISMISS, sender);
 			else
 			{
 				// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server
@@ -84,15 +100,78 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 				else
 					action = KillUnitActionID.FREE;
 				
-				mom.getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, null, mom.getGeneralServerKnowledge ().getTrueMap (),
+				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, null, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}
 			
 			// Unit probably had some maintenance
-			mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
+			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 
 		log.exiting (DismissUnitMessageImpl.class.getName (), "process");
 	}
 
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final MomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
 }

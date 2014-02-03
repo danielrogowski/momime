@@ -9,7 +9,9 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.messages.clienttoserver.v0_9_4.CancelTargetSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.MomServerResourceCalculations;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -23,6 +25,12 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CancelTargetSpellMessageImpl.class.getName ());
 
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Resource calculations */
+	private MomServerResourceCalculations serverResourceCalculations;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -40,7 +48,7 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// Spell should already exist, but not targetted
-		final MemoryMaintainedSpell maintainedSpell = mom.getMemoryMaintainedSpellUtils ().findMaintainedSpell
+		final MemoryMaintainedSpell maintainedSpell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 				sender.getPlayerDescription ().getPlayerID (), getSpellID (), null, null, null, null);
 	
@@ -67,9 +75,41 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
 			
 			// Cancelled spell will probably use up some mana maintenance
-			mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
+			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
 		log.exiting (CancelTargetSpellMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final MomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

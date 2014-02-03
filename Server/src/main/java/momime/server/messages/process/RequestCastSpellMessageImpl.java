@@ -11,6 +11,7 @@ import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
 import momime.server.MomSessionVariables;
+import momime.server.process.SpellProcessing;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -31,6 +32,9 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestCastSpellMessageImpl.class.getName ());
+
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -48,9 +52,25 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		mom.getSpellProcessing ().requestCastSpell (sender, getSpellID (),
+		getSpellProcessing ().requestCastSpell (sender, getSpellID (),
 			(OverlandMapCoordinatesEx) getCombatLocation (), (CombatMapCoordinatesEx) getCombatTargetLocation (), getCombatTargetUnitURN (), mom);
 
 		log.exiting (RequestCastSpellMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final SpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final SpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

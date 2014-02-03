@@ -10,6 +10,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.AttackNodeLairTowerMessage;
 import momime.server.MomSessionVariables;
+import momime.server.process.CombatProcessing;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -25,6 +26,9 @@ public final class AttackNodeLairTowerMessageImpl extends AttackNodeLairTowerMes
 	/** Class logger */
 	private final Logger log = Logger.getLogger (AttackNodeLairTowerMessageImpl.class.getName ());
 
+	/** Combat processing */
+	private CombatProcessing combatProcessing;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -44,9 +48,25 @@ public final class AttackNodeLairTowerMessageImpl extends AttackNodeLairTowerMes
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		mom.getCombatProcessing ().startCombat ((OverlandMapCoordinatesEx) getDefendingLocation (), (OverlandMapCoordinatesEx) getAttackingFrom (),
+		getCombatProcessing ().startCombat ((OverlandMapCoordinatesEx) getDefendingLocation (), (OverlandMapCoordinatesEx) getAttackingFrom (),
 			getScheduledCombatURN (), sender, getUnitURN (), mom);
 
 		log.exiting (AttackNodeLairTowerMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Combat processing
+	 */
+	public final CombatProcessing getCombatProcessing ()
+	{
+		return combatProcessing;
+	}
+
+	/**
+	 * @param proc Combat processing
+	 */
+	public final void setCombatProcessing (final CombatProcessing proc)
+	{
+		combatProcessing = proc;
 	}
 }

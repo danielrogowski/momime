@@ -13,6 +13,7 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
+import momime.server.process.CityProcessing;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -26,33 +27,20 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 	private final Logger log = Logger.getLogger (MomResourceConsumerBuilding.class.getName ());
 	
 	/** True map building that is consuming resources */
-	private final MemoryBuilding building;
+	private MemoryBuilding building;
 
 	/** The player who's resources are being consumed */
-	private final PlayerServerDetails player;
+	private PlayerServerDetails player;
 
 	/** The type of resources being consumed */
-	private final String productionTypeID;
+	private String productionTypeID;
 
 	/** The amount of production being consumed */
-	private final int consumptionAmount;
+	private int consumptionAmount;
 
-	/**
-	 * @param aPlayer The player who's resources are being consumed
-	 * @param aProductionTypeID The type of resources being consumed
-	 * @param aConsumptionAmount The amount of production being consumed
-	 * @param aBuilding True map building that is consuming resources
-	 */
-	public MomResourceConsumerBuilding (final PlayerServerDetails aPlayer, final String aProductionTypeID, final int aConsumptionAmount, final MemoryBuilding aBuilding)
-	{
-		super ();
-
-		player = aPlayer;
-		productionTypeID = aProductionTypeID;
-		consumptionAmount = aConsumptionAmount;
-		building = aBuilding;
-	}
-
+	/** City processing methods */
+	private CityProcessing cityProcessing;
+	
 	/**
 	 * @return The player who's resources are being consumed
 	 */
@@ -63,6 +51,14 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 	}
 
 	/**
+	 * @param aPlayer The player who's resources are being consumed
+	 */
+	public final void setPlayer (final PlayerServerDetails aPlayer)
+	{
+		player = aPlayer;
+	}
+	
+	/**
 	 * @return The type of resources being consumed
 	 */
 	@Override
@@ -71,6 +67,14 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 		return productionTypeID;
 	}
 
+	/**
+	 * @param aProductionTypeID The type of resources being consumed
+	 */
+	public final void setProductionTypeID (final String aProductionTypeID)
+	{
+		productionTypeID = aProductionTypeID;
+	}
+	
 	/**
 	 * @return The amount of production being consumed
 	 */
@@ -81,6 +85,14 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 	}
 
 	/**
+	 * @param amount The amount of production being consumed
+	 */
+	public final void setConsumptionAmount (final int amount)
+	{
+		consumptionAmount = amount;
+	}
+	
+	/**
 	 * @return True map building that is consuming resources
 	 */
 	public final MemoryBuilding getBuilding ()
@@ -88,6 +100,14 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 		return building;
 	}
 
+	/**
+	 * @param aBuilding True map building that is consuming resources
+	 */
+	public final void setBuilding (final MemoryBuilding aBuilding)
+	{
+		building = aBuilding;
+	}
+	
 	/**
 	 * Sells this building to get some gold back and conserve resources
 	 *
@@ -105,7 +125,7 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 		log.entering (MomResourceConsumerBuilding.class.getName (), "kill",
 			new String [] {getBuilding ().getCityLocation ().toString (), getBuilding ().getBuildingID ()});
 
-		mom.getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
+		getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
 			(OverlandMapCoordinatesEx) getBuilding ().getCityLocation (), getBuilding ().getBuildingID (), false, false, mom.getSessionDescription (), mom.getServerDB ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
@@ -120,5 +140,21 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 		}
 
 		log.exiting (MomResourceConsumerBuilding.class.getName (), "kill");
+	}
+
+	/**
+	 * @return City processing methods
+	 */
+	public final CityProcessing getCityProcessing ()
+	{
+		return cityProcessing;
+	}
+
+	/**
+	 * @param obj City processing methods
+	 */
+	public final void setCityProcessing (final CityProcessing obj)
+	{
+		cityProcessing = obj;
 	}
 }

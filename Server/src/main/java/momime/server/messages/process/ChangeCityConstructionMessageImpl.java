@@ -11,6 +11,8 @@ import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessag
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.server.MomSessionVariables;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.utils.CityServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -23,6 +25,12 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChangeCityConstructionMessageImpl.class.getName ());
+	
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
+
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -40,7 +48,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		final String error = mom.getCityServerUtils ().validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
+		final String error = getCityServerUtils ().validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
 			(OverlandMapCoordinatesEx) getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription (), mom.getServerDB ());
 
 		if (error != null)
@@ -60,10 +68,42 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 			cityData.setCurrentlyConstructingBuildingOrUnitID (getBuildingOrUnitID ());
 
 			// Send update to clients
-			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), false);
 		}
 
 		log.exiting (ChangeCityConstructionMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

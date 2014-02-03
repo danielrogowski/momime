@@ -12,6 +12,8 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.server.MomSessionVariables;
+import momime.server.process.PlayerMessageProcessing;
+import momime.server.utils.PlayerPickServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -25,6 +27,12 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseRaceMessageImpl.class.getName ());
+	
+	/** Server-only pick utils */
+	private PlayerPickServerUtils playerPickServerUtils;
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -43,7 +51,7 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		final String error = mom.getPlayerPickServerUtils ().validateRaceChoice (sender, getRaceID (), mom.getServerDB ());
+		final String error = getPlayerPickServerUtils ().validateRaceChoice (sender, getRaceID (), mom.getServerDB ());
 		if (error != null)
 		{
 			// Return error
@@ -63,9 +71,41 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 			sender.getConnection ().sendMessageToClient (new YourRaceIsOkMessage ());
 
 			// If all players have chosen then start the game
-			mom.getPlayerMessageProcessing ().checkIfCanStartGame (mom);
+			getPlayerMessageProcessing ().checkIfCanStartGame (mom);
 		}
 
 		log.exiting (ChooseRaceMessageImpl.class.getName (), "process", error);
+	}
+	
+	/**
+	 * @return Server-only pick utils
+	 */
+	public final PlayerPickServerUtils getPlayerPickServerUtils ()
+	{
+		return playerPickServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only pick utils
+	 */
+	public final void setPlayerPickServerUtils (final PlayerPickServerUtils utils)
+	{
+		playerPickServerUtils = utils;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

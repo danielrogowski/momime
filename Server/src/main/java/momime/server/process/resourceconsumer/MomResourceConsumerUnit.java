@@ -14,6 +14,7 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -27,33 +28,20 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 	private final Logger log = Logger.getLogger (MomResourceConsumerUnit.class.getName ());
 	
 	/** True map unit that is consuming resources */
-	private final MemoryUnit unit;
+	private MemoryUnit unit;
 
 	/** The player who's resources are being consumed */
-	private final PlayerServerDetails player;
+	private PlayerServerDetails player;
 
 	/** The type of resources being consumed */
-	private final String productionTypeID;
+	private String productionTypeID;
 
 	/** The amount of production being consumed */
-	private final int consumptionAmount;
+	private int consumptionAmount;
 
-	/**
-	 * @param aPlayer The player who's resources are being consumed
-	 * @param aProductionTypeID The type of resources being consumed
-	 * @param aConsumptionAmount The amount of production being consumed
-	 * @param aUnit True map unit that is consuming resources
-	 */
-	public MomResourceConsumerUnit (final PlayerServerDetails aPlayer, final String aProductionTypeID, final int aConsumptionAmount, final MemoryUnit aUnit)
-	{
-		super ();
-
-		player = aPlayer;
-		productionTypeID = aProductionTypeID;
-		consumptionAmount = aConsumptionAmount;
-		unit = aUnit;
-	}
-
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
 	/**
 	 * @return The player who's resources are being consumed
 	 */
@@ -64,6 +52,14 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 	}
 
 	/**
+	 * @param aPlayer The player who's resources are being consumed
+	 */
+	public final void setPlayer (final PlayerServerDetails aPlayer)
+	{
+		player = aPlayer;
+	}
+	
+	/**
 	 * @return The type of resources being consumed
 	 */
 	@Override
@@ -72,6 +68,14 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 		return productionTypeID;
 	}
 
+	/**
+	 * @param aProductionTypeID The type of resources being consumed
+	 */
+	public final void setProductionTypeID (final String aProductionTypeID)
+	{
+		productionTypeID = aProductionTypeID;
+	}
+	
 	/**
 	 * @return The amount of production being consumed
 	 */
@@ -82,6 +86,14 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 	}
 
 	/**
+	 * @param amount The amount of production being consumed
+	 */
+	public final void setConsumptionAmount (final int amount)
+	{
+		consumptionAmount = amount;
+	}
+	
+	/**
 	 * @return True map unit that is consuming resources
 	 */
 	public final MemoryUnit getUnit ()
@@ -89,6 +101,14 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 		return unit;
 	}
 
+	/**
+	 * @param aUnit True map unit that is consuming resources
+	 */
+	public final void setUnit (final MemoryUnit aUnit)
+	{
+		unit = aUnit;
+	}
+	
 	/**
 	 * Disbands this unit to conserve resources
 	 *
@@ -112,7 +132,7 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 		else
 			action = KillUnitActionID.UNIT_LACK_OF_PRODUCTION;
 
-		mom.getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (getUnit (), action, null,
+		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (getUnit (), action, null,
 			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
@@ -126,5 +146,21 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 		}
 
 		log.exiting (MomResourceConsumerUnit.class.getName (), "kill");
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

@@ -13,6 +13,7 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
+import momime.server.process.SpellProcessing;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -26,33 +27,20 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	private final Logger log = Logger.getLogger (MomResourceConsumerSpell.class.getName ());
 	
 	/** True map spell that is consuming resources */
-	private final MemoryMaintainedSpell spell;
+	private MemoryMaintainedSpell spell;
 
 	/** The player who's resources are being consumed */
-	private final PlayerServerDetails player;
+	private PlayerServerDetails player;
 
 	/** The type of resources being consumed */
-	private final String productionTypeID;
+	private String productionTypeID;
 
 	/** The amount of production being consumed */
-	private final int consumptionAmount;
+	private int consumptionAmount;
 
-	/**
-	 * @param aPlayer The player who's resources are being consumed
-	 * @param aProductionTypeID The type of resources being consumed
-	 * @param aConsumptionAmount The amount of production being consumed
-	 * @param aSpell True map spell that is consuming resources
-	 */
-	public MomResourceConsumerSpell (final PlayerServerDetails aPlayer, final String aProductionTypeID, final int aConsumptionAmount, final MemoryMaintainedSpell aSpell)
-	{
-		super ();
-
-		player = aPlayer;
-		productionTypeID = aProductionTypeID;
-		consumptionAmount = aConsumptionAmount;
-		spell = aSpell;
-	}
-
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
+	
 	/**
 	 * @return The player who's resources are being consumed
 	 */
@@ -63,6 +51,14 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	}
 
 	/**
+	 * @param aPlayer The player who's resources are being consumed
+	 */
+	public final void setPlayer (final PlayerServerDetails aPlayer)
+	{
+		player = aPlayer;
+	}
+	
+	/**
 	 * @return The type of resources being consumed
 	 */
 	@Override
@@ -71,6 +67,14 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 		return productionTypeID;
 	}
 
+	/**
+	 * @param aProductionTypeID The type of resources being consumed
+	 */
+	public final void setProductionTypeID (final String aProductionTypeID)
+	{
+		productionTypeID = aProductionTypeID;
+	}
+	
 	/**
 	 * @return The amount of production being consumed
 	 */
@@ -81,6 +85,14 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	}
 
 	/**
+	 * @param amount The amount of production being consumed
+	 */
+	public final void setConsumptionAmount (final int amount)
+	{
+		consumptionAmount = amount;
+	}
+	
+	/**
 	 * @return True map spell that is consuming resources
 	 */
 	public final MemoryMaintainedSpell getSpell ()
@@ -88,6 +100,14 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 		return spell;
 	}
 
+	/**
+	 * @param aSpell True map spell that is consuming resources
+	 */
+	public final void setSpell (final MemoryMaintainedSpell aSpell)
+	{
+		spell = aSpell;
+	}
+	
 	/**
 	 * Switches off this spell to conserve resources
 	 *
@@ -104,7 +124,7 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	{
 		log.entering (MomResourceConsumerSpell.class.getName (), "kill", getSpell ().getSpellID ());
 
-		mom.getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (),
+		getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (),
 			getSpell ().getCastingPlayerID (), getSpell ().getSpellID (), getSpell ().getUnitURN (), getSpell ().getUnitSkillID (),
 			getSpell ().isCastInCombat (), (OverlandMapCoordinatesEx) getSpell ().getCityLocation (), getSpell ().getCitySpellEffectID (),
 			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
@@ -120,5 +140,21 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 		}
 
 		log.exiting (MomResourceConsumerSpell.class.getName (), "kill");
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final SpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final SpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

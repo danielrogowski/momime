@@ -11,6 +11,7 @@ import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.EndCombatTurnMessage;
 import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.process.CombatProcessing;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -25,6 +26,9 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 	/** Class logger */
 	private final Logger log = Logger.getLogger (EndCombatTurnMessageImpl.class.getName ());
 
+	/** Combat processing */
+	private CombatProcessing combatProcessing;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -48,8 +52,24 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 		if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayer ()))
 			log.warning ("Received EndCombatTurnMessage from wrong player - ignored");
 		else
-			mom.getCombatProcessing ().progressCombat ((OverlandMapCoordinatesEx) getCombatLocation (), false, false, mom);
+			getCombatProcessing ().progressCombat ((OverlandMapCoordinatesEx) getCombatLocation (), false, false, mom);
 
 		log.exiting (EndCombatTurnMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Combat processing
+	 */
+	public final CombatProcessing getCombatProcessing ()
+	{
+		return combatProcessing;
+	}
+
+	/**
+	 * @param proc Combat processing
+	 */
+	public final void setCombatProcessing (final CombatProcessing proc)
+	{
+		combatProcessing = proc;
 	}
 }

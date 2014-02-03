@@ -11,7 +11,10 @@ import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.clienttoserver.v0_9_4.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.process.SpellProcessing;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -27,6 +30,15 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestSwitchOffMaintainedSpellMessageImpl.class.getName ());
 
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Resource calculations */
+	private MomServerResourceCalculations serverResourceCalculations;
+
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -45,7 +57,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Look for the spell
-		final MemoryMaintainedSpell trueSpell = mom.getMemoryMaintainedSpellUtils ().findMaintainedSpell
+		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), getCastingPlayerID (), getSpellID (),
 			getUnitURN (), getUnitSkillID (), (OverlandMapCoordinatesEx) getCityLocation (), getCitySpellEffectID ());
 		
@@ -71,14 +83,62 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		else
 		{
 			// Switch off spell + associated CAEs
-			mom.getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (), trueSpell.getCastingPlayerID (), trueSpell.getSpellID (),
+			getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (), trueSpell.getCastingPlayerID (), trueSpell.getSpellID (),
 				trueSpell.getUnitURN (), trueSpell.getUnitSkillID (), trueSpell.isCastInCombat (), (OverlandMapCoordinatesEx) trueSpell.getCityLocation (),
 				trueSpell.getCitySpellEffectID (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			
 			// Spell no longer using mana
-			mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
+			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 
 		log.exiting (RequestSwitchOffMaintainedSpellMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final MomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final SpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final SpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

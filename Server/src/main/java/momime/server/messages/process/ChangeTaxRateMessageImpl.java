@@ -9,6 +9,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.ChangeTaxRateMessage;
 import momime.server.MomSessionVariables;
+import momime.server.process.CityProcessing;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -23,6 +24,9 @@ public final class ChangeTaxRateMessageImpl extends ChangeTaxRateMessage impleme
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChangeTaxRateMessageImpl.class.getName ());
 
+	/** City processing methods */
+	private CityProcessing cityProcessing;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -41,8 +45,24 @@ public final class ChangeTaxRateMessageImpl extends ChangeTaxRateMessage impleme
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		mom.getCityProcessing ().changeTaxRate (sender, getTaxRateID (), mom);
+		getCityProcessing ().changeTaxRate (sender, getTaxRateID (), mom);
 
 		log.exiting (ChangeTaxRateMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return City processing methods
+	 */
+	public final CityProcessing getCityProcessing ()
+	{
+		return cityProcessing;
+	}
+
+	/**
+	 * @param obj City processing methods
+	 */
+	public final void setCityProcessing (final CityProcessing obj)
+	{
+		cityProcessing = obj;
 	}
 }

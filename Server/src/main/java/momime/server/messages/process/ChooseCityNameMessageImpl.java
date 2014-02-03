@@ -10,6 +10,7 @@ import momime.common.messages.clienttoserver.v0_9_4.ChooseCityNameMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.server.MomSessionVariables;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -23,6 +24,9 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 	/** Class logger */
 	private final Logger log = Logger.getLogger (ChooseCityNameMessageImpl.class.getName ());
 
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -44,7 +48,7 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 			tc.getCityData ().setCityName (getCityName ());
 
 			// Then send the change to all players who can see the city
-			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), false);
 		}
 		else
@@ -57,5 +61,21 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 		}
 
 		log.exiting (ChooseCityNameMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

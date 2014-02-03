@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.RushBuyMessage;
@@ -13,7 +14,9 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
+import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Unit;
 
@@ -29,6 +32,15 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RushBuyMessageImpl.class.getName ());
 
+	/** City calculations */
+	private MomCityCalculations cityCalculations;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Resource calculations */
+	private MomServerResourceCalculations serverResourceCalculations;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -101,9 +113,9 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 		else
 		{
 			// Check if we have enough gold
-			rushBuyCost = mom.getCityCalculations ().goldToRushBuy (productionCost, tc.getProductionSoFar ());
+			rushBuyCost = getCityCalculations ().goldToRushBuy (productionCost, tc.getProductionSoFar ());
 			
-			if (mom.getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD) < rushBuyCost)
+			if (getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD) < rushBuyCost)
 				msg = "You cannot afford to rush buy the construction project in this city.";
 			else
 				msg = null;			
@@ -121,8 +133,8 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 		else
 		{
 			// All ok - deduct money & send to client
-			mom.getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, -rushBuyCost);
-			mom.getServerResourceCalculations ().sendGlobalProductionValues (sender, 0);
+			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, -rushBuyCost);
+			getServerResourceCalculations ().sendGlobalProductionValues (sender, 0);
 			
 			// Finish construction & send to client
 			// We don't actually construct the building/unit here - that only happens when we end turn, same as in the original MoM
@@ -135,5 +147,53 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 		}
 		
 		log.exiting (RushBuyMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final MomCityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final MomCityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+	
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param utils Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
+	{
+		resourceValueUtils = utils;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final MomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

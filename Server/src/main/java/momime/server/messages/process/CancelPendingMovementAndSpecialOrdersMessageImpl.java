@@ -11,7 +11,11 @@ import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.utils.UnitServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -25,6 +29,18 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CancelPendingMovementAndSpecialOrdersMessageImpl.class.getName ());
 
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
+	
+	/** Pending movement utils */
+	private PendingMovementUtils pendingMovementUtils;
+	
+	/** Resource calculations */
+	private MomServerResourceCalculations serverResourceCalculations;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -43,7 +59,7 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 
 		// Find the unit and do some basic validation
 		final String error;
-		final MemoryUnit trueUnit = mom.getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+		final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 		if (trueUnit == null)
 			error = "Can't find the unit you are trying to cancel movement and/or special orders for";
 		else if (trueUnit.getOwningPlayerID () != sender.getPlayerDescription ().getPlayerID ())
@@ -66,15 +82,79 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 		else
 		{
 			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) sender.getTransientPlayerPrivateKnowledge ();
-			mom.getPendingMovementUtils ().removeAnyPendingMovesThatIncludeUnit (trans.getPendingMovement (), getUnitURN ());
+			getPendingMovementUtils ().removeAnyPendingMovesThatIncludeUnit (trans.getPendingMovement (), getUnitURN ());
 		
 			// Clear special orders - if the unit was on a 'die' order, this means its going to start using upkeep again
-			final boolean recalcProduction = mom.getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (trueUnit.getSpecialOrder ());
+			final boolean recalcProduction = getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (trueUnit.getSpecialOrder ());
 			trueUnit.setSpecialOrder (null);
 			if (recalcProduction)
-				mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
+				getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
 		log.exiting (CancelPendingMovementAndSpecialOrdersMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
+	}
+
+	/**
+	 * @return Pending movement utils
+	 */
+	public final PendingMovementUtils getPendingMovementUtils ()
+	{
+		return pendingMovementUtils;
+	}
+
+	/**
+	 * @param utils Pending movement utils
+	 */
+	public final void setPendingMovementUtils (final PendingMovementUtils utils)
+	{
+		pendingMovementUtils = utils;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final MomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

@@ -16,9 +16,15 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetUnitSpellResult;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.v0_9_4.Spell;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -34,6 +40,24 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	/** Class logger */
 	private final Logger log = Logger.getLogger (TargetSpellMessageImpl.class.getName ());
 
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
+
+	/** Unit utils */
+	private UnitUtils unitUtils;
+
+	/** Resource calculations */
+	private MomServerResourceCalculations serverResourceCalculations;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
 	/** Random number generator */
 	private RandomUtils randomUtils;
 
@@ -54,12 +78,12 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// Spell should already exist, but not targetted
-		final MemoryMaintainedSpell maintainedSpell = mom.getMemoryMaintainedSpellUtils ().findMaintainedSpell
+		final MemoryMaintainedSpell maintainedSpell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 				sender.getPlayerDescription ().getPlayerID (), getSpellID (), null, null, null, null);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
-		final SpellResearchStatus researchStatus = mom.getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), getSpellID ());
+		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), getSpellID ());
 		final Spell spell = mom.getServerDB ().findSpell (getSpellID (), "TargetSpellMessageImpl");
 		
 		// Do all the checks
@@ -97,7 +121,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						(getCityLocation ().getPlane ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 					
 					// Get the list of possible citySpellEffectIDs that this spell might cast
-					final List<String> citySpellEffectIDs = mom.getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
+					final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
 						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (OverlandMapCoordinatesEx) getCityLocation ());
 					
 					if ((spell.getBuildingID () == null) && (citySpellEffectIDs == null))
@@ -120,7 +144,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					else if ((citySpellEffectIDs != null) && (citySpellEffectIDs.size () == 0))
 						error = "This city already has this enchantment cast on it";
 					
-					else if ((citySpellEffectIDs == null) && (mom.getMemoryBuildingUtils ().findBuilding
+					else if ((citySpellEffectIDs == null) && (getMemoryBuildingUtils ().findBuilding
 						(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), (OverlandMapCoordinatesEx) getCityLocation (), spell.getBuildingID ())))
 						error = "This city already has the type of building that this spell creates";
 					
@@ -139,18 +163,18 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 			else if (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS))
 			{
 				// Find the unit we're aiming at
-				final MemoryUnit unit = mom.getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+				final MemoryUnit unit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 				if (unit == null)
 					error = "Could not find the unit you're trying to target the spell on";
 				else
 				{
 					// Common routine used by both the client and server does the guts of the validation work
-					final TargetUnitSpellResult reason = mom.getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					final TargetUnitSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 						spell, sender.getPlayerDescription ().getPlayerID (), unit, mom.getServerDB ());
 					if (reason == TargetUnitSpellResult.VALID_TARGET)
 					{
 						// Looks ok but weird if at this point we can't find a free skill ID
-						final List<String> unitSkillIDs = mom.getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+						final List<String> unitSkillIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
 							(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), getUnitURN ());
 						if ((unitSkillIDs == null) || (unitSkillIDs.size () == 0))
 							error = "Unit is supposedly a valid target, yet couldn't find any unitSkillIDs to use";
@@ -194,7 +218,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				maintainedSpell.setCitySpellEffectID (citySpellEffectID);
 				
 				// Add spell on clients (they don't have a blank version of it before now)
-				mom.getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (maintainedSpell,
+				getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (maintainedSpell,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), null, null, null, mom.getServerDB (), mom.getSessionDescription ());
 			}
 			else
@@ -206,25 +230,25 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					(spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)))
 				{
 					// Find & remove the main building for this spell
-					final OverlandMapCoordinatesEx destroyBuildingLocation = mom.getMemoryBuildingUtils ().findCityWithBuilding
+					final OverlandMapCoordinatesEx destroyBuildingLocation = getMemoryBuildingUtils ().findCityWithBuilding
 						(sender.getPlayerDescription ().getPlayerID (), spell.getBuildingID (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 					
 					if (destroyBuildingLocation != null)
 					{
-						mom.getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
 							mom.getPlayers (), destroyBuildingLocation, spell.getBuildingID (), false, mom.getSessionDescription (), mom.getServerDB ());
 						
 						// Move summoning circle as well if its in the same place as the wizard's fortress
 						if (spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
 						{
-							final OverlandMapCoordinatesEx summoningCircleLocation = mom.getMemoryBuildingUtils ().findCityWithBuilding
+							final OverlandMapCoordinatesEx summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding
 								(sender.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
 									mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 							
 							if (summoningCircleLocation != null)
 							{
-								mom.getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+								getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
 									mom.getPlayers (), summoningCircleLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
 									false, mom.getSessionDescription (), mom.getServerDB ());
 								
@@ -235,7 +259,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				}
 				
 				// First create the building(s) on the server
-				mom.getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
+				getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
 					mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
 					mom.getSessionDescription (), mom.getServerDB ());
 				
@@ -244,12 +268,108 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 			}
 			
 			// New spell will probably use up some mana maintenance
-			mom.getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
+			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
 		log.exiting (TargetSpellMessageImpl.class.getName (), "process");
 	}		
 
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final MomServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final MomServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
+	
 	/**
 	 * @return Random number generator
 	 */

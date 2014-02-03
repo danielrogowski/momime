@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
@@ -22,6 +23,8 @@ import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.TileType;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.utils.CityServerUtils;
+import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -40,12 +43,21 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
+	/** City calculations */
+	private MomCityCalculations cityCalculations;
+	
 	/** City processing methods */
 	private CityProcessing cityProcessing;
 
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
 
+	/** Server-only overland map utils */
+	private OverlandMapServerUtils overlandMapServerUtils;
+	
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
+	
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
@@ -134,7 +146,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				error = "The type of terrain here has changed, you can no longer build a city here";
 			else if ((mapFeature != null) && (!mapFeature.isCanBuildCity ()))
 				error = "The map feature here has changed, you can no longer build a city here";
-			else if (mom.getCityCalculations ().markWithinExistingCityRadius
+			else if (getCityCalculations ().markWithinExistingCityRadius
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				settler.getUnitLocation ().getPlane (), mom.getSessionDescription ().getMapSize ()).get (settler.getUnitLocation ().getX (), settler.getUnitLocation ().getY ()))
 				
@@ -155,7 +167,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			}
 			else
 			{
-				mom.getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), settlerOwner, settler,
+				getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), settlerOwner, settler,
 					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}			
 		}
@@ -197,7 +209,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			}
 			else
 			{
-				mom.getOverlandMapServerUtils ().attemptToMeldWithNode (spirit, mom.getGeneralServerKnowledge ().getTrueMap (),
+				getOverlandMapServerUtils ().attemptToMeldWithNode (spirit, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}			
 		}
@@ -238,6 +250,22 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	}
 
 	/**
+	 * @return City calculations
+	 */
+	public final MomCityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final MomCityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+	
+	/**
 	 * @return Server-only unit utils
 	 */
 	public final UnitServerUtils getUnitServerUtils ()
@@ -253,6 +281,38 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		unitServerUtils = utils;
 	}
 
+	/**
+	 * @return Server-only overland map utils
+	 */
+	public final OverlandMapServerUtils getOverlandMapServerUtils ()
+	{
+		return overlandMapServerUtils;
+	}
+	
+	/**
+	 * @param utils Server-only overland map utils
+	 */
+	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
+	{
+		overlandMapServerUtils = utils;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
+	}
+	
 	/**
 	 * @return Random number generator
 	 */

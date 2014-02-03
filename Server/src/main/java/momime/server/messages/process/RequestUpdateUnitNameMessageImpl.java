@@ -10,7 +10,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_4.RequestUpdateUnitNameMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -25,6 +27,12 @@ public final class RequestUpdateUnitNameMessageImpl extends RequestUpdateUnitNam
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestUpdateUnitNameMessageImpl.class.getName ());
 
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -44,7 +52,7 @@ public final class RequestUpdateUnitNameMessageImpl extends RequestUpdateUnitNam
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// Find the unit being dismissed
-		final MemoryUnit trueUnit = mom.getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+		final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 
 		// Validation
 		String error = null;
@@ -72,10 +80,42 @@ public final class RequestUpdateUnitNameMessageImpl extends RequestUpdateUnitNam
 			trueUnit.setUnitName (getUnitName ());
 			
 			// Rename it in players' memories and on clients
-			mom.getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit_UnitName (trueUnit,
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit_UnitName (trueUnit,
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 		}
 
 		log.exiting (RequestUpdateUnitNameMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

@@ -7,6 +7,10 @@
 	<name>momimeClient</name>
 	<description>MoM IME Client</description>
 
+	<scm>
+		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEClient/trunk</connection>
+	</scm>
+
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
@@ -236,12 +240,12 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.9.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-serverdatabase</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.9.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

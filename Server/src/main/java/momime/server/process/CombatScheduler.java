@@ -5,12 +5,16 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MomScheduledCombat;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
+import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Combat scheduler is only used in Simultaneous turns games, where all the combats are queued up and processed in one go at the end of the turn.
@@ -59,4 +63,19 @@ public interface CombatScheduler
 	public void sendScheduledCombats (final List<PlayerServerDetails> players,
 		final List<MomScheduledCombat> combats, final boolean updateOthersCountOnly)
 		throws JAXBException, XMLStreamException;
+
+	/**
+	 * Handles tidying up after a scheduled combat
+	 * 
+	 * @param scheduledCombatURN The scheduled combat that ended
+	 * @param winningPlayer Player who won; if they scouted a node/lair/tower but clicked No to not attack those Sky Drakes, this will be null
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void processEndOfScheduledCombat (final int scheduledCombatURN, final PlayerServerDetails winningPlayer, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 }

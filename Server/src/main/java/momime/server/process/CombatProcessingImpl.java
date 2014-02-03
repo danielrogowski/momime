@@ -269,7 +269,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		boolean walkInWithoutAFight = false;
 		if (scheduledCombatURN != null)
 			walkInWithoutAFight = getScheduledCombatUtils ().findScheduledCombatURN
-				(mom.getGeneralServerKnowledge ().getScheduledCombat (), scheduledCombatURN).isWalkInWithoutAFight ();
+				(mom.getGeneralServerKnowledge ().getScheduledCombat (), scheduledCombatURN, "startCombat").isWalkInWithoutAFight ();
 		
 		// Record the scheduled combat ID
 		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -1218,7 +1218,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if (tc.getScheduledCombatURN () != null)
 			{
 				log.finest ("Tidying up scheduled combat");
-				throw new UnsupportedOperationException ("combatEnded doesn't know what to do with scheduled combats yet");
+				getCombatScheduler ().processEndOfScheduledCombat (tc.getScheduledCombatURN (), winningPlayer, mom);
+				tc.setScheduledCombatURN (null);
 			}
 			
 			// Assuming both sides may have taken losses, could have gained/lost a city, etc. etc., best to just recalculate production for both

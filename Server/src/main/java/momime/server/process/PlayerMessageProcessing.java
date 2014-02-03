@@ -90,4 +90,18 @@ public interface PlayerMessageProcessing
 	 */
 	public void nextTurnButton (final MomSessionVariables mom, final PlayerServerDetails player)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+
+	/**
+	 * Processes the 'end phase' (for want of something better to call it), which happens at the end of each player's turn
+	 *
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process start phase for all players; if specified will process start phase only for the specified player
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void endPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 }

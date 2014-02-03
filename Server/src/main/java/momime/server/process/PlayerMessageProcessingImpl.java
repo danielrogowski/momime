@@ -844,7 +844,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final void endPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
+	@Override
+	public final void endPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.entering (PlayerMessageProcessingImpl.class.getName (), "endPhase", onlyOnePlayerID);

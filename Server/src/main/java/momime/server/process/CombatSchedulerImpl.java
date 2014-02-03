@@ -6,18 +6,25 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.AddScheduledCombatMessage;
 import momime.common.messages.servertoclient.v0_9_4.PlayerCombatRequestStatusMessage;
+import momime.common.messages.servertoclient.v0_9_4.ScheduledCombatWalkInWithoutAFightMessage;
 import momime.common.messages.servertoclient.v0_9_4.ShowListAndOtherScheduledCombatsMessage;
 import momime.common.messages.servertoclient.v0_9_4.UpdateOtherScheduledCombatsMessage;
 import momime.common.messages.v0_9_4.MomScheduledCombat;
 import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
+import momime.common.utils.ScheduledCombatUtils;
+import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Combat scheduler is only used in Simultaneous turns games, where all the combats are queued up and processed in one go at the end of the turn.
@@ -31,6 +38,12 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	
 	/** Server-side multiplayer utils */
 	private MultiplayerServerUtils multiplayerServerUtils;
+	
+	/** Scheduled combat utils */
+	private ScheduledCombatUtils scheduledCombatUtils; 
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
 	
 	/**
 	 * Records details of a combat that needs to be added to the combat scheduler, allocating it a new scheduledCombatURN in the process
@@ -172,6 +185,63 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	}
 
 	/**
+	 * Handles tidying up after a scheduled combat
+	 * 
+	 * @param scheduledCombatURN The scheduled combat that ended
+	 * @param winningPlayer Player who won; if they scouted a node/lair/tower but clicked No to not attack those Sky Drakes, this will be null
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void processEndOfScheduledCombat (final int scheduledCombatURN, final PlayerServerDetails winningPlayer, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.entering (CombatSchedulerImpl.class.getName (), "processEndOfScheduledCombat", scheduledCombatURN);
+		
+		final MomScheduledCombat combat = getScheduledCombatUtils ().findScheduledCombatURN 
+			(mom.getGeneralServerKnowledge ().getScheduledCombat (), scheduledCombatURN, "processEndOfScheduledCombat");
+		
+		final PlayerServerDetails attackingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), combat.getAttackingPlayerID (), "processEndOfScheduledCombat");
+		
+		// Any other combats where this player is attacking the same square, change from a combat into an optional movement without a fight
+		if ((winningPlayer != null) && (combat.getAttackingPlayerID () == winningPlayer.getPlayerDescription ().getPlayerID ()))
+			for (final MomScheduledCombat otherCombat : mom.getGeneralServerKnowledge ().getScheduledCombat ())
+				if ((otherCombat != combat) &&
+					(otherCombat.getAttackingPlayerID () == combat.getAttackingPlayerID ()) &&
+					(otherCombat.getDefendingLocation ().equals (combat.getDefendingLocation ())))
+				{
+					// Update on server
+					otherCombat.setWalkInWithoutAFight (true);
+					
+					// Update on client
+					if (attackingPlayer.getPlayerDescription ().isHuman ())
+					{
+						final ScheduledCombatWalkInWithoutAFightMessage msg = new ScheduledCombatWalkInWithoutAFightMessage ();
+						msg.setScheduledCombatURN (otherCombat.getScheduledCombatURN ());
+						
+						attackingPlayer.getConnection ().sendMessageToClient (msg);
+					}
+				}
+
+		// Delete it list on server
+		// Note that we don't have to tell the clients to remove the combat from their list - they know to do so from the mmCombatEnded message
+		mom.getGeneralServerKnowledge ().getScheduledCombat ().remove (combat);
+		
+		// Any more combats left to play?
+		if (mom.getGeneralServerKnowledge ().getScheduledCombat ().size () == 0)
+			getPlayerMessageProcessing ().endPhase (mom, 0);
+		else
+			// Update counts on other clients so they know how many combats other players are involved in and they're still waiting for
+			sendScheduledCombats (mom.getPlayers (), mom.getGeneralServerKnowledge ().getScheduledCombat (), true);
+		
+		log.exiting (CombatSchedulerImpl.class.getName (), "processEndOfScheduledCombat");
+	}
+
+	/**
 	 * @return Server-side multiplayer utils
 	 */
 	public final MultiplayerServerUtils getMultiplayerServerUtils ()
@@ -185,5 +255,37 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	public final void setMultiplayerServerUtils (final MultiplayerServerUtils utils)
 	{
 		multiplayerServerUtils = utils;
+	}
+
+	/**
+	 * @return Scheduled combat utils
+	 */
+	public final ScheduledCombatUtils getScheduledCombatUtils ()
+	{
+		return scheduledCombatUtils;
+	}
+
+	/**
+	 * @param utils Scheduled combat utils
+	 */
+	public final void setScheduledCombatUtils (final ScheduledCombatUtils utils)
+	{
+		scheduledCombatUtils = utils;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

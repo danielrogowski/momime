@@ -309,7 +309,7 @@
 	<xsd:complexType name="productionTypeImage" nxe:singular="Production Type Image" nxe:plural="Production Type Images">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="productionImageFile" type="momimegfx:imageFilename" nxe:label="Production type image file" nxe:gridwidth="200" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="productionImageNumber" type="momimecommon:imageNumber" nxe:label="Production type image number" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="productionImageNumber" type="momimecommon:imageNumber" nxe:label="Production type image number" nxe:gridwidth="200" />
 		</xsd:sequence>
 		<xsd:attribute name="productionValue" type="momimegfx:productionImageValue" use="required" nxe:label="Production Type Value" nxe:gridwidth="150" />
 	</xsd:complexType>
@@ -330,7 +330,7 @@
 	<xsd:complexType name="racePopulationTask" nxe:singular="Race Population Task" nxe:plural="Race Population Tasks">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="civilianImageFile" type="momimegfx:imageFilename" nxe:label="Civilian image file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="civilianImageNumber" type="momimecommon:imageNumber" nxe:label="Civilian image number" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="civilianImageNumber" type="momimecommon:imageNumber" nxe:label="Civilian image number" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="populationTaskID" type="momimecommon:populationTaskID" use="required" nxe:label="Population Task ID" nxe:gridwidth="150" />
 	</xsd:complexType>
@@ -352,14 +352,14 @@
 	<xsd:complexType name="bookImage" nxe:singular="Book Image" nxe:plural="Book Images">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="bookImageFile" type="momimegfx:imageFilename" nxe:label="Book image file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="bookImageNumber" type="momimecommon:imageNumber" nxe:label="Book image number" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="bookImageNumber" type="momimecommon:imageNumber" nxe:label="Book image number" nxe:gridwidth="150" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
 	<xsd:complexType name="unitAttribute" nxe:singular="Unit Attribute" nxe:plural="Unit Attributes" nxe:submenu="Units">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="attributeImageFile" type="momimegfx:imageFilename" nxe:label="Unit Attribute image file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="attributeImageNumber" type="momimecommon:imageNumber" nxe:label="Unit Attribute image number" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="attributeImageNumber" type="momimecommon:imageNumber" nxe:label="Unit Attribute image number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="mithrilAndAdamantiumVersions" type="xsd:boolean" nxe:label="Mithril &amp; Adamantium versions?" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="unitAttributeID" type="momimecommon:unitAttributeID" use="required" nxe:label="Unit Attribute ID" nxe:gridwidth="100" />
@@ -368,7 +368,7 @@
 	<xsd:complexType name="rangedAttackType" nxe:singular="Ranged Attack Type" nxe:plural="Ranged Attack Types" nxe:submenu="Units">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitDisplayRangedImageFile" type="momimegfx:imageFilename" nxe:label="Unit Display RAT image file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitDisplayRangedImageNumber" type="momimecommon:imageNumber" nxe:label="Unit Display RAT image number" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitDisplayRangedImageNumber" type="momimecommon:imageNumber" nxe:label="Unit Display RAT image number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackSoundFile" type="momimegfx:imageFilename" nxe:label="RAT sound file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackSoundNumber" type="momimecommon:imageNumber" nxe:label="RAT sound number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeCombatImage" type="momimegfx:rangedAttackTypeCombatImage" />
@@ -428,7 +428,7 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSummonImageFile" type="momimegfx:imageFilename" nxe:label="Summoning image file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSummonImageNumber" type="momimecommon:imageNumber" nxe:label="Summoning number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitOverlandImageFile" type="momimegfx:imageFilename" nxe:label="Overland image file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitOverlandImageNumber" type="momimecommon:imageNumber" nxe:label="Overland image number" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitOverlandImageNumber" type="momimecommon:imageNumber" nxe:label="Overland image number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroPortraitImageFile" type="momimegfx:imageFilename" nxe:label="Hero Portrait image file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroPortraitImageNumber" type="momimecommon:imageNumber" nxe:label="Hero Portrait image number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitCombatAction" type="momimegfx:unitCombatAction" />
@@ -685,7 +685,7 @@
 	<xsd:complexType name="combatAreaEffect" nxe:singular="Combat Area Effect" nxe:plural="Combat Area Effects" nxe:submenu="Magic">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatAreaEffectImageFile" type="momimegfx:imageFilename" nxe:label="CAE image file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="combatAreaEffectImageNumber" type="momimecommon:imageNumber" nxe:label="CAE image number" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectImageNumber" type="momimecommon:imageNumber" nxe:label="CAE image number" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" use="required" nxe:label="Combat Area Effect ID" nxe:gridwidth="120">
 			<xsd:annotation>
@@ -715,7 +715,7 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimegfx:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageNumber" type="momimecommon:imageNumber" nxe:label="Monster Found image number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="overlandMapImageFile" type="momimegfx:imageFilename" nxe:label="Overland Map image file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="overlandMapImageNumber" type="momimecommon:imageNumber" nxe:label="Overland Map image number" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="overlandMapImageNumber" type="momimecommon:imageNumber" nxe:label="Overland Map image number" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="mapFeatureID" type="momimecommon:mapFeatureID" use="required" nxe:label="Map Feature ID" nxe:gridwidth="100">
 			<xsd:annotation>
@@ -737,7 +737,7 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="cityImageFile" type="momimegfx:imageFilename" nxe:label="City image file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="cityImageNumber" type="momimecommon:imageNumber" nxe:label="City image number" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="cityImageNumber" type="momimecommon:imageNumber" nxe:label="City image number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="flagOffsetX" type="momimegfx:pixelCoordinate" nxe:label="Flag offset X" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="flagOffsetY" type="momimegfx:pixelCoordinate" nxe:label="Flag offset Y" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityImagePrerequisite" type="momimegfx:cityImagePrerequisite" />

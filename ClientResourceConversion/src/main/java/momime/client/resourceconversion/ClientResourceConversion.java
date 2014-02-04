@@ -70,13 +70,16 @@ public final class ClientResourceConversion
 	 * @param animationID ID of animation, null if its a single image
 	 * @param alreadyExported Whether we expect that this image has already been exported under a different name, due to two entries in the XML pointing at the same file/image number
 	 * @param destName Folder and name appropriate to call the saved .png
+	 * @return Resource path name to use in 0.9.5 graphics XML, e.g. /folder/something.png - only if we input an image, an animation will output null, since that's what we need for the image filename
 	 * @throws IOException If there is a problem
 	 */
-	private final void convertImageOrAnimation (final String imageFile, final Integer imageNumber, final String animationID,
+	private final String convertImageOrAnimation (final String imageFile, final Integer imageNumber, final String animationID,
 		final boolean alreadyExported, final String destName) throws IOException
 	{
+		String newResourceName = null;
+		
 		if ((imageFile != null) && (imageNumber != null))
-			convertImage (imageFile, imageNumber, alreadyExported, destName);
+			newResourceName = convertImage (imageFile, imageNumber, alreadyExported, destName);
 		
 		else if (animationID != null)
 		{
@@ -111,9 +114,14 @@ public final class ClientResourceConversion
 					useAlreadyExported = alreadyExported;
 				
 				// Process this frame
-				convertImage (frame.getFrameImageFile (), frame.getFrameImageNumber (), useAlreadyExported, destName + "-frame" + frameNo);
+				// This would be really difficult to just write the new resource name over the old image name, because we might then encounter the same anim again
+				// So this seemed simplest solution, to just stick the values in a temporary field and copy it across at the end
+				frame.setXxxResourceNameXxx (convertImage
+					(frame.getFrameImageFile (), frame.getFrameImageNumber (), useAlreadyExported, destName + "-frame" + frameNo));
 			}
-		}			
+		}
+		
+		return newResourceName;
 	}
 	
 	/**
@@ -123,9 +131,10 @@ public final class ClientResourceConversion
 	 * @param imageNumber Number of the image within the file, for files that can contain multiple
 	 * @param alreadyExported Whether we expect that this image has already been exported under a different name, due to two entries in the XML pointing at the same file/image number
 	 * @param destName Folder and name appropriate to call the saved .png
+	 * @return Resource path name to use in 0.9.5 graphics XML, e.g. /folder/something.png
 	 * @throws IOException If there is a problem
 	 */
-	private final void convertImage (final String imageFile, final Integer imageNumber, final boolean alreadyExported, final String destName) throws IOException
+	private final String convertImage (final String imageFile, final Integer imageNumber, final boolean alreadyExported, final String destName) throws IOException
 	{
 		// This is a bit of a hack, the Delphi code numbered all the frames in an .LBX in only a one-index system but
 		// really the file is organized in a two-index system, and how we have to convert one to the other depends on which .LBX it is
@@ -527,6 +536,7 @@ public final class ClientResourceConversion
 		// Did we save this one already?
 		final String exportedImageNamesKey = imageFile + "-" + imageNumber;
 		final File exportedImageNamesExisting = exportedImageNames.get (exportedImageNamesKey);
+		final File useFile;
 		if (alreadyExported)
 		{
 			// Want it to already have been exported
@@ -534,6 +544,9 @@ public final class ClientResourceConversion
 				throw new IOException ("Expected " + imageFile + ", " + imageNumber + " to have been already saved but it hasn't been");
 				
 			System.out.println (imageFile + ", " + imageNumber + " -> already exported as " + exportedImageNamesExisting);
+			
+			// Use resource name of where it was previously saved
+			useFile = exportedImageNamesExisting;
 		}
 		else
 		{				
@@ -541,6 +554,7 @@ public final class ClientResourceConversion
 				throw new IOException ("Went to save " + imageFile + ", " + imageNumber + " as " + destFile + ", but it was already saved as " + exportedImageNamesExisting);
 			
 			exportedImageNames.put (exportedImageNamesKey, destFile);
+			useFile = destFile;
 			
 			// Read image
 			final BufferedImage image = cache.findOrLoadImage (imageFile, subFileNumber, frameNumber);
@@ -550,6 +564,10 @@ public final class ClientResourceConversion
 			
 			System.out.println (imageFile + ", " + imageNumber + " -> " + subFileNumber + "-" + frameNumber + " -> " + destFile);
 		}
+		
+		// Get back from file to a resource name
+		String resourceName = useFile.toString ().substring (58).replace ('\\', '/');
+		return resourceName;
 	}
 	
 	/**
@@ -583,13 +601,18 @@ public final class ClientResourceConversion
 		// Read the graphics XML so we know which images are actually needed - e.g. don't want to
 		// convert every single frame in TERRAIN.LBX if they aren't all needed
 		final JAXBContext graphicsContext = JAXBContext.newInstance (GraphicsDatabase.class);
+		
+		System.out.println ("Reading graphics xml...");
 		xml = (GraphicsDatabase) graphicsContext.createUnmarshaller ().unmarshal (new File (CLIENT_PROJECT_ROOT +
 			"\\src\\external\\resources\\momime.client.graphics.database\\Default.Master of Magic Graphics.xml"));
 		
 		// Wizards
 		for (final Wizard wizard : xml.getWizard ())
 			if (wizard.getPortraitFile () != null)
-				convertImage (wizard.getPortraitFile (), wizard.getPortraitNumber (), false, "wizards\\" + wizard.getWizardID ());
+			{
+				wizard.setPortraitFile (convertImage (wizard.getPortraitFile (), wizard.getPortraitNumber (), false, "wizards\\" + wizard.getWizardID ()));
+				wizard.setPortraitNumber (null);
+			}
 		
 		// Production types
 		final Map<String, String> productionTypeNames = new HashMap<String, String> ();
@@ -615,8 +638,11 @@ public final class ClientResourceConversion
 			for (final ProductionTypeImage prodImage : productionType.getProductionTypeImage ())
 			{
 				final String value = (prodImage.getProductionValue ().equals ("½")) ? "half" : prodImage.getProductionValue ();
-				convertImage (prodImage.getProductionImageFile (), prodImage.getProductionImageNumber (), productionType.getProductionTypeID ().equals ("RE04"),
-					"production\\" + productionTypeName + "\\" + value);
+				
+				prodImage.setProductionImageFile (convertImage (prodImage.getProductionImageFile (), prodImage.getProductionImageNumber (),
+					productionType.getProductionTypeID ().equals ("RE04"), "production\\" + productionTypeName + "\\" + value));
+				
+				prodImage.setProductionImageNumber (null);
 			}
 		}
 		
@@ -644,8 +670,12 @@ public final class ClientResourceConversion
 		
 		for (final Race race : xml.getRace ())
 			for (final RacePopulationTask task : race.getRacePopulationTask ())
-				convertImage (task.getCivilianImageFile (), task.getCivilianImageNumber (), false,
-					"races\\" + raceNames.get (race.getRaceID ()) + "\\" + productionTaskNames.get (task.getPopulationTaskID ()));
+			{
+				task.setCivilianImageFile (convertImage (task.getCivilianImageFile (), task.getCivilianImageNumber (), false,
+					"races\\" + raceNames.get (race.getRaceID ()) + "\\" + productionTaskNames.get (task.getPopulationTaskID ())));
+				
+				task.setCivilianImageNumber (null);
+			}
 		
 		// Picks
 		final Map<String, String> pickNames = new HashMap<String, String> ();
@@ -661,7 +691,8 @@ public final class ClientResourceConversion
 			for (final BookImage book : pick.getBookImage ())
 			{
 				n++;
-				convertImage (book.getBookImageFile (), book.getBookImageNumber (), false, "picks\\" + pickNames.get (pick.getPickID ()) + "-" + n);
+				book.setBookImageFile (convertImage (book.getBookImageFile (), book.getBookImageNumber (), false, "picks\\" + pickNames.get (pick.getPickID ()) + "-" + n));
+				book.setBookImageNumber (null);
 			}
 		}
 		
@@ -691,17 +722,25 @@ public final class ClientResourceConversion
 		for (final RangedAttackType rat : rats)
 		{
 			final String ratName = ratNames.get (rat.getRangedAttackTypeID ());
-			convertImage (rat.getUnitDisplayRangedImageFile (), rat.getUnitDisplayRangedImageNumber (),
+			
+			rat.setUnitDisplayRangedImageFile (convertImage (rat.getUnitDisplayRangedImageFile (), rat.getUnitDisplayRangedImageNumber (),
 				(rat.getRangedAttackTypeID ().equals ("RAT15")) || (rat.getRangedAttackTypeID ().equals ("RAT1E")) ||
 				(rat.getRangedAttackTypeID ().equals ("RAT21")) ||
 				(rat.getRangedAttackTypeID ().equals ("RAT22")) || (rat.getRangedAttackTypeID ().equals ("RAT23")) || 
 				(rat.getRangedAttackTypeID ().equals ("RAT24")) ||	(rat.getRangedAttackTypeID ().equals ("RAT25")),		// Rock and pebble share same icon, as do a lot of magic attacks
-				"rangedAttacks\\" + ratName + "\\icon");
+				"rangedAttacks\\" + ratName + "\\icon"));
+			
+			rat.setUnitDisplayRangedImageNumber (null);
 			
 			for (final RangedAttackTypeCombatImage combatImage : rat.getRangedAttackTypeCombatImage ())
-				convertImageOrAnimation (combatImage.getRangedAttackTypeCombatImageFile (), combatImage.getRangedAttackTypeCombatImageNumber (),
+			{
+				combatImage.setRangedAttackTypeCombatImageFile (convertImageOrAnimation
+					(combatImage.getRangedAttackTypeCombatImageFile (), combatImage.getRangedAttackTypeCombatImageNumber (),
 					combatImage.getRangedAttackTypeCombatAnimation (), false,
-					"rangedAttacks\\" + ratName + "\\" + combatImage.getRangedAttackTypeActionID ().name ().toLowerCase () + "-d" + combatImage.getDirection ());
+					"rangedAttacks\\" + ratName + "\\" + combatImage.getRangedAttackTypeActionID ().name ().toLowerCase () + "-d" + combatImage.getDirection ()));
+				
+				combatImage.setRangedAttackTypeCombatImageNumber (null);
+			}
 		}
 		
 		// Unit attributes
@@ -715,15 +754,24 @@ public final class ClientResourceConversion
 		unitAttributeNames.put ("UA07", "plusToBlock");
 
 		for (final UnitAttribute attr : xml.getUnitAttribute ())
-			convertImage (attr.getAttributeImageFile (), attr.getAttributeImageNumber (), attr.getUnitAttributeID ().equals ("UA02"),	// ranged reuses RAT icon for arrows
-				"unitAttributes\\" + unitAttributeNames.get (attr.getUnitAttributeID ()));
+		{
+			attr.setAttributeImageFile (convertImage (attr.getAttributeImageFile (), attr.getAttributeImageNumber (),
+				attr.getUnitAttributeID ().equals ("UA02"),	// ranged reuses RAT icon for arrows
+				"unitAttributes\\" + unitAttributeNames.get (attr.getUnitAttributeID ())));
+			
+			attr.setAttributeImageNumber (null);
+		}
 		
 		// Spells
 		for (final Spell spell : xml.getSpell ())
 		{
 			if ((spell.getOverlandEnchantmentImageFile () != null) && (spell.getOverlandEnchantmentImageNumber () != null))
-				convertImage (spell.getOverlandEnchantmentImageFile (), spell.getOverlandEnchantmentImageNumber (), false,
-					"spells\\" + spell.getSpellID () + "\\overlandEnchantment");
+			{
+				spell.setOverlandEnchantmentImageFile (convertImage (spell.getOverlandEnchantmentImageFile (), spell.getOverlandEnchantmentImageNumber (), false,
+					"spells\\" + spell.getSpellID () + "\\overlandEnchantment"));
+				
+				spell.setOverlandEnchantmentImageNumber (null);
+			}
 			
 			// Lots of spells share the same anims
 			if (spell.getCombatCastAnimation () != null)
@@ -791,15 +839,23 @@ public final class ClientResourceConversion
 		
 		for (final Unit unit : xml.getUnit ())
 		{
-			convertImage (unit.getUnitOverlandImageFile (), unit.getUnitOverlandImageNumber (), false, "units\\" + unit.getUnitID () + "\\overland");
+			unit.setUnitOverlandImageFile (convertImage (unit.getUnitOverlandImageFile (), unit.getUnitOverlandImageNumber (), false, "units\\" + unit.getUnitID () + "\\overland"));
+			unit.setUnitOverlandImageNumber (null);
 			
 			if ((unit.getUnitSummonImageFile () != null) && (unit.getUnitSummonImageNumber () != null))
-				convertImage (unit.getUnitSummonImageFile (), unit.getUnitSummonImageNumber (),
-				(unit.getUnitSummonImageNumber () == 44) || (unit.getUnitSummonImageNumber () == 45),
-				"units\\" + unit.getUnitID () + "\\summon");
+			{
+				unit.setUnitSummonImageFile (convertImage (unit.getUnitSummonImageFile (), unit.getUnitSummonImageNumber (),
+					(unit.getUnitSummonImageNumber () == 44) || (unit.getUnitSummonImageNumber () == 45),
+					"units\\" + unit.getUnitID () + "\\summon"));
+				
+				unit.setUnitSummonImageNumber (null);
+			}
 			
 			if ((unit.getHeroPortraitImageFile () != null) && (unit.getHeroPortraitImageNumber () != null))
-				convertImage (unit.getHeroPortraitImageFile (), unit.getHeroPortraitImageNumber (), false, "units\\" + unit.getUnitID () + "\\portrait");
+			{
+				unit.setHeroPortraitImageFile (convertImage (unit.getHeroPortraitImageFile (), unit.getHeroPortraitImageNumber (), false, "units\\" + unit.getUnitID () + "\\portrait"));
+				unit.setHeroPortraitImageNumber (null);
+			}
 			
 			for (final UnitCombatAction action : unit.getUnitCombatAction ())
 				for (final UnitCombatImage image : action.getUnitCombatImage ())
@@ -812,9 +868,11 @@ public final class ClientResourceConversion
 					else
 						actionID = action.getCombatActionID ().toLowerCase ();
 					
-					convertImageOrAnimation (image.getUnitCombatImageFile (), image.getUnitCombatImageNumber (), image.getUnitCombatAnimation (),
+					image.setUnitCombatImageFile (convertImageOrAnimation (image.getUnitCombatImageFile (), image.getUnitCombatImageNumber (), image.getUnitCombatAnimation (),
 						action.getCombatActionID ().equals ("FLY"),
-						"units\\" + unit.getUnitID () + "\\d" + image.getDirection () + "-" + actionID);
+						"units\\" + unit.getUnitID () + "\\d" + image.getDirection () + "-" + actionID));
+					
+					image.setUnitCombatImageNumber (null);
 				}
 		}
 		
@@ -891,8 +949,10 @@ public final class ClientResourceConversion
 						("TT11".equals (smoothedTileType.getTileTypeID ())) || ("TT15".equals (smoothedTileType.getTileTypeID ())) ||		// Oceanside/Landside River Mouth tiles are just dup shore/ocean/river tiles
 						(("TT14".equals (smoothedTileType.getTileTypeID ())) && (tileSet.getTileSetID ().equals ("TS02"))));						// Nodes look like other tiles; e.g. chaos nodes look like mountains on combat map
 					
-					convertImageOrAnimation (smoothedTile.getTileFile (), smoothedTile.getTileNumber (), smoothedTile.getTileAnimation (), alreadyExported,
-						tileSetName + terrainFolder + planeName + tileTypeName + combatTileTypeName + smoothedTile.getBitmask () + suffix);
+					smoothedTile.setTileFile (convertImageOrAnimation (smoothedTile.getTileFile (), smoothedTile.getTileNumber (), smoothedTile.getTileAnimation (), alreadyExported,
+						tileSetName + terrainFolder + planeName + tileTypeName + combatTileTypeName + smoothedTile.getBitmask () + suffix));
+					
+					smoothedTile.setTileNumber (null);
 				}
 			}
 		}
@@ -902,31 +962,53 @@ public final class ClientResourceConversion
 		{
 			// Even the main skill icon is optional, since some passive skills (like "walking") don't have icons
 			if ((unitSkill.getUnitSkillImageFile () != null) && (unitSkill.getUnitSkillImageNumber () != null))
-				convertImage (unitSkill.getUnitSkillImageFile (), unitSkill.getUnitSkillImageNumber (), false,
-					"unitSkills\\" + unitSkill.getUnitSkillID () + "-icon");
+			{
+				unitSkill.setUnitSkillImageFile (convertImage (unitSkill.getUnitSkillImageFile (), unitSkill.getUnitSkillImageNumber (), false,
+					"unitSkills\\" + unitSkill.getUnitSkillID () + "-icon"));
+				
+				unitSkill.setUnitSkillImageNumber (null);
+			}
 
 			// Movement icons are reused a lot, since there's a number of different e.g. flying skills
 			if ((unitSkill.getMovementIconImageFile () != null) && (unitSkill.getMovementIconImageNumber () != null))
-				convertImage (unitSkill.getMovementIconImageFile (), unitSkill.getMovementIconImageNumber (),
+			{
+				unitSkill.setMovementIconImageFile (convertImage (unitSkill.getMovementIconImageFile (), unitSkill.getMovementIconImageNumber (),
 					(unitSkill.getUnitSkillID ().equals ("USX03")) || (unitSkill.getUnitSkillID ().equals ("SS008")) ||
 					(unitSkill.getUnitSkillID ().equals ("US022")) || (unitSkill.getUnitSkillID ().equals ("SS181")) ||
 					(unitSkill.getUnitSkillID ().equals ("US023")) || (unitSkill.getUnitSkillID ().equals ("SS056")) ||
 					(unitSkill.getUnitSkillID ().equals ("SS063")) || (unitSkill.getUnitSkillID ().equals ("SS093C")),
-					"unitSkills\\" + unitSkill.getUnitSkillID () + "-move");
+					"unitSkills\\" + unitSkill.getUnitSkillID () + "-move"));
+				
+				unitSkill.setMovementIconImageNumber (null);
+			}
 			
 			if ((unitSkill.getSampleTileImageFile () != null) && (unitSkill.getSampleTileImageNumber () != null))
-				convertImage (unitSkill.getSampleTileImageFile (), unitSkill.getSampleTileImageNumber (), true,	// Should be one of the overland tiles
-					"unitSkills\\" + unitSkill.getUnitSkillID () + "-sampleTile");
+			{
+				unitSkill.setSampleTileImageFile (convertImage (unitSkill.getSampleTileImageFile (), unitSkill.getSampleTileImageNumber (), true,	// Should be one of the overland tiles
+					"unitSkills\\" + unitSkill.getUnitSkillID () + "-sampleTile"));
+				
+				unitSkill.setSampleTileImageNumber (null);
+			}
 		}
 		
 		// CAEs
 		for (final CombatAreaEffect cae : xml.getCombatAreaEffect ())
-			convertImage (cae.getCombatAreaEffectImageFile (), cae.getCombatAreaEffectImageNumber (), false, "combat\\effects\\" + cae.getCombatAreaEffectID ());
+		{
+			cae.setCombatAreaEffectImageFile (convertImage (cae.getCombatAreaEffectImageFile (), cae.getCombatAreaEffectImageNumber (),
+				false, "combat\\effects\\" + cae.getCombatAreaEffectID ()));
+			
+			cae.setCombatAreaEffectImageNumber (null);
+		}
 		
 		// Tile types
 		for (final TileType tileType : xml.getTileType ())
 			if ((tileType.getMonsterFoundImageFile () != null) && (tileType.getMonsterFoundImageNumber () != null))
-				convertImage (tileType.getMonsterFoundImageFile (),tileType.getMonsterFoundImageNumber (), false, "overland\\tileTypes\\" + tileTypeNames.get (tileType.getTileTypeID ()) + "-scouting");
+			{
+				tileType.setMonsterFoundImageFile (convertImage (tileType.getMonsterFoundImageFile (),tileType.getMonsterFoundImageNumber (),
+					false, "overland\\tileTypes\\" + tileTypeNames.get (tileType.getTileTypeID ()) + "-scouting"));
+				
+				tileType.setMonsterFoundImageNumber (null);
+			}			
 		
 		// Map features
 		final Map<String, String> mapFeatureNames = new HashMap<String, String> ();
@@ -953,16 +1035,22 @@ public final class ClientResourceConversion
 
 		for (final MapFeature mapFeature : xml.getMapFeature ())
 		{
-			convertImage (mapFeature.getOverlandMapImageFile (), mapFeature.getOverlandMapImageNumber (),
+			mapFeature.setOverlandMapImageFile (convertImage (mapFeature.getOverlandMapImageFile (), mapFeature.getOverlandMapImageNumber (),
 				(mapFeature.getMapFeatureID ().equals ("MF14")) || (mapFeature.getMapFeatureID ().equals ("MF17")),
-				"overland\\mapFeatures\\" + mapFeatureNames.get (mapFeature.getMapFeatureID ()) + "-map");
+				"overland\\mapFeatures\\" + mapFeatureNames.get (mapFeature.getMapFeatureID ()) + "-map"));
+			
+			mapFeature.setOverlandMapImageNumber (null);
 			
 			if ((mapFeature.getMonsterFoundImageFile () != null) && (mapFeature.getMonsterFoundImageNumber () != null))
-				convertImage (mapFeature.getMonsterFoundImageFile (), mapFeature.getMonsterFoundImageNumber (), mapFeature.getMapFeatureID ().equals ("MF12B"),
-					"overland\\mapFeatures\\" + mapFeatureNames.get (mapFeature.getMapFeatureID ()) + "-scouting");
+			{
+				mapFeature.setMonsterFoundImageFile (convertImage (mapFeature.getMonsterFoundImageFile (), mapFeature.getMonsterFoundImageNumber (),
+					mapFeature.getMapFeatureID ().equals ("MF12B"), "overland\\mapFeatures\\" + mapFeatureNames.get (mapFeature.getMapFeatureID ()) + "-scouting"));
+				
+				mapFeature.setMonsterFoundImageNumber (null);
+			}
 		}
 		
-		// Cities on overland map - do output last since has common image with smallest actual town
+		// Cities on overland map - do outpost last since has common image with smallest actual town
 		final List<CityImage> cities = new ArrayList<CityImage> ();
 		for (final CityImage city : xml.getCityImage ())
 			if (city.getCitySizeID ().equals ("CS02"))
@@ -971,8 +1059,12 @@ public final class ClientResourceConversion
 				cities.add (city);
 		
 		for (final CityImage city : cities)
-			convertImage (city.getCityImageFile (), city.getCityImageNumber (), city.getCitySizeID ().equals ("CS01"),
-				"overland\\cities\\" + city.getCitySizeID () + ((city.getCityImagePrerequisite ().size () == 0) ? "-noWalls" : "-withWalls"));
+		{
+			city.setCityImageFile (convertImage (city.getCityImageFile (), city.getCityImageNumber (), city.getCitySizeID ().equals ("CS01"),
+				"overland\\cities\\" + city.getCitySizeID () + ((city.getCityImagePrerequisite ().size () == 0) ? "-noWalls" : "-withWalls")));
+			
+			city.setCityImageNumber (null);
+		}
 		
 		// Combat tile borders
 		final Map<String, String> combatTileBorderNames = new HashMap<String, String> ();
@@ -1016,14 +1108,22 @@ public final class ClientResourceConversion
 			final boolean reuse = (((border.getCombatTileBorderID ().equals ("CTB04")) || (border.getCombatTileBorderID ().equals ("CTB05"))) &&
 				((border.getDirections ().equals ("68")) || (border.getDirections ().equals ("24"))));				
 			
-			convertImageOrAnimation (border.getStandardFile (), border.getStandardNumber (), border.getStandardAnimation (), reuse,
-				"combat\\borders\\" + combatTileBorderName + "-d" + border.getDirections () + "-standard" + suffix);
+			border.setStandardFile (convertImageOrAnimation (border.getStandardFile (), border.getStandardNumber (), border.getStandardAnimation (), reuse,
+				"combat\\borders\\" + combatTileBorderName + "-d" + border.getDirections () + "-standard" + suffix));
+			
+			border.setStandardNumber (null);
 			
 			if ((border.getWreckedFile () != null) && (border.getWreckedNumber () != null))
-				convertImage (border.getWreckedFile (), border.getWreckedNumber (), reuse, "combat\\borders\\" + combatTileBorderName + "-d" + border.getDirections () + "-wrecked" + suffix);
+			{
+				border.setWreckedFile (convertImage (border.getWreckedFile (), border.getWreckedNumber (), reuse,
+					"combat\\borders\\" + combatTileBorderName + "-d" + border.getDirections () + "-wrecked" + suffix));
+				
+				border.setWreckedNumber (null);
+			}
 			
 			if (border.getRaisingAnimation () != null)
 				convertImageOrAnimation (null, null, border.getRaisingAnimation (), reuse, "combat\\borders\\" + combatTileBorderName + "-d" + border.getDirections () + "-raising" + suffix);
+				
 		}
 		
 		// City view elements
@@ -1035,71 +1135,134 @@ public final class ClientResourceConversion
 				final String spell = (cityViewElement.getCitySpellEffectID () == null) ? "" : "-" + cityViewElement.getCitySpellEffectID ();
 				final String tileType = (cityViewElement.getTileTypeID () == null) ? "" : "-" + tileTypeNames.get (cityViewElement.getTileTypeID ());
 				
-				convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (), cityViewElement.getCityViewAnimation (),
+				cityViewElement.setCityViewImageFile (convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (),
+					cityViewElement.getCityViewAnimation (),
 					"TT14".equals (cityViewElement.getTileTypeID ()),		// since Chaos Nodes reuse the sky from Mountains
-					"cityView\\" + landOrSky + "\\" + planeName + spell + tileType);
+					"cityView\\" + landOrSky + "\\" + planeName + spell + tileType));
+				
+				cityViewElement.setCityViewImageNumber (null);
 				
 				if ((cityViewElement.getCityViewAlternativeImageFile () != null) && (cityViewElement.getCityViewAlternativeImageNumber () != null))
-					convertImage (cityViewElement.getCityViewAlternativeImageFile (), cityViewElement.getCityViewAlternativeImageNumber (),
+				{
+					cityViewElement.setCityViewAlternativeImageFile (convertImage (cityViewElement.getCityViewAlternativeImageFile (),
+						cityViewElement.getCityViewAlternativeImageNumber (),
 						(cityViewElement.getPlaneNumber () == 1) && (cityViewElement.getCitySpellEffectID () != null),
-						"cityView\\" + landOrSky + "\\" + planeName + spell + tileType + "-mini");
+						"cityView\\" + landOrSky + "\\" + planeName + spell + tileType + "-mini"));
+					
+					cityViewElement.setCityViewAlternativeImageNumber (null);
+				}
 			}
 			else if ("R".equals (cityViewElement.getCityViewElementSetID ()))
 			{
 				final String planeName = (cityViewElement.getPlaneNumber () == 0) ? "arcanus" : "myrror";
 				
-				convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (), cityViewElement.getCityViewAnimation (),
+				cityViewElement.setCityViewImageFile (convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (),
+					cityViewElement.getCityViewAnimation (),
 					(cityViewElement.getTileTypeID ().equals ("TT08")) || (cityViewElement.getTileTypeID ().equals ("TT11")) || (cityViewElement.getTileTypeID ().equals ("TT15")),
-					"cityView\\water\\" + planeName + "-" + tileTypeNames.get (cityViewElement.getTileTypeID ()));
+					"cityView\\water\\" + planeName + "-" + tileTypeNames.get (cityViewElement.getTileTypeID ())));
+				
+				cityViewElement.setCityViewImageNumber (null);
 				
 				if ((cityViewElement.getCityViewAlternativeImageFile () != null) && (cityViewElement.getCityViewAlternativeImageNumber () != null))
-					convertImage (cityViewElement.getCityViewAlternativeImageFile (), cityViewElement.getCityViewAlternativeImageNumber (),
-						false, "cityView\\water\\" + planeName + "-" + tileTypeNames.get (cityViewElement.getTileTypeID ()) + "-mini");
+				{
+					cityViewElement.setCityViewAlternativeImageFile (convertImage (cityViewElement.getCityViewAlternativeImageFile (),
+						cityViewElement.getCityViewAlternativeImageNumber (),
+						false, "cityView\\water\\" + planeName + "-" + tileTypeNames.get (cityViewElement.getTileTypeID ()) + "-mini"));
+					
+					cityViewElement.setCityViewAlternativeImageNumber (null);
+				}
 			}
 			else if ("W".equals (cityViewElement.getCityViewElementSetID ()))
 			{
 				final String spell = (cityViewElement.getCitySpellEffectID () == null) ? "" : cityViewElement.getCitySpellEffectID ();
 				final String building = (cityViewElement.getBuildingID () == null) ? "" : cityViewElement.getBuildingID ();
 
-				convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (), cityViewElement.getCityViewAnimation (),
-					false, "cityView\\walls\\" + spell + building);
+				cityViewElement.setCityViewImageFile (convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (),
+					cityViewElement.getCityViewAnimation (), false, "cityView\\walls\\" + spell + building));
+				
+				cityViewElement.setCityViewImageNumber (null);
 				
 				if ((cityViewElement.getCityViewAlternativeImageFile () != null) && (cityViewElement.getCityViewAlternativeImageNumber () != null))
-					convertImage (cityViewElement.getCityViewAlternativeImageFile (), cityViewElement.getCityViewAlternativeImageNumber (),
-						false, "cityView\\walls\\" + spell + building + "-mini");
+				{
+					cityViewElement.setCityViewAlternativeImageFile (convertImage (cityViewElement.getCityViewAlternativeImageFile (),
+						cityViewElement.getCityViewAlternativeImageNumber (),
+						false, "cityView\\walls\\" + spell + building + "-mini"));
+					
+					cityViewElement.setCityViewAlternativeImageNumber (null);
+				}
 			}
 		
 			// Otherwise it isn't part of a set, start looking at other elements to categorise it
 			else if (cityViewElement.getBuildingID () != null)
 			{
-				convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (), cityViewElement.getCityViewAnimation (),
-					false, "cityView\\buildings\\" + cityViewElement.getBuildingID ());
+				cityViewElement.setCityViewImageFile (convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (),
+					cityViewElement.getCityViewAnimation (), false, "cityView\\buildings\\" + cityViewElement.getBuildingID ()));
+				
+				cityViewElement.setCityViewImageNumber (null);
 
 				if ((cityViewElement.getCityViewAlternativeImageFile () != null) && (cityViewElement.getCityViewAlternativeImageNumber () != null))
-					convertImage (cityViewElement.getCityViewAlternativeImageFile (), cityViewElement.getCityViewAlternativeImageNumber (),
-						false, "cityView\\buildings\\"  + cityViewElement.getBuildingID () + "-mini");
+				{
+					cityViewElement.setCityViewAlternativeImageFile (convertImage (cityViewElement.getCityViewAlternativeImageFile (),
+						cityViewElement.getCityViewAlternativeImageNumber (), false, "cityView\\buildings\\"  + cityViewElement.getBuildingID () + "-mini"));
+					
+					cityViewElement.setCityViewAlternativeImageNumber (null);
+				}
 			}
 
 			else if (cityViewElement.getCitySpellEffectID () != null)
 			{
-				convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (), cityViewElement.getCityViewAnimation (),
-					false, "cityView\\spellEffects\\" + cityViewElement.getCitySpellEffectID ());
+				cityViewElement.setCityViewImageFile (convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (),
+					cityViewElement.getCityViewAnimation (),
+					false, "cityView\\spellEffects\\" + cityViewElement.getCitySpellEffectID ()));
+				
+				cityViewElement.setCityViewImageNumber (null);
 
 				if ((cityViewElement.getCityViewAlternativeImageFile () != null) && (cityViewElement.getCityViewAlternativeImageNumber () != null))
-					convertImage (cityViewElement.getCityViewAlternativeImageFile (), cityViewElement.getCityViewAlternativeImageNumber (),
-						false, "cityView\\spellEffects\\"  + cityViewElement.getCitySpellEffectID () + "-mini");
+				{
+					cityViewElement.setCityViewAlternativeImageFile (convertImage (cityViewElement.getCityViewAlternativeImageFile (),
+						cityViewElement.getCityViewAlternativeImageNumber (),
+						false, "cityView\\spellEffects\\"  + cityViewElement.getCitySpellEffectID () + "-mini"));
+					
+					cityViewElement.setCityViewAlternativeImageNumber (null);
+				}
 			}
 		
 			else
 			{
 				// There's only 1 of these
-				convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (), cityViewElement.getCityViewAnimation (),
-					false, "cityView\\roadWithinCity");
+				cityViewElement.setCityViewImageFile (convertImageOrAnimation (cityViewElement.getCityViewImageFile (), cityViewElement.getCityViewImageNumber (),
+					cityViewElement.getCityViewAnimation (), false, "cityView\\roadWithinCity"));
+				
+				cityViewElement.setCityViewImageNumber (null);
 
 				if ((cityViewElement.getCityViewAlternativeImageFile () != null) && (cityViewElement.getCityViewAlternativeImageNumber () != null))
-					convertImage (cityViewElement.getCityViewAlternativeImageFile (), cityViewElement.getCityViewAlternativeImageNumber (),
-						false, "cityView\\roadWithinCity-mini");
+				{
+					cityViewElement.setCityViewAlternativeImageFile (convertImage (cityViewElement.getCityViewAlternativeImageFile (),
+						cityViewElement.getCityViewAlternativeImageNumber (), false, "cityView\\roadWithinCity-mini"));
+					
+					cityViewElement.setCityViewAlternativeImageNumber (null);
+				}
 			}
+		
+		// Node aura anim is used by the code, not referenced in the XML
+		convertImageOrAnimation (null, null, "NODE_AURA", false, "overland\\tileTypes\\nodeAura");
+		
+		// Copy back out of temporary field in animations
+		for (final Animation anim : xml.getAnimation ())
+			for (final AnimationFrame frame : anim.getFrame ())
+			{
+				if (frame.getXxxResourceNameXxx () == null)
+					System.out.println ("Warning: Animation \"" + anim.getAnimationID () + "\" has a frame with no new resource name");
+				
+				frame.setFrameImageFile (frame.getXxxResourceNameXxx ());
+				frame.setFrameImageNumber (null);
+				frame.setXxxResourceNameXxx (null);
+			}
+		
+		// Save XML containing all the new resource names
+		System.out.println ("Writing graphics xml with new resource names...");
+		graphicsContext.createMarshaller ().marshal (xml, new File (CLIENT_PROJECT_ROOT +
+			"\\src\\external\\resources\\momime.client.graphics.database\\0.9.5.Master of Magic Graphics.xml"));
 		
 		System.out.println ("All done!");
 	}

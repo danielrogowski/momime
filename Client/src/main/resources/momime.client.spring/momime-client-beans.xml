@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
+	
+	<import resource="../momime.common.spring/momime-common-beans.xml"/>
+	
+	<!-- General XSD objects (may move these into common project at some stage)-->
+	
+	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
+	
+	<bean id="serverXsdResourceResolver" class="momime.server.database.ServerXsdResourceResolver">
+		<constructor-arg ref="domImplementationRegistry" />
+	</bean>
+	
+	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
+		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
+		<property name="resourceResolver" ref="serverXsdResourceResolver" />
+	</bean>	
+	
+	<!-- Client config XML -->
+	
+	<bean id="clientConfigSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg value="/momime.client.config/MoMIMEClientConfig.xsd"/>
+	</bean>
+	
+	<bean id="clientConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>momime.client.config.v0_9_5.MomImeClientConfig</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+	
+	<bean id="clientConfigUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="clientConfigJaxbContext" factory-method="createUnmarshaller">
+		<property name="schema" ref="clientConfigSchema" />
+	</bean>
+	
+	<bean id="clientConfig" class="momime.client.config.v0_9_5.MomImeClientConfig" factory-bean="clientConfigUnmarshaller" factory-method="unmarshal">
+		<constructor-arg value="MoMIMEClientConfig.xml" />
+	</bean>
+	
+	<!-- Graphics XML -->
+	
+	<bean id="graphicsDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg value="/momime.client.graphics/MoMIMEGraphicsDatabase_NoServerXsdLink.xsd" />		<!-- Otherwise XSD validation expects to find serverDatabase element in graphics XML -->
+	</bean>
+	
+	<bean id="graphicsDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>momime.client.graphics.database.v0_9_5.GraphicsDatabase</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+	
+	<bean id="graphicsDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="graphicsDatabaseJaxbContext" factory-method="createUnmarshaller">
+		<property name="schema" ref="graphicsDatabaseSchema" />
+	</bean>
+
+	<bean id="graphicsDatabase" class="momime.client.graphics.database.v0_9_5.GraphicsDatabase" factory-bean="graphicsDatabaseUnmarshaller" factory-method="unmarshal">
+		<constructor-arg value="#{clientConfig.graphicsXmlFilename}" />
+	</bean>
+	
+	<!-- Language XML -->
+
+	<bean id="languageDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg value="/momime.client.language/MoMIMELanguageDatabase_NoServerXsdLink.xsd" />		<!-- Otherwise XSD validation expects to find serverDatabase element in language XML -->
+	</bean>
+	
+	<bean id="languageDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>momime.client.language.database.v0_9_4.LanguageDatabase</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+	
+	<bean id="languageDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="languageDatabaseJaxbContext" factory-method="createUnmarshaller">
+		<property name="schema" ref="languageDatabaseSchema" />
+	</bean>
+
+	<bean id="languageDatabase" class="momime.client.language.database.v0_9_4.LanguageDatabase" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal">
+		<constructor-arg value="#{clientConfig.pathToLanguageXmlFiles + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
+	</bean>
+	
+	<!-- Create extended versions of server to clientmessages which include message implementations -->
+
+	<bean id="momClientServerToClientServerFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.client.messages.process.ServerToClientMessagesFactory" />
+	</bean>			
+
+	<bean id="momClientServerToClientObjectFactory" class="momime.client.messages.process.ServerToClientMessagesObjectFactory">
+		<property name="factory" ref="momClientServerToClientServerFactory" />
+	</bean>
+	
+	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
+	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype" />
+	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype" />
+	<bean id="newGameDatabaseMessage" class="momime.client.messages.process.NewGameDatabaseMessageImpl" scope="prototype" />
+	<bean id="updateNodeLairTowerUnitIDMessage" class="momime.client.messages.process.UpdateNodeLairTowerUnitIDMessageImpl" scope="prototype" />
+	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype" />
+	<bean id="pendingMovementMessage" class="momime.client.messages.process.PendingMovementMessageImpl" scope="prototype" />
+	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
+	<bean id="fullSpellListMessage" class="momime.client.messages.process.FullSpellListMessageImpl" scope="prototype" />
+	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype" />
+	<bean id="startGameMessage" class="momime.client.messages.process.StartGameMessageImpl" scope="prototype" />
+	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype" />
+	<bean id="startGameProgressMessage" class="momime.client.messages.process.StartGameProgressMessageImpl" scope="prototype" />
+	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
+	<bean id="updateOverlandMovementRemainingMessage" class="momime.client.messages.process.UpdateOverlandMovementRemainingMessageImpl" scope="prototype" />
+	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
+	<bean id="updateGlobalEconomyMessage" class="momime.client.messages.process.UpdateGlobalEconomyMessageImpl" scope="prototype" />
+	<bean id="startSimultaneousTurnMessage" class="momime.client.messages.process.StartSimultaneousTurnMessageImpl" scope="prototype" />
+	<bean id="addNewTurnMessagesMessage" class="momime.client.messages.process.AddNewTurnMessagesMessageImpl" scope="prototype" />
+	<bean id="taxRateChangedMessage" class="momime.client.messages.process.TaxRateChangedMessageImpl" scope="prototype" />
+	<bean id="scheduledCombatWalkInWithoutAFightMessage" class="momime.client.messages.process.ScheduledCombatWalkInWithoutAFightMessageImpl" scope="prototype" />
+	<bean id="moveUnitStackOverlandMessage" class="momime.client.messages.process.MoveUnitStackOverlandMessageImpl" scope="prototype" />
+	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype" />
+	<bean id="foundLairNodeTowerMessage" class="momime.client.messages.process.FoundLairNodeTowerMessageImpl" scope="prototype" />
+	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype" />
+	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype" />
+	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype" />
+	<bean id="chooseInitialSpellsNowMessage" class="momime.client.messages.process.ChooseInitialSpellsNowMessageImpl" scope="prototype" />
+	<bean id="chosenStandardPhotoMessage" class="momime.client.messages.process.ChosenStandardPhotoMessageImpl" scope="prototype" />
+	<bean id="replacePicksMessage" class="momime.client.messages.process.ReplacePicksMessageImpl" scope="prototype" />
+	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
+	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype" />
+	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype" />
+	<bean id="chosenCustomPhotoMessage" class="momime.client.messages.process.ChosenCustomPhotoMessageImpl" scope="prototype" />
+	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
+	<bean id="chooseYourRaceNowMessage" class="momime.client.messages.process.ChooseYourRaceNowMessageImpl" scope="prototype" />
+	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
+	<bean id="yourRaceIsOkMessage" class="momime.client.messages.process.YourRaceIsOkMessageImpl" scope="prototype" />
+	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
+	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype" />
+	<bean id="updateTerrainMessage" class="momime.client.messages.process.UpdateTerrainMessageImpl" scope="prototype" />
+	<bean id="overlandCastQueuedMessage" class="momime.client.messages.process.OverlandCastQueuedMessageImpl" scope="prototype" />
+	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype" />
+	<bean id="addUnitMessage" class="momime.client.messages.process.AddUnitMessageImpl" scope="prototype" />
+	<bean id="addBuildingMessage" class="momime.client.messages.process.AddBuildingMessageImpl" scope="prototype" />
+	<bean id="destroyBuildingMessage" class="momime.client.messages.process.DestroyBuildingMessageImpl" scope="prototype" />
+	<bean id="endOfContinuedMovementMessage" class="momime.client.messages.process.EndOfContinuedMovementMessageImpl" scope="prototype" />
+	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype" />
+	<bean id="spellResearchChangedMessage" class="momime.client.messages.process.SpellResearchChangedMessageImpl" scope="prototype" />
+	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype" />
+	<bean id="removeQueuedSpellMessage" class="momime.client.messages.process.RemoveQueuedSpellMessageImpl" scope="prototype" />
+	<bean id="updateUnitNameMessage" class="momime.client.messages.process.UpdateUnitNameMessageImpl" scope="prototype" />
+	<bean id="updateProductionSoFarMessage" class="momime.client.messages.process.UpdateProductionSoFarMessageImpl" scope="prototype" />
+	<bean id="moveUnitInCombatMessage" class="momime.client.messages.process.MoveUnitInCombatMessageImpl" scope="prototype" />
+	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype" />
+	<bean id="chosenWizardMessage" class="momime.client.messages.process.ChosenWizardMessageImpl" scope="prototype" />
+	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype" />
+	<bean id="updateManaSpentOnCastingCurrentSpellMessage" class="momime.client.messages.process.UpdateManaSpentOnCastingCurrentSpellMessageImpl" scope="prototype" />
+	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
+	<bean id="setCurrentPlayerMessage" class="momime.client.messages.process.SetCurrentPlayerMessageImpl" scope="prototype" />
+	<bean id="overlandMovementTypesMessage" class="momime.client.messages.process.OverlandMovementTypesMessageImpl" scope="prototype" />
+	<bean id="cancelCombatAreaEffectMessage" class="momime.client.messages.process.CancelCombatAreaEffectMessageImpl" scope="prototype" />
+	<bean id="askForCaptureCityDecisionMessage" class="momime.client.messages.process.AskForCaptureCityDecisionMessageImpl" scope="prototype" />
+	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
+	
+	<!-- Singleton beans for client -->
+	
+	<!-- Utils -->
+
+	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
+	
+</beans>

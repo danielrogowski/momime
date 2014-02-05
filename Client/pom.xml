@@ -166,6 +166,17 @@
 							</catalogs>
 						</configuration>
 					</execution>
+					<execution>
+						<id>config-xjc-generate</id>
+						<phase>generate-sources</phase>
+						<goals><goal>generate</goal></goals>
+						<configuration>
+							<schemaDirectory>src/main/resources/momime.client.config</schemaDirectory>
+							<generateDirectory>target/generated-sources/xjc-momime-clientcfg</generateDirectory>
+							<episodeFile>target/generated-sources/xjc-momime-clientcfg/META-INF/momime-clientcfg.episode</episodeFile>
+							<extension>true</extension>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 
@@ -239,7 +250,7 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-common</artifactId>
-			<version>0.9.4</version>
+			<version>0.9.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config:momImeClientConfig xmlns:config="http://momime/client/config/v0_9_5">
+	<graphicsXmlFilename>C:\Your Eclipse Workspace\MoMIMEClient\src\external\resources\momime.client.graphics.database\Default.Master of Magic Graphics.xml</graphicsXmlFilename>
+	<pathToLanguageXmlFiles>C:\Your Eclipse Workspace\MoMIMEClient\src\external\resources\momime.client.language.database\</pathToLanguageXmlFiles>
+	<chosenLanguage>English</chosenLanguage>
+</config:momImeClientConfig>

@@ -13,6 +13,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.MomCommonConstants;
 import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.database.ServerDatabaseConverters;
@@ -38,12 +39,6 @@ public final class MomServer extends MultiplayerSessionServer
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomServer.class.getName ());
 	
-	/** Minimum major version of JVM required to run MoM IME */
-	private final static int JAVA_REQUIRED_MAJOR_VERSION = 1;
-
-	/** Minimum minor version of JVM required to run MoM IME */
-	private final static int JAVA_REQUIRED_MINOR_VERSION = 6;
-
 	/** Message to send new game database to clients as they connect */
 	private NewGameDatabaseMessage newGameDatabaseMessage;
 
@@ -277,8 +272,7 @@ public final class MomServer extends MultiplayerSessionServer
 	}
 	
 	/**
-	 * @param args Command line arguments, following are allowed but all optional:
-	 *		-debug, to turn on writing the full debug log out to a text file; without this, only messages of level INFO and higher are viewable on screen
+	 * @param args Command line arguments, ignored
 	 */
 	@SuppressWarnings ("resource")
 	public final static void main (final String [] args)
@@ -290,8 +284,11 @@ public final class MomServer extends MultiplayerSessionServer
 			final int majorVersion = Integer.parseInt (javaVersion [0]);
 			final int minorVersion = Integer.parseInt (javaVersion [1]);
 
-			if ((majorVersion < JAVA_REQUIRED_MAJOR_VERSION) || ((majorVersion == JAVA_REQUIRED_MAJOR_VERSION) && (minorVersion < JAVA_REQUIRED_MINOR_VERSION)))
-				throw new InvalidParameterException ("MoM IME requires a Java Virtual Machine version " + JAVA_REQUIRED_MAJOR_VERSION + "." + JAVA_REQUIRED_MINOR_VERSION +
+			if ((majorVersion < MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION) ||
+				((majorVersion == MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION) && (minorVersion < MomCommonConstants.JAVA_REQUIRED_MINOR_VERSION)))
+				
+				throw new InvalidParameterException ("MoM IME requires a Java Virtual Machine version " +
+					MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION + "." + MomCommonConstants.JAVA_REQUIRED_MINOR_VERSION +
 					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
 			
 			// Initialize logging first, in case debug logging for spring itself is enabled

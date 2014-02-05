@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:momimecltconfig="http://momime/client/config/v0_9_5" targetNamespace="http://momime/client/config/v0_9_5">
+
+	<xsd:element name="momImeClientConfig">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="1" maxOccurs="1" name="graphicsXmlFilename" type="momimecltconfig:filename" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="pathToLanguageXmlFiles" type="momimecltconfig:path" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="chosenLanguage" type="xsd:normalizedString" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:simpleType name="path">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="filename">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+</xsd:schema>

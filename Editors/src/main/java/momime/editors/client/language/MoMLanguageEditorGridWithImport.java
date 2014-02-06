@@ -36,7 +36,7 @@ public abstract class MoMLanguageEditorGridWithImport extends XmlEditorGridWithI
 		final Element aParentRecord, final Element [] aParentEntityElements, final ComplexTypeReference [] aParentTypeDefinitions, final XmlEditorMain aMdiEditor)
 		throws XmlEditorException, IOException
 	{
-		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor);
+		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor, null);
 
 		// Import action
 		setImportAction (new AbstractAction ()

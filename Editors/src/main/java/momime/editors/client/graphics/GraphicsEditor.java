@@ -12,7 +12,6 @@ import org.jdom.input.SAXBuilder;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.xmleditor.editor.AskForXsdAndXmlFileLocations;
-import com.ndg.xmleditor.editor.XmlEditorDispatcher;
 
 /**
  * Kicks off the XML editor by opening up the frame asking for the path to the XSD and XML files
@@ -48,7 +47,7 @@ public final class GraphicsEditor
 
 			// Show form asking for XSD and XML locations
 			final AskForXsdAndXmlFileLocations ask = new AskForXsdAndXmlFileLocations
-				(new SAXBuilder (), schemaFactory, new XmlEditorDispatcher (), resourceResolver);
+				(new SAXBuilder (), schemaFactory, new GraphicsEditorDispatcher (), resourceResolver);
 
 			ask.setLoadXsdFromClasspath (true);
 			ask.setXsdFilename (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION);

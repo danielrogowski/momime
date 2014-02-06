@@ -43,7 +43,7 @@ public class RaceCannotBuildGrid extends XmlEditorGrid
 		final Element aParentRecord, final Element [] aParentEntityElements, final ComplexTypeReference [] aParentTypeDefinitions, final XmlEditorMain aMdiEditor)
 		throws XmlEditorException, IOException
 	{
-		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor);
+		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor, null);
 
 		// Create the table model
 		final RaceCannotBuildTableModel tableModel = new RaceCannotBuildTableModel (buildListOfBuildingsThatRaceCannotBuild ());

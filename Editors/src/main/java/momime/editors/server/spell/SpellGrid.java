@@ -30,19 +30,20 @@ public class SpellGrid extends XmlEditorGrid
 	public SpellGrid (final Element anEntityElement, final ComplexTypeReference aTypeDefinition, final Element aParentRecord,
 		final Element [] aParentEntityElements, final ComplexTypeReference [] aParentTypeDefinitions, final XmlEditorMain aMdiEditor) throws XmlEditorException, IOException
 	{
-		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor);
+		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor, null);
 	}
 
 	/**
 	 * Adds a special column listing out all the units that a spell can summon
+	 * @param param Misc parameter passed down from constructor
 	 * @return The list of columns to display in the grid
 	 * @throws XmlEditorException If there a syntax problem parsing the XSD
 	 */
 	@Override
-	protected List<XmlGridColumn> buildColumnsList ()
+	protected List<XmlGridColumn> buildColumnsList (final Object param)
 		throws XmlEditorException
 	{
-		final List<XmlGridColumn> columns = super.buildColumnsList ();
+		final List<XmlGridColumn> columns = super.buildColumnsList (param);
 
 		columns.add (new SpellSummonedUnitsColumn (getTypeDefinition ().getComplexTypeDefinition (), getMdiEditor ().getXmlDocuments ()));
 

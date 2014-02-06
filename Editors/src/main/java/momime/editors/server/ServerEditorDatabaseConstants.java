@@ -5,6 +5,14 @@ package momime.editors.server;
  */
 public final class ServerEditorDatabaseConstants
 {
+	// productionType - productionTypeImage
+	
+	/** productionTypeImage child entity */
+	public static final String TAG_CHILD_ENTITY_PRODUCTION_TYPE_IMAGE = "productionTypeImage";
+
+	/** Image for production type value */
+	public static final String TAG_VALUE_PRODUCTION_IMAGE_FILE = "productionImageFile";
+	
 	// tileType
 
 	/**
@@ -18,7 +26,21 @@ public final class ServerEditorDatabaseConstants
 
 	/** Description of a terrain tile type */
 	public static final String TAG_VALUE_TILE_TYPE_DESCRIPTION = "tileTypeDescription";
+	
+	/** Image when scouting monsters in this tile type */
+	public static final String TAG_VALUE_TILE_TYPE_MONSTER_FOUND_IMAGE = "monsterFoundImageFile";
+	
+	// mapFeature
+	
+	/** Defines extra features added to the map, either mineral deposits, or monster lairs */
+	public static final String TAG_ENTITY_MAP_FEATURE = "mapFeature";
 
+	/** Image when scouting monsters in this map feature */
+	public static final String TAG_VALUE_MAP_FEATURE_MONSTER_FOUND_IMAGE = "monsterFoundImageFile";
+
+	/** Image to display on the overland map for this feature */
+	public static final String TAG_VALUE_MAP_FEATURE_OVERLAND_IMAGE = "overlandMapImageFile";
+	
 	// pick
 
 	/** pick entity */
@@ -29,6 +51,14 @@ public final class ServerEditorDatabaseConstants
 
 	/** Description of a spell book or retort that can be chosen at the start of the game */
 	public static final String TAG_VALUE_PICK_DESCRIPTION = "pickDescription";
+	
+	// pick - bookImage
+	
+	/** Varying possible images for these types of spell books */
+	public static final String TAG_CHILD_ENTITY_BOOK_IMAGE = "bookImage";
+	
+	/** Each possible image of a type of spell book */
+	public static final String TAG_VALUE_BOOK_IMAGE_FILE = "bookImageFile";
 
 	// pickType - pickTypeCount
 
@@ -51,7 +81,15 @@ public final class ServerEditorDatabaseConstants
 
 	/** The number of spells of a particular rank we get for free at the start of the game for a given number of spell books */
 	public static final String TAG_VALUE_SPELLS_FREE_AT_START = "spellsFreeAtStart";
+	
+	// wizard
+	
+	/** Wizard */
+	public static final String TAG_ENTITY_WIZARD = "wizard";
 
+	/** Image for wizard's portrait */
+	public static final String TAG_VALUE_WIZARD_PORTRAIT_FILE = "portraitFile";
+	
 	// wizard - wizardPickCount
 
 	/** wizardPickCount child entity */
@@ -75,6 +113,14 @@ public final class ServerEditorDatabaseConstants
 
 	/** The building ID of this building that this race cannot build */
 	public static final String TAG_ATTRIBUTE_RACE_CANNOT_BUILD_BUILDING_ID = "cannotBuildBuildingID";
+	
+	// race - racePopulationTask
+	
+	/** How much each farmer, worker, etc. produces */
+	public static final String TAG_CHILD_ENTITY_RACE_POPULATION_TASK = "racePopulationTask";
+	
+	/** Image of race civilians performing each task */
+	public static final String TAG_VALUE_CIVILIAN_IMAGE_FILE = "civilianImageFile";
 
 	// movementRateRule
 
@@ -117,6 +163,14 @@ public final class ServerEditorDatabaseConstants
 
 	/** The building ID of the required building */
 	public static final String TAG_ATTRIBUTE_BUILDING_PREREQUISITE_ID = "prerequisiteID";
+	
+	// unitAttrbiute
+	
+	/** Defines unit attribute such as defence and hit points */
+	public static final String TAG_ENTITY_UNIT_ATTRIBUTE = "unitAttribute";
+	
+	/** Icon for each unit attribute */
+	public static final String TAG_VALUE_UNIT_ATTRIBUTE_IMAGE_FILE = "attributeImageFile";
 
 	// unitSkill
 
@@ -132,6 +186,15 @@ public final class ServerEditorDatabaseConstants
 	/** Description of each unit skill */
 	public static final String TAG_VALUE_UNIT_SKILL_DESCRIPTION = "unitSkillDescription";
 
+	/** Description of each unit skill */
+	public static final String TAG_VALUE_UNIT_SKILL_IMAGE = "unitSkillImageFile";
+
+	/** Description of each unit skill */
+	public static final String TAG_VALUE_UNIT_SKILL_MOVE_IMAGE = "movementIconImageFile";
+
+	/** Description of each unit skill */
+	public static final String TAG_VALUE_UNIT_SKILL_SAMPLE_TILE_IMAGE = "sampleTileImageFile";
+
 	// unit
 
 	/** unit entity */
@@ -143,6 +206,15 @@ public final class ServerEditorDatabaseConstants
 	/** Name for each unit */
 	public static final String TAG_VALUE_UNIT_NAME = "unitName";
 
+	/** Name for each unit */
+	public static final String TAG_VALUE_UNIT_SUMMON_IMAGE = "unitSummonImageFile";
+
+	/** Name for each unit */
+	public static final String TAG_VALUE_UNIT_OVERLAND_IMAGE = "unitOverlandImageFile";
+
+	/** Name for each unit */
+	public static final String TAG_VALUE_UNIT_HERO_IMAGE = "heroPortraitImageFile";
+	
 	// unit - unitHasSkill
 
 	/** Defines which skills a particular unit has, e.g. First Strike, Flame Breath, Flying, Scouting */
@@ -150,7 +222,31 @@ public final class ServerEditorDatabaseConstants
 
 	/** The unit skill ID of this skill that the unit has */
 	public static final String TAG_ATTRIBUTE_UNIT_HAS_SKILL_ID = "unitSkillID";
+	
+	// unit - unitCombatAction - unitCombatImage
+	
+	/** Images of units walking around combat */
+	public static final String TAG_GRANDCHILD_ENTITY_UNIT_COMBAT_IMAGE = "unitCombatImage";
+	
+	/** Images of units walking around combat */
+	public static final String TAG_VALUE_UNIT_COMBAT_IMAGE_FILE = "unitCombatImageFile";	
 
+	// rangedAttackType
+	
+	/** Defines different types of ranged attacks, e.g. rocks, arrows, blue blasts, purple dots */
+	public static final String TAG_ENTITY_RANGED_ATTACK_TYPE = "rangedAttackType";
+	
+	/** Icon used for this ranged attack type on the unit info display */
+	public static final String TAG_VALUE_UNIT_DISPLAY_RAT_IMAGE = "unitDisplayRangedImageFile";
+
+	// rangedAttackType - rangedAttackTypeCombatImage
+	
+	/** Images of ranged attacks flying across combat and striking their target */
+	public static final String TAG_CHILD_ENTITY_RANGED_ATTACK_TYPE_COMBAT_IMAGE = "rangedAttackTypeCombatImage";
+
+	/** Images of ranged attacks flying across combat and striking their target */
+	public static final String TAG_VALUE_RAT_COMBAT_IMAGE_FILE = "rangedAttackTypeCombatImageFile";
+	
 	// hero
 
 	/** Hero names */
@@ -189,6 +285,9 @@ public final class ServerEditorDatabaseConstants
 
 	/** Full help text for this spell */
 	public static final String TAG_VALUE_SPELL_HELP_TEXT = "spellHelpText";
+	
+	/** Image for casting overland enchantments */
+	public static final String TAG_VALUE_OVERLAND_ENCHANTMENT_IMAGE_FILE = "overlandEnchantmentImageFile";
 
 	// spell - summonedUnit
 
@@ -197,7 +296,61 @@ public final class ServerEditorDatabaseConstants
 
 	/** The unit ID of the unit which this spell may summon */
 	public static final String TAG_ATTRIBUTE_SUMMONED_UNIT_ID = "summonedUnitID";
+	
+	// combatAreaEffect
+	
+	/** Combat area effects */
+	public static final String TAG_ENTITY_COMBAT_AREA_EFFECT = "combatAreaEffect";
 
+	/** The icon that appears in the combat status area for this CAE */
+	public static final String TAG_VALUE_COMBAT_AREA_EFFECT_IMAGE_FILE = "combatAreaEffectImageFile";
+
+	// tileSet - smoothedTileType - smoothedTile
+	
+	/** Overland map scenery tiles */
+	public static final String TAG_GRANDCHILD_ENTITY_UNIT_SMOOTHED_TILE = "smoothedTile";
+	
+	/** Overland map scenery tiles */
+	public static final String TAG_VALUE_SMOOTHED_TILE_FILE = "tileFile";
+	
+	// cityImage
+
+	/** Combat area effects */
+	public static final String TAG_ENTITY_CITY_IMAGE = "cityImage";
+
+	/** The icon that appears in the combat status area for this CAE */
+	public static final String TAG_VALUE_CITY_IMAGE_FILE = "cityImageFile";
+	
+	// combatTileBorderImage
+
+	/** Combat tile border images */
+	public static final String TAG_ENTITY_COMBAT_TILE_BORDER_IMAGE = "combatTileBorderImage";
+
+	/** Standard appearance */
+	public static final String TAG_VALUE_COMBAT_TILE_BORDER_STANDARD_FILE = "standardFile";
+
+	/** Wrecked appearance */
+	public static final String TAG_VALUE_COMBAT_TILE_BORDER_WRECKED_FILE = "wreckedFile";
+	
+	// cityViewElement
+
+	/** Images that make up the scenery oif the city view */
+	public static final String TAG_ENTITY_CITY_VIEW_ELEMENT = "cityViewElement";
+
+	/** Standard appearance */
+	public static final String TAG_VALUE_CITY_VIEW_IMAGE_FILE = "cityViewImageFile";
+
+	/** Alternative appearance (usually a mini icon) */
+	public static final String TAG_VALUE_CITY_VIEW_ALT_IMAGE_FILE = "cityViewAlternativeImageFile";
+
+	// animation - frame
+
+	/** Animations */
+	public static final String TAG_CHILD_ENTITY_ANIMATION_FRAME = "frame";
+
+	/** One frame of an animation */
+	public static final String TAG_VALUE_FRAME_IMAGE_FILE = "frameImageFile";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

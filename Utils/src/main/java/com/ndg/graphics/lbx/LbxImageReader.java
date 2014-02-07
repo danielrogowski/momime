@@ -722,7 +722,30 @@ public final class LbxImageReader extends ImageReader
 						palette [firstPaletteColourIndex + colourNumber] = 0x80000000;
 				}
 			}
+			
+			// Save or load palette to disk (this is a hack for converting MAINSCRN.LBX correctly)
+/*			try (final FileWriter writer = new FileWriter ("F:\\LbxPalette.txt"))
+			{
+				for (int n = 0; n < 256; n++)
+					writer.write (palette [n] + "\r\n");
+				
+				writer.flush ();
+				writer.close ();
+			} */
 
+/*			try (final FileReader reader = new FileReader ("F:\\LbxPalette.txt"))
+			{
+				try (final BufferedReader bufRead = new BufferedReader (reader))
+				{
+					for (int n = 0; n < 256; n++)
+						palette [n] = Integer.parseInt (bufRead.readLine ());
+				
+					bufRead.close ();
+				}
+				
+				reader.close ();
+			} */
+			
 			// Values of at least this indicate run length values
 			RLE_val = firstPaletteColourIndex + paletteColourCount;
 		

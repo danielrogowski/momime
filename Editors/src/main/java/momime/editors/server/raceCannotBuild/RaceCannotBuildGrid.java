@@ -49,13 +49,13 @@ public class RaceCannotBuildGrid extends XmlEditorGrid
 		final RaceCannotBuildTableModel tableModel = new RaceCannotBuildTableModel (buildListOfBuildingsThatRaceCannotBuild ());
 
 		// Create the table itself
-		final JTable table = new JTable (tableModel);
-		table.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
-		table.getColumnModel ().getColumn (0).setPreferredWidth (150);
-		table.getColumnModel ().getColumn (1).setPreferredWidth (200);
+		final JTable cannotBuildTable = new JTable (tableModel);
+		cannotBuildTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
+		cannotBuildTable.getColumnModel ().getColumn (0).setPreferredWidth (150);
+		cannotBuildTable.getColumnModel ().getColumn (1).setPreferredWidth (200);
 
 		// Put the grid into a scrolling area
-		final JScrollPane scrollPane = new JScrollPane (table);
+		final JScrollPane scrollPane = new JScrollPane (cannotBuildTable);
 		scrollPane.setAlignmentY (Component.TOP_ALIGNMENT);
 
 		getParentsAndGridPanel ().add (Box.createRigidArea (new Dimension (0, SwingLayoutConstants.SPACE_BETWEEN_CONTROLS)));

@@ -57,6 +57,9 @@ public final class MomServer extends MultiplayerSessionServer
 	/** Factory interface for creating MomSessionThreads */
 	private MomSessionThreadFactory sessionThreadFactory;
 
+	/** Maven version number, injected from spring */
+	private String version;
+	
 	/**
 	 * @throws DatatypeConfigurationException If there is a problem creating the DatatypeFactory
 	 */
@@ -172,7 +175,7 @@ public final class MomServer extends MultiplayerSessionServer
 			throw new InvalidParameterException ("Requested UI class " + uiClassName + " but this does not implement the " + MomServerUI.class.getName () + " interface");
 
 		setUI ((MomServerUI) uiObject);
-		getUI ().createMainWindow ();
+		getUI ().createMainWindow (getVersion ());
 	}
 
 	/**
@@ -269,6 +272,22 @@ public final class MomServer extends MultiplayerSessionServer
 	public final void setSessionThreadFactory (final MomSessionThreadFactory factory)
 	{
 		sessionThreadFactory = factory;
+	}
+
+	/**
+	 * @return Maven version number, injected from spring
+	 */
+	public final String getVersion ()
+	{
+		return version;
+	}
+
+	/**
+	 * @param ver Maven version number, injected from spring
+	 */
+	public final void setVersion (final String ver)
+	{
+		version = ver;
 	}
 	
 	/**

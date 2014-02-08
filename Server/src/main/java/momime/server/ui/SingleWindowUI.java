@@ -29,7 +29,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.TurnSystem;
 import momime.server.MomServer;
@@ -60,9 +59,10 @@ public class SingleWindowUI implements MomServerUI
 	/**
 	 * Placeholder where the UI can perform any work startup work necessary, typically creating the main window
 	 * By this stage the debug logger has been created, so if the UI wants to hook into this and add its own handler, it can do that here too
+	 * @param version Maven version of server build
 	 */
 	@Override
-	public final void createMainWindow ()
+	public final void createMainWindow (final String version)
 	{
 		// Switch to Windows look and feel if available
 		try
@@ -77,7 +77,7 @@ public class SingleWindowUI implements MomServerUI
 		// Initialize the frame
 		final JFrame frame = new JFrame ();
 		frame.setSize (900, 500);
-		frame.setTitle ("Master of Magic - Implode's Multiplayer Edition - Server " + CommonDatabaseConstants.MOM_IME_VERSION);
+		frame.setTitle ("Master of Magic - Implode's Multiplayer Edition - Server v" + version);
 		frame.setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		// Closing the main window kills the server, so ask for confirmation before doing so

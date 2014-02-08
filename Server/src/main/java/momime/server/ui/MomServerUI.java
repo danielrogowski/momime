@@ -19,8 +19,9 @@ public interface MomServerUI
 	/**
 	 * Placeholder where the UI can perform any work startup work necessary, typically creating the main window
 	 * By this stage the debug logger has been created, so if the UI wants to hook into this and add its own handler, it can do that here too
+	 * @param version Maven version of server build
 	 */
-	public void createMainWindow ();
+	public void createMainWindow (final String version);
 
 	/**
 	 * @param session Newly created session

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 	
 	<import resource="../momime.common.spring/momime-common-beans.xml"/>
 	
@@ -254,6 +256,10 @@
 		<property name="combatScheduler" ref="combatScheduler" />
 	</bean>
 	
+	<!-- Version of the server -->
+	
+	<context:property-placeholder location="classpath:MoMIMEServerVersion.properties" />
+	
 	<!-- Singleton beans for server -->
 	
 	<bean id="multiplayerSessionServerClientToServerObjectFactory" class="com.ndg.multiplayer.server.messages.process.MultiplayerSessionServerClientToServerObjectFactory" />
@@ -288,6 +294,7 @@
 		<property name="newGameDatabaseMessage" ref="newGameDatabaseMessage" />
 		<property name="port" value="#{serverConfig.portNumber}" />
 		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
+		<property name="version" value="${momime.server.version}" />
 		<property name="uiClassName" value="#{serverConfig.uiClassName}" />
 		<property name="sessionThreadFactory" ref="sessionThreadFactory" />
 	</bean>

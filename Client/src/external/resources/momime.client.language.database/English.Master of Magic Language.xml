@@ -4433,7 +4433,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Exit to Windows</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="LanguageFileAuthor">
-			<languageEntryText>£</languageEntryText>
+			<languageEntryText></languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Connected">
 			<languageEntryText>Logged on to server SERVER_NAME as PLAYER_NAME</languageEntryText>

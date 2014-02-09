@@ -1,9 +1,15 @@
 package momime.client;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.logging.LogManager;
 
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+
+import momime.client.ui.MainMenuUI;
 import momime.common.MomCommonConstants;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -13,6 +19,64 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public final class MomClient
 {
+	/** Main menu with options to connect to a server and create or join games */
+	private MainMenuUI mainMenuUI;
+	
+	/**
+	 * Kick off method invoked by spring's init-method
+	 */
+	public final void start ()
+	{
+		// Use Nimbus look and feel
+		try
+		{
+		    for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels ())
+		    {
+		        if ("Nimbus".equals (info.getName ()))
+		        {
+		            UIManager.setLookAndFeel (info.getClassName ());
+		            break;
+		        }
+		    }
+		}
+		catch (final Exception e)
+		{
+		}
+		
+		// To be correct, should start up the first Swing frame in the Swing thread
+		SwingUtilities.invokeLater (new Runnable ()
+		{
+			@Override
+			public void run ()
+			{
+				try
+				{
+					getMainMenuUI ().setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace ();
+				}
+			}
+		});
+	}
+
+	/**
+	 * @return Main menu with options to connect to a server and create or join games
+	 */
+	public final MainMenuUI getMainMenuUI ()
+	{
+		return mainMenuUI;
+	}
+
+	/**
+	 * @param ui Main menu with options to connect to a server and create or join game
+	 */
+	public final void setMainMenuUI (final MainMenuUI ui)
+	{
+		mainMenuUI = ui;
+	}
+	
 	/**
 	 * @param args Command line arguments, ignored
 	 */

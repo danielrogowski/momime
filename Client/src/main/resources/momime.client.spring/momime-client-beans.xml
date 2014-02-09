@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 	
 	<import resource="../momime.common.spring/momime-common-beans.xml"/>
 	
@@ -75,12 +77,31 @@
    		</constructor-arg>
 	</bean>
 	
+	<bean id="languageDatabaseFactory" class="momime.client.language.database.LanguageDatabaseFactory" />		<!-- Creates LanguageDatabaseExImpl instead of LanguageDatabase -->
+	
 	<bean id="languageDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="languageDatabaseJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="languageDatabaseSchema" />
 	</bean>
 
-	<bean id="languageDatabase" class="momime.client.language.database.v0_9_4.LanguageDatabase" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal">
+	<bean id="configureLanguageDatabaseUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="languageDatabaseUnmarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>com.sun.xml.bind.ObjectFactory</value>
+				<array>
+					<ref bean="languageDatabaseFactory" />
+				</array>
+			</list>
+		</property>
+	</bean>	
+
+	<bean id="languageDatabase" class="momime.client.language.database.v0_9_4.LanguageDatabase" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal"  init-method="buildMaps">
 		<constructor-arg value="#{clientConfig.pathToLanguageXmlFiles + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
+	</bean>
+	
+	<bean id="languageHolder" class ="momime.client.language.database.LanguageDatabaseHolder">
+		<property name="language" ref="languageDatabase" />
 	</bean>
 	
 	<!-- Create extended versions of server to clientmessages which include message implementations -->
@@ -158,7 +179,44 @@
 	<bean id="askForCaptureCityDecisionMessage" class="momime.client.messages.process.AskForCaptureCityDecisionMessageImpl" scope="prototype" />
 	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
 	
+	<!-- Version of the client -->
+	
+	<context:property-placeholder location="classpath:MoMIMEClientVersion.properties" />
+	
 	<!-- Singleton beans for client -->
+	
+	<bean id="momClient" class="momime.client.MomClient" init-method="start">
+		<property name="mainMenuUI" ref="mainMenuUI" />
+	</bean>
+	
+	<!-- Fonts -->
+	
+	<bean id="fontFactory" class="momime.client.fonts.FontFactoryImpl" />
+	
+	<bean id="largeFontTTF" class="java.awt.Font" factory-bean="fontFactory" factory-method="loadFont">
+		<constructor-arg value="/momime.client.fonts/OldEnglishFive.ttf" />
+	</bean>
+
+	<bean id="largeFont" class="java.awt.Font" factory-bean="largeFontTTF" factory-method="deriveFont">
+		<constructor-arg value="14.0" />
+	</bean>
+
+	<bean id="mediumFontTTF" class="java.awt.Font" factory-bean="fontFactory" factory-method="loadFont">
+		<constructor-arg value="/momime.client.fonts/KingthingsPetrock.ttf" />
+	</bean>
+
+	<bean id="mediumFont" class="java.awt.Font" factory-bean="mediumFontTTF" factory-method="deriveFont">
+		<constructor-arg value="15.0" />
+	</bean>
+	
+	<!-- UI components -->
+
+	<bean id="mainMenuUI" class="momime.client.ui.MainMenuUI">
+		<property name="version" value="${momime.client.version}" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
 	
 	<!-- Utils -->
 

@@ -1,12 +1,13 @@
 package momime.client.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -24,7 +25,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -131,9 +131,12 @@ public final class MainMenuUI extends MomClientAbstractUI
 		
 		exitToWindowsAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = 5037769648975101972L;
+
 			@Override
 			public void actionPerformed (final ActionEvent e)
 			{
+				System.exit (0);
 			}
 		};
 		
@@ -175,62 +178,51 @@ public final class MainMenuUI extends MomClientAbstractUI
 		contentPane.setPreferredSize (new Dimension (640, 480));
 		
 		// Set up layout
-		contentPane.setLayout (new BorderLayout ());
+		contentPane.setLayout (new GridBagLayout ());
 		
 		// Static text
-		final JPanel top = new JPanel ();
-		top.setLayout (new BoxLayout (top, BoxLayout.Y_AXIS));
-		top.setOpaque (false);
-		contentPane.add (top, BorderLayout.NORTH);
-		
-		final Dimension labelsSpace = new Dimension (0, (480 * 41) / 200);
+		final Dimension labelsSpace = new Dimension (630, (480 * 41) / 200);
 		labelsGap = new Box.Filler (labelsSpace, labelsSpace, labelsSpace);
-		top.add (labelsGap);
+		contentPane.add (labelsGap, createConstraints (0, GridBagConstraints.CENTER));
 		
 		final JLabel titleLabel = new JLabel ("Implode's Multiplayer Edition - Client");
 		titleLabel.setForeground (new Color (0xD8DCEC));
 		titleLabel.setFont (getLargeFont ());
-		titleLabel.setAlignmentX (Component.RIGHT_ALIGNMENT);
-		top.add (titleLabel);
+		contentPane.add (titleLabel, createConstraints (1, GridBagConstraints.EAST));
 		
 		final JLabel versionLabel = new JLabel ("version " + getVersion ());
 		versionLabel.setForeground (new Color (0xD8DCEC));
 		versionLabel.setFont (getMediumFont ());
-		versionLabel.setAlignmentX (Component.RIGHT_ALIGNMENT);
-		top.add (versionLabel);
+		contentPane.add (versionLabel, createConstraints (2, GridBagConstraints.EAST));
 		
 		final JLabel originalLabel = new JLabel ("Original Master of Magic is Copyright");
 		originalLabel.setForeground (new Color (0xFCC864));
 		originalLabel.setFont (getMediumFont ());
-		originalLabel.setAlignmentX (Component.RIGHT_ALIGNMENT);
-		top.add (originalLabel);
+		contentPane.add (originalLabel, createConstraints (3, GridBagConstraints.EAST));
 		
 		final JLabel simtexLabel = new JLabel ("Simtex Software and Microprose");
 		simtexLabel.setForeground (new Color (0xFCC864));
 		simtexLabel.setFont (getMediumFont ());
-		simtexLabel.setAlignmentX (Component.RIGHT_ALIGNMENT);
-		top.add (simtexLabel);
+		contentPane.add (simtexLabel, createConstraints (4, GridBagConstraints.EAST));
 		
 		authorLabel = new JLabel ();
 		authorLabel.setForeground (new Color (0xD8DCEC));
 		authorLabel.setFont (getMediumFont ());
-		authorLabel.setAlignmentX (Component.RIGHT_ALIGNMENT);
-		top.add (authorLabel);
+		contentPane.add (authorLabel, createConstraints (5, GridBagConstraints.EAST));
+		
+		// Space in between
+		final GridBagConstraints constraints = createConstraints (6, GridBagConstraints.CENTER);
+		constraints.weighty = 1;
+		contentPane.add (Box.createGlue (), constraints);
 		
 		// Main menu options
-		final JPanel bottom = new JPanel ();
-		bottom.setLayout (new BoxLayout (bottom, BoxLayout.Y_AXIS));
-		bottom.setOpaque (false);
-		contentPane.add (bottom, BorderLayout.SOUTH);
-
 		final JButton changeLanguage = new JButton (changeLanguageAction);
 		changeLanguage.setForeground (new Color (0xFCC864));
 		changeLanguage.setFont (getLargeFont ());
 		changeLanguage.setContentAreaFilled (false);
 		changeLanguage.setMargin (new Insets (0, 0, 0, 0));
 		changeLanguage.setBorder (null);
-		changeLanguage.setAlignmentX (Component.CENTER_ALIGNMENT);
-		bottom.add (changeLanguage);
+		contentPane.add (changeLanguage, createConstraints (7, GridBagConstraints.CENTER));
 
 		final JButton connectToServer = new JButton (connectToServerAction);
 		connectToServer.setForeground (new Color (0xFCC864));
@@ -238,8 +230,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 		connectToServer.setContentAreaFilled (false);
 		connectToServer.setMargin (new Insets (0, 0, 0, 0));
 		connectToServer.setBorder (null);
-		connectToServer.setAlignmentX (Component.CENTER_ALIGNMENT);
-		bottom.add (connectToServer);
+		contentPane.add (connectToServer, createConstraints (8, GridBagConstraints.CENTER));
 
 		final JButton newGame = new JButton (newGameAction);
 		newGame.setForeground (new Color (0xFCC864));
@@ -247,8 +238,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 		newGame.setContentAreaFilled (false);
 		newGame.setMargin (new Insets (0, 0, 0, 0));
 		newGame.setBorder (null);
-		newGame.setAlignmentX (Component.CENTER_ALIGNMENT);
-		bottom.add (newGame);
+		contentPane.add (newGame, createConstraints (9, GridBagConstraints.CENTER));
 
 		final JButton joinGame = new JButton (joinGameAction);
 		joinGame.setForeground (new Color (0xFCC864));
@@ -256,8 +246,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 		joinGame.setContentAreaFilled (false);
 		joinGame.setMargin (new Insets (0, 0, 0, 0));
 		joinGame.setBorder (null);
-		joinGame.setAlignmentX (Component.CENTER_ALIGNMENT);
-		bottom.add (joinGame);
+		contentPane.add (joinGame, createConstraints (10, GridBagConstraints.CENTER));
 
 		final JButton options = new JButton (optionsAction);
 		options.setForeground (new Color (0xFCC864));
@@ -265,8 +254,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 		options.setContentAreaFilled (false);
 		options.setMargin (new Insets (0, 0, 0, 0));
 		options.setBorder (null);
-		options.setAlignmentX (Component.CENTER_ALIGNMENT);
-		bottom.add (options);
+		contentPane.add (options, createConstraints (11, GridBagConstraints.CENTER));
 
 		final JButton exitToWindows = new JButton (exitToWindowsAction);
 		exitToWindows.setForeground (new Color (0xFCC864));
@@ -274,12 +262,11 @@ public final class MainMenuUI extends MomClientAbstractUI
 		exitToWindows.setContentAreaFilled (false);
 		exitToWindows.setMargin (new Insets (0, 0, 0, 0));
 		exitToWindows.setBorder (null);
-		exitToWindows.setAlignmentX (Component.CENTER_ALIGNMENT);
-		bottom.add (exitToWindows);
+		contentPane.add (exitToWindows, createConstraints (12, GridBagConstraints.CENTER));
 
-		final Dimension buttonsSpace = new Dimension (0, 0);
+		final Dimension buttonsSpace = new Dimension (630, 0);
 		buttonsGap = new Box.Filler (buttonsSpace, buttonsSpace, buttonsSpace);
-		bottom.add (buttonsGap);
+		contentPane.add (buttonsGap, createConstraints (13, GridBagConstraints.CENTER));
 		
 		// Animate the title
 		new Timer (1000 / 8, new ActionListener ()
@@ -300,19 +287,20 @@ public final class MainMenuUI extends MomClientAbstractUI
 			public final void componentResized (final ComponentEvent e)
 			{
 				final int edge = Math.min (contentPane.getWidth () / 4, contentPane.getHeight () / 3);
+				final int imgWidth = edge * 4;
 				final int imgHeight = edge * 3;
 				final int topBorder = (contentPane.getHeight () - imgHeight) / 2;
 				
 				final int titleHeight = (imgHeight * 41) / 200; 
 
 				// Adjust gap above labels
-				final Dimension newLabelsSpace = new Dimension (0, topBorder + titleHeight);
+				final Dimension newLabelsSpace = new Dimension (imgWidth - 10, topBorder + titleHeight);
 				labelsGap.setMinimumSize (newLabelsSpace);
 				labelsGap.setPreferredSize (newLabelsSpace);
 				labelsGap.setMaximumSize (newLabelsSpace);
 				
 				// Adjust gap below buttons
-				final Dimension newButtonsSpace = new Dimension (0, topBorder);
+				final Dimension newButtonsSpace = new Dimension (imgWidth - 10, topBorder);
 				buttonsGap.setMinimumSize (newButtonsSpace);
 				buttonsGap.setPreferredSize (newButtonsSpace);
 				buttonsGap.setMaximumSize (newButtonsSpace);
@@ -342,6 +330,19 @@ public final class MainMenuUI extends MomClientAbstractUI
 		exitToWindowsAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "Exit"));
 
 		authorLabel.setText (getLanguage ().findCategoryEntry ("frmMainMenu", "LanguageFileAuthor"));
+	}
+	
+	/**
+	 * @param gridy Y cell we are putting a component into
+	 * @param anchor Position of the component within the grid cell
+	 * @return Constraints object
+	 */
+	private final GridBagConstraints createConstraints (final int gridy, final int anchor)
+	{
+		final GridBagConstraints c = new GridBagConstraints ();
+		c.gridy = gridy;
+		c.anchor = anchor;
+		return c;
 	}
 	
 	/**

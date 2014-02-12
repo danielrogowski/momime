@@ -72,10 +72,10 @@ public final class LbxExtract
 		};
 		
 		// Extract from an LBX
-		for (int n = 0; n < 20; n++)
-			convertImage ("MAINSCRN.LBX", 0, n, "ui\\mainMenu\\title-frame" + (n < 9 ? "0" : "") + (n+1));
+		//for (int n = 0; n < 20; n++)
+		// convertImage ("MAINSCRN.LBX", 0, n, "ui\\mainMenu\\title-frame" + (n < 9 ? "0" : "") + (n+1));
 
-		convertImage ("MAINSCRN.LBX", 5, 0, "ui\\mainMenu\\background");
+		convertImage ("NEWGAME.LBX", 54, 0, "ui\\newGame\\divider");
 		
 		System.out.println ("All done!");
 	}

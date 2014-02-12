@@ -1,14 +1,12 @@
 package momime.client.ui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,7 +23,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -44,6 +41,9 @@ public final class MainMenuUI extends MomClientAbstractUI
 	
 	/** Medium font */
 	private Font mediumFont;
+	
+	/** Choose language UI */
+	private ChooseLanguageUI chooseLanguageUI;
 	
 	/** Frame number being displayed */
 	private int titleFrame;
@@ -75,6 +75,9 @@ public final class MainMenuUI extends MomClientAbstractUI
 	/** Gap under buttons */
 	private Filler buttonsGap;
 	
+	/** Typical inset used on this screen layout */
+	private final static int INSET = 0;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -91,9 +94,19 @@ public final class MainMenuUI extends MomClientAbstractUI
 		// Create actions
 		changeLanguageAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = 7129552133649247249L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getChooseLanguageUI ().setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace ();
+				}
 			}
 		};
 		
@@ -147,7 +160,6 @@ public final class MainMenuUI extends MomClientAbstractUI
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
-			/** Unique value for serialization */
 			private static final long serialVersionUID = 358769518041873860L;
 
 			@Override
@@ -183,90 +195,32 @@ public final class MainMenuUI extends MomClientAbstractUI
 		// Static text
 		final Dimension labelsSpace = new Dimension (630, (480 * 41) / 200);
 		labelsGap = new Box.Filler (labelsSpace, labelsSpace, labelsSpace);
-		contentPane.add (labelsGap, createConstraints (0, GridBagConstraints.CENTER));
+		contentPane.add (labelsGap, getUtils ().createConstraints (0, 0, INSET, GridBagConstraints.CENTER));
 		
-		final JLabel titleLabel = new JLabel ("Implode's Multiplayer Edition - Client");
-		titleLabel.setForeground (new Color (0xD8DCEC));
-		titleLabel.setFont (getLargeFont ());
-		contentPane.add (titleLabel, createConstraints (1, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIUtils.SILVER, getLargeFont (), "Implode's Multiplayer Edition - Client"),	getUtils ().createConstraints (0, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIUtils.SILVER, getMediumFont (), "version " + getVersion ()),					getUtils ().createConstraints (0, 2, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont (), "Original Master of Magic is Copyright"),	getUtils ().createConstraints (0, 3, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont (), "Simtex Software and Microprose"),		getUtils ().createConstraints (0, 4, INSET, GridBagConstraints.EAST));
 		
-		final JLabel versionLabel = new JLabel ("version " + getVersion ());
-		versionLabel.setForeground (new Color (0xD8DCEC));
-		versionLabel.setFont (getMediumFont ());
-		contentPane.add (versionLabel, createConstraints (2, GridBagConstraints.EAST));
-		
-		final JLabel originalLabel = new JLabel ("Original Master of Magic is Copyright");
-		originalLabel.setForeground (new Color (0xFCC864));
-		originalLabel.setFont (getMediumFont ());
-		contentPane.add (originalLabel, createConstraints (3, GridBagConstraints.EAST));
-		
-		final JLabel simtexLabel = new JLabel ("Simtex Software and Microprose");
-		simtexLabel.setForeground (new Color (0xFCC864));
-		simtexLabel.setFont (getMediumFont ());
-		contentPane.add (simtexLabel, createConstraints (4, GridBagConstraints.EAST));
-		
-		authorLabel = new JLabel ();
-		authorLabel.setForeground (new Color (0xD8DCEC));
-		authorLabel.setFont (getMediumFont ());
-		contentPane.add (authorLabel, createConstraints (5, GridBagConstraints.EAST));
+		authorLabel = getUtils ().createLabel (MomUIUtils.SILVER, getMediumFont ());
+		contentPane.add (authorLabel, getUtils ().createConstraints (0, 5, INSET, GridBagConstraints.EAST));
 		
 		// Space in between
-		final GridBagConstraints constraints = createConstraints (6, GridBagConstraints.CENTER);
+		final GridBagConstraints constraints = getUtils ().createConstraints (0, 6, INSET, GridBagConstraints.CENTER);
 		constraints.weighty = 1;
 		contentPane.add (Box.createGlue (), constraints);
 		
 		// Main menu options
-		final JButton changeLanguage = new JButton (changeLanguageAction);
-		changeLanguage.setForeground (new Color (0xFCC864));
-		changeLanguage.setFont (getLargeFont ());
-		changeLanguage.setContentAreaFilled (false);
-		changeLanguage.setMargin (new Insets (0, 0, 0, 0));
-		changeLanguage.setBorder (null);
-		contentPane.add (changeLanguage, createConstraints (7, GridBagConstraints.CENTER));
-
-		final JButton connectToServer = new JButton (connectToServerAction);
-		connectToServer.setForeground (new Color (0xFCC864));
-		connectToServer.setFont (getLargeFont ());
-		connectToServer.setContentAreaFilled (false);
-		connectToServer.setMargin (new Insets (0, 0, 0, 0));
-		connectToServer.setBorder (null);
-		contentPane.add (connectToServer, createConstraints (8, GridBagConstraints.CENTER));
-
-		final JButton newGame = new JButton (newGameAction);
-		newGame.setForeground (new Color (0xFCC864));
-		newGame.setFont (getLargeFont ());
-		newGame.setContentAreaFilled (false);
-		newGame.setMargin (new Insets (0, 0, 0, 0));
-		newGame.setBorder (null);
-		contentPane.add (newGame, createConstraints (9, GridBagConstraints.CENTER));
-
-		final JButton joinGame = new JButton (joinGameAction);
-		joinGame.setForeground (new Color (0xFCC864));
-		joinGame.setFont (getLargeFont ());
-		joinGame.setContentAreaFilled (false);
-		joinGame.setMargin (new Insets (0, 0, 0, 0));
-		joinGame.setBorder (null);
-		contentPane.add (joinGame, createConstraints (10, GridBagConstraints.CENTER));
-
-		final JButton options = new JButton (optionsAction);
-		options.setForeground (new Color (0xFCC864));
-		options.setFont (getLargeFont ());
-		options.setContentAreaFilled (false);
-		options.setMargin (new Insets (0, 0, 0, 0));
-		options.setBorder (null);
-		contentPane.add (options, createConstraints (11, GridBagConstraints.CENTER));
-
-		final JButton exitToWindows = new JButton (exitToWindowsAction);
-		exitToWindows.setForeground (new Color (0xFCC864));
-		exitToWindows.setFont (getLargeFont ());
-		exitToWindows.setContentAreaFilled (false);
-		exitToWindows.setMargin (new Insets (0, 0, 0, 0));
-		exitToWindows.setBorder (null);
-		contentPane.add (exitToWindows, createConstraints (12, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (changeLanguageAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 7, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (connectToServerAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 8, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (newGameAction,			MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 9, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (joinGameAction,			MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 10, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (optionsAction,				MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 11, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (exitToWindowsAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 12, INSET, GridBagConstraints.CENTER));
 
 		final Dimension buttonsSpace = new Dimension (630, 0);
 		buttonsGap = new Box.Filler (buttonsSpace, buttonsSpace, buttonsSpace);
-		contentPane.add (buttonsGap, createConstraints (13, GridBagConstraints.CENTER));
+		contentPane.add (buttonsGap, getUtils ().createConstraints (0, 13, INSET, GridBagConstraints.CENTER));
 		
 		// Animate the title
 		new Timer (1000 / 8, new ActionListener ()
@@ -333,19 +287,6 @@ public final class MainMenuUI extends MomClientAbstractUI
 	}
 	
 	/**
-	 * @param gridy Y cell we are putting a component into
-	 * @param anchor Position of the component within the grid cell
-	 * @return Constraints object
-	 */
-	private final GridBagConstraints createConstraints (final int gridy, final int anchor)
-	{
-		final GridBagConstraints c = new GridBagConstraints ();
-		c.gridy = gridy;
-		c.anchor = anchor;
-		return c;
-	}
-	
-	/**
 	 * @return Maven version number, injected from spring
 	 */
 	public final String getVersion ()
@@ -391,5 +332,21 @@ public final class MainMenuUI extends MomClientAbstractUI
 	public final void setMediumFont (final Font font)
 	{
 		mediumFont = font;
+	}
+
+	/**
+	 * @return Choose language UI
+	 */
+	public final ChooseLanguageUI getChooseLanguageUI ()
+	{
+		return chooseLanguageUI;
+	}
+
+	/**
+	 * @param ui Choose language UI
+	 */
+	public final void setChooseLanguageUI (final ChooseLanguageUI ui)
+	{
+		chooseLanguageUI = ui;
 	}
 }

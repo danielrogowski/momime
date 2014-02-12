@@ -26,6 +26,9 @@ public abstract class MomClientAbstractUI implements MomClientUI
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
+	/** Helper methods and constants for creating and laying out Swing components */
+	private MomUIUtils utils;
+	
 	/**
 	 * @return The actual frame
 	 */
@@ -92,5 +95,21 @@ public abstract class MomClientAbstractUI implements MomClientUI
 	public final LanguageDatabaseEx getLanguage ()
 	{
 		return languageHolder.getLanguage ();
+	}
+
+	/**
+	 * @return Helper methods and constants for creating and laying out Swing components
+	 */
+	public final MomUIUtils getUtils ()
+	{
+		return utils;
+	}
+
+	/**
+	 * @param util Helper methods and constants for creating and laying out Swing components
+	 */
+	public final void setUtils (final MomUIUtils util)
+	{
+		utils = util;
 	}
 }

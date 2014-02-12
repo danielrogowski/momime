@@ -191,10 +191,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- Fonts -->
 	
-	<bean id="fontFactory" class="momime.client.fonts.FontFactoryImpl" />
+	<bean id="fontFactory" class="momime.client.ui.fonts.FontFactoryImpl" />
 	
 	<bean id="largeFontTTF" class="java.awt.Font" factory-bean="fontFactory" factory-method="loadFont">
-		<constructor-arg value="/momime.client.fonts/OldEnglishFive.ttf" />
+		<constructor-arg value="/momime.client.ui.fonts/OldEnglishFive.ttf" />
 	</bean>
 
 	<bean id="largeFont" class="java.awt.Font" factory-bean="largeFontTTF" factory-method="deriveFont">
@@ -202,20 +202,40 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="mediumFontTTF" class="java.awt.Font" factory-bean="fontFactory" factory-method="loadFont">
-		<constructor-arg value="/momime.client.fonts/KingthingsPetrock.ttf" />
+		<constructor-arg value="/momime.client.ui.fonts/KingthingsPetrock.ttf" />
 	</bean>
 
 	<bean id="mediumFont" class="java.awt.Font" factory-bean="mediumFontTTF" factory-method="deriveFont">
 		<constructor-arg value="15.0" />
 	</bean>
+
+	<bean id="smallFontTTF" class="java.awt.Font" factory-bean="fontFactory" factory-method="loadFont">
+		<constructor-arg value="/momime.client.ui.fonts/Aclonica.ttf" />
+	</bean>
+
+	<bean id="smallFont" class="java.awt.Font" factory-bean="smallFontTTF" factory-method="deriveFont">
+		<constructor-arg value="10.0" />
+	</bean>
 	
 	<!-- UI components -->
+
+	<bean id="uiUtils" class="momime.client.ui.MomUIUtilsImpl" />
 
 	<bean id="mainMenuUI" class="momime.client.ui.MainMenuUI">
 		<property name="version" value="${momime.client.version}" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="utils" ref="uiUtils" />
+		<property name="chooseLanguageUI" ref="chooseLanguageUI" />
+	</bean>
+
+	<bean id="chooseLanguageUI" class="momime.client.ui.ChooseLanguageUI">
+		<property name="largeFont" ref="largeFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="utils" ref="uiUtils" />
+		<property name="pathToLanguageXmlFiles" value="#{clientConfig.pathToLanguageXmlFiles}" />
 	</bean>
 	
 	<!-- Utils -->

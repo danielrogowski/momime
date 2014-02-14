@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -25,6 +26,13 @@ public interface MomUIUtils
 	
 	/** Light brown background text on buttons */
 	public static final Color LIGHT_BROWN = new Color (0xA5846B);
+	
+	/**
+	 * @param resourceName Name of image resource on classpath, e.g. /momime.client.graphics/something.png 
+	 * @return Image
+	 * @throws IOException If there is a problem loading the image
+	 */
+	public BufferedImage loadImage (final String resourceName) throws IOException;
 	
 	/**
 	 * Creates a label with no text - typically because the text is going to be read from the language XML file later

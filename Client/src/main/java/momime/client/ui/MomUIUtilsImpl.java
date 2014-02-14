@@ -5,7 +5,11 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -19,6 +23,27 @@ import momime.client.ui.components.OffsetShadowTextButtonUI;
  */
 public final class MomUIUtilsImpl implements MomUIUtils
 {
+	/** Image cache */
+	private final Map<String, BufferedImage> imageCache = new HashMap<String, BufferedImage> ();
+	
+	/**
+	 * @param resourceName Name of image resource on classpath, e.g. /momime.client.graphics/something.png 
+	 * @return Image
+	 * @throws IOException If there is a problem loading the image
+	 */
+	@Override
+	public final BufferedImage loadImage (final String resourceName) throws IOException
+	{
+		// Check cache first
+		BufferedImage image = imageCache.get (resourceName);
+		if (image == null)
+		{
+			image = ImageIO.read (getClass ().getResource (resourceName));
+			imageCache.put (resourceName, image);
+		}
+		return image;
+	}
+	
 	/**
 	 * Creates a label with no text - typically because the text is going to be read from the language XML file later
 	 * 

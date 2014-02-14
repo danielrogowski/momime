@@ -86,10 +86,10 @@ public final class MainMenuUI extends MomClientAbstractUI
 	protected final void init () throws IOException
 	{
 		// Load images
-		final BufferedImage background = ImageIO.read (getClass ().getResource ("/momime.client.graphics/ui/mainMenu/background.png"));
+		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/mainMenu/background.png");
 		final List<BufferedImage> title = new ArrayList<BufferedImage> (20);
 		for (int n = 1; n <= 20; n++)
-			title.add (ImageIO.read (getClass ().getResource ("/momime.client.graphics/ui/mainMenu/title-frame" + ((n < 10) ? "0" : "") + n + ".png")));
+			title.add (getUtils ().loadImage ("/momime.client.graphics/ui/mainMenu/title-frame" + ((n < 10) ? "0" : "") + n + ".png"));
 
 		// Create actions
 		changeLanguageAction = new AbstractAction ()
@@ -268,6 +268,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().pack ();
 		getFrame ().setMinimumSize (getFrame ().getSize ());
+		getFrame ().setLocationRelativeTo (null);
 	}
 
 	/**

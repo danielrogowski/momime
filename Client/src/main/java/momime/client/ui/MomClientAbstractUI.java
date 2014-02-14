@@ -33,9 +33,10 @@ public abstract class MomClientAbstractUI implements MomClientUI
 	private MomUIUtils utils;
 	
 	/**
+	 * This is package-private so it can be accessed for setLocationRelativeTo () methods
 	 * @return The actual frame
 	 */
-	protected final JFrame getFrame ()
+	final JFrame getFrame ()
 	{
 		return frame;
 	}

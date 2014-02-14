@@ -247,6 +247,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="chooseLanguageUI" class="momime.client.ui.ChooseLanguageUI">
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
+		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />

@@ -42,6 +42,9 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 	/** Small font */
 	private Font smallFont;
 	
+	/** Main menu UI */
+	private MainMenuUI mainMenuUI;
+	
 	/** Where to look for language XML files */
 	private String pathToLanguageXmlFiles;
 	
@@ -71,10 +74,10 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 	protected final void init () throws IOException
 	{
 		// Load images
-		final BufferedImage background = ImageIO.read (getClass ().getResource ("/momime.client.graphics/ui/newGame/background.png"));
-		final BufferedImage divider = ImageIO.read (getClass ().getResource ("/momime.client.graphics/ui/newGame/divider.png"));
-		final BufferedImage buttonNormal = ImageIO.read (getClass ().getResource ("/momime.client.graphics/ui/buttons/button74x21Normal.png"));
-		final BufferedImage buttonPressed = ImageIO.read (getClass ().getResource ("/momime.client.graphics/ui/buttons/button74x21Pressed.png"));
+		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/background.png");
+		final BufferedImage divider = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/divider.png");
+		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
+		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Pressed.png");
 
 		// Get list of files
 		final FilenameFilter filter = new FilenameFilter ()
@@ -102,6 +105,9 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
+		
+		// Do this "too early" on purpose, so that the window isn't centred over the main menu, but is a little down-right of it
+		getFrame ().setLocationRelativeTo (getMainMenuUI ().getFrame ());
 
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
@@ -251,6 +257,22 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 	public final void setSmallFont (final Font font)
 	{
 		smallFont = font;
+	}
+
+	/**
+	 * @return Main menu UI
+	 */
+	public final MainMenuUI getMainMenuUI ()
+	{
+		return mainMenuUI;
+	}
+
+	/**
+	 * @param ui Main menu UI
+	 */
+	public final void setMainMenuUI (final MainMenuUI ui)
+	{
+		mainMenuUI = ui;
 	}
 	
 	/**

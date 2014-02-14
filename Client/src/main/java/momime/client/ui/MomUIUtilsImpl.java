@@ -19,9 +19,6 @@ import momime.client.ui.components.OffsetShadowTextButtonUI;
  */
 public final class MomUIUtilsImpl implements MomUIUtils
 {
-	/** Reuse UI object */
-	private final OffsetShadowTextButtonUI offsetShadowTextButtonUI = new OffsetShadowTextButtonUI ();
-	
 	/**
 	 * Creates a label with no text - typically because the text is going to be read from the language XML file later
 	 * 
@@ -105,6 +102,8 @@ public final class MomUIUtilsImpl implements MomUIUtils
 		final BufferedImage normalImage, final BufferedImage pressedImage)
 	{
 		final JButton button = new JButton (action);
+		button.setUI (new OffsetShadowTextButtonUI ());
+
 		button.setForeground (foregroundColour);
 		button.setBackground (backgroundColour);
 		button.setFont (font);
@@ -115,9 +114,7 @@ public final class MomUIUtilsImpl implements MomUIUtils
 		button.setIcon (new ImageIcon (normalImage));
 		button.setPressedIcon (new ImageIcon (pressedImage));
 		button.setHorizontalTextPosition (SwingConstants.CENTER);
-		
-		button.setUI (offsetShadowTextButtonUI);
-		
+
 		return button;
 	}
 

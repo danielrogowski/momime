@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -20,11 +22,16 @@ import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
+import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.language.database.LanguageDatabaseExImpl;
 
 /**
  * Screen for changing the selected language
  */
-public final class ChooseLanguageUI extends MomClientAbstractUI
+public final class ChooseLanguageUI extends MomClientAbstractUI implements LanguageChangeMaster
 {
 	/** Suffix we expect language files to have */
 	private static final String FILE_SUFFIX = ".master of magic language.xml";
@@ -38,11 +45,23 @@ public final class ChooseLanguageUI extends MomClientAbstractUI
 	/** Where to look for language XML files */
 	private String pathToLanguageXmlFiles;
 	
+	/** For reading in different language XML files when selection is changed */
+	private Unmarshaller languageDatabaseUnmarshaller;
+	
+	/** Complete client config, so we can replace the selected language */
+	private MomImeClientConfig clientConfig;
+
+	/** Marshaller for saving client config */
+	private Marshaller clientConfigMarshaller;
+	
 	/** Cancel action */
 	private Action cancelAction;
 
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 3;
+	
+	/** List of screens that need to be notified when the selected language changes */
+	private final List<MomClientUI> languageChangeListeners = new ArrayList<MomClientUI> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -126,9 +145,33 @@ public final class ChooseLanguageUI extends MomClientAbstractUI
 			
 			final Action languageAction = new AbstractAction (language)
 			{
+				private static final long serialVersionUID = 7617503785697399045L;
+
 				@Override
-				public void actionPerformed (final ActionEvent e)
+				public void actionPerformed (final ActionEvent ev)
 				{
+					try
+					{
+						// Load the new langauge XML
+						final LanguageDatabaseExImpl lang = (LanguageDatabaseExImpl) getLanguageDatabaseUnmarshaller ().unmarshal (new File (getPathToLanguageXmlFiles () + file));
+						lang.buildMaps ();
+						getLanguageHolder ().setLanguage (lang);
+						
+						// Notify all the forms
+						for (final MomClientUI ui : languageChangeListeners)
+							ui.languageChanged ();
+						
+						// Update selected language in the config XML
+						getClientConfig ().setChosenLanguage (language);
+						getClientConfigMarshaller ().marshal (getClientConfig (), new File ("MoMIMEClientConfig.xml"));
+						
+						// Close out the screen
+						setVisible (false);
+					}
+					catch (final Exception e)
+					{
+						e.printStackTrace ();
+					}
 				}
 			};
 			
@@ -166,6 +209,16 @@ public final class ChooseLanguageUI extends MomClientAbstractUI
 		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmChooseLanguage", "Title"));
 		
 		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmChooseLanguage", "Cancel"));
+	}
+	
+	/**
+	 * Remember that we need to tell the listener when the user changes the selected language
+	 * @param listener Screen on which to call the .languageChanged () method
+	 */
+	@Override
+	public final void addLanuageChangeListener (final MomClientUI listener)
+	{
+		languageChangeListeners.add (listener);
 	}
 	
 	/**
@@ -214,5 +267,53 @@ public final class ChooseLanguageUI extends MomClientAbstractUI
 	public final void setPathToLanguageXmlFiles (final String path)
 	{
 		pathToLanguageXmlFiles = path;
+	}
+
+	/**
+	 * @return For reading in different language XML files when selection is changed
+	 */
+	public final Unmarshaller getLanguageDatabaseUnmarshaller ()
+	{
+		return languageDatabaseUnmarshaller;
+	}
+
+	/**
+	 * @param unmarshaller For reading in different language XML files when selection is changed
+	 */
+	public final void setLanguageDatabaseUnmarshaller (final Unmarshaller unmarshaller)
+	{
+		languageDatabaseUnmarshaller = unmarshaller;
+	}
+
+	/**
+	 * @return Complete client config, so we can replace the selected language
+	 */
+	public final MomImeClientConfig getClientConfig ()
+	{
+		return clientConfig;
+	}
+
+	/**
+	 * @param cfg Complete client config, so we can replace the selected language
+	 */
+	public final void setClientConfig (final MomImeClientConfig cfg)
+	{
+		clientConfig = cfg;
+	}
+
+	/**
+	 * @return Marshaller for saving client config
+	 */
+	public final Marshaller getClientConfigMarshaller ()
+	{
+		return clientConfigMarshaller;
+	}
+
+	/**
+	 * @param marsh Marshaller for saving client config
+	 */
+	public final void setClientConfigMarshaller (final Marshaller marsh)
+	{
+		clientConfigMarshaller = marsh;
 	}
 }

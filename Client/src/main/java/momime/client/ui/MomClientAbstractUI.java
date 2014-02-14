@@ -26,6 +26,9 @@ public abstract class MomClientAbstractUI implements MomClientUI
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
+	/** Component responsible for controlling the selected language */
+	private LanguageChangeMaster languageChangeMaster;
+	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private MomUIUtils utils;
 	
@@ -59,6 +62,7 @@ public abstract class MomClientAbstractUI implements MomClientUI
 			frame = new JFrame ();
 			init ();
 			languageChanged ();
+			getLanguageChangeMaster ().addLanuageChangeListener (this);
 		}
 		frame.setVisible (v);
 	}
@@ -97,6 +101,24 @@ public abstract class MomClientAbstractUI implements MomClientUI
 		return languageHolder.getLanguage ();
 	}
 
+	/**
+	 * @return Component responsible for controlling the selected language
+	 */
+	@Override
+	public final LanguageChangeMaster getLanguageChangeMaster ()
+	{
+		return languageChangeMaster;
+	}
+
+	/**
+	 * @param master Component responsible for controlling the selected language
+	 */
+	@Override
+	public final void setLanguageChangeMaster (final LanguageChangeMaster master)
+	{
+		languageChangeMaster = master;
+	}
+	
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */

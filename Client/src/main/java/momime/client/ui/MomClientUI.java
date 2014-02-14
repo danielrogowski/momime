@@ -41,4 +41,14 @@ public interface MomClientUI
 	 * Notifies this screen that the language contained by the holder has changed
 	 */
 	public void languageChanged ();
+	
+	/**
+	 * @return Component responsible for controlling the selected language
+	 */
+	public LanguageChangeMaster getLanguageChangeMaster ();
+
+	/**
+	 * @param master Component responsible for controlling the selected language
+	 */
+	public void setLanguageChangeMaster (final LanguageChangeMaster master);
 }

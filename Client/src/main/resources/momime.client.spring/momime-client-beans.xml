@@ -36,9 +36,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="clientConfigUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="clientConfigJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="clientConfigSchema" />
 	</bean>
-	
+
 	<bean id="clientConfig" class="momime.client.config.v0_9_5.MomImeClientConfig" factory-bean="clientConfigUnmarshaller" factory-method="unmarshal">
 		<constructor-arg value="MoMIMEClientConfig.xml" />
+	</bean>
+
+	<bean id="clientConfigMarshaller" class="javax.xml.bind.Marshaller" factory-bean="clientConfigJaxbContext" factory-method="createMarshaller">
+		<property name="schema" ref="clientConfigSchema" />
+	</bean>
+
+	<bean id="configureClientConfigMarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="clientConfigMarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>jaxb.formatted.output</value>
+				<value type="java.lang.Boolean">true</value>
+			</list>
+		</property>
 	</bean>
 	
 	<!-- Graphics XML -->
@@ -94,10 +109,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				</array>
 			</list>
 		</property>
-	</bean>	
+	</bean>
 
 	<bean id="languageDatabase" class="momime.client.language.database.v0_9_4.LanguageDatabase" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal"  init-method="buildMaps">
-		<constructor-arg value="#{clientConfig.pathToLanguageXmlFiles + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
+		<constructor-arg type="java.io.File" value="#{clientConfig.pathToLanguageXmlFiles + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
 	</bean>
 	
 	<bean id="languageHolder" class ="momime.client.language.database.LanguageDatabaseHolder">
@@ -189,20 +204,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mainMenuUI" ref="mainMenuUI" />
 	</bean>
 	
-	<!-- Fonts -->
+	<!-- Fonts
+		Having to use same font for medium and large sizes, because I can't find anywhere a decent
+		Old English / Blackletter style font with sufficient foreign char support -->
 	
 	<bean id="fontFactory" class="momime.client.ui.fonts.FontFactoryImpl" />
 	
-	<bean id="largeFontTTF" class="java.awt.Font" factory-bean="fontFactory" factory-method="loadFont">
-		<constructor-arg value="/momime.client.ui.fonts/OldEnglishFive.ttf" />
-	</bean>
-
-	<bean id="largeFont" class="java.awt.Font" factory-bean="largeFontTTF" factory-method="deriveFont">
-		<constructor-arg value="14.0" />
-	</bean>
-
 	<bean id="mediumFontTTF" class="java.awt.Font" factory-bean="fontFactory" factory-method="loadFont">
 		<constructor-arg value="/momime.client.ui.fonts/KingthingsPetrock.ttf" />
+	</bean>
+
+	<bean id="largeFont" class="java.awt.Font" factory-bean="mediumFontTTF" factory-method="deriveFont">
+		<constructor-arg value="20.0" />
 	</bean>
 
 	<bean id="mediumFont" class="java.awt.Font" factory-bean="mediumFontTTF" factory-method="deriveFont">
@@ -226,6 +239,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="chooseLanguageUI" ref="chooseLanguageUI" />
 	</bean>
@@ -234,8 +248,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="pathToLanguageXmlFiles" value="#{clientConfig.pathToLanguageXmlFiles}" />
+		<property name="languageDatabaseUnmarshaller" ref="languageDatabaseUnmarshaller" />
+		<property name="clientConfig" ref="clientConfig" />
+		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
 	</bean>
 	
 	<!-- Utils -->

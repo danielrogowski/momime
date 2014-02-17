@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.xml.bind.Marshaller;
@@ -56,6 +56,9 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 
 	/** Marshaller for saving client config */
 	private Marshaller clientConfigMarshaller;
+	
+	/** Title */
+	private JLabel title;
 	
 	/** Cancel action */
 	private Action cancelAction;
@@ -136,12 +139,12 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 		contentPane.setLayout (new GridBagLayout ());
 		
 		// Cut off left half of the window
-		contentPane.add (Box.createRigidArea (new Dimension (335, 0)), getUtils ().createConstraints (0, 0, INSET, GridBagConstraints.CENTER));
+		contentPane.add (Box.createRigidArea (new Dimension (335, 0)), getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER));
 		
 		// Header
-		contentPane.add (getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont (), getLanguage ().findCategoryEntry ("frmChooseLanguage", "Title")),
-			getUtils ().createConstraints (1, 0, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, 1, INSET, GridBagConstraints.CENTER));
+		title = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont (), null);
+		contentPane.add (title, getUtils ().createConstraints (1, 0, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, 1, 1, INSET, GridBagConstraints.CENTER));
 		
 		// Actual language choice buttons
 		int gridy = 2;
@@ -182,23 +185,23 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 			};
 			
 			contentPane.add (getUtils ().createImageButton (languageAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed),
-				getUtils ().createConstraints (1, gridy, INSET, GridBagConstraints.CENTER));
+				getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.CENTER));
 			gridy++;
 		}
 		
 		// Space in between
-		final GridBagConstraints constraints = getUtils ().createConstraints (1, gridy, INSET, GridBagConstraints.CENTER);
+		final GridBagConstraints constraints = getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.CENTER);
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 		contentPane.add (Box.createGlue (), constraints);
 		gridy++;
 		
 		// Footer
-		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, gridy, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.CENTER));
 		gridy++;
 		
 		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed),
-			getUtils ().createConstraints (1, gridy, INSET, GridBagConstraints.EAST));
+			getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.EAST));
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -212,7 +215,9 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 	@Override
 	public final void languageChanged ()
 	{
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmChooseLanguage", "Title"));
+		final String text = getLanguage ().findCategoryEntry ("frmChooseLanguage", "Title");
+		getFrame ().setTitle (text);
+		title.setText (text);
 		
 		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmChooseLanguage", "Cancel"));
 	}

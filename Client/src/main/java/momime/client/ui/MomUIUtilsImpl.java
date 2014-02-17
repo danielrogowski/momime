@@ -13,9 +13,14 @@ import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
+import momime.client.ui.components.JPasswordFieldWithBackgroundImage;
+import momime.client.ui.components.JTextFieldWithBackgroundImage;
 import momime.client.ui.components.OffsetShadowTextButtonUI;
 
 /**
@@ -123,7 +128,7 @@ public final class MomUIUtilsImpl implements MomUIUtils
 	 * @return New button
 	 */
 	@Override
-	public JButton createImageButton (final Action action, final Color backgroundColour, final Color foregroundColour, final Font font,
+	public final JButton createImageButton (final Action action, final Color backgroundColour, final Color foregroundColour, final Font font,
 		final BufferedImage normalImage, final BufferedImage pressedImage)
 	{
 		final JButton button = new JButton (action);
@@ -144,18 +149,97 @@ public final class MomUIUtilsImpl implements MomUIUtils
 	}
 
 	/**
+	 * Creates an image from an unticked image and a ticked image
+	 * Text, if any, is assumed that it will be set later from the language XML file
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @param untickedImage Image of the checkbox in unticked state
+	 * @param tickedImage Image of the checkbox in ticked state
+	 * @return New checkbox
+	 */
+	@Override
+	public final JCheckBox createImageCheckBox (final Color colour, final Font font, final BufferedImage untickedImage, final BufferedImage tickedImage)
+	{
+		final JCheckBox checkbox = new JCheckBox ();
+		
+		checkbox.setForeground (colour);
+		checkbox.setFont (font);
+		
+		checkbox.setIcon (new ImageIcon (untickedImage));
+		checkbox.setRolloverIcon (new ImageIcon (untickedImage));
+		checkbox.setSelectedIcon (new ImageIcon (tickedImage));
+		
+		return checkbox;
+	}
+
+	/**
+	 * Creates a text field that uses an image for its background rather than the standard drawing.
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @param backgroundImage Background image of the text field
+	 * @return New text field
+	 */
+	@Override
+	public final JTextField createTextFieldWithBackgroundImage (final Color colour, final Font font, final BufferedImage backgroundImage)
+	{
+		final JTextFieldWithBackgroundImage tf = new JTextFieldWithBackgroundImage ();
+
+		tf.setBackgroundImage (backgroundImage);
+		tf.setFont (font);
+		tf.setForeground (colour);
+		
+		// Setting background to null just paints it black - to make it invisible we have to explicitly create a colour with 0 alpha component (4th param)
+		tf.setBackground (new Color (0, 0, 0, 0));
+		
+		// Leave small gap at left and right so the text doesn't overlap the borders drawn on the image
+		tf.setBorder (new EmptyBorder (3, 6, 3, 6));
+		
+		return tf;
+	}
+	
+	/**
+	 * Creates a password field that uses an image for its background rather than the standard drawing.
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @param backgroundImage Background image of the text field
+	 * @return New text field
+	 */
+	@Override
+	public final JTextField createPasswordFieldWithBackgroundImage (final Color colour, final Font font, final BufferedImage backgroundImage)
+	{
+		final JPasswordFieldWithBackgroundImage tf = new JPasswordFieldWithBackgroundImage ();
+
+		tf.setBackgroundImage (backgroundImage);
+		tf.setFont (font);
+		tf.setForeground (colour);
+		
+		// Setting background to null just paints it black - to make it invisible we have to explicitly create a colour with 0 alpha component (4th param)
+		tf.setBackground (new Color (0, 0, 0, 0));
+		
+		// Leave small gap at left and right so the text doesn't overlap the borders drawn on the image
+		tf.setBorder (new EmptyBorder (3, 6, 3, 6));
+		
+		return tf;
+	}
+	
+	/**
 	 * @param gridx X cell we are putting a component into
 	 * @param gridy Y cell we are putting a component into
+	 * @param spanx Number of cells wide this component is
 	 * @param insets Gap to leave around component
 	 * @param anchor Position of the component within the grid cell
 	 * @return Constraints object
 	 */
 	@Override
-	public final GridBagConstraints createConstraints (final int gridx, final int gridy, final int insets, final int anchor)
+	public final GridBagConstraints createConstraints (final int gridx, final int gridy, final int spanx, final int insets, final int anchor)
 	{
 		final GridBagConstraints c = new GridBagConstraints ();
 		c.gridx = gridx;
 		c.gridy = gridy;
+		c.gridwidth = spanx;
 		c.anchor = anchor;
 		
 		if (insets > 0)

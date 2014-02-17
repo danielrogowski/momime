@@ -8,7 +8,9 @@ import java.io.IOException;
 
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 /**
  * Helper methods and constants for creating and laying out Swing components 
@@ -86,11 +88,44 @@ public interface MomUIUtils
 		final BufferedImage normalImage, final BufferedImage pressedImage);
 
 	/**
+	 * Creates an image from an unticked image and a ticked image
+	 * Text, if any, is assumed that it will be set later from the language XML file
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @param untickedImage Image of the checkbox in unticked state
+	 * @param tickedImage Image of the checkbox in ticked state
+	 * @return New checkbox
+	 */
+	public JCheckBox createImageCheckBox (final Color colour, final Font font, final BufferedImage untickedImage, final BufferedImage tickedImage);
+	
+	/**
+	 * Creates a text field that uses an image for its background rather than the standard drawing.
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @param backgroundImage Background image of the text field
+	 * @return New text field
+	 */
+	public JTextField createTextFieldWithBackgroundImage (final Color colour, final Font font, final BufferedImage backgroundImage);
+	
+	/**
+	 * Creates a password field that uses an image for its background rather than the standard drawing.
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @param backgroundImage Background image of the text field
+	 * @return New text field
+	 */
+	public JTextField createPasswordFieldWithBackgroundImage (final Color colour, final Font font, final BufferedImage backgroundImage);
+	
+	/**
 	 * @param gridx X cell we are putting a component into
 	 * @param gridy Y cell we are putting a component into
+	 * @param spanx Number of cells wide this component is
 	 * @param insets Gap to leave around component
 	 * @param anchor Position of the component within the grid cell
 	 * @return Constraints object
 	 */
-	public GridBagConstraints createConstraints (final int gridx, final int gridy, final int insets, final int anchor);
+	public GridBagConstraints createConstraints (final int gridx, final int gridy, final int spanx, final int insets, final int anchor);
 }

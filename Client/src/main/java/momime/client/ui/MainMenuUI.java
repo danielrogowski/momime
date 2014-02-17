@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -44,6 +43,9 @@ public final class MainMenuUI extends MomClientAbstractUI
 	
 	/** Choose language UI */
 	private ChooseLanguageUI chooseLanguageUI;
+	
+	/** Connect to server UI */
+	private ConnectToServerUI connectToServerUI;
 	
 	/** Frame number being displayed */
 	private int titleFrame;
@@ -112,9 +114,19 @@ public final class MainMenuUI extends MomClientAbstractUI
 		
 		connectToServerAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = 438056656620043266L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getConnectToServerUI ().setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace ();
+				}
 			}
 		};
 		
@@ -195,32 +207,32 @@ public final class MainMenuUI extends MomClientAbstractUI
 		// Static text
 		final Dimension labelsSpace = new Dimension (630, (480 * 41) / 200);
 		labelsGap = new Box.Filler (labelsSpace, labelsSpace, labelsSpace);
-		contentPane.add (labelsGap, getUtils ().createConstraints (0, 0, INSET, GridBagConstraints.CENTER));
+		contentPane.add (labelsGap, getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER));
 		
-		contentPane.add (getUtils ().createLabel (MomUIUtils.SILVER, getLargeFont (), "Implode's Multiplayer Edition - Client"),	getUtils ().createConstraints (0, 1, INSET, GridBagConstraints.EAST));
-		contentPane.add (getUtils ().createLabel (MomUIUtils.SILVER, getMediumFont (), "version " + getVersion ()),					getUtils ().createConstraints (0, 2, INSET, GridBagConstraints.EAST));
-		contentPane.add (getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont (), "Original Master of Magic is Copyright"),	getUtils ().createConstraints (0, 3, INSET, GridBagConstraints.EAST));
-		contentPane.add (getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont (), "Simtex Software and Microprose"),		getUtils ().createConstraints (0, 4, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIUtils.SILVER, getLargeFont (), "Implode's Multiplayer Edition - Client"),	getUtils ().createConstraints (0, 1, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIUtils.SILVER, getMediumFont (), "version " + getVersion ()),					getUtils ().createConstraints (0, 2, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont (), "Original Master of Magic is Copyright"),	getUtils ().createConstraints (0, 3, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont (), "Simtex Software and Microprose"),		getUtils ().createConstraints (0, 4, 1, INSET, GridBagConstraints.EAST));
 		
 		authorLabel = getUtils ().createLabel (MomUIUtils.SILVER, getMediumFont ());
-		contentPane.add (authorLabel, getUtils ().createConstraints (0, 5, INSET, GridBagConstraints.EAST));
+		contentPane.add (authorLabel, getUtils ().createConstraints (0, 5, 1, INSET, GridBagConstraints.EAST));
 		
 		// Space in between
-		final GridBagConstraints constraints = getUtils ().createConstraints (0, 6, INSET, GridBagConstraints.CENTER);
+		final GridBagConstraints constraints = getUtils ().createConstraints (0, 6, 1, INSET, GridBagConstraints.CENTER);
 		constraints.weighty = 1;
 		contentPane.add (Box.createGlue (), constraints);
 		
 		// Main menu options
-		contentPane.add (getUtils ().createTextOnlyButton (changeLanguageAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 7, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createTextOnlyButton (connectToServerAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 8, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createTextOnlyButton (newGameAction,			MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 9, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createTextOnlyButton (joinGameAction,			MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 10, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createTextOnlyButton (optionsAction,				MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 11, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createTextOnlyButton (exitToWindowsAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 12, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (changeLanguageAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 7, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (connectToServerAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 8, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (newGameAction,			MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 9, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (joinGameAction,			MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 10, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (optionsAction,				MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 11, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (exitToWindowsAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 12, 1, INSET, GridBagConstraints.CENTER));
 
 		final Dimension buttonsSpace = new Dimension (630, 0);
 		buttonsGap = new Box.Filler (buttonsSpace, buttonsSpace, buttonsSpace);
-		contentPane.add (buttonsGap, getUtils ().createConstraints (0, 13, INSET, GridBagConstraints.CENTER));
+		contentPane.add (buttonsGap, getUtils ().createConstraints (0, 13, 1, INSET, GridBagConstraints.CENTER));
 		
 		// Animate the title
 		new Timer (1000 / 8, new ActionListener ()
@@ -349,5 +361,21 @@ public final class MainMenuUI extends MomClientAbstractUI
 	public final void setChooseLanguageUI (final ChooseLanguageUI ui)
 	{
 		chooseLanguageUI = ui;
+	}
+
+	/**
+	 * @return Connect to server UI
+	 */
+	public final ConnectToServerUI getConnectToServerUI ()
+	{
+		return connectToServerUI;
+	}
+
+	/**
+	 * @param ui Connect to server UI
+	 */
+	public final void setConnectToServerUI (final ConnectToServerUI ui)
+	{
+		connectToServerUI = ui;
 	}
 }

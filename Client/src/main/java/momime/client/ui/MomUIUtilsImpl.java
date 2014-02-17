@@ -125,11 +125,12 @@ public final class MomUIUtilsImpl implements MomUIUtils
 	 * @param font Font to set the text in
 	 * @param normalImage Image of the button in normal state
 	 * @param pressedImage Image of the button when it is pressed
+	 * @param disabledImage Image of the button when it is disabled
 	 * @return New button
 	 */
 	@Override
 	public final JButton createImageButton (final Action action, final Color backgroundColour, final Color foregroundColour, final Font font,
-		final BufferedImage normalImage, final BufferedImage pressedImage)
+		final BufferedImage normalImage, final BufferedImage pressedImage, final BufferedImage disabledImage)
 	{
 		final JButton button = new JButton (action);
 		button.setUI (new OffsetShadowTextButtonUI ());
@@ -143,6 +144,7 @@ public final class MomUIUtilsImpl implements MomUIUtils
 		
 		button.setIcon (new ImageIcon (normalImage));
 		button.setPressedIcon (new ImageIcon (pressedImage));
+		button.setDisabledIcon (new ImageIcon (disabledImage));
 		button.setHorizontalTextPosition (SwingConstants.CENTER);
 
 		return button;

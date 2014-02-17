@@ -81,6 +81,7 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 		final BufferedImage divider = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/divider.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Pressed.png");
+		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Disabled.png");
 
 		// Get list of files
 		final FilenameFilter filter = new FilenameFilter ()
@@ -184,8 +185,8 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 				}
 			};
 			
-			contentPane.add (getUtils ().createImageButton (languageAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed),
-				getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.CENTER));
+			contentPane.add (getUtils ().createImageButton (languageAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+				buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.CENTER));
 			gridy++;
 		}
 		
@@ -200,8 +201,8 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.CENTER));
 		gridy++;
 		
-		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed),
-			getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.EAST));
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

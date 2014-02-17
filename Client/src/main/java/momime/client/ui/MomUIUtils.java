@@ -82,10 +82,11 @@ public interface MomUIUtils
 	 * @param font Font to set the text in
 	 * @param normalImage Image of the button in normal state
 	 * @param pressedImage Image of the button when it is pressed
+	 * @param disabledImage Image of the button when it is disabled
 	 * @return New button
 	 */
 	public JButton createImageButton (final Action action, final Color backgroundColour, final Color foregroundColour, final Font font,
-		final BufferedImage normalImage, final BufferedImage pressedImage);
+		final BufferedImage normalImage, final BufferedImage pressedImage, final BufferedImage disabledImage);
 
 	/**
 	 * Creates an image from an unticked image and a ticked image

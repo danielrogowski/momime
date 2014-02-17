@@ -20,7 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
-import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import momime.client.language.database.v0_9_4.KnownServer;
 
@@ -49,13 +50,22 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 	
 	/** IP address label */
 	private JLabel ipAddressLabel;
+	
+	/** IP address edit box */
+	private JTextField ipAddress;
 
 	/** Player name label */
 	private JLabel playerNameLabel;
 
+	/** Player name edit box */
+	private JTextField playerName;
+	
 	/** Password label */
 	private JLabel passwordLabel;
 
+	/** Password edit box */
+	private JTextField password;
+	
 	/** New account checkbox */
 	private JCheckBox newAccount;
 	
@@ -83,6 +93,7 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 		final BufferedImage divider = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/divider.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Pressed.png");
+		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Disabled.png");
 		final BufferedImage wideButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button290x17Normal.png");
 		final BufferedImage wideButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button290x17Pressed.png");
 		final BufferedImage checkboxUnticked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Unticked.png");
@@ -101,10 +112,6 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 			}
 		};
 
-		final JTextField ipAddress;
-		final JTextField playerName;
-		final JTextField password;
-		
 		okAction = new AbstractAction ()
 		{
 			@Override
@@ -166,14 +173,18 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 		{
 			final Action serverAction = new AbstractAction (server.getKnownServerDescription () + " (" + server.getKnownServerIP () + ")")
 			{
+				private static final long serialVersionUID = 3576390732905287196L;
+
 				@Override
 				public void actionPerformed (final ActionEvent ev)
 				{
+					ipAddress.setText (server.getKnownServerIP ());
 				}
 			};
 			
-			contentPane.add (getUtils ().createImageButton (serverAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (), wideButtonNormal, wideButtonPressed),
-				getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.CENTER));
+			// There's no "disabled" image for the wide button
+			contentPane.add (getUtils ().createImageButton (serverAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+				wideButtonNormal, wideButtonPressed, wideButtonNormal), getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.CENTER));
 			gridy++;
 		}
 		
@@ -181,7 +192,7 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 		ipAddressLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
 		contentPane.add (ipAddressLabel, getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.CENTER));
 		gridy++;
-		
+
 		ipAddress = getUtils ().createTextFieldWithBackgroundImage (MomUIUtils.SILVER, getMediumFont (), editbox);
 		contentPane.add (ipAddress, getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.CENTER));
 		gridy++;
@@ -226,16 +237,53 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 
 		final GridBagConstraints constraints2 = getUtils ().createConstraints (2, gridy, 1, INSET, GridBagConstraints.EAST);
 		constraints2.weightx = 1;		// Move the OK button as far to the right as possible
-		contentPane.add (getUtils ().createImageButton (okAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed),
-			constraints2);
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+			buttonNormal, buttonPressed, buttonDisabled), constraints2);
 		
-		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed),
-			getUtils ().createConstraints (3, gridy, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (3, gridy, 1, INSET, GridBagConstraints.EAST));
+		
+		// Ok button should only be enabled once we have enough info
+		final DocumentListener documentListener = new DocumentListener ()
+		{
+			@Override
+			public final void insertUpdate (final DocumentEvent e)
+			{
+				enabledOrDisableOkButton ();
+			}
+
+			@Override
+			public final void removeUpdate (final DocumentEvent e)
+			{
+				enabledOrDisableOkButton ();
+			}
+
+			@Override
+			public final void changedUpdate (final DocumentEvent e)
+			{
+				enabledOrDisableOkButton ();
+			}
+		};
+		
+		ipAddress.getDocument ().addDocumentListener (documentListener);
+		playerName.getDocument ().addDocumentListener (documentListener);
+		password.getDocument ().addDocumentListener (documentListener);
+		enabledOrDisableOkButton ();
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().pack ();
 		getFrame ().setResizable (false);
+	}
+	
+	/**
+	 * Ok button should only be enabled once we have enough info
+	 */
+	private final void enabledOrDisableOkButton ()
+	{
+		okAction.setEnabled ((!ipAddress.getText ().trim ().equals ("")) &&
+			(!playerName.getText ().trim ().equals ("")) &&
+			(!password.getText ().trim ().equals ("")));
 	}
 	
 	/**

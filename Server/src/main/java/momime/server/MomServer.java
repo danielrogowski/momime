@@ -25,7 +25,7 @@ import momime.server.ui.SessionWindow;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.ndg.multiplayer.base.MultiplayerBaseServerThread;
+import com.ndg.multiplayer.base.server.MultiplayerBaseServerThread;
 import com.ndg.multiplayer.server.MultiplayerClientConnection;
 import com.ndg.multiplayer.server.MultiplayerSessionServer;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;

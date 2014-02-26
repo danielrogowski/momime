@@ -3,8 +3,8 @@ package momime.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ndg.multiplayer.base.ServerToClientConnection;
 import com.ndg.multiplayer.base.ServerToClientMessage;
+import com.ndg.multiplayer.base.server.ServerToClientConnection;
 
 /**
  * Dummy connection object that captures all messages sent to the client in a list instead of actually sending them

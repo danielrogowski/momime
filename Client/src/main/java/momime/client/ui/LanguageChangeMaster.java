@@ -11,4 +11,10 @@ public interface LanguageChangeMaster
 	 * @param listener Screen on which to call the .languageChanged () method
 	 */
 	public void addLanuageChangeListener (final MomClientUI listener);
+
+	/**
+	 * Since singleton screens have their containers kept around, this is typically only used by prototype screens disposing themselves
+	 * @param listener Screen on which to cancel calling the .languageChanged () method
+	 */
+	public void removeLanuageChangeListener (final MomClientUI listener);
 }

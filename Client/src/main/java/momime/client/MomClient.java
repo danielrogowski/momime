@@ -14,10 +14,12 @@ import momime.common.MomCommonConstants;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.ndg.multiplayer.client.MultiplayerSessionClient;
+
 /**
  * Main class to kickstart client
  */
-public final class MomClient
+public final class MomClient extends MultiplayerSessionClient
 {
 	/** Main menu with options to connect to a server and create or join games */
 	private MainMenuUI mainMenuUI;

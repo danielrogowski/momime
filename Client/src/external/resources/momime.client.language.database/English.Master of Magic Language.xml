@@ -4450,6 +4450,11 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Cancel</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmMessageBox">
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="frmConnectToServer">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Connect to Server</languageEntryText>
@@ -5241,7 +5246,7 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>Connection refused.  Typically this means you were able to connect to the MoM IME port on the requested server, but that the MoM IME server wasn't running.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Other">
-			<languageEntryText>Connection attempted failed with an unusual error code (SOCKET_ERROR).</languageEntryText>
+			<languageEntryText>Connection attempted failed with an unusual error code.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="NewGameFormTurnSystems">

@@ -5184,7 +5184,7 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>Połączenie zerwane.  Najprawdopodobniej oznacza to, że udało ci się połączyć z portem MoM IME na danym serwerze, ale serwer ten nie działał.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Other">
-			<languageEntryText>Próba połączenia nie powiodła się, z nietypowym kodem błędu (SOCKET_ERROR).</languageEntryText>
+			<languageEntryText>Próba połączenia nie powiodła się, z nietypowym kodem błędu.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="NewGameFormTurnSystems">

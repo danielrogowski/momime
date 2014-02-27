@@ -234,6 +234,16 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 	}
 	
 	/**
+	 * Since singleton screens have their containers kept around, this is typically only used by prototype screens disposing themselves
+	 * @param listener Screen on which to cancel calling the .languageChanged () method
+	 */
+	@Override
+	public final void removeLanuageChangeListener (final MomClientUI listener)
+	{
+		languageChangeListeners.remove (listener);
+	}
+	
+	/**
 	 * @return Large font
 	 */
 	public final Font getLargeFont ()

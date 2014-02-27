@@ -5219,7 +5219,7 @@ Bonus Or +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>Connexion refusée. Typiquement, cela signifie que vous avez été en mesure de vous connecter au port MoM IME sur le serveur demandé, seulement le serveur MoM IME n'est pas en attente.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Other">
-			<languageEntryText>La tentative de connexion a échouée avec un code erreur inhabituel (SOCKET_ERROR).</languageEntryText>
+			<languageEntryText>La tentative de connexion a échouée avec un code erreur inhabituel.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="NewGameFormTurnSystems">

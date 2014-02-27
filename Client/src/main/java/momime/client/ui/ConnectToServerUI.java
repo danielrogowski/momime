@@ -11,6 +11,8 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -23,6 +25,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import momime.client.MomClient;
 import momime.client.language.database.v0_9_4.KnownServer;
 
 /**
@@ -41,6 +44,12 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 	
 	/** Main menu UI */
 	private MainMenuUI mainMenuUI;
+	
+	/** Multiplayer client */
+	private MomClient client;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** Title */
 	private JLabel title;
@@ -114,9 +123,52 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 
 		okAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -1830313744189041084L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getClient ().setServerAddress (ipAddress.getText ());
+					getClient ().connect ();
+					
+					// The next thing that happens from there is we either get an exception if we can't
+					// connect, or the server sends NewGameDatabaseMessage if we can
+				}
+				catch (final Exception e)
+				{
+					// Get the key for the message in the langauge XML
+					// This still uses the old Delphi numeric codes, but didn't see much point in changing them, they're just keys
+					final String entryID;
+					if (e instanceof UnknownHostException)
+						entryID = "10049";
+					else if (e instanceof ConnectException)
+					{
+						if (e.getMessage ().contains ("timed"))
+							entryID = "10060";
+						else
+							entryID = "10061";
+					}
+					else
+					{
+						entryID = "Other";
+						e.printStackTrace ();
+					}
+
+					// Display in window
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageCategoryID ("ConnectionErrors");
+					msg.setLanguageEntryID (entryID);
+					try
+					{
+						msg.setVisible (true);
+					}
+					catch (final Exception e2)
+					{
+						e2.printStackTrace ();
+					}
+				}
 			}
 		};
 		
@@ -370,5 +422,37 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 	public final void setMainMenuUI (final MainMenuUI ui)
 	{
 		mainMenuUI = ui;
+	}
+	
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

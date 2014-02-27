@@ -200,7 +200,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- Singleton beans for client -->
 	
+	<bean id="multiplayerSessionClientServerToClientObjectFactory" class="com.ndg.multiplayer.client.messages.process.MultiplayerSessionClientServerToClientObjectFactory" />
+	
 	<bean id="momClient" class="momime.client.MomClient" init-method="start">
+		<property name="serverPort" value="18250" />
+		<property name="processMessagesOnSwingEventDispatcherThread" value="true" />
+		<property name="clientToServerContext" ref="clientToServerJaxbContext" />
+		<property name="serverToClientContext" ref="serverToClientJaxbContext" />
+		<property name="serverToClientContextFactoryArray">
+			<array>
+				<ref bean="multiplayerSessionClientServerToClientObjectFactory" />
+				<ref bean="momClientServerToClientObjectFactory" />
+				<ref bean="objectFactoryMessages" />
+			</array>
+		</property>
 		<property name="mainMenuUI" ref="mainMenuUI" />
 	</bean>
 	
@@ -266,10 +279,25 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="momClient" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	
 	<!-- Utils -->
 
 	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
+	
+	<!-- Prototype UI components -->
+	
+	<bean id="prototypeFrameCreator" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.client.ui.PrototypeFrameCreator" />
+	</bean>			
+	
+	<bean id="messageBoxUI" class="momime.client.ui.MessageBoxUI" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+	</bean>
 	
 </beans>

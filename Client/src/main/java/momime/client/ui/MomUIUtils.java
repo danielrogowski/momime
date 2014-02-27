@@ -10,6 +10,7 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
@@ -55,6 +56,15 @@ public interface MomUIUtils
 	 */
 	public JLabel createLabel (final Color colour, final Font font, final String text);
 
+	/**
+	 * Creates a text area with no text - typically because the text is going to be read from the language XML file later
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @return New text area
+	 */
+	public JTextArea createTextArea (final Color colour, final Font font);
+	
 	/**
 	 * Creates a label of an image
 	 * 

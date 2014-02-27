@@ -15,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -83,6 +84,23 @@ public final class MomUIUtilsImpl implements MomUIUtils
 		return label;
 	}
 
+	/**
+	 * Creates a text area with no text - typically because the text is going to be read from the language XML file later
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @return New text area
+	 */
+	@Override
+	public final JTextArea createTextArea (final Color colour, final Font font)
+	{
+		final JTextArea label = new JTextArea ();
+		label.setForeground (colour);
+		label.setFont (font);
+		
+		return label;
+	}
+	
 	/**
 	 * Creates a label of an image
 	 * 

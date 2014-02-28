@@ -3,8 +3,8 @@ package momime.client.language.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.language.database.v0_9_4.LanguageCategory;
-import momime.client.language.database.v0_9_4.LanguageDatabase;
+import momime.client.language.database.v0_9_5.LanguageCategory;
+import momime.client.language.database.v0_9_5.LanguageDatabase;
 
 /**
  * Implementation of language XML database - extends stubs auto-generated from XSD to add additional functionality from the interface

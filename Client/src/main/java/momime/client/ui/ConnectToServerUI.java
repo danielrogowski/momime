@@ -24,9 +24,14 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
-import momime.client.language.database.v0_9_4.KnownServer;
+import momime.client.language.database.v0_9_5.KnownServer;
+
+import com.ndg.multiplayer.sessionbase.CreateAccount;
+import com.ndg.multiplayer.sessionbase.Login;
 
 /**
  * Screen for choosing a server to connect to
@@ -135,6 +140,7 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 					
 					// The next thing that happens from there is we either get an exception if we can't
 					// connect, or the server sends NewGameDatabaseMessage if we can
+					// See the afterConnected () method below
 				}
 				catch (final Exception e)
 				{
@@ -358,6 +364,32 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 		
 		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmConnectToServer", "Cancel"));
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmConnectToServer", "OK"));
+	}
+	
+	/**
+	 * Triggered after we connect + receive the new game database from the server
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public final void afterConnected () throws JAXBException, XMLStreamException
+	{
+		if (newAccount.isSelected ())
+		{
+			final CreateAccount msg = new CreateAccount ();
+			msg.setPlayerName (playerName.getText ());
+			msg.setPlayerPassword (password.getText ());
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			// We'll then proceed to login after the createAccount call returns
+		}
+		else
+		{
+			final Login msg = new Login ();
+			msg.setPlayerName (playerName.getText ());
+			msg.setPlayerPassword (password.getText ());
+			msg.setKickExistingConnection (kickAccount.isSelected ());
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+		}
 	}
 	
 	/**

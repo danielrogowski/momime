@@ -1,7 +1,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
 	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
 	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" 
-	xmlns:momimelang="http://momime/client/language/database/v0_9_4" targetNamespace="http://momime/client/language/database/v0_9_4">
+	xmlns:momimelang="http://momime/client/language/database/v0_9_5" targetNamespace="http://momime/client/language/database/v0_9_5">
 	
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
 	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4"/>
@@ -22,12 +22,6 @@
 	<xsd:complexType>
 		<xsd:sequence>
 			<!-- Language entities -->
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="createAccountFailedReason" type="momimelang:createAccountFailedReason" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="loginFailedReason" type="momimelang:loginFailedReason" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="logoutFailedReason" type="momimelang:logoutFailedReason" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="requestSessionListFailedReason" type="momimelang:requestSessionListFailedReason" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="joinFailedReason" type="momimelang:joinFailedReason" />
-			
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="plane" type="momimelang:plane" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionType" type="momimelang:productionType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeature" type="momimelang:mapFeature" />
@@ -77,27 +71,6 @@
 
 <!-- Primary keys -->
 
-		<xsd:key name="createAccountFailedReasonPK">
-			<xsd:selector xpath="createAccountFailedReason" />
-			<xsd:field xpath="@createAccountFailedReasonID" />
-		</xsd:key>
-		<xsd:key name="loginFailedReasonPK">
-			<xsd:selector xpath="loginFailedReason" />
-			<xsd:field xpath="@loginFailedReasonID" />
-		</xsd:key>
-		<xsd:key name="logoutFailedReasonPK">
-			<xsd:selector xpath="logoutFailedReason" />
-			<xsd:field xpath="@logoutFailedReasonID" />
-		</xsd:key>
-		<xsd:key name="requestSessionListFailedReasonPK">
-			<xsd:selector xpath="requestSessionListFailedReason" />
-			<xsd:field xpath="@requestSessionListFailedReasonID" />
-		</xsd:key>
-		<xsd:key name="joinFailedReasonPK">
-			<xsd:selector xpath="joinFailedReason" />
-			<xsd:field xpath="@joinFailedReasonID" />
-		</xsd:key>
-		
 		<xsd:key name="planePK">
 			<xsd:selector xpath="plane" />
 			<xsd:field xpath="@planeNumber" />
@@ -238,41 +211,6 @@
 	</xsd:element>
 		
 <!-- Complex types -->
-	
-	<xsd:complexType name="createAccountFailedReason" nxe:singular="Create Account Failed Reason" nxe:plural="Create Account Failed Reasons" nxe:submenu="Multiplayer engine messages">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="createAccountFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
-		</xsd:sequence>
-		<xsd:attribute name="createAccountFailedReasonID" type="mps:createAccountFailedReason" use="required" nxe:label="Create Account Failed Reason ID" nxe:gridwidth="100" />
-	</xsd:complexType>
-	
-	<xsd:complexType name="loginFailedReason" nxe:singular="Login Failed Reason" nxe:plural="Login Failed Reasons" nxe:submenu="Multiplayer engine messages">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="loginFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
-		</xsd:sequence>
-		<xsd:attribute name="loginFailedReasonID" type="mps:loginFailedReason" use="required" nxe:label="Login Failed Reason ID" nxe:gridwidth="100" />
-	</xsd:complexType>
-	
-	<xsd:complexType name="logoutFailedReason" nxe:singular="Logout Failed Reason" nxe:plural="Logout Failed Reasons" nxe:submenu="Multiplayer engine messages">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="logoutFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
-		</xsd:sequence>
-		<xsd:attribute name="logoutFailedReasonID" type="mps:logoutFailedReason" use="required" nxe:label="Logout Failed Reason ID" nxe:gridwidth="100" />
-	</xsd:complexType>
-	
-	<xsd:complexType name="requestSessionListFailedReason" nxe:singular="Request Session List Failed Reason" nxe:plural="Request Session List Failed Reasons" nxe:submenu="Multiplayer engine messages">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="requestSessionListFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
-		</xsd:sequence>
-		<xsd:attribute name="requestSessionListFailedReasonID" type="mps:requestSessionListFailedReason" use="required" nxe:label="Request Session List Failed Reason ID" nxe:gridwidth="100" />
-	</xsd:complexType>
-	
-	<xsd:complexType name="joinFailedReason" nxe:singular="Join Failed Reason" nxe:plural="Join Failed Reasons" nxe:submenu="Multiplayer engine messages">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="joinFailedReasonDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="600" />
-		</xsd:sequence>
-		<xsd:attribute name="joinFailedReasonID" type="mps:joinFailedReason" use="required" nxe:label="Join Failed Reason ID" nxe:gridwidth="100" />
-	</xsd:complexType>
 	
 	<xsd:complexType name="plane" nxe:singular="Plane" nxe:plural="Planes" nxe:submenu="Overland Map">
 		<xsd:sequence>

@@ -2,9 +2,9 @@ package momime.client.language.database;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import momime.client.language.database.v0_9_4.LanguageCategory;
-import momime.client.language.database.v0_9_4.LanguageDatabase;
-import momime.client.language.database.v0_9_4.ObjectFactory;
+import momime.client.language.database.v0_9_5.LanguageCategory;
+import momime.client.language.database.v0_9_5.LanguageDatabase;
+import momime.client.language.database.v0_9_5.ObjectFactory;
 
 
 /**

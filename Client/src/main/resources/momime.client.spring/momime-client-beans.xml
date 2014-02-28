@@ -87,7 +87,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="languageDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.client.language.database.v0_9_4.LanguageDatabase</value>
+    			<value>momime.client.language.database.v0_9_5.LanguageDatabase</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -111,7 +111,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		</property>
 	</bean>
 
-	<bean id="languageDatabase" class="momime.client.language.database.v0_9_4.LanguageDatabase" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal"  init-method="buildMaps">
+	<bean id="languageDatabase" class="momime.client.language.database.v0_9_5.LanguageDatabase" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal"  init-method="buildMaps">
 		<constructor-arg type="java.io.File" value="#{clientConfig.pathToLanguageXmlFiles + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
 	</bean>
 	
@@ -128,11 +128,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="momClientServerToClientObjectFactory" class="momime.client.messages.process.ServerToClientMessagesObjectFactory">
 		<property name="factory" ref="momClientServerToClientServerFactory" />
 	</bean>
+
+	<bean id="newGameDatabaseMessage" class="momime.client.messages.process.NewGameDatabaseMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="connectToServerUI" ref="connectToServerUI" />
+	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype" />
 	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype" />
-	<bean id="newGameDatabaseMessage" class="momime.client.messages.process.NewGameDatabaseMessageImpl" scope="prototype" />
+	
 	<bean id="updateNodeLairTowerUnitIDMessage" class="momime.client.messages.process.UpdateNodeLairTowerUnitIDMessageImpl" scope="prototype" />
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype" />
 	<bean id="pendingMovementMessage" class="momime.client.messages.process.PendingMovementMessageImpl" scope="prototype" />
@@ -215,6 +220,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			</array>
 		</property>
 		<property name="mainMenuUI" ref="mainMenuUI" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	
 	<!-- Fonts

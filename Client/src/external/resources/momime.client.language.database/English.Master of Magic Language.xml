@@ -1,35 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<momimelang:languageDatabase xmlns:momimelang="http://momime/client/language/database/v0_9_4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<createAccountFailedReason createAccountFailedReasonID="E">
-		<createAccountFailedReasonDescription>That player name is already in use on this server, please try another.</createAccountFailedReasonDescription>
-	</createAccountFailedReason>
-	<loginFailedReason loginFailedReasonID="K">
-		<loginFailedReasonDescription>Your player name is already logged into this server from another client, or perhaps you were disconnected so the server has an idle connection.  Use a different name, or try again and tick 'Kick existing connection' to boot the other client.</loginFailedReasonDescription>
-	</loginFailedReason>
-	<loginFailedReason loginFailedReasonID="P">
-		<loginFailedReasonDescription>Your player name or password is not recognized.</loginFailedReasonDescription>
-	</loginFailedReason>
-	<loginFailedReason loginFailedReasonID="L">
-		<loginFailedReasonDescription>You are already logged in.  Log out before attempting to log in again.</loginFailedReasonDescription>
-	</loginFailedReason>
-	<logoutFailedReason logoutFailedReasonID="L">
-		<logoutFailedReasonDescription>You can't log out since you were not logged in.</logoutFailedReasonDescription>
-	</logoutFailedReason>
-	<requestSessionListFailedReason requestSessionListFailedReasonID="L">
-		<requestSessionListFailedReasonDescription>You must log in before you can request a list of sessions that you could join.</requestSessionListFailedReasonDescription>
-	</requestSessionListFailedReason>
-	<joinFailedReason joinFailedReasonID="L">
-		<joinFailedReasonDescription>You must log into the server before you can create or join a game.</joinFailedReasonDescription>
-	</joinFailedReason>
-	<joinFailedReason joinFailedReasonID="A">
-		<joinFailedReasonDescription>You are already in a game and cannot create or join another one.</joinFailedReasonDescription>
-	</joinFailedReason>
-	<joinFailedReason joinFailedReasonID="N">
-		<joinFailedReasonDescription>The game you tried to join could not be found (it likely ended since the list of running games was retrieved from the server).</joinFailedReasonDescription>
-	</joinFailedReason>
-	<joinFailedReason joinFailedReasonID="F">
-		<joinFailedReasonDescription>The game you are trying to join is already full.</joinFailedReasonDescription>
-	</joinFailedReason>
+<momimelang:languageDatabase xmlns:momimelang="http://momime/client/language/database/v0_9_5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<plane planeNumber="0">
 		<planeDescription>Arcanus</planeDescription>
 		<planeRacesTitle>Arcanian Races</planeRacesTitle>
@@ -4411,6 +4381,54 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="true">
 			<languageEntryText>Yes</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="CreateAccountFailedReason">
+		<languageEntry languageEntryID="E">
+			<languageEntryText>That player name is already in use on this server, please try another.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="LoginFailedReason">
+		<languageEntry languageEntryID="K">
+			<languageEntryText>Your player name is already logged into this server from another client, or perhaps you were disconnected so the server has an idle connection.  Use a different name, or try again and tick 'Kick existing connection' to boot the other client.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="P">
+			<languageEntryText>Your player name or password is not recognized.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="L">
+			<languageEntryText>You are already logged in.  Log out before attempting to log in again.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="LogoutFailedReason">
+		<languageEntry languageEntryID="L">
+			<languageEntryText>You can't log out since you were not logged in.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="RequestSessionListFailedReason">
+		<languageEntry languageEntryID="L">
+			<languageEntryText>You must log in before you can request a list of sessions that you could join.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="JoinFailedReason">
+		<languageEntry languageEntryID="L">
+			<languageEntryText>You must log into the server before you can create or join a game.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="A">
+			<languageEntryText>You are already in a game and cannot create or join another one.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="N">
+			<languageEntryText>The game you tried to join could not be found (it likely ended since the list of running games was retrieved from the server).</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="F">
+			<languageEntryText>The game you are trying to join is already full.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="LeaveSessionFailedReason">
+		<languageEntry languageEntryID="L">
+			<languageEntryText>You can't leave a session since you were not logged in.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="S">
+			<languageEntryText>You can't leave a session since you weren't in one.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMainMenu">

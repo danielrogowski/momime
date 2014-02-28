@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<momimelang:languageDatabase xmlns:momimelang="http://momime/client/language/database/v0_9_4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<joinFailedReason joinFailedReasonID="A">
-		<joinFailedReasonDescription>Jesteś już w grze i nie możesz stworzyć ani dołączyć do innej.</joinFailedReasonDescription>
-	</joinFailedReason>
-	<joinFailedReason joinFailedReasonID="N">
-		<joinFailedReasonDescription>Gra do której próbowałeś się dołączyć nie została znaleziona (najprawdopodobniej skończyła się po otrzymaniu z serwera listy trwających gier).</joinFailedReasonDescription>
-	</joinFailedReason>
-	<joinFailedReason joinFailedReasonID="F">
-		<joinFailedReasonDescription>Gra do której chcesz się dołączyć jest już pełna.</joinFailedReasonDescription>
-	</joinFailedReason>
+<momimelang:languageDatabase xmlns:momimelang="http://momime/client/language/database/v0_9_5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<plane planeNumber="0">
 		<planeDescription>Arcanus</planeDescription>
 		<planeRacesTitle>Rasy Arcanus</planeRacesTitle>
@@ -4364,6 +4355,17 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="true">
 			<languageEntryText>Tak</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="JoinFailedReason">
+		<languageEntry languageEntryID="A">
+			<languageEntryText>Jesteś już w grze i nie możesz stworzyć ani dołączyć do innej.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="N">
+			<languageEntryText>Gra do której próbowałeś się dołączyć nie została znaleziona (najprawdopodobniej skończyła się po otrzymaniu z serwera listy trwających gier).</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="F">
+			<languageEntryText>Gra do której chcesz się dołączyć jest już pełna.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMainMenu">

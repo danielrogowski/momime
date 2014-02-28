@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<momimelang:languageDatabase xmlns:momimelang="http://momime/client/language/database/v0_9_4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<joinFailedReason joinFailedReasonID="A">
-		<joinFailedReasonDescription>You are already in a game and cannot create or join another one.</joinFailedReasonDescription>
-	</joinFailedReason>
-	<joinFailedReason joinFailedReasonID="N">
-		<joinFailedReasonDescription>The game you tried to join could not be found (it likely ended since the list of running games was retrieved from the server).</joinFailedReasonDescription>
-	</joinFailedReason>
-	<joinFailedReason joinFailedReasonID="F">
-		<joinFailedReasonDescription>The game you are trying to join is already full.</joinFailedReasonDescription>
-	</joinFailedReason>
+<momimelang:languageDatabase xmlns:momimelang="http://momime/client/language/database/v0_9_5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<plane planeNumber="0">
 		<planeDescription>Arcanus</planeDescription>
 		<planeRacesTitle>Arcanische Rassen</planeRacesTitle>

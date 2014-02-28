@@ -2,7 +2,7 @@ package momime.client.language.database;
 
 import java.util.List;
 
-import momime.client.language.database.v0_9_4.KnownServer;
+import momime.client.language.database.v0_9_5.KnownServer;
 
 /**
  * Describes operations that we need to support over the language XML file

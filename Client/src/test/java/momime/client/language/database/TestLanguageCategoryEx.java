@@ -2,7 +2,7 @@ package momime.client.language.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import momime.client.language.database.v0_9_4.LanguageEntry;
+import momime.client.language.database.v0_9_5.LanguageEntry;
 
 import org.junit.Test;
 

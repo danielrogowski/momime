@@ -5225,10 +5225,10 @@ Bonus Or +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="NewGameFormTurnSystems">
-		<languageEntry languageEntryID="OnePlayerAtATime">
+		<languageEntry languageEntryID="ONE_PLAYER_AT_A_TIME">
 			<languageEntryText>Tour par tour</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="Simultaneous">
+		<languageEntry languageEntryID="SIMULTANEOUS">
 			<languageEntryText>Tours simultanés</languageEntryText>
 		</languageEntry>
 	</languageCategory>

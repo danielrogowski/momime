@@ -22,10 +22,13 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
+
+import momime.client.MomClient;
 
 /**
  * Main menu with options to connect to a server and create or join games
@@ -46,6 +49,12 @@ public final class MainMenuUI extends MomClientAbstractUI
 	
 	/** Connect to server UI */
 	private ConnectToServerUI connectToServerUI;
+
+	/** New Game UI */
+	private NewGameUI newGameUI;
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/** Frame number being displayed */
 	private int titleFrame;
@@ -58,9 +67,15 @@ public final class MainMenuUI extends MomClientAbstractUI
 
 	/** New game action */
 	private Action newGameAction;
+	
+	/** New game button */
+	private JButton newGameButton;
 
 	/** Join game action */
 	private Action joinGameAction;
+	
+	/** Join game button */
+	private JButton joinGameButton;
 
 	/** Options action */
 	private Action optionsAction;
@@ -132,9 +147,19 @@ public final class MainMenuUI extends MomClientAbstractUI
 		
 		newGameAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -1111824002334990953L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getNewGameUI ().setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace ();
+				}
 			}
 		};
 		
@@ -225,8 +250,13 @@ public final class MainMenuUI extends MomClientAbstractUI
 		// Main menu options
 		contentPane.add (getUtils ().createTextOnlyButton (changeLanguageAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 7, 1, INSET, GridBagConstraints.CENTER));
 		contentPane.add (getUtils ().createTextOnlyButton (connectToServerAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 8, 1, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createTextOnlyButton (newGameAction,			MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 9, 1, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createTextOnlyButton (joinGameAction,			MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 10, 1, INSET, GridBagConstraints.CENTER));
+		
+		newGameButton = getUtils ().createTextOnlyButton (newGameAction, MomUIUtils.GOLD, getLargeFont ());
+		contentPane.add (newGameButton, getUtils ().createConstraints (0, 9, 1, INSET, GridBagConstraints.CENTER));
+		
+		joinGameButton = getUtils ().createTextOnlyButton (joinGameAction, MomUIUtils.GOLD, getLargeFont ());
+		contentPane.add (joinGameButton, getUtils ().createConstraints (0, 10, 1, INSET, GridBagConstraints.CENTER));
+		
 		contentPane.add (getUtils ().createTextOnlyButton (optionsAction,				MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 11, 1, INSET, GridBagConstraints.CENTER));
 		contentPane.add (getUtils ().createTextOnlyButton (exitToWindowsAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 12, 1, INSET, GridBagConstraints.CENTER));
 
@@ -281,6 +311,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 		getFrame ().pack ();
 		getFrame ().setMinimumSize (getFrame ().getSize ());
 		getFrame ().setLocationRelativeTo (null);
+		enableActions ();
 	}
 
 	/**
@@ -297,6 +328,18 @@ public final class MainMenuUI extends MomClientAbstractUI
 		exitToWindowsAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "Exit"));
 
 		authorLabel.setText (getLanguage ().findCategoryEntry ("frmMainMenu", "LanguageFileAuthor"));
+	}
+	
+	/**
+	 * Updates enable/disable status of actions
+	 */
+	public final void enableActions ()
+	{
+		newGameAction.setEnabled (getClient ().getOurPlayerID () != null);
+		newGameButton.setForeground (newGameAction.isEnabled () ? MomUIUtils.GOLD : Color.GRAY);
+		
+		joinGameAction.setEnabled (getClient ().getOurPlayerID () != null);
+		joinGameButton.setForeground (joinGameAction.isEnabled () ? MomUIUtils.GOLD : Color.GRAY);
 	}
 	
 	/**
@@ -377,5 +420,37 @@ public final class MainMenuUI extends MomClientAbstractUI
 	public final void setConnectToServerUI (final ConnectToServerUI ui)
 	{
 		connectToServerUI = ui;
+	}
+
+	/**
+	 * @return New Game UI
+	 */
+	public final NewGameUI getNewGameUI ()
+	{
+		return newGameUI;
+	}
+
+	/**
+	 * @param ui New Game UI
+	 */
+	public final void setNewGameUI (final NewGameUI ui)
+	{
+		newGameUI = ui;
+	}
+	
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 }

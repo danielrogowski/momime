@@ -5268,10 +5268,10 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="NewGameFormTurnSystems">
-		<languageEntry languageEntryID="OnePlayerAtATime">
+		<languageEntry languageEntryID="ONE_PLAYER_AT_A_TIME">
 			<languageEntryText>One player at a time</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="Simultaneous">
+		<languageEntry languageEntryID="SIMULTANEOUS">
 			<languageEntryText>Simultaneous turns</languageEntryText>
 		</languageEntry>
 	</languageCategory>

@@ -13,6 +13,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.database.v0_9_4.NewGameDatabase;
+import momime.client.ui.ConnectToServerUI;
 import momime.client.ui.MainMenuUI;
 import momime.client.ui.MessageBoxUI;
 import momime.client.ui.PrototypeFrameCreator;
@@ -38,6 +39,9 @@ public final class MomClient extends MultiplayerSessionClient
 {
 	/** Main menu with options to connect to a server and create or join games */
 	private MainMenuUI mainMenuUI;
+
+	/** Connect to server UI */
+	private ConnectToServerUI connectToServerUI;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -82,6 +86,8 @@ public final class MomClient extends MultiplayerSessionClient
 			public final void accountCreated (final MultiplayerServerConnection sender, final int playerID)
 				throws JAXBException, XMLStreamException, IOException
 			{
+				// Log in with the new account
+				getConnectToServerUI ().afterAccountCreated ();
 			}
 
 			/**
@@ -96,6 +102,8 @@ public final class MomClient extends MultiplayerSessionClient
 			public final void loggedIn (final MultiplayerServerConnection sender)
 				throws JAXBException, XMLStreamException, IOException
 			{
+				getConnectToServerUI ().setVisible (false);
+				getMainMenuUI ().enableActions ();
 			}
 			
 			/**
@@ -111,6 +119,7 @@ public final class MomClient extends MultiplayerSessionClient
 			public final void loggedOut (final MultiplayerServerConnection sender)
 				throws JAXBException, XMLStreamException, IOException
 			{
+				getMainMenuUI ().enableActions ();
 			}
 			
 			/**
@@ -126,6 +135,18 @@ public final class MomClient extends MultiplayerSessionClient
 			public final void kickedByAnotherLogin (final MultiplayerServerConnection sender)
 				throws JAXBException, XMLStreamException, IOException
 			{
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setText ("Another player logged onto the server with your player name and password, so you have been kicked");
+				try
+				{
+					msg.setVisible (true);
+				}
+				catch (final Exception e)
+				{
+					e.printStackTrace ();
+				}
+				
+				getMainMenuUI ().enableActions ();
 			}
 			
 			/**
@@ -311,6 +332,22 @@ public final class MomClient extends MultiplayerSessionClient
 		mainMenuUI = ui;
 	}
 
+	/**
+	 * @return Connect to server UI
+	 */
+	public final ConnectToServerUI getConnectToServerUI ()
+	{
+		return connectToServerUI;
+	}
+
+	/**
+	 * @param ui Connect to server UI
+	 */
+	public final void setConnectToServerUI (final ConnectToServerUI ui)
+	{
+		connectToServerUI = ui;
+	}
+	
 	/**
 	 * @return Prototype frame creator
 	 */

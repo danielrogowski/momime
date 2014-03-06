@@ -383,15 +383,23 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 			// We'll then proceed to login after the createAccount call returns
 		}
 		else
-		{
-			final Login msg = new Login ();
-			msg.setPlayerName (playerName.getText ());
-			msg.setPlayerPassword (password.getText ());
-			msg.setKickExistingConnection (kickAccount.isSelected ());
-			getClient ().getServerConnection ().sendMessageToServer (msg);
-		}
+			afterAccountCreated ();
 	}
 	
+	/**
+	 * Triggered after we connect and create an account above
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public final void afterAccountCreated () throws JAXBException, XMLStreamException
+	{
+		final Login msg = new Login ();
+		msg.setPlayerName (playerName.getText ());
+		msg.setPlayerPassword (password.getText ());
+		msg.setKickExistingConnection (kickAccount.isSelected ());
+		getClient ().getServerConnection ().sendMessageToServer (msg);
+	}
+
 	/**
 	 * @return Large font
 	 */

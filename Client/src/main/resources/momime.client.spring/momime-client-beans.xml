@@ -220,6 +220,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			</array>
 		</property>
 		<property name="mainMenuUI" ref="mainMenuUI" />
+		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	
@@ -262,6 +263,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="chooseLanguageUI" ref="chooseLanguageUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
+		<property name="newGameUI" ref="newGameUI" />
+		<property name="client" ref="momClient" />
 	</bean>
 
 	<bean id="chooseLanguageUI" class="momime.client.ui.ChooseLanguageUI">
@@ -287,6 +290,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="momClient" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
+	
+	<bean id="newGameUI" class="momime.client.ui.NewGameUI">
+		<property name="largeFont" ref="largeFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="mainMenuUI" ref="mainMenuUI" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="momClient" />
 	</bean>
 	
 	<!-- Utils -->

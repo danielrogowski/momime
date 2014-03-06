@@ -39,6 +39,9 @@ public final class MessageBoxUI extends MomClientAbstractUI
 	/** Language entry ID to use for the message; null if message is not language-variable */
 	private String languageEntryID;
 	
+	/** Fixed text that isn't lanuage variant; null if message is language variable */
+	private String text;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 8;
 	
@@ -132,7 +135,10 @@ public final class MessageBoxUI extends MomClientAbstractUI
 	@Override
 	public final void languageChanged ()
 	{
-		messageText.setText (getLanguage ().findCategoryEntry (getLanguageCategoryID (), getLanguageEntryID ()));
+		if (getText () != null)
+			messageText.setText (getText ());
+		else
+			messageText.setText (getLanguage ().findCategoryEntry (getLanguageCategoryID (), getLanguageEntryID ()));
 		
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "OK"));
 	}
@@ -183,5 +189,21 @@ public final class MessageBoxUI extends MomClientAbstractUI
 	public final void setLanguageEntryID (final String ent)
 	{
 		languageEntryID = ent;
+	}
+
+	/**
+	 * @return Fixed text that isn't lanuage variant; null if message is language variable
+	 */
+	public final String getText ()
+	{
+		return text;
+	}
+
+	/**
+	 * @param txt Fixed text that isn't lanuage variant; null if message is language variable
+	 */
+	public final void setText (final String txt)
+	{
+		text = txt;
 	}
 }

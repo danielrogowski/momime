@@ -170,6 +170,8 @@
 	
 	<bean id="spellCalculations" class="momime.common.calculations.MomSpellCalculationsImpl">
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 	
 	<bean id="unitCalculations" class="momime.common.calculations.MomUnitCalculationsImpl">

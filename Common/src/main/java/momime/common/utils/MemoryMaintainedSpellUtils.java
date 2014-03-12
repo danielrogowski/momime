@@ -89,6 +89,8 @@ public interface MemoryMaintainedSpellUtils
 	 * Checks whether the specified spell can be targetted at the specified unit.  There's lots of validation to do for this, and the
 	 * client does it in a few places and then repeated on the server, so much cleaner if we pull it out into a common routine.
 	 * 
+	 * In Delphi code this is named isUnitValidTargetForCombatSpell, but took "combat" word out here since its used for validating overland targets as well.
+	 * 
 	 * @param spells List of known existing spells
 	 * @param spell Spell being cast
 	 * @param castingPlayerID Player casting the spell

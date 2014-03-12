@@ -186,6 +186,9 @@ public final class CommonDatabaseConstants
 	/** Spells in the unit enchantments section of the spell book */
 	public static final String SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS = "SC04";
 
+	/** Spells in the combat enchantments section of the spell book */
+	public static final String SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS = "SC05";
+	
 	/** Spells in the city curses section of the spell book */
 	public static final String SPELL_BOOK_SECTION_CITY_CURSES = "SC06";
 
@@ -216,8 +219,6 @@ public final class CommonDatabaseConstants
 	
 	/** Gives better chance of each shield blocking a hit */ 
 	public static final String VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK = "UA07";
-
-	//public static final String SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS        = "SC05";
 
 	/**
 	 * Prevent instatiation of this class

@@ -458,6 +458,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// Even for heroes, we load in their default skill list - this is how heroes default skills are loaded during game startup
 		final MemoryUnit newUnit = getUnitUtils ().createMemoryUnit (unitID, gsk.getNextFreeUnitURN (), weaponGrade, startingExperience, true, db);
 		newUnit.setOwningPlayerID (unitOwner.getPlayerDescription ().getPlayerID ());
+		newUnit.setCombatLocation (combatLocation);
 
 		gsk.setNextFreeUnitURN (gsk.getNextFreeUnitURN () + 1);
 		gsk.getTrueMap ().getUnit ().add (newUnit);

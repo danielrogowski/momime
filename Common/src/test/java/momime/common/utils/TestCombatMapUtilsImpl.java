@@ -237,4 +237,57 @@ public final class TestCombatMapUtilsImpl
 		assertSame (defender, result3.getDefendingPlayer ());
 		assertTrue (result3.bothFound ());
 	}
+	
+	/**
+	 * Tests the countPlayersAliveUnitsAtCombatLocation method
+	 */
+	@Test
+	public final void testCountPlayersAliveUnitsAtCombatLocation ()
+	{
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Unit meets critera
+		final MemoryUnit unit1 = new MemoryUnit ();
+		unit1.setOwningPlayerID (3);
+		unit1.setStatus (UnitStatusID.ALIVE);
+		unit1.setCombatLocation (createLocation (0));
+		units.add (unit1);
+		
+		// Dead
+		final MemoryUnit unit2 = new MemoryUnit ();
+		unit2.setOwningPlayerID (3);
+		unit2.setStatus (UnitStatusID.DEAD);
+		unit2.setCombatLocation (createLocation (0));
+		units.add (unit2);
+		
+		// Wrong location
+		final MemoryUnit unit3 = new MemoryUnit ();
+		unit3.setOwningPlayerID (3);
+		unit3.setStatus (UnitStatusID.ALIVE);
+		unit3.setCombatLocation (createLocation (1));
+		units.add (unit3);
+		
+		// Wrong player
+		final MemoryUnit unit4 = new MemoryUnit ();
+		unit4.setOwningPlayerID (4);
+		unit4.setStatus (UnitStatusID.ALIVE);
+		unit4.setCombatLocation (createLocation (0));
+		units.add (unit4);
+		
+		// Unit meets critera
+		final MemoryUnit unit5 = new MemoryUnit ();
+		unit5.setOwningPlayerID (3);
+		unit5.setStatus (UnitStatusID.ALIVE);
+		unit5.setCombatLocation (createLocation (0));
+		units.add (unit5);
+		
+		// Set up object to test
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		
+		// Run test
+		final OverlandMapCoordinatesEx combatLocation = createLocation (0);
+		
+		assertEquals (2, utils.countPlayersAliveUnitsAtCombatLocation (3, combatLocation, units));
+	}
 }

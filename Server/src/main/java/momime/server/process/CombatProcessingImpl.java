@@ -1414,7 +1414,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 */
-	final void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapVolumeOfMemoryGridCells trueTerrain,
+	@Override
+	public final void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapVolumeOfMemoryGridCells trueTerrain,
 		final MemoryUnit trueUnit, final OverlandMapCoordinatesEx terrainLocation, final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatPosition,
 		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException

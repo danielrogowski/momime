@@ -1,6 +1,7 @@
 package momime.server.utils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -22,6 +23,8 @@ import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_4.UnitCombatSideID;
+import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.CityNameContainer;
@@ -326,6 +329,38 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		
 		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "totalPlayerPopulation", total);
 		return total;
+	}
+	
+	/**
+	 * @param combatLocation Location of combat we're interested in
+	 * @param combatSide Which side of combat we're interested in
+	 * @param units True units list
+	 * @return Which map cell the requested sides' units are in (i.e. for defender probably=combatLocation, for attacker will be some adjacent map cell)
+	 * @throws MomException If the requested side is wiped out
+	 */
+	@Override
+	public final OverlandMapCoordinatesEx findMapLocationOfUnitsInCombat (final OverlandMapCoordinatesEx combatLocation,
+		final UnitCombatSideID combatSide, final List<MemoryUnit> units) throws MomException
+	{
+		log.entering (OverlandMapServerUtilsImpl.class.getName (), "findMapLocationOfUnitsInCombat",
+			new String [] {combatLocation.toString (), combatSide.value ()});
+		
+		OverlandMapCoordinatesEx location = null;
+		final Iterator<MemoryUnit> iter = units.iterator ();
+		while ((location == null) && (iter.hasNext ()))
+		{
+			final MemoryUnit unit = iter.next ();
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) &&
+				(unit.getCombatSide () == combatSide) && (combatLocation.equals (unit.getCombatLocation ())))
+				
+				location = (OverlandMapCoordinatesEx) unit.getUnitLocation ();
+		}
+		
+		if (location == null)
+			throw new MomException ("No units on the specified side are left alive");
+		
+		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "findMapLocationOfUnitsInCombat", location);
+		return location;
 	}
 	
 	/**

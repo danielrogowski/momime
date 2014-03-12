@@ -2,13 +2,13 @@ package momime.common.utils;
 
 import java.util.List;
 
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-
 import momime.common.database.v0_9_4.CombatMapLayerID;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomCombatTile;
+
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Helper utils for dealing with combat maps
@@ -44,4 +44,12 @@ public interface CombatMapUtils
 	 */
 	public CombatPlayers determinePlayersInCombatFromLocation (final OverlandMapCoordinatesEx combatLocation,
 		final List<MemoryUnit> units, final List<? extends PlayerPublicDetails> players) throws PlayerNotFoundException;
+	
+	/**
+	 * @param playerID Player whose units to count
+	 * @param combatLocation Combat units must be in
+	 * @param units List of units
+	 * @return Number of alive units belonging to this player at this location
+	 */
+	public int countPlayersAliveUnitsAtCombatLocation (final int playerID, final OverlandMapCoordinatesEx combatLocation, final List<MemoryUnit> units);
 }

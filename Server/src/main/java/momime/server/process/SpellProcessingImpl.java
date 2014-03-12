@@ -8,6 +8,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.calculations.MomSpellCalculations;
+import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.SpellHasCombatEffect;
@@ -29,13 +31,19 @@ import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
+import momime.common.messages.v0_9_4.UnitCombatSideID;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.MomSpellCastType;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
+import momime.common.utils.TargetUnitSpellResult;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -43,6 +51,8 @@ import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
 
@@ -71,8 +81,17 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
+	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Unit calculations */
+	private MomUnitCalculations unitCalculations;
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -82,10 +101,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
+
+	/** Combat processing */
+	private CombatProcessing combatProcessing;
 	
 	/** Resource calculations */
 	private MomServerResourceCalculations serverResourceCalculations;
 
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
+	
+	/** Spell calculations */
+	private MomSpellCalculations spellCalculations;
+
+	/** Server-only overland map utils */
+	private OverlandMapServerUtils overlandMapServerUtils;
+	
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
@@ -260,6 +291,146 @@ public final class SpellProcessingImpl implements SpellProcessing
 	}
 	
 	/**
+	 * Handles casting a spell in combat, after all validation has passed.
+	 * If its a spell where we need to choose a target (like Doom Bolt or Phantom Warriors), additional mana (like Counter Magic)
+	 * or both (like Firebolt), then the client will already have done all this and supplied us with the chosen values.
+	 * 
+	 * @param player Player who is casting the spell
+	 * @param spell Which spell they want to cast
+	 * @param reducedCombatCastingCost Skill cost of the spell, reduced by any book or retort bonuses the player may have
+	 * @param multipliedManaCost MP cost of the spell, reduced as above, then multiplied up according to the distance the combat is from the wizard's fortress
+	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
+	 * @param defendingPlayer Defending player in the combat
+	 * @param attackingPlayer Attacking player in the combat
+	 * @param targetUnit Unit to target the spell on, if appropriate for spell book section, otherwise null
+	 * @param targetLocation Location to target the spell at, if appropriate for spell book section, otherwise null
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	void castCombatNow (final PlayerServerDetails player, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
+		final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
+		final MemoryUnit targetUnit, final CombatMapCoordinatesEx targetLocation, final MomSessionVariables mom)
+		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
+	{
+		log.entering (SpellProcessingImpl.class.getName (), "castCombatNow", new String []
+			{player.getPlayerDescription ().getPlayerID ().toString (), spell.getSpellID (), spell.getSpellBookSectionID (), combatLocation.toString ()});
+
+		// Which side is casting the spell
+		final UnitCombatSideID castingSide;
+		if (player == attackingPlayer)
+			castingSide = UnitCombatSideID.ATTACKER;
+		else if (player == defendingPlayer)
+			castingSide = UnitCombatSideID.DEFENDER;
+		else
+			throw new MomException ("castCombatNow: Casting player is neither the attacker nor defender");
+		
+		// Combat enchantments
+		if (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS))
+		{
+			// Pick an actual effect at random
+			if (spell.getSpellHasCombatEffect ().size () > 0)
+			{
+				final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
+				log.finest ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
+				
+				getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (),
+					combatAreaEffectID, player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			}
+		}
+		
+		// Unit enchantments or curses
+		else if ((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS)) ||
+			(spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES)))
+		{
+			// What effects doesn't the unit already have - can cast Warp Creature multiple times
+			final List<String> unitSpellEffectIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				spell, player.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
+			
+			if (unitSpellEffectIDs.size () == 0)
+				throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " on unit URN " + targetUnit.getUnitURN () +
+					" but unitSpellEffectIDs list came back empty");
+			
+			// Pick an actual effect at random
+			final String unitSpellEffectID = unitSpellEffectIDs.get (getRandomUtils ().nextInt (unitSpellEffectIDs.size ()));
+			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
+				player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffectID,
+				true, null, null, mom.getPlayers (), combatLocation, attackingPlayer, defendingPlayer, mom.getServerDB (), mom.getSessionDescription ());
+		}
+		
+		// Combat summons
+		else if (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING))
+		{
+			// Pick an actual unit at random
+			if (spell.getSummonedUnit ().size () > 0)
+			{
+				final String unitID = spell.getSummonedUnit ().get (getRandomUtils ().nextInt (spell.getSummonedUnit ().size ())).getSummonedUnitID ();
+				log.finest ("castCombatNow chose Unit ID " + unitID + " as unit to summon from spell " + spell.getSpellID ());
+				
+				// Even though we're summoning the unit into a combat, the location of the unit might not be
+				// the same location as the combat - if its the attacker summoning a unit, it needs to go in the
+				// cell they're attacking from, not the actual defending/combat cell
+				final OverlandMapCoordinatesEx summonLocation = getOverlandMapServerUtils ().findMapLocationOfUnitsInCombat
+					(combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+				
+				// Now can add it
+				final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
+					unitID, summonLocation, summonLocation, combatLocation, player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				
+				// What direction should the unit face?
+				final int combatHeading = (player == attackingPlayer) ? 8 : 4;
+				
+				// Set it immediately into combat
+				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
+					combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+				
+				// Allow it to be moved this combat turn
+				tu.setDoubleCombatMovesLeft (mom.getServerDB ().findUnit (tu.getUnitID (), "castCombatNow").getDoubleMovement ());
+				
+				// Make sure we remove it after combat
+				tu.setWasSummonedInCombat (true);
+			}
+		}
+		
+		else
+			throw new MomException ("Cast a combat spell with a section ID that there is no code to deal with yet: " + spell.getSpellBookSectionID ());
+		
+		// Charge mana
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
+		
+		// Charge skill
+		final ServerGridCell gc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		final int sendSkillValue;
+		if (player == defendingPlayer)
+		{
+			gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
+			sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
+		}
+		else if (player == attackingPlayer)
+		{
+			gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
+			sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
+		}
+		else
+			throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
+		
+		// Send both values to client
+		getServerResourceCalculations ().sendGlobalProductionValues (player, sendSkillValue);
+		
+		// Only allow casting one spell each combat turn
+		gc.setSpellCastThisCombatTurn (true);
+
+		log.exiting (SpellProcessingImpl.class.getName (), "castCombatNow");
+	}
+	
+	/**
 	 * Client wants to cast a spell, either overland or in combat
 	 * We may not actually be able to cast it yet - big overland spells take a number of turns to channel, so this
 	 * routine does all the checks to see if it can be instantly cast or needs to be queued up and cast over multiple turns
@@ -293,7 +464,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
 		
 		// Do validation checks
-		final String msg;
+		String msg;
 		if (researchStatus.getStatus () != SpellResearchStatusID.AVAILABLE)
 			msg = "You don't have that spell researched and/or available so can't cast it.";
 		
@@ -318,8 +489,111 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else
 			msg = null;
 		
+		int reducedCombatCastingCost = Integer.MAX_VALUE;
+		int multipliedManaCost = Integer.MAX_VALUE;
+		MemoryUnit combatTargetUnit = null;
+		CombatPlayers combatPlayers = null;
 		if ((msg == null) && (combatLocation != null))
-			throw new UnsupportedOperationException ("requestCastSpell is missing a lot validation regarding casting spells in combat");
+		{
+			// First need to know if we're the attacker or defender
+			combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
+				(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+			
+			final ServerGridCell gc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+			
+			if (!combatPlayers.bothFound ())
+				msg = "You cannot cast combat spells if one side has been wiped out in the combat.";
+
+			else if ((gc.isSpellCastThisCombatTurn () != null) && (gc.isSpellCastThisCombatTurn ()))
+				msg = "You have already cast a spell this combat turn.";
+			
+			else
+			{
+				// Books/retorts can make spell cheaper to cast
+				reducedCombatCastingCost = getSpellUtils ().getReducedCombatCastingCost
+					(spell, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+				
+				// What our remaining skill?
+				final int ourSkill;
+				if (player == combatPlayers.getAttackingPlayer ())
+					ourSkill = gc.getCombatAttackerCastingSkillRemaining ();
+				else if (player == combatPlayers.getDefendingPlayer ())
+					ourSkill = gc.getCombatDefenderCastingSkillRemaining ();
+				else
+				{
+					ourSkill = -1;
+					msg = "You tried to cast a combat spell in a combat that you are not participating in.";
+				}
+				
+				// Check range penalty
+				final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (player, combatLocation,
+					getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+					mom.getSessionDescription ().getMapSize ());
+				
+				if (doubleRangePenalty == null)
+					msg = "You cannot cast combat spells while you are banished.";
+				else
+					multipliedManaCost = (reducedCombatCastingCost * doubleRangePenalty + 1) / 2;
+				
+				// Casting skill/MP checks
+				if (msg != null)
+				{
+					// Do nothing - more serious message already generated
+				}
+				else if (spell.getCombatCastingCost () > ourSkill)
+					msg = "You don't have enough casting skill remaining to cast that spell in combat.";
+				else if (multipliedManaCost > getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA))
+					msg = "You don't have enough mana remaining to cast that spell in combat at this range.";
+			}
+			
+			// Validation for specific types of combat spells
+			if (msg != null)
+			{
+				// Do nothing - more serious message already generated
+			}
+			else if ((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS)) ||
+				(spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES)))
+			{
+				// (Note overland spells tend to have a lot less validation since we don't pick targets until they've completed casting - so the checks are done then)
+				// Verify that the chosen unit is a valid target for unit enchantments/curses (we checked above that a unit has chosen)
+				combatTargetUnit = getUnitUtils ().findUnitURN (combatTargetUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+				if (combatTargetUnit == null)
+					msg = "Cannot find the unit you are trying to target the spell on";
+				else
+				{
+					final TargetUnitSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
+						player.getPlayerDescription ().getPlayerID (), combatTargetUnit, mom.getServerDB ());
+					
+					if (validTarget != TargetUnitSpellResult.VALID_TARGET)
+					{
+						// Using the enum name isn't that great, but the client will already have
+						// performed this validation so should never see any message generated here anyway
+						msg = "This unit is not a valid target for this spell for reason " + validTarget;
+					}
+				}
+			}
+			else if (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING))
+			{
+				// Verify for summoning spells that there isn't a unit in that location
+				if (getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, combatTargetLocation) != null)
+					msg = "There is already a unit in the chosen location so you cannot summon there.";
+				
+				else if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&
+					(getCombatMapUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
+						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) >= mom.getSessionDescription ().getUnitSetting ().getUnitsPerMapCell ()))
+					
+					msg = "You already have the maximum number of units in combat so cannot summon any more.";
+				
+				// Make sure the combat location is passable, i.e. can't summon on top of city wall corners
+				else if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+					(gc.getCombatMap ().getRow ().get (combatTargetLocation.getY ()).getCell ().get (combatTargetLocation.getX ()), mom.getServerDB ()) < 0)
+					
+					msg = "The terrain at your chosen location is impassable so you cannot summon a unit there.";						
+			}
+		}
 		
 		// Ok to go ahead and cast (or queue) it?
 		if (msg != null)
@@ -333,7 +607,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else if (combatLocation != null)
 		{
 			// Cast combat spell
-			throw new UnsupportedOperationException ("requestCastSpell is missing code for casting combat spells");
+			// Always cast instantly
+			// If its a spell where we need to choose a target and/or additional mana, the client will already have done so
+			castCombatNow (player, spell, reducedCombatCastingCost, multipliedManaCost, combatLocation,
+				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
+				combatTargetUnit, combatTargetLocation, mom);
 		}
 		else
 		{
@@ -568,6 +846,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 	{
 		memoryCombatAreaEffectUtils = utils;
 	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
+	}
 	
 	/**
 	 * @return Resource value utils
@@ -583,6 +877,38 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setResourceValueUtils (final ResourceValueUtils utils)
 	{
 		resourceValueUtils = utils;
+	}
+	
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final MomUnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final MomUnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 	
 	/**
@@ -634,6 +960,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 	}
 
 	/**
+	 * @return Combat processing
+	 */
+	public final CombatProcessing getCombatProcessing ()
+	{
+		return combatProcessing;
+	}
+
+	/**
+	 * @param proc Combat processing
+	 */
+	public final void setCombatProcessing (final CombatProcessing proc)
+	{
+		combatProcessing = proc;
+	}
+
+	/**
 	 * @return Resource calculations
 	 */
 	public final MomServerResourceCalculations getServerResourceCalculations ()
@@ -649,6 +991,54 @@ public final class SpellProcessingImpl implements SpellProcessing
 		serverResourceCalculations = calc;
 	}
 
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+	
+	/**
+	 * @param utils Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils utils)
+	{
+		combatMapUtils = utils;
+	}
+
+	/**
+	 * @return Spell calculations
+	 */
+	public final MomSpellCalculations getSpellCalculations ()
+	{
+		return spellCalculations;
+	}
+
+	/**
+	 * @param calc Spell calculations
+	 */
+	public final void setSpellCalculations (final MomSpellCalculations calc)
+	{
+		spellCalculations = calc;
+	}
+
+	/**
+	 * @return Server-only overland map utils
+	 */
+	public final OverlandMapServerUtils getOverlandMapServerUtils ()
+	{
+		return overlandMapServerUtils;
+	}
+	
+	/**
+	 * @param utils Server-only overland map utils
+	 */
+	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
+	{
+		overlandMapServerUtils = utils;
+	}
+	
 	/**
 	 * @return Random number generator
 	 */

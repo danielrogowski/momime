@@ -132,4 +132,25 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 		
 		return result;
 	}
+	
+	/**
+	 * @param playerID Player whose units to count
+	 * @param combatLocation Combat units must be in
+	 * @param units List of units
+	 * @return Number of alive units belonging to this player at this location
+	 */
+	@Override
+	public final int countPlayersAliveUnitsAtCombatLocation (final int playerID, final OverlandMapCoordinatesEx combatLocation, final List<MemoryUnit> units)
+	{
+		log.entering (CombatMapUtilsImpl.class.getName (), "countPlayersAliveUnitsAtCombatLocation",
+			new String [] {new Integer (playerID).toString (), combatLocation.toString ()});
+		
+		int count = 0;
+		for (final MemoryUnit thisUnit : units)
+			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+				count++;			
+
+		log.exiting (CombatMapUtilsImpl.class.getName (), "countPlayersAliveUnitsAtCombatLocation", count);
+		return count;
+	}
 }

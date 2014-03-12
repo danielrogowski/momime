@@ -2,6 +2,7 @@ package momime.server.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,8 +12,10 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import momime.common.MomException;
 import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
@@ -27,6 +30,7 @@ import momime.common.messages.v0_9_4.NewTurnMessageData;
 import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_4.UnitCombatSideID;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -344,5 +348,202 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		// Run method
 		assertEquals (5000, new OverlandMapServerUtilsImpl ().totalPlayerPopulation (map, 2, sys, db));
+	}
+	
+	/**
+	 * Tests the findMapLocationOfUnitsInCombat method
+	 * @throws MomException If the requested side is wiped out
+	 */
+	@Test
+	public final void testFindMapLocationOfUnitsInCombat_Found () throws MomException
+	{
+		// Locations
+		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
+		combatLocation.setX (20);
+		combatLocation.setY (10);
+		combatLocation.setPlane (1);
+
+		final OverlandMapCoordinatesEx defenderLocation = new OverlandMapCoordinatesEx ();
+		defenderLocation.setX (20);
+		defenderLocation.setY (10);
+		defenderLocation.setPlane (1);
+
+		final OverlandMapCoordinatesEx attackerLocation = new OverlandMapCoordinatesEx ();
+		attackerLocation.setX (21);
+		attackerLocation.setY (10);
+		attackerLocation.setPlane (1);
+
+		final OverlandMapCoordinatesEx otherLocation = new OverlandMapCoordinatesEx ();
+		otherLocation.setX (22);
+		otherLocation.setY (10);
+		otherLocation.setPlane (1);
+		
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		// Not in combat
+		final MemoryUnit unit1 = new MemoryUnit ();
+		unit1.setUnitLocation (otherLocation);
+		unit1.setStatus (UnitStatusID.ALIVE);
+		unit1.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit1);
+
+		// Dead
+		final MemoryUnit unit2 = new MemoryUnit ();
+		unit2.setCombatLocation (combatLocation);
+		unit2.setUnitLocation (otherLocation);
+		unit2.setStatus (UnitStatusID.DEAD);
+		unit2.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit2);
+		
+		// No combat position
+		final MemoryUnit unit3 = new MemoryUnit ();
+		unit3.setCombatLocation (combatLocation);
+		unit3.setUnitLocation (otherLocation);
+		unit3.setStatus (UnitStatusID.ALIVE);
+		unit3.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit3);
+
+		// Wrong combat
+		final MemoryUnit unit4 = new MemoryUnit ();
+		unit4.setCombatLocation (otherLocation);
+		unit4.setUnitLocation (otherLocation);
+		unit4.setStatus (UnitStatusID.ALIVE);
+		unit4.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit4);
+
+		// No side
+		final MemoryUnit unit5 = new MemoryUnit ();
+		unit5.setCombatLocation (combatLocation);
+		unit5.setUnitLocation (otherLocation);
+		unit5.setStatus (UnitStatusID.ALIVE);
+		unit5.setCombatPosition (new CombatMapCoordinatesEx ());
+		units.add (unit5);
+		
+		// Matches
+		final MemoryUnit attackingUnit = new MemoryUnit ();
+		attackingUnit.setCombatLocation (combatLocation);
+		attackingUnit.setUnitLocation (attackerLocation);
+		attackingUnit.setStatus (UnitStatusID.ALIVE);
+		attackingUnit.setCombatPosition (new CombatMapCoordinatesEx ());
+		attackingUnit.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (attackingUnit);
+
+		final MemoryUnit defendingUnit = new MemoryUnit ();
+		defendingUnit.setCombatLocation (combatLocation);
+		defendingUnit.setUnitLocation (defenderLocation);
+		defendingUnit.setStatus (UnitStatusID.ALIVE);
+		defendingUnit.setCombatPosition (new CombatMapCoordinatesEx ());
+		defendingUnit.setCombatSide (UnitCombatSideID.DEFENDER);
+		units.add (defendingUnit);
+		
+		// Set up object to test
+		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
+
+		// Run method, recreate location so = would find no match
+		final OverlandMapCoordinatesEx searchLocation = new OverlandMapCoordinatesEx ();
+		searchLocation.setX (20);
+		searchLocation.setY (10);
+		searchLocation.setPlane (1);
+		
+		assertSame (attackerLocation, utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.ATTACKER, units));
+		assertSame (defenderLocation, utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.DEFENDER, units));
+	}
+
+	/**
+	 * Tests the findMapLocationOfUnitsInCombat method - this is a copy of the test above, except that the attacker unit (match) is removed
+	 * @throws MomException If the requested side is wiped out
+	 */
+	@Test(expected=MomException.class)
+	public final void testFindMapLocationOfUnitsInCombat_WipedOut () throws MomException
+	{
+		// Locations
+		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
+		combatLocation.setX (20);
+		combatLocation.setY (10);
+		combatLocation.setPlane (1);
+
+		final OverlandMapCoordinatesEx defenderLocation = new OverlandMapCoordinatesEx ();
+		defenderLocation.setX (20);
+		defenderLocation.setY (10);
+		defenderLocation.setPlane (1);
+
+		final OverlandMapCoordinatesEx attackerLocation = new OverlandMapCoordinatesEx ();
+		attackerLocation.setX (21);
+		attackerLocation.setY (10);
+		attackerLocation.setPlane (1);
+
+		final OverlandMapCoordinatesEx otherLocation = new OverlandMapCoordinatesEx ();
+		otherLocation.setX (22);
+		otherLocation.setY (10);
+		otherLocation.setPlane (1);
+		
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		// Not in combat
+		final MemoryUnit unit1 = new MemoryUnit ();
+		unit1.setUnitLocation (otherLocation);
+		unit1.setStatus (UnitStatusID.ALIVE);
+		unit1.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit1);
+
+		// Dead
+		final MemoryUnit unit2 = new MemoryUnit ();
+		unit2.setCombatLocation (combatLocation);
+		unit2.setUnitLocation (otherLocation);
+		unit2.setStatus (UnitStatusID.DEAD);
+		unit2.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit2);
+		
+		// No combat position
+		final MemoryUnit unit3 = new MemoryUnit ();
+		unit3.setCombatLocation (combatLocation);
+		unit3.setUnitLocation (otherLocation);
+		unit3.setStatus (UnitStatusID.ALIVE);
+		unit3.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit3);
+
+		// Wrong combat
+		final MemoryUnit unit4 = new MemoryUnit ();
+		unit4.setCombatLocation (otherLocation);
+		unit4.setUnitLocation (otherLocation);
+		unit4.setStatus (UnitStatusID.ALIVE);
+		unit4.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
+		units.add (unit4);
+
+		// No side
+		final MemoryUnit unit5 = new MemoryUnit ();
+		unit5.setCombatLocation (combatLocation);
+		unit5.setUnitLocation (otherLocation);
+		unit5.setStatus (UnitStatusID.ALIVE);
+		unit5.setCombatPosition (new CombatMapCoordinatesEx ());
+		units.add (unit5);
+		
+		// Matches
+		final MemoryUnit defendingUnit = new MemoryUnit ();
+		defendingUnit.setCombatLocation (combatLocation);
+		defendingUnit.setUnitLocation (defenderLocation);
+		defendingUnit.setStatus (UnitStatusID.ALIVE);
+		defendingUnit.setCombatPosition (new CombatMapCoordinatesEx ());
+		defendingUnit.setCombatSide (UnitCombatSideID.DEFENDER);
+		units.add (defendingUnit);
+		
+		// Set up object to test
+		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
+
+		// Run method, recreate location so = would find no match
+		final OverlandMapCoordinatesEx searchLocation = new OverlandMapCoordinatesEx ();
+		searchLocation.setX (20);
+		searchLocation.setY (10);
+		searchLocation.setPlane (1);
+		
+		utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.ATTACKER, units);
 	}
 }

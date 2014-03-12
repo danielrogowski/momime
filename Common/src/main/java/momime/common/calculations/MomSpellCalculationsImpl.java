@@ -5,14 +5,24 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.PickProductionBonus;
 import momime.common.database.v0_9_4.Spell;
+import momime.common.messages.OverlandMapCoordinatesEx;
+import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MemoryBuilding;
+import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Calculations for dealing with spell casting cost reductions and research bonuses
@@ -27,7 +37,13 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
+	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
 
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
+	
 	/**
 	 * @param bookCount The number of books we have in the magic realm of the spell for which we want to calculate the reduction, e.g. to calculate reductions for life spells, pass in how many life books we have
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
@@ -257,6 +273,58 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 	}
 
 	/**
+	 * Spells cast into combat cost more MP to cast the further away they are from the wizard's fortess (though the casting skill used remains the same).
+	 * Table is on p323 in the strategy guide. 
+	 * 
+	 * @param player Player casting the spell
+	 * @param combatLocation Combat location they are casting a spell at
+	 * @param allowEitherPlane For combats in Towers of Wizardry, where we can always consider ourselves to be on the same plane as the wizard's fortress
+	 * @param map Known terrain
+	 * @param buildings Known buildings
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @return Double the range penalty for casting spells in combat; or null if the player simply can't cast any spells at all right now because they're banished
+	 */
+	@Override
+	public final Integer calculateDoubleCombatCastingRangePenalty (final PlayerPublicDetails player, final OverlandMapCoordinatesEx combatLocation,
+		final boolean allowEitherPlane, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CoordinateSystem overlandMapCoordinateSystem)
+	{
+		log.entering (MomSpellCalculationsImpl.class.getName (), "calculateDoubleCombatCastingRangePenalty",
+			new String [] {player.getPlayerDescription ().getPlayerID ().toString (), combatLocation.toString ()});
+			
+		// First need to find where the wizard's fortress is
+		Integer penalty;
+		final OverlandMapCoordinatesEx fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
+			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings);
+		if (fortressLocation == null)
+			penalty = null;
+		else
+		{
+			// Different planes always = max penalty
+			if ((!allowEitherPlane) && (combatLocation.getPlane () != fortressLocation.getPlane ()))
+				penalty = 6;
+			else
+			{
+				// This gives a real distance, e.g. 1.4 for a 1x1 diagonal
+				// Remember we need to return double the value in the table
+				final double distance = CoordinateSystemUtils.determineRealDistanceBetween (overlandMapCoordinateSystem, combatLocation, fortressLocation);
+				penalty = (((int) distance) + 9) / 5;
+				if (penalty > 6)
+					penalty = 6;
+			}
+				
+			// Channeler retort limits range penalty to 1x
+			// Tested this in the original MoM to prove it really does cap it at 1x, because that's not really "as if at the wizard's fortress"
+			// like the description says, which would be capping it at ½x, so the description is a bit ambigious
+			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			if ((penalty > 2) && (getPlayerPickUtils ().getQuantityOfPick (ppk.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER) > 0))
+				penalty = 2;
+		}
+
+		log.exiting (MomSpellCalculationsImpl.class.getName (), "calculateDoubleCombatCastingRangePenalty", penalty);
+		return penalty;
+	}
+	
+	/**
 	 * @return Spell utils
 	 */
 	public final SpellUtils getSpellUtils ()
@@ -270,5 +338,37 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

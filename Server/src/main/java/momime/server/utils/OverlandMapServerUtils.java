@@ -7,10 +7,12 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.UnitCombatSideID;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Race;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
@@ -75,4 +77,14 @@ public interface OverlandMapServerUtils
 	 * @return Total population this player has across all their cities
 	 */
 	public int totalPlayerPopulation (final MapVolumeOfMemoryGridCells map, final int playerID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db);
+
+	/**
+	 * @param combatLocation Location of combat we're interested in
+	 * @param combatSide Which side of combat we're interested in
+	 * @param units True units list
+	 * @return Which map cell the requested sides' units are in (i.e. for defender probably=combatLocation, for attacker will be some adjacent map cell)
+	 * @throws MomException If the requested side is wiped out
+	 */
+	public OverlandMapCoordinatesEx findMapLocationOfUnitsInCombat (final OverlandMapCoordinatesEx combatLocation,
+		final UnitCombatSideID combatSide, final List<MemoryUnit> units) throws MomException;
 }

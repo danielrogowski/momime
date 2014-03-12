@@ -7,7 +7,13 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.Spell;
+import momime.common.messages.OverlandMapCoordinatesEx;
+import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.PlayerPick;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Calculations for dealing with spell casting cost reductions and research bonuses
@@ -41,4 +47,19 @@ public interface MomSpellCalculations
 	public double calculateResearchBonus (final int bookCount, final SpellSettingData spellSettings, final Spell spell,
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
+	
+	/**
+	 * Spells cast into combat cost more MP to cast the further away they are from the wizard's fortess (though the casting skill used remains the same).
+	 * Table is on p323 in the strategy guide. 
+	 * 
+	 * @param player Player casting the spell
+	 * @param combatLocation Combat location they are casting a spell at
+	 * @param allowEitherPlane For combats in Towers of Wizardry, where we can always consider ourselves to be on the same plane as the wizard's fortress
+	 * @param map Known terrain
+	 * @param buildings Known buildings
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @return Double the range penalty for casting spells in combat; or null if the player simply can't cast any spells at all right now because they're banished
+	 */
+	public Integer calculateDoubleCombatCastingRangePenalty (final PlayerPublicDetails player, final OverlandMapCoordinatesEx combatLocation,
+		final boolean allowEitherPlane, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CoordinateSystem overlandMapCoordinateSystem);
 }

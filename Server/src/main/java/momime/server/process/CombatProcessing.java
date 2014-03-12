@@ -11,9 +11,12 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.v0_9_4.CaptureCityDecisionID;
+import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
+import momime.common.messages.v0_9_4.UnitCombatSideID;
 import momime.server.MomSessionVariables;
+import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -108,6 +111,35 @@ public interface CombatProcessing
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
 		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	
+	/**
+	 * Units are put into combat initially as part of the big StartCombat message rather than here.
+	 * This routine is used a) for units added after a combat starts (e.g. summoning fire elementals or phantom warriors) and
+	 * b) taking units out of combat when it ends.
+	 * 
+	 * Logic for taking units out of combat at the end very much mirrors what's in purgeDeadUnitsAndCombatSummonsFromCombat, e.g. don't
+	 * try to take a monster in a lair out of combat in player's memory on server or client because purgeDeadUnitsAndCombatSummonsFromCombat will
+	 * already have killed it off.
+	 * 
+	 * @param attackingPlayer Player who is attacking
+	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
+	 * @param trueTerrain True overland terrain
+	 * @param trueUnit The true unit being put into or taken out of combat
+	 * @param terrainLocation The location the combat is taking place
+	 * @param combatLocation For putting unit into combat, is the location the combat is taking place (i.e. = terrainLocation), for taking unit out of combat will be null
+	 * @param combatPosition For putting unit into combat, is the starting position the unit is standing in on the battlefield, for taking unit out of combat will be null
+	 * @param combatHeading For putting unit into combat, is the direction the the unit is heading on the battlefield, for taking unit out of combat will be null
+	 * @param combatSide For putting unit into combat, specifies which side they're on, for taking unit out of combat will be null
+	 * @param summonedBySpellID For summoning new units directly into combat (e.g. fire elementals) gives the spellID they were summoned with; otherwise null
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 */
+	public void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapVolumeOfMemoryGridCells trueTerrain,
+		final MemoryUnit trueUnit, final OverlandMapCoordinatesEx terrainLocation, final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatPosition,
+		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException;
 	
 	/**
 	 * Once we have mapped out the directions and distances around the combat map and verified that our desired destination is

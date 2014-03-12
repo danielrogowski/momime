@@ -31,6 +31,7 @@ import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseExImpl;
 import momime.server.database.ServerDatabaseFactory;
 import momime.server.database.v0_9_4.DifficultyLevel;
 import momime.server.database.v0_9_4.FogOfWarSetting;
@@ -86,7 +87,7 @@ public final class ServerTestData
 		final URL xmlResource = new Object ().getClass ().getResource (SERVER_XML_LOCATION);
 		assertNotNull ("MoM IME Server XML could not be found on classpath", xmlResource);
 
-		final ServerDatabaseEx serverDB = (ServerDatabaseEx) unmarshaller.unmarshal (xmlResource);
+		final ServerDatabaseExImpl serverDB = (ServerDatabaseExImpl) unmarshaller.unmarshal (xmlResource);
 		serverDB.buildMaps ();
 		return serverDB;
 	}

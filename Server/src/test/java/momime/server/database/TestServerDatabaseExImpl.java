@@ -34,7 +34,7 @@ import org.junit.Test;
  * Note there's no point testing any of the 'get' methods that return the complete lists, since they're provided by the JAXB-generated code
  * Only need to test the maps that we coded in the Ex class
  */
-public final class TestServerDatabaseEx
+public final class TestServerDatabaseExImpl
 {
 	/**
 	 * Tests the findCitySize method to find a citySizeNumber that does exist
@@ -43,7 +43,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindCitySize_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CitySize newCitySize = new CitySize ();
@@ -63,7 +63,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindCitySize_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CitySize newCitySize = new CitySize ();
@@ -83,7 +83,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindPlaneID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 0; n < 2; n++)
 		{
 			final Plane newPlane = new Plane ();
@@ -105,7 +105,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindPlaneID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 0; n < 2; n++)
 		{
 			final Plane newPlane = new Plane ();
@@ -127,7 +127,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindMapFeatureID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final MapFeature newMapFeature = new MapFeature ();
@@ -149,7 +149,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindMapFeatureID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final MapFeature newMapFeature = new MapFeature ();
@@ -169,7 +169,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindTileType_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final TileType newTileType = new TileType ();
@@ -189,7 +189,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindTileType_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final TileType newTileType = new TileType ();
@@ -209,7 +209,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindProductionTypeID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final ProductionType newProductionType = new ProductionType ();
@@ -232,7 +232,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindProductionTypeID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final ProductionType newProductionType = new ProductionType ();
@@ -254,7 +254,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindPickTypeID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final PickType newPickType = new PickType ();
@@ -281,7 +281,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindPickTypeID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final PickType newPickType = new PickType ();
@@ -301,7 +301,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindPickID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Pick newPick = new Pick ();
@@ -323,7 +323,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindPickID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Pick newPick = new Pick ();
@@ -343,7 +343,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindWizardID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Wizard newWizard = new Wizard ();
@@ -370,7 +370,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindWizardID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Wizard newWizard = new Wizard ();
@@ -390,7 +390,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindUnitType_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitType newUnitType = new UnitType ();
@@ -410,7 +410,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindUnitType_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitType newUnitType = new UnitType ();
@@ -431,7 +431,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindUnitMagicRealm_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitMagicRealm newUnitMagicRealm = new UnitMagicRealm ();
@@ -451,7 +451,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindUnitMagicRealm_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitMagicRealm newUnitMagicRealm = new UnitMagicRealm ();
@@ -471,7 +471,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindUnitID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Unit newUnit = new Unit ();
@@ -494,7 +494,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindUnitID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Unit newUnit = new Unit ();
@@ -514,7 +514,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindUnitSkillID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitSkill newUnitSkill = new UnitSkill ();
@@ -536,7 +536,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindUnitSkillID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitSkill newUnitSkill = new UnitSkill ();
@@ -558,7 +558,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindWeaponGrade_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final WeaponGrade newWeaponGrade = new WeaponGrade ();
@@ -578,7 +578,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindWeaponGrade_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final WeaponGrade newWeaponGrade = new WeaponGrade ();
@@ -598,7 +598,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindRangedAttackType_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final RangedAttackType newRangedAttackType = new RangedAttackType ();
@@ -618,7 +618,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindRangedAttackType_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final RangedAttackType newRangedAttackType = new RangedAttackType ();
@@ -638,7 +638,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindRaceID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Race newRace = new Race ();
@@ -665,7 +665,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindRaceID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Race newRace = new Race ();
@@ -685,7 +685,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindBuilding_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building newBuilding = new Building ();
@@ -706,7 +706,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindBuilding_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Building newBuilding = new Building ();
@@ -727,7 +727,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindSpellID_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Spell newSpell = new Spell ();
@@ -749,7 +749,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindSpellID_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final Spell newSpell = new Spell ();
@@ -769,7 +769,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindCombatAreaEffect_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
@@ -789,7 +789,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindCombatAreaEffect_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CombatAreaEffect newCombatAreaEffect = new CombatAreaEffect ();
@@ -809,7 +809,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindCombatTileType_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CombatTileType newCombatTileType = new CombatTileType ();
@@ -829,7 +829,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindCombatTileType_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CombatTileType newCombatTileType = new CombatTileType ();
@@ -849,7 +849,7 @@ public final class TestServerDatabaseEx
 	@Test
 	public final void testFindCombatTileBorder_Exists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CombatTileBorder newCombatTileBorder = new CombatTileBorder ();
@@ -869,7 +869,7 @@ public final class TestServerDatabaseEx
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindCombatTileBorder_NotExists () throws RecordNotFoundException
 	{
-		final ServerDatabaseEx db = new ServerDatabaseEx ();
+		final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
 			final CombatTileBorder newCombatTileBorder = new CombatTileBorder ();

@@ -1,7 +1,6 @@
 package momime.server.database;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
@@ -9,234 +8,51 @@ import momime.common.database.v0_9_4.TaxRate;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CitySize;
 import momime.server.database.v0_9_4.CombatAreaEffect;
+import momime.server.database.v0_9_4.CombatMapElement;
 import momime.server.database.v0_9_4.CombatTileBorder;
 import momime.server.database.v0_9_4.CombatTileType;
+import momime.server.database.v0_9_4.DifficultyLevel;
+import momime.server.database.v0_9_4.FogOfWarSetting;
+import momime.server.database.v0_9_4.LandProportion;
 import momime.server.database.v0_9_4.MapFeature;
+import momime.server.database.v0_9_4.MapSize;
+import momime.server.database.v0_9_4.MovementRateRule;
+import momime.server.database.v0_9_4.NodeStrength;
 import momime.server.database.v0_9_4.Pick;
 import momime.server.database.v0_9_4.PickType;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Race;
 import momime.server.database.v0_9_4.RangedAttackType;
-import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_4.SpellSetting;
 import momime.server.database.v0_9_4.TileType;
 import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_4.UnitAttribute;
 import momime.server.database.v0_9_4.UnitMagicRealm;
+import momime.server.database.v0_9_4.UnitSetting;
 import momime.server.database.v0_9_4.UnitSkill;
 import momime.server.database.v0_9_4.UnitType;
 import momime.server.database.v0_9_4.WeaponGrade;
 import momime.server.database.v0_9_4.Wizard;
 
 /**
- * Adds maps for faster key lookups over the server-side database read in via JAXB
+ * Describes operations that we need to support over the server XML file
+ * This overrides a lot of the methods declared on CommonDatabase to return the server-specific versions
  */
-public final class ServerDatabaseEx extends ServerDatabase implements CommonDatabase
+public interface ServerDatabaseEx extends CommonDatabase
 {
-	/** Map of city size IDs to city size XML objects */
-	private Map<String, CitySize> citySizesMap;
-
-	/** Map of plane numbers to plane XML objects */
-	private Map<Integer, Plane> planesMap;
-
-	/** Map of map feature IDs to map feature XML objects */
-	private Map<String, MapFeature> mapFeaturesMap;
-
-	/** Map of tile type IDs to file type XML objects */
-	private Map<String, TileType> tileTypesMap;
-
-	/** Map of production type IDs to production type XML objects */
-	private Map<String, ProductionType> productionTypesMap;
-
-	/** Map of pick type IDs to pick XML objects */
-	private Map<String, PickType> pickTypesMap;
-
-	/** Map of pick IDs to pick XML objects */
-	private Map<String, Pick> picksMap;
-
-	/** Map of wizard IDs to wizard XML objects */
-	private Map<String, Wizard> wizardsMap;
-
-	/** Map of unit type IDs to unit type XML objects */
-	private Map<String, UnitType> unitTypesMap;
-
-	/** Map of unit magic realm IDs to unit magic realm XML objects */
-	private Map<String, UnitMagicRealm> unitMagicRealmsMap;
-
-	/** Map of unit IDs to unit XML objects */
-	private Map<String, Unit> unitsMap;
-
-	/** Map of unit skill IDs to unit skill XML objects */
-	private Map<String, UnitSkill> unitSkillsMap;
-
-	/** Map of weapon grade numbers to weapon grade XML objects */
-	private Map<Integer, WeaponGrade> weaponGradesMap;
-
-	/** Map of ranged attack type IDs to ranged attack type XML objects */
-	private Map<String, RangedAttackType> rangedAttackTypesMap;
-	
-	/** Map of race IDs to race XML objects */
-	private Map<String, Race> racesMap;
-
-	/** Map of tax rate IDs to tax rate XML objects */
-	private Map<String, TaxRate> taxRatesMap;
-
-	/** Map of building IDs to building XML objects */
-	private Map<String, Building> buildingsMap;
-
-	/** Map of spell IDs to spell XML objects */
-	private Map<String, Spell> spellsMap;
-
-	/** Map of combat area effect IDs to combat area effect objects */
-	private Map<String, CombatAreaEffect> combatAreaEffectsMap;
-	
-	/** Map of combat tile type IDs to combat tile type objects */
-	private Map<String, CombatTileType> combatTileTypesMap;
-
-	/** Map of combat tile border IDs to combat tile border objects */
-	private Map<String, CombatTileBorder> combatTileBordersMap;
-	
 	/**
-	 * Builds all the hash maps to enable finding records faster
-	 */
-	public final void buildMaps ()
-	{
-		// Create city sizes map
-		citySizesMap = new HashMap<String, CitySize> ();
-		for (final CitySize thisCitySize : getCitySize ())
-			citySizesMap.put (thisCitySize.getCitySizeID (), thisCitySize);
-
-		// Create planes map
-		planesMap = new HashMap<Integer, Plane> ();
-		for (final Plane thisPlane : getPlane ())
-			planesMap.put (thisPlane.getPlaneNumber (), thisPlane);
-
-		// Create map features map
-		mapFeaturesMap = new HashMap<String, MapFeature> ();
-		for (final MapFeature thismapFeature : getMapFeature ())
-			mapFeaturesMap.put (thismapFeature.getMapFeatureID (), thismapFeature);
-
-		// Create tile types map
-		tileTypesMap = new HashMap<String, TileType> ();
-		for (final TileType thistileType : getTileType ())
-			tileTypesMap.put (thistileType.getTileTypeID (), thistileType);
-
-		// Create production types map
-		productionTypesMap = new HashMap<String, ProductionType> ();
-		for (final ProductionType thisproductionType : getProductionType ())
-			productionTypesMap.put (thisproductionType.getProductionTypeID (), thisproductionType);
-
-		// Create pick types map
-		pickTypesMap = new HashMap<String, PickType> ();
-		for (final PickType thisPickType : getPickType ())
-			pickTypesMap.put (thisPickType.getPickTypeID (), thisPickType);
-
-		// Create picks map
-		picksMap = new HashMap<String, Pick> ();
-		for (final Pick thisPick : getPick ())
-			picksMap.put (thisPick.getPickID (), thisPick);
-
-		// Create wizards map
-		wizardsMap = new HashMap<String, Wizard> ();
-		for (final Wizard thisWizard : getWizard ())
-			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
-
-		// Create unit types map
-		unitTypesMap = new HashMap<String, UnitType> ();
-		for (final UnitType thisUnitType : getUnitType ())
-			unitTypesMap.put (thisUnitType.getUnitTypeID (), thisUnitType);
-
-		// Create unit magic realms map
-		unitMagicRealmsMap = new HashMap<String, UnitMagicRealm> ();
-		for (final UnitMagicRealm thisUnitMagicRealm : getUnitMagicRealm ())
-			unitMagicRealmsMap.put (thisUnitMagicRealm.getUnitMagicRealmID (), thisUnitMagicRealm);
-
-		// Create units map
-		unitsMap = new HashMap<String, Unit> ();
-		for (final Unit thisUnit : getUnit ())
-			unitsMap.put (thisUnit.getUnitID (), thisUnit);
-
-		// Create unit skills map
-		unitSkillsMap = new HashMap<String, UnitSkill> ();
-		for (final UnitSkill thisUnitSkill : getUnitSkill ())
-			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), thisUnitSkill);
-
-		// Create weaponGrades map
-		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
-		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
-			weaponGradesMap.put (thisWeaponGrade.getWeaponGradeNumber (), thisWeaponGrade);
-
-		// Create rangedAttackTypes map
-		rangedAttackTypesMap = new HashMap<String, RangedAttackType> ();
-		for (final RangedAttackType thisRangedAttackType : getRangedAttackType ())
-			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), thisRangedAttackType);
-		
-		// Create races map
-		racesMap = new HashMap<String, Race> ();
-		for (final Race thisRace : getRace ())
-			racesMap.put (thisRace.getRaceID (), thisRace);
-
-		// Create tax rates map
-		taxRatesMap = new HashMap<String, TaxRate> ();
-		for (final TaxRate thisTaxRate : getTaxRate ())
-			taxRatesMap.put (thisTaxRate.getTaxRateID (), thisTaxRate);
-
-		// Create buildings map
-		buildingsMap = new HashMap<String, Building> ();
-		for (final Building thisBuilding : getBuilding ())
-			buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
-
-		// Create spells map
-		spellsMap = new HashMap<String, Spell> ();
-		for (final Spell thisSpell : getSpell ())
-			spellsMap.put (thisSpell.getSpellID (), thisSpell);
-
-		// Create combat area effects map
-		combatAreaEffectsMap = new HashMap<String, CombatAreaEffect> ();
-		for (final CombatAreaEffect thisCombatAreaEffect : getCombatAreaEffect ())
-			combatAreaEffectsMap.put (thisCombatAreaEffect.getCombatAreaEffectID (), thisCombatAreaEffect);
-
-		// Combat tile types map
-		combatTileTypesMap = new HashMap<String, CombatTileType> ();
-		for (final CombatTileType thisCombatTileType : getCombatTileType ())
-			combatTileTypesMap.put (thisCombatTileType.getCombatTileTypeID (), thisCombatTileType);
-
-		// Combat tile borders map
-		combatTileBordersMap = new HashMap<String, CombatTileBorder> ();
-		for (final CombatTileBorder thisCombatTileBorder : getCombatTileBorder ())
-			combatTileBordersMap.put (thisCombatTileBorder.getCombatTileBorderID (), thisCombatTileBorder);
-	}
-
-	/**
-	 * @param citySizeID City size ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return CitySize object
-	 * @throws RecordNotFoundException If the citySizeID doesn't exist
-	 */
-	public final CitySize findCitySize (final String citySizeID, final String caller) throws RecordNotFoundException
-	{
-		final CitySize found = citySizesMap.get (citySizeID);
-		if (found == null)
-			throw new RecordNotFoundException (CitySize.class.getName (), citySizeID, caller);
-
-		return found;
-	}
-
-	/**
-	 * @param planeNumber Plane number to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Plane object
-	 * @throws RecordNotFoundException If the plane number doesn't exist
+	 * @return Complete list of all planes in game
 	 */
 	@Override
-	public final Plane findPlane (final int planeNumber, final String caller) throws RecordNotFoundException
-	{
-		final Plane found = planesMap.get (planeNumber);
-		if (found == null)
-			throw new RecordNotFoundException (Plane.class.getName (), planeNumber, caller);
-
-		return found;
-	}
+	public List<Plane> getPlane ();
+	
+	/**
+	 * @return Complete list of all map features in game
+	 */
+	@Override
+	public List<MapFeature> getMapFeature ();
 
 	/**
 	 * @param mapFeatureID Map feature ID to search for
@@ -245,15 +61,14 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the mapFeatureID doesn't exist
 	 */
 	@Override
-	public final MapFeature findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException
-	{
-		final MapFeature found = mapFeaturesMap.get (mapFeatureID);
-		if (found == null)
-			throw new RecordNotFoundException (MapFeature.class.getName (), mapFeatureID, caller);
-
-		return found;
-	}
-
+	public MapFeature findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @return Complete list of all tile types in game
+	 */
+	@Override
+	public List<TileType> getTileType ();
+	
 	/**
 	 * @param tileTypeID Tile type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -261,15 +76,14 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the tileTypeID doesn't exist
 	 */
 	@Override
-	public final TileType findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException
-	{
-		final TileType found = tileTypesMap.get (tileTypeID);
-		if (found == null)
-			throw new RecordNotFoundException (TileType.class.getName (), tileTypeID, caller);
-
-		return found;
-	}
-
+	public TileType findTileType (final String tileTypeID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @return Complete list of all production types in game
+	 */
+	@Override
+	public List<ProductionType> getProductionType ();
+	
 	/**
 	 * @param productionTypeID Production type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -277,15 +91,14 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the productionTypeID doesn't exist
 	 */
 	@Override
-	public final ProductionType findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
-	{
-		final ProductionType found = productionTypesMap.get (productionTypeID);
-		if (found == null)
-			throw new RecordNotFoundException (ProductionType.class.getName (), productionTypeID, caller);
-
-		return found;
-	}
-
+	public ProductionType findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @return Complete list of all pick types in game
+	 */
+	@Override
+	public List<PickType> getPickType ();
+	
 	/**
 	 * @param pickTypeID Pick type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -293,15 +106,8 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the pickTypeID doesn't exist
 	 */
 	@Override
-	public final PickType findPickType (final String pickTypeID, final String caller) throws RecordNotFoundException
-	{
-		final PickType found = pickTypesMap.get (pickTypeID);
-		if (found == null)
-			throw new RecordNotFoundException (PickType.class.getName (), pickTypeID, caller);
-
-		return found;
-	}
-
+	public PickType findPickType (final String pickTypeID, final String caller) throws RecordNotFoundException;
+	
 	/**
 	 * @param pickID Pick ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -309,15 +115,14 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the pickID doesn't exist
 	 */
 	@Override
-	public final Pick findPick (final String pickID, final String caller) throws RecordNotFoundException
-	{
-		final Pick found = picksMap.get (pickID);
-		if (found == null)
-			throw new RecordNotFoundException (Pick.class.getName (), pickID, caller);
-
-		return found;
-	}
-
+	public Pick findPick (final String pickID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @return Complete list of all wizards in game
+	 */
+	@Override
+	public List<Wizard> getWizard ();
+	
 	/**
 	 * @param wizardID Wizard ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -325,47 +130,14 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the wizardID doesn't exist
 	 */
 	@Override
-	public final Wizard findWizard (final String wizardID, final String caller) throws RecordNotFoundException
-	{
-		final Wizard found = wizardsMap.get (wizardID);
-		if (found == null)
-			throw new RecordNotFoundException (Wizard.class.getName (), wizardID, caller);
-
-		return found;
-	}
-
+	public Wizard findWizard (final String wizardID, final String caller) throws RecordNotFoundException;
+	
 	/**
-	 * @param unitTypeID Unit type ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Unit type object
-	 * @throws RecordNotFoundException If the unitTypeID doesn't exist
+	 * @return Complete list of all units in game
 	 */
 	@Override
-	public final UnitType findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException
-	{
-		final UnitType found = unitTypesMap.get (unitTypeID);
-		if (found == null)
-			throw new RecordNotFoundException (UnitType.class.getName (), unitTypeID, caller);
-
-		return found;
-	}
-
-	/**
-	 * @param unitMagicRealmID Unit magic realm ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Unit magic realm object
-	 * @throws RecordNotFoundException If the unitMagicRealmID doesn't exist
-	 */
-	@Override
-	public final UnitMagicRealm findUnitMagicRealm (final String unitMagicRealmID, final String caller) throws RecordNotFoundException
-	{
-		final UnitMagicRealm found = unitMagicRealmsMap.get (unitMagicRealmID);
-		if (found == null)
-			throw new RecordNotFoundException (UnitMagicRealm.class.getName (), unitMagicRealmID, caller);
-
-		return found;
-	}
-
+	public List<Unit> getUnit ();
+	
 	/**
 	 * @param unitID Unit ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -373,15 +145,14 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	@Override
-	public final Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException
-	{
-		final Unit found = unitsMap.get (unitID);
-		if (found == null)
-			throw new RecordNotFoundException (Unit.class.getName (), unitID, caller);
-
-		return found;
-	}
-
+	public Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @return Complete list of all unit skills in game
+	 */
+	@Override
+	public List<UnitSkill> getUnitSkill ();
+	
 	/**
 	 * @param unitSkillID Unit skill ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -389,46 +160,13 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the unitSkillID doesn't exist
 	 */
 	@Override
-	public final UnitSkill findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException
-	{
-		final UnitSkill found = unitSkillsMap.get (unitSkillID);
-		if (found == null)
-			throw new RecordNotFoundException (UnitSkill.class.getName (), unitSkillID, caller);
-
-		return found;
-	}
-
+	public UnitSkill findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException;
+	
 	/**
-	 * @param weaponGradeNumber Weapon grade number to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Weapon grade object
-	 * @throws RecordNotFoundException If the weapon grade number doesn't exist
+	 * @return Complete list of all races in game
 	 */
 	@Override
-	public final WeaponGrade findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException
-	{
-		final WeaponGrade found = weaponGradesMap.get (weaponGradeNumber);
-		if (found == null)
-			throw new RecordNotFoundException (WeaponGrade.class.getName (), weaponGradeNumber, caller);
-
-		return found;
-	}
-
-	/**
-	 * @param rangedAttackTypeID RAT ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return RAT object
-	 * @throws RecordNotFoundException If the RAT ID doesn't exist
-	 */
-	@Override
-	public final RangedAttackType findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException
-	{
-		final RangedAttackType found = rangedAttackTypesMap.get (rangedAttackTypeID);
-		if (found == null)
-			throw new RecordNotFoundException (RangedAttackType.class.getName (), rangedAttackTypeID, caller);
-
-		return found;
-	}
+	public List<Race> getRace ();
 	
 	/**
 	 * @param raceID Race ID to search for
@@ -437,31 +175,14 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the raceID doesn't exist
 	 */
 	@Override
-	public final Race findRace (final String raceID, final String caller) throws RecordNotFoundException
-	{
-		final Race found = racesMap.get (raceID);
-		if (found == null)
-			throw new RecordNotFoundException (Race.class.getName (), raceID, caller);
-
-		return found;
-	}
+	public Race findRace (final String raceID, final String caller) throws RecordNotFoundException;
 
 	/**
-	 * @param taxRateID Tax rate ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Tax rate object
-	 * @throws RecordNotFoundException If the tax rateID doesn't exist
+	 * @return Complete list of all buildings in game
 	 */
 	@Override
-	public final TaxRate findTaxRate (final String taxRateID, final String caller) throws RecordNotFoundException
-	{
-		final TaxRate found = taxRatesMap.get (taxRateID);
-		if (found == null)
-			throw new RecordNotFoundException (TaxRate.class.getName (), taxRateID, caller);
-
-		return found;
-	}
-
+	public List<Building> getBuilding ();
+	
 	/**
 	 * @param buildingID Building ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -469,15 +190,14 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
 	@Override
-	public final Building findBuilding (final String buildingID, final String caller) throws RecordNotFoundException
-	{
-		final Building found = buildingsMap.get (buildingID);
-		if (found == null)
-			throw new RecordNotFoundException (Building.class.getName (), buildingID, caller);
+	public Building findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
 
-		return found;
-	}
-
+	/**
+	 * @return Complete list of all spells in game
+	 */
+	@Override
+	public List<Spell> getSpell ();
+	
 	/**
 	 * @param spellID Spell ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -485,30 +205,7 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the spellID doesn't exist
 	 */
 	@Override
-	public final Spell findSpell (final String spellID, final String caller) throws RecordNotFoundException
-	{
-		final Spell found = spellsMap.get (spellID);
-		if (found == null)
-			throw new RecordNotFoundException (Spell.class.getName (), spellID, caller);
-
-		return found;
-	}
-
-	/**
-	 * @param combatAreaEffectID Combat area effect ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return CombatAreaEffect object
-	 * @throws RecordNotFoundException If the combat area effect ID doesn't exist
-	 */
-	@Override
-	public final CombatAreaEffect findCombatAreaEffect (final String combatAreaEffectID, final String caller) throws RecordNotFoundException
-	{
-		final CombatAreaEffect found = combatAreaEffectsMap.get (combatAreaEffectID);
-		if (found == null)
-			throw new RecordNotFoundException (CombatAreaEffect.class.getName (), combatAreaEffectID, caller);
-
-		return found;
-	}
+	public Spell findSpell (final String spellID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @param combatTileTypeID Combat tile type ID to search for
@@ -517,28 +214,107 @@ public final class ServerDatabaseEx extends ServerDatabase implements CommonData
 	 * @throws RecordNotFoundException If the combat tile type ID doesn't exist
 	 */
 	@Override
-	public final CombatTileType findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException
-	{
-		final CombatTileType found = combatTileTypesMap.get (combatTileTypeID);
-		if (found == null)
-			throw new RecordNotFoundException (CombatTileType.class.getName (), combatTileTypeID, caller);
-
-		return found;
-	}
+	public CombatTileType findCombatTileType (final String combatTileTypeID, final String caller) throws RecordNotFoundException;
+	
+	// New methods that aren't overrides from CommonDatabase
 
 	/**
-	 * @param combatTileBorderID Combat tile border ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return CombatTileBorder object
-	 * @throws RecordNotFoundException If the combat tile border ID doesn't exist
+	 * @return Complete list of all picks in game
 	 */
-	@Override
-	public final CombatTileBorder findCombatTileBorder (final String combatTileBorderID, final String caller) throws RecordNotFoundException
-	{
-		final CombatTileBorder found = combatTileBordersMap.get (combatTileBorderID);
-		if (found == null)
-			throw new RecordNotFoundException (CombatTileBorder.class.getName (), combatTileBorderID, caller);
+	public List<Pick> getPick ();
 
-		return found;
-	}
+	/**
+	 * @return Complete list of all tax rates in game
+	 */
+	public List<TaxRate> getTaxRate ();
+	
+	/**
+	 * @return Complete list of all city sizes in game
+	 */
+	public List<CitySize> getCitySize ();
+
+	/**
+	 * @return Complete list of all unit magic realms in game
+	 */
+	public List<UnitMagicRealm> getUnitMagicRealm ();
+
+	/**
+	 * @return Complete list of all unit types in game
+	 */
+	public List<UnitType> getUnitType ();
+	
+	/**
+	 * @return Complete list of all unit attributes in game
+	 */
+	public List<UnitAttribute> getUnitAttribute ();
+
+	/**
+	 * @return Complete list of all ranged attack types in game
+	 */
+	public List<RangedAttackType> getRangedAttackType ();
+
+	/**
+	 * @return Complete list of all weapon grades in game
+	 */
+	public List<WeaponGrade> getWeaponGrade ();
+
+	/**
+	 * @return Complete list of all movement rate rules in game
+	 */
+	public List<MovementRateRule> getMovementRateRule ();
+
+	/**
+	 * @return Complete list of all combat map elements in game
+	 */
+	public List<CombatMapElement> getCombatMapElement ();
+
+	/**
+	 * @return Complete list of all CAEs in game
+	 */
+	public List<CombatAreaEffect> getCombatAreaEffect ();
+
+	/**
+	 * @return Complete list of all combat tile types in game
+	 */
+	public List<CombatTileType> getCombatTileType ();
+
+	/**
+	 * @return Complete list of all combat tile borders in game
+	 */
+	public List<CombatTileBorder> getCombatTileBorder ();
+	
+	/**
+	 * @return Complete list of all pre-defined map sizes
+	 */
+	public List<MapSize> getMapSize ();
+
+	/**
+	 * @return Complete list of all pre-defined land proportions
+	 */
+	public List<LandProportion> getLandProportion ();
+
+	/**
+	 * @return Complete list of all pre-defined node strengths
+	 */
+	public List<NodeStrength> getNodeStrength ();
+
+	/**
+	 * @return Complete list of all pre-defined difficulty levels
+	 */
+	public List<DifficultyLevel> getDifficultyLevel ();
+
+	/**
+	 * @return Complete list of all pre-defined fog of war settings
+	 */
+	public List<FogOfWarSetting> getFogOfWarSetting ();
+
+	/**
+	 * @return Complete list of all pre-defined unit settings
+	 */
+	public List<UnitSetting> getUnitSetting ();
+
+	/**
+	 * @return Complete list of all pre-defined spell settings
+	 */
+	public List<SpellSetting> getSpellSetting ();
 }

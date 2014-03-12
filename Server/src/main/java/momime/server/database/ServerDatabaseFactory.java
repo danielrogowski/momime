@@ -17,6 +17,6 @@ public final class ServerDatabaseFactory extends ObjectFactory
 	@Override
 	public final ServerDatabase createServerDatabase ()
 	{
-		return new ServerDatabaseEx ();
+		return new ServerDatabaseExImpl ();
 	}
 }

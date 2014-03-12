@@ -17,7 +17,7 @@ public final class TestServerDatabase
 	@Test
 	public final void testReadDatabase () throws Exception
 	{
-		final ServerDatabaseEx serverDB = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseExImpl serverDB = (ServerDatabaseExImpl) ServerTestData.loadServerDatabase ();
 		
 		// This doesn't exhaustively test that every element of the database is loaded correctly, it only checks that the right number of records of each type are loaded
 		// Common entities
@@ -65,7 +65,7 @@ public final class TestServerDatabase
 		assertEquals ("Failed to load correct number of spell book sections",					9,					serverDB.getSpellBookSection ().size ());
 		assertEquals ("Failed to load correct number of city spell effects",						24,				serverDB.getCitySpellEffect ().size ());
 		assertEquals ("Failed to load correct number of known servers",							2,					serverDB.getKnownServer ().size ());
-		assertEquals ("Failed to load correct number of language text categories",			40,				serverDB.getLanguageCategory ().size ());
+		assertEquals ("Failed to load correct number of language text categories",			47,				serverDB.getLanguageCategory ().size ());
 
 		// Second level entities
 		assertEquals ("Failed to load correct number of fortress plane productions",		1,					serverDB.getPlane ().get (1).getFortressPlaneProduction ().size ());

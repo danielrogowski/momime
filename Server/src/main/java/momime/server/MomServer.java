@@ -18,7 +18,7 @@ import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
-import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseExImpl;
 import momime.server.mapgenerator.OverlandMapGeneratorImpl;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.SessionWindow;
@@ -123,11 +123,12 @@ public final class MomServer extends MultiplayerSessionServer
 		// Load server XML
 		thread.getSessionLogger ().info ("Loading server XML...");
 		final File fullFilename = new File (getPathToServerXmlDatabases () + sd.getXmlDatabaseName () + ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
-		thread.setServerDB ((ServerDatabaseEx) getServerDatabaseUnmarshaller ().unmarshal (fullFilename));
+		final ServerDatabaseExImpl db = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
 
 		// Create hash maps to look up all the values from the DB
 		thread.getSessionLogger ().info ("Building maps over XML data...");
-		thread.getServerDB ().buildMaps ();
+		db.buildMaps ();
+		thread.setServerDB (db); 
 		
 		// Create client database
 		thread.getSessionLogger ().info ("Generating client XML...");

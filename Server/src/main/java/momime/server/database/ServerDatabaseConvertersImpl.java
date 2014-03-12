@@ -170,7 +170,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 			try
 			{
 				// Attempt to load it in
-				final ServerDatabaseEx db = (ServerDatabaseEx) serverDatabaseUnmarshaller.unmarshal (thisXmlFile.getValue ());
+				final ServerDatabaseExImpl db = (ServerDatabaseExImpl) serverDatabaseUnmarshaller.unmarshal (thisXmlFile.getValue ());
 				db.buildMaps ();
 
 				// Loaded ok, add relevant parts to the new game database

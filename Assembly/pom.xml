@@ -3,7 +3,7 @@
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-assembly</artifactId>
 	<version>0.9.5-SNAPSHOT</version>
-	<name>momimeEditors</name>
+	<name>momimeAssembly</name>
 	<description>MoM IME zip assembly</description>
 	<packaging>pom</packaging>
 

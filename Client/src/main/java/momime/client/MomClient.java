@@ -37,6 +37,9 @@ import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
  */
 public final class MomClient extends MultiplayerSessionClient
 {
+	/** Name that we logged in using */
+	private String ourPlayerName;
+	
 	/** Main menu with options to connect to a server and create or join games */
 	private MainMenuUI mainMenuUI;
 
@@ -102,6 +105,7 @@ public final class MomClient extends MultiplayerSessionClient
 			public final void loggedIn (final MultiplayerServerConnection sender)
 				throws JAXBException, XMLStreamException, IOException
 			{
+				getConnectToServerUI ().afterLoggedIn ();
 				getConnectToServerUI ().setVisible (false);
 				getMainMenuUI ().enableActions ();
 			}
@@ -176,6 +180,7 @@ public final class MomClient extends MultiplayerSessionClient
 			public final void joinedSession (final MultiplayerServerConnection sender)
 				throws JAXBException, XMLStreamException, IOException
 			{
+				System.out.println (getSessionDescription ());
 			}
 
 			/**
@@ -316,6 +321,22 @@ public final class MomClient extends MultiplayerSessionClient
 		});
 	}
 
+	/**
+	 * @return Name that we logged in using
+	 */
+	public final String getOurPlayerName ()
+	{
+		return ourPlayerName;
+	}
+
+	/**
+	 * @param name Name that we logged in using
+	 */
+	public final void setOurPlayerName (final String name)
+	{
+		ourPlayerName = name;
+	}
+	
 	/**
 	 * @return Main menu with options to connect to a server and create or join games
 	 */

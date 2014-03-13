@@ -20,18 +20,32 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import momime.client.MomClient;
 import momime.client.database.v0_9_4.AvailableDatabase;
 import momime.client.ui.actions.CycleAction;
+import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
+import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
+import momime.common.database.newgame.v0_9_4.LandProportionData;
+import momime.common.database.newgame.v0_9_4.MapSizeData;
+import momime.common.database.newgame.v0_9_4.NodeStrengthData;
+import momime.common.database.newgame.v0_9_4.SpellSettingData;
+import momime.common.database.newgame.v0_9_4.UnitSettingData;
 import momime.common.database.v0_9_4.DifficultyLevel;
+import momime.common.database.v0_9_4.DifficultyLevelNodeStrength;
 import momime.common.database.v0_9_4.FogOfWarSetting;
 import momime.common.database.v0_9_4.LandProportion;
 import momime.common.database.v0_9_4.MapSize;
 import momime.common.database.v0_9_4.NodeStrength;
 import momime.common.database.v0_9_4.SpellSetting;
 import momime.common.database.v0_9_4.UnitSetting;
+import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.TurnSystem;
+
+import com.ndg.multiplayer.sessionbase.NewSession;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Screens for setting up new and joining existing games
@@ -77,6 +91,12 @@ public final class NewGameUI extends MomClientAbstractUI
 	/** Label for human opponents button */
 	private JLabel humanOpponentsLabel;
 	
+	/** Number of human opponents */
+	private CycleAction<Integer> changeHumanOpponentsAction;
+	
+	/** Number of AI opponents */
+	private CycleAction<Integer> changeAIOpponentsAction;
+	
 	/** Label for AI opponents button */
 	private JLabel aiOpponentsLabel;
 	
@@ -114,7 +134,7 @@ public final class NewGameUI extends MomClientAbstractUI
 	private JLabel fogOfWarLabel;
 
 	/** Action for selecting pre-defined fog of war settings or custom */
-	private CycleAction<FogOfWarSetting> changeFogOfWarAction;
+	private CycleAction<FogOfWarSetting> changeFogOfWarSettingsAction;
 	
 	/** Label for unit settings button */
 	private JLabel unitSettingsLabel;
@@ -308,6 +328,8 @@ public final class NewGameUI extends MomClientAbstractUI
 		// Actions
 		cancelAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = 3392213175312761329L;
+
 			@Override
 			public void actionPerformed (final ActionEvent e)
 			{
@@ -317,10 +339,28 @@ public final class NewGameUI extends MomClientAbstractUI
 
 		okAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -6935146629512835133L;
+
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
 				// What this does depends on which 'card' is currently displayed
+				final PlayerDescription pd = new PlayerDescription ();
+				pd.setPlayerID (getClient ().getOurPlayerID ());
+				pd.setPlayerName (getClient ().getOurPlayerName ());
+				
+				final NewSession msg = new NewSession ();
+				msg.setSessionDescription (buildSessionDescription ());
+				msg.setPlayerDescription (pd);
+				
+				try
+				{
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+				}
+				catch (final Exception e)
+				{
+					e.printStackTrace ();
+				}
 			}
 		};
 		
@@ -394,27 +434,46 @@ public final class NewGameUI extends MomClientAbstractUI
 			 * Update available choices of all the buttons when a database is chosen
 			 */
 			@Override
-			protected void selectedItemChanged ()
+			protected final void selectedItemChanged ()
 			{
 				selectedDatabaseOrLanguageChanged ();
 			}
 		};
 
-		final CycleAction<Integer> changeHumanOpponentsAction = new CycleAction<Integer> ();
-		final CycleAction<Integer> changeAIOpponentsAction = new CycleAction<Integer> ();
-		
-		for (int playerCount = 0; playerCount <= 13; playerCount++)
+		changeHumanOpponentsAction = new CycleAction<Integer> ()
 		{
-			changeHumanOpponentsAction.addItem (playerCount, new Integer (playerCount).toString ());
-			changeAIOpponentsAction.addItem (playerCount, new Integer (playerCount).toString ());
-		}
+			private static final long serialVersionUID = 6976686450640981530L;
 
+			/**
+			 * Enable/disable OK button when number of oppponents changes
+			 */
+			@Override
+			protected final void selectedItemChanged ()
+			{
+				enableOrDisableOkButton ();
+			}
+		};
+		
+		changeAIOpponentsAction = new CycleAction<Integer> ()
+		{
+			private static final long serialVersionUID = -800824274156080772L;
+
+			/**
+			 * Enable/disable OK button when number of oppponents changes
+			 */
+			@Override
+			protected final void selectedItemChanged ()
+			{
+				enableOrDisableOkButton ();
+			}
+		};
+		
 		changeMapSizeAction = new CycleAction<MapSize> ();
 		changeLandProportionAction = new CycleAction<LandProportion> ();
 		changeNodeStrengthAction = new CycleAction<NodeStrength> ();
 		changeDifficultyLevelAction = new CycleAction<DifficultyLevel> ();
 		changeTurnSystemAction = new CycleAction<TurnSystem> ();
-		changeFogOfWarAction = new CycleAction<FogOfWarSetting> ();
+		changeFogOfWarSettingsAction = new CycleAction<FogOfWarSetting> ();
 		changeUnitSettingsAction = new CycleAction<UnitSetting> ();
 		changeSpellSettingsAction = new CycleAction<SpellSetting> ();
 		changeDebugOptionsAction = new CycleAction<Boolean> ();
@@ -478,7 +537,7 @@ public final class NewGameUI extends MomClientAbstractUI
 		fogOfWarLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
 		newGamePanel.add (fogOfWarLabel, getUtils ().createConstraints (0, 11, 1, INSET, GridBagConstraints.WEST));
 
-		newGamePanel.add (getUtils ().createImageButton (changeFogOfWarAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+		newGamePanel.add (getUtils ().createImageButton (changeFogOfWarSettingsAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
 			midButtonNormal, midButtonPressed, midButtonNormal), getUtils ().createConstraints (1, 11, 1, INSET, GridBagConstraints.EAST));
 		
 		unitSettingsLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
@@ -549,12 +608,55 @@ public final class NewGameUI extends MomClientAbstractUI
 		for (final AvailableDatabase db : getClient ().getNewGameDatabase ().getMomimeXmlDatabase ())
 			changeDatabaseAction.addItem (db, db.getDbName ());
 		
+		// Ok button should only be enabled once we have enough info
+		final DocumentListener documentListener = new DocumentListener ()
+		{
+			@Override
+			public final void insertUpdate (final DocumentEvent e)
+			{
+				enableOrDisableOkButton ();
+			}
+
+			@Override
+			public final void removeUpdate (final DocumentEvent e)
+			{
+				enableOrDisableOkButton ();
+			}
+
+			@Override
+			public final void changedUpdate (final DocumentEvent e)
+			{
+				enableOrDisableOkButton ();
+			}
+		};
+		
+		gameName.getDocument ().addDocumentListener (documentListener);
+		
+		// Add these last, because they trigger enableOrDisableOkButton
+		for (int playerCount = 0; playerCount <= 13; playerCount++)
+		{
+			changeHumanOpponentsAction.addItem (playerCount, new Integer (playerCount).toString ());
+			changeAIOpponentsAction.addItem (playerCount, new Integer (playerCount).toString ());
+		}
+		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().pack ();
 		getFrame ().setResizable (false);
 	}
 
+	/**
+	 * Ok button should only be enabled once we have enough info
+	 */
+	private final void enableOrDisableOkButton ()
+	{
+		// This gets triggered during startup before both actions have been created
+		final int totalOpponents = ((changeHumanOpponentsAction.getSelectedItem () == null) || (changeAIOpponentsAction.getSelectedItem () == null)) ? 0 :
+			changeHumanOpponentsAction.getSelectedItem () + changeAIOpponentsAction.getSelectedItem ();
+		
+		okAction.setEnabled ((totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals ("")));
+	}
+	
 	/**
 	 * Update all labels and such from the chosen language 
 	 */
@@ -669,9 +771,9 @@ public final class NewGameUI extends MomClientAbstractUI
 		for (final DifficultyLevel difficultyLevel : changeDatabaseAction.getSelectedItem ().getDifficultyLevel ())
 			changeDifficultyLevelAction.addItem (difficultyLevel, getLanguage ().findDifficultyLevelDescription (difficultyLevel.getDifficultyLevelID ()));
 		
-		changeFogOfWarAction.clearItems ();
+		changeFogOfWarSettingsAction.clearItems ();
 		for (final FogOfWarSetting fowSetting : changeDatabaseAction.getSelectedItem ().getFogOfWarSetting ())
-			changeFogOfWarAction.addItem (fowSetting, getLanguage ().findFogOfWarSettingDescription (fowSetting.getFogOfWarSettingID ()));
+			changeFogOfWarSettingsAction.addItem (fowSetting, getLanguage ().findFogOfWarSettingDescription (fowSetting.getFogOfWarSettingID ()));
 		
 		changeUnitSettingsAction.clearItems ();
 		for (final UnitSetting unitSetting : changeDatabaseAction.getSelectedItem ().getUnitSetting ())
@@ -683,13 +785,127 @@ public final class NewGameUI extends MomClientAbstractUI
 		
 		// Add "custom" options for all as well
 		final String custom = getLanguage ().findCategoryEntry ("frmNewGame", "Custom");
-		changeMapSizeAction.addItem				(null, custom);
-		changeLandProportionAction.addItem	(null, custom);
-		changeNodeStrengthAction.addItem		(null, custom);
-		changeDifficultyLevelAction.addItem		(null, custom);
-		changeFogOfWarAction.addItem			(null, custom);
-		changeUnitSettingsAction.addItem		(null, custom);
-		changeSpellSettingsAction.addItem		(null, custom);
+		changeMapSizeAction.addItem					(null, custom);
+		changeLandProportionAction.addItem		(null, custom);
+		changeNodeStrengthAction.addItem			(null, custom);
+		changeDifficultyLevelAction.addItem			(null, custom);
+		changeFogOfWarSettingsAction.addItem	(null, custom);
+		changeUnitSettingsAction.addItem			(null, custom);
+		changeSpellSettingsAction.addItem			(null, custom);
+	}
+	
+	/**
+	 * @return Session description built from all the selected options
+	 */
+	private final MomSessionDescription buildSessionDescription ()
+	{
+		final MomSessionDescription sd = new MomSessionDescription ();
+		
+		// Easy fields
+		sd.setSessionName (gameName.getText ());
+		sd.setXmlDatabaseName (changeDatabaseAction.getSelectedItem ().getDbName ());
+		sd.setTurnSystem (changeTurnSystemAction.getSelectedItem ());
+		
+		// +3 for this player (since we only select nbr of opponents) + raiders + monsters
+		sd.setMaxPlayers (changeHumanOpponentsAction.getSelectedItem () + changeAIOpponentsAction.getSelectedItem () + 3);
+		sd.setAiPlayerCount (changeAIOpponentsAction.getSelectedItem ());
+		
+		// Map size
+		if (changeMapSizeAction.getSelectedItem () != null)
+			sd.setMapSize (changeMapSizeAction.getSelectedItem ());
+		else
+		{
+			final MapSizeData customMapSize = new MapSizeData ();
+			sd.setMapSize (customMapSize);
+			throw new UnsupportedOperationException ("Custom map size not yet supported");
+		}
+		
+		// Land proportion
+		if (changeLandProportionAction.getSelectedItem () != null)
+			sd.setLandProportion (changeLandProportionAction.getSelectedItem ());
+		else
+		{
+			final LandProportionData customLandProportion = new LandProportionData ();
+			sd.setLandProportion (customLandProportion);
+			throw new UnsupportedOperationException ("Custom land proportion not yet supported");
+		}
+		
+		// Node strength
+		if (changeNodeStrengthAction.getSelectedItem () != null)
+			sd.setNodeStrength (changeNodeStrengthAction.getSelectedItem ());
+		else
+		{
+			final NodeStrengthData customNodeStrength = new NodeStrengthData ();
+			sd.setNodeStrength (customNodeStrength);
+			throw new UnsupportedOperationException ("Custom node strength not yet supported");
+		}
+		
+		// Difficulty level
+		if (changeDifficultyLevelAction.getSelectedItem () != null)
+			sd.setDifficultyLevel (changeDifficultyLevelAction.getSelectedItem ());
+		else
+		{
+			final DifficultyLevelData customDifficultyLevel = new DifficultyLevelData ();
+			sd.setDifficultyLevel (customDifficultyLevel);
+			throw new UnsupportedOperationException ("Custom difficulty level not yet supported");
+		}
+
+		// Difficulty level - node strength
+		if ((changeDifficultyLevelAction.getSelectedItem () != null) && (changeNodeStrengthAction.getSelectedItem () != null))
+		{
+			// Note there's multiple entries, one for each plane, so isn't a simple search and exit as soon as we get a match
+			final String nodeStrengthID = changeNodeStrengthAction.getSelectedItem ().getNodeStrengthID ();
+			for (final DifficultyLevelNodeStrength dlns : changeDifficultyLevelAction.getSelectedItem ().getDifficultyLevelNodeStrength ())
+				if (dlns.getNodeStrengthID ().equals (nodeStrengthID))
+					sd.getDifficultyLevelNodeStrength ().add (dlns);
+		}
+		else
+		{
+			throw new UnsupportedOperationException ("Custom difficulty level-node strength not yet supported");
+		}
+		
+		// FOW setting
+		if (changeFogOfWarSettingsAction.getSelectedItem () != null)
+			sd.setFogOfWarSetting (changeFogOfWarSettingsAction.getSelectedItem ());
+		else
+		{
+			final FogOfWarSettingData customFogOfWarSetting = new FogOfWarSettingData ();
+			sd.setFogOfWarSetting (customFogOfWarSetting);
+			throw new UnsupportedOperationException ("Custom fog of war settings not yet supported");
+		}
+		
+		// Unit setting
+		if (changeUnitSettingsAction.getSelectedItem () != null)
+			sd.setUnitSetting (changeUnitSettingsAction.getSelectedItem ());
+		else
+		{
+			final UnitSettingData customUnitSetting = new UnitSettingData ();
+			sd.setUnitSetting (customUnitSetting);
+			throw new UnsupportedOperationException ("Custom unit settings not yet supported");
+		}
+		
+		// Spell setting
+		if (changeSpellSettingsAction.getSelectedItem () != null)
+			sd.setSpellSetting (changeSpellSettingsAction.getSelectedItem ());
+		else
+		{
+			final SpellSettingData customSpellSetting = new SpellSettingData ();
+			sd.setSpellSetting (customSpellSetting);
+			throw new UnsupportedOperationException ("Custom spell settings not yet supported");
+		}
+		
+		// Debug options
+		if (!changeDebugOptionsAction.getSelectedItem ())
+		{
+			// No debug options, set defaults
+			sd.setDisableFogOfWar (false);
+		}
+		else
+		{
+			throw new UnsupportedOperationException ("Custom debug options not yet supported");
+		}
+		
+		return sd;
 	}
 
 	/**

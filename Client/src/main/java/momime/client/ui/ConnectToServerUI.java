@@ -399,6 +399,15 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 		msg.setKickExistingConnection (kickAccount.isSelected ());
 		getClient ().getServerConnection ().sendMessageToServer (msg);
 	}
+	
+	/**
+	 * Triggered after we successfully log in
+	 */
+	public final void afterLoggedIn ()
+	{
+		// Remember the name that we logged in as
+		getClient ().setOurPlayerName (playerName.getText ());
+	}
 
 	/**
 	 * @return Large font

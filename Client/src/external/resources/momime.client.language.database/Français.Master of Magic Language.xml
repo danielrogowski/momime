@@ -4964,6 +4964,9 @@ Si la cité a une insuffisante fourniture de nourriture, les citoyens commencero
 		<languageEntry languageEntryID="LeaveGame">
 			<languageEntryText>Annuler</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Custom">
+			<languageEntryText>Custom</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmChoosePortrait">
 		<languageEntry languageEntryID="Title">
@@ -4974,6 +4977,9 @@ Si la cité a une insuffisante fourniture de nourriture, les citoyens commencero
 		</languageEntry>
 		<languageEntry languageEntryID="LeaveGame">
 			<languageEntryText>Annuler</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Custom">
+			<languageEntryText>Custom</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmChooseFlagColour">

@@ -2,6 +2,7 @@ package momime.client.ui;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -12,10 +13,17 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -25,7 +33,9 @@ import javax.swing.event.DocumentListener;
 
 import momime.client.MomClient;
 import momime.client.database.v0_9_4.AvailableDatabase;
+import momime.client.database.v0_9_4.Wizard;
 import momime.client.ui.actions.CycleAction;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
 import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_4.LandProportionData;
@@ -74,8 +84,23 @@ public final class NewGameUI extends MomClientAbstractUI
 	/** OK action */
 	private Action okAction;
 	
+	/** Card layout for right hand side */
+	private CardLayout cardLayout;
+	
+	/** Panel that the card layout is the layout manager for */
+	private JPanel cards;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 3;
+	
+	/** 74x21 button */
+	private BufferedImage buttonNormal;
+	
+	/** 74x21 button */
+	private BufferedImage buttonPressed;
+	
+	/** 74x21 button */
+	private BufferedImage buttonDisabled;
 	
 	// NEW GAME PANEL
 
@@ -249,12 +274,21 @@ public final class NewGameUI extends MomClientAbstractUI
 	private JLabel joinGameTitle;
 	
 	// WIZARD SELECTION PANEL
-	
+
 	/** Panel key */
 	private final static String WIZARD_PANEL = "Wizard";
+
+	/** Panel */
+	private JPanel wizardPanel;
 	
 	/** Panel title */
 	private JLabel wizardTitle;
+	
+	/** Dynamically created button actions */
+	private Map<String, Action> wizardButtonActions = new HashMap<String, Action> ();
+
+	/** Dynamically created buttons etc */
+	private List<Component> wizardComponents = new ArrayList<Component> ();
 	
 	// PORTRAIT SELECTION PANEL (for custom wizards)
 
@@ -314,9 +348,6 @@ public final class NewGameUI extends MomClientAbstractUI
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/background.png");
 		final BufferedImage divider = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/divider.png");
-		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
-		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Pressed.png");
-		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Disabled.png");
 		final BufferedImage midButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button135x17Normal.png");
 		final BufferedImage midButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button135x17Pressed.png");
 		final BufferedImage wideButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button290x17Normal.png");
@@ -325,6 +356,10 @@ public final class NewGameUI extends MomClientAbstractUI
 		final BufferedImage checkboxTicked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Ticked.png");
 		final BufferedImage editbox = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox125x23.png");
 
+		buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
+		buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Pressed.png");
+		buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Disabled.png");
+		
 		// Actions
 		cancelAction = new AbstractAction ()
 		{
@@ -409,7 +444,9 @@ public final class NewGameUI extends MomClientAbstractUI
 		rhsConstraints.weighty = 1;
 		rhsConstraints.fill = GridBagConstraints.BOTH;
 		
-		final JPanel cards = new JPanel (new CardLayout ());
+		cardLayout = new CardLayout ();
+		
+		cards = new JPanel (cardLayout);
 		cards.setOpaque (false);
 		contentPane.add (cards, rhsConstraints);
 		
@@ -574,18 +611,6 @@ public final class NewGameUI extends MomClientAbstractUI
 		cards.add (newGamePanel, NEW_GAME_PANEL);
 		
 		// CUSTOM MAP SIZE PANEL
-		// This has 6 columns, Map Size, Width, x, Height - then the right hand 2 columns are the rightmost value and %
-		final JPanel mapSizePanel = new JPanel ();
-		mapSizePanel.setOpaque (false);
-		mapSizePanel.setLayout (new GridBagLayout ());
-		
-		mapSizeTitle = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
-		mapSizePanel.add (mapSizeTitle, getUtils ().createConstraints (0, 0, 4, INSET, GridBagConstraints.CENTER));
-		
-		mapSizePanel.add (getUtils ().createImage (divider), getUtils ().createConstraints (0, 1, 4, INSET, GridBagConstraints.CENTER));
-		
-		cards.add (mapSizePanel, MAP_SIZE_PANEL);
-
 		// CUSTOM LAND PROPORTION PANEL
 		// CUSTOM NODES PANEL
 		// CUSTOM DIFFICULTY PANEL (1 of 2)
@@ -596,7 +621,19 @@ public final class NewGameUI extends MomClientAbstractUI
 		// CUSTOM SPELL SETTINGS PANEL
 		// DEBUG OPTIONS PANEL
 		// JOIN GAME PANEL
+		
 		// WIZARD SELECTION PANEL
+		wizardPanel = new JPanel ();
+		wizardPanel.setOpaque (false);
+		wizardPanel.setLayout (new GridBagLayout ());
+		
+		wizardTitle = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
+		wizardPanel.add (wizardTitle, getUtils ().createConstraints (0, 0, 2, INSET, GridBagConstraints.CENTER));
+		
+		wizardPanel.add (getUtils ().createImage (divider), getUtils ().createConstraints (0, 1, 2, INSET, GridBagConstraints.CENTER));
+		
+		cards.add (wizardPanel, WIZARD_PANEL);
+
 		// PORTRAIT SELECTION PANEL (for custom wizards)
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
 		// CUSTOM PICKS PANEL (for custom wizards)
@@ -644,6 +681,14 @@ public final class NewGameUI extends MomClientAbstractUI
 		getFrame ().pack ();
 		getFrame ().setResizable (false);
 	}
+	
+	/**
+	 * Show new game card, if they cancelled and then took option again
+	 */
+	public final void showNewGamePanel ()
+	{
+		cardLayout.show (cards, NEW_GAME_PANEL);
+	}
 
 	/**
 	 * Ok button should only be enabled once we have enough info
@@ -655,6 +700,86 @@ public final class NewGameUI extends MomClientAbstractUI
 			changeHumanOpponentsAction.getSelectedItem () + changeAIOpponentsAction.getSelectedItem ();
 		
 		okAction.setEnabled ((totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals ("")));
+	}
+	
+	/**
+	 * After we join a session, server sends us the database so then we know all things like
+	 * all the wizards and retorts available, so can set up the controls for those
+	 */
+	public final void afterJoinedSession ()
+	{
+		// Remove any old buttons leftover from a previous joining game
+		for (final Component oldComponent : wizardComponents)
+			wizardPanel.remove (oldComponent);
+
+		wizardComponents.clear ();
+		wizardButtonActions.clear ();
+		
+		// WIZARD SELECTION PANEL
+		// First list all the wizards, we need to know up front how many there are so we can arrange the buttons properly
+		final List<String> wizardIDs = new ArrayList<String> ();
+		for (final Wizard wizard : getClient ().getClientDB ().getWizard ())
+			if ((!wizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
+				(!wizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
+				
+				wizardIDs.add (wizard.getWizardID ());
+		
+		// Make space for custom button
+		if (getClient ().getSessionDescription ().getDifficultyLevel ().isCustomWizards ())
+			wizardIDs.add (null);
+		
+		// Work out button locations
+		// We do entire left column first, then entire right column
+		final int colCount = 2;
+		final int rowCount = (wizardIDs.size () + colCount - 1) / colCount;
+		int wizardNo = 0;
+		
+		for (int colNo = 0; colNo < colCount; colNo++)
+			for (int rowNo = 0; rowNo < rowCount; rowNo++)
+				
+				// This forumla is to make sure any rows which need an extra button (i.e. because number of wizards did not divide equally into columns) on the right
+				if ((rowNo < rowCount - 1) || (wizardNo + (rowCount * (colCount - 1 - colNo)) < wizardIDs.size ()))
+				{
+					final String wizardID = wizardIDs.get (wizardNo);
+					
+					final Action wizardButtonAction = new AbstractAction ()
+					{
+						@Override
+						public void actionPerformed (final ActionEvent e)
+						{
+						}
+					};
+				
+					wizardButtonActions.put (wizardID, wizardButtonAction);
+
+					final JButton wizardButton = getUtils ().createImageButton (wizardButtonAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+						buttonNormal, buttonPressed, buttonDisabled);
+					wizardPanel.add (wizardButton, getUtils ().createConstraints (colNo, rowNo+2, 1, INSET,
+						(colNo == 0) ? GridBagConstraints.EAST : GridBagConstraints.WEST));
+					wizardComponents.add (wizardButton);
+					
+					// Next wizard
+					wizardNo++;
+				}
+
+		// Put all the space underneath the buttons
+		// Have to create two space 'blobs' to make the columns stay even
+		for (int colNo = 0; colNo < colCount; colNo++)
+		{
+			final GridBagConstraints wizardSpace = getUtils ().createConstraints (colNo, rowCount+2, 1, INSET, GridBagConstraints.CENTER);
+			wizardSpace.weightx = 0.5;
+			wizardSpace.weighty = 1;
+			
+			final Component glue = Box.createGlue ();
+			wizardPanel.add (glue, wizardSpace);
+			wizardComponents.add (glue);
+		}
+		
+		// Set all the text
+		languageChangedDynamic ();
+		
+		// Show the page
+		cardLayout.show (cards, WIZARD_PANEL);
 	}
 	
 	/**
@@ -691,10 +816,10 @@ public final class NewGameUI extends MomClientAbstractUI
 			changeDebugOptionsAction.addItem (debugOptions, getLanguage ().findCategoryEntry ("XsdBoolean", new Boolean (debugOptions).toString ().toLowerCase ()));
 	
 		// CUSTOM MAP SIZE PANEL
-		mapSizeTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Title"));
+		/* mapSizeTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Title"));
 		
 		// CUSTOM LAND PROPORTION PANEL
-		/* landProportionTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "Title"));
+		landProportionTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomLandProportion", "Title"));
 		
 		// CUSTOM NODES PANEL
 		nodesTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "Title"));
@@ -721,13 +846,13 @@ public final class NewGameUI extends MomClientAbstractUI
 		debugTitle.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDebug", "Title"));
 		
 		// JOIN GAME PANEL
-		joinGameTitle.setText (getLanguage ().findCategoryEntry ("frmJoinGame", "Title"));
+		joinGameTitle.setText (getLanguage ().findCategoryEntry ("frmJoinGame", "Title")); */
 		
 		// WIZARD SELECTION PANEL
 		wizardTitle.setText (getLanguage ().findCategoryEntry ("frmChooseWizard", "Title"));
 		
 		// PORTRAIT SELECTION PANEL (for custom wizards)
-		portraitTitle.setText (getLanguage ().findCategoryEntry ("frmChoosePortrait", "Title"));
+		/* portraitTitle.setText (getLanguage ().findCategoryEntry ("frmChoosePortrait", "Title"));
 		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
 		flagTitle.setText (getLanguage ().findCategoryEntry ("frmChooseFlagColour", "Title"));
@@ -747,6 +872,9 @@ public final class NewGameUI extends MomClientAbstractUI
 		// Change labels for buttons on the new game form
 		if (changeDatabaseAction.getSelectedItem () != null)
 			selectedDatabaseOrLanguageChanged ();
+		
+		// Change all the forms dynamically built after we join a game
+		languageChangedDynamic ();
 	}
 	
 	/**
@@ -792,6 +920,18 @@ public final class NewGameUI extends MomClientAbstractUI
 		changeFogOfWarSettingsAction.addItem	(null, custom);
 		changeUnitSettingsAction.addItem			(null, custom);
 		changeSpellSettingsAction.addItem			(null, custom);
+	}
+	
+	/**
+	 * Update all labels and buttons that are only dynamically created after we join a game
+	 */
+	private final void languageChangedDynamic ()
+	{
+		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
+			if (wizard.getKey () == null)
+				wizard.getValue ().putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmChooseWizard", "Custom"));
+			else
+				wizard.getValue ().putValue (Action.NAME, getLanguage ().findWizardName (wizard.getKey ()));
 	}
 	
 	/**

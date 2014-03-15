@@ -9,6 +9,7 @@ import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.UnitSetting;
+import momime.client.language.database.v0_9_5.Wizard;
 
 import org.junit.Test;
 
@@ -17,6 +18,27 @@ import org.junit.Test;
  */
 public final class TestLanguageDatabaseExImpl
 {
+	/**
+	 * Tests the findWizardName method
+	 */
+	@Test
+	public final void findWizardName ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Wizard newWizard = new Wizard ();
+			newWizard.setWizardID ("WZ0" + n);
+			newWizard.setWizardName ("WZDesc0" + n);
+			lang.getWizard ().add (newWizard);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("WZDesc02", lang.findWizardName ("WZ02"));
+		assertEquals ("WZ04", lang.findWizardName ("WZ04"));
+	}
+
 	/**
 	 * Tests the findMapSizeDescription method
 	 */

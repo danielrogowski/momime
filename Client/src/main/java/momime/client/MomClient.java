@@ -12,12 +12,16 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.database.ClientDatabaseEx;
 import momime.client.database.v0_9_4.NewGameDatabase;
 import momime.client.ui.ConnectToServerUI;
 import momime.client.ui.MainMenuUI;
 import momime.client.ui.MessageBoxUI;
+import momime.client.ui.NewGameUI;
 import momime.client.ui.PrototypeFrameCreator;
 import momime.common.MomCommonConstants;
+import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
+import momime.common.messages.v0_9_4.MomSessionDescription;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -45,6 +49,9 @@ public final class MomClient extends MultiplayerSessionClient
 
 	/** Connect to server UI */
 	private ConnectToServerUI connectToServerUI;
+	
+	/** New Game UI */
+	private NewGameUI newGameUI;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -180,7 +187,7 @@ public final class MomClient extends MultiplayerSessionClient
 			public final void joinedSession (final MultiplayerServerConnection sender)
 				throws JAXBException, XMLStreamException, IOException
 			{
-				System.out.println (getSessionDescription ());
+				getNewGameUI ().afterJoinedSession ();
 			}
 
 			/**
@@ -320,7 +327,33 @@ public final class MomClient extends MultiplayerSessionClient
 			}
 		});
 	}
+	
+	/**
+	 * @return Public knowledge structure, typecasted to MoM specific type
+	 */
+	@Override
+	public final MomGeneralPublicKnowledge getGeneralPublicKnowledge ()
+	{
+		return (MomGeneralPublicKnowledge) super.getGeneralPublicKnowledge ();
+	}
 
+	/**
+	 * @return Client XML in use for this session
+	 */
+	public final ClientDatabaseEx getClientDB ()
+	{
+		return (ClientDatabaseEx) getGeneralPublicKnowledge ().getClientDatabase ();
+	}
+	
+	/**
+	 * @return Session description, typecasted to MoM specific type
+	 */
+	@Override
+	public final MomSessionDescription getSessionDescription ()
+	{
+		return (MomSessionDescription) super.getSessionDescription ();
+	}
+	
 	/**
 	 * @return Name that we logged in using
 	 */
@@ -367,6 +400,22 @@ public final class MomClient extends MultiplayerSessionClient
 	public final void setConnectToServerUI (final ConnectToServerUI ui)
 	{
 		connectToServerUI = ui;
+	}
+
+	/**
+	 * @return New Game UI
+	 */
+	public final NewGameUI getNewGameUI ()
+	{
+		return newGameUI;
+	}
+
+	/**
+	 * @param ui New Game UI
+	 */
+	public final void setNewGameUI (final NewGameUI ui)
+	{
+		newGameUI = ui;
 	}
 	
 	/**

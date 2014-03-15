@@ -206,6 +206,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- Singleton beans for client -->
 	
 	<bean id="multiplayerSessionClientServerToClientObjectFactory" class="com.ndg.multiplayer.client.messages.process.MultiplayerSessionClientServerToClientObjectFactory" />
+
+	<bean id="clientDatabaseFactory" class="momime.client.database.ClientDatabaseFactory" />	<!-- Creates ClientDatabaseExImpl instead of ClientDatabase -->
 	
 	<bean id="momClient" class="momime.client.MomClient" init-method="start">
 		<property name="serverPort" value="18250" />
@@ -216,11 +218,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			<array>
 				<ref bean="multiplayerSessionClientServerToClientObjectFactory" />
 				<ref bean="momClientServerToClientObjectFactory" />
+				<ref bean="clientDatabaseFactory" />
 				<ref bean="objectFactoryMessages" />
 			</array>
 		</property>
 		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
+		<property name="newGameUI" ref="newGameUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	

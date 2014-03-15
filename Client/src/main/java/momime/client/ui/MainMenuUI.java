@@ -155,6 +155,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 				try
 				{
 					getNewGameUI ().setVisible (true);
+					getNewGameUI ().showNewGamePanel ();
 				}
 				catch (final IOException e)
 				{

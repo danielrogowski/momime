@@ -55,7 +55,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
    		</constructor-arg>
 	</bean>
 	
-	<bean id="serverDatabaseFactory" class="momime.server.database.ServerDatabaseFactory" />	<!-- Creates ServerDatabaseEx instead of ServerDatabase -->
+	<bean id="serverDatabaseFactory" class="momime.server.database.ServerDatabaseFactory" />	<!-- Creates ServerDatabaseExImpl instead of ServerDatabase -->
 	
 	<bean id="serverDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="serverDatabaseJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="serverDatabaseSchema" />

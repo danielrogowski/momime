@@ -4965,6 +4965,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="LeaveGame">
 			<languageEntryText>Leave Game</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Custom">
+			<languageEntryText>Custom</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmChoosePortrait">
 		<languageEntry languageEntryID="Title">
@@ -4975,6 +4978,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="LeaveGame">
 			<languageEntryText>Leave Game</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Custom">
+			<languageEntryText>Custom</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmChooseFlagColour">

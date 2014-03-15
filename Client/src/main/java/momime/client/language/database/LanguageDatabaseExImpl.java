@@ -12,12 +12,16 @@ import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.UnitSetting;
+import momime.client.language.database.v0_9_5.Wizard;
 
 /**
  * Implementation of language XML database - extends stubs auto-generated from XSD to add additional functionality from the interface
  */
 public final class LanguageDatabaseExImpl extends LanguageDatabase implements LanguageDatabaseEx
 {
+	/** Map of wizard IDs to wizard objects */
+	private Map<String, Wizard> wizardsMap;
+	
 	/** Map of map size IDs to map size objects */
 	private Map<String, MapSize> mapSizesMap;
 	
@@ -47,6 +51,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 */
 	public final void buildMaps ()
 	{
+		// Create wizards map
+		wizardsMap = new HashMap<String, Wizard> ();
+		for (final Wizard thisWizard : getWizard ())
+			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
+
 		// Create map sizes map
 		mapSizesMap = new HashMap<String, MapSize> ();
 		for (final MapSize thisMapSize : getMapSize ())
@@ -92,6 +101,17 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		}
 	}	
 
+	/**
+	 * @param wizardID Wizard ID to search for
+	 * @return Wizard name; or replays back the ID if no description exists
+	 */
+	@Override
+	public final String findWizardName (final String wizardID)
+	{
+		final Wizard thisWizard = wizardsMap.get (wizardID);
+		return (thisWizard == null) ? wizardID : thisWizard.getWizardName ();
+	}
+	
 	/**
 	 * @param mapSizeID Map size ID to search for
 	 * @return Map size description; or replays back the ID if no description exists

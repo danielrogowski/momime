@@ -2,9 +2,12 @@ package momime.client.messages;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import momime.client.ClientTestData;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import momime.client.database.ClientDatabaseEx;
+import momime.client.database.v0_9_4.MapFeature;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_4.TileType;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 
 import org.junit.Test;
@@ -21,10 +24,12 @@ public final class TestClientMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_BothNull () throws RecordNotFoundException
 	{
+		// Set up mock database
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		
+		// Run test
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-
-		final ClientDatabaseEx db = ClientTestData.createDB ();
-
+		
 		assertFalse (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
 
@@ -35,11 +40,16 @@ public final class TestClientMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_TileTypeNo () throws RecordNotFoundException
 	{
+		// Set up mock database
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		
+		final TileType tt = new TileType ();
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+
+		// Run test
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
-
-		final ClientDatabaseEx db = ClientTestData.createDB ();
-
+		
 		assertFalse (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
 
@@ -50,10 +60,16 @@ public final class TestClientMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_TileTypeYes () throws RecordNotFoundException
 	{
+		// Set up mock database
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		
+		final TileType tt = new TileType ();
+		tt.setMagicRealmID ("X");
+		when (db.findTileType ("TT02", "isNodeLairTower")).thenReturn (tt);
+		
+		// Run test
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT02");
-
-		final ClientDatabaseEx db = ClientTestData.createDB ();
 
 		assertTrue (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
@@ -65,10 +81,15 @@ public final class TestClientMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_MapFeatureNo () throws RecordNotFoundException
 	{
+		// Set up mock database
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		
+		final MapFeature mf = new MapFeature ();
+		when (db.findMapFeature ("MF01", "isNodeLairTower")).thenReturn (mf);
+
+		// Run test
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("MF01");
-
-		final ClientDatabaseEx db = ClientTestData.createDB ();
 
 		assertFalse (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
@@ -80,11 +101,17 @@ public final class TestClientMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_MapFeatureYes () throws RecordNotFoundException
 	{
+		// Set up mock database
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+
+		final MapFeature mf = new MapFeature ();
+		mf.setAnyMagicRealmsDefined (true);
+		when (db.findMapFeature ("MF02", "isNodeLairTower")).thenReturn (mf);
+		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("MF02");
 
-		final ClientDatabaseEx db = ClientTestData.createDB ();
-
+		// Run test
 		assertTrue (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}
 
@@ -95,11 +122,20 @@ public final class TestClientMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_MapFeatureYes_WithTileType () throws RecordNotFoundException
 	{
+		// Set up mock database
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+
+		final TileType tt = new TileType ();
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+
+		final MapFeature mf = new MapFeature ();
+		mf.setAnyMagicRealmsDefined (true);
+		when (db.findMapFeature ("MF02", "isNodeLairTower")).thenReturn (mf);
+		
+		// Run test
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
 		terrainData.setMapFeatureID ("MF02");
-
-		final ClientDatabaseEx db = ClientTestData.createDB ();
 
 		assertTrue (ClientMemoryGridCellUtils.isNodeLairTower (terrainData, db));
 	}

@@ -7,11 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import momime.client.database.ClientDatabaseEx;
-import momime.client.database.v0_9_4.MapFeature;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.database.LanguageDatabaseConstants;
-import momime.common.database.v0_9_4.TileType;
 
 /**
  * Since the tests in the common project can't use the XML file (since the classes generated from the server XSD that allow
@@ -66,37 +63,6 @@ public final class ClientTestData
 		final File graphicsXmlFile = new File (graphicsFile, "../../../../src/external/resources/momime.client.graphics.database/Default.Master of Magic Graphics.xml");
 
 		return graphicsXmlFile.getCanonicalFile ();
-	}
-
-	/**
-	 * @return Selected data required by the tests
-	 */
-	public final static ClientDatabaseEx createDB ()
-	{
-		final ClientDatabaseEx db = new ClientDatabaseEx ();
-
-		// Tile types
-		final TileType tileTypeWithoutMagicRealm = new TileType ();
-		tileTypeWithoutMagicRealm.setTileTypeID ("TT01");
-		db.getTileType ().add (tileTypeWithoutMagicRealm);
-
-		final TileType tileTypeWithMagicRealm = new TileType ();
-		tileTypeWithMagicRealm.setTileTypeID ("TT02");
-		tileTypeWithMagicRealm.setMagicRealmID ("MB01");
-		db.getTileType ().add (tileTypeWithMagicRealm);
-
-		// Map features
-		final MapFeature mapFeatureWithoutRealm = new MapFeature ();
-		mapFeatureWithoutRealm.setMapFeatureID ("MF01");
-		db.getMapFeature ().add (mapFeatureWithoutRealm);
-
-		final MapFeature mapFeatureWithRealm = new MapFeature ();
-		mapFeatureWithRealm.setMapFeatureID ("MF02");
-		mapFeatureWithRealm.setAnyMagicRealmsDefined (true);
-		db.getMapFeature ().add (mapFeatureWithRealm);
-
-		db.buildMaps ();
-		return db;
 	}
 
 	/**

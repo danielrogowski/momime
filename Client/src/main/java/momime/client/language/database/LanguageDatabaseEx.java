@@ -10,6 +10,12 @@ import momime.client.language.database.v0_9_5.KnownServer;
 public interface LanguageDatabaseEx
 {
 	/**
+	 * @param wizardID Wizard ID to search for
+	 * @return Wizard name; or replays back the ID if no description exists
+	 */
+	public String findWizardName (final String wizardID);
+	
+	/**
 	 * @param mapSizeID Map size ID to search for
 	 * @return Map size description; or replays back the ID if no description exists
 	 */

@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -22,8 +23,8 @@ import java.util.Map.Entry;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -34,6 +35,8 @@ import javax.swing.event.DocumentListener;
 import momime.client.MomClient;
 import momime.client.database.v0_9_4.AvailableDatabase;
 import momime.client.database.v0_9_4.Wizard;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.v0_9_5.BookImage;
 import momime.client.ui.actions.CycleAction;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
@@ -78,11 +81,17 @@ public final class NewGameUI extends MomClientAbstractUI
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
+	
 	/** Cancel action */
 	private Action cancelAction;
 
 	/** OK action */
 	private Action okAction;
+	
+	/** Player name under wizard portrait */
+	private JLabel playerName;
 	
 	/** Card layout for right hand side */
 	private CardLayout cardLayout;
@@ -90,9 +99,27 @@ public final class NewGameUI extends MomClientAbstractUI
 	/** Panel that the card layout is the layout manager for */
 	private JPanel cards;
 	
+	/** Shelf displaying chosen books */
+	private JPanel bookshelf;
+	
+	/** Wizard portrait */
+	private JLabel wizardPortrait;
+	
+	/** Fixed size allocated for portrait, whether there's a pic yet there or not */
+	final Dimension WIZARD_PORTRAIT_SIZE = new Dimension (218, 250);	
+
+	/** Wizard's colour flag */
+	private JLabel flag1;
+	
+	/** Wizard's colour flag */
+	private JLabel flag2;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 3;
-	
+
+	/** Special inset for books */
+	private final static int NO_INSET = 0;
+
 	/** 74x21 button */
 	private BufferedImage buttonNormal;
 	
@@ -101,6 +128,9 @@ public final class NewGameUI extends MomClientAbstractUI
 	
 	/** 74x21 button */
 	private BufferedImage buttonDisabled;
+	
+	/** White flag */
+	private BufferedImage flag;
 	
 	// NEW GAME PANEL
 
@@ -355,6 +385,7 @@ public final class NewGameUI extends MomClientAbstractUI
 		final BufferedImage checkboxUnticked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Unticked.png");
 		final BufferedImage checkboxTicked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Ticked.png");
 		final BufferedImage editbox = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox125x23.png");
+		flag = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/flag.png");
 
 		buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
 		buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Pressed.png");
@@ -415,9 +446,9 @@ public final class NewGameUI extends MomClientAbstractUI
 			{
 				super.paintComponent (g);
 				
-				// Scale the background image up smoothly
+				// Intentionally let the image be blocky (omit KEY_INTERPOLATION), or the borders and such on the
+				// background look blurry and we can't line the e.g. wizard portrait up inside them correctly
 				final Graphics2D g2 = (Graphics2D) g;
-				g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 				g2.setRenderingHint (RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 				
 				g.drawImage (background, 0, 0, getWidth (), getHeight (), null);
@@ -429,17 +460,14 @@ public final class NewGameUI extends MomClientAbstractUI
  		contentPane.setPreferredSize (fixedSize);
 		
 		// Set up main layout
- 		// This includes the left half of the screen, and the slice under the right half containing the OK and Cancel buttons
- 		// to save all the individual "cards" having their own OK and Cancel buttons, so is 3x3
+ 		// This is 5x7 and quite complicated, so see "NewGameUI contentPane.psp" in the misc project
+ 		// The right hand side of the screen (except the OK/cancel buttons and divider) contains a card layout
+ 		// that then flips between each page of game setup, so contentPane only contains the elements
+ 		// maintained across all pages
 		contentPane.setLayout (new GridBagLayout ());
 		
-		// Cut off left half of the window
-		final GridBagConstraints lhsConstraints = getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER);
-		lhsConstraints.gridheight = 3;
-		
-		contentPane.add (Box.createRigidArea (new Dimension (335, 0)), lhsConstraints);
-		
-		final GridBagConstraints rhsConstraints = getUtils ().createConstraints (1, 0, 2, INSET, GridBagConstraints.CENTER);
+		final GridBagConstraints rhsConstraints = getUtils ().createConstraints (4, 0, 2, INSET, GridBagConstraints.CENTER);
+		rhsConstraints.gridheight = 5;
 		rhsConstraints.weightx = 1;
 		rhsConstraints.weighty = 1;
 		rhsConstraints.fill = GridBagConstraints.BOTH;
@@ -451,15 +479,79 @@ public final class NewGameUI extends MomClientAbstractUI
 		contentPane.add (cards, rhsConstraints);
 		
 		// Divider, OK and Cancel buttons
-		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, 1, 2, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (4, 5, 2, INSET, GridBagConstraints.CENTER));
 		
-		final GridBagConstraints constraints2 = getUtils ().createConstraints (1, 2, 1, INSET, GridBagConstraints.EAST);
-		constraints2.weightx = 1;		// Move the OK button as far to the right as possible
+		final GridBagConstraints okConstraints = getUtils ().createConstraints (4, 6, 1, INSET, GridBagConstraints.EAST);
+		okConstraints.weightx = 1;		// Move the OK button as far to the right as possible
 		contentPane.add (getUtils ().createImageButton (okAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
-			buttonNormal, buttonPressed, buttonDisabled), constraints2);
+			buttonNormal, buttonPressed, buttonDisabled), okConstraints);
 		
 		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
-			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (2, 2, 1, INSET, GridBagConstraints.EAST));
+			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (5, 6, 1, INSET, GridBagConstraints.EAST));
+		
+		// Images in left hand side
+		wizardPortrait = new JLabel (new ImageIcon ());		// If we don't create the ImageIcon, even though empty, the layout is set incorrectly, not sure why
+		wizardPortrait.setMinimumSize (WIZARD_PORTRAIT_SIZE);
+		wizardPortrait.setMaximumSize (WIZARD_PORTRAIT_SIZE);
+		wizardPortrait.setPreferredSize (WIZARD_PORTRAIT_SIZE);
+		contentPane.add (wizardPortrait, getUtils ().createConstraints (0, 1, 3, INSET, GridBagConstraints.CENTER));
+		
+		final Dimension flagSize = new Dimension (flag.getWidth (), flag.getHeight ());
+		
+		flag1 = new JLabel (new ImageIcon ());
+		flag1.setMinimumSize (flagSize);
+		flag1.setMaximumSize (flagSize);
+		flag1.setPreferredSize (flagSize);
+		contentPane.add (flag1, getUtils ().createConstraints (0, 3, 1, INSET, GridBagConstraints.CENTER));
+
+		flag2 = new JLabel (new ImageIcon ());
+		flag2.setMinimumSize (flagSize);
+		flag2.setMaximumSize (flagSize);
+		flag2.setPreferredSize (flagSize);
+		contentPane.add (flag2, getUtils ().createConstraints (2, 3, 1, INSET, GridBagConstraints.CENTER));
+
+		playerName = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
+		contentPane.add (playerName, getUtils ().createConstraints (1, 2, 1, INSET, GridBagConstraints.CENTER));
+		
+		final Dimension bookshelfSize = new Dimension (187, 58);
+		bookshelf = new JPanel (new GridBagLayout ());
+		bookshelf.setOpaque (false);
+		bookshelf.setMinimumSize (bookshelfSize);
+		bookshelf.setMaximumSize (bookshelfSize);
+		bookshelf.setPreferredSize (bookshelfSize);
+
+		contentPane.add (bookshelf, getUtils ().createConstraints (1, 3, 1, INSET, GridBagConstraints.SOUTH));
+		
+		// Gap above the wizard portrait
+		// Also force the width, because nothing else in column 1 (like the books) is a fixed size to base the column width on
+		contentPane.add (Box.createRigidArea (new Dimension (0, 15)), getUtils ().createConstraints (1, 0, 1, INSET, GridBagConstraints.CENTER));
+		
+		// Force height of row 2, containing the player name, to the same size regardless of whether there's a name in it or not
+		contentPane.add (Box.createRigidArea (new Dimension (0, 30)), getUtils ().createConstraints (0, 2, 1, INSET, GridBagConstraints.CENTER));
+		
+		// Small gap down spine of the "book" background
+		contentPane.add (Box.createRigidArea (new Dimension (20, 0)), getUtils ().createConstraints (3, 0, 1, INSET, GridBagConstraints.CENTER));
+
+		// Some example books
+		int bookNo = 0;
+		for (int n = 1; n <= 5; n++)
+			for (final BookImage img : getGraphicsDB ().findPick ("MB0" + n, "NewGameUI.init").getBookImage ())
+			{
+				bookshelf.add (getUtils ().createImage (getUtils ().loadImage (img.getBookImageFile ())),
+					getUtils ().createConstraints (bookNo, 0, 1, NO_INSET, GridBagConstraints.SOUTH));
+				bookNo++;
+			}
+
+		for (int n = 1; n <= 5; n++)
+		{
+			final BookImage img = getGraphicsDB ().findPick ("MB0" + n, "NewGameUI.init").getBookImage ().get (0);
+			bookshelf.add (getUtils ().createImage (getUtils ().loadImage (img.getBookImageFile ())),
+				getUtils ().createConstraints (bookNo, 0, 1, NO_INSET, GridBagConstraints.SOUTH));
+			bookNo++;
+		}
+		
+		// Force the books to be tall enough, or they don't sit down onto the shelf
+		bookshelf.add (Box.createRigidArea (new Dimension (0, bookshelfSize.height)), getUtils ().createConstraints (bookNo, 0, 1, NO_INSET, GridBagConstraints.SOUTH));
 		
 		// NEW GAME PANEL
 		// This is easy with 2 columns
@@ -678,8 +770,9 @@ public final class NewGameUI extends MomClientAbstractUI
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
+		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
 		getFrame ().pack ();
-		getFrame ().setResizable (false);
+		getFrame ().setPreferredSize (getFrame ().getSize ());
 	}
 	
 	/**
@@ -687,6 +780,10 @@ public final class NewGameUI extends MomClientAbstractUI
 	 */
 	public final void showNewGamePanel ()
 	{
+		playerName.setText (null);
+		wizardPortrait.setIcon (null);
+		flag1.setIcon (null);
+		flag2.setIcon (null);
 		cardLayout.show (cards, NEW_GAME_PANEL);
 	}
 
@@ -708,6 +805,8 @@ public final class NewGameUI extends MomClientAbstractUI
 	 */
 	public final void afterJoinedSession ()
 	{
+		playerName.setText (getClient ().getOurPlayerName ());
+		
 		// Remove any old buttons leftover from a previous joining game
 		for (final Component oldComponent : wizardComponents)
 			wizardPanel.remove (oldComponent);
@@ -744,9 +843,35 @@ public final class NewGameUI extends MomClientAbstractUI
 					
 					final Action wizardButtonAction = new AbstractAction ()
 					{
+						private static final long serialVersionUID = 6525568382660451459L;
+
 						@Override
-						public void actionPerformed (final ActionEvent e)
+						public final void actionPerformed (final ActionEvent ev)
 						{
+							try
+							{
+								if (wizardID == null)
+								{
+									// Custom wizard - select portait and flag colour in next stages
+									wizardPortrait.setIcon (null);
+									flag1.setIcon (null);
+									flag2.setIcon (null);
+								}
+								else
+								{
+									final momime.client.graphics.database.v0_9_5.Wizard wizard = getGraphicsDB ().findWizard (wizardID, "NewGameUI.wizardButtonAction"); 
+									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (wizard.getPortraitFile ()).getScaledInstance
+										(WIZARD_PORTRAIT_SIZE.width, WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
+									
+									final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, Integer.parseInt (wizard.getFlagColour (), 16));
+									flag1.setIcon (new ImageIcon (wizardFlag));
+									flag2.setIcon (new ImageIcon (wizardFlag));
+								}
+							}
+							catch (final Exception e)
+							{
+								e.printStackTrace ();
+							}
 						}
 					};
 				
@@ -1126,5 +1251,21 @@ public final class NewGameUI extends MomClientAbstractUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+	
+	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
 	}
 }

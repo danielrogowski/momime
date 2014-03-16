@@ -3,6 +3,7 @@ package momime.client.ui;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -71,7 +72,7 @@ public interface MomUIUtils
 	 * @param image Image to create a label for
 	 * @return New label
 	 */
-	public JLabel createImage (final BufferedImage image);
+	public JLabel createImage (final Image image);
 	
 	/**
 	 * Creates a button comprising only of text, with no actual button appearance; assumed actual text will come from the action
@@ -139,4 +140,11 @@ public interface MomUIUtils
 	 * @return Constraints object
 	 */
 	public GridBagConstraints createConstraints (final int gridx, final int gridy, final int spanx, final int insets, final int anchor);
+
+	/**
+	 * @param src Source white image
+	 * @param multRGB Colour to multiply the source image by
+	 * @return New image created by multiplying the RGB components of the source image against the RGB components of the colour, and preserving the image alpha
+	 */
+	public BufferedImage multiplyImageByColour (final BufferedImage src, final int multRGB);
 }

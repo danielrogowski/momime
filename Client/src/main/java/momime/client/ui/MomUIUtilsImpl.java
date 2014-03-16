@@ -3,6 +3,7 @@ package momime.client.ui;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -108,7 +109,7 @@ public final class MomUIUtilsImpl implements MomUIUtils
 	 * @return New label
 	 */
 	@Override
-	public final JLabel createImage (final BufferedImage image)
+	public final JLabel createImage (final Image image)
 	{
 		return new JLabel (new ImageIcon (image));
 	}
@@ -266,5 +267,39 @@ public final class MomUIUtilsImpl implements MomUIUtils
 			c.insets = new Insets (insets, insets, insets, insets);
 		
 		return c;
+	}
+
+	/**
+	 * @param src Source white image
+	 * @param multRGB Colour to multiply the source image by
+	 * @return New image created by multiplying the RGB components of the source image against the RGB components of the colour, and preserving the image alpha
+	 */
+	@Override
+	public final BufferedImage multiplyImageByColour (final BufferedImage src, final int multRGB)
+	{
+		final int multBlue = (multRGB >> 16) & 0xFF;
+		final int multGreen = (multRGB >> 8) & 0xFF;
+		final int multRed = multRGB & 0xFF;
+		
+		final BufferedImage dest = new BufferedImage (src.getWidth (), src.getHeight (), src.getType ());
+		for (int y = 0; y < src.getHeight (); y++)
+			for (int x = 0; x < src.getWidth (); x++)
+			{
+				final int srcRGBA = src.getRGB (x, y);
+				final int srcAlpha = srcRGBA >> 24;
+				final int srcBlue = (srcRGBA >> 16) & 0xFF;
+				final int srcGreen = (srcRGBA >> 8) & 0xFF;
+				final int srcRed = srcRGBA & 0xFF;
+				
+				final int destAlpha = srcAlpha;
+				final int destBlue = (srcBlue * multBlue) / 0xFF;
+				final int destGreen = (srcGreen * multGreen) / 0xFF;
+				final int destRed = (srcRed * multRed) / 0xFF;
+				
+				final int destRGBA = (destAlpha << 24) | (destBlue << 16) | (destGreen << 8) | destRed;
+				dest.setRGB (x, y, destRGBA);
+			}
+		
+		return dest;
 	}
 }

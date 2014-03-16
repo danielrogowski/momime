@@ -123,9 +123,9 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 			{
 				super.paintComponent (g);
 				
-				// Scale the background image up smoothly
+				// Intentionally let the image be blocky (omit KEY_INTERPOLATION), or the borders and such on the
+				// background look blurry and we can't line the e.g. wizard portrait up inside them correctly
 				final Graphics2D g2 = (Graphics2D) g;
-				g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 				g2.setRenderingHint (RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 				
 				g.drawImage (background, 0, 0, getWidth (), getHeight (), null);
@@ -206,8 +206,9 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
+		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
 		getFrame ().pack ();
-		getFrame ().setResizable (false);
+		getFrame ().setPreferredSize (getFrame ().getSize ());
 	}
 	
 	/**

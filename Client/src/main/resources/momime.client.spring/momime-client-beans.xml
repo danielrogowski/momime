@@ -70,11 +70,26 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
    		</constructor-arg>
 	</bean>
 	
+	<bean id="graphicsDatabaseFactory" class="momime.client.graphics.database.GraphicsDatabaseFactory" />		<!-- Creates GraphicsDatabaseExImpl instead of GraphicsDatabase -->
+		
 	<bean id="graphicsDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="graphicsDatabaseJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="graphicsDatabaseSchema" />
 	</bean>
 
-	<bean id="graphicsDatabase" class="momime.client.graphics.database.v0_9_5.GraphicsDatabase" factory-bean="graphicsDatabaseUnmarshaller" factory-method="unmarshal">
+	<bean id="configureGraphicsDatabaseUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="graphicsDatabaseUnmarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>com.sun.xml.bind.ObjectFactory</value>
+				<array>
+					<ref bean="graphicsDatabaseFactory" />
+				</array>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="graphicsDatabase" class="momime.client.graphics.database.v0_9_5.GraphicsDatabase" factory-bean="graphicsDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg value="#{clientConfig.graphicsXmlFilename}" />
 	</bean>
 	
@@ -111,7 +126,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		</property>
 	</bean>
 
-	<bean id="languageDatabase" class="momime.client.language.database.v0_9_5.LanguageDatabase" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal"  init-method="buildMaps">
+	<bean id="languageDatabase" class="momime.client.language.database.v0_9_5.LanguageDatabase" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.File" value="#{clientConfig.pathToLanguageXmlFiles + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
 	</bean>
 	
@@ -305,6 +320,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="momClient" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
 	</bean>
 	
 	<!-- Utils -->

@@ -48,6 +48,15 @@ public interface MomUIUtils
 	public JLabel createLabel (final Color colour, final Font font);
 
 	/**
+	 * Creates a label (actually text area made to look like a label) with wrapping text
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @return New label
+	 */
+	public JTextArea createWrappingLabel (final Color colour, final Font font);
+	
+	/**
 	 * Creates a label with some text
 	 * 
 	 * @param colour Colour to set the text in

@@ -1,12 +1,14 @@
 package momime.client.language.database;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
 import momime.client.language.database.v0_9_5.LandProportion;
 import momime.client.language.database.v0_9_5.LanguageEntry;
 import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
+import momime.client.language.database.v0_9_5.Pick;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
@@ -18,6 +20,27 @@ import org.junit.Test;
  */
 public final class TestLanguageDatabaseExImpl
 {
+	/**
+	 * Tests the findPick method
+	 */
+	@Test
+	public final void findPick ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Pick newPick = new Pick ();
+			newPick.setPickID ("WZ0" + n);
+			newPick.setPickDescription ("WZDesc0" + n);
+			lang.getPick ().add (newPick);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("WZDesc02", lang.findPick ("WZ02").getPickDescription ());
+		assertNull ("WZ04", lang.findPick ("WZ04"));
+	}
+
 	/**
 	 * Tests the findWizardName method
 	 */

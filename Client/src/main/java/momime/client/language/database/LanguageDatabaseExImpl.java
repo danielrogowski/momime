@@ -10,6 +10,7 @@ import momime.client.language.database.v0_9_5.LanguageCategory;
 import momime.client.language.database.v0_9_5.LanguageDatabase;
 import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
+import momime.client.language.database.v0_9_5.Pick;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
@@ -19,6 +20,9 @@ import momime.client.language.database.v0_9_5.Wizard;
  */
 public final class LanguageDatabaseExImpl extends LanguageDatabase implements LanguageDatabaseEx
 {
+	/** Map of pick IDs to pick objects */
+	private Map<String, Pick> picksMap;
+
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
 	
@@ -51,6 +55,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 */
 	public final void buildMaps ()
 	{
+		// Create picks map
+		picksMap = new HashMap<String, Pick> ();
+		for (final Pick thisPick : getPick ())
+			picksMap.put (thisPick.getPickID (), thisPick);
+
 		// Create wizards map
 		wizardsMap = new HashMap<String, Wizard> ();
 		for (final Wizard thisWizard : getWizard ())
@@ -101,6 +110,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		}
 	}	
 
+	/**
+	 * @param pickID Pick ID to search for
+	 * @return Pick descriptions object; or null if not found
+	 */
+	@Override
+	public final Pick findPick (final String pickID)
+	{
+		return picksMap.get (pickID);
+	}
+	
 	/**
 	 * @param wizardID Wizard ID to search for
 	 * @return Wizard name; or replays back the ID if no description exists

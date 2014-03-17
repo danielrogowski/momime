@@ -27,6 +27,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
@@ -37,8 +38,10 @@ import momime.client.database.v0_9_4.AvailableDatabase;
 import momime.client.database.v0_9_4.Wizard;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.BookImage;
+import momime.client.language.database.v0_9_5.Pick;
 import momime.client.ui.actions.CycleAction;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
 import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_4.LandProportionData;
@@ -54,11 +57,14 @@ import momime.common.database.v0_9_4.MapSize;
 import momime.common.database.v0_9_4.NodeStrength;
 import momime.common.database.v0_9_4.SpellSetting;
 import momime.common.database.v0_9_4.UnitSetting;
+import momime.common.database.v0_9_4.WizardPick;
+import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.TurnSystem;
 
 import com.ndg.multiplayer.sessionbase.NewSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
 
 /**
  * Screens for setting up new and joining existing games
@@ -83,6 +89,12 @@ public final class NewGameUI extends MomClientAbstractUI
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
+
+	/** Random number generator */
+	private RandomUtils randomUtils;
+
+	/** Content pane */
+	private JPanel contentPane;
 	
 	/** Cancel action */
 	private Action cancelAction;
@@ -102,11 +114,23 @@ public final class NewGameUI extends MomClientAbstractUI
 	/** Shelf displaying chosen books */
 	private JPanel bookshelf;
 	
+	/** Size of mini grid bag layout to display chosen spell books */
+	private final Dimension BOOKSHELF_SIZE = new Dimension (187, 58);
+	
+	/** Currently selected picks (whether from pre-defined wizard or custom) */
+	private List<WizardPick> picks = new ArrayList<WizardPick> ();
+	
+	/** Images added to draw the books on the shelf */
+	private List<JLabel> bookImages = new ArrayList<JLabel> ();
+	
+	/** Currently selected retorts */
+	private JTextArea retorts;
+	
 	/** Wizard portrait */
 	private JLabel wizardPortrait;
 	
 	/** Fixed size allocated for portrait, whether there's a pic yet there or not */
-	final Dimension WIZARD_PORTRAIT_SIZE = new Dimension (218, 250);	
+	private final Dimension WIZARD_PORTRAIT_SIZE = new Dimension (218, 250);	
 
 	/** Wizard's colour flag */
 	private JLabel flag1;
@@ -136,6 +160,9 @@ public final class NewGameUI extends MomClientAbstractUI
 
 	/** Panel key */
 	private final static String NEW_GAME_PANEL = "New";
+	
+	/** Panel */
+	private JPanel newGamePanel;
 	
 	/** Panel title */
 	private JLabel newGameTitle;
@@ -320,6 +347,12 @@ public final class NewGameUI extends MomClientAbstractUI
 	/** Dynamically created buttons etc */
 	private List<Component> wizardComponents = new ArrayList<Component> ();
 	
+	/** Gets set to true after player clicks a button */
+	private boolean isWizardChosen;
+	
+	/** Gets set to chosen wizard ID when player clicks a button, or null if they click custom */
+	private String wizardChosen;
+	
 	// PORTRAIT SELECTION PANEL (for custom wizards)
 
 	/** Panel key */
@@ -410,18 +443,29 @@ public final class NewGameUI extends MomClientAbstractUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
-				// What this does depends on which 'card' is currently displayed
-				final PlayerDescription pd = new PlayerDescription ();
-				pd.setPlayerID (getClient ().getOurPlayerID ());
-				pd.setPlayerName (getClient ().getOurPlayerName ());
-				
-				final NewSession msg = new NewSession ();
-				msg.setSessionDescription (buildSessionDescription ());
-				msg.setPlayerDescription (pd);
-				
 				try
 				{
-					getClient ().getServerConnection ().sendMessageToServer (msg);
+					// What this does depends on which 'card' is currently displayed
+					if (newGamePanel.isVisible ())
+					{
+						final PlayerDescription pd = new PlayerDescription ();
+						pd.setPlayerID (getClient ().getOurPlayerID ());
+						pd.setPlayerName (getClient ().getOurPlayerName ());
+				
+						final NewSession msg = new NewSession ();
+						msg.setSessionDescription (buildSessionDescription ());
+						msg.setPlayerDescription (pd);
+				
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
+					else if (wizardPanel.isVisible ())
+					{
+						final ChooseWizardMessage msg = new ChooseWizardMessage ();
+						msg.setWizardID (wizardChosen);
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
+					
+					okAction.setEnabled (false);
 				}
 				catch (final Exception e)
 				{
@@ -437,7 +481,7 @@ public final class NewGameUI extends MomClientAbstractUI
 		getFrame ().setLocationRelativeTo (getMainMenuUI ().getFrame ());
 
 		// Initialize the content pane
-		final JPanel contentPane = new JPanel ()
+		contentPane = new JPanel ()
 		{
 			private static final long serialVersionUID = 4885116900695807364L;
 
@@ -513,14 +557,23 @@ public final class NewGameUI extends MomClientAbstractUI
 		playerName = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
 		contentPane.add (playerName, getUtils ().createConstraints (1, 2, 1, INSET, GridBagConstraints.CENTER));
 		
-		final Dimension bookshelfSize = new Dimension (187, 58);
 		bookshelf = new JPanel (new GridBagLayout ());
 		bookshelf.setOpaque (false);
-		bookshelf.setMinimumSize (bookshelfSize);
-		bookshelf.setMaximumSize (bookshelfSize);
-		bookshelf.setPreferredSize (bookshelfSize);
+		bookshelf.setMinimumSize (BOOKSHELF_SIZE);
+		bookshelf.setMaximumSize (BOOKSHELF_SIZE);
+		bookshelf.setPreferredSize (BOOKSHELF_SIZE);
 
 		contentPane.add (bookshelf, getUtils ().createConstraints (1, 3, 1, INSET, GridBagConstraints.SOUTH));
+		
+		final GridBagConstraints retortsConstraints = getUtils ().createConstraints (0, 5, 3, INSET, GridBagConstraints.CENTER);
+		retortsConstraints.gridheight = 2;
+		retortsConstraints.fill = GridBagConstraints.BOTH;
+		
+		retorts = getUtils ().createWrappingLabel (MomUIUtils.GOLD, getMediumFont ());
+		contentPane.add (retorts, retortsConstraints);
+		
+		// Force the books to be tall enough, or they don't sit down onto the shelf
+		bookshelf.add (Box.createRigidArea (new Dimension (0, BOOKSHELF_SIZE.height)), getUtils ().createConstraints (0, 0, 1, NO_INSET, GridBagConstraints.SOUTH));
 		
 		// Gap above the wizard portrait
 		// Also force the width, because nothing else in column 1 (like the books) is a fixed size to base the column width on
@@ -532,27 +585,6 @@ public final class NewGameUI extends MomClientAbstractUI
 		// Small gap down spine of the "book" background
 		contentPane.add (Box.createRigidArea (new Dimension (20, 0)), getUtils ().createConstraints (3, 0, 1, INSET, GridBagConstraints.CENTER));
 
-		// Some example books
-		int bookNo = 0;
-		for (int n = 1; n <= 5; n++)
-			for (final BookImage img : getGraphicsDB ().findPick ("MB0" + n, "NewGameUI.init").getBookImage ())
-			{
-				bookshelf.add (getUtils ().createImage (getUtils ().loadImage (img.getBookImageFile ())),
-					getUtils ().createConstraints (bookNo, 0, 1, NO_INSET, GridBagConstraints.SOUTH));
-				bookNo++;
-			}
-
-		for (int n = 1; n <= 5; n++)
-		{
-			final BookImage img = getGraphicsDB ().findPick ("MB0" + n, "NewGameUI.init").getBookImage ().get (0);
-			bookshelf.add (getUtils ().createImage (getUtils ().loadImage (img.getBookImageFile ())),
-				getUtils ().createConstraints (bookNo, 0, 1, NO_INSET, GridBagConstraints.SOUTH));
-			bookNo++;
-		}
-		
-		// Force the books to be tall enough, or they don't sit down onto the shelf
-		bookshelf.add (Box.createRigidArea (new Dimension (0, bookshelfSize.height)), getUtils ().createConstraints (bookNo, 0, 1, NO_INSET, GridBagConstraints.SOUTH));
-		
 		// NEW GAME PANEL
 		// This is easy with 2 columns
 		changeDatabaseAction = new CycleAction<AvailableDatabase> ()
@@ -607,7 +639,7 @@ public final class NewGameUI extends MomClientAbstractUI
 		changeSpellSettingsAction = new CycleAction<SpellSetting> ();
 		changeDebugOptionsAction = new CycleAction<Boolean> ();
 		
-		final JPanel newGamePanel = new JPanel ();
+		newGamePanel = new JPanel ();
 		newGamePanel.setOpaque (false);
 		newGamePanel.setLayout (new GridBagLayout ());
 		
@@ -777,13 +809,21 @@ public final class NewGameUI extends MomClientAbstractUI
 	
 	/**
 	 * Show new game card, if they cancelled and then took option again
+	 * @throws IOException If there is a problem loading any of the images
 	 */
-	public final void showNewGamePanel ()
+	public final void showNewGamePanel () throws IOException
 	{
 		playerName.setText (null);
 		wizardPortrait.setIcon (null);
 		flag1.setIcon (null);
 		flag2.setIcon (null);
+		retorts.setText (null);
+		
+		picks.clear ();
+		updateBookshelfFromPicks ();
+		
+		isWizardChosen = false;
+		
 		cardLayout.show (cards, NEW_GAME_PANEL);
 	}
 
@@ -792,11 +832,14 @@ public final class NewGameUI extends MomClientAbstractUI
 	 */
 	private final void enableOrDisableOkButton ()
 	{
+		cardLayout.toString ();
 		// This gets triggered during startup before both actions have been created
 		final int totalOpponents = ((changeHumanOpponentsAction.getSelectedItem () == null) || (changeAIOpponentsAction.getSelectedItem () == null)) ? 0 :
 			changeHumanOpponentsAction.getSelectedItem () + changeAIOpponentsAction.getSelectedItem ();
 		
-		okAction.setEnabled ((totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals ("")));
+		okAction.setEnabled
+			(((newGamePanel.isVisible ()) && (totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals (""))) ||
+			((wizardPanel.isVisible ()) && (isWizardChosen)));
 	}
 	
 	/**
@@ -816,30 +859,31 @@ public final class NewGameUI extends MomClientAbstractUI
 		
 		// WIZARD SELECTION PANEL
 		// First list all the wizards, we need to know up front how many there are so we can arrange the buttons properly
-		final List<String> wizardIDs = new ArrayList<String> ();
+		final List<Wizard> wizards = new ArrayList<Wizard> ();
 		for (final Wizard wizard : getClient ().getClientDB ().getWizard ())
 			if ((!wizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
 				(!wizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
 				
-				wizardIDs.add (wizard.getWizardID ());
+				wizards.add (wizard);
 		
 		// Make space for custom button
 		if (getClient ().getSessionDescription ().getDifficultyLevel ().isCustomWizards ())
-			wizardIDs.add (null);
+			wizards.add (null);
 		
 		// Work out button locations
 		// We do entire left column first, then entire right column
 		final int colCount = 2;
-		final int rowCount = (wizardIDs.size () + colCount - 1) / colCount;
+		final int rowCount = (wizards.size () + colCount - 1) / colCount;
 		int wizardNo = 0;
 		
 		for (int colNo = 0; colNo < colCount; colNo++)
 			for (int rowNo = 0; rowNo < rowCount; rowNo++)
 				
 				// This forumla is to make sure any rows which need an extra button (i.e. because number of wizards did not divide equally into columns) on the right
-				if ((rowNo < rowCount - 1) || (wizardNo + (rowCount * (colCount - 1 - colNo)) < wizardIDs.size ()))
+				if ((rowNo < rowCount - 1) || (wizardNo + (rowCount * (colCount - 1 - colNo)) < wizards.size ()))
 				{
-					final String wizardID = wizardIDs.get (wizardNo);
+					final Wizard wizard = wizards.get (wizardNo);
+					final String wizardID = (wizard == null) ? null : wizard.getWizardID ();
 					
 					final Action wizardButtonAction = new AbstractAction ()
 					{
@@ -848,9 +892,13 @@ public final class NewGameUI extends MomClientAbstractUI
 						@Override
 						public final void actionPerformed (final ActionEvent ev)
 						{
+							isWizardChosen = true;
+							wizardChosen = wizardID;
+							enableOrDisableOkButton ();
 							try
 							{
-								if (wizardID == null)
+								picks.clear ();
+								if (wizard == null)
 								{
 									// Custom wizard - select portait and flag colour in next stages
 									wizardPortrait.setIcon (null);
@@ -859,14 +907,18 @@ public final class NewGameUI extends MomClientAbstractUI
 								}
 								else
 								{
-									final momime.client.graphics.database.v0_9_5.Wizard wizard = getGraphicsDB ().findWizard (wizardID, "NewGameUI.wizardButtonAction"); 
-									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (wizard.getPortraitFile ()).getScaledInstance
+									final momime.client.graphics.database.v0_9_5.Wizard portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.wizardButtonAction"); 
+									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
 										(WIZARD_PORTRAIT_SIZE.width, WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
 									
-									final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, Integer.parseInt (wizard.getFlagColour (), 16));
+									final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, Integer.parseInt (portrait.getFlagColour (), 16));
 									flag1.setIcon (new ImageIcon (wizardFlag));
 									flag2.setIcon (new ImageIcon (wizardFlag));
+									
+									picks.addAll (wizard.getWizardPick ());
 								}
+								updateBookshelfFromPicks ();
+								updateRetortsFromPicks ();
 							}
 							catch (final Exception e)
 							{
@@ -901,7 +953,7 @@ public final class NewGameUI extends MomClientAbstractUI
 		}
 		
 		// Set all the text
-		languageChangedDynamic ();
+		languageChangedAfterInGame ();
 		
 		// Show the page
 		cardLayout.show (cards, WIZARD_PANEL);
@@ -999,7 +1051,15 @@ public final class NewGameUI extends MomClientAbstractUI
 			selectedDatabaseOrLanguageChanged ();
 		
 		// Change all the forms dynamically built after we join a game
-		languageChangedDynamic ();
+		languageChangedAfterInGame ();
+		try
+		{
+			updateRetortsFromPicks ();
+		}
+		catch (final RecordNotFoundException e)
+		{
+			e.printStackTrace ();
+		}
 	}
 	
 	/**
@@ -1048,9 +1108,76 @@ public final class NewGameUI extends MomClientAbstractUI
 	}
 	
 	/**
+	 * When the selected picks change, update the books on the bookshelf
+	 * @throws IOException If there is a problem loading any of the book images
+	 */
+	private final void updateBookshelfFromPicks () throws IOException
+	{
+		// Remove all the old books
+		for (final JLabel oldBook : bookImages)
+			bookshelf.remove (oldBook);
+		
+		bookImages.clear ();
+		
+		// Generate new images
+		int gridx = 1;
+		for (final WizardPick pick : picks)
+		{
+			// Pick must exist in the graphics XML file, but may not have any image(s)
+			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPick (), "NewGameUI.updateBookshelfFromPicks").getBookImage ();
+			if (possibleImages.size () > 0)
+			{
+				// Add images onto bookshelf
+				for (int n = 0; n < pick.getQuantity (); n++)
+				{
+					// Choose random image for the pick
+					final JLabel img = getUtils ().createImage (getUtils ().loadImage (possibleImages.get (getRandomUtils ().nextInt (possibleImages.size ())).getBookImageFile ()));
+					bookshelf.add (img, getUtils ().createConstraints (gridx, 0, 1, NO_INSET, GridBagConstraints.SOUTH));
+					bookImages.add (img);
+					gridx++;
+				}
+			}
+		}
+		
+		// Redrawing only the bookshelf isn't enough, because the new books might be smaller than before so only the smaller so
+		// bookshelf.validate only redraws the new smaller area and leaves bits of the old books showing
+		contentPane.validate ();
+		contentPane.repaint ();
+	}
+
+	/**
+	 * When the selected picks (or language) change, update the retort descriptions
+	 * @throws RecordNotFoundException If one of the picks we have isn't in the graphics XML file
+	 */
+	private final void updateRetortsFromPicks () throws RecordNotFoundException
+	{
+		final StringBuffer desc = new StringBuffer ();
+		for (final WizardPick pick : picks)
+		{
+			// Pick must exist in the graphics XML file, but may not have any image(s)
+			final List<BookImage> possibleImages = getGraphicsDB ().findPick (pick.getPick (), "NewGameUI.updateRetortsFromPicks").getBookImage ();
+			if (possibleImages.size () == 0)
+			{
+				if (desc.length () > 0)
+					desc.append (", ");
+				
+				if (pick.getQuantity () > 1)
+					desc.append (pick.getQuantity () + "x");
+				
+				final Pick pickDesc = getLanguage ().findPick (pick.getPick ());
+				if (pickDesc == null)
+					desc.append (pick.getPick ());
+				else
+					desc.append (pickDesc.getPickDescription ());
+			}
+		}
+		retorts.setText (desc.toString ());
+	}	
+	
+	/**
 	 * Update all labels and buttons that are only dynamically created after we join a game
 	 */
-	private final void languageChangedDynamic ()
+	private final void languageChangedAfterInGame ()
 	{
 		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
 			if (wizard.getKey () == null)
@@ -1267,5 +1394,21 @@ public final class NewGameUI extends MomClientAbstractUI
 	public final void setGraphicsDB (final GraphicsDatabaseEx db)
 	{
 		graphicsDB = db;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

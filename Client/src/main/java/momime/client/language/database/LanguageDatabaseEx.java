@@ -3,12 +3,19 @@ package momime.client.language.database;
 import java.util.List;
 
 import momime.client.language.database.v0_9_5.KnownServer;
+import momime.client.language.database.v0_9_5.Pick;
 
 /**
  * Describes operations that we need to support over the language XML file
  */
 public interface LanguageDatabaseEx
 {
+	/**
+	 * @param pickID Pick ID to search for
+	 * @return Pick descriptions object; or null if not found
+	 */
+	public Pick findPick (final String pickID);
+	
 	/**
 	 * @param wizardID Wizard ID to search for
 	 * @return Wizard name; or replays back the ID if no description exists

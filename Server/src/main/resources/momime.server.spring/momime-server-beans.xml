@@ -337,8 +337,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="playerServerUtils" class="momime.server.utils.PlayerServerUtilsImpl" />
 	
-	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
-	
 	<!-- Calculations -->
 	
 	<bean id="serverSpellCalculations" class="momime.server.calculations.MomServerSpellCalculationsImpl">

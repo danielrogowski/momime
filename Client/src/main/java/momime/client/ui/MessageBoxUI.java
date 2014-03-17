@@ -17,7 +17,6 @@ import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
-import javax.swing.border.EmptyBorder;
 
 /**
  * Frame which displays a message with an OK button
@@ -106,16 +105,7 @@ public final class MessageBoxUI extends MomClientAbstractUI
 		constraints.weighty = 1;
 		constraints.fill = GridBagConstraints.BOTH;
 		
-		messageText = getUtils ().createTextArea (MomUIUtils.SILVER, getSmallFont ());
-		messageText.setEditable (false);
-		messageText.setOpaque (false);
-		messageText.setWrapStyleWord (true);		// This is why we have to use a JTextArea, since JLabels don't support wrapping
-		messageText.setLineWrap (true);
-		messageText.setBorder (new EmptyBorder (0, 0, 0, 0));
-		
-		// Setting background to null just paints it black - to make it invisible we have to explicitly create a colour with 0 alpha component (4th param)
-		messageText.setBackground (new Color (0, 0, 0, 0));
-		
+		messageText = getUtils ().createWrappingLabel (MomUIUtils.SILVER, getSmallFont ());
 		contentPane.add (messageText, constraints);
 
 		contentPane.add (getUtils ().createImageButton (okAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),

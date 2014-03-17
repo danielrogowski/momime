@@ -215,4 +215,6 @@
 
 	<bean id="scheduledCombatUtils" class="momime.common.utils.ScheduledCombatUtilsImpl" />
 
+	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
+
 </beans>

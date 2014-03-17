@@ -86,6 +86,28 @@ public final class MomUIUtilsImpl implements MomUIUtils
 	}
 
 	/**
+	 * Creates a label (actually text area made to look like a label) with wrapping text
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @return New label
+	 */
+	@Override
+	public final JTextArea createWrappingLabel (final Color colour, final Font font)
+	{
+		final JTextArea messageText = createTextArea (colour, font);
+		messageText.setEditable (false);
+		messageText.setOpaque (false);
+		messageText.setWrapStyleWord (true);		// This is why we have to use a JTextArea, since JLabels don't support wrapping
+		messageText.setLineWrap (true);
+		messageText.setBorder (new EmptyBorder (0, 0, 0, 0));
+		
+		// Setting background to null just paints it black - to make it invisible we have to explicitly create a colour with 0 alpha component (4th param)
+		messageText.setBackground (new Color (0, 0, 0, 0));
+		return messageText;
+	}
+	
+	/**
 	 * Creates a text area with no text - typically because the text is going to be read from the language XML file later
 	 * 
 	 * @param colour Colour to set the text in

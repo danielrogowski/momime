@@ -9,6 +9,8 @@ import momime.client.language.database.v0_9_5.LanguageEntry;
 import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
@@ -62,6 +64,48 @@ public final class TestLanguageDatabaseExImpl
 		assertEquals ("WZ04", lang.findWizardName ("WZ04"));
 	}
 
+	/**
+	 * Tests the findSpellRankDescription method
+	 */
+	@Test
+	public final void findSpellRankDescription ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final SpellRank newSpellRank = new SpellRank ();
+			newSpellRank.setSpellRankID ("SR0" + n);
+			newSpellRank.setSpellRankDescription ("SRDesc0" + n);
+			lang.getSpellRank ().add (newSpellRank);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("SRDesc02", lang.findSpellRankDescription ("SR02"));
+		assertEquals ("SR04", lang.findSpellRankDescription ("SR04"));
+	}
+
+	/**
+	 * Tests the findSpell method
+	 */
+	@Test
+	public final void findSpell ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Spell newSpell = new Spell ();
+			newSpell.setSpellID ("MB0" + n);
+			newSpell.setSpellDescription ("MBDesc0" + n);
+			lang.getSpell ().add (newSpell);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("MBDesc02", lang.findSpell ("MB02").getSpellDescription ());
+		assertNull ("MB04", lang.findSpell ("MB04"));
+	}
+	
 	/**
 	 * Tests the findMapSizeDescription method
 	 */

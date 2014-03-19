@@ -15,7 +15,10 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,6 +43,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.BookImage;
 import momime.client.language.database.v0_9_5.Pick;
 import momime.client.ui.actions.CycleAction;
+import momime.client.ui.actions.ToggleAction;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
@@ -55,10 +59,14 @@ import momime.common.database.v0_9_4.FogOfWarSetting;
 import momime.common.database.v0_9_4.LandProportion;
 import momime.common.database.v0_9_4.MapSize;
 import momime.common.database.v0_9_4.NodeStrength;
+import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.SpellSetting;
 import momime.common.database.v0_9_4.UnitSetting;
 import momime.common.database.v0_9_4.WizardPick;
+import momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage;
+import momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
+import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowRank;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.TurnSystem;
 
@@ -357,9 +365,24 @@ public final class NewGameUI extends MomClientAbstractUI
 
 	/** Panel key */
 	private final static String PORTRAIT_PANEL = "Portrait";
+
+	/** Panel */
+	private JPanel portraitPanel;
 	
 	/** Panel title */
 	private JLabel portraitTitle;
+
+	/** Dynamically created button actions */
+	private Map<String, Action> portraitButtonActions = new HashMap<String, Action> ();
+
+	/** Dynamically created buttons etc */
+	private List<Component> portraitComponents = new ArrayList<Component> ();
+	
+	/** Gets set to true after player clicks a button */
+	private boolean isPortraitChosen;
+	
+	/** Gets set to chosen portrait ID when player clicks a button, or null if they click custom */
+	private String portraitChosen;
 	
 	// FLAG COLOUR PANEL (for custom wizards with custom portraits)
 	
@@ -382,8 +405,23 @@ public final class NewGameUI extends MomClientAbstractUI
 	/** Panel key */
 	private final static String FREE_SPELLS_PANEL = "Free";
 	
+	/** Panel */
+	private JPanel freeSpellsPanel;
+	
 	/** Panel title */
 	private JLabel freeSpellsTitle;
+	
+	/** Magic realm we're current choosing free spells for */
+	private String currentMagicRealmID;
+	
+	/** Dynamically created rank titles */
+	private Map<ChooseInitialSpellsNowRank, JLabel> spellRankTitles = new HashMap<ChooseInitialSpellsNowRank, JLabel> ();
+	
+	/** Free spell actions */
+	private Map<Spell, ToggleAction> freeSpellActions = new HashMap<Spell, ToggleAction> ();
+
+	/** Dynamically created buttons etc */
+	private List<Component> freeSpellsComponents = new ArrayList<Component> ();
 	
 	// RACE SELECTION PANEL
 	
@@ -462,6 +500,29 @@ public final class NewGameUI extends MomClientAbstractUI
 					{
 						final ChooseWizardMessage msg = new ChooseWizardMessage ();
 						msg.setWizardID (wizardChosen);
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
+					else if (portraitPanel.isVisible ())
+					{
+						if (portraitChosen == null)
+						{
+						}
+						else
+						{
+							final ChooseStandardPhotoMessage msg = new ChooseStandardPhotoMessage ();
+							msg.setPhotoID (portraitChosen);
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+						}						
+					}
+					else if (freeSpellsPanel.isVisible ())
+					{
+						final ChooseInitialSpellsMessage msg = new ChooseInitialSpellsMessage ();
+						msg.setPickID (currentMagicRealmID);
+						
+						for (final Entry<Spell, ToggleAction> spell : freeSpellActions.entrySet ())
+							if (spell.getValue ().isSelected ())
+								msg.getSpell ().add (spell.getKey ().getSpellID ());
+
 						getClient ().getServerConnection ().sendMessageToServer (msg);
 					}
 					
@@ -759,9 +820,32 @@ public final class NewGameUI extends MomClientAbstractUI
 		cards.add (wizardPanel, WIZARD_PANEL);
 
 		// PORTRAIT SELECTION PANEL (for custom wizards)
+		portraitPanel = new JPanel ();
+		portraitPanel.setOpaque (false);
+		portraitPanel.setLayout (new GridBagLayout ());
+		
+		portraitTitle = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
+		portraitPanel.add (portraitTitle, getUtils ().createConstraints (0, 0, 2, INSET, GridBagConstraints.CENTER));
+		
+		portraitPanel.add (getUtils ().createImage (divider), getUtils ().createConstraints (0, 1, 2, INSET, GridBagConstraints.CENTER));
+		
+		cards.add (portraitPanel, PORTRAIT_PANEL);
+		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
 		// CUSTOM PICKS PANEL (for custom wizards)
+		
 		// FREE SPELL SELECTION PANEL
+		freeSpellsPanel = new JPanel ();
+		freeSpellsPanel.setOpaque (false);
+		freeSpellsPanel.setLayout (new GridBagLayout ());
+		
+		freeSpellsTitle = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
+		freeSpellsPanel.add (freeSpellsTitle, getUtils ().createConstraints (0, 0, 2, INSET, GridBagConstraints.CENTER));
+		
+		freeSpellsPanel.add (getUtils ().createImage (divider), getUtils ().createConstraints (0, 1, 2, INSET, GridBagConstraints.CENTER));
+		
+		cards.add (freeSpellsPanel, FREE_SPELLS_PANEL);
+		
 		// RACE SELECTION PANEL
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
 
@@ -823,23 +907,10 @@ public final class NewGameUI extends MomClientAbstractUI
 		updateBookshelfFromPicks ();
 		
 		isWizardChosen = false;
+		isPortraitChosen = false;
+		currentMagicRealmID = null;
 		
 		cardLayout.show (cards, NEW_GAME_PANEL);
-	}
-
-	/**
-	 * Ok button should only be enabled once we have enough info
-	 */
-	private final void enableOrDisableOkButton ()
-	{
-		cardLayout.toString ();
-		// This gets triggered during startup before both actions have been created
-		final int totalOpponents = ((changeHumanOpponentsAction.getSelectedItem () == null) || (changeAIOpponentsAction.getSelectedItem () == null)) ? 0 :
-			changeHumanOpponentsAction.getSelectedItem () + changeAIOpponentsAction.getSelectedItem ();
-		
-		okAction.setEnabled
-			(((newGamePanel.isVisible ()) && (totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals (""))) ||
-			((wizardPanel.isVisible ()) && (isWizardChosen)));
 	}
 	
 	/**
@@ -854,10 +925,16 @@ public final class NewGameUI extends MomClientAbstractUI
 		for (final Component oldComponent : wizardComponents)
 			wizardPanel.remove (oldComponent);
 
+		for (final Component oldComponent : portraitComponents)
+			portraitPanel.remove (oldComponent);
+		
 		wizardComponents.clear ();
 		wizardButtonActions.clear ();
+		portraitComponents.clear ();
+		portraitButtonActions.clear ();
 		
-		// WIZARD SELECTION PANEL
+		// WIZARD SELECTION PANEL and PORTRAIT SELECTION PANEL (for custom wizards)
+		// The two panels use the same button arrangement, so do both at once
 		// First list all the wizards, we need to know up front how many there are so we can arrange the buttons properly
 		final List<Wizard> wizards = new ArrayList<Wizard> ();
 		for (final Wizard wizard : getClient ().getClientDB ().getWizard ())
@@ -885,6 +962,7 @@ public final class NewGameUI extends MomClientAbstractUI
 					final Wizard wizard = wizards.get (wizardNo);
 					final String wizardID = (wizard == null) ? null : wizard.getWizardID ();
 					
+					// Choose wizard button
 					final Action wizardButtonAction = new AbstractAction ()
 					{
 						private static final long serialVersionUID = 6525568382660451459L;
@@ -935,6 +1013,52 @@ public final class NewGameUI extends MomClientAbstractUI
 						(colNo == 0) ? GridBagConstraints.EAST : GridBagConstraints.WEST));
 					wizardComponents.add (wizardButton);
 					
+					// Choose portrait button
+					final Action portraitButtonAction = new AbstractAction ()
+					{
+						private static final long serialVersionUID = -4992227972632337644L;
+
+						@Override
+						public final void actionPerformed (final ActionEvent ev)
+						{
+							isPortraitChosen = true;
+							portraitChosen = wizardID;
+							enableOrDisableOkButton ();
+							try
+							{
+								if (wizard == null)
+								{
+									// Custom wizard - ask for filename
+									wizardPortrait.setIcon (null);
+									flag1.setIcon (null);
+									flag2.setIcon (null);
+								}
+								else
+								{
+									final momime.client.graphics.database.v0_9_5.Wizard portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.portraitButtonAction"); 
+									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
+										(WIZARD_PORTRAIT_SIZE.width, WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
+
+									final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, Integer.parseInt (portrait.getFlagColour (), 16));
+									flag1.setIcon (new ImageIcon (wizardFlag));
+									flag2.setIcon (new ImageIcon (wizardFlag));
+								}
+							}
+							catch (final Exception e)
+							{
+								e.printStackTrace ();
+							}
+						}
+					};
+
+					portraitButtonActions.put (wizardID, portraitButtonAction);
+
+					final JButton portraitButton = getUtils ().createImageButton (portraitButtonAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+						buttonNormal, buttonPressed, buttonDisabled);
+					portraitPanel.add (portraitButton, getUtils ().createConstraints (colNo, rowNo+2, 1, INSET,
+						(colNo == 0) ? GridBagConstraints.EAST : GridBagConstraints.WEST));
+					portraitComponents.add (portraitButton);
+					
 					// Next wizard
 					wizardNo++;
 				}
@@ -943,13 +1067,23 @@ public final class NewGameUI extends MomClientAbstractUI
 		// Have to create two space 'blobs' to make the columns stay even
 		for (int colNo = 0; colNo < colCount; colNo++)
 		{
+			// Choose wizard panel
 			final GridBagConstraints wizardSpace = getUtils ().createConstraints (colNo, rowCount+2, 1, INSET, GridBagConstraints.CENTER);
 			wizardSpace.weightx = 0.5;
 			wizardSpace.weighty = 1;
 			
-			final Component glue = Box.createGlue ();
-			wizardPanel.add (glue, wizardSpace);
-			wizardComponents.add (glue);
+			final Component wizardGlue = Box.createGlue ();
+			wizardPanel.add (wizardGlue, wizardSpace);
+			wizardComponents.add (wizardGlue);
+			
+			// Choose portrait panel
+			final GridBagConstraints portraitSpace = getUtils ().createConstraints (colNo, rowCount+2, 1, INSET, GridBagConstraints.CENTER);
+			portraitSpace.weightx = 0.5;
+			portraitSpace.weighty = 1;
+			
+			final Component portraitGlue = Box.createGlue ();
+			portraitPanel.add (portraitGlue, portraitSpace);
+			portraitComponents.add (portraitGlue);
 		}
 		
 		// Set all the text
@@ -957,6 +1091,165 @@ public final class NewGameUI extends MomClientAbstractUI
 		
 		// Show the page
 		cardLayout.show (cards, WIZARD_PANEL);
+	}
+	
+	/**
+	 * Show portrait panel, if custom wizard was chosen
+	 */
+	public final void showPortraitPanel ()
+	{
+		cardLayout.show (cards, PORTRAIT_PANEL);
+	}
+	
+	/**
+	 * Show panel to select spells to get for free at the start of the game
+	 * If we have multiple types of spell books that grant free spells (e.g. 5 life books + 5 nature books) then this will get called twice
+	 * 
+	 * @param magicRealmID Magic realm ID to choose free spells for
+	 * @param spellRanks How many free spells of each rank we get; only ranks that we get free spells for are listed
+	 * @throws RecordNotFoundException If the pickID doesn't exist
+	 */
+	public final void showInitialSpellsPanel (final String magicRealmID, final List<ChooseInitialSpellsNowRank> spellRanks) throws RecordNotFoundException
+	{
+		currentMagicRealmID = magicRealmID;
+		
+		// Remove old ones
+		for (final Component oldComponent : freeSpellsComponents)
+			freeSpellsPanel.remove (oldComponent);
+		
+		freeSpellsComponents.clear ();
+		freeSpellActions.clear ();
+		
+		// Set the colour of the labels to match the spell book colour
+		final Color magicRealmColour = new Color (Integer.parseInt (getGraphicsDB ().findPick (magicRealmID, "showInitialSpellsPanel").getPickBookshelfTitleColour (), 16));
+		freeSpellsTitle.setForeground (magicRealmColour);
+		
+		// Start by copying the list of spells that we get for free
+		final List<ChooseInitialSpellsNowRank> spellRanksList = new ArrayList<ChooseInitialSpellsNowRank> ();
+		
+		// Just to scope spellRankIDs
+		{
+			final List<String> spellRankIDs = new ArrayList<String> ();
+			for (final ChooseInitialSpellsNowRank rank : spellRanks)
+			{
+				spellRanksList.add (rank);
+				spellRankIDs.add (rank.getSpellRankID ());
+			}
+		
+			// See if there's any other spell ranks for this magic realm that we don't get free spells for
+			// i.e. for any of the 5 magic realms in the default MoM setup, this will give SR01, SR02, SR03, SR04 but not SR05
+			for (final Spell spell : getClient ().getClientDB ().getSpell ())
+				if ((magicRealmID.equals (spell.getSpellRealm ())) && (!spellRankIDs.contains (spell.getSpellRank ())))
+				{
+					spellRankIDs.add (spell.getSpellRank ());
+					
+					final ChooseInitialSpellsNowRank rank = new ChooseInitialSpellsNowRank ();
+					rank.setSpellRankID (spell.getSpellRank ());
+					spellRanksList.add (rank);
+				}
+		}
+		
+		Collections.sort (spellRanksList, new Comparator<ChooseInitialSpellsNowRank> ()
+		{
+			@Override
+			public final int compare (final ChooseInitialSpellsNowRank o1, final ChooseInitialSpellsNowRank o2)
+			{
+				return o1.getSpellRankID ().compareTo (o2.getSpellRankID ());
+			}
+		});
+		
+		// Now create labels for each spell rank
+		int gridy = 2;
+		final int colCount = 2;
+		for (final ChooseInitialSpellsNowRank rank : spellRanksList)
+		{
+			final JLabel spellRankTitle = getUtils ().createLabel (magicRealmColour, getLargeFont ());
+			freeSpellsPanel.add (spellRankTitle, getUtils ().createConstraints (0, gridy, 2, INSET, GridBagConstraints.CENTER));
+					
+			spellRankTitles.put (rank, spellRankTitle);
+			freeSpellsComponents.add (spellRankTitle);
+			gridy++;
+			
+			// All the spells at this rank
+			final List<Spell> spellsAtThisRank = new ArrayList<Spell> ();
+			for (final Spell spell : getClient ().getClientDB ().getSpell ())
+				if ((magicRealmID.equals (spell.getSpellRealm ())) && (rank.getSpellRankID ().equals (spell.getSpellRank ())))
+					spellsAtThisRank.add (spell);
+			
+			Collections.sort (spellsAtThisRank, new Comparator<Spell> ()
+			{
+				@Override
+				public final int compare (final Spell o1, final Spell o2)
+				{
+					return o1.getSpellID ().compareTo (o2.getSpellID ());
+				}
+			});
+			
+			final int rowCount = (spellsAtThisRank.size () + colCount - 1) / colCount;
+			int spellNo = 0;
+
+			for (int colNo = 0; colNo < colCount; colNo++)
+				for (int rowNo = 0; rowNo < rowCount; rowNo++)
+					if (spellNo < spellsAtThisRank.size ())
+					{
+						final Spell spell = spellsAtThisRank.get (spellNo);
+						final ToggleAction spellAction = new ToggleAction ()
+						{
+							private static final long serialVersionUID = 277053074758949105L;
+
+							@Override
+							protected final void selectedChanged ()
+							{
+								updateInitialSpellsCount ();
+								enableOrDisableOkButton ();
+							}
+						};
+						freeSpellActions.put (spell, spellAction);
+						
+						final JButton spellButton = getUtils ().createTextOnlyButton (spellAction, MomUIUtils.DULL_GOLD, getSmallFont ());
+						freeSpellsPanel.add (spellButton, getUtils ().createConstraints (colNo, gridy + rowNo, 1, NO_INSET, GridBagConstraints.CENTER));
+						freeSpellsComponents.add (spellButton);
+						
+						spellNo++;
+					}
+			
+			gridy = gridy + rowCount;
+		}
+		
+		// Put any free space at the bottom
+		// Have to create two space 'blobs' to make the columns stay even
+		for (int colNo = 0; colNo < colCount; colNo++)
+		{
+			final GridBagConstraints freeSpellsSpace = getUtils ().createConstraints (colNo, gridy, 1, INSET, GridBagConstraints.CENTER);
+			freeSpellsSpace.weightx = 0.5;
+			freeSpellsSpace.weighty = 1;
+		
+			final Component freeSpellsGlue = Box.createGlue ();
+			freeSpellsPanel.add (freeSpellsGlue, freeSpellsSpace);
+			freeSpellsComponents.add (freeSpellsGlue);
+		}
+		
+		setCurrentMagicRealmTitleAndSpellNames ();
+		updateInitialSpellsCount ();
+		freeSpellsPanel.validate ();
+		
+		cardLayout.show (cards, FREE_SPELLS_PANEL);
+	}
+
+	/**
+	 * Ok button should only be enabled once we have enough info
+	 */
+	private final void enableOrDisableOkButton ()
+	{
+		// This gets triggered during startup before both actions have been created
+		final int totalOpponents = ((changeHumanOpponentsAction.getSelectedItem () == null) || (changeAIOpponentsAction.getSelectedItem () == null)) ? 0 :
+			changeHumanOpponentsAction.getSelectedItem () + changeAIOpponentsAction.getSelectedItem ();
+		
+		okAction.setEnabled
+			(((newGamePanel.isVisible ()) && (totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals (""))) ||
+			((wizardPanel.isVisible ()) && (isWizardChosen)) ||
+			((portraitPanel.isVisible ()) && (isPortraitChosen)) ||
+			((freeSpellsPanel.isVisible ()) && (isCorrectNumberOfFreeSpellsChosen ())));
 	}
 	
 	/**
@@ -1029,19 +1322,16 @@ public final class NewGameUI extends MomClientAbstractUI
 		wizardTitle.setText (getLanguage ().findCategoryEntry ("frmChooseWizard", "Title"));
 		
 		// PORTRAIT SELECTION PANEL (for custom wizards)
-		/* portraitTitle.setText (getLanguage ().findCategoryEntry ("frmChoosePortrait", "Title"));
+		portraitTitle.setText (getLanguage ().findCategoryEntry ("frmChoosePortrait", "Title"));
 		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
-		flagTitle.setText (getLanguage ().findCategoryEntry ("frmChooseFlagColour", "Title"));
+		/* flagTitle.setText (getLanguage ().findCategoryEntry ("frmChooseFlagColour", "Title"));
 		
 		// CUSTOM PICKS PANEL (for custom wizards)
-		picksTitle.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", "Title"));
-		
-		// FREE SPELL SELECTION PANEL
-		freeSpellsTitle.setText (getLanguage ().findCategoryEntry ("frmChooseInitialSpells", "Title"));
+		picksTitle.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", "Title")); */
 		
 		// RACE SELECTION PANEL
-		raceTitle.setText (getLanguage ().findCategoryEntry ("frmChooseRace", "Title"));
+		/* raceTitle.setText (getLanguage ().findCategoryEntry ("frmChooseRace", "Title"));
 		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
 		waitTitle.setText (getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Title")); */
@@ -1059,6 +1349,13 @@ public final class NewGameUI extends MomClientAbstractUI
 		catch (final RecordNotFoundException e)
 		{
 			e.printStackTrace ();
+		}
+		
+		// Choose initial spells title depends on current magic realm
+		if (currentMagicRealmID != null)
+		{
+			setCurrentMagicRealmTitleAndSpellNames ();
+			updateInitialSpellsCount ();
 		}
 	}
 	
@@ -1179,11 +1476,116 @@ public final class NewGameUI extends MomClientAbstractUI
 	 */
 	private final void languageChangedAfterInGame ()
 	{
+		// Choose wizard buttons
 		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
 			if (wizard.getKey () == null)
 				wizard.getValue ().putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmChooseWizard", "Custom"));
 			else
 				wizard.getValue ().putValue (Action.NAME, getLanguage ().findWizardName (wizard.getKey ()));
+		
+		// Choose portrait buttons
+		for (final Entry<String, Action> portrait : portraitButtonActions.entrySet ())
+			if (portrait.getKey () == null)
+				portrait.getValue ().putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmChoosePortrait", "Custom"));
+			else
+				portrait.getValue ().putValue (Action.NAME, getLanguage ().findWizardName (portrait.getKey ()));
+	}
+	
+	/**
+	 * Choose initial spells title depends on current magic realm; sets the title for that and the names of all 40 spells
+	 */
+	private final void setCurrentMagicRealmTitleAndSpellNames ()
+	{
+		// "Choose Life Spells" title
+		final Pick currentMagicRealm = getLanguage ().findPick (currentMagicRealmID);
+		final String magicRealmDescription = (currentMagicRealm == null) ? currentMagicRealmID : currentMagicRealm.getBookshelfDescription ();
+		freeSpellsTitle.setText (getLanguage ().findCategoryEntry ("frmChooseInitialSpells", "Title").replaceAll ("MAGIC_REALM", magicRealmDescription));
+		
+		// Names of every spell
+		for (final Entry<Spell, ToggleAction> spellAction : freeSpellActions.entrySet ())
+		{
+			final momime.client.language.database.v0_9_5.Spell spell = getLanguage ().findSpell (spellAction.getKey ().getSpellID ());
+			spellAction.getValue ().putValue (Action.NAME, (spell == null) ? spellAction.getKey ().getSpellID () : spell.getSpellName ());			
+		}
+	}
+	
+	/**
+	 * Update spell rank titles that include how many free spells we have left to choose, like Uncommon: 8/10
+	 */
+	private final void updateInitialSpellsCount ()
+	{
+		for (final Entry<ChooseInitialSpellsNowRank, JLabel> rank : spellRankTitles.entrySet ())
+		{
+			// How many spells have been chosen at this rank
+			int chosen = 0;
+			for (final Entry<Spell, ToggleAction> spell : freeSpellActions.entrySet ())
+				if ((spell.getValue ().isSelected ()) && (rank.getKey ().getSpellRankID ().equals (spell.getKey ().getSpellRank ())))
+					chosen++;
+			
+			// Set rank title as 0/10
+			rank.getValue ().setText (getLanguage ().findSpellRankDescription (rank.getKey ().getSpellRankID ()) + ": " +
+				chosen + "/" + rank.getKey ().getFreeSpellCount ());
+			
+			// Enable or disable all the buttons
+			for (final Entry<Spell, ToggleAction> spell : freeSpellActions.entrySet ())
+				if (rank.getKey ().getSpellRankID ().equals (spell.getKey ().getSpellRank ()))
+				{
+					final boolean enabled;
+					
+					// If can't choose any free spells ever, then never enable it
+					if (rank.getKey ().getFreeSpellCount () == 0)
+						enabled = false;
+					
+					// If we've selected spells, we have to be allowed to unselect them, so we can change our mind
+					else if (spell.getValue ().isSelected ())
+						enabled = true;
+					
+					// Otherwise enable it only if we haven't already made all selections
+					else
+						enabled = (chosen < rank.getKey ().getFreeSpellCount ());
+					
+					spell.getValue ().setEnabled (enabled);
+				}
+		}
+		
+		// Now we've set the state of the actions correctly, colour the buttons to match
+		for (final Component comp : freeSpellsComponents)
+			if (comp instanceof JButton)
+			{
+				final JButton spellButton = (JButton) comp;
+				final ToggleAction spellAction = (ToggleAction) spellButton.getAction ();
+				
+				if (spellAction.isEnabled ())
+					spellButton.setForeground (spellAction.isSelected () ? MomUIUtils.GOLD : MomUIUtils.DULL_GOLD);
+				else
+					spellButton.setForeground (MomUIUtils.GRAY);
+			}
+	}
+	
+	/**
+	 * @return True only if exactly the right number of spells in all ranks have been chosen
+	 */
+	private final boolean isCorrectNumberOfFreeSpellsChosen ()
+	{
+		boolean allOk = true;
+		final Iterator<ChooseInitialSpellsNowRank> rankIter = spellRankTitles.keySet ().iterator ();
+		
+		while ((allOk) && (rankIter.hasNext ()))
+		{
+			final ChooseInitialSpellsNowRank rank = rankIter.next ();
+			
+			// How many spells have been chosen at this rank
+			int chosen = 0;
+			for (final Entry<Spell, ToggleAction> spell : freeSpellActions.entrySet ())
+				if ((spell.getValue ().isSelected ()) && (rank.getSpellRankID ().equals (spell.getKey ().getSpellRank ())))
+					chosen++;
+			
+			// Is it correct?
+			if (chosen != rank.getFreeSpellCount ())
+				allOk = false;
+		}
+		
+		return allOk;
 	}
 	
 	/**

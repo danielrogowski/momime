@@ -4,6 +4,7 @@ import java.util.List;
 
 import momime.client.language.database.v0_9_5.KnownServer;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.Spell;
 
 /**
  * Describes operations that we need to support over the language XML file
@@ -21,6 +22,18 @@ public interface LanguageDatabaseEx
 	 * @return Wizard name; or replays back the ID if no description exists
 	 */
 	public String findWizardName (final String wizardID);
+	
+	/**
+	 * @param spellRankID Spell rank ID to search for
+	 * @return Spell rank description; or replays back the ID if no description exists
+	 */
+	public String findSpellRankDescription (final String spellRankID);
+	
+	/**
+	 * @param spellID Spell ID to search for
+	 * @return Spell descriptions object; or null if not found
+	 */
+	public Spell findSpell (final String spellID);
 	
 	/**
 	 * @param mapSizeID Map size ID to search for

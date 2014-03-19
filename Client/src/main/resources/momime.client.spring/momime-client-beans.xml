@@ -148,6 +148,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="momClient" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 	</bean>
+
+	<bean id="chosenWizardMessage" class="momime.client.messages.process.ChosenWizardMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="newGameUI" ref="newGameUI" />
+	</bean>
+	
+	<bean id="chooseInitialSpellsNowMessage" class="momime.client.messages.process.ChooseInitialSpellsNowMessageImpl" scope="prototype">
+		<property name="newGameUI" ref="newGameUI" />
+	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype" />
@@ -176,7 +185,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype" />
 	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype" />
 	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype" />
-	<bean id="chooseInitialSpellsNowMessage" class="momime.client.messages.process.ChooseInitialSpellsNowMessageImpl" scope="prototype" />
 	<bean id="chosenStandardPhotoMessage" class="momime.client.messages.process.ChosenStandardPhotoMessageImpl" scope="prototype" />
 	<bean id="replacePicksMessage" class="momime.client.messages.process.ReplacePicksMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
@@ -204,7 +212,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateProductionSoFarMessage" class="momime.client.messages.process.UpdateProductionSoFarMessageImpl" scope="prototype" />
 	<bean id="moveUnitInCombatMessage" class="momime.client.messages.process.MoveUnitInCombatMessageImpl" scope="prototype" />
 	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype" />
-	<bean id="chosenWizardMessage" class="momime.client.messages.process.ChosenWizardMessageImpl" scope="prototype" />
 	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype" />
 	<bean id="updateManaSpentOnCastingCurrentSpellMessage" class="momime.client.messages.process.UpdateManaSpentOnCastingCurrentSpellMessageImpl" scope="prototype" />
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
@@ -323,10 +330,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
-	
-	<!-- Utils -->
-
-	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
 	
 	<!-- Prototype UI components -->
 	

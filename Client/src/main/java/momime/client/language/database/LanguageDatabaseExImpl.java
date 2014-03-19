@@ -11,6 +11,8 @@ import momime.client.language.database.v0_9_5.LanguageDatabase;
 import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
@@ -25,6 +27,12 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
+
+	/** Map of spell rank IDs to spell rank objects */
+	private Map<String, SpellRank> spellRanksMap;
+
+	/** Map of spell IDs to spell objects */
+	private Map<String, Spell> spellsMap;
 	
 	/** Map of map size IDs to map size objects */
 	private Map<String, MapSize> mapSizesMap;
@@ -65,6 +73,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		for (final Wizard thisWizard : getWizard ())
 			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
 
+		// Create spell ranks map
+		spellRanksMap = new HashMap<String, SpellRank> ();
+		for (final SpellRank thisSpellRank : getSpellRank ())
+			spellRanksMap.put (thisSpellRank.getSpellRankID (), thisSpellRank);
+		
+		// Create spells map
+		spellsMap = new HashMap<String, Spell> ();
+		for (final Spell thisSpell : getSpell ())
+			spellsMap.put (thisSpell.getSpellID (), thisSpell);
+		
 		// Create map sizes map
 		mapSizesMap = new HashMap<String, MapSize> ();
 		for (final MapSize thisMapSize : getMapSize ())
@@ -129,6 +147,27 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	{
 		final Wizard thisWizard = wizardsMap.get (wizardID);
 		return (thisWizard == null) ? wizardID : thisWizard.getWizardName ();
+	}
+
+	/**
+	 * @param spellRankID Spell rank ID to search for
+	 * @return Spell rank description; or replays back the ID if no description exists
+	 */
+	@Override
+	public final String findSpellRankDescription (final String spellRankID)
+	{
+		final SpellRank thisSpellRank = spellRanksMap.get (spellRankID);
+		return (thisSpellRank == null) ? spellRankID : thisSpellRank.getSpellRankDescription ();
+	}
+
+	/**
+	 * @param spellID Spell ID to search for
+	 * @return Spell descriptions object; or null if not found
+	 */
+	@Override
+	public final Spell findSpell (final String spellID)
+	{
+		return spellsMap.get (spellID);
 	}
 	
 	/**

@@ -337,10 +337,10 @@ public final class MainMenuUI extends MomClientAbstractUI
 	public final void enableActions ()
 	{
 		newGameAction.setEnabled (getClient ().getOurPlayerID () != null);
-		newGameButton.setForeground (newGameAction.isEnabled () ? MomUIUtils.GOLD : Color.GRAY);
+		newGameButton.setForeground (newGameAction.isEnabled () ? MomUIUtils.GOLD : MomUIUtils.GRAY);
 		
 		joinGameAction.setEnabled (getClient ().getOurPlayerID () != null);
-		joinGameButton.setForeground (joinGameAction.isEnabled () ? MomUIUtils.GOLD : Color.GRAY);
+		joinGameButton.setForeground (joinGameAction.isEnabled () ? MomUIUtils.GOLD : MomUIUtils.GRAY);
 	}
 	
 	/**

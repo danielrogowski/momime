@@ -22,6 +22,12 @@ public interface MomUIUtils
 	/** Closest possible match to the gold font colours from the original MoM */
 	public static final Color GOLD = new Color (0xFCC864);
 	
+	/** Dull gold, for deselected buttons */
+	public static final Color DULL_GOLD = new Color (0xA88542);
+	
+	/** Color.GRAY is too bright and Color.DARK_GRAY is too dark */
+	public static final Color GRAY = new Color (0x606060);
+	
 	/** Closest possible match to the silver font colours from the original MoM */
 	public static final Color SILVER = new Color (0xD8DCEC);
 	

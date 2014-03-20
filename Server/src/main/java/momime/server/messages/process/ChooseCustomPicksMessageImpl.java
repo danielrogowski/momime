@@ -11,6 +11,7 @@ import momime.common.database.v0_9_4.WizardPick;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseCustomPicksMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChooseYourRaceNowMessage;
+import momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage;
 import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
@@ -76,10 +77,15 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 				ppk.getPick ().add (destPick);
 			}
 
-			// Commenting this out because don't think client needs this info yet
-			// Send picks
-			// if (player.getPlayerDescription ().isHuman ())
-			// sendPicksToPlayer (players, player, false, false, debugLogger);
+			// Send picks to the player - they need to know their own picks so they know whether they're allowed to pick a Myrran race not
+			// We don't send picks to other players until the game is starting up
+			if (sender.getPlayerDescription ().isHuman ())
+			{
+				final ReplacePicksMessage picksMsg = new ReplacePicksMessage ();
+				picksMsg.setPlayerID (sender.getPlayerDescription ().getPlayerID ());
+				picksMsg.getPick ().addAll (ppk.getPick ());
+				sender.getConnection ().sendMessageToClient (picksMsg);
+			}
 
 			// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 			// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below

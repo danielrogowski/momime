@@ -268,10 +268,15 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						log.finest (PlayerMessageProcessingImpl.class.getName () + ".chooseWizard: Read picks for player '" + player.getPlayerDescription ().getPlayerName () + "' who has chosen pre-defined wizard \"" + wizardID + "\":  " + picksDebugDescription);
 					}
 
-					// Commenting this out because don't think client needs this info yet
-					// Send picks
-					// if (player.getPlayerDescription ().isHuman ())
-					// sendPicksToPlayer (players, player, false, false);
+					// Send picks to the player - they need to know their own picks so they know whether they're allowed to pick a Myrran race not
+					// We don't send picks to other players until the game is starting up
+					if (player.getPlayerDescription ().isHuman ())
+					{
+						final ReplacePicksMessage picksMsg = new ReplacePicksMessage ();
+						picksMsg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+						picksMsg.getPick ().addAll (ppk.getPick ());
+						player.getConnection ().sendMessageToClient (picksMsg);
+					}
 
 					// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 					// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below

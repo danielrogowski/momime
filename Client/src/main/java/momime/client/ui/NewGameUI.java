@@ -59,17 +59,25 @@ import momime.common.database.v0_9_4.FogOfWarSetting;
 import momime.common.database.v0_9_4.LandProportion;
 import momime.common.database.v0_9_4.MapSize;
 import momime.common.database.v0_9_4.NodeStrength;
+import momime.common.database.v0_9_4.Plane;
+import momime.common.database.v0_9_4.Race;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.SpellSetting;
 import momime.common.database.v0_9_4.UnitSetting;
 import momime.common.database.v0_9_4.WizardPick;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseInitialSpellsMessage;
+import momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.v0_9_4.ChooseWizardMessage;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowRank;
+import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 import momime.common.messages.v0_9_4.TurnSystem;
+import momime.common.utils.PlayerPickUtils;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.NewSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -98,6 +106,9 @@ public final class NewGameUI extends MomClientAbstractUI
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
+	
 	/** Random number generator */
 	private RandomUtils randomUtils;
 
@@ -427,9 +438,24 @@ public final class NewGameUI extends MomClientAbstractUI
 	
 	/** Panel key */
 	private final static String RACE_PANEL = "Race";
+
+	/** Panel */
+	private JPanel racePanel;
 	
 	/** Panel title */
 	private JLabel raceTitle;
+
+	/** Dynamically created titles */
+	private Map<Integer, JLabel> racePlanes = new HashMap<Integer, JLabel> ();
+	
+	/** Dynamically created button actions */
+	private Map<Race, Action> raceButtonActions = new HashMap<Race, Action> ();
+
+	/** Dynamically created buttons etc */
+	private List<Component> raceComponents = new ArrayList<Component> ();
+	
+	/** Gets set to chosen race ID when player clicks a button */
+	private String raceChosen;
 	
 	// WAITING TO OTHER PLAYERS TO JOIN PANEL
 	
@@ -523,6 +549,12 @@ public final class NewGameUI extends MomClientAbstractUI
 							if (spell.getValue ().isSelected ())
 								msg.getSpell ().add (spell.getKey ().getSpellID ());
 
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
+					else if (racePanel.isVisible ())
+					{
+						final ChooseRaceMessage msg = new ChooseRaceMessage ();
+						msg.setRaceID (raceChosen);
 						getClient ().getServerConnection ().sendMessageToServer (msg);
 					}
 					
@@ -847,6 +879,17 @@ public final class NewGameUI extends MomClientAbstractUI
 		cards.add (freeSpellsPanel, FREE_SPELLS_PANEL);
 		
 		// RACE SELECTION PANEL
+		racePanel = new JPanel ();
+		racePanel.setOpaque (false);
+		racePanel.setLayout (new GridBagLayout ());
+		
+		raceTitle = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
+		racePanel.add (raceTitle, getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER));
+		
+		racePanel.add (getUtils ().createImage (divider), getUtils ().createConstraints (0, 1, 1, INSET, GridBagConstraints.CENTER));
+		
+		cards.add (racePanel, RACE_PANEL);
+		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
 
 		// Load the database list last, because it causes the first database to be selected and hence loads all the other buttons with values
@@ -927,11 +970,17 @@ public final class NewGameUI extends MomClientAbstractUI
 
 		for (final Component oldComponent : portraitComponents)
 			portraitPanel.remove (oldComponent);
+
+		for (final Component oldComponent : raceComponents)
+			racePanel.remove (oldComponent);
 		
 		wizardComponents.clear ();
 		wizardButtonActions.clear ();
 		portraitComponents.clear ();
 		portraitButtonActions.clear ();
+		raceComponents.clear ();
+		racePlanes.clear ();
+		raceButtonActions.clear ();
 		
 		// WIZARD SELECTION PANEL and PORTRAIT SELECTION PANEL (for custom wizards)
 		// The two panels use the same button arrangement, so do both at once
@@ -1086,6 +1135,53 @@ public final class NewGameUI extends MomClientAbstractUI
 			portraitComponents.add (portraitGlue);
 		}
 		
+		// Race buttons - first go through each plane
+		int gridy = 2;
+		for (final Plane plane : getClient ().getClientDB ().getPlane ())
+		{
+			final JLabel planeLabel = getUtils ().createLabel (MomUIUtils.SILVER, getLargeFont ());
+			racePanel.add (planeLabel, getUtils ().createConstraints (0, gridy, 1, INSET, GridBagConstraints.CENTER));
+			
+			racePlanes.put (plane.getPlaneNumber (), planeLabel);
+			raceComponents.add (planeLabel);
+			gridy++;
+			
+			// Then search for races native to this plane
+			for (final Race race : getClient ().getClientDB ().getRace ())
+				if (race.getNativePlane () == plane.getPlaneNumber ())
+				{
+					final Action raceButtonAction = new AbstractAction ()
+					{
+						private static final long serialVersionUID = -6804723217965830108L;
+
+						@Override
+						public final void actionPerformed (final ActionEvent ev)
+						{
+							raceChosen = race.getRaceID ();
+							enableOrDisableOkButton ();
+						}
+					};
+					
+					raceButtonActions.put (race, raceButtonAction);
+					
+					final JButton raceButton =  getUtils ().createImageButton (raceButtonAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+						buttonNormal, buttonPressed, buttonDisabled);
+					racePanel.add (raceButton, getUtils ().createConstraints (0, gridy, 1, NO_INSET, GridBagConstraints.CENTER));
+					
+					raceComponents.add (raceButton);
+					gridy++;
+				}
+		}
+
+		// Put all the space underneath the buttons
+		final GridBagConstraints raceSpace = getUtils ().createConstraints (0, gridy, 1, INSET, GridBagConstraints.CENTER);
+		raceSpace.weightx = 1;
+		raceSpace.weighty = 1;
+			
+		final Component raceGlue = Box.createGlue ();
+		racePanel.add (raceGlue, raceSpace);
+		raceComponents.add (raceGlue);
+		
 		// Set all the text
 		languageChangedAfterInGame ();
 		
@@ -1237,6 +1333,29 @@ public final class NewGameUI extends MomClientAbstractUI
 	}
 
 	/**
+	 * Show race selection panel
+	 * @throws PlayerNotFoundException If we can't find ourPlayerID in the players list
+	 * @throws RecordNotFoundException If one of the races referrs to a native plane that can't be found
+	 */
+	public final void showRacePanel () throws PlayerNotFoundException, RecordNotFoundException
+	{
+		// Enable/disable Myrran buttons, now we know what picks we chose
+		final PlayerPublicDetails ourPlayer = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "NewGameUI.showRacePanel");
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+		
+		for (final Entry<Race, Action> race : raceButtonActions.entrySet ())
+		{
+			final Plane plane = getClient ().getClientDB ().findPlane (race.getKey ().getNativePlane (), "NewGameUI.showRacePanel");
+			
+			race.getValue ().setEnabled ((plane.getPrerequisitePickToChooseNativeRace () == null) ? true :
+				(getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), plane.getPrerequisitePickToChooseNativeRace ()) > 0));
+		}		
+		
+		// Now can show it
+		cardLayout.show (cards, RACE_PANEL);
+	}
+
+	/**
 	 * Ok button should only be enabled once we have enough info
 	 */
 	private final void enableOrDisableOkButton ()
@@ -1249,7 +1368,8 @@ public final class NewGameUI extends MomClientAbstractUI
 			(((newGamePanel.isVisible ()) && (totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals (""))) ||
 			((wizardPanel.isVisible ()) && (isWizardChosen)) ||
 			((portraitPanel.isVisible ()) && (isPortraitChosen)) ||
-			((freeSpellsPanel.isVisible ()) && (isCorrectNumberOfFreeSpellsChosen ())));
+			((freeSpellsPanel.isVisible ()) && (isCorrectNumberOfFreeSpellsChosen ())) ||
+			((racePanel.isVisible ()) && (raceChosen != null)));
 	}
 	
 	/**
@@ -1331,10 +1451,10 @@ public final class NewGameUI extends MomClientAbstractUI
 		picksTitle.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", "Title")); */
 		
 		// RACE SELECTION PANEL
-		/* raceTitle.setText (getLanguage ().findCategoryEntry ("frmChooseRace", "Title"));
+		raceTitle.setText (getLanguage ().findCategoryEntry ("frmChooseRace", "Title"));
 		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
-		waitTitle.setText (getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Title")); */
+		// waitTitle.setText (getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Title"));
 		
 		// Change labels for buttons on the new game form
 		if (changeDatabaseAction.getSelectedItem () != null)
@@ -1489,6 +1609,20 @@ public final class NewGameUI extends MomClientAbstractUI
 				portrait.getValue ().putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmChoosePortrait", "Custom"));
 			else
 				portrait.getValue ().putValue (Action.NAME, getLanguage ().findWizardName (portrait.getKey ()));
+		
+		// Race plane titles
+		for (final Entry<Integer, JLabel> planeLabel : racePlanes.entrySet ())
+		{
+			final momime.client.language.database.v0_9_5.Plane plane = getLanguage ().findPlane (planeLabel.getKey ());
+			planeLabel.getValue ().setText ((plane == null) ? planeLabel.getKey ().toString () : plane.getPlaneRacesTitle ());
+		}
+		
+		// Choose race buttons
+		for (final Entry<Race, Action> raceAction : raceButtonActions.entrySet ())
+		{
+			final momime.client.language.database.v0_9_5.Race race = getLanguage ().findRace (raceAction.getKey ().getRaceID ());
+			raceAction.getValue ().putValue (Action.NAME, (race == null) ? raceAction.getKey () : race.getRaceName ());
+		}
 	}
 	
 	/**
@@ -1798,6 +1932,22 @@ public final class NewGameUI extends MomClientAbstractUI
 		graphicsDB = db;
 	}
 
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
+	}
+	
 	/**
 	 * @return Random number generator
 	 */

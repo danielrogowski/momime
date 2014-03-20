@@ -9,6 +9,8 @@ import momime.client.language.database.v0_9_5.LanguageEntry;
 import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.Plane;
+import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
@@ -22,6 +24,27 @@ import org.junit.Test;
  */
 public final class TestLanguageDatabaseExImpl
 {
+	/**
+	 * Tests the findPlane method
+	 */
+	@Test
+	public final void findPlane ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Plane newPlane = new Plane ();
+			newPlane.setPlaneNumber(n);
+			newPlane.setPlaneDescription ("PLDesc0" + n);
+			lang.getPlane ().add (newPlane);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("PLDesc02", lang.findPlane (2).getPlaneDescription ());
+		assertNull ("PL04", lang.findPlane (4));
+	}
+
 	/**
 	 * Tests the findPick method
 	 */
@@ -64,6 +87,27 @@ public final class TestLanguageDatabaseExImpl
 		assertEquals ("WZ04", lang.findWizardName ("WZ04"));
 	}
 
+	/**
+	 * Tests the findRace method
+	 */
+	@Test
+	public final void findRace ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Race newRace = new Race ();
+			newRace.setRaceID ("RC0" + n);
+			newRace.setRaceName ("RCDesc0" + n);
+			lang.getRace ().add (newRace);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("RCDesc02", lang.findRace ("RC02").getRaceName ());
+		assertNull ("RC04", lang.findRace ("RC04"));
+	}
+	
 	/**
 	 * Tests the findSpellRankDescription method
 	 */

@@ -11,6 +11,8 @@ import momime.client.language.database.v0_9_5.LanguageDatabase;
 import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.Plane;
+import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
@@ -22,12 +24,18 @@ import momime.client.language.database.v0_9_5.Wizard;
  */
 public final class LanguageDatabaseExImpl extends LanguageDatabase implements LanguageDatabaseEx
 {
+	/** Map of plane IDs to plane objects */
+	private Map<Integer, Plane> planesMap;
+
 	/** Map of pick IDs to pick objects */
 	private Map<String, Pick> picksMap;
 
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
 
+	/** Map of race IDs to race objects */
+	private Map<String, Race> racesMap;
+	
 	/** Map of spell rank IDs to spell rank objects */
 	private Map<String, SpellRank> spellRanksMap;
 
@@ -63,6 +71,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 */
 	public final void buildMaps ()
 	{
+		// Create planes map
+		planesMap = new HashMap<Integer, Plane> ();
+		for (final Plane thisPlane : getPlane ())
+			planesMap.put (thisPlane.getPlaneNumber (), thisPlane);
+
 		// Create picks map
 		picksMap = new HashMap<String, Pick> ();
 		for (final Pick thisPick : getPick ())
@@ -73,6 +86,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		for (final Wizard thisWizard : getWizard ())
 			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
 
+		// Create races map
+		racesMap = new HashMap<String, Race> ();
+		for (final Race thisRace : getRace ())
+			racesMap.put (thisRace.getRaceID (), thisRace);
+		
 		// Create spell ranks map
 		spellRanksMap = new HashMap<String, SpellRank> ();
 		for (final SpellRank thisSpellRank : getSpellRank ())
@@ -129,6 +147,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	}	
 
 	/**
+	 * @param planeNumber Plane number to search for
+	 * @return Plane descriptions object; or null if not found
+	 */
+	@Override
+	public final Plane findPlane (final int planeNumber)
+	{
+		return planesMap.get (planeNumber);
+	}
+	
+	/**
 	 * @param pickID Pick ID to search for
 	 * @return Pick descriptions object; or null if not found
 	 */
@@ -149,6 +177,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		return (thisWizard == null) ? wizardID : thisWizard.getWizardName ();
 	}
 
+	/**
+	 * @param raceID Race ID to search for
+	 * @return Race descriptions object; or null if not found
+	 */
+	@Override
+	public final Race findRace (final String raceID)
+	{
+		return racesMap.get (raceID);
+	}
+	
 	/**
 	 * @param spellRankID Spell rank ID to search for
 	 * @return Spell rank description; or replays back the ID if no description exists

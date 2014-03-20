@@ -4,6 +4,8 @@ import java.util.List;
 
 import momime.client.language.database.v0_9_5.KnownServer;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.Plane;
+import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 
 /**
@@ -11,6 +13,12 @@ import momime.client.language.database.v0_9_5.Spell;
  */
 public interface LanguageDatabaseEx
 {
+	/**
+	 * @param planeNumber Plane number to search for
+	 * @return Plane descriptions object; or null if not found
+	 */
+	public Plane findPlane (final int planeNumber);
+
 	/**
 	 * @param pickID Pick ID to search for
 	 * @return Pick descriptions object; or null if not found
@@ -22,6 +30,12 @@ public interface LanguageDatabaseEx
 	 * @return Wizard name; or replays back the ID if no description exists
 	 */
 	public String findWizardName (final String wizardID);
+
+	/**
+	 * @param raceID Race ID to search for
+	 * @return Race descriptions object; or null if not found
+	 */
+	public Race findRace (final String raceID);
 	
 	/**
 	 * @param spellRankID Spell rank ID to search for

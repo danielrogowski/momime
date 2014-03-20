@@ -153,8 +153,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="momClient" />
 		<property name="newGameUI" ref="newGameUI" />
 	</bean>
+
+	<bean id="replacePicksMessage" class="momime.client.messages.process.ReplacePicksMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+	</bean>
 	
 	<bean id="chooseInitialSpellsNowMessage" class="momime.client.messages.process.ChooseInitialSpellsNowMessageImpl" scope="prototype">
+		<property name="newGameUI" ref="newGameUI" />
+	</bean>
+	
+	<bean id="chooseYourRaceNowMessage" class="momime.client.messages.process.ChooseYourRaceNowMessageImpl" scope="prototype">
 		<property name="newGameUI" ref="newGameUI" />
 	</bean>
 	
@@ -186,13 +194,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype" />
 	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype" />
 	<bean id="chosenStandardPhotoMessage" class="momime.client.messages.process.ChosenStandardPhotoMessageImpl" scope="prototype" />
-	<bean id="replacePicksMessage" class="momime.client.messages.process.ReplacePicksMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype" />
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype" />
 	<bean id="chosenCustomPhotoMessage" class="momime.client.messages.process.ChosenCustomPhotoMessageImpl" scope="prototype" />
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
-	<bean id="chooseYourRaceNowMessage" class="momime.client.messages.process.ChooseYourRaceNowMessageImpl" scope="prototype" />
 	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="yourRaceIsOkMessage" class="momime.client.messages.process.YourRaceIsOkMessageImpl" scope="prototype" />
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
@@ -328,6 +334,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="momClient" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	

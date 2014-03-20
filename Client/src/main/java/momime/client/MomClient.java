@@ -13,6 +13,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.database.ClientDatabaseEx;
+import momime.client.database.ClientDatabaseExImpl;
 import momime.client.database.v0_9_4.NewGameDatabase;
 import momime.client.ui.ConnectToServerUI;
 import momime.client.ui.MainMenuUI;
@@ -187,6 +188,7 @@ public final class MomClient extends MultiplayerSessionClient
 			public final void joinedSession (final MultiplayerServerConnection sender)
 				throws JAXBException, XMLStreamException, IOException
 			{
+				((ClientDatabaseExImpl) getClientDB ()).buildMaps ();
 				getNewGameUI ().afterJoinedSession ();
 			}
 

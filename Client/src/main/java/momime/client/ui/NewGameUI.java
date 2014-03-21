@@ -461,6 +461,9 @@ public final class NewGameUI extends MomClientAbstractUI
 	
 	/** Panel key */
 	private final static String WAIT_PANEL = "Wait";
+
+	/** Panel */
+	private JPanel waitPanel;
 	
 	/** Panel title */
 	private JLabel waitTitle;
@@ -891,6 +894,23 @@ public final class NewGameUI extends MomClientAbstractUI
 		cards.add (racePanel, RACE_PANEL);
 		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
+		waitPanel = new JPanel ();
+		waitPanel.setOpaque (false);
+		waitPanel.setLayout (new GridBagLayout ());
+		
+		waitTitle = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
+		waitPanel.add (waitTitle, getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER));
+		
+		waitPanel.add (getUtils ().createImage (divider), getUtils ().createConstraints (0, 1, 1, INSET, GridBagConstraints.CENTER));
+
+		final GridBagConstraints waitSpace = getUtils ().createConstraints (0, 2, 1, INSET, GridBagConstraints.CENTER);
+		waitSpace.weightx = 1;
+		waitSpace.weighty = 1;
+			
+		final Component waitGlue = Box.createGlue ();
+		waitPanel.add (waitGlue, waitSpace);
+		
+		cards.add (waitPanel, WAIT_PANEL);
 
 		// Load the database list last, because it causes the first database to be selected and hence loads all the other buttons with values
 		for (final AvailableDatabase db : getClient ().getNewGameDatabase ().getMomimeXmlDatabase ())
@@ -1354,6 +1374,14 @@ public final class NewGameUI extends MomClientAbstractUI
 		// Now can show it
 		cardLayout.show (cards, RACE_PANEL);
 	}
+	
+	/**
+	 * Shows "wait for other players to join" panel
+	 */
+	public final void showWaitPanel ()
+	{
+		cardLayout.show (cards, WAIT_PANEL);
+	}
 
 	/**
 	 * Ok button should only be enabled once we have enough info
@@ -1454,7 +1482,7 @@ public final class NewGameUI extends MomClientAbstractUI
 		raceTitle.setText (getLanguage ().findCategoryEntry ("frmChooseRace", "Title"));
 		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
-		// waitTitle.setText (getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Title"));
+		waitTitle.setText (getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Title"));
 		
 		// Change labels for buttons on the new game form
 		if (changeDatabaseAction.getSelectedItem () != null)

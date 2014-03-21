@@ -165,6 +165,22 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="chooseYourRaceNowMessage" class="momime.client.messages.process.ChooseYourRaceNowMessageImpl" scope="prototype">
 		<property name="newGameUI" ref="newGameUI" />
 	</bean>
+
+	<bean id="yourRaceIsOkMessage" class="momime.client.messages.process.YourRaceIsOkMessageImpl" scope="prototype" >
+		<property name="newGameUI" ref="newGameUI" />
+	</bean>
+	
+	<bean id="startGameProgressMessage" class="momime.client.messages.process.StartGameProgressMessageImpl" scope="prototype" />
+
+	<bean id="chosenStandardPhotoMessage" class="momime.client.messages.process.ChosenStandardPhotoMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+	</bean>
+
+	<bean id="fullSpellListMessage" class="momime.client.messages.process.FullSpellListMessageImpl" scope="prototype" >
+		<property name="client" ref="momClient" />
+		<property name="spellUtils" ref="spellUtils" />
+	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype" />
@@ -174,11 +190,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype" />
 	<bean id="pendingMovementMessage" class="momime.client.messages.process.PendingMovementMessageImpl" scope="prototype" />
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
-	<bean id="fullSpellListMessage" class="momime.client.messages.process.FullSpellListMessageImpl" scope="prototype" />
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype" />
 	<bean id="startGameMessage" class="momime.client.messages.process.StartGameMessageImpl" scope="prototype" />
 	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype" />
-	<bean id="startGameProgressMessage" class="momime.client.messages.process.StartGameProgressMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
 	<bean id="updateOverlandMovementRemainingMessage" class="momime.client.messages.process.UpdateOverlandMovementRemainingMessageImpl" scope="prototype" />
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
@@ -193,14 +207,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype" />
 	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype" />
 	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype" />
-	<bean id="chosenStandardPhotoMessage" class="momime.client.messages.process.ChosenStandardPhotoMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype" />
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype" />
 	<bean id="chosenCustomPhotoMessage" class="momime.client.messages.process.ChosenCustomPhotoMessageImpl" scope="prototype" />
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
 	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
-	<bean id="yourRaceIsOkMessage" class="momime.client.messages.process.YourRaceIsOkMessageImpl" scope="prototype" />
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype" />
 	<bean id="updateTerrainMessage" class="momime.client.messages.process.UpdateTerrainMessageImpl" scope="prototype" />

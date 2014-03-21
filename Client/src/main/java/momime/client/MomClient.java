@@ -22,7 +22,9 @@ import momime.client.ui.NewGameUI;
 import momime.client.ui.PrototypeFrameCreator;
 import momime.common.MomCommonConstants;
 import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
+import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -354,6 +356,24 @@ public final class MomClient extends MultiplayerSessionClient
 	public final MomSessionDescription getSessionDescription ()
 	{
 		return (MomSessionDescription) super.getSessionDescription ();
+	}
+	
+	/**
+	 * @return Private knowledge about our player that is persisted to save game files,  typecasted to MoM specific type
+	 */
+	@Override
+	public final MomPersistentPlayerPrivateKnowledge getOurPersistentPlayerPrivateKnowledge ()
+	{
+		return (MomPersistentPlayerPrivateKnowledge) super.getOurPersistentPlayerPrivateKnowledge ();
+	}
+	
+	/**
+	 * @return Private knowledge about our player that is not persisted to save game files,  typecasted to MoM specific type
+	 */
+	@Override
+	public final MomTransientPlayerPrivateKnowledge getOurTransientPlayerPrivateKnowledge ()
+	{
+		return (MomTransientPlayerPrivateKnowledge) super.getOurTransientPlayerPrivateKnowledge ();
 	}
 	
 	/**

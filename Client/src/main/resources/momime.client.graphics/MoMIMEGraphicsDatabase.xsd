@@ -1,7 +1,9 @@
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
 	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
 	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_4" xmlns:map="http://www.ndg.com/map" 
-	xmlns:momimegfx="http://momime/client/graphics/database/v0_9_5" targetNamespace="http://momime/client/graphics/database/v0_9_5">
+	xmlns:momimegfx="http://momime/client/graphics/database/v0_9_5" targetNamespace="http://momime/client/graphics/database/v0_9_5"
+	jaxb:version="2.0">
 	
 	<xsd:import namespace="http://www.ndg.com/map"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
@@ -909,8 +911,14 @@
 
 	<xsd:simpleType name="frontOrBack">
 		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="F" />
-			<xsd:enumeration value="B" />
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Front</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FRONT"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Back</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BACK"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

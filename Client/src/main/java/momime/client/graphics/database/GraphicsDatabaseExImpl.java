@@ -2,10 +2,14 @@ package momime.client.graphics.database;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Wizard;
+import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 
 /**
@@ -13,17 +17,28 @@ import momime.common.database.RecordNotFoundException;
  */
 public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements GraphicsDatabaseEx
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (GraphicsDatabaseExImpl.class.getName ());
+	
 	/** Map of pick IDs to pick objects */
 	private Map<String, Pick> picksMap;
 
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
+
+	/** Map of animation IDs to animation objects */
+	private Map<String, Animation> animationsMap;
 	
 	/**
 	 * Builds all the hash maps to enable finding records faster
+	 * @throws MomException If there are invalid rules defined, i.e. with a mixture of null and non-null condition/set rules
+	 * @throws RecordNotFoundException If an image is missing, or a tile type refers to a smoothing system that doesn't exist
 	 */
-	public final void buildMaps ()
+	public final void buildMaps () throws MomException, RecordNotFoundException
 	{
+		log.entering (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
+		log.info ("Processing graphics XML file");
+		
 		// Create picks map
 		picksMap = new HashMap<String, Pick> ();
 		for (final Pick thisPick : getPick ())
@@ -33,6 +48,21 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		wizardsMap = new HashMap<String, Wizard> ();
 		for (final Wizard thisWizard : getWizard ())
 			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
+		
+		// Create animations map
+		animationsMap = new HashMap<String, Animation> ();
+		for (final Animation thisAnimation : getAnimation ())
+			animationsMap.put (thisAnimation.getAnimationID (), thisAnimation);
+		
+		// Build all the smoothing rule bitmask maps
+		for (final TileSet ts : getTileSet ())
+		{
+			final TileSetEx tsex = (TileSetEx) ts;
+			tsex.buildMaps ();
+			tsex.deriveAnimationFrameCountAndSpeed (this);
+		}
+
+		log.exiting (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
 	}
 
 	/**
@@ -63,6 +93,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final Wizard found = wizardsMap.get (wizardID);
 		if (found == null)
 			throw new RecordNotFoundException (Wizard.class.getName (), wizardID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param animationID Animation ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Animation object
+	 * @throws RecordNotFoundException If the animationID doesn't exist
+	 */
+	@Override
+	public final Animation findAnimation (final String animationID, final String caller) throws RecordNotFoundException
+	{
+		final Animation found = animationsMap.get (animationID);
+		if (found == null)
+			throw new RecordNotFoundException (Animation.class.getName (), animationID, caller);
 
 		return found;
 	}

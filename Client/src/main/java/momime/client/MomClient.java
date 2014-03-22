@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -44,6 +45,9 @@ import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
  */
 public final class MomClient extends MultiplayerSessionClient
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (MomClient.class.getName ());
+	
 	/** Name that we logged in using */
 	private String ourPlayerName;
 	
@@ -67,6 +71,8 @@ public final class MomClient extends MultiplayerSessionClient
 	 */
 	public final void start ()
 	{
+		log.entering (MomClient.class.getName (), "start");
+		
 		// Use Nimbus look and feel
 		try
 		{
@@ -315,6 +321,7 @@ public final class MomClient extends MultiplayerSessionClient
 		});
 		
 		// To be correct, should start up the first Swing frame in the Swing thread
+		log.info ("Starting up UI");
 		SwingUtilities.invokeLater (new Runnable ()
 		{
 			@Override
@@ -330,6 +337,8 @@ public final class MomClient extends MultiplayerSessionClient
 				}
 			}
 		});
+		
+		log.exiting (MomClient.class.getName (), "start");
 	}
 	
 	/**

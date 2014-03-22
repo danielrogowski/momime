@@ -33814,6 +33814,9 @@
 			<smoothedTile bitmask="11111101">
 				<tileFile>/momime.client.graphics/overland/terrain/arcanus/river/11111101.png</tileFile>
 			</smoothedTile>
+			<smoothedTile bitmask="11111111">
+				<tileFile>/momime.client.graphics/overland/terrain/arcanus/grasslands/00000000.png</tileFile>
+			</smoothedTile>
 			<smoothedTile bitmask="NoSmooth">
 				<tileFile>/momime.client.graphics/overland/terrain/arcanus/river/00000000a.png</tileFile>
 			</smoothedTile>
@@ -33948,6 +33951,9 @@
 			</smoothedTile>
 			<smoothedTile bitmask="11111101">
 				<tileFile>/momime.client.graphics/overland/terrain/myrror/river/11111101.png</tileFile>
+			</smoothedTile>
+			<smoothedTile bitmask="11111111">
+				<tileFile>/momime.client.graphics/overland/myrror/arcanus/grasslands/00000000.png</tileFile>
 			</smoothedTile>
 			<smoothedTile bitmask="NoSmooth">
 				<tileFile>/momime.client.graphics/overland/terrain/myrror/river/00000000a.png</tileFile>
@@ -36224,6 +36230,9 @@
 			<smoothedTile bitmask="11111101">
 				<tileFile>/momime.client.graphics/overland/terrain/arcanus/river/11111101.png</tileFile>
 			</smoothedTile>
+			<smoothedTile bitmask="11111111">
+				<tileFile>/momime.client.graphics/overland/terrain/arcanus/grasslands/00000000.png</tileFile>
+			</smoothedTile>
 			<smoothedTile bitmask="NoSmooth">
 				<tileFile>/momime.client.graphics/overland/terrain/arcanus/river/00000000a.png</tileFile>
 			</smoothedTile>
@@ -36359,6 +36368,9 @@
 			<smoothedTile bitmask="11111101">
 				<tileFile>/momime.client.graphics/overland/terrain/myrror/river/11111101.png</tileFile>
 			</smoothedTile>
+			<smoothedTile bitmask="11111111">
+				<tileFile>/momime.client.graphics/overland/terrain/myrror/grasslands/00000000.png</tileFile>
+			</smoothedTile>
 			<smoothedTile bitmask="NoSmooth">
 				<tileFile>/momime.client.graphics/overland/terrain/myrror/river/00000000a.png</tileFile>
 			</smoothedTile>
@@ -36407,6 +36419,9 @@
 			<smoothedTile bitmask="11111110">
 				<tileFile>/momime.client.graphics/overland/fogOfWar/11111110.png</tileFile>
 			</smoothedTile>
+			<smoothedTile bitmask="11111111">
+				<tileFile>/momime.client.graphics/overland/fogOfWar/11111111.png</tileFile>
+			</smoothedTile>
 		</smoothedTileType>
 		<smoothedTileType tileTypeID="FOWPARTIAL">
 			<smoothingSystemID>FOW</smoothingSystemID>
@@ -36451,6 +36466,9 @@
 			</smoothedTile>
 			<smoothedTile bitmask="11111110">
 				<tileFile>/momime.client.graphics/overland/fogOfWarPartial/11111110.png</tileFile>
+			</smoothedTile>
+			<smoothedTile bitmask="11111111">
+				<tileFile>/momime.client.graphics/overland/fogOfWarPartial/11111111.png</tileFile>
 			</smoothedTile>
 		</smoothedTileType>
 	</tileSet>

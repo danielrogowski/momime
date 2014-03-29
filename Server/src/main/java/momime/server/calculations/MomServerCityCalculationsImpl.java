@@ -94,7 +94,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	{
 		log.entering (MomServerCityCalculationsImpl.class.getName (), "calculateDoubleFarmingRate", cityLocation);
 
-		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		// Find the farmers for this race
 		RacePopulationTask farmer = null;
@@ -164,7 +164,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	{
 		log.entering (MomServerCityCalculationsImpl.class.getName (), "calculateCitySizeIDAndMinimumFarmers", cityLocation);
 
-		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		// First work out the Size ID - There should only be one entry in the DB which matches
 		boolean found = false;
@@ -298,7 +298,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 			new String [] {cityLocation.toString (), building.getBuildingID ()});
 
 		// Need to get the city race
-		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		final Race race = db.findRace (cityData.getCityRaceID (), "canEventuallyConstructBuilding");
 
 		// Check any direct blocks to us constructing this building

@@ -44,6 +44,9 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
 	/**
 	 * @param bookCount The number of books we have in the magic realm of the spell for which we want to calculate the reduction, e.g. to calculate reductions for life spells, pass in how many life books we have
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
@@ -300,13 +303,13 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 		else
 		{
 			// Different planes always = max penalty
-			if ((!allowEitherPlane) && (combatLocation.getPlane () != fortressLocation.getPlane ()))
+			if ((!allowEitherPlane) && (combatLocation.getZ () != fortressLocation.getZ ()))
 				penalty = 6;
 			else
 			{
 				// This gives a real distance, e.g. 1.4 for a 1x1 diagonal
 				// Remember we need to return double the value in the table
-				final double distance = CoordinateSystemUtils.determineRealDistanceBetween (overlandMapCoordinateSystem, combatLocation, fortressLocation);
+				final double distance = getCoordinateSystemUtils ().determineRealDistanceBetween (overlandMapCoordinateSystem, combatLocation, fortressLocation);
 				penalty = (((int) distance) + 9) / 5;
 				if (penalty > 6)
 					penalty = 6;
@@ -370,5 +373,21 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

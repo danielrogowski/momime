@@ -72,7 +72,7 @@ public final class MomFogOfWarCalculationsImpl implements MomFogOfWarCalculation
 		boolean canSee;
 
 		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry
-			(trueTerrain.getPlane ().get (location.getPlane ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()).getTerrainData ()))
+			(trueTerrain.getPlane ().get (location.getZ ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()).getTerrainData ()))
 		{
 			canSee = false;
 			final Iterator<Plane> planeIter = db.getPlane ().iterator ();
@@ -86,7 +86,7 @@ public final class MomFogOfWarCalculationsImpl implements MomFogOfWarCalculation
 		}
 		else
 			// Regular unit not in a tower of wizardry, i.e. the standard scenario
-			canSee = canSeeMidTurn (fogOfWarArea.getPlane ().get (location.getPlane ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()), setting);
+			canSee = canSeeMidTurn (fogOfWarArea.getPlane ().get (location.getZ ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()), setting);
 
 		return canSee;
 	}

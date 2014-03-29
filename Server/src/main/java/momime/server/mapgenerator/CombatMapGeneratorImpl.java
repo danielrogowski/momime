@@ -24,7 +24,7 @@ import momime.server.database.v0_9_4.TileType;
 import momime.server.messages.v0_9_4.ServerGridCell;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.map.MapCoordinates;
+import com.ndg.map.MapCoordinates2D;
 import com.ndg.random.RandomUtils;
 
 
@@ -79,7 +79,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		log.entering (CombatMapGeneratorImpl.class.getName (), "generateCombatMap");
 		
 		// What tileType is the map cell we're generating a combat map for?
-		final ServerGridCell mc = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (combatMapLocation.getPlane ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
+		final ServerGridCell mc = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
 		final TileType tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "generateCombatMap");
 
 		// Start map generation, this initializes all the map cells
@@ -216,11 +216,11 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 
 		// Make a list of all the possible locations
 		// Since there's nothing in the building layer at this point - that means everywhere
-		final List<MapCoordinates> possibleLocations = new ArrayList<MapCoordinates> ();
+		final List<MapCoordinates2D> possibleLocations = new ArrayList<MapCoordinates2D> ();
 		for (int x = 0; x < COMBAT_MAP_WIDTH; x++)
 			for (int y = 0; y < COMBAT_MAP_HEIGHT; y++)
 			{
-				final MapCoordinates coords = new MapCoordinates ();
+				final MapCoordinates2D coords = new MapCoordinates2D ();
 				coords.setX (x);
 				coords.setY (y);
 				possibleLocations.add (coords);
@@ -231,7 +231,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		while ((featuresAdded < featureTileCount) && (possibleLocations.size () > 0))
 		{
 			final int index = getRandomUtils ().nextInt (possibleLocations.size ());
-			final MapCoordinates coords = possibleLocations.get (index);
+			final MapCoordinates2D coords = possibleLocations.get (index);
 			possibleLocations.remove (index);
 			featuresAdded++;
 			
@@ -260,7 +260,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		log.entering (CombatMapGeneratorImpl.class.getName (), "placeCombatMapElements");
 		
 		// Find the map cell
-		final MemoryGridCell mc = trueTerrain.getMap ().getPlane ().get (combatMapLocation.getPlane ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
+		final MemoryGridCell mc = trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
 		
 		// Check each element
 		for (final CombatMapElement element : db.getCombatMapElement ())

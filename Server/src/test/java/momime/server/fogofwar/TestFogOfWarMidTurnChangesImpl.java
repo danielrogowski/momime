@@ -202,7 +202,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final UpdateTerrainMessage updateMsg = (UpdateTerrainMessage) msgs3.getMessages ().get (0);
 		assertEquals (20, updateMsg.getData ().getMapLocation ().getX ());
 		assertEquals (10, updateMsg.getData ().getMapLocation ().getY ());
-		assertEquals (1, updateMsg.getData ().getMapLocation ().getPlane ());
+		assertEquals (1, updateMsg.getData ().getMapLocation ().getZ ());
 		assertSame (td, updateMsg.getData ().getTerrainData ());
 		
 		// Prove that data was copied for players 3,4&5 but not for 1&2
@@ -359,7 +359,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final UpdateCityMessage updateMsg = (UpdateCityMessage) msgs3.getMessages ().get (0);
 		assertEquals (20, updateMsg.getData ().getMapLocation ().getX ());
 		assertEquals (10, updateMsg.getData ().getMapLocation ().getY ());
-		assertEquals (1, updateMsg.getData ().getMapLocation ().getPlane ());
+		assertEquals (1, updateMsg.getData ().getMapLocation ().getZ ());
 		assertSame (mc3.getCityData (), updateMsg.getData ().getCityData ());		// NB. not true data as like terrain test, see comments in method
 		
 		// Prove that data was copied for players 3,4&5 but not for 1&2
@@ -426,7 +426,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
-		unitLocation.setPlane (0);
+		unitLocation.setZ (0);
 
 		final MemoryUnit spearmen = new UnitUtilsImpl ().createMemoryUnit ("UN105", 1, 0, 0, true, db);
 		spearmen.setOwningPlayerID (pd1.getPlayerID ());
@@ -466,13 +466,13 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final OverlandMapCoordinatesEx unitCombatLocation = new OverlandMapCoordinatesEx ();
 		unitCombatLocation.setX (21);
 		unitCombatLocation.setY (10);
-		unitCombatLocation.setPlane (0);
+		unitCombatLocation.setZ (0);
 		spearmen.setCombatLocation (unitCombatLocation);
 		
 		final OverlandMapCoordinatesEx playerCombatLocation = new OverlandMapCoordinatesEx ();
 		playerCombatLocation.setX (21);
 		playerCombatLocation.setY (10);
-		playerCombatLocation.setPlane (0);
+		playerCombatLocation.setZ (0);
 		
 		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, playerCombatLocation, player3, player1, db, sd));
 		
@@ -533,7 +533,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
-		unitLocation.setPlane (0);
+		unitLocation.setZ (0);
 
 		final MemoryUnit spearmen = new UnitUtilsImpl ().createMemoryUnit ("UN105", 11, 0, 0, true, db);
 		spearmen.setOwningPlayerID (pd1.getPlayerID ());
@@ -1211,7 +1211,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
 		combatLocation.setX (x);
 		combatLocation.setY (10);
-		combatLocation.setPlane (1);
+		combatLocation.setZ (1);
 		return combatLocation;
 	}
 }

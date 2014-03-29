@@ -28,6 +28,7 @@ import momime.server.database.ServerDatabaseValues;
 
 import org.junit.Test;
 
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -62,8 +63,14 @@ public final class TestCityAIImpl
 				}
 
 		// Set up test object
+		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
+		
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (coordinateSystemUtils);
+		
 		final CityAIImpl ai = new CityAIImpl ();
-		ai.setCityCalculations (new MomCityCalculationsImpl ());
+		ai.setCityCalculations (calc);
+		ai.setCoordinateSystemUtils (coordinateSystemUtils);
 		
 		final OverlandMapCoordinatesEx ocean = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertNull (ocean);
@@ -77,7 +84,7 @@ public final class TestCityAIImpl
 		final OverlandMapCoordinatesEx tundra = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (0, tundra.getX ());
 		assertEquals (0, tundra.getY ());
-		assertEquals (0, tundra.getPlane ());
+		assertEquals (0, tundra.getZ ());
 
 		// If we put 3 dots of grass, there's only one exact spot where the city radius will include all of them
 		// Also set the entire other plane to grass, to prove that it doesn't get considered
@@ -92,7 +99,7 @@ public final class TestCityAIImpl
 		final OverlandMapCoordinatesEx grass = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (22, grass.getX ());
 		assertEquals (12, grass.getY ());
-		assertEquals (0, grass.getPlane ());
+		assertEquals (0, grass.getZ ());
 
 		// Putting some gems there is great
 		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF01");
@@ -100,7 +107,7 @@ public final class TestCityAIImpl
 		final OverlandMapCoordinatesEx gems = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (22, gems.getX ());
 		assertEquals (12, gems.getY ());
-		assertEquals (0, gems.getPlane ());
+		assertEquals (0, gems.getZ ());
 
 		// Putting a lair there instead means we can't build a city there
 		// Note there's no longer a spot where can include all 3 grass tiles, so it picks the first coordinates that it encounters that includes two of the grass tiles
@@ -109,7 +116,7 @@ public final class TestCityAIImpl
 		final OverlandMapCoordinatesEx lair = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (20, lair.getX ());
 		assertEquals (11, lair.getY ());
-		assertEquals (0, lair.getPlane ());
+		assertEquals (0, lair.getZ ());
 
 		// Put a river just to the right of the city - so it would be included in the previous radius, so we get the food from it anyway
 		// But we don't get the 20% gold bonus from it unless we move the city to that location, so this proves that the gold bonus is taken into account
@@ -118,7 +125,7 @@ public final class TestCityAIImpl
 		final OverlandMapCoordinatesEx river = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (21, river.getX ());
 		assertEquals (11, river.getY ());
-		assertEquals (0, river.getPlane ());
+		assertEquals (0, river.getZ ());
 
 		// Mountains produce no food and no gold, just like tundra, but they go give a 5% production bonus
 		// This carefully places 5 mountain tiles just along underneath where the city was previously chosen, totally 25% bonus so it then
@@ -132,7 +139,7 @@ public final class TestCityAIImpl
 		final OverlandMapCoordinatesEx mountain = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (21, mountain.getX ());
 		assertEquals (12, mountain.getY ());
-		assertEquals (0, mountain.getPlane ());
+		assertEquals (0, mountain.getZ ());
 
 		// Iron ore has a +4 quality rating, so putting some on the row that just *isn't* included if we take those mountains means it will still choose
 		// the 25% bonus from the mountains rather than the 20% + 4 from the river and iron ore
@@ -141,7 +148,7 @@ public final class TestCityAIImpl
 		final OverlandMapCoordinatesEx ironOre = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (21, ironOre.getX ());
 		assertEquals (12, ironOre.getY ());
-		assertEquals (0, ironOre.getPlane ());
+		assertEquals (0, ironOre.getZ ());
 
 		// Coal has a +6 quality rating, so putting some on the row that just *isn't* included if we take those mountains means it will now go
 		// back to the 20% + 6 from the river and coal rather than the 25% from the mountains
@@ -150,7 +157,7 @@ public final class TestCityAIImpl
 		final OverlandMapCoordinatesEx coal = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
 		assertEquals (21, coal.getX ());
 		assertEquals (11, coal.getY ());
-		assertEquals (0, coal.getPlane ());
+		assertEquals (0, coal.getZ ());
 	}
 
 	/**
@@ -272,7 +279,7 @@ public final class TestCityAIImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (20);
 		cityLocation.setY (10);
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
@@ -280,8 +287,11 @@ public final class TestCityAIImpl
 		// Set up test object
 		final MemoryBuildingUtilsImpl memoryBuildingUtils = new MemoryBuildingUtilsImpl ();
 		
+		final MomCityCalculationsImpl cityCalc = new MomCityCalculationsImpl ();
+		cityCalc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
 		final MomServerCityCalculationsImpl serverCityCalculations = new MomServerCityCalculationsImpl ();
-		serverCityCalculations.setCityCalculations (new MomCityCalculationsImpl ());
+		serverCityCalculations.setCityCalculations (cityCalc);
 		serverCityCalculations.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		final CityAIImpl ai = new CityAIImpl ();
@@ -300,7 +310,7 @@ public final class TestCityAIImpl
 				final OverlandMapCoordinatesEx buildingLocation = new OverlandMapCoordinatesEx ();
 				buildingLocation.setX (20);
 				buildingLocation.setY (10);
-				buildingLocation.setPlane (1);
+				buildingLocation.setZ (1);
 
 				final MemoryBuilding building = new MemoryBuilding ();
 				building.setCityLocation (buildingLocation);
@@ -355,7 +365,7 @@ public final class TestCityAIImpl
 				final OverlandMapCoordinatesEx buildingLocation = new OverlandMapCoordinatesEx ();
 				buildingLocation.setX (20);
 				buildingLocation.setY (10);
-				buildingLocation.setPlane (1);
+				buildingLocation.setZ (1);
 
 				final MemoryBuilding building = new MemoryBuilding ();
 				building.setCityLocation (buildingLocation);

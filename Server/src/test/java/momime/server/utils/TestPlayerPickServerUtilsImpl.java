@@ -11,8 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.WizardPick;
 import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
@@ -22,11 +21,16 @@ import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.PlayerPick;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.PlayerPickUtilsImpl;
-import momime.common.utils.SpellUtilsImpl;
-import momime.server.ServerTestData;
-import momime.server.ai.SpellAIImpl;
+import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.SpellUtils;
+import momime.server.ai.SpellAI;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.v0_9_4.Pick;
+import momime.server.database.v0_9_4.PickType;
+import momime.server.database.v0_9_4.PickTypeCountContainer;
+import momime.server.database.v0_9_4.PickTypeGrantsSpells;
+import momime.server.database.v0_9_4.Plane;
+import momime.server.database.v0_9_4.Race;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Wizard;
 
@@ -37,7 +41,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 /**
- * Tests the PlayerPickServerUtils class
+ * Tests the PlayerPickServerUtilsImpl class
  */
 public final class TestPlayerPickServerUtilsImpl
 {
@@ -48,7 +52,24 @@ public final class TestPlayerPickServerUtilsImpl
 	@Test
 	public final void testGetTotalInitialSkill () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock some types of pick
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		for (int n = 1; n <= 5; n++)
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID ("MB0" + n);
+			pick.setPickInitialSkill (2);
+			when (db.findPick ("MB0" + n, "getTotalInitialSkill")).thenReturn (pick);
+		}
+		
+		for (int n = 1; n <= 2; n++)
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID ("RT0" + n);
+			if (n == 2)
+				pick.setPickInitialSkill (10);
+			when (db.findPick ("RT0" + n, "getTotalInitialSkill")).thenReturn (pick);
+		}
 
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
@@ -65,17 +86,17 @@ public final class TestPlayerPickServerUtilsImpl
 
 		assertEquals (30, utils.getTotalInitialSkill (picks, db));
 
-		// Archmage adds +10
+		// Add a retort that gives +10
 		final PlayerPick archmage = new PlayerPick ();
-		archmage.setPickID ("RT04");
+		archmage.setPickID ("RT02");
 		archmage.setQuantity (1);
 		picks.add (archmage);
 
 		assertEquals (40, utils.getTotalInitialSkill (picks, db));
 
-		// Some other irrelevant retort adds nothing
+		// Add a retort that gives nothing
 		final PlayerPick somethingElse = new PlayerPick ();
-		somethingElse.setPickID ("RT05");
+		somethingElse.setPickID ("RT01");
 		somethingElse.setQuantity (1);
 		picks.add (somethingElse);
 
@@ -181,18 +202,21 @@ public final class TestPlayerPickServerUtilsImpl
 	}
 
 	/**
-	 * Tests the validateCustomPicks method
+	 * Tests the validateCustomPicks method, trying to select custom picks when we didn't choose a wizard yet
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateCustomPicks () throws Exception
+	public final void testValidateCustomPicks_DidntPickWizardYet () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
-		// Set up session description
-		final DifficultyLevelData dl = new DifficultyLevelData ();
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setDifficultyLevel (dl);
+		// Mock some types of pick
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		for (int n = 1; n <= 3; n++)
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID ("MB0" + n);
+			pick.setPickCost (n);
+			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
+		}
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -206,50 +230,335 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Create requested picks list
 		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		
+		final WizardPick pick1 = new WizardPick ();
+		pick1.setPick ("MB02");
+		pick1.setQuantity (4);
+		picks.add (pick1);
+		
+		final WizardPick pick2 = new WizardPick ();
+		pick2.setPick ("MB03");
+		pick2.setQuantity (1);
+		picks.add (pick2);
 
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
-		// This is invalid because the player didn't choose a wizard yet
-		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
-
-		// Can't choose a pre-defined wizard either
-		ppk.setWizardID ("WZ01");
-		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
-
-		// This is valid, because they're requesting 0 picks and the session description currently says 0 picks
-		ppk.setWizardID ("");
-		assertNull (utils.validateCustomPicks (player, picks, sd, db));
-
-		// Invalid because we didn't choose enough picks
-		dl.setHumanSpellPicks (11);
-		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
-
-		// Still not enough picks
-		final WizardPick lifeBook = new WizardPick ();
-		lifeBook.setPick ("MB01");
-		lifeBook.setQuantity (10);
-		picks.add (lifeBook);
-
-		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
-
-		// Too many picks
-		final WizardPick warlord = new WizardPick ();
-		warlord.setPick (CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD);
-		warlord.setQuantity (1);
-		picks.add (warlord);
-
-		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
-
-		// Just right
-		lifeBook.setQuantity (9);
-		assertNull (utils.validateCustomPicks (player, picks, sd, db));
-
-		// Already chosen picks
-		priv.setCustomPicksChosen (true);
-		assertNotNull (utils.validateCustomPicks (player, picks, sd, db));
+		// Check results
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
 	}
 
+	/**
+	 * Tests the validateCustomPicks method, trying to select custom picks when we picked a standard wizard
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateCustomPicks_PickedStandardWizard () throws Exception
+	{
+		// Mock some types of pick
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		for (int n = 1; n <= 3; n++)
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID ("MB0" + n);
+			pick.setPickCost (n);
+			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
+		}
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		ppk.setWizardID ("WZ01");
+		
+		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+
+		// Create requested picks list
+		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		
+		final WizardPick pick1 = new WizardPick ();
+		pick1.setPick ("MB02");
+		pick1.setQuantity (4);
+		picks.add (pick1);
+		
+		final WizardPick pick2 = new WizardPick ();
+		pick2.setPick ("MB03");
+		pick2.setQuantity (1);
+		picks.add (pick2);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Check results
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+	}
+
+	/**
+	 * Tests the validateCustomPicks method, trying to select custom picks but we didn't pick enough
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateCustomPicks_PickedNotEnough () throws Exception
+	{
+		// Mock some types of pick
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		for (int n = 1; n <= 3; n++)
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID ("MB0" + n);
+			pick.setPickCost (n);
+			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
+		}
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		ppk.setWizardID ("");
+		
+		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+
+		// Create requested picks list
+		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		
+		final WizardPick pick1 = new WizardPick ();
+		pick1.setPick ("MB02");
+		pick1.setQuantity (4);
+		picks.add (pick1);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Check results
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+	}
+	
+	/**
+	 * Tests the validateCustomPicks method, trying to select custom picks but we picked too many
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateCustomPicks_PickedTooMany () throws Exception
+	{
+		// Mock some types of pick
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		for (int n = 1; n <= 3; n++)
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID ("MB0" + n);
+			pick.setPickCost (n);
+			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
+		}
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		ppk.setWizardID ("");
+		
+		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+
+		// Create requested picks list
+		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		
+		final WizardPick pick1 = new WizardPick ();
+		pick1.setPick ("MB02");
+		pick1.setQuantity (4);
+		picks.add (pick1);
+		
+		final WizardPick pick2 = new WizardPick ();
+		pick2.setPick ("MB03");
+		pick2.setQuantity (2);
+		picks.add (pick2);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Check results
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+	}
+	
+	/**
+	 * Tests the validateCustomPicks method, trying to select custom picks and everything is fine
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateCustomPicks () throws Exception
+	{
+		// Mock some types of pick
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		for (int n = 1; n <= 3; n++)
+		{
+			final Pick pick = new Pick ();
+			pick.setPickID ("MB0" + n);
+			pick.setPickCost (n);
+			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
+		}
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		ppk.setWizardID ("");
+		
+		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+
+		// Create requested picks list
+		final List<WizardPick> picks = new ArrayList<WizardPick> ();
+		
+		final WizardPick pick1 = new WizardPick ();
+		pick1.setPick ("MB02");
+		pick1.setQuantity (4);
+		picks.add (pick1);
+		
+		final WizardPick pick2 = new WizardPick ();
+		pick2.setPick ("MB03");
+		pick2.setQuantity (1);
+		picks.add (pick2);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Check results
+		assertNull (utils.validateCustomPicks (player, picks, 11, db));
+	}
+	
+	/**
+	 * Tests the countFreeSpellsLeftToChoose method when we don't have enough picks to get any free spells
+	 * @throws RecordNotFoundException If there is a problem
+	 */
+	@Test
+	public final void testCountFreeSpellsLeftToChoose_None () throws RecordNotFoundException
+	{
+		// Mock the pick and pick type details
+		final Pick pick = new Pick ();
+		pick.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
+		
+		// Type of book we're choosing picks for
+		final PlayerPick playerPick = new PlayerPick ();
+		playerPick.setPickID ("MB01");
+		playerPick.setQuantity (5);
+		
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Run method
+		final ChooseInitialSpellsNowMessage msg = utils.countFreeSpellsLeftToChoose (player, playerPick, db);
+		
+		// Check results
+		assertNull (msg);
+	}
+	
+	/**
+	 * Tests the countFreeSpellsLeftToChoose method when we do get some free spells
+	 * @throws RecordNotFoundException If there is a problem
+	 */
+	@Test
+	public final void testCountFreeSpellsLeftToChoose () throws RecordNotFoundException
+	{
+		// Mock the pick and pick type details
+		final Pick pick = new Pick ();
+		pick.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer elevenPicks = new PickTypeCountContainer ();
+		elevenPicks.setCount (11);
+		pickType.getPickTypeCount ().add (elevenPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (10);
+		elevenPicks.getSpellCount ().add (common);
+
+		final PickTypeGrantsSpells uncommon = new PickTypeGrantsSpells ();
+		uncommon.setSpellRank ("SR02");
+		uncommon.setSpellsFreeAtStart (2);
+		elevenPicks.getSpellCount ().add (uncommon);
+
+		final PickTypeGrantsSpells rare = new PickTypeGrantsSpells ();
+		rare.setSpellRank ("SR03");
+		rare.setSpellsFreeAtStart (1);
+		elevenPicks.getSpellCount ().add (rare);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
+		
+		// Type of book we're choosing picks for
+		final PlayerPick playerPick = new PlayerPick ();
+		playerPick.setPickID ("MB01");
+		playerPick.setQuantity (11);
+
+		// We already picked 6 of the free common spells, and the two uncommon
+		final List<momime.common.database.v0_9_4.Spell> commonsAlreadyChosen = new ArrayList<momime.common.database.v0_9_4.Spell> ();
+		for (int n = 0; n < 6; n++)
+			commonsAlreadyChosen.add (null);		// Don't care what they are, just want the count
+
+		final List<momime.common.database.v0_9_4.Spell> uncommonsAlreadyChosen = new ArrayList<momime.common.database.v0_9_4.Spell> ();
+		for (int n = 0; n < 2; n++)
+			uncommonsAlreadyChosen.add (null);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB01", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (commonsAlreadyChosen);
+		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB01", "SR02", SpellResearchStatusID.AVAILABLE, db)).thenReturn (uncommonsAlreadyChosen);
+		
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		final ChooseInitialSpellsNowMessage msg = utils.countFreeSpellsLeftToChoose (player, playerPick, db);
+		
+		// Check results
+		assertEquals ("MB01", msg.getMagicRealmID ());
+		assertEquals (2, msg.getSpellRank ().size ());
+		assertEquals ("SR01", msg.getSpellRank ().get (0).getSpellRankID ());
+		assertEquals (4, msg.getSpellRank ().get (0).getFreeSpellCount ());
+		assertEquals ("SR03", msg.getSpellRank ().get (1).getSpellRankID ());
+		assertEquals (1, msg.getSpellRank ().get (1).getFreeSpellCount ());
+	}
+	
 	/**
 	 * Tests the findRealmIDWhereWeNeedToChooseFreeSpells method on a human player
 	 * @throws Exception If there is a problem
@@ -257,82 +566,147 @@ public final class TestPlayerPickServerUtilsImpl
 	@Test
 	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_Human () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock the two types of pick and pick type details
+		final Pick pick1 = new Pick ();
+		pick1.setPickType ("X");
+
+		final Pick pick2 = new Pick ();
+		pick2.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		sixPicks.setCount (6);
+		pickType.getPickTypeCount ().add (sixPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (4);
+		sixPicks.getSpellCount ().add (common);
+
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick1);
+		when (db.findPick ("MB02", "countFreeSpellsLeftToChoose")).thenReturn (pick2);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		pd.setHuman (true);
-
+		
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-
-		for (final Spell spell : db.getSpell ())
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// We've got 6 of both types of book
+		for (int n = 1; n <= 2; n++)
 		{
-			final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-			researchStatus.setSpellID (spell.getSpellID ());
-			researchStatus.setStatus (SpellResearchStatusID.UNAVAILABLE);
-			priv.getSpellResearchStatus ().add (researchStatus);
+			final PlayerPick playerPick = new PlayerPick ();
+			playerPick.setPickID ("MB0" + n);
+			playerPick.setQuantity (6);
+			ppk.getPick ().add (playerPick);
 		}
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		// We already picked all 4 of the MB01 free spells, and 1 of the MB02 free spells
+		final List<momime.common.database.v0_9_4.Spell> firstsAlreadyChosen = new ArrayList<momime.common.database.v0_9_4.Spell> ();
+		for (int n = 0; n < 4; n++)
+			firstsAlreadyChosen.add (null);		// Don't care what they are, just want the count
 
+		final List<momime.common.database.v0_9_4.Spell> secondsAlreadyChosen = new ArrayList<momime.common.database.v0_9_4.Spell> ();
+		secondsAlreadyChosen.add (null);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB01", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (firstsAlreadyChosen);
+		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB02", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (secondsAlreadyChosen);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
-		utils.setSpellUtils (new SpellUtilsImpl ());
+		utils.setSpellUtils (spellUtils);
 		
-		// So far we have no books, so we get no free spells
-		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
-
-		// Give player a retort and 1 chaos book - neither of which is enough to grant any free spells
-		final PlayerPick retort = new PlayerPick ();
-		retort.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY);
-		retort.setQuantity (1);
-		ppk.getPick ().add (retort);
-
-		final PlayerPick chaosBook = new PlayerPick ();
-		chaosBook.setPickID ("MB03");
-		chaosBook.setQuantity (1);
-		ppk.getPick ().add (chaosBook);
-
-		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
-
-		// Give player 4 nature books - which then grant 3 free common nature spells
-		final PlayerPick natureBooks = new PlayerPick ();
-		natureBooks.setPickID ("MB04");
-		natureBooks.setQuantity (4);
-		ppk.getPick ().add (natureBooks);
-
-		final ChooseInitialSpellsNowMessage natureBooksResult = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
-		assertEquals ("MB04", natureBooksResult.getMagicRealmID ());
-		assertEquals (1, natureBooksResult.getSpellRank ().size ());
-		assertEquals ("SR01", natureBooksResult.getSpellRank ().get (0).getSpellRankID ());
-		assertEquals (3, natureBooksResult.getSpellRank ().get (0).getFreeSpellCount ());
-
-		// Choose 2 of those spells, then we only have 1 left to choose
-		priv.getSpellResearchStatus ().get (3).setStatus (SpellResearchStatusID.AVAILABLE);
-		priv.getSpellResearchStatus ().get (7).setStatus (SpellResearchStatusID.AVAILABLE);
-
-		final ChooseInitialSpellsNowMessage chosenSomeSpells = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
-		assertEquals ("MB04", chosenSomeSpells.getMagicRealmID ());
-		assertEquals (1, chosenSomeSpells.getSpellRank ().size ());
-		assertEquals ("SR01", chosenSomeSpells.getSpellRank ().get (0).getSpellRankID ());
-		assertEquals (1, chosenSomeSpells.getSpellRank ().get (0).getFreeSpellCount ());
-
-		// Now get 11 nature books, so we get free spells at 3 different ranks, 2 of which we've already chosen
-		natureBooks.setQuantity (11);
-
-		final ChooseInitialSpellsNowMessage elevenBooks = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
-		assertEquals ("MB04", elevenBooks.getMagicRealmID ());
-		assertEquals (3, elevenBooks.getSpellRank ().size ());
-		assertEquals ("SR01", elevenBooks.getSpellRank ().get (0).getSpellRankID ());
-		assertEquals (8, elevenBooks.getSpellRank ().get (0).getFreeSpellCount ());
-		assertEquals ("SR02", elevenBooks.getSpellRank ().get (1).getSpellRankID ());
-		assertEquals (2, elevenBooks.getSpellRank ().get (1).getFreeSpellCount ());
-		assertEquals ("SR03", elevenBooks.getSpellRank ().get (2).getSpellRankID ());
-		assertEquals (1, elevenBooks.getSpellRank ().get (2).getFreeSpellCount ());
+		// Run method
+		final ChooseInitialSpellsNowMessage msg = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
+		
+		// Check results
+		assertEquals ("MB02", msg.getMagicRealmID ());
+		assertEquals (1, msg.getSpellRank ().size ());
+		assertEquals ("SR01", msg.getSpellRank ().get (0).getSpellRankID ());
+		assertEquals (3, msg.getSpellRank ().get (0).getFreeSpellCount ());
 	}
 
+	/**
+	 * Tests the findRealmIDWhereWeNeedToChooseFreeSpells method when we've already chosen everything
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_AllChosen () throws Exception
+	{
+		// Mock the two types of pick and pick type details
+		final Pick pick1 = new Pick ();
+		pick1.setPickType ("X");
+
+		final Pick pick2 = new Pick ();
+		pick2.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		sixPicks.setCount (6);
+		pickType.getPickTypeCount ().add (sixPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (4);
+		sixPicks.getSpellCount ().add (common);
+
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick1);
+		when (db.findPick ("MB02", "countFreeSpellsLeftToChoose")).thenReturn (pick2);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// We've got 6 of both types of book
+		for (int n = 1; n <= 2; n++)
+		{
+			final PlayerPick playerPick = new PlayerPick ();
+			playerPick.setPickID ("MB0" + n);
+			playerPick.setQuantity (6);
+			ppk.getPick ().add (playerPick);
+		}
+
+		// We already picked all 4 of both types of spells
+		final List<momime.common.database.v0_9_4.Spell> firstsAlreadyChosen = new ArrayList<momime.common.database.v0_9_4.Spell> ();
+		for (int n = 0; n < 4; n++)
+			firstsAlreadyChosen.add (null);		// Don't care what they are, just want the count
+
+		final List<momime.common.database.v0_9_4.Spell> secondsAlreadyChosen = new ArrayList<momime.common.database.v0_9_4.Spell> ();
+		for (int n = 0; n < 4; n++)
+			secondsAlreadyChosen.add (null);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB01", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (firstsAlreadyChosen);
+		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB02", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (secondsAlreadyChosen);
+		
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		final ChooseInitialSpellsNowMessage msg = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
+		
+		// Check results
+		assertNull (msg);
+	}
+	
 	/**
 	 * Tests the findRealmIDWhereWeNeedToChooseFreeSpells method on an AI player
 	 * @throws Exception If there is a problem
@@ -340,185 +714,734 @@ public final class TestPlayerPickServerUtilsImpl
 	@Test
 	public final void testFindRealmIDWhereWeNeedToChooseFreeSpells_AI () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock the two types of pick and pick type details
+		final Pick pick1 = new Pick ();
+		pick1.setPickType ("X");
+
+		final Pick pick2 = new Pick ();
+		pick2.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		sixPicks.setCount (6);
+		pickType.getPickTypeCount ().add (sixPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (4);
+		sixPicks.getSpellCount ().add (common);
+
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick1);
+		when (db.findPick ("MB02", "countFreeSpellsLeftToChoose")).thenReturn (pick2);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (2);
+		pd.setPlayerID (-1);
 		pd.setHuman (false);
-
+		pd.setPlayerName ("Name");
+		
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-
-		for (final Spell spell : db.getSpell ())
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// We've got 6 of both types of book
+		for (int n = 1; n <= 2; n++)
 		{
-			final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-			researchStatus.setSpellID (spell.getSpellID ());
-			researchStatus.setStatus (SpellResearchStatusID.UNAVAILABLE);
-			priv.getSpellResearchStatus ().add (researchStatus);
+			final PlayerPick playerPick = new PlayerPick ();
+			playerPick.setPickID ("MB0" + n);
+			playerPick.setQuantity (6);
+			ppk.getPick ().add (playerPick);
 		}
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		// We already picked all 4 of the MB01 free spells, and 1 of the MB02 free spells
+		final List<momime.common.database.v0_9_4.Spell> firstsAlreadyChosen = new ArrayList<momime.common.database.v0_9_4.Spell> ();
+		for (int n = 0; n < 4; n++)
+			firstsAlreadyChosen.add (null);		// Don't care what they are, just want the count
 
-		// Fix random results
-		final RandomUtils random = mock (RandomUtils.class);
+		final List<momime.common.database.v0_9_4.Spell> secondsAlreadyChosen = new ArrayList<momime.common.database.v0_9_4.Spell> ();
+		secondsAlreadyChosen.add (null);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB01", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (firstsAlreadyChosen);
+		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB02", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (secondsAlreadyChosen);
 		
 		// Set up object to test
+		final SpellAI spellAI = mock (SpellAI.class);
+		final SpellResearchStatus spell1 = new SpellResearchStatus ();
+		final SpellResearchStatus spell2 = new SpellResearchStatus ();
+		final SpellResearchStatus spell3 = new SpellResearchStatus ();
+		when (spellAI.chooseFreeSpellAI (priv.getSpellResearchStatus (), "MB02", "SR01", "Name", db)).thenReturn (spell1, spell2, spell3);
+		
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
-		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
-		final SpellAIImpl spellAI = new SpellAIImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setSpellAI (spellAI);
-		spellAI.setSpellUtils (spellUtils);
-		spellAI.setRandomUtils (random);
 		
-		// So far we have no books, so we get no free spells
-		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
-
-		// Give player a retort and 1 chaos book - neither of which is enough to grant any free spells
-		final PlayerPick retort = new PlayerPick ();
-		retort.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY);
-		retort.setQuantity (1);
-		ppk.getPick ().add (retort);
-
-		final PlayerPick chaosBook = new PlayerPick ();
-		chaosBook.setPickID ("MB03");
-		chaosBook.setQuantity (1);
-		ppk.getPick ().add (chaosBook);
-
-		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
-
-		// Give player 4 nature books - which then grant 3 free common nature spells
-		// Since its an AI player, they then actually choose the spells
-		// There's exactly 3 common nature spells with AI research order 1, so the AI player should choose to get those for free
-		final PlayerPick natureBooks = new PlayerPick ();
-		natureBooks.setPickID ("MB04");
-		natureBooks.setQuantity (4);
-		ppk.getPick ().add (natureBooks);
-
-		utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
-		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (0).getStatus ());
-		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (1).getStatus ());
-		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (2).getStatus ());
-		assertEquals (SpellResearchStatusID.AVAILABLE, priv.getSpellResearchStatus ().get (3).getStatus ());
-		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (4).getStatus ());
-		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (5).getStatus ());
-		assertEquals (SpellResearchStatusID.AVAILABLE, priv.getSpellResearchStatus ().get (6).getStatus ());
-		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (7).getStatus ());
-		assertEquals (SpellResearchStatusID.UNAVAILABLE, priv.getSpellResearchStatus ().get (8).getStatus ());
-		assertEquals (SpellResearchStatusID.AVAILABLE, priv.getSpellResearchStatus ().get (9).getStatus ());
-
-		// If we run it again, there's nothing else to pick because we've already done so
-		assertNull (utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db));
+		// Run method
+		final ChooseInitialSpellsNowMessage msg = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
+		
+		// Check results - it *does* still return the "message" for AI players, so the calling routine knows whether it chose spells or had nothing to do
+		assertEquals ("MB02", msg.getMagicRealmID ());
+		assertEquals (1, msg.getSpellRank ().size ());
+		assertEquals ("SR01", msg.getSpellRank ().get (0).getSpellRankID ());
+		assertEquals (3, msg.getSpellRank ().get (0).getFreeSpellCount ());
+		
+		assertEquals (SpellResearchStatusID.AVAILABLE, spell1.getStatus ());
+		assertEquals (SpellResearchStatusID.AVAILABLE, spell2.getStatus ());
+		assertEquals (SpellResearchStatusID.AVAILABLE, spell3.getStatus ());
 	}
 
 	/**
-	 * Tests the validateInitialSpellSelection method
+	 * Tests the validateInitialSpellSelection method on a valid selection
 	 * @throws Exception If there is a problem
 	 */
 	@Test
 	public final void testValidateInitialSpellSelection () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Mock the pick and pick type details
+		final Pick pick = new Pick ();
+		pick.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		sixPicks.setCount (6);
+		pickType.getPickTypeCount ().add (sixPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (4);
+		sixPicks.getSpellCount ().add (common);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+		
+		for (int n = 1; n <= 4; n++)
+		{
+			final Spell spell = new Spell ();
+			spell.setSpellRealm ("MB01");
+			spell.setSpellRank ("SR01");
+			
+			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
+		}
+		
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		pd.setHuman (true);
-
+		
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// Picks we have
+		final PlayerPick playerPick = new PlayerPick ();
+		playerPick.setPickID ("MB01");
+		playerPick.setQuantity (6);
+		ppk.getPick ().add (playerPick);
+		
+		// Spells we have
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
+		// Spells we're trying to choose
+		final List<String> spellIDs = new ArrayList<String> ();
+		for (int n = 1; n <= 3; n++)
+			spellIDs.add ("SP00" + n);
 
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
-		utils.setSpellUtils (new SpellUtilsImpl ());
+		utils.setSpellUtils (spellUtils);
 		
-		// Ask for a pick ID that we have none of
-		final List<String> spellIDs = new ArrayList<String> ();
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
-
-		// Using a number of books that isn't listed under pick type "B" means we get no free spells
-		// Bit of an artificial test because we're triggering it by going over the number of books we could ever have
-		final PlayerPick natureBooks = new PlayerPick ();
-		natureBooks.setPickID ("MB04");
-		natureBooks.setQuantity (21);
-		ppk.getPick ().add (natureBooks);
-
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
-
-		// Get 4 books, so we get 3 free spell choices - because we're requesting no spells, its valid
-		natureBooks.setQuantity (4);
-		assertNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
-
-		// Request wrong rank
-		spellIDs.add ("SP011");
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
-
-		// Request wrong magic realm
-		spellIDs.set (0, "SP041");
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
-
-		// Valid request
-		spellIDs.set (0, "SP001");
-		assertNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
-
-		spellIDs.add ("SP002");
-		spellIDs.add ("SP003");
-		assertNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
-
-		// Request too many
-		spellIDs.add ("SP004");
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB04", spellIDs, db));
+		// Run method
+		assertNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
 	}
 
 	/**
-	 * Tests the validateRaceChoice method
+	 * Tests the validateInitialSpellSelection method trying to pick free spells in a magic realm that we have no books in
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testValidateRaceChoice () throws Exception
+	public final void testValidateInitialSpellSelection_NoBooks () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock the pick and pick type details
+		final Pick pick = new Pick ();
+		pick.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		sixPicks.setCount (6);
+		pickType.getPickTypeCount ().add (sixPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (4);
+		sixPicks.getSpellCount ().add (common);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+		
+		for (int n = 1; n <= 4; n++)
+		{
+			final Spell spell = new Spell ();
+			spell.setSpellRealm ("MB01");
+			spell.setSpellRank ("SR01");
+			
+			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
+		}
+		
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// Picks we have
+		final PlayerPick playerPick = new PlayerPick ();
+		playerPick.setPickID ("MB01");
+		playerPick.setQuantity (6);
+		ppk.getPick ().add (playerPick);
+		
+		// Spells we have
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
+		// Spells we're trying to choose
+		final List<String> spellIDs = new ArrayList<String> ();
+		for (int n = 1; n <= 3; n++)
+			spellIDs.add ("SP00" + n);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB02", spellIDs, db));		// <--
+	}
+
+	/**
+	 * Tests the validateInitialSpellSelection method where the number of books we have doesn't grant any free spells
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateInitialSpellSelection_NotEnoughBooks () throws Exception
+	{
+		// Mock the pick and pick type details
+		final Pick pick = new Pick ();
+		pick.setPickType ("X");
+		
+		final PickType pickType = new PickType ();		// <--- Didn't set 6 picks to actually give any free spells
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+		
+		for (int n = 1; n <= 4; n++)
+		{
+			final Spell spell = new Spell ();
+			spell.setSpellRealm ("MB01");
+			spell.setSpellRank ("SR01");
+			
+			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
+		}
+		
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// Picks we have
+		final PlayerPick playerPick = new PlayerPick ();
+		playerPick.setPickID ("MB01");
+		playerPick.setQuantity (6);
+		ppk.getPick ().add (playerPick);
+		
+		// Spells we have
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
+		// Spells we're trying to choose
+		final List<String> spellIDs = new ArrayList<String> ();
+		for (int n = 1; n <= 3; n++)
+			spellIDs.add ("SP00" + n);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+	}
+
+	/**
+	 * Tests the validateInitialSpellSelection method where we've already made all our free picks
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateInitialSpellSelection_AlreadyChosen () throws Exception
+	{
+		// Mock the pick and pick type details
+		final Pick pick = new Pick ();
+		pick.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		sixPicks.setCount (6);
+		pickType.getPickTypeCount ().add (sixPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (4);
+		sixPicks.getSpellCount ().add (common);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+		
+		for (int n = 1; n <= 4; n++)
+		{
+			final Spell spell = new Spell ();
+			spell.setSpellRealm ("MB01");
+			spell.setSpellRank ("SR01");
+			
+			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
+		}
+		
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// Picks we have
+		final PlayerPick playerPick = new PlayerPick ();
+		playerPick.setPickID ("MB01");
+		playerPick.setQuantity (6);
+		ppk.getPick ().add (playerPick);
+		
+		// Spells we have
+		final List<momime.common.database.v0_9_4.Spell> alreadyChosen = new ArrayList<momime.common.database.v0_9_4.Spell> ();
+		for (int n = 0; n < 4; n++)
+			alreadyChosen.add (null);		// Don't care what they are, just want the count
+
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB01", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (alreadyChosen);
+		
+		// Spells we're trying to choose
+		final List<String> spellIDs = new ArrayList<String> ();
+		for (int n = 1; n <= 3; n++)
+			spellIDs.add ("SP00" + n);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+	}
+
+	/**
+	 * Tests the validateInitialSpellSelection method when we're trying to choose too many spells
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateInitialSpellSelection_TooMany () throws Exception
+	{
+		// Mock the pick and pick type details
+		final Pick pick = new Pick ();
+		pick.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		sixPicks.setCount (6);
+		pickType.getPickTypeCount ().add (sixPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (2);		// <---
+		sixPicks.getSpellCount ().add (common);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+		
+		for (int n = 1; n <= 4; n++)
+		{
+			final Spell spell = new Spell ();
+			spell.setSpellRealm ("MB01");
+			spell.setSpellRank ("SR01");
+			
+			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
+		}
+		
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// Picks we have
+		final PlayerPick playerPick = new PlayerPick ();
+		playerPick.setPickID ("MB01");
+		playerPick.setQuantity (6);
+		ppk.getPick ().add (playerPick);
+		
+		// Spells we have
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
+		// Spells we're trying to choose
+		final List<String> spellIDs = new ArrayList<String> ();
+		for (int n = 1; n <= 3; n++)
+			spellIDs.add ("SP00" + n);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+	}
+
+	/**
+	 * Tests the validateInitialSpellSelection trying to choose spells of the wrong rank
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateInitialSpellSelection_WrongRank () throws Exception
+	{
+		// Mock the pick and pick type details
+		final Pick pick = new Pick ();
+		pick.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		sixPicks.setCount (6);
+		pickType.getPickTypeCount ().add (sixPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (4);
+		sixPicks.getSpellCount ().add (common);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+		
+		for (int n = 1; n <= 4; n++)
+		{
+			final Spell spell = new Spell ();
+			spell.setSpellRealm ("MB01");
+			spell.setSpellRank ((n == 3) ? "SR02" : "SR01");		// <---
+			
+			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
+		}
+		
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// Picks we have
+		final PlayerPick playerPick = new PlayerPick ();
+		playerPick.setPickID ("MB01");
+		playerPick.setQuantity (6);
+		ppk.getPick ().add (playerPick);
+		
+		// Spells we have
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
+		// Spells we're trying to choose
+		final List<String> spellIDs = new ArrayList<String> ();
+		for (int n = 1; n <= 3; n++)
+			spellIDs.add ("SP00" + n);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+	}
+
+	/**
+	 * Tests the validateInitialSpellSelection method trying to choose spells of the wrong realm
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateInitialSpellSelection_WrongRealm () throws Exception
+	{
+		// Mock the pick and pick type details
+		final Pick pick = new Pick ();
+		pick.setPickType ("X");
+		
+		final PickType pickType = new PickType ();
+		
+		final PickTypeCountContainer sixPicks = new PickTypeCountContainer ();
+		sixPicks.setCount (6);
+		pickType.getPickTypeCount ().add (sixPicks);
+		
+		final PickTypeGrantsSpells common = new PickTypeGrantsSpells ();
+		common.setSpellRank ("SR01");
+		common.setSpellsFreeAtStart (4);
+		sixPicks.getSpellCount ().add (common);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
+		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
+		
+		for (int n = 1; n <= 4; n++)
+		{
+			final Spell spell = new Spell ();
+			spell.setSpellRealm ((n == 3) ? "MB02" : "MB01");		// <---
+			spell.setSpellRank ("SR01");
+			
+			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
+		}
+		
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		
+		// Picks we have
+		final PlayerPick playerPick = new PlayerPick ();
+		playerPick.setPickID ("MB01");
+		playerPick.setQuantity (6);
+		ppk.getPick ().add (playerPick);
+		
+		// Spells we have
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
+		// Spells we're trying to choose
+		final List<String> spellIDs = new ArrayList<String> ();
+		for (int n = 1; n <= 3; n++)
+			spellIDs.add ("SP00" + n);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+	}
+	
+	/**
+	 * Tests the validateRaceChoice method picking a race that doesn't even exist
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateRaceChoice_NotFound () throws Exception
+	{
+		// Mock race details
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		pd.setHuman (true);
-
+		
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
-
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
-		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
-		// Invalid race
-		assertNotNull (utils.validateRaceChoice (player, "RC15", db));
-
-		// Race with no pre-requisite
-		assertNull (utils.validateRaceChoice (player, "RC04", db));
-
-		// Myrran race without Myrran pick
-		assertNotNull (utils.validateRaceChoice (player, "RC14", db));
-
-		// Myrran race without Myrran pick
-		final PlayerPick myrran = new PlayerPick ();
-		myrran.setPickID ("RT08");
-		myrran.setQuantity (1);
-		ppk.getPick ().add (myrran);
-
-		assertNull (utils.validateRaceChoice (player, "RC14", db));
+		// Run method
+		assertNotNull (utils.validateRaceChoice (player, "X", db));
 	}
 
 	/**
-	 * Tests the hasChosenAllDetails method
+	 * Tests the validateRaceChoice method picking a Myrran race when we do have the Myrran pick
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testHasChosenAllDetails ()
+	public final void testValidateRaceChoice_MyrranWithRetort () throws Exception
 	{
+		// Mock race details
+		final Race race = new Race ();
+		race.setNativePlane (1);
+		
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
+		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
+		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+		
+		// Picks we have
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (ppk.getPick (), "RT08")).thenReturn (1);
+		
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// Run method
+		assertNull (utils.validateRaceChoice (player, "RC01", db));
+	}
+
+	/**
+	 * Tests the validateRaceChoice method picking a Myrran race when we don't have the Myrran pick
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateRaceChoice_MyrranWithoutRetort () throws Exception
+	{
+		// Mock race details
+		final Race race = new Race ();
+		race.setNativePlane (1);
+		
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
+		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
+		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+		
+		// Picks we have
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// Run method
+		assertNotNull (utils.validateRaceChoice (player, "RC01", db));
+	}
+
+	/**
+	 * Tests the validateRaceChoice method picking an Arcanian race when we do have the Myrran pick
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateRaceChoice_ArcanusWithRetort () throws Exception
+	{
+		// Mock race details
+		final Race race = new Race ();
+		race.setNativePlane (0);
+		
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
+		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
+		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+		
+		// Picks we have
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (ppk.getPick (), "RT08")).thenReturn (1);
+		
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// Run method
+		assertNull (utils.validateRaceChoice (player, "RC01", db));
+	}
+
+	/**
+	 * Tests the validateRaceChoice method picking an Arcanian race when we don't have the Myrran pick
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateRaceChoice_ArcanusWithoutRetort () throws Exception
+	{
+		// Mock race details
+		final Race race = new Race ();
+		race.setNativePlane (0);
+		
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
+		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
+		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
+
+		// Set up player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+		
+		// Picks we have
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// Run method
+		assertNull (utils.validateRaceChoice (player, "RC01", db));
+	}
+
+	/**
+	 * Tests the hasChosenAllDetails method where we've chosen a standard wizard
+	 */
+	@Test
+	public final void testHasChosenAllDetails_Standard ()
+	{
+		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		pd.setHuman (true);
@@ -527,30 +1450,125 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		
+		// Make selections
+		ppk.setWizardID ("WZ01");
+		priv.setFirstCityRaceID ("RC01");
 
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
-		// Nothing picked yet
-		assertFalse (utils.hasChosenAllDetails (player));
-
-		// Wizard but no race
-		ppk.setWizardID ("WZ01");
-		assertFalse (utils.hasChosenAllDetails (player));
-
-		// Standard wizard
-		priv.setFirstCityRaceID ("RC01");
-		assertTrue (utils.hasChosenAllDetails (player));
-
-		// Custom wizard without custom picks chosen
-		ppk.setWizardID ("");
-		assertFalse (utils.hasChosenAllDetails (player));
-
-		// Chosen custom picks
-		priv.setCustomPicksChosen (true);
+		// Run method
 		assertTrue (utils.hasChosenAllDetails (player));
 	}
 
+	/**
+	 * Tests the hasChosenAllDetails method where we've chosen a custom wizard
+	 */
+	@Test
+	public final void testHasChosenAllDetails_Custom ()
+	{
+		// Set up player details
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		
+		// Make selections
+		ppk.setWizardID ("");
+		priv.setFirstCityRaceID ("RC01");
+		priv.setCustomPicksChosen (true);
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Run method
+		assertTrue (utils.hasChosenAllDetails (player));
+	}
+
+	/**
+	 * Tests the hasChosenAllDetails method where we've chosen a custom wizard but didn't make custom picks yet
+	 */
+	@Test
+	public final void testHasChosenAllDetails_CustomNotChosen ()
+	{
+		// Set up player details
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		
+		// Make selections
+		ppk.setWizardID ("");
+		priv.setFirstCityRaceID ("RC01");
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.hasChosenAllDetails (player));
+	}
+
+	/**
+	 * Tests the hasChosenAllDetails method where we've not chosen a wizard
+	 */
+	@Test
+	public final void testHasChosenAllDetails_NoWizard ()
+	{
+		// Set up player details
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		
+		// Make selections
+		priv.setFirstCityRaceID ("RC01");
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.hasChosenAllDetails (player));
+	}
+	
+	/**
+	 * Tests the hasChosenAllDetails method where we've not chosen a race
+	 */
+	@Test
+	public final void testHasChosenAllDetails_NoRace ()
+	{
+		// Set up player details
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		pd.setHuman (true);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
+
+		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		
+		// Make selections
+		ppk.setWizardID ("WZ01");
+
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		
+		// Run method
+		assertFalse (utils.hasChosenAllDetails (player));
+	}
+	
 	/**
 	 * Tests the allPlayersHaveChosenAllDetails method
 	 */
@@ -620,10 +1638,17 @@ public final class TestPlayerPickServerUtilsImpl
 	@Test
 	public final void testListWizardsForAIPlayers () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock 9 wizards in DB
+		final List<Wizard> availableWizards = new ArrayList<Wizard> ();
+		for (int n = 1; n <= 9; n++)
+		{
+			final Wizard wizard = new Wizard ();
+			wizard.setWizardID ("WZ0" + n);
+			availableWizards.add (wizard);
+		}
 
-		// Quick check on DB
-		assertEquals (16, db.getWizard ().size ());
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getWizard ()).thenReturn (availableWizards);
 
 		// Create human players using 2 wizards
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -637,7 +1662,7 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		final MomPersistentPlayerPublicKnowledge ppk2 = new MomPersistentPlayerPublicKnowledge ();
-		ppk2.setStandardPhotoID ("WZ12");
+		ppk2.setStandardPhotoID ("WZ08");
 		players.add (new PlayerServerDetails (pd2, ppk2, null, null, null));
 
 		// Set up object to test
@@ -645,53 +1670,79 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		// Run test
 		final List<Wizard> wizardIDs = utils.listWizardsForAIPlayers (players, db);
-		assertEquals (12, wizardIDs.size ());
+		assertEquals (7, wizardIDs.size ());
 		assertEquals ("WZ01", wizardIDs.get (0).getWizardID ());
 		assertEquals ("WZ03", wizardIDs.get (1).getWizardID ());
 		assertEquals ("WZ04", wizardIDs.get (2).getWizardID ());
 		assertEquals ("WZ05", wizardIDs.get (3).getWizardID ());
 		assertEquals ("WZ06", wizardIDs.get (4).getWizardID ());
 		assertEquals ("WZ07", wizardIDs.get (5).getWizardID ());
-		assertEquals ("WZ08", wizardIDs.get (6).getWizardID ());
-		assertEquals ("WZ09", wizardIDs.get (7).getWizardID ());
-		assertEquals ("WZ10", wizardIDs.get (8).getWizardID ());
-		assertEquals ("WZ11", wizardIDs.get (9).getWizardID ());
-		assertEquals ("WZ13", wizardIDs.get (10).getWizardID ());
-		assertEquals ("WZ14", wizardIDs.get (11).getWizardID ());
+		assertEquals ("WZ09", wizardIDs.get (6).getWizardID ());
 	}
 
 	/**
-	 * Tests the startingPlaneForWizard method
+	 * Tests the startingPlaneForWizard method when the player doesn't have the Myrran retort
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testStartingPlaneForWizard () throws Exception
+	public final void testStartingPlaneForWizard_Arcanus () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Set up pick details
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
 
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getPlane ()).thenReturn (planes);
+
+		// Picks we have
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
-
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
-		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		utils.setPlayerPickUtils (playerPickUtils);
+
+		// Run method
+		assertEquals (0, utils.startingPlaneForWizard (picks, db));
+	}
+	
+	/**
+	 * Tests the startingPlaneForWizard method when the player does have the Myrran retort
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testStartingPlaneForWizard_Myrran () throws Exception
+	{
+		// Set up pick details
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
+		myrror.setPlaneNumber (1);
 		
-		// No picks
-		assertEquals (0, utils.startingPlaneForWizard (picks, db));
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
 
-		// Irrelevant pick
-		final PlayerPick warlord = new PlayerPick ();
-		warlord.setPickID (CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD);
-		warlord.setQuantity (1);
-		picks.add (warlord);
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getPlane ()).thenReturn (planes);
 
-		assertEquals (0, utils.startingPlaneForWizard (picks, db));
+		// Picks we have
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		
+		when (playerPickUtils.getQuantityOfPick (picks, "RT08")).thenReturn (1);
+		
+		// Set up object to test
+		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
 
-		// Myrran pick
-		final PlayerPick myrran = new PlayerPick ();
-		myrran.setPickID ("RT08");
-		myrran.setQuantity (1);
-		picks.add (myrran);
-
+		// Run method
 		assertEquals (1, utils.startingPlaneForWizard (picks, db));
 	}
 
@@ -702,12 +1753,23 @@ public final class TestPlayerPickServerUtilsImpl
 	@Test
 	public final void testChooseRandomRaceForPlane () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Mock some races, 6 on arcanus, 3 on myrror
+		final List<Race> races = new ArrayList<Race> ();
+		for (int n = 1; n <= 9; n++)
+		{
+			final Race race = new Race ();
+			race.setRaceID ("RC0" + n);
+			race.setNativePlane ((n <= 6) ? 0 : 1);
+			races.add (race);
+		}
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getRace ()).thenReturn (races);
+			
 		// Fix results
 		final RandomUtils random = mock (RandomUtils.class);
-		when (random.nextInt (9)).thenReturn (3);		// Arcanus race
-		when (random.nextInt (5)).thenReturn (2);		// Myrror race
+		when (random.nextInt (6)).thenReturn (3);		// Arcanus race
+		when (random.nextInt (3)).thenReturn (1);		// Myrror race
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
@@ -715,6 +1777,6 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Run test
 		assertEquals ("RC04", utils.chooseRandomRaceForPlane (0, db));
-		assertEquals ("RC12", utils.chooseRandomRaceForPlane (1, db));
+		assertEquals ("RC08", utils.chooseRandomRaceForPlane (1, db));
 	}
 }

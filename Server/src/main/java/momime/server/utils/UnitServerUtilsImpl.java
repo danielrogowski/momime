@@ -56,6 +56,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
 	/**
 	 * Chooses a name for this hero (out of 5 possibilities) and rolls their random skills
 	 * @param unit The hero to generate name and skills for
@@ -224,13 +227,13 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 
 		// Any other units here?
 		final boolean unitCheckOk;
-		final MemoryUnit unitHere = getUnitUtils ().findFirstAliveEnemyAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getPlane (), 0);
+		final MemoryUnit unitHere = getUnitUtils ().findFirstAliveEnemyAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getZ (), 0);
 		if (unitHere != null)
 		{
 			// Do we own it?
 			if (unitHere.getOwningPlayerID () == testUnit.getOwningPlayerID ())
 				// Maximum number of units already in the cell?
-				unitCheckOk = (getUnitUtils ().countAliveEnemiesAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getPlane (), 0) < settings.getUnitsPerMapCell ());
+				unitCheckOk = (getUnitUtils ().countAliveEnemiesAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getZ (), 0) < settings.getUnitsPerMapCell ());
 			else
 				// Enemy unit in the cell, so we can't add here
 				unitCheckOk = false;
@@ -248,7 +251,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			okToAdd = false;
 		else
 		{
-			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (addLocation.getPlane ()).getRow ().get (addLocation.getY ()).getCell ().get (addLocation.getX ());
+			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (addLocation.getZ ()).getRow ().get (addLocation.getY ()).getCell ().get (addLocation.getX ());
 			if ((ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db)) ||
 				(getServerUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
 
@@ -296,13 +299,15 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		testUnit.setOwningPlayerID (playerID);
 		getUnitUtils ().initializeUnitSkills (testUnit, 0, true, db);
 
-		final List<String> emptySkillList = new ArrayList<String> ();
+		final List<String> testUnitSkillList = new ArrayList<String> ();
+		for (final UnitHasSkill testUnitSkill : testUnit.getUnitHasSkill ())
+			testUnitSkillList.add (testUnitSkill.getUnitSkillID ());
 
 		// First try the centre
 		OverlandMapCoordinatesEx addLocation = null;
 		UnitAddBumpTypeID bumpType = UnitAddBumpTypeID.NO_ROOM;
 
-		if (canUnitBeAddedHere (desiredLocation, testUnit, emptySkillList, trueMap, sd.getUnitSetting (), db))
+		if (canUnitBeAddedHere (desiredLocation, testUnit, testUnitSkillList, trueMap, sd.getUnitSetting (), db))
 		{
 			addLocation = desiredLocation;
 			bumpType = UnitAddBumpTypeID.CITY;
@@ -310,15 +315,15 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		else
 		{
 			int direction = 1;
-			while ((addLocation == null) && (direction <= CoordinateSystemUtils.getMaxDirection (sd.getMapSize ().getCoordinateSystemType ())))
+			while ((addLocation == null) && (direction <= getCoordinateSystemUtils ().getMaxDirection (sd.getMapSize ().getCoordinateSystemType ())))
 			{
 				final OverlandMapCoordinatesEx adjacentLocation = new OverlandMapCoordinatesEx ();
 				adjacentLocation.setX (desiredLocation.getX ());
 				adjacentLocation.setY (desiredLocation.getY ());
-				adjacentLocation.setPlane (desiredLocation.getPlane ());
+				adjacentLocation.setZ (desiredLocation.getZ ());
 
-				if (CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), adjacentLocation, direction))
-					if (canUnitBeAddedHere (adjacentLocation, testUnit, emptySkillList, trueMap, sd.getUnitSetting (), db))
+				if (getCoordinateSystemUtils ().moveCoordinates (sd.getMapSize (), adjacentLocation, direction))
+					if (canUnitBeAddedHere (adjacentLocation, testUnit, testUnitSkillList, trueMap, sd.getUnitSetting (), db))
 					{
 						addLocation = adjacentLocation;
 						bumpType = UnitAddBumpTypeID.BUMPED;
@@ -415,5 +420,21 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

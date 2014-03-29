@@ -28,6 +28,7 @@ import momime.server.database.v0_9_4.Building;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -89,7 +90,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Set up object to test
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
@@ -107,7 +108,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx firstBuildingLocation = new OverlandMapCoordinatesEx ();
 		firstBuildingLocation.setX (2);
 		firstBuildingLocation.setY (2);
-		firstBuildingLocation.setPlane (0);
+		firstBuildingLocation.setZ (0);
 
 		final MemoryBuilding firstBuilding = new MemoryBuilding ();
 		firstBuilding.setBuildingID ("BL15");		// Sawmill
@@ -120,7 +121,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx secondBuildingLocation = new OverlandMapCoordinatesEx ();
 		secondBuildingLocation.setX (2);
 		secondBuildingLocation.setY (2);
-		secondBuildingLocation.setPlane (1);
+		secondBuildingLocation.setZ (1);
 
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL10");
@@ -133,7 +134,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx thirdBuildingLocation = new OverlandMapCoordinatesEx ();
 		thirdBuildingLocation.setX (2);
 		thirdBuildingLocation.setY (2);
-		thirdBuildingLocation.setPlane (0);
+		thirdBuildingLocation.setZ (0);
 
 		final MemoryBuilding thirdBuilding = new MemoryBuilding ();
 		thirdBuilding.setBuildingID ("BL10");
@@ -177,11 +178,14 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Set up object to test
+		final MomCityCalculationsImpl cityCalc = new MomCityCalculationsImpl ();
+		cityCalc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
-		calc.setCityCalculations (new MomCityCalculationsImpl ());
+		calc.setCityCalculations (cityCalc);
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		
 		// Starter size city - with no wild game and no granary, we need 2 farmers to feed the 4 population
@@ -194,7 +198,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx granaryLocation = new OverlandMapCoordinatesEx ();
 		granaryLocation.setX (2);
 		granaryLocation.setY (2);
-		granaryLocation.setPlane (0);
+		granaryLocation.setZ (0);
 
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID ("BL29");
@@ -290,7 +294,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Set up object to test
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
@@ -302,7 +306,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx firstBuildingLocation = new OverlandMapCoordinatesEx ();
 		firstBuildingLocation.setX (2);
 		firstBuildingLocation.setY (3);
-		firstBuildingLocation.setPlane (0);
+		firstBuildingLocation.setZ (0);
 
 		final MemoryBuilding firstBuilding = new MemoryBuilding ();
 		firstBuilding.setBuildingID ("BL35");
@@ -315,7 +319,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx secondBuildingLocation = new OverlandMapCoordinatesEx ();
 		secondBuildingLocation.setX (2);
 		secondBuildingLocation.setY (2);
-		secondBuildingLocation.setPlane (0);
+		secondBuildingLocation.setZ (0);
 
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL34");
@@ -328,7 +332,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx cityWallsLocation = new OverlandMapCoordinatesEx ();
 		cityWallsLocation.setX (2);
 		cityWallsLocation.setY (2);
-		cityWallsLocation.setPlane (0);
+		cityWallsLocation.setZ (0);
 
 		final MemoryBuilding cityWalls = new MemoryBuilding ();
 		cityWalls.setBuildingID ("BL35");
@@ -341,7 +345,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx oracleLocation = new OverlandMapCoordinatesEx ();
 		oracleLocation.setX (2);
 		oracleLocation.setY (2);
-		oracleLocation.setPlane (0);
+		oracleLocation.setZ (0);
 
 		final MemoryBuilding oracle = new MemoryBuilding ();
 		oracle.setBuildingID ("BL18");
@@ -382,15 +386,18 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (20);
 		cityLocation.setY (10);
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
 		// Set up object to test
+		final MomCityCalculationsImpl cityCalc = new MomCityCalculationsImpl ();
+		cityCalc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
-		calc.setCityCalculations (new MomCityCalculationsImpl ());
+		calc.setCityCalculations (cityCalc);
 		
 		// Orcs can build absolutely everything
 		cityData.setCityRaceID ("RC09");
@@ -432,7 +439,7 @@ public final class TestMomServerCityCalculationsImpl
 		final OverlandMapCoordinatesEx shipWrightsGuildLocation = new OverlandMapCoordinatesEx ();
 		shipWrightsGuildLocation.setX (20);
 		shipWrightsGuildLocation.setY (10);
-		shipWrightsGuildLocation.setPlane (1);
+		shipWrightsGuildLocation.setZ (1);
 
 		final MemoryBuilding shipWrightsGuild = new MemoryBuilding ();
 		shipWrightsGuild.setCityLocation (shipWrightsGuildLocation);

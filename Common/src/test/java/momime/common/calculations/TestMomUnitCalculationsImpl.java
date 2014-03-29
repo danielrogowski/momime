@@ -41,6 +41,7 @@ import momime.common.utils.UnitUtils;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
@@ -58,6 +59,7 @@ public final class TestMomUnitCalculationsImpl
 		// Set up object to test
 		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
 		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -69,7 +71,7 @@ public final class TestMomUnitCalculationsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -97,7 +99,7 @@ public final class TestMomUnitCalculationsImpl
 		final OverlandMapCoordinatesEx sagesGuildLocation = new OverlandMapCoordinatesEx ();
 		sagesGuildLocation.setX (2);
 		sagesGuildLocation.setY (2);
-		sagesGuildLocation.setPlane (0);
+		sagesGuildLocation.setZ (0);
 
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();
 		sagesGuild.setCityLocation (sagesGuildLocation);
@@ -110,7 +112,7 @@ public final class TestMomUnitCalculationsImpl
 		final OverlandMapCoordinatesEx alchemistsGuildLocation = new OverlandMapCoordinatesEx ();
 		alchemistsGuildLocation.setX (2);
 		alchemistsGuildLocation.setY (2);
-		alchemistsGuildLocation.setPlane (1);
+		alchemistsGuildLocation.setZ (1);
 
 		final MemoryBuilding alchemistsGuild = new MemoryBuilding ();
 		alchemistsGuild.setCityLocation (alchemistsGuildLocation);
@@ -120,7 +122,7 @@ public final class TestMomUnitCalculationsImpl
 		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Move it to the right place
-		alchemistsGuildLocation.setPlane (0);
+		alchemistsGuildLocation.setZ (0);
 		assertEquals (3, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 	}
 	
@@ -563,6 +565,7 @@ public final class TestMomUnitCalculationsImpl
 		
 		// Set up object to test
 		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// No border at all
 		assertTrue (calc.okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), 10, 5, 1, db));

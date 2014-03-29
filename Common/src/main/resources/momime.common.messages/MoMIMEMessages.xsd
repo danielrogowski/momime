@@ -274,17 +274,13 @@ Values must add up to a total of 240.</xsd:documentation>
 
 	<xsd:complexType name="overlandMapCoordinates">
 		<xsd:complexContent>
-			<xsd:extension base="map:mapCoordinates">
-		        <xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="plane" type="map:mapDimension"/>
-				</xsd:sequence>
-			</xsd:extension>
+			<xsd:extension base="map:mapCoordinates3D"/>
 		</xsd:complexContent>
 	</xsd:complexType>
 	
 	<xsd:complexType name="combatMapCoordinates">
 		<xsd:complexContent>
-			<xsd:extension base="map:mapCoordinates"/>
+			<xsd:extension base="map:mapCoordinates2D"/>
         </xsd:complexContent>
 	</xsd:complexType>
 

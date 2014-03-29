@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.database.v0_9_4.Building;
@@ -40,7 +40,9 @@ import momime.common.utils.PlayerPickUtils;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
-import com.ndg.map.areas.BooleanMapArea2DArray;
+import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
+import com.ndg.map.areas.storage.MapArea2D;
+import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -58,6 +60,9 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
 	 * A list of directions for traversing from a city's coordinates through all the map cells within that city's radius
@@ -95,13 +100,13 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (cityLocation.getX ());
 		coords.setY (cityLocation.getY ());
-		coords.setPlane (cityLocation.getPlane ());
+		coords.setZ (cityLocation.getZ ());
 
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 		{
-			if (CoordinateSystemUtils.moveCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
+			if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
-				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
 				{
 					final Integer thisBonus = db.findTileType (terrainData.getTileTypeID (), "calculateProductionBonus").getProductionBonus ();
@@ -132,7 +137,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 
 		// Deal with centre square
 		int goldBonus = 0;
-		final OverlandMapTerrainData centreTile = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getTerrainData ();
+		final OverlandMapTerrainData centreTile = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getTerrainData ();
 		if ((centreTile != null) && (centreTile.getTileTypeID () != null))
 		{
 			final Integer centreBonus = db.findTileType (centreTile.getTileTypeID (), "calculateGoldBonus").getGoldBonus ();
@@ -142,17 +147,17 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 
 		// Only check adjacent squares if we didn't find a centre square bonus
 		int d = 1;
-		while ((goldBonus == 0) && (d <= CoordinateSystemUtils.getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ())))
+		while ((goldBonus == 0) && (d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ())))
 		{
 			final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 			coords.setX (cityLocation.getX ());
 			coords.setY (cityLocation.getY ());
-			coords.setPlane (cityLocation.getPlane ());
+			coords.setZ (cityLocation.getZ ());
 
-			if (CoordinateSystemUtils.moveCoordinates (overlandMapCoordinateSystem, coords, d))
+			if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, d))
 			{
 				// Bonus only applies if adjacent flag is set
-				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
 				{
 					final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "calculateGoldBonus");
@@ -200,7 +205,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 
 				// First check the centre square, we can check this regardless of the defined distance
 				// Put requirement first, just in case the area of terrain is unknown to us
-				final OverlandMapTerrainData centreTile = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getTerrainData ();
+				final OverlandMapTerrainData centreTile = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getTerrainData ();
 				if ((centreTile != null) && (thisRequirement.getTileTypeID ().equals (centreTile.getTileTypeID ())))
 					thisRequirementPasses = true;
 				else
@@ -210,16 +215,16 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 					{
 						// Fan out in all 8 directions from the centre
 						int d = 1;
-						while ((!thisRequirementPasses) && (d <= CoordinateSystemUtils.getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ())))
+						while ((!thisRequirementPasses) && (d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ()))) 
 						{
 							final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 							coords.setX (cityLocation.getX ());
 							coords.setY (cityLocation.getY ());
-							coords.setPlane (cityLocation.getPlane ());
+							coords.setZ (cityLocation.getZ ());
 
-							if (CoordinateSystemUtils.moveCoordinates (overlandMapCoordinateSystem, coords, d))
+							if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, d))
 							{
-								final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+								final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 								if ((terrainData != null) && (thisRequirement.getTileTypeID ().equals (terrainData.getTileTypeID ())))
 									thisRequirementPasses = true;
 							}
@@ -233,14 +238,14 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 						final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 						coords.setX (cityLocation.getX ());
 						coords.setY (cityLocation.getY ());
-						coords.setPlane (cityLocation.getPlane ());
+						coords.setZ (cityLocation.getZ ());
 
 						int directionIndex = 0;
 						while ((!thisRequirementPasses) && (directionIndex < DIRECTIONS_TO_TRAVERSE_CITY_RADIUS.length))
 						{
-							if (CoordinateSystemUtils.moveCoordinates (overlandMapCoordinateSystem, coords, DIRECTIONS_TO_TRAVERSE_CITY_RADIUS [directionIndex].getDirectionID ()))
+							if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, DIRECTIONS_TO_TRAVERSE_CITY_RADIUS [directionIndex].getDirectionID ()))
 							{
-								final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+								final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 								if ((terrainData != null) && (thisRequirement.getTileTypeID ().equals (terrainData.getTileTypeID ())))
 									thisRequirementPasses = true;
 							}
@@ -285,13 +290,13 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (cityLocation.getX ());
 		coords.setY (cityLocation.getY ());
-		coords.setPlane (cityLocation.getPlane ());
+		coords.setZ (cityLocation.getZ ());
 
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 		{
-			if (CoordinateSystemUtils.moveCoordinates (sessionDescription.getMapSize (), coords, direction.getDirectionID ()))
+			if (getCoordinateSystemUtils ().moveCoordinates (sessionDescription.getMapSize (), coords, direction.getDirectionID ()))
 			{
-				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 
 				// Food from terrain
 				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
@@ -342,7 +347,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateCityGrowthRate", cityLocation);
 
-		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		// Start off calculation
 		final int currentPopulation = cityData.getCityPopulation ();
@@ -475,7 +480,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateCityRebels", cityLocation);
 
-		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
 
 		// First get the tax rate
@@ -496,7 +501,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		else
 		{
 			// Find the capital race's unrest value listed under this city's race
-			final OverlandMapCityData fortressCityData = map.getPlane ().get (fortressLocation.getPlane ()).getRow ().get (fortressLocation.getY ()).getCell ().get (fortressLocation.getX ()).getCityData ();
+			final OverlandMapCityData fortressCityData = map.getPlane ().get (fortressLocation.getZ ()).getRow ().get (fortressLocation.getY ()).getCell ().get (fortressLocation.getX ()).getCityData ();
 
 			RaceUnrest raceUnrest = null;
 			final Iterator<RaceUnrest> iter = db.findRace (cityData.getCityRaceID (), "calculateCityRebels").getRaceUnrest ().iterator ();
@@ -682,7 +687,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateAllCityProductions", cityLocation);
 
-		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
 		final Race cityRace = db.findRace (cityData.getCityRaceID (), "calculateAllCityProductions");
 
@@ -761,7 +766,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 						productionValues.addProductionFromFortressPickType (thisPickType, getPlayerPickUtils ().countPicksOfType (cityOwnerPicks, thisPickType.getPickTypeID (), true, db));
 
 					// ...and according to which plane it is on
-					productionValues.addProductionFromFortressPlane (db.findPlane (cityLocation.getPlane (), "calculateAllCityProductions"));
+					productionValues.addProductionFromFortressPlane (db.findPlane (cityLocation.getZ (), "calculateAllCityProductions"));
 				}
 
 				// Regular building
@@ -786,12 +791,12 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (cityLocation.getX ());
 		coords.setY (cityLocation.getY ());
-		coords.setPlane (cityLocation.getPlane ());
+		coords.setZ (cityLocation.getZ ());
 
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-			if (CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
+			if (getCoordinateSystemUtils ().moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
 			{
-				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 				if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
 					productionValues.addProductionFromMapFeature (db.findMapFeature (terrainData.getMapFeatureID (), "calculateAllCityProductions"), cityRace.getMineralBonusMultiplier (), mineralPercentageBonus);
 			}
@@ -936,18 +941,23 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @return Map area with areas we know are too close to cities marked
 	 */
 	@Override
-	public final BooleanMapArea2DArray markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
+	public final MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
 		final int plane, final MapSizeData mapSize)
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "markWithinExistingCityRadius", plane);
 
-		final BooleanMapArea2DArray result = new BooleanMapArea2DArray (mapSize);
+		final MapArea2D<Boolean> result = new MapArea2DArrayListImpl<Boolean> ();
+		result.setCoordinateSystem (mapSize);
+		
+		final BooleanMapAreaOperations2DImpl op = new BooleanMapAreaOperations2DImpl ();
+		op.setCoordinateSystemUtils (getCoordinateSystemUtils ());
+		
 		for (int x = 0; x < mapSize.getWidth (); x++)
 			for (int y = 0; y < mapSize.getHeight (); y++)
 			{
 				final OverlandMapCityData cityData = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
 				if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
-					result.selectRadius (x, y, mapSize.getCitySeparation ());
+					op.selectRadius (result, x, y, mapSize.getCitySeparation ());
 			}
 
 		log.exiting (MomCityCalculationsImpl.class.getName (), "markWithinExistingCityRadius");
@@ -1006,5 +1016,21 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

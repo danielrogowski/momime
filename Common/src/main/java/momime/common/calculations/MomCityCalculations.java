@@ -14,7 +14,7 @@ import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomSessionDescription;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.map.areas.BooleanMapArea2DArray;
+import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
@@ -178,7 +178,7 @@ public interface MomCityCalculations
 	 * @param mapSize Overland map coordinate system and extended details
 	 * @return Map area with areas we know are too close to cities marked
 	 */
-	public BooleanMapArea2DArray markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
+	public MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
 		final int plane, final MapSizeData mapSize);
 
 	/**

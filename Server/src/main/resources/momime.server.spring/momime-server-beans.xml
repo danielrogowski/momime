@@ -298,6 +298,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="uiClassName" value="#{serverConfig.uiClassName}" />
 		<property name="sessionThreadFactory" ref="sessionThreadFactory" />
 	</bean>
+	
+	<bean id="booleanMapAreaOperations2D" class="com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl">
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+	</bean>
 
 	<!-- Utils -->
 
@@ -313,6 +318,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtilsImpl">
@@ -320,6 +326,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtilsImpl">
@@ -352,6 +359,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="serverUnitCalculations" class="momime.server.calculations.MomServerUnitCalculationsImpl">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="serverResourceCalculations" class="momime.server.calculations.MomServerResourceCalculationsImpl">
@@ -471,6 +479,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="combatAI" ref="combatAI" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 	
 	<bean id="combatScheduler" class="momime.server.process.CombatSchedulerImpl">
@@ -503,6 +512,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="momAI" class="momime.server.ai.MomAIImpl">
@@ -515,6 +525,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 	
 	<!-- Fog of War -->
@@ -546,6 +557,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="combatScheduler" ref="combatScheduler" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">
@@ -557,6 +569,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 	
 	<!-- Beans created each time a new session is started
@@ -586,6 +599,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
 		<!-- <property name="trueTerrain" ref="trueMap" /> see comment above, this is done in the code instead -->
 	</bean>
 

@@ -18,7 +18,7 @@ import momime.server.database.v0_9_4.Race;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.map.areas.StringMapArea2DArray;
+import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -37,7 +37,7 @@ public interface OverlandMapServerUtils
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
  	 * @throws MomException If no races are defined for a particular plane
 	 */
-	public List<StringMapArea2DArray> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
+	public MapArea3D<String> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
 
 	/**

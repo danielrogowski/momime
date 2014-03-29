@@ -28,6 +28,7 @@ import momime.common.utils.SpellUtilsImpl;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -353,6 +354,7 @@ public final class TestMomSpellCalculationsImpl
 		final MemoryBuildingUtils utils = mock (MemoryBuildingUtils.class);
 		final PlayerPickUtils picks = mock (PlayerPickUtils.class);
 		final MomSpellCalculationsImpl calc = new MomSpellCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		calc.setMemoryBuildingUtils (utils);
 		calc.setPlayerPickUtils (picks);
 		
@@ -360,7 +362,7 @@ public final class TestMomSpellCalculationsImpl
 		final OverlandMapCoordinatesEx location1 = new OverlandMapCoordinatesEx ();
 		location1.setX (3);
 		location1.setY (7);
-		location1.setPlane (0);
+		location1.setZ (0);
 		
 		assertNull (calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem));
 		
@@ -368,7 +370,7 @@ public final class TestMomSpellCalculationsImpl
 		final OverlandMapCoordinatesEx fortressLocation = new OverlandMapCoordinatesEx ();
 		fortressLocation.setX (3);
 		fortressLocation.setY (7);
-		fortressLocation.setPlane (0);
+		fortressLocation.setZ (0);
 		when (utils.findCityWithBuilding (pd.getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings)).thenReturn (fortressLocation);
 
 		assertEquals (1, calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem).intValue ());
@@ -377,7 +379,7 @@ public final class TestMomSpellCalculationsImpl
 		final OverlandMapCoordinatesEx location2 = new OverlandMapCoordinatesEx ();
 		location2.setX (4);
 		location2.setY (7);
-		location2.setPlane (0);
+		location2.setZ (0);
 		
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location2, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
@@ -385,7 +387,7 @@ public final class TestMomSpellCalculationsImpl
 		final OverlandMapCoordinatesEx location3 = new OverlandMapCoordinatesEx ();
 		location3.setX (4);
 		location3.setY (7);
-		location3.setPlane (1);
+		location3.setZ (1);
 		
 		assertEquals (6, calc.calculateDoubleCombatCastingRangePenalty (player, location3, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location3, true, map, buildings, overlandMapCoordinateSystem).intValue ());
@@ -394,7 +396,7 @@ public final class TestMomSpellCalculationsImpl
 		final OverlandMapCoordinatesEx location4 = new OverlandMapCoordinatesEx ();
 		location4.setX (3+5);
 		location4.setY (7+3);
-		location4.setPlane (0);
+		location4.setZ (0);
 		
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location4, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 
@@ -402,7 +404,7 @@ public final class TestMomSpellCalculationsImpl
 		final OverlandMapCoordinatesEx location5 = new OverlandMapCoordinatesEx ();
 		location5.setX (58);
 		location5.setY (7+3);
-		location5.setPlane (0);
+		location5.setZ (0);
 		
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location5, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
@@ -410,7 +412,7 @@ public final class TestMomSpellCalculationsImpl
 		final OverlandMapCoordinatesEx location6 = new OverlandMapCoordinatesEx ();
 		location6.setX (3+6);
 		location6.setY (7);
-		location6.setPlane (0);
+		location6.setZ (0);
 		
 		assertEquals (3, calc.calculateDoubleCombatCastingRangePenalty (player, location6, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 
@@ -418,7 +420,7 @@ public final class TestMomSpellCalculationsImpl
 		final OverlandMapCoordinatesEx location7 = new OverlandMapCoordinatesEx ();
 		location7.setX (3+6);
 		location7.setY (7+20);
-		location7.setPlane (0);
+		location7.setZ (0);
 		
 		assertEquals (5, calc.calculateDoubleCombatCastingRangePenalty (player, location7, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 
@@ -426,7 +428,7 @@ public final class TestMomSpellCalculationsImpl
 		final OverlandMapCoordinatesEx location8 = new OverlandMapCoordinatesEx ();
 		location8.setX (3+30);
 		location8.setY (7+20);
-		location8.setPlane (0);
+		location8.setZ (0);
 		
 		assertEquals (6, calc.calculateDoubleCombatCastingRangePenalty (player, location8, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		

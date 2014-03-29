@@ -80,13 +80,13 @@ public final class CombatSchedulerImpl implements CombatScheduler
 		final OverlandMapCoordinatesEx defLoc = new OverlandMapCoordinatesEx ();
 		defLoc.setX (defendingLocation.getX ());
 		defLoc.setY (defendingLocation.getY ());
-		defLoc.setPlane (defendingLocation.getPlane ());
+		defLoc.setZ (defendingLocation.getZ ());
 		combat.setDefendingLocation (defLoc);
 		
 		final OverlandMapCoordinatesEx attFrom = new OverlandMapCoordinatesEx ();
 		attFrom.setX (attackingFrom.getX ());
 		attFrom.setY (attackingFrom.getY ());
-		attFrom.setPlane (attackingFrom.getPlane ());
+		attFrom.setZ (attackingFrom.getZ ());
 		combat.setAttackingFrom (attFrom);
 	    
 		// Add to list

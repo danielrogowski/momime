@@ -42,6 +42,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -107,6 +108,7 @@ public final class TestFogOfWarProcessingImpl
 
 		// Set up test object
 		final FogOfWarProcessingImpl proc = new FogOfWarProcessingImpl ();
+		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
 		proc.canSeeRadius (fogOfWarArea, sys, 2, 2, 1, 3);
@@ -184,7 +186,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx cityWallsLocation = new OverlandMapCoordinatesEx ();
 		cityWallsLocation.setX (50);
 		cityWallsLocation.setY (12);
-		cityWallsLocation.setPlane (0);
+		cityWallsLocation.setZ (0);
 
 		final MemoryBuilding cityWalls = new MemoryBuilding ();
 		cityWalls.setBuildingID ("BL35");
@@ -195,7 +197,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx ourOracleLocation = new OverlandMapCoordinatesEx ();
 		ourOracleLocation.setX (1);
 		ourOracleLocation.setY (1);
-		ourOracleLocation.setPlane (1);
+		ourOracleLocation.setZ (1);
 
 		final MemoryBuilding ourOracle = new MemoryBuilding ();
 		ourOracle.setBuildingID ("BL18");
@@ -218,7 +220,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx curseLocation = new OverlandMapCoordinatesEx ();
 		curseLocation.setX (54);
 		curseLocation.setY (32);
-		curseLocation.setPlane (1);
+		curseLocation.setZ (1);
 
 		final MemoryMaintainedSpell curse = new MemoryMaintainedSpell ();
 		curse.setCastingPlayerID (2);
@@ -231,7 +233,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx enemyOracleLocation = new OverlandMapCoordinatesEx ();
 		enemyOracleLocation.setX (54);
 		enemyOracleLocation.setY (32);
-		enemyOracleLocation.setPlane (1);
+		enemyOracleLocation.setZ (1);
 
 		final MemoryBuilding enemyOracle = new MemoryBuilding ();
 		enemyOracle.setBuildingID ("BL18");
@@ -243,7 +245,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx unitOneLocation = new OverlandMapCoordinatesEx ();
 		unitOneLocation.setX (54);
 		unitOneLocation.setY (4);
-		unitOneLocation.setPlane (1);
+		unitOneLocation.setZ (1);
 
 		final MemoryUnit unitOne = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
 		unitOne.setUnitLocation (unitOneLocation);
@@ -254,7 +256,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx unitTwoLocation = new OverlandMapCoordinatesEx ();
 		unitTwoLocation.setX (14);
 		unitTwoLocation.setY (34);
-		unitTwoLocation.setPlane (1);
+		unitTwoLocation.setZ (1);
 
 		final MemoryUnit unitTwo = unitUtils.createMemoryUnit ("UN067", 2, 0, 0, true, db);
 		unitTwo.setUnitLocation (unitTwoLocation);
@@ -265,7 +267,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx unitThreeLocation = new OverlandMapCoordinatesEx ();
 		unitThreeLocation.setX (44);
 		unitThreeLocation.setY (17);
-		unitThreeLocation.setPlane (0);
+		unitThreeLocation.setZ (0);
 
 		final MemoryUnit unitThree = unitUtils.createMemoryUnit ("UN005", 3, 0, 0, true, db);
 		unitThree.setUnitLocation (unitThreeLocation);
@@ -285,7 +287,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx unitFourLocation = new OverlandMapCoordinatesEx ();
 		unitFourLocation.setX (22);
 		unitFourLocation.setY (22);
-		unitFourLocation.setPlane (0);
+		unitFourLocation.setZ (0);
 
 		final MemoryUnit unitFour = unitUtils.createMemoryUnit ("UN105", 4, 0, 0, true, db);
 		unitFour.setUnitLocation (unitFourLocation);
@@ -297,7 +299,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx unitFiveLocation = new OverlandMapCoordinatesEx ();
 		unitFiveLocation.setX (23);
 		unitFiveLocation.setY (9);
-		unitFiveLocation.setPlane (1);
+		unitFiveLocation.setZ (1);
 
 		final MemoryUnit unitFive = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
 		unitFive.setUnitLocation (unitFiveLocation);
@@ -309,7 +311,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx naturesEyeLocation = new OverlandMapCoordinatesEx ();
 		naturesEyeLocation.setX (11);
 		naturesEyeLocation.setY (35);
-		naturesEyeLocation.setPlane (0);
+		naturesEyeLocation.setZ (0);
 
 		final MemoryMaintainedSpell naturesEye = new MemoryMaintainedSpell ();
 		naturesEye.setCastingPlayerID (2);
@@ -331,6 +333,7 @@ public final class TestFogOfWarProcessingImpl
 		proc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		proc.setServerCityCalculations (new MomServerCityCalculationsImpl ());
 		proc.setServerUnitCalculations (serverUnitCalculations);
+		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Test with no special spells
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
@@ -446,7 +449,7 @@ public final class TestFogOfWarProcessingImpl
 			final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 			coords.setX (n);
 			coords.setY (n + 1);
-			coords.setPlane (n + 2);
+			coords.setZ (n + 2);
 
 			final UpdateNodeLairTowerUnitIDMessageData msgData = new UpdateNodeLairTowerUnitIDMessageData ();
 			msgData.setNodeLairTowerLocation (coords);
@@ -461,7 +464,7 @@ public final class TestFogOfWarProcessingImpl
 		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (2);
 		coords.setY (3);
-		coords.setPlane (4);
+		coords.setZ (4);
 
 		assertTrue (proc.areCoordinatesIncludedInMessage (coordinateList, coords));
 

@@ -65,6 +65,9 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
 	/**
 	 * @param map Our knowledge of the surrounding terrain
 	 * @param buildings Pre-locked buildings list
@@ -99,13 +102,13 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 			final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 			coords.setX (cityLocation.getX ());
 			coords.setY (cityLocation.getY ());
-			coords.setPlane (cityLocation.getPlane ());
+			coords.setZ (cityLocation.getZ ());
 
 			for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			{
-				if (CoordinateSystemUtils.moveCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
+				if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 				{
-					final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+					final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 					if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
 					{
 						final Integer featureMagicWeapons = db.findMapFeature (terrainData.getMapFeatureID (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort").getFeatureMagicWeapons ();
@@ -391,8 +394,8 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		// So there is a border - check if it includes the requested direction.
 		// Have to check +1/-1 of the requested direction so that flat walls also stop moving in diagonals past the wall.
 		else if ((!tile.getBorderDirections ().contains (new Integer (d).toString ())) &&
-					(!tile.getBorderDirections ().contains (new Integer (CoordinateSystemUtils.normalizeDirection (combatMapCoordinateSystemType, d+1)).toString ())) &&
-					(!tile.getBorderDirections ().contains (new Integer (CoordinateSystemUtils.normalizeDirection (combatMapCoordinateSystemType, d-1)).toString ())))
+					(!tile.getBorderDirections ().contains (new Integer (getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystemType, d+1)).toString ())) &&
+					(!tile.getBorderDirections ().contains (new Integer (getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystemType, d-1)).toString ())))
 					
 			ok = true;
 		else
@@ -438,13 +441,13 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		final int distance = doubleMovementDistances [moveFrom.getY ()] [moveFrom.getX ()];
 		final int doubleMovementRemainingToHere = unitBeingMoved.getDoubleCombatMovesLeft () - distance;
 		
-		for (int d = 1; d <= CoordinateSystemUtils.getMaxDirection (combatMapCoordinateSystem.getCoordinateSystemType ()); d++)
+		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (combatMapCoordinateSystem.getCoordinateSystemType ()); d++)
 		{
 			final CombatMapCoordinatesEx moveTo = new CombatMapCoordinatesEx ();
 			moveTo.setX (moveFrom.getX ());
 			moveTo.setY (moveFrom.getY ());
 			
-			if (CoordinateSystemUtils.moveCoordinates (combatMapCoordinateSystem, moveTo, d))
+			if (getCoordinateSystemUtils ().moveCoordinates (combatMapCoordinateSystem, moveTo, d))
 				if (doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] >= MOVEMENT_DISTANCE_NOT_YET_CHECKED)
 				{
 					// This is a valid location on the map that we've either not visited before or that we've already found another path to
@@ -465,7 +468,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 					// i.e. check there's not a stone wall in the exit from the first cell or in the entrance to the second cell
 					else if ((okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), moveFrom.getX (), moveFrom.getY (), d, db)) &&
 						(okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), moveTo.getX (), moveTo.getY (),
-							CoordinateSystemUtils.normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), d+4), db)))
+							getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), d+4), db)))
 					{
 						// How much movement (total) will it cost us to get here
 						final int newDistance = distance + doubleMovementToEnterThisTile;
@@ -639,5 +642,21 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

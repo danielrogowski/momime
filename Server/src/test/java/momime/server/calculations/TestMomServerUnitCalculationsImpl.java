@@ -37,6 +37,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -123,7 +124,7 @@ public final class TestMomServerUnitCalculationsImpl
 			final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 			u2location.setX (20);
 			u2location.setY (10);
-			u2location.setPlane (0);
+			u2location.setZ (0);
 
 			final MemoryUnit u2 = new MemoryUnit ();
 			u2.setOwningPlayerID (2);
@@ -138,7 +139,7 @@ public final class TestMomServerUnitCalculationsImpl
 			final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 			u2location.setX (30);
 			u2location.setY (20);
-			u2location.setPlane (1);
+			u2location.setZ (1);
 
 			final MemoryUnit u2 = new MemoryUnit ();
 			u2.setOwningPlayerID (2);
@@ -151,7 +152,7 @@ public final class TestMomServerUnitCalculationsImpl
 		final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 		u2location.setX (20);
 		u2location.setY (10);
-		u2location.setPlane (0);
+		u2location.setZ (0);
 
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setOwningPlayerID (3);
@@ -163,7 +164,7 @@ public final class TestMomServerUnitCalculationsImpl
 		final OverlandMapCoordinatesEx u3location = new OverlandMapCoordinatesEx ();
 		u3location.setX (20);
 		u3location.setY (10);
-		u3location.setPlane (0);
+		u3location.setZ (0);
 
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setOwningPlayerID (2);
@@ -174,7 +175,7 @@ public final class TestMomServerUnitCalculationsImpl
 		final OverlandMapCoordinatesEx u4location = new OverlandMapCoordinatesEx ();
 		u4location.setX (20);
 		u4location.setY (10);
-		u4location.setPlane (0);
+		u4location.setZ (0);
 
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setOwningPlayerID (2);
@@ -308,7 +309,7 @@ public final class TestMomServerUnitCalculationsImpl
 		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
-		unitLocation.setPlane (0);
+		unitLocation.setZ (0);
 
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setOwningPlayerID (2);
@@ -779,7 +780,7 @@ public final class TestMomServerUnitCalculationsImpl
 			final OverlandMapCoordinatesEx spearmenLocation = new OverlandMapCoordinatesEx ();
 			spearmenLocation.setX (20);
 			spearmenLocation.setY (10);
-			spearmenLocation.setPlane (1);
+			spearmenLocation.setZ (1);
 
 			final MemoryUnit spearmen = unitUtils.createMemoryUnit ("UN105", n, 0, 0, true, db);
 			spearmen.setOwningPlayerID (2);
@@ -793,6 +794,7 @@ public final class TestMomServerUnitCalculationsImpl
 		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
 		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, nodeLairTowerKnownUnitIDs, unitStack,
@@ -927,7 +929,7 @@ public final class TestMomServerUnitCalculationsImpl
 			final OverlandMapCoordinatesEx spearmenLocation = new OverlandMapCoordinatesEx ();
 			spearmenLocation.setX (20);
 			spearmenLocation.setY (10);
-			spearmenLocation.setPlane (1);
+			spearmenLocation.setZ (1);
 
 			nextUnitURN++;
 			final MemoryUnit spearmen = unitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db);
@@ -945,7 +947,7 @@ public final class TestMomServerUnitCalculationsImpl
 			final OverlandMapCoordinatesEx ourLocation = new OverlandMapCoordinatesEx ();
 			ourLocation.setX (19);
 			ourLocation.setY (9);
-			ourLocation.setPlane (1);
+			ourLocation.setZ (1);
 
 			nextUnitURN++;
 			final MemoryUnit our = unitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db);
@@ -957,7 +959,7 @@ public final class TestMomServerUnitCalculationsImpl
 			final OverlandMapCoordinatesEx theirLocation = new OverlandMapCoordinatesEx ();
 			theirLocation.setX (20);
 			theirLocation.setY (9);
-			theirLocation.setPlane (1);
+			theirLocation.setZ (1);
 
 			nextUnitURN++;
 			final MemoryUnit their = unitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db);
@@ -971,6 +973,7 @@ public final class TestMomServerUnitCalculationsImpl
 		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
 		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, nodeLairTowerKnownUnitIDs, unitStack,

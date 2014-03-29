@@ -244,7 +244,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 			cityLocation.setX (100 + n);
 			cityLocation.setY (200 + n);
-			cityLocation.setPlane (300 + n);
+			cityLocation.setZ (300 + n);
 			spell.setCityLocation (cityLocation);
 
 			spells.add (spell);
@@ -253,12 +253,12 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (104);
 		cityLocation.setY (204);
-		cityLocation.setPlane (304);
+		cityLocation.setZ (304);
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, null).getSpellID ());
 
-		cityLocation.setPlane (305);
+		cityLocation.setZ (305);
 		assertNull (utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, null));
 	}
 
@@ -281,7 +281,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 			cityLocation.setX (100 + n);
 			cityLocation.setY (200 + n);
-			cityLocation.setPlane (300 + n);
+			cityLocation.setZ (300 + n);
 			spell.setCityLocation (cityLocation);
 
 			spells.add (spell);
@@ -290,7 +290,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (104);
 		cityLocation.setY (204);
-		cityLocation.setPlane (304);
+		cityLocation.setZ (304);
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, "SP004", null, null, cityLocation, "CSE034").getSpellID ());
@@ -316,7 +316,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 			cityLocation.setX (100 + n);
 			cityLocation.setY (200 + n);
-			cityLocation.setPlane (300 + n);
+			cityLocation.setZ (300 + n);
 			spell.setCityLocation (cityLocation);
 
 			spells.add (spell);
@@ -325,7 +325,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (104);
 		cityLocation.setY (204);
-		cityLocation.setPlane (304);
+		cityLocation.setZ (304);
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE034").getSpellID ());
@@ -373,7 +373,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			final OverlandMapCoordinatesEx spellLocation = new OverlandMapCoordinatesEx ();
 			spellLocation.setX (20 + n);
 			spellLocation.setY (10 + n);
-			spellLocation.setPlane (n);
+			spellLocation.setZ (n);
 
 			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
 			spell.setSpellID ("SP00" + n);
@@ -387,7 +387,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final OverlandMapCoordinatesEx switchOffLocation = new OverlandMapCoordinatesEx ();
 		switchOffLocation.setX (24);
 		switchOffLocation.setY (14);
-		switchOffLocation.setPlane (4);
+		switchOffLocation.setZ (4);
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, switchOffLocation, "CSE004");
@@ -581,7 +581,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (20);
 		cityLocation.setY (10);
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 		
 		// Spell has no citySpellEffectIDs defined
 		assertNull (utils.listCitySpellEffectsNotYetCastAtLocation (spells, spell, 1, cityLocation));
@@ -599,7 +599,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final OverlandMapCoordinatesEx effectLocationA = new OverlandMapCoordinatesEx ();
 		effectLocationA.setX (20);
 		effectLocationA.setY (10);
-		effectLocationA.setPlane (1);
+		effectLocationA.setZ (1);
 
 		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
 		existingEffectA.setSpellID ("SP001");
@@ -639,7 +639,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final OverlandMapCoordinatesEx effectLocationD = new OverlandMapCoordinatesEx ();
 		effectLocationD.setX (20);
 		effectLocationD.setY (11);
-		effectLocationD.setPlane (1);
+		effectLocationD.setZ (1);
 
 		final MemoryMaintainedSpell existingEffectD = new MemoryMaintainedSpell ();
 		existingEffectD.setSpellID ("SP001");

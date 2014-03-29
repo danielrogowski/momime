@@ -3,9 +3,12 @@ package momime.server.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +17,14 @@ import javax.xml.bind.JAXBException;
 
 import momime.common.MomException;
 import momime.common.calculations.MomCityCalculationsImpl;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
+import momime.common.database.newgame.v0_9_4.FogOfWarValue;
 import momime.common.messages.CombatMapCoordinatesEx;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
+import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
 import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
@@ -32,12 +39,13 @@ import momime.common.messages.v0_9_4.OverlandMapCityData;
 import momime.common.messages.v0_9_4.OverlandMapTerrainData;
 import momime.common.messages.v0_9_4.UnitCombatSideID;
 import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Race;
+import momime.server.database.v0_9_4.TileType;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_4.ServerGridCell;
@@ -45,16 +53,18 @@ import momime.server.messages.v0_9_4.ServerGridCell;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.MapCoordinates;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.SquareMapDirection;
-import com.ndg.map.areas.StringMapArea2DArray;
+import com.ndg.map.areas.operations.MapAreaOperations3DImpl;
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 /**
- * Tests the OverlandMapServerUtils class
+ * Tests the OverlandMapServerUtilsImpl class
  */
 public final class TestOverlandMapServerUtilsImpl
 {
@@ -65,10 +75,22 @@ public final class TestOverlandMapServerUtilsImpl
 	@Test
 	public final void testSetContinentalRace () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock some tile types
+		final TileType grass = new TileType ();
+		grass.setIsLand (true);
+		
+		final TileType ocean = new TileType ();
+		ocean.setIsLand (false);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("G", "setContinentalRace")).thenReturn (grass);
+		when (db.findTileType ("O", "setContinentalRace")).thenReturn (ocean);
 
+		// Map and coordinate system
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
+		final MapAreaOperations3DImpl<String> op = new MapAreaOperations3DImpl<String> ();
+		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
 
 		// Fill map with ocean
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
@@ -76,35 +98,34 @@ public final class TestOverlandMapServerUtilsImpl
 				for (final MemoryGridCell cell : row.getCell ())
 				{
 					final OverlandMapTerrainData terrain = new OverlandMapTerrainData ();
-					terrain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+					terrain.setTileTypeID ("O");
 
 					cell.setTerrainData (terrain);
 				}
 
-		// Create area to output into
-		final List<StringMapArea2DArray> continentalRace = new ArrayList<StringMapArea2DArray> ();
-		for (int plane = 0; plane < db.getPlane ().size (); plane++)
-			continentalRace.add (new StringMapArea2DArray (sys));
-
-		// Set up object to test
-		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
-		
-		// One cell of land
-		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
-		utils.setContinentalRace (map, continentalRace, 20, 10, 1, "RC01", db);
-		assertEquals (1, continentalRace.get (1).countCellsEqualTo ("RC01"));
-
 		// Mark a city radius around the tile - just to test a non-square area
-		final MapCoordinates coords = new MapCoordinates ();
+		final MapCoordinates2D coords = new MapCoordinates2D ();
 		coords.setX (20);
 		coords.setY (10);
+		map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
 
 		for (final SquareMapDirection d : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-			if (CoordinateSystemUtils.moveCoordinates (sys, coords, d.getDirectionID ()))
-				map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
-
+			if (coordinateSystemUtils.moveCoordinates (sys, coords, d.getDirectionID ()))
+				map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
+		
+		// Create area to output into
+		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();
+		continentalRace.setCoordinateSystem (sys);
+		
+		// Set up object to test
+		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
+		utils.setCoordinateSystemUtils (coordinateSystemUtils);
+		
+		// Call method
 		utils.setContinentalRace (map, continentalRace, 20, 10, 1, "RC02", db);
-		assertEquals (21, continentalRace.get (1).countCellsEqualTo ("RC02"));
+		
+		// Check results
+		assertEquals (21, op.countCellsEqualTo (continentalRace, "RC02"));
 	}
 
 	/**
@@ -114,10 +135,34 @@ public final class TestOverlandMapServerUtilsImpl
 	@Test
 	public final void testDecideAllContinentalRaces () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock some tile types
+		final TileType grass = new TileType ();
+		grass.setIsLand (true);
+		
+		final TileType ocean = new TileType ();
+		ocean.setIsLand (false);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("G", "setContinentalRace")).thenReturn (grass);
+		when (db.findTileType ("O", "setContinentalRace")).thenReturn (ocean);
+		when (db.findTileType ("G", "decideAllContinentalRaces")).thenReturn (grass);
+		when (db.findTileType ("O", "decideAllContinentalRaces")).thenReturn (ocean);
 
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
+
+		when (db.getPlane ()).thenReturn (planes);
+		
+		// Map and coordinate system
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
+		final MapAreaOperations3DImpl<String> op = new MapAreaOperations3DImpl<String> ();
+		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
 
 		// Fill map with ocean
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
@@ -125,52 +170,45 @@ public final class TestOverlandMapServerUtilsImpl
 				for (final MemoryGridCell cell : row.getCell ())
 				{
 					final OverlandMapTerrainData terrain = new OverlandMapTerrainData ();
-					terrain.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+					terrain.setTileTypeID ("O");
 
 					cell.setTerrainData (terrain);
 				}
 
+		// Mark two city radiuses
+		final MapCoordinates2D coords = new MapCoordinates2D ();
+		coords.setX (20);
+		coords.setY (10);
+		map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
+
+		for (final SquareMapDirection d : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+			if (coordinateSystemUtils.moveCoordinates (sys, coords, d.getDirectionID ()))
+				map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
+
+		coords.setX (15);
+		coords.setY (10);
+		map.getPlane ().get (0).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
+
+		for (final SquareMapDirection d : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+			if (coordinateSystemUtils.moveCoordinates (sys, coords, d.getDirectionID ()))
+				map.getPlane ().get (0).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
+		
+		// Fix race selections
+		final PlayerPickServerUtils pickUtils = mock (PlayerPickServerUtils.class);
+		when (pickUtils.chooseRandomRaceForPlane (0, db)).thenReturn ("RC02");
+		when (pickUtils.chooseRandomRaceForPlane (1, db)).thenReturn ("RC04");
+		
 		// Set up object to test
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
+		utils.setCoordinateSystemUtils (coordinateSystemUtils);
+		utils.setPlayerPickServerUtils (pickUtils);
 		
 		// Run method
-		final List<StringMapArea2DArray> continentalRace = utils.decideAllContinentalRaces (map, sys, db);
+		final MapArea3D<String> continentalRace = utils.decideAllContinentalRaces (map, sys, db);
 
-		// Check results, we should have
-		// null at every sea tile
-		// race at every land tile, that inhabits the correct plane
-		// same race at any adjacent land tile
-		for (final Plane plane : db.getPlane ())
-			for (int x = 0; x < sys.getWidth (); x++)
-				for (int y = 0; y < sys.getHeight (); y++)
-				{
-					final OverlandMapTerrainData terrain = map.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-					final String raceID = continentalRace.get (plane.getPlaneNumber ()).get (x, y);
-
-					if (db.findTileType (terrain.getTileTypeID (), "testDecideAllContinentalRaces").isIsLand ())
-					{
-						// Land tile
-						assertEquals (plane.getPlaneNumber (), db.findRace (raceID, "testDecideAllContinentalRaces").getNativePlane ());
-
-						// Check adjacent tiles are the same race
-						for (int d = 1; d <= CoordinateSystemUtils.getMaxDirection (sys.getCoordinateSystemType ()); d++)
-						{
-							final MapCoordinates coords = new MapCoordinates ();
-							coords.setX (x);
-							coords.setY (y);
-
-							if (CoordinateSystemUtils.moveCoordinates (sys, coords, d))
-							{
-								final String adjacentRaceID = continentalRace.get (plane.getPlaneNumber ()).get (coords);
-								if (adjacentRaceID != null)
-									assertEquals (raceID, adjacentRaceID);
-							}
-						}
-					}
-					else
-						// Sea tile
-						assertNull (raceID);
-				}
+		// Check results
+		assertEquals (21, op.countCellsEqualTo (continentalRace, "RC02"));
+		assertEquals (21, op.countCellsEqualTo (continentalRace, "RC04"));
 	}
 
 	/**
@@ -225,18 +263,35 @@ public final class TestOverlandMapServerUtilsImpl
 	}
 	
 	/**
-	 * Tests the attemptToMeldWithNode method when there's no defender
+	 * Tests the attemptToMeldWithNode method when there's no defender, and a human player attacking
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAttemptToMeldWithNode_Undefended () throws Exception
+	public final void testAttemptToMeldWithNode_Undefended_HumanAttacking () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
+
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getPlane ()).thenReturn (planes);
+
+		// Session description
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setFogOfWarSetting (settings);
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
-
+		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 
@@ -244,7 +299,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final OverlandMapCoordinatesEx nodeLocation = new OverlandMapCoordinatesEx ();
 		nodeLocation.setX (20);
 		nodeLocation.setY (10);
-		nodeLocation.setPlane (1);
+		nodeLocation.setZ (1);
 		
 		// Node
 		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -271,10 +326,15 @@ public final class TestOverlandMapServerUtilsImpl
 		players.add (attacker);
 		
 		// Units
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
+		unitLocation.setX (20);
+		unitLocation.setY (10);
+		unitLocation.setZ (1);
+
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
 		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
-		attackingSpirit.setUnitLocation (nodeLocation);
-		attackingSpirit.setUnitID ("UN177");	// Guardian spirit
+		attackingSpirit.setUnitLocation (unitLocation);
+		attackingSpirit.setUnitID ("GS");
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
 		
 		// Set up object to test
@@ -287,7 +347,7 @@ public final class TestOverlandMapServerUtilsImpl
 		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
 		
 		// Check results
-		assertEquals ("UN177", nodeCell.getNodeSpiritUnitID ());
+		assertEquals ("GS", nodeCell.getNodeSpiritUnitID ());
 		assertEquals (attacker.getPlayerDescription ().getPlayerID (), nodeData.getNodeOwnerID ());
 		assertEquals (attacker.getPlayerDescription ().getPlayerID (), adjacentData.getNodeOwnerID ());
 		
@@ -295,19 +355,390 @@ public final class TestOverlandMapServerUtilsImpl
 		final NewTurnMessageData attackerMsg = attackerTrans.getNewTurnMessage ().get (0);
 		assertEquals (NewTurnMessageTypeID.NODE_CAPTURED, attackerMsg.getMsgType ());
 		assertEquals (nodeLocation, attackerMsg.getLocation ());
-		assertEquals ("UN177", attackerMsg.getBuildingOrUnitID ());
+		assertEquals ("GS", attackerMsg.getBuildingOrUnitID ());
 		assertNull (attackerMsg.getOtherUnitID ());
 		assertNull (attackerMsg.getOtherPlayerID ());
 
-		verify (fogOfWarMidTurnChanges).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final OverlandMapCoordinatesEx adjacentLocation = new OverlandMapCoordinatesEx ();
 		adjacentLocation.setX (21);
 		adjacentLocation.setY (10);
-		adjacentLocation.setPlane (1);
+		adjacentLocation.setZ (1);
 
-		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+	}
+	
+	/**
+	 * Tests the attemptToMeldWithNode method when there's no defender, and an AI player attacking
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAttemptToMeldWithNode_Undefended_AIAttacking () throws Exception
+	{
+		// Mock database
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
+
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getPlane ()).thenReturn (planes);
+
+		// Session description
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setFogOfWarSetting (settings);
+
+		// Map
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+
+		// Node location
+		final OverlandMapCoordinatesEx nodeLocation = new OverlandMapCoordinatesEx ();
+		nodeLocation.setX (20);
+		nodeLocation.setY (10);
+		nodeLocation.setZ (1);
+		
+		// Node
+		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final OverlandMapTerrainData nodeData = new OverlandMapTerrainData ();
+		nodeCell.setTerrainData (nodeData);
+		
+		// Node aura - its a small node, the centre tile and the one map square to the right of it :)
+		nodeCell.setAuraFromNode (nodeLocation);
+		final ServerGridCell adjacentCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
+		final OverlandMapTerrainData adjacentData = new OverlandMapTerrainData ();
+		adjacentCell.setTerrainData (adjacentData);
+		adjacentCell.setAuraFromNode (nodeLocation);		
+		
+		// Players
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		final PlayerDescription attackerPd = new PlayerDescription ();
+		attackerPd.setPlayerID (-1);
+		attackerPd.setHuman (false);
+		
+		final MomTransientPlayerPrivateKnowledge attackerTrans = new MomTransientPlayerPrivateKnowledge ();
+		
+		final PlayerServerDetails attacker = new PlayerServerDetails (attackerPd, null, null, null, attackerTrans);
+		players.add (attacker);
+		
+		// Units
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
+		unitLocation.setX (20);
+		unitLocation.setY (10);
+		unitLocation.setZ (1);
+
+		final MemoryUnit attackingSpirit = new MemoryUnit ();
+		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
+		attackingSpirit.setUnitLocation (unitLocation);
+		attackingSpirit.setUnitID ("GS");
+		attackingSpirit.setStatus (UnitStatusID.ALIVE);
+		
+		// Set up object to test
+		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
+		
+		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
+		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
+		
+		// Run method
+		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
+		
+		// Check results
+		assertEquals ("GS", nodeCell.getNodeSpiritUnitID ());
+		assertEquals (attacker.getPlayerDescription ().getPlayerID (), nodeData.getNodeOwnerID ());
+		assertEquals (attacker.getPlayerDescription ().getPlayerID (), adjacentData.getNodeOwnerID ());
+		
+		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
+
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+
+		final OverlandMapCoordinatesEx adjacentLocation = new OverlandMapCoordinatesEx ();
+		adjacentLocation.setX (21);
+		adjacentLocation.setY (10);
+		adjacentLocation.setZ (1);
+
+		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+	}
+
+	/**
+	 * Tests the attemptToMeldWithNode method when there's a defender, but a human player captures it from them
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAttemptToMeldWithNode_Successful_HumanAttacking () throws Exception
+	{
+		// Mock database
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
+
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getPlane ()).thenReturn (planes);
+
+		// Session description
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setFogOfWarSetting (settings);
+
+		// Map
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+
+		// Node location
+		final OverlandMapCoordinatesEx nodeLocation = new OverlandMapCoordinatesEx ();
+		nodeLocation.setX (20);
+		nodeLocation.setY (10);
+		nodeLocation.setZ (1);
+		
+		// Node
+		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final OverlandMapTerrainData nodeData = new OverlandMapTerrainData ();
+		nodeData.setNodeOwnerID (3);
+		nodeCell.setNodeSpiritUnitID ("MS");
+		nodeCell.setTerrainData (nodeData);
+		
+		// Node aura - its a small node, the centre tile and the one map square to the right of it :)
+		nodeCell.setAuraFromNode (nodeLocation);
+		final ServerGridCell adjacentCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
+		final OverlandMapTerrainData adjacentData = new OverlandMapTerrainData ();
+		adjacentData.setNodeOwnerID (3);
+		adjacentCell.setNodeSpiritUnitID ("MS");
+		adjacentCell.setTerrainData (adjacentData);
+		adjacentCell.setAuraFromNode (nodeLocation);		
+		
+		// Players
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		final PlayerDescription attackerPd = new PlayerDescription ();
+		attackerPd.setPlayerID (2);
+		attackerPd.setHuman (true);
+		
+		final MomTransientPlayerPrivateKnowledge attackerTrans = new MomTransientPlayerPrivateKnowledge ();
+		
+		final PlayerServerDetails attacker = new PlayerServerDetails (attackerPd, null, null, null, attackerTrans);
+		players.add (attacker);
+
+		final PlayerDescription defenderPd = new PlayerDescription ();
+		defenderPd.setPlayerID (3);
+		defenderPd.setHuman (true);
+		
+		final MomTransientPlayerPrivateKnowledge defenderTrans = new MomTransientPlayerPrivateKnowledge ();
+		
+		final PlayerServerDetails defender = new PlayerServerDetails (defenderPd, null, null, null, defenderTrans);
+		players.add (defender);
+		
+		// Units
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
+		unitLocation.setX (20);
+		unitLocation.setY (10);
+		unitLocation.setZ (1);
+
+		final MemoryUnit attackingSpirit = new MemoryUnit ();
+		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
+		attackingSpirit.setUnitLocation (unitLocation);
+		attackingSpirit.setUnitID ("GS");
+		attackingSpirit.setStatus (UnitStatusID.ALIVE);
+		
+		// Unit stats
+		// Can get away with matching attackingSpirit.getUnitHasSkill () for the defender also, because they're both just empty lists
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()), eq (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_MELD_WITH_NODE),
+			eq (players), eq (trueMap.getMaintainedSpell ()), eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (2, 1);
+		
+		// Fix random result
+		final RandomUtils randomUtils = mock (RandomUtils.class);
+		when (randomUtils.nextInt (3)).thenReturn (1);		// 0-1 = Attacker wins, 2 = Defender wins
+		
+		// Set up object to test
+		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
+		
+		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
+		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
+		utils.setUnitUtils (unitUtils);
+		utils.setRandomUtils (randomUtils);
+		
+		// Run method
+		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
+		
+		// Check results
+		assertEquals ("GS", nodeCell.getNodeSpiritUnitID ());
+		assertEquals (attacker.getPlayerDescription ().getPlayerID (), nodeData.getNodeOwnerID ());
+		assertEquals (attacker.getPlayerDescription ().getPlayerID (), adjacentData.getNodeOwnerID ());
+		
+		assertEquals (1, attackerTrans.getNewTurnMessage ().size ());
+		final NewTurnMessageData attackerMsg = attackerTrans.getNewTurnMessage ().get (0);
+		assertEquals (NewTurnMessageTypeID.NODE_CAPTURED, attackerMsg.getMsgType ());
+		assertEquals (nodeLocation, attackerMsg.getLocation ());
+		assertEquals ("GS", attackerMsg.getBuildingOrUnitID ());
+		assertEquals ("MS", attackerMsg.getOtherUnitID ());
+		assertEquals (3, attackerMsg.getOtherPlayerID ().intValue ());
+
+		assertEquals (1, defenderTrans.getNewTurnMessage ().size ());
+		final NewTurnMessageData defenderMsg = defenderTrans.getNewTurnMessage ().get (0);
+		assertEquals (NewTurnMessageTypeID.NODE_LOST, defenderMsg.getMsgType ());
+		assertEquals (nodeLocation, defenderMsg.getLocation ());
+		assertEquals ("MS", defenderMsg.getBuildingOrUnitID ());
+		assertEquals ("GS", defenderMsg.getOtherUnitID ());
+		assertEquals (2, defenderMsg.getOtherPlayerID ().intValue ());
+		
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+
+		final OverlandMapCoordinatesEx adjacentLocation = new OverlandMapCoordinatesEx ();
+		adjacentLocation.setX (21);
+		adjacentLocation.setY (10);
+		adjacentLocation.setZ (1);
+
+		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+	}
+	
+	/**
+	 * Tests the attemptToMeldWithNode method when there's a defender, and a human player fails to capture it from them
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAttemptToMeldWithNode_Failed_HumanAttacking () throws Exception
+	{
+		// Mock database
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
+
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getPlane ()).thenReturn (planes);
+
+		// Session description
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (ServerTestData.createMapSizeData ());
+		sd.setFogOfWarSetting (settings);
+
+		// Map
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+
+		// Node location
+		final OverlandMapCoordinatesEx nodeLocation = new OverlandMapCoordinatesEx ();
+		nodeLocation.setX (20);
+		nodeLocation.setY (10);
+		nodeLocation.setZ (1);
+		
+		// Node
+		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		final OverlandMapTerrainData nodeData = new OverlandMapTerrainData ();
+		nodeData.setNodeOwnerID (3);
+		nodeCell.setNodeSpiritUnitID ("MS");
+		nodeCell.setTerrainData (nodeData);
+		
+		// Node aura - its a small node, the centre tile and the one map square to the right of it :)
+		nodeCell.setAuraFromNode (nodeLocation);
+		final ServerGridCell adjacentCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21);
+		final OverlandMapTerrainData adjacentData = new OverlandMapTerrainData ();
+		adjacentData.setNodeOwnerID (3);
+		adjacentCell.setNodeSpiritUnitID ("MS");
+		adjacentCell.setTerrainData (adjacentData);
+		adjacentCell.setAuraFromNode (nodeLocation);		
+		
+		// Players
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		final PlayerDescription attackerPd = new PlayerDescription ();
+		attackerPd.setPlayerID (2);
+		attackerPd.setHuman (true);
+		
+		final MomTransientPlayerPrivateKnowledge attackerTrans = new MomTransientPlayerPrivateKnowledge ();
+		
+		final PlayerServerDetails attacker = new PlayerServerDetails (attackerPd, null, null, null, attackerTrans);
+		players.add (attacker);
+
+		final PlayerDescription defenderPd = new PlayerDescription ();
+		defenderPd.setPlayerID (3);
+		defenderPd.setHuman (true);
+		
+		final MomTransientPlayerPrivateKnowledge defenderTrans = new MomTransientPlayerPrivateKnowledge ();
+		
+		final PlayerServerDetails defender = new PlayerServerDetails (defenderPd, null, null, null, defenderTrans);
+		players.add (defender);
+		
+		// Units
+		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
+		unitLocation.setX (20);
+		unitLocation.setY (10);
+		unitLocation.setZ (1);
+
+		final MemoryUnit attackingSpirit = new MemoryUnit ();
+		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
+		attackingSpirit.setUnitLocation (unitLocation);
+		attackingSpirit.setUnitID ("GS");
+		attackingSpirit.setStatus (UnitStatusID.ALIVE);
+		
+		// Unit stats
+		// Can get away with matching attackingSpirit.getUnitHasSkill () for the defender also, because they're both just empty lists
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()), eq (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_MELD_WITH_NODE),
+			eq (players), eq (trueMap.getMaintainedSpell ()), eq (trueMap.getCombatAreaEffect ()), eq (db))).thenReturn (2, 1);
+		
+		// Fix random result
+		final RandomUtils randomUtils = mock (RandomUtils.class);
+		when (randomUtils.nextInt (3)).thenReturn (2);		// 0-1 = Attacker wins, 2 = Defender wins
+		
+		// Set up object to test
+		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
+		
+		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
+		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
+		utils.setUnitUtils (unitUtils);
+		utils.setRandomUtils (randomUtils);
+		
+		// Run method
+		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
+		
+		// Check results
+		assertEquals ("MS", nodeCell.getNodeSpiritUnitID ());
+		assertEquals (defender.getPlayerDescription ().getPlayerID (), nodeData.getNodeOwnerID ());
+		assertEquals (defender.getPlayerDescription ().getPlayerID (), adjacentData.getNodeOwnerID ());
+		
+		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
+		assertEquals (0, defenderTrans.getNewTurnMessage ().size ());
+		
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fogOfWarMidTurnChanges, times (0)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+
+		final OverlandMapCoordinatesEx adjacentLocation = new OverlandMapCoordinatesEx ();
+		adjacentLocation.setX (21);
+		adjacentLocation.setY (10);
+		adjacentLocation.setZ (1);
+
+		verify (fogOfWarMidTurnChanges, times (0)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 	}
 	
 	/**
@@ -317,7 +748,17 @@ public final class TestOverlandMapServerUtilsImpl
 	@Test
 	public final void testTotalPlayerPopulation () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock planes
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
+
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getPlane ()).thenReturn (planes);
 		
 		// Map
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -361,22 +802,22 @@ public final class TestOverlandMapServerUtilsImpl
 		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
 		combatLocation.setX (20);
 		combatLocation.setY (10);
-		combatLocation.setPlane (1);
+		combatLocation.setZ (1);
 
 		final OverlandMapCoordinatesEx defenderLocation = new OverlandMapCoordinatesEx ();
 		defenderLocation.setX (20);
 		defenderLocation.setY (10);
-		defenderLocation.setPlane (1);
+		defenderLocation.setZ (1);
 
 		final OverlandMapCoordinatesEx attackerLocation = new OverlandMapCoordinatesEx ();
 		attackerLocation.setX (21);
 		attackerLocation.setY (10);
-		attackerLocation.setPlane (1);
+		attackerLocation.setZ (1);
 
 		final OverlandMapCoordinatesEx otherLocation = new OverlandMapCoordinatesEx ();
 		otherLocation.setX (22);
 		otherLocation.setY (10);
-		otherLocation.setPlane (1);
+		otherLocation.setZ (1);
 		
 		// Units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -447,7 +888,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final OverlandMapCoordinatesEx searchLocation = new OverlandMapCoordinatesEx ();
 		searchLocation.setX (20);
 		searchLocation.setY (10);
-		searchLocation.setPlane (1);
+		searchLocation.setZ (1);
 		
 		assertSame (attackerLocation, utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.ATTACKER, units));
 		assertSame (defenderLocation, utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.DEFENDER, units));
@@ -464,22 +905,22 @@ public final class TestOverlandMapServerUtilsImpl
 		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
 		combatLocation.setX (20);
 		combatLocation.setY (10);
-		combatLocation.setPlane (1);
+		combatLocation.setZ (1);
 
 		final OverlandMapCoordinatesEx defenderLocation = new OverlandMapCoordinatesEx ();
 		defenderLocation.setX (20);
 		defenderLocation.setY (10);
-		defenderLocation.setPlane (1);
+		defenderLocation.setZ (1);
 
 		final OverlandMapCoordinatesEx attackerLocation = new OverlandMapCoordinatesEx ();
 		attackerLocation.setX (21);
 		attackerLocation.setY (10);
-		attackerLocation.setPlane (1);
+		attackerLocation.setZ (1);
 
 		final OverlandMapCoordinatesEx otherLocation = new OverlandMapCoordinatesEx ();
 		otherLocation.setX (22);
 		otherLocation.setY (10);
-		otherLocation.setPlane (1);
+		otherLocation.setZ (1);
 		
 		// Units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -542,7 +983,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final OverlandMapCoordinatesEx searchLocation = new OverlandMapCoordinatesEx ();
 		searchLocation.setX (20);
 		searchLocation.setY (10);
-		searchLocation.setPlane (1);
+		searchLocation.setZ (1);
 		
 		utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.ATTACKER, units);
 	}

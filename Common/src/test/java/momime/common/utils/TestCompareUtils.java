@@ -47,17 +47,17 @@ public final class TestCompareUtils
 		final OverlandMapCoordinatesEx firstCoords = new OverlandMapCoordinatesEx ();
 		firstCoords.setX (56);
 		firstCoords.setY (0);
-		firstCoords.setPlane (-12);
+		firstCoords.setZ (-12);
 
 		final OverlandMapCoordinatesEx secondCoords = new OverlandMapCoordinatesEx ();
 		secondCoords.setX (56);
 		secondCoords.setY (0);
-		secondCoords.setPlane (-12);
+		secondCoords.setZ (-12);
 		
 		final OverlandMapCoordinatesEx thirdCoords = new OverlandMapCoordinatesEx ();
 		thirdCoords.setX (56);
 		thirdCoords.setY (10);
-		thirdCoords.setPlane (-12);
+		thirdCoords.setZ (-12);
 		
 		assertTrue (CompareUtils.safeOverlandMapCoordinatesCompare (null, null));
 		assertTrue (CompareUtils.safeOverlandMapCoordinatesCompare (firstCoords, firstCoords));

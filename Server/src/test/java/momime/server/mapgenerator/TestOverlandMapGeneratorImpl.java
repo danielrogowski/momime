@@ -26,6 +26,8 @@ import momime.server.database.v0_9_4.Plane;
 
 import org.junit.Test;
 
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
 import com.ndg.random.RandomUtils;
 import com.ndg.random.RandomUtilsImpl;
 
@@ -122,6 +124,7 @@ public final class TestOverlandMapGeneratorImpl
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		mapGen.setTrueTerrain (fow);
 		mapGen.setSessionDescription (sd);
 		mapGen.setServerDB (db);
@@ -284,8 +287,16 @@ public final class TestOverlandMapGeneratorImpl
 		mapGen.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 
 		// Need real random number generator to get a nice map out
+		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl ();
+		
+		final BooleanMapAreaOperations2DImpl op = new BooleanMapAreaOperations2DImpl ();
+		op.setCoordinateSystemUtils (coordinateSystemUtils);
+		
 		final RandomUtils random = new RandomUtilsImpl ();
+		op.setRandomUtils (random);
 		mapGen.setRandomUtils (random);
+		mapGen.setBooleanMapAreaOperations2D (op);
+		mapGen.setCoordinateSystemUtils (coordinateSystemUtils);
 		
 		// Run method
 		mapGen.generateOverlandTerrain ();

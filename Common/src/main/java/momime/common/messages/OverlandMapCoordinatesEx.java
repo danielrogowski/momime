@@ -13,7 +13,7 @@ public final class OverlandMapCoordinatesEx extends OverlandMapCoordinates
 	@Override
 	public final String toString ()
 	{
-		return "(" + getX () + ", " + getY () + ", " + getPlane () + ")";
+		return "(" + getX () + ", " + getY () + ", " + getZ () + ")";
 	}
 
 	/**
@@ -25,7 +25,7 @@ public final class OverlandMapCoordinatesEx extends OverlandMapCoordinates
 		if (obj instanceof OverlandMapCoordinatesEx)
 		{
 			final OverlandMapCoordinatesEx coords = (OverlandMapCoordinatesEx) obj;
-			return ((getX () == coords.getX ()) && (getY () == coords.getY ()) && (getPlane () == coords.getPlane ()));
+			return ((getX () == coords.getX ()) && (getY () == coords.getY ()) && (getZ () == coords.getZ ()));
 		}
 		else
 			return super.equals (obj);

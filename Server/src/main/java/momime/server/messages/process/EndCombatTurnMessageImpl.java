@@ -47,7 +47,7 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(getCombatLocation ().getPlane ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
+			(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
 		
 		if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayer ()))
 			log.warning ("Received EndCombatTurnMessage from wrong player - ignored");

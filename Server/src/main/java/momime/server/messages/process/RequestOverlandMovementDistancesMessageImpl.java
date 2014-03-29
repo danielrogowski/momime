@@ -54,7 +54,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		log.entering (RequestOverlandMovementDistancesMessageImpl.class.getName (), "process", new Integer []
-			{getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getPlane (), sender.getPlayerDescription ().getPlayerID ()});
+			{getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getZ (), sender.getPlayerDescription ().getPlayerID ()});
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
@@ -109,7 +109,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 			final boolean [] [] [] canMoveToInOneTurn										= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 
-			getServerUnitCalculations ().calculateOverlandMovementDistances (getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getPlane (),
+			getServerUnitCalculations ().calculateOverlandMovementDistances (getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getZ (),
 				sender.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (),
 				unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 				mom.getSessionDescription (), mom.getServerDB ());

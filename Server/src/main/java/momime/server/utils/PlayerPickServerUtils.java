@@ -45,11 +45,11 @@ public interface PlayerPickServerUtils
 	 *
 	 * @param player Player choosing custom picks
 	 * @param picks The custom picks they have requested
-	 * @param sd Session description
+	 * @param humanSpellPicks Number of picks that human players get at the start of the game, from the session description - difficulty level
 	 * @param db Lookup lists built over the XML database
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
-	public String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final MomSessionDescription sd, final ServerDatabaseEx db);
+	public String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final int humanSpellPicks, final ServerDatabaseEx db);
 
 	/**
 	 * Checks each type of book this player has to see if it can find a type of book for which the player gets free spells, but has not yet chosen those free spells

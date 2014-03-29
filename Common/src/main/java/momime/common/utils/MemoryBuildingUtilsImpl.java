@@ -102,7 +102,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
 			final OverlandMapCoordinatesEx coords = (OverlandMapCoordinatesEx) thisBuilding.getCityLocation ();
-			final OverlandMapCityData cityData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getCityData ();
+			final OverlandMapCityData cityData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getCityData ();
 
 			if ((thisBuilding.getBuildingID ().equals (buildingID)) && (cityData != null) && (cityData.getCityOwnerID () == playerID) &&
 				(cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))

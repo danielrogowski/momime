@@ -165,7 +165,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
-						cityLocation.setPlane (plane.getPlaneNumber ());
+						cityLocation.setZ (plane.getPlaneNumber ());
 
 						for (final CalculateCityProductionResult cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db))
 
@@ -261,7 +261,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 		// Buildings
 		for (final MemoryBuilding thisBuilding : trueMap.getBuilding ())
 		{
-			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (thisBuilding.getCityLocation ().getPlane ()).getRow ().get (thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ()).getCityData ();
+			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (thisBuilding.getCityLocation ().getZ ()).getRow ().get (thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ()).getCityData ();
 
 			if ( (cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 			{

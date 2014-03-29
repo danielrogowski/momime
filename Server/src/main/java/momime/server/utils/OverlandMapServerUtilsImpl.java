@@ -36,8 +36,9 @@ import momime.server.messages.v0_9_4.ServerGridCell;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.MapCoordinates;
-import com.ndg.map.areas.StringMapArea2DArray;
+import com.ndg.map.MapCoordinates3D;
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -63,6 +64,9 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	/** Server-only pick utils */
 	private PlayerPickServerUtils playerPickServerUtils;
 	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
 	/**
 	 * Sets the race for all land squares connected to x, y
 	 * @param map True terrain
@@ -74,31 +78,32 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
-	final void setContinentalRace (final MapVolumeOfMemoryGridCells map, final List<StringMapArea2DArray> continentalRace,
+	final void setContinentalRace (final MapVolumeOfMemoryGridCells map, final MapArea3D<String> continentalRace,
 		final int x, final int y, final int plane, final String raceID, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.entering (OverlandMapServerUtilsImpl.class.getName (), "setContinentalRace",
 			new String [] {new Integer (x).toString (), new Integer (y).toString (), new Integer (plane).toString (), raceID});
 
-		final CoordinateSystem sys = continentalRace.get (plane).getCoordinateSystem ();
+		final CoordinateSystem sys = continentalRace.getCoordinateSystem ();
 
 		// Set centre tile
-		continentalRace.get (plane).set (x, y, raceID);
+		continentalRace.set (x, y, plane, raceID);
 
 		// Now branch out in every direction from here
-		for (int d = 1; d <= CoordinateSystemUtils.getMaxDirection (sys.getCoordinateSystemType ()); d++)
+		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
 		{
-			final MapCoordinates coords = new MapCoordinates ();
+			final MapCoordinates3D coords = new MapCoordinates3D ();
 			coords.setX (x);
 			coords.setY (y);
+			coords.setZ (plane);
 
-			if (CoordinateSystemUtils.moveCoordinates (sys, coords, d))
+			if (getCoordinateSystemUtils ().moveCoordinates (sys, coords, d))
 			{
 				final OverlandMapTerrainData terrain = map.getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 
 				// NB. IsLand is Boolean so could be null, but should be set for all tile types produced by the map generator
 				// the only tile types for which it is null are those which are special references for the movement tables, e.g. road tiles
-				if ((db.findTileType (terrain.getTileTypeID (), "setContinentalRace").isIsLand ()) && (continentalRace.get (plane).get (coords) == null))
+				if ((db.findTileType (terrain.getTileTypeID (), "setContinentalRace").isIsLand ()) && (continentalRace.get (coords) == null))
 					setContinentalRace (map, continentalRace, coords.getX (), coords.getY (), plane, raceID, db);
 			}
 		}
@@ -117,15 +122,14 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
  	 * @throws MomException If no races are defined for a particular plane
 	 */
 	@Override
-	public final List<StringMapArea2DArray> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
+	public final MapArea3D<String> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
 		log.entering (OverlandMapServerUtilsImpl.class.getName (), "decideAllContinentalRaces");
 
 		// Allocate a race to each continent of land for raider cities
-		final List<StringMapArea2DArray> continentalRace = new ArrayList<StringMapArea2DArray> ();
-		for (int plane = 0; plane < db.getPlane ().size (); plane++)
-			continentalRace.add (new StringMapArea2DArray (sys));
+		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();
+		continentalRace.setCoordinateSystem (sys);
 
 		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sys.getWidth (); x++)
@@ -136,7 +140,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 					// NB. IsLand is Boolean so could be null, but should be set for all tile types produced by the map generator
 					// the only tile types for which it is null are those which are special references for the movement tables, e.g. road tiles
 					if ((db.findTileType (terrain.getTileTypeID (), "decideAllContinentalRaces").isIsLand ()) &&
-						(continentalRace.get (plane.getPlaneNumber ()).get (x, y) == null))
+						(continentalRace.get (x, y, plane.getPlaneNumber ()) == null))
 
 						setContinentalRace (map, continentalRace, x, y, plane.getPlaneNumber (),
 							getPlayerPickServerUtils ().chooseRandomRaceForPlane (plane.getPlaneNumber (), db), db);
@@ -213,7 +217,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			{attackingSpirit.getUnitID (), new Integer (attackingSpirit.getOwningPlayerID ()).toString (), new Integer (attackingSpirit.getUnitURN ()).toString ()});
 
 		final ServerGridCell tc = (ServerGridCell) trueMap.getMap ().getPlane ().get
-			(attackingSpirit.getUnitLocation ().getPlane ()).getRow ().get (attackingSpirit.getUnitLocation ().getY ()).getCell ().get (attackingSpirit.getUnitLocation ().getX ());
+			(attackingSpirit.getUnitLocation ().getZ ()).getRow ().get (attackingSpirit.getUnitLocation ().getY ()).getCell ().get (attackingSpirit.getUnitLocation ().getX ());
 		
 		// Succeed?
 		final boolean successful;
@@ -289,7 +293,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 							final OverlandMapCoordinatesEx auraLocation = new OverlandMapCoordinatesEx ();
 							auraLocation.setX (x);
 							auraLocation.setY (y);
-							auraLocation.setPlane (plane.getPlaneNumber ());
+							auraLocation.setZ (plane.getPlaneNumber ());
 							
 							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players, auraLocation,
 								sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
@@ -425,5 +429,21 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	public final void setPlayerPickServerUtils (final PlayerPickServerUtils utils)
 	{
 		playerPickServerUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

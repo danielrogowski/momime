@@ -13,6 +13,7 @@ import javax.xml.validation.SchemaFactory;
 
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.database.v0_9_4.DifficultyLevelNodeStrength;
 import momime.common.messages.v0_9_4.FogOfWarStateID;
 import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
@@ -172,6 +173,21 @@ public final class ServerTestData
 		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
 		sys.setWidth (60);
 		sys.setHeight (40);
+		sys.setDepth (2);
+		sys.setWrapsLeftToRight (true);
+		return sys;
+	}
+
+	/**
+	 * @return Overland map coordinate system that can be included into session description
+	 */
+	public final static MapSizeData createMapSizeData ()
+	{
+		final MapSizeData sys = new MapSizeData ();
+		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
+		sys.setWidth (60);
+		sys.setHeight (40);
+		sys.setDepth (2);
 		sys.setWrapsLeftToRight (true);
 		return sys;
 	}

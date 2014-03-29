@@ -58,6 +58,7 @@ import momime.server.utils.UnitServerUtilsImpl;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -101,6 +102,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final MomCityCalculationsImpl cityCalculations = new MomCityCalculationsImpl ();
 		cityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		cityCalculations.setPlayerPickUtils (playerPickUtils);
+		cityCalculations.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (new ResourceValueUtilsImpl ());
@@ -210,7 +212,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final OverlandMapCoordinatesEx granaryLocation = new OverlandMapCoordinatesEx ();
 		granaryLocation.setX (2);
 		granaryLocation.setY (2);
-		granaryLocation.setPlane (0);
+		granaryLocation.setZ (0);
 
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID ("BL29");
@@ -240,7 +242,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final OverlandMapCoordinatesEx templeLocation = new OverlandMapCoordinatesEx ();
 		templeLocation.setX (2);
 		templeLocation.setY (2);
-		templeLocation.setPlane (0);
+		templeLocation.setZ (0);
 
 		final MemoryBuilding temple = new MemoryBuilding ();
 		temple.setBuildingID ("BL23");
@@ -427,7 +429,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final OverlandMapCoordinatesEx parthenonLocation = new OverlandMapCoordinatesEx ();
 		parthenonLocation.setX (20);
 		parthenonLocation.setY (10);
-		parthenonLocation.setPlane (1);
+		parthenonLocation.setZ (1);
 
 		final MemoryBuilding parthenon = new MemoryBuilding ();
 		parthenon.setBuildingID ("BL24");
@@ -438,7 +440,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final OverlandMapCoordinatesEx wizardsGuildLocation = new OverlandMapCoordinatesEx ();
 		wizardsGuildLocation.setX (20);
 		wizardsGuildLocation.setY (10);
-		wizardsGuildLocation.setPlane (1);
+		wizardsGuildLocation.setZ (1);
 
 		final MemoryBuilding wizardsGuild = new MemoryBuilding ();
 		wizardsGuild.setBuildingID ("BL21");
@@ -449,7 +451,7 @@ public final class TestMomServerResourceCalculationsImpl
 		final OverlandMapCoordinatesEx wizardsGuildEnemyCityLocation = new OverlandMapCoordinatesEx ();
 		wizardsGuildEnemyCityLocation.setX (21);
 		wizardsGuildEnemyCityLocation.setY (10);
-		wizardsGuildEnemyCityLocation.setPlane (1);
+		wizardsGuildEnemyCityLocation.setZ (1);
 
 		final MemoryBuilding wizardsGuildEnemyCity = new MemoryBuilding ();
 		wizardsGuildEnemyCity.setBuildingID ("BL21");

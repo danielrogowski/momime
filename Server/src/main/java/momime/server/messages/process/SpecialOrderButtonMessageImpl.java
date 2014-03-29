@@ -99,7 +99,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		
 		// Get map cell
 		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(getMapLocation ().getPlane ()).getRow ().get (getMapLocation ().getY ()).getCell ().get (getMapLocation ().getX ());
+			(getMapLocation ().getZ ()).getRow ().get (getMapLocation ().getY ()).getCell ().get (getMapLocation ().getX ());
 		final TileType tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "SpecialOrderButtonMessageImpl");
 		final MapFeature mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
 			(tc.getTerrainData ().getMapFeatureID (), "SpecialOrderButtonMessageImpl");
@@ -160,7 +160,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				error = "You can't build a city on top of this type of map feature";
 			else if ((getSpecialOrder () == UnitSpecialOrder.BUILD_CITY) && (getCityCalculations ().markWithinExistingCityRadius
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				getMapLocation ().getPlane (), mom.getSessionDescription ().getMapSize ()).get (getMapLocation ().getX (), getMapLocation ().getY ())))
+				getMapLocation ().getZ (), mom.getSessionDescription ().getMapSize ()).get (getMapLocation ().getX (), getMapLocation ().getY ())))
 				error = "Cities cannot be built within " + mom.getSessionDescription ().getMapSize ().getCitySeparation () + " squares of another city";
 			else if ((getSpecialOrder () == UnitSpecialOrder.MELD_WITH_NODE) && (tileType.getMagicRealmID () == null))
 				error = "Can only use the meld with node skill with node map squares";

@@ -108,17 +108,17 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				else if (getCityLocation () == null)
 					error = "You didn't provide a target for a city enchantment";
 				
-				else if ((getCityLocation ().getX () < 0) || (getCityLocation ().getY () < 0) || (getCityLocation ().getPlane () < 0) ||
+				else if ((getCityLocation ().getX () < 0) || (getCityLocation ().getY () < 0) || (getCityLocation ().getZ () < 0) ||
 					(getCityLocation ().getX () >= mom.getSessionDescription ().getMapSize ().getWidth ()) ||
 					(getCityLocation ().getY () >= mom.getSessionDescription ().getMapSize ().getHeight ()) ||
-					(getCityLocation ().getPlane () >= mom.getServerDB ().getPlane ().size ()))
+					(getCityLocation ().getZ () >= mom.getServerDB ().getPlane ().size ()))
 					
 					error = "The coordinates you are trying to aim a city spell at are off the edge of the map";
 				else
 				{
 					// Get the city we're casting the spell on
 					final OverlandMapCityData city = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-						(getCityLocation ().getPlane ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+						(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 					
 					// Get the list of possible citySpellEffectIDs that this spell might cast
 					final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation

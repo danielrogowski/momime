@@ -37,7 +37,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
-import com.ndg.map.areas.BooleanMapArea2D;
+import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -67,6 +67,9 @@ public final class CityAIImpl implements CityAI
 
 	/** Random number generator */
 	private RandomUtils randomUtils;
+
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
@@ -88,7 +91,7 @@ public final class CityAIImpl implements CityAI
 		log.entering (CityAIImpl.class.getName (), "chooseCityLocation", plane);
 
 		// Mark off all places within 3 squares of an existing city, i.e. those spaces we can't put a new city
-		final BooleanMapArea2D withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (map, plane, sd.getMapSize ());
+		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (map, plane, sd.getMapSize ());
 
 		// Now consider every map location as a possible location for a new city
 		OverlandMapCoordinatesEx bestLocation = null;
@@ -100,7 +103,7 @@ public final class CityAIImpl implements CityAI
 				// Can we build a city here?
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
 
-				if (!withinExistingCityRadius.get (x, y))
+				if ((withinExistingCityRadius.get (x, y) == null) || (!withinExistingCityRadius.get (x, y)))
 				{
 					final Boolean canBuildCityOnThisTerrain = db.findTileType (terrainData.getTileTypeID (), "chooseCityLocation").isCanBuildCity ();
 					final Boolean canBuildCityOnThisFeature = (terrainData.getMapFeatureID () == null) ? true : db.findMapFeature (terrainData.getMapFeatureID (), "chooseCityLocation").isCanBuildCity ();
@@ -112,7 +115,7 @@ public final class CityAIImpl implements CityAI
 						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
-						cityLocation.setPlane (plane);
+						cityLocation.setZ (plane);
 
 						// First find what the max. size will be after we've built all buildings, and re-cap this at the game maximum
 						// This ensures cities with max size 20 are considered just as good as cities with max size 25+
@@ -130,12 +133,12 @@ public final class CityAIImpl implements CityAI
 						final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 						coords.setX (x);
 						coords.setY (y);
-						coords.setPlane (plane);
+						coords.setZ (plane);
 
 						for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-							if (CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
+							if (getCoordinateSystemUtils ().moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
 							{
-								final OverlandMapTerrainData checkFeatureData = map.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+								final OverlandMapTerrainData checkFeatureData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 								if (checkFeatureData.getMapFeatureID () != null)
 								{
 									final Integer featureCityQualityEstimate = db.findMapFeature (checkFeatureData.getMapFeatureID (), "chooseCityLocation").getCityQualityEstimate ();
@@ -195,7 +198,7 @@ public final class CityAIImpl implements CityAI
 							final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 							cityLocation.setX (x);
 							cityLocation.setY (y);
-							cityLocation.setPlane (plane.getPlaneNumber ());
+							cityLocation.setZ (plane.getPlaneNumber ());
 
 							final int numberOfWorkers = (cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getNumberOfRebels ();
 							for (int workerNo = 0; workerNo < numberOfWorkers; workerNo++)
@@ -214,7 +217,7 @@ public final class CityAIImpl implements CityAI
 			final OverlandMapCoordinatesEx cityLocation = workerCoordinates.get (workerNo);
 			workerCoordinates.remove (workerNo);
 
-			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 			// Add 1 optional farmer in this city
 			cityData.setOptionalFarmers (cityData.getOptionalFarmers () + 1);
@@ -272,7 +275,7 @@ public final class CityAIImpl implements CityAI
 						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
-						cityLocation.setPlane (plane.getPlaneNumber ());
+						cityLocation.setZ (plane.getPlaneNumber ());
 
 						rationsNeeded = rationsNeeded - getCityCalculations ().calculateSingleCityProduction (players, trueMap.getMap (),
 							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db,
@@ -309,7 +312,7 @@ public final class CityAIImpl implements CityAI
 						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
-						cityLocation.setPlane (plane.getPlaneNumber ());
+						cityLocation.setZ (plane.getPlaneNumber ());
 
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 					}
@@ -515,5 +518,21 @@ public final class CityAIImpl implements CityAI
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

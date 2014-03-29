@@ -54,7 +54,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			final OverlandMapCoordinatesEx thisLocation = new OverlandMapCoordinatesEx ();
 			thisLocation.setX (10 + n);
 			thisLocation.setY (20 + n);
-			thisLocation.setPlane (30 + n);
+			thisLocation.setZ (30 + n);
 
 			newCAE.setMapLocation (thisLocation);
 			CAEs.add (newCAE);
@@ -63,7 +63,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
 		desiredLocation.setX (12);
 		desiredLocation.setY (22);
-		desiredLocation.setPlane (32);
+		desiredLocation.setZ (32);
 
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		assertTrue (utils.findCombatAreaEffect (CAEs, desiredLocation, "CAE02", 2));
@@ -104,7 +104,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			final OverlandMapCoordinatesEx thisLocation = new OverlandMapCoordinatesEx ();
 			thisLocation.setX (10 + n);
 			thisLocation.setY (20 + n);
-			thisLocation.setPlane (30 + n);
+			thisLocation.setZ (30 + n);
 
 			newCAE.setMapLocation (thisLocation);
 			CAEs.add (newCAE);
@@ -113,7 +113,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
 		desiredLocation.setX (12);
 		desiredLocation.setY (22);
-		desiredLocation.setPlane (32);
+		desiredLocation.setZ (32);
 
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		assertTrue (utils.findCombatAreaEffect (CAEs, desiredLocation, "CAE02", null));
@@ -161,7 +161,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			final OverlandMapCoordinatesEx thisLocation = new OverlandMapCoordinatesEx ();
 			thisLocation.setX (10 + n);
 			thisLocation.setY (20 + n);
-			thisLocation.setPlane (30 + n);
+			thisLocation.setZ (30 + n);
 
 			newCAE.setMapLocation (thisLocation);
 			CAEs.add (newCAE);
@@ -170,7 +170,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
 		desiredLocation.setX (12);
 		desiredLocation.setY (22);
-		desiredLocation.setPlane (32);
+		desiredLocation.setZ (32);
 
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.cancelCombatAreaEffect (CAEs, desiredLocation, "CAE02", 2);
@@ -219,7 +219,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			final OverlandMapCoordinatesEx thisLocation = new OverlandMapCoordinatesEx ();
 			thisLocation.setX (10 + n);
 			thisLocation.setY (20 + n);
-			thisLocation.setPlane (30 + n);
+			thisLocation.setZ (30 + n);
 
 			newCAE.setMapLocation (thisLocation);
 			CAEs.add (newCAE);
@@ -228,7 +228,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
 		desiredLocation.setX (12);
 		desiredLocation.setY (22);
-		desiredLocation.setPlane (32);
+		desiredLocation.setZ (32);
 
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.cancelCombatAreaEffect (CAEs, desiredLocation, "CAE02", null);

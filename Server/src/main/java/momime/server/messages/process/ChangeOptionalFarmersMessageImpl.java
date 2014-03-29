@@ -56,8 +56,8 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		final String error = getCityServerUtils ().validateOptionalFarmers (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			(OverlandMapCoordinatesEx) getCityLocation (), getOptionalFarmers (), mom.getSessionDescription (), mom.getServerDB ());
+		final String error = getCityServerUtils ().validateOptionalFarmers (sender, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			(OverlandMapCoordinatesEx) getCityLocation (), getOptionalFarmers ());
 
 		if (error != null)
 		{
@@ -72,7 +72,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 		{
 			// Update construction on true map
 			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(getCityLocation ().getPlane ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 			cityData.setOptionalFarmers (getOptionalFarmers ());
 
 			// Send update to clients

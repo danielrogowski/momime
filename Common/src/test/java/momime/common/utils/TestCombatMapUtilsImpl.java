@@ -40,7 +40,7 @@ public final class TestCombatMapUtilsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (15 + offset);
 		cityLocation.setY (10);
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 
 		return cityLocation;
 	}

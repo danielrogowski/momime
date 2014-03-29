@@ -66,7 +66,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 		else
 		{
 			tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(getCityLocation ().getPlane ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		
 			// Check if we're constructing a building or a unit
 			final String buildingOrUnitID = (tc.getCityData () == null) ? null : tc.getCityData ().getCurrentlyConstructingBuildingOrUnitID ();  

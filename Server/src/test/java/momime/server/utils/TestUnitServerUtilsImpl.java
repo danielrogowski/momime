@@ -5,23 +5,23 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.newgame.v0_9_4.UnitSettingData;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.SetSpecialOrderMessage;
 import momime.common.messages.v0_9_4.AvailableUnit;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryUnit;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.MomSessionDescription;
@@ -33,15 +33,19 @@ import momime.common.messages.v0_9_4.UnitSpecialOrder;
 import momime.common.messages.v0_9_4.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
-import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
-import momime.server.calculations.MomServerUnitCalculationsImpl;
+import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.v0_9_4.HeroName;
+import momime.server.database.v0_9_4.TileType;
+import momime.server.database.v0_9_4.Unit;
 import momime.server.database.v0_9_4.UnitSkill;
 
 import org.junit.Test;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -52,132 +56,161 @@ import com.ndg.random.RandomUtils;
 public final class TestUnitServerUtilsImpl
 {
 	/**
-	 * Tests the generateHeroNameAndRandomSkills method on a hero who gets no random rolled skills
+	 * Tests the generateHeroNameAndRandomSkills method on a hero who gets no random rolled skills, so it generates a name only
 	 * @throws Exception If there is a problem
 	 */
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_NoExtras () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock unit detalis
+		final Unit unitDef = new Unit ();
+		for (int n = 1; n <= 5; n++)
+		{
+			final HeroName name = new HeroName ();
+			name.setHeroNameID ("UN001_HN0" + n);
+			unitDef.getHeroName ().add (name);
+		}
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
 		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+
+		// Set up test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setRandomUtils (random);
 		
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
-
-		// Dwarf hero
-		final MemoryUnit unit = unitUtils.createMemoryUnit ("UN001", 3, 0, 0, true, db);
-		assertNull (unit.getHeroNameID ());
-
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
-
-		assertEquals (4, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertEquals (0, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals ("US002", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (1).getUnitSkillValue ());
-		assertEquals ("USX01", unit.getUnitHasSkill ().get (2).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (2).getUnitSkillValue ());
-		assertEquals ("HS07", unit.getUnitHasSkill ().get (3).getUnitSkillID ());
-		assertEquals (1, unit.getUnitHasSkill ().get (3).getUnitSkillValue ().intValue ());
+		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 	}
 
 	/**
-	 * Tests the generateHeroNameAndRandomSkills method on a hero who only has one viable skill to pick (all others are "only if have already")
+	 * Tests the generateHeroNameAndRandomSkills method on a hero who gets one fighter pick, and there's 3 possible skills to choose
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGenerateHeroNameAndRandomSkills_SingleChoice () throws Exception
+	public final void testGenerateHeroNameAndRandomSkills_OnePick () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Mock unit detalis
+		final Unit unitDef = new Unit ();
+		unitDef.setHeroRandomPickCount (1);
+		unitDef.setHeroRandomPickType ("F");
+		for (int n = 1; n <= 5; n++)
+		{
+			final HeroName name = new HeroName ();
+			name.setHeroNameID ("UN001_HN0" + n);
+			unitDef.getHeroName ().add (name);
+		}
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
+		
+		// Mock possible skill choices, 3 fighter picks and 2 mage picks
+		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitSkill skill = new UnitSkill ();
+			skill.setUnitSkillID ("HS0" + n);
+			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
+			possibleSkills.add (skill);
+		}		
+		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		when (random.nextInt (3)).thenReturn (1);		// Fix skill choice
+
+		// Set up test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up existing skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
 		utils.setRandomUtils (random);
 		
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
-		
-		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
-		final MemoryUnit unit = unitUtils.createMemoryUnit ("UN007", 3, 0, 0, true, db);
-		assertNull (unit.getHeroNameID ());
-
-		// Set every skill except for HS11 to "only if have already", so HS11 remains the only possible choice
-		for (final UnitSkill thisSkill : db.getUnitSkill ())
-			if ((thisSkill.getUnitSkillID ().startsWith ("HS")) && (!thisSkill.getUnitSkillID ().equals ("HS11")))
-				thisSkill.setOnlyIfHaveAlready (true);
-
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN007_HN03", unit.getHeroNameID ());
-
-		assertEquals (5, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertEquals (0, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals ("US126", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertEquals (3, unit.getUnitHasSkill ().get (1).getUnitSkillValue ().intValue ());
-		assertEquals ("US002", unit.getUnitHasSkill ().get (2).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (2).getUnitSkillValue ());
-		assertEquals ("USX01", unit.getUnitHasSkill ().get (3).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (3).getUnitSkillValue ());
-		assertEquals ("HS11", unit.getUnitHasSkill ().get (4).getUnitSkillID ());
-		assertEquals (1, unit.getUnitHasSkill ().get (4).getUnitSkillValue ().intValue ());
+		assertEquals ("UN001_HN03", unit.getHeroNameID ());
+		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
+		
+		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS01", 1);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS02", 1);
+		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS03", 1);
 	}
 
 	/**
-	 * Tests the generateHeroNameAndRandomSkills method on a hero who only has one viable skill to pick (it is "only if have already" and we do have the skill)
+	 * Tests the generateHeroNameAndRandomSkills method on a hero who gets one fighter pick, and there's 3 possible skills to choose
+	 * One of them is "only if have already", and we do have the skill
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGenerateHeroNameAndRandomSkills_SingleChoiceHaveAlready () throws Exception
+	public final void testGenerateHeroNameAndRandomSkills_OnePick_OnlyIfHaveAlready () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Mock unit detalis
+		final Unit unitDef = new Unit ();
+		unitDef.setHeroRandomPickCount (1);
+		unitDef.setHeroRandomPickType ("F");
+		for (int n = 1; n <= 5; n++)
+		{
+			final HeroName name = new HeroName ();
+			name.setHeroNameID ("UN001_HN0" + n);
+			unitDef.getHeroName ().add (name);
+		}
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
+		
+		// Mock possible skill choices, 3 fighter picks and 2 mage picks
+		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitSkill skill = new UnitSkill ();
+			skill.setUnitSkillID ("HS0" + n);
+			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
+			skill.setOnlyIfHaveAlready (n==3);
+			possibleSkills.add (skill);
+		}		
+		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		when (random.nextInt (3)).thenReturn (1);		// Fix skill choice
+
+		// Set up test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
+
+		// Set up existing skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "HS03")).thenReturn (1);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
 		utils.setRandomUtils (random);
 		
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
-		
-		// Healer hero - gets 1 mage pick
-		final MemoryUnit unit = unitUtils.createMemoryUnit ("UN008", 3, 0, 0, true, db);
-		assertNull (unit.getHeroNameID ());
-
-		// Set every skill to "only if have already", so HS05 remains the only possible choice because its the only one we have
-		for (final UnitSkill thisSkill : db.getUnitSkill ())
-			if (thisSkill.getUnitSkillID ().startsWith ("HS"))
-				thisSkill.setOnlyIfHaveAlready (true);
-
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN008_HN03", unit.getHeroNameID ());
-
-		assertEquals (4, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertEquals (0, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals ("USX01", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (1).getUnitSkillValue ());
-		assertEquals ("US016", unit.getUnitHasSkill ().get (2).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (2).getUnitSkillValue ());
-		assertEquals ("HS05", unit.getUnitHasSkill ().get (3).getUnitSkillID ());
-		assertEquals (4, unit.getUnitHasSkill ().get (3).getUnitSkillValue ().intValue ());
+		assertEquals ("UN001_HN03", unit.getHeroNameID ());
+		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
+		
+		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS01", 1);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS02", 1);
+		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS03", 1);
 	}
 
 	/**
@@ -187,28 +220,49 @@ public final class TestUnitServerUtilsImpl
 	@Test(expected=MomException.class)
 	public final void testGenerateHeroNameAndRandomSkills_NoChoices () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Mock unit detalis
+		final Unit unitDef = new Unit ();
+		unitDef.setHeroRandomPickCount (1);
+		unitDef.setHeroRandomPickType ("F");
+		for (int n = 1; n <= 5; n++)
+		{
+			final HeroName name = new HeroName ();
+			name.setHeroNameID ("UN001_HN0" + n);
+			unitDef.getHeroName ().add (name);
+		}
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
+		
+		// Mock possible skill choices, 3 fighter picks and 2 mage picks
+		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitSkill skill = new UnitSkill ();
+			skill.setUnitSkillID ("HS0" + n);
+			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
+			skill.setOnlyIfHaveAlready (n <= 3);
+			possibleSkills.add (skill);
+		}		
+		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		when (random.nextInt (3)).thenReturn (1);		// Fix skill choice
+
+		// Set up test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
+
+		// Set up existing skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
 		utils.setRandomUtils (random);
 		
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
-		
-		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
-		final MemoryUnit unit = unitUtils.createMemoryUnit ("UN007", 3, 0, 0, true, db);
-		assertNull (unit.getHeroNameID ());
-
-		// Set every skill except to "only if have already", so none are possible choices
-		for (final UnitSkill thisSkill : db.getUnitSkill ())
-			if (thisSkill.getUnitSkillID ().startsWith ("HS"))
-				thisSkill.setOnlyIfHaveAlready (true);
-
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
 	}
@@ -220,44 +274,57 @@ public final class TestUnitServerUtilsImpl
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_SkillNotTypeSpecific () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Mock unit detalis
+		final Unit unitDef = new Unit ();
+		unitDef.setHeroRandomPickCount (1);
+		unitDef.setHeroRandomPickType ("F");
+		for (int n = 1; n <= 5; n++)
+		{
+			final HeroName name = new HeroName ();
+			name.setHeroNameID ("UN001_HN0" + n);
+			unitDef.getHeroName ().add (name);
+		}
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
+		
+		// Mock possible skill choices, 3 fighter picks and 2 mage picks
+		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 6; n++)
+		{
+			final UnitSkill skill = new UnitSkill ();
+			skill.setUnitSkillID ("HS0" + n);
+			skill.setHeroSkillTypeID ((n <= 3) ? "F" : null);
+			skill.setMaxOccurrences (10);
+			possibleSkills.add (skill);
+		}		
+		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		when (random.nextInt (6)).thenReturn (1);		// Fix skill choice - note selects from all 6
+
+		// Set up test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up existing skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
 		utils.setRandomUtils (random);
 		
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
-		
-		// Orc warrior - gets 1 fighter pick, but has no skills, so none that are "only if have already" will be available
-		final MemoryUnit unit = unitUtils.createMemoryUnit ("UN007", 3, 0, 0, true, db);
-		assertNull (unit.getHeroNameID ());
-
-		// Set every skill except for HS10 to "only if have already", so HS10 remains the only possible choice
-		// Note HS10 isn't a fighter skill, it has no hero random pick type defined so can be obtained by anyone
-		for (final UnitSkill thisSkill : db.getUnitSkill ())
-			if ((thisSkill.getUnitSkillID ().startsWith ("HS")) && (!thisSkill.getUnitSkillID ().equals ("HS10")))
-				thisSkill.setOnlyIfHaveAlready (true);
-
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN007_HN03", unit.getHeroNameID ());
-
-		assertEquals (5, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertEquals (0, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals ("US126", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertEquals (3, unit.getUnitHasSkill ().get (1).getUnitSkillValue ().intValue ());
-		assertEquals ("US002", unit.getUnitHasSkill ().get (2).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (2).getUnitSkillValue ());
-		assertEquals ("USX01", unit.getUnitHasSkill ().get (3).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (3).getUnitSkillValue ());
-		assertEquals ("HS10", unit.getUnitHasSkill ().get (4).getUnitSkillID ());
-		assertEquals (1, unit.getUnitHasSkill ().get (4).getUnitSkillValue ().intValue ());
+		assertEquals ("UN001_HN03", unit.getHeroNameID ());
+		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
+		
+		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS01", 1);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS02", 1);
+		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS03", 1);
 	}
 
 	/**
@@ -267,40 +334,56 @@ public final class TestUnitServerUtilsImpl
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_SingleChoice_HeroNotTypeSpecific () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Mock unit detalis
+		final Unit unitDef = new Unit ();
+		unitDef.setHeroRandomPickCount (1);
+		unitDef.setHeroRandomPickType (null);	// <---
+		for (int n = 1; n <= 5; n++)
+		{
+			final HeroName name = new HeroName ();
+			name.setHeroNameID ("UN001_HN0" + n);
+			unitDef.getHeroName ().add (name);
+		}
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
+		
+		// Mock possible skill choices, 3 fighter picks and 2 mage picks
+		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 6; n++)
+		{
+			final UnitSkill skill = new UnitSkill ();
+			skill.setUnitSkillID ("HS0" + n);
+			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
+			possibleSkills.add (skill);
+		}		
+		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		when (random.nextInt (6)).thenReturn (1);		// Fix skill choice - note selects from all 6
+
+		// Set up test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up existing skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
 		utils.setRandomUtils (random);
 		
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
-		
-		// Warrior Mage - gets 1 pick of any type, and has HS05
-		final MemoryUnit unit = unitUtils.createMemoryUnit ("UN013", 3, 0, 0, true, db);
-		assertNull (unit.getHeroNameID ());
-
-		// Set every skill except to "only if have already", so HS05 remains the only possible choice
-		// Note HS05 is a mage specific skill
-		for (final UnitSkill thisSkill : db.getUnitSkill ())
-			if (thisSkill.getUnitSkillID ().startsWith ("HS"))
-				thisSkill.setOnlyIfHaveAlready (true);
-
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN013_HN03", unit.getHeroNameID ());
-
-		assertEquals (3, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertEquals (0, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals ("USX01", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (1).getUnitSkillValue ());
-		assertEquals ("HS05", unit.getUnitHasSkill ().get (2).getUnitSkillID ());
-		assertEquals (3, unit.getUnitHasSkill ().get (2).getUnitSkillValue ().intValue ());
+		assertEquals ("UN001_HN03", unit.getHeroNameID ());
+		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
+		
+		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS01", 1);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS02", 1);
+		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS03", 1);
 	}
 
 	/**
@@ -310,39 +393,60 @@ public final class TestUnitServerUtilsImpl
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_Uncapped () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Mock unit detalis
+		final Unit unitDef = new Unit ();
+		unitDef.setHeroRandomPickCount (5);
+		unitDef.setHeroRandomPickType ("M");
+		for (int n = 1; n <= 5; n++)
+		{
+			final HeroName name = new HeroName ();
+			name.setHeroNameID ("UN001_HN0" + n);
+			unitDef.getHeroName ().add (name);
+		}
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
+		
+		// Mock possible skill choices, 3 fighter picks and 2 mage picks
+		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitSkill skill = new UnitSkill ();
+			skill.setUnitSkillID ("HS0" + n);
+			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
+			possibleSkills.add (skill);
+		}		
+		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		when (random.nextInt (2)).thenReturn (1);		// Fix skill choice
+
+		// Set up test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up existing skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "HS05")).thenReturn (0, 0, 1, 1, 2, 2, 3, 3, 4, 4);	// Gets read twice each iteration
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
 		utils.setRandomUtils (random);
 		
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
-		
-		// Unknown hero - gets 5 picks of any type, and has HS05
-		final MemoryUnit unit = unitUtils.createMemoryUnit ("UN025", 3, 0, 0, true, db);
-		assertNull (unit.getHeroNameID ());
-
-		// Set every skill to "only if have already", so HS05 remains the only possible choice
-		for (final UnitSkill thisSkill : db.getUnitSkill ())
-			if (thisSkill.getUnitSkillID ().startsWith ("HS"))
-				thisSkill.setOnlyIfHaveAlready (true);
-
 		// Run test
 		utils.generateHeroNameAndRandomSkills (unit, db);
-		assertEquals ("UN025_HN03", unit.getHeroNameID ());
-
-		assertEquals (3, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertEquals (0, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals ("USX01", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (1).getUnitSkillValue ());
-		assertEquals ("HS05", unit.getUnitHasSkill ().get (2).getUnitSkillID ());
-		assertEquals (7, unit.getUnitHasSkill ().get (2).getUnitSkillValue ().intValue ());
+		assertEquals ("UN001_HN03", unit.getHeroNameID ());
+		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
+		
+		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS04", 1);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 1);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 2);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 3);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 4);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 5);
 	}
 
 	/**
@@ -352,65 +456,63 @@ public final class TestUnitServerUtilsImpl
 	@Test
 	public final void testGenerateHeroNameAndRandomSkills_Capped () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Mock unit detalis
+		final Unit unitDef = new Unit ();
+		unitDef.setHeroRandomPickCount (5);
+		unitDef.setHeroRandomPickType ("M");
+		for (int n = 1; n <= 5; n++)
+		{
+			final HeroName name = new HeroName ();
+			name.setHeroNameID ("UN001_HN0" + n);
+			unitDef.getHeroName ().add (name);
+		}
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnit ("UN001", "generateHeroNameAndRandomSkills")).thenReturn (unitDef);
+		
+		// Mock possible skill choices, 3 fighter picks and 2 mage picks
+		final List<UnitSkill> possibleSkills = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitSkill skill = new UnitSkill ();
+			skill.setUnitSkillID ("HS0" + n);
+			skill.setHeroSkillTypeID ((n <= 3) ? "F" : "M");
+			
+			if (n == 5)
+				skill.setMaxOccurrences (4);
+			
+			possibleSkills.add (skill);
+		}		
+		when (db.getUnitSkill ()).thenReturn (possibleSkills);
+		
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
+		when (random.nextInt (2)).thenReturn (1);		// Fix skill choice
+
+		// Set up test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up existing skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "HS05")).thenReturn (0, 0, 1, 1, 2, 2, 3, 3, 4, 4);	// Gets read twice each iteration
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
 		utils.setRandomUtils (random);
 		
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		// Run test
+		utils.generateHeroNameAndRandomSkills (unit, db);
+		assertEquals ("UN001_HN03", unit.getHeroNameID ());
+		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		// Unknown hero - gets 5 picks of any type
-		final MemoryUnit unit = unitUtils.createMemoryUnit ("UN025", 3, 0, 0, true, db);
-		assertNull (unit.getHeroNameID ());
-
-		// Alter unit to have 2xHS01 instead of 2xHS05 (HS05 in uncapped so no use for this test)
-		unit.getUnitHasSkill ().get (2).setUnitSkillID ("HS01");
-
-		// Set every skill except HS01,3 and 4 to "only if have already", so these are our only possible choices
-		for (final UnitSkill thisSkill : db.getUnitSkill ())
-			if ((thisSkill.getUnitSkillID ().startsWith ("HS")) && (!thisSkill.getUnitSkillID ().equals ("HS01")) && (!thisSkill.getUnitSkillID ().equals ("HS03")) && (!thisSkill.getUnitSkillID ().equals ("HS04")))
-				thisSkill.setOnlyIfHaveAlready (true);
-
-		// Run test - since HS01 is already maxed, we'll put 2 points into HS03, 2 points into HS04, then bomb out because we
-		// still have to put a 5th point somewhere and there's nowhere left for it to go
-		try
-		{
-			utils.generateHeroNameAndRandomSkills (unit, db);
-			fail ("generateHeroNameAndRandomSkills should have ran out of available skills to choose");
-		}
-		catch (final MomException e)
-		{
-			// Expected result
-		}
-
-		// We need to prove that it got as far as filling out HS03 and HS04 before it bombed out - if it bombed out right at the start, fail the test
-		assertEquals ("UN025_HN03", unit.getHeroNameID ());
-
-		assertEquals (5, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertEquals (0, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals ("USX01", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (1).getUnitSkillValue ());
-		assertEquals ("HS01", unit.getUnitHasSkill ().get (2).getUnitSkillID ());
-		assertEquals (2, unit.getUnitHasSkill ().get (2).getUnitSkillValue ().intValue ());
-		assertEquals (2, unit.getUnitHasSkill ().get (3).getUnitSkillValue ().intValue ());
-		assertEquals (2, unit.getUnitHasSkill ().get (4).getUnitSkillValue ().intValue ());
-
-		// HS03 and HS04 could have been added in either order
-		final List<String> skillIDs = new ArrayList<String> ();
-		for (int n = 3; n <= 4; n++)
-			skillIDs.add (unit.getUnitHasSkill ().get (n).getUnitSkillID ());
-
-		Collections.sort (skillIDs);
-
-		assertEquals ("HS03", skillIDs.get (0));
-		assertEquals ("HS04", skillIDs.get (1));
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 1);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 2);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 3);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 4);
+		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS04", 1);		// Last point goes into HS04 because HS05 is maxed out
 	}
 
 	/**
@@ -488,7 +590,7 @@ public final class TestUnitServerUtilsImpl
 	 * @throws RecordNotFoundException If unit with requested URN is not found
 	 */
 	@Test
-	public final void testFndUnitWithPlayerAndID () throws RecordNotFoundException
+	public final void testFindUnitWithPlayerAndID () throws RecordNotFoundException
 	{
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		for (int n = 1; n <= 3; n++)
@@ -508,214 +610,684 @@ public final class TestUnitServerUtilsImpl
 	}
 
 	/**
-	 * Tests the canUnitBeAddedHere method
+	 * Tests the canUnitBeAddedHere method in the simplest situation where there's no other units already in the map cell
 	 * @throws Exception If there is a problem
 	 */
 	@Test
 	public final void testCanUnitBeAddedHere () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
-		final List<String> emptySkillList = new ArrayList<String> ();
-
-		// Set up object to test
-		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (new MomServerUnitCalculationsImpl ());
+		// We aren't trying to add on top of a node
+		final TileType tt = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
-
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
+		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		
+		// Map cell we're trying to add to
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+		terrainData.setTileTypeID ("TT01");
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Unit settings
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		
+		// Unit to try to add
+		final AvailableUnit testUnit = new AvailableUnit ();
+		testUnit.setOwningPlayerID (2);
+		
+		final List<String> testUnitSkills = new ArrayList<String> ();
 
-		// Lair here
-		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST);
-		terrainData.setMapFeatureID ("MF13");
-		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		// Unit can enter this type of tile
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		
+		// Other units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
 
-		final AvailableUnit spearmen = new AvailableUnit ();
-		spearmen.setOwningPlayerID (2);
-		spearmen.setUnitID ("UN105");
-		unitUtils.initializeUnitSkills (spearmen,  0, true, db);
-
+		// Run method
 		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
-		addLocation.setPlane (1);
-
-		assertFalse (utils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db));
-
-		// Nothing here
-		terrainData.setMapFeatureID (null);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db));
-
-		// Enemy city here
-		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityPopulation (1);
-		cityData.setCityOwnerID (3);
-		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
-
-		assertFalse (utils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db));
-
-		// Our city here
-		cityData.setCityOwnerID (2);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db));
-
-		// Enemy unit here
-		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (null);
-
-		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
-		unitLocation.setX (20);
-		unitLocation.setY (10);
-		unitLocation.setPlane (1);
-
-		final MemoryUnit unitInTheWay = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
-		unitInTheWay.setOwningPlayerID (3);
-		unitInTheWay.setUnitLocation (unitLocation);
-
-		trueMap.getUnit ().add (unitInTheWay);
-
-		assertFalse (utils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db));
-
-		// Our units here, but space left
-		unitInTheWay.setOwningPlayerID (2);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db));
-
-		// Our units here, space left, but cell is impassable to the type of unit we're trying to add
-		final AvailableUnit trireme = new AvailableUnit ();
-		trireme.setOwningPlayerID (2);
-		trireme.setUnitID ("UN016");
-		unitUtils.initializeUnitSkills (trireme,  0, true, db);
-
-		assertFalse (utils.canUnitBeAddedHere (addLocation, trireme, emptySkillList, trueMap, sd.getUnitSetting (), db));
-
-		// Our units have the cell full already
-		for (int n = 2; n <= sd.getUnitSetting ().getUnitsPerMapCell (); n++)
-		{
-			final OverlandMapCoordinatesEx anotherUnitLocation = new OverlandMapCoordinatesEx ();
-			anotherUnitLocation.setX (20);
-			anotherUnitLocation.setY (10);
-			anotherUnitLocation.setPlane (1);
-
-			final MemoryUnit anotherUnitInTheWay = unitUtils.createMemoryUnit ("UN105", n, 0, 0, true, db);
-			anotherUnitInTheWay.setOwningPlayerID (2);
-			anotherUnitInTheWay.setUnitLocation (anotherUnitLocation);
-
-			trueMap.getUnit ().add (anotherUnitInTheWay);
-
-			if (n < sd.getUnitSetting ().getUnitsPerMapCell ())
-				assertTrue (utils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db));
-			else
-				assertFalse (utils.canUnitBeAddedHere (addLocation, spearmen, emptySkillList, trueMap, sd.getUnitSetting (), db));
-		}
+		addLocation.setZ (1);
+		
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
 	}
 
 	/**
-	 * Tests the findNearestLocationWhereUnitCanBeAdded method
+	 * Tests the canUnitBeAddedHere method when there's an enemy unit in the way
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testFindNearestLocationWhereUnitCanBeAdded () throws Exception
+	public final void testCanUnitBeAddedHere_EnemyUnit () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// We aren't trying to add on top of a node
+		final TileType tt = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		
+		// Map cell we're trying to add to
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+		terrainData.setTileTypeID ("TT01");
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Unit settings
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		
+		// Unit to try to add
+		final AvailableUnit testUnit = new AvailableUnit ();
+		testUnit.setOwningPlayerID (2);
+		
+		final List<String> testUnitSkills = new ArrayList<String> ();
+
+		// Unit can enter this type of tile
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		
+		// Other units
+		final MemoryUnit enemyUnit = new MemoryUnit ();
+		enemyUnit.setOwningPlayerID (3);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (enemyUnit);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
+
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+	}
+
+	/**
+	 * Tests the canUnitBeAddedHere method when there's a stack of 8 of our units already there
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCanUnitBeAddedHere_StackOf8 () throws Exception
+	{
+		// We aren't trying to add on top of a node
+		final TileType tt = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		
+		// Map cell we're trying to add to
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+		terrainData.setTileTypeID ("TT01");
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Unit settings
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		
+		// Unit to try to add
+		final AvailableUnit testUnit = new AvailableUnit ();
+		testUnit.setOwningPlayerID (2);
+		
+		final List<String> testUnitSkills = new ArrayList<String> ();
+
+		// Unit can enter this type of tile
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		
+		// Other units
+		final MemoryUnit ourUnit = new MemoryUnit ();
+		ourUnit.setOwningPlayerID (2);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (ourUnit);
+		when (unitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (8);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
+
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+	}
+
+	/**
+	 * Tests the canUnitBeAddedHere method when there's a stack of 9 of our units already there, so we can't fit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCanUnitBeAddedHere_StackOf9 () throws Exception
+	{
+		// We aren't trying to add on top of a node
+		final TileType tt = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		
+		// Map cell we're trying to add to
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+		terrainData.setTileTypeID ("TT01");
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Unit settings
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		
+		// Unit to try to add
+		final AvailableUnit testUnit = new AvailableUnit ();
+		testUnit.setOwningPlayerID (2);
+		
+		final List<String> testUnitSkills = new ArrayList<String> ();
+
+		// Unit can enter this type of tile
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		
+		// Other units
+		final MemoryUnit ourUnit = new MemoryUnit ();
+		ourUnit.setOwningPlayerID (2);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (ourUnit);
+		when (unitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (9);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
+
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+	}
+	
+	/**
+	 * Tests the canUnitBeAddedHere method trying to add a unit onto a node
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCanUnitBeAddedHere_Node () throws Exception
+	{
+		// We ARE trying to add on top of a node
+		final TileType tt = new TileType ();
+		tt.setMagicRealmID ("A");		// <---
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		
+		// Map cell we're trying to add to
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+		terrainData.setTileTypeID ("TT01");
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Unit settings
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		
+		// Unit to try to add
+		final AvailableUnit testUnit = new AvailableUnit ();
+		testUnit.setOwningPlayerID (2);
+		
+		final List<String> testUnitSkills = new ArrayList<String> ();
+
+		// Unit can enter this type of tile
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		
+		// Other units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
+
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+	}
+	
+	/**
+	 * Tests the canUnitBeAddedHere method trying to add a unit onto terrain that's impassable to them
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCanUnitBeAddedHere_Impassable () throws Exception
+	{
+		// We aren't trying to add on top of a node
+		final TileType tt = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		
+		// Map cell we're trying to add to
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+		terrainData.setTileTypeID ("TT01");
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// Unit settings
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		
+		// Unit to try to add
+		final AvailableUnit testUnit = new AvailableUnit ();
+		testUnit.setOwningPlayerID (2);
+		
+		final List<String> testUnitSkills = new ArrayList<String> ();
+
+		// Unit can enter this type of tile
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (null);		// <---
+		
+		// Other units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
+
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+	}
+	
+	/**
+	 * Tests the canUnitBeAddedHere method adding units into our own city
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCanUnitBeAddedHere_OurCity () throws Exception
+	{
+		// We aren't trying to add on top of a node
+		final TileType tt = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		
+		// Map cell we're trying to add to
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+		terrainData.setTileTypeID ("TT01");
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1);
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Unit settings
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		
+		// Unit to try to add
+		final AvailableUnit testUnit = new AvailableUnit ();
+		testUnit.setOwningPlayerID (2);
+		
+		final List<String> testUnitSkills = new ArrayList<String> ();
+
+		// Unit can enter this type of tile
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		
+		// Other units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
+
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+	}
+	
+	/**
+	 * Tests the canUnitBeAddedHere method adding units into am enemy city (which must have no units in it, to have skipped previous checks)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCanUnitBeAddedHere_EnemyCity () throws Exception
+	{
+		// We aren't trying to add on top of a node
+		final TileType tt = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		
+		// Map cell we're trying to add to
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+		terrainData.setTileTypeID ("TT01");
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (3);		// <---
+		cityData.setCityPopulation (1);
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Unit settings
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		
+		// Unit to try to add
+		final AvailableUnit testUnit = new AvailableUnit ();
+		testUnit.setOwningPlayerID (2);
+		
+		final List<String> testUnitSkills = new ArrayList<String> ();
+
+		// Unit can enter this type of tile
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		
+		// Other units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
+
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+	}
+
+	/**
+	 * Tests the findNearestLocationWhereUnitCanBeAdded method in the simple situation where we do fit in the city
+	 * @throws Exception If there is a problem
+	 */
+	@SuppressWarnings ("unchecked")
+	@Test
+	public final void testFindNearestLocationWhereUnitCanBeAdded_City () throws Exception
+	{
+		// We aren't trying to add on top of a node
+		final TileType tt = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (ServerTestData.createMapSizeData ());
+
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		sd.setUnitSetting (settings);
+		
+		// Map
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (ServerTestData.createOverlandMap (sd.getMapSize ()));
+		
+		// Map cell and surrounding terrain that we're trying to add to
+		for (int x = -1; x <= 1; x++)
+			for (int y = -1; y <= 1; y++)
+			{
+				final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+				terrainData.setTileTypeID ("TT01");
+				trueMap.getMap ().getPlane ().get (1).getRow ().get (10+y).getCell ().get (20+x).setTerrainData (terrainData);
+			}
+		
+		// Unit can enter this type of tile
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT01"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (1);
+		
+		// Put 8 units in the city so we just fit
+		final MemoryUnit ourUnit = new MemoryUnit ();
+		ourUnit.setOwningPlayerID (2);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (ourUnit);
+		when (unitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (8);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		// So we eventually end up being positioned down-right of our preferred location
+		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, sd, db);
+		assertEquals (UnitAddBumpTypeID.CITY, result.getBumpType ());
+		assertEquals (20, result.getUnitLocation ().getX ());
+		assertEquals (10, result.getUnitLocation ().getY ());
+		assertEquals (1, result.getUnitLocation ().getZ ());
+	}
+	
+	/**
+	 * Tests the findNearestLocationWhereUnitCanBeAdded method where we can't fit inside the city or the first few surrounding tiles
+	 * @throws Exception If there is a problem
+	 */
+	@SuppressWarnings ("unchecked")
+	@Test
+	public final void testFindNearestLocationWhereUnitCanBeAdded_Bumped () throws Exception
+	{
+		// Two tile types are clear, the middle one is a node
+		final TileType tt = new TileType ();
+		
+		final TileType tt2 = new TileType ();
+		tt2.setMagicRealmID ("A");
+
+		final TileType tt3 = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		when (db.findTileType ("TT02", "isNodeLairTower")).thenReturn (tt2);
+		when (db.findTileType ("TT03", "isNodeLairTower")).thenReturn (tt3);
+		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (ServerTestData.createMapSizeData ());
+
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		sd.setUnitSetting (settings);
+		
+		// Map
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (ServerTestData.createOverlandMap (sd.getMapSize ()));
+		
+		// Map cell and surrounding terrain that we're trying to add to
+		for (int x = -1; x <= 1; x++)
+			for (int y = -1; y <= 1; y++)
+			{
+				final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+				terrainData.setTileTypeID ("TT01");
+				trueMap.getMap ().getPlane ().get (1).getRow ().get (10+y).getCell ().get (20+x).setTerrainData (terrainData);
+			}
+		
+		// Unit can enter tiles TT01 and TT02, but TT03 is impassable
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT01"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT02"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT03"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (null);
+		
+		// Put 9 units in the city so we can't fit
+		final MemoryUnit ourUnit = new MemoryUnit ();
+		ourUnit.setOwningPlayerID (2);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (ourUnit);
+		when (unitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (9);
+		
+		// Put an enemy unit above us so we can't fit there either
+		final MemoryUnit enemyUnit = new MemoryUnit ();
+		enemyUnit.setOwningPlayerID (3);
+		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 9, 1, 0)).thenReturn (enemyUnit);
+		
+		// Make the tile up-right of us a node so we can't fit there either
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (9).getCell ().get (21).getTerrainData ().setTileTypeID ("TT02");
+		
+		// Make the tile right of us something impassable (like water), so we can't fit there either
+		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (21).getTerrainData ().setTileTypeID ("TT03");
 
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
-		utils.setServerUnitCalculations (new MomServerUnitCalculationsImpl ());
+		utils.setServerUnitCalculations (calc);
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		// So we eventually end up being positioned down-right of our preferred location
+		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, sd, db);
+		assertEquals (UnitAddBumpTypeID.BUMPED, result.getBumpType ());
+		assertEquals (21, result.getUnitLocation ().getX ());
+		assertEquals (11, result.getUnitLocation ().getY ());
+		assertEquals (1, result.getUnitLocation ().getZ ());
+	}
+	
+	/**
+	 * Tests the findNearestLocationWhereUnitCanBeAdded method where we can't fit either in the city or any of the 8 surrounding tiles
+	 * @throws Exception If there is a problem
+	 */
+	@SuppressWarnings ("unchecked")
+	@Test
+	public final void testFindNearestLocationWhereUnitCanBeAdded_NoRoom () throws Exception
+	{
+		// We aren't trying to add on top of a node
+		final TileType tt = new TileType ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (ServerTestData.createMapSizeData ());
+
+		final UnitSettingData settings = new UnitSettingData ();
+		settings.setUnitsPerMapCell (9);
+		sd.setUnitSetting (settings);
 		
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
-
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-
-		// Put regular tiles in a 1 radius (3x3 pattern)
-		for (int x = 19; x <= 21; x++)
-			for (int y = 9; y <= 11; y++)
+		trueMap.setMap (ServerTestData.createOverlandMap (sd.getMapSize ()));
+		
+		// Map cell and surrounding terrain that we're trying to add to
+		for (int x = -1; x <= 1; x++)
+			for (int y = -1; y <= 1; y++)
 			{
-				final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-				terrainData.setTileTypeID (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST);
-				trueTerrain.getPlane ().get (1).getRow ().get (y).getCell ().get (x).setTerrainData (terrainData);
+				final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
+				terrainData.setTileTypeID ("TT01");
+				trueMap.getMap ().getPlane ().get (1).getRow ().get (10+y).getCell ().get (20+x).setTerrainData (terrainData);
 			}
+		
+		// Easiest thing to do is make the tile type impassable, then we can't fit anywhere
+		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT01"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (null);
 
-		// Put 8 of our units in the middle
-		for (int n = 1; n < sd.getUnitSetting ().getUnitsPerMapCell (); n++)
-		{
-			final OverlandMapCoordinatesEx anotherUnitLocation = new OverlandMapCoordinatesEx ();
-			anotherUnitLocation.setX (20);
-			anotherUnitLocation.setY (10);
-			anotherUnitLocation.setPlane (1);
+		// Other units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		utils.setServerUnitCalculations (calc);
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
-			final MemoryUnit anotherUnitInTheWay = unitUtils.createMemoryUnit ("UN105", n, 0, 0, true, db);
-			anotherUnitInTheWay.setOwningPlayerID (2);
-			anotherUnitInTheWay.setUnitLocation (anotherUnitLocation);
-
-			trueMap.getUnit ().add (anotherUnitInTheWay);
-		}
-
-		// Run test
-		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
-		desiredLocation.setX (20);
-		desiredLocation.setY (10);
-		desiredLocation.setPlane (1);
-
-		final UnitAddLocation centre = utils.findNearestLocationWhereUnitCanBeAdded (desiredLocation, "UN105", 2, trueMap, sd, db);
-		assertEquals (desiredLocation, centre.getUnitLocation ());
-		assertEquals (UnitAddBumpTypeID.CITY, centre.getBumpType ());
-
-		// Add a 9th unit in the middle
-		final OverlandMapCoordinatesEx anotherUnitLocation = new OverlandMapCoordinatesEx ();
-		anotherUnitLocation.setX (20);
-		anotherUnitLocation.setY (10);
-		anotherUnitLocation.setPlane (1);
-
-		final MemoryUnit anotherUnitInTheWay = unitUtils.createMemoryUnit ("UN105", 9, 0, 0, true, db);
-		anotherUnitInTheWay.setOwningPlayerID (2);
-		anotherUnitInTheWay.setUnitLocation (anotherUnitLocation);
-
-		trueMap.getUnit ().add (anotherUnitInTheWay);
-
-		// Add an enemy unit above us
-		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
-		unitLocation.setX (20);
-		unitLocation.setY (9);
-		unitLocation.setPlane (1);
-
-		final MemoryUnit unitInTheWay = unitUtils.createMemoryUnit ("UN105", 9, 0, 0, true, db);
-		unitInTheWay.setOwningPlayerID (3);
-		unitInTheWay.setUnitLocation (unitLocation);
-
-		trueMap.getUnit ().add (unitInTheWay);
-
-		// Add an enemy city above-right of us
-		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityPopulation (1);
-		cityData.setCityOwnerID (3);
-		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setCityData (cityData);
-
-		// So now we should get bumped to the right...
-		final UnitAddLocation right = utils.findNearestLocationWhereUnitCanBeAdded (desiredLocation, "UN105", 2, trueMap, sd, db);
-		assertEquals (21, right.getUnitLocation ().getX ());
-		assertEquals (10, right.getUnitLocation ().getY ());
-		assertEquals (1, right.getUnitLocation ().getPlane ());
-		assertEquals (UnitAddBumpTypeID.BUMPED, right.getBumpType ());
-
-		// Set every tile in the 3x3 area to be a lair!
-		for (int x = 19; x <= 21; x++)
-			for (int y = 9; y <= 11; y++)
-				trueTerrain.getPlane ().get (1).getRow ().get (y).getCell ().get (x).getTerrainData ().setMapFeatureID ("MF13");
-
-		// Now we won't fit anywhere
-		final UnitAddLocation wontFit = utils.findNearestLocationWhereUnitCanBeAdded (desiredLocation, "UN105", 2, trueMap, sd, db);
-		assertNull (wontFit.getUnitLocation ());
-		assertEquals (UnitAddBumpTypeID.NO_ROOM, wontFit.getBumpType ());
+		// Run method
+		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		addLocation.setX (20);
+		addLocation.setY (10);
+		addLocation.setZ (1);
+		
+		// So we eventually end up being positioned down-right of our preferred location
+		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, sd, db);
+		assertEquals (UnitAddBumpTypeID.NO_ROOM, result.getBumpType ());
+		assertNull (result.getUnitLocation ());
 	}
 	
 	/**

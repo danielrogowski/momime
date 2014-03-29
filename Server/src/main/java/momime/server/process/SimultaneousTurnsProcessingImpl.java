@@ -110,7 +110,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
-						cityLocation.setPlane (plane.getPlaneNumber ());
+						cityLocation.setZ (plane.getPlaneNumber ());
 						
 						getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), cityLocation, tc.getBuildingIdSoldThisTurn (),
 							false, true, mom.getSessionDescription (), mom.getServerDB ());
@@ -134,7 +134,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			
 			// Find where the settler is
 			final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(settler.getUnitLocation ().getPlane ()).getRow ().get (settler.getUnitLocation ().getY ()).getCell ().get (settler.getUnitLocation ().getX ());
+				(settler.getUnitLocation ().getZ ()).getRow ().get (settler.getUnitLocation ().getY ()).getCell ().get (settler.getUnitLocation ().getX ());
 			final TileType tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "processSpecialOrders-t");
 			final MapFeature mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
 				(tc.getTerrainData ().getMapFeatureID (), "processSpecialOrders-f");
@@ -148,7 +148,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				error = "The map feature here has changed, you can no longer build a city here";
 			else if (getCityCalculations ().markWithinExistingCityRadius
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				settler.getUnitLocation ().getPlane (), mom.getSessionDescription ().getMapSize ()).get (settler.getUnitLocation ().getX (), settler.getUnitLocation ().getY ()))
+				settler.getUnitLocation ().getZ (), mom.getSessionDescription ().getMapSize ()).get (settler.getUnitLocation ().getX (), settler.getUnitLocation ().getY ()))
 				
 				error = "Another city was built before yours and is within " + mom.getSessionDescription ().getMapSize ().getCitySeparation () +
 					" squares of where you are trying to build, so you cannot build here anymore";
@@ -186,7 +186,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 
 			// Find where the spirit is
 			final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(spirit.getUnitLocation ().getPlane ()).getRow ().get (spirit.getUnitLocation ().getY ()).getCell ().get (spirit.getUnitLocation ().getX ());
+				(spirit.getUnitLocation ().getZ ()).getRow ().get (spirit.getUnitLocation ().getY ()).getCell ().get (spirit.getUnitLocation ().getX ());
 
 			final PlayerServerDetails spiritOwner = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), spirit.getOwningPlayerID (), "processSpecialOrders-s");
 			

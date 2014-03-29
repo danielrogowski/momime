@@ -164,6 +164,7 @@
 	<bean id="cityCalculations" class="momime.common.calculations.MomCityCalculationsImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 	
 	<bean id="skillCalculations" class="momime.common.calculations.MomSkillCalculationsImpl" />
@@ -172,12 +173,14 @@
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 	
 	<bean id="unitCalculations" class="momime.common.calculations.MomUnitCalculationsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="memoryBuildingUtils" class="momime.common.utils.MemoryBuildingUtilsImpl" />
@@ -216,5 +219,7 @@
 	<bean id="scheduledCombatUtils" class="momime.common.utils.ScheduledCombatUtilsImpl" />
 
 	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
+	
+	<bean id="coordinateSystemUtils" class="com.ndg.map.CoordinateSystemUtilsImpl" />
 
 </beans>

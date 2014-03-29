@@ -49,6 +49,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -68,7 +69,7 @@ public final class TestCombatProcessingImpl
 		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
 		combatLocation.setX (x);
 		combatLocation.setY (10);
-		combatLocation.setPlane (1);
+		combatLocation.setZ (1);
 		return combatLocation;
 	}
 
@@ -102,6 +103,7 @@ public final class TestCombatProcessingImpl
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitCalculations (calc);
+		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
 		final List<Integer> maxUnitsInRow = proc.determineMaxUnitsInRow (CombatProcessingImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X,
@@ -404,7 +406,7 @@ public final class TestCombatProcessingImpl
 		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
 		combatLocation.setX (20);
 		combatLocation.setY (10);
-		combatLocation.setPlane (1);
+		combatLocation.setZ (1);
 
 		// 1 in front row and 2 behind
 		final List<Integer> unitsInRow = new ArrayList<Integer> ();
@@ -461,6 +463,7 @@ public final class TestCombatProcessingImpl
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitCalculations (calc);
 		proc.setUnitUtils (new UnitUtilsImpl ());		// used for searching unit lists, so easier to use real one
+		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
 		proc.placeCombatUnits (combatLocation, CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X,

@@ -200,7 +200,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			final OverlandMapCoordinatesEx destinationCoords = new OverlandMapCoordinatesEx ();
 			destinationCoords.setX (source.getCityLocation ().getX ());
 			destinationCoords.setY (source.getCityLocation ().getY ());
-			destinationCoords.setPlane (source.getCityLocation ().getPlane ());
+			destinationCoords.setZ (source.getCityLocation ().getZ ());
 
 			final MemoryBuilding destinationBuilding = new MemoryBuilding ();
 			destinationBuilding.setBuildingID (source.getBuildingID ());
@@ -285,7 +285,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 				unitLocation.setX (source.getUnitLocation ().getX ());
 				unitLocation.setY (source.getUnitLocation ().getY ());
-				unitLocation.setPlane (source.getUnitLocation ().getPlane ());
+				unitLocation.setZ (source.getUnitLocation ().getZ ());
 				dest.setUnitLocation (unitLocation);
 			}
 
@@ -320,7 +320,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
 				combatLocation.setX (source.getCombatLocation ().getX ());
 				combatLocation.setY (source.getCombatLocation ().getY ());
-				combatLocation.setPlane (source.getCombatLocation ().getPlane ());
+				combatLocation.setZ (source.getCombatLocation ().getZ ());
 				dest.setCombatLocation (combatLocation);
 			}
 
@@ -370,7 +370,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 				cityLocation.setX (source.getCityLocation ().getX ());
 				cityLocation.setY (source.getCityLocation ().getY ());
-				cityLocation.setPlane (source.getCityLocation ().getPlane ());
+				cityLocation.setZ (source.getCityLocation ().getZ ());
 				destinationSpell.setCityLocation (cityLocation);
 			}
 
@@ -408,7 +408,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				final OverlandMapCoordinatesEx mapLocation = new OverlandMapCoordinatesEx ();
 				mapLocation.setX (source.getMapLocation ().getX ());
 				mapLocation.setY (source.getMapLocation ().getY ());
-				mapLocation.setPlane (source.getMapLocation ().getPlane ());
+				mapLocation.setZ (source.getMapLocation ().getZ ());
 				destinationCAE.setMapLocation (mapLocation);
 			}
 

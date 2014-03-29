@@ -74,7 +74,7 @@ public final class MomAIImpl implements MomAI
 						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
-						cityLocation.setPlane (plane.getPlaneNumber ());
+						cityLocation.setZ (plane.getPlaneNumber ());
 
 						getCityAI ().decideWhatToBuild (cityLocation, cityData, trueMap.getMap (), trueMap.getBuilding (), sd, db);
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);

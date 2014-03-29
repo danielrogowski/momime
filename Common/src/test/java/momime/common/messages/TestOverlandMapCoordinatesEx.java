@@ -21,7 +21,7 @@ public final class TestOverlandMapCoordinatesEx
 		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (56);
 		coords.setY (0);
-		coords.setPlane (-12);
+		coords.setZ (-12);
 		assertEquals ("(56, 0, -12)", coords.toString ());
 	}
 
@@ -34,7 +34,7 @@ public final class TestOverlandMapCoordinatesEx
 		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (56);
 		coords.setY (0);
-		coords.setPlane (-12);
+		coords.setZ (-12);
 
 		assertFalse (coords.equals (null));
 	}
@@ -48,7 +48,7 @@ public final class TestOverlandMapCoordinatesEx
 		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (56);
 		coords.setY (0);
-		coords.setPlane (-12);
+		coords.setZ (-12);
 
 		assertTrue (coords.equals (coords));
 	}
@@ -62,12 +62,12 @@ public final class TestOverlandMapCoordinatesEx
 		final OverlandMapCoordinatesEx firstCoords = new OverlandMapCoordinatesEx ();
 		firstCoords.setX (56);
 		firstCoords.setY (0);
-		firstCoords.setPlane (-12);
+		firstCoords.setZ (-12);
 
 		final OverlandMapCoordinatesEx secondCoords = new OverlandMapCoordinatesEx ();
 		secondCoords.setX (56);
 		secondCoords.setY (0);
-		secondCoords.setPlane (-12);
+		secondCoords.setZ (-12);
 
 		assertTrue (firstCoords.equals (secondCoords)); 
 	}
@@ -81,12 +81,12 @@ public final class TestOverlandMapCoordinatesEx
 		final OverlandMapCoordinatesEx firstCoords = new OverlandMapCoordinatesEx ();
 		firstCoords.setX (56);
 		firstCoords.setY (0);
-		firstCoords.setPlane (-12);
+		firstCoords.setZ (-12);
 
 		final OverlandMapCoordinatesEx secondCoords = new OverlandMapCoordinatesEx ();
 		secondCoords.setX (56);
 		secondCoords.setY (10);
-		secondCoords.setPlane (-12);
+		secondCoords.setZ (-12);
 
 		assertFalse (firstCoords.equals (secondCoords));
 	}
@@ -100,12 +100,12 @@ public final class TestOverlandMapCoordinatesEx
 		final OverlandMapCoordinatesEx firstCoords = new OverlandMapCoordinatesEx ();
 		firstCoords.setX (56);
 		firstCoords.setY (10);
-		firstCoords.setPlane (-12);
+		firstCoords.setZ (-12);
 
 		final OverlandMapCoordinates secondCoords = new OverlandMapCoordinates ();
 		secondCoords.setX (56);
 		secondCoords.setY (10);
-		secondCoords.setPlane (-12);
+		secondCoords.setZ (-12);
 
 		assertFalse (firstCoords.equals (secondCoords));
 		assertFalse (secondCoords.equals (firstCoords));

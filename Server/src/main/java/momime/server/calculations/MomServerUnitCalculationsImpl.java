@@ -35,7 +35,7 @@ import momime.server.messages.ServerMemoryGridCellUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.MapCoordinates;
+import com.ndg.map.MapCoordinates2D;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -58,6 +58,9 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
 	 * @param unit The unit to check
@@ -114,7 +117,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		final int [] [] [] count = new int [db.getPlane ().size ()] [sys.getHeight ()] [sys.getWidth ()];
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) & (thisUnit.getUnitLocation () != null))
-				count [thisUnit.getUnitLocation ().getPlane ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
+				count [thisUnit.getUnitLocation ().getZ ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
 
 		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "countOurAliveUnitsAtEveryLocation");
 		return count;
@@ -320,7 +323,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
 		final boolean [] [] [] canMoveToInOneTurn, final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
-		final List<MapCoordinates> cellsLeftToCheck, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
+		final List<MapCoordinates2D> cellsLeftToCheck, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.entering (MomServerUnitCalculationsImpl.class.getName (), "calculateOverlandMovementDistances_Cell", new Integer [] {cellX, cellY, cellPlane, movingPlayerID});
 
@@ -328,13 +331,13 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		final int doubleMovementRemainingToHere = doubleMovementRemaining - doubleDistanceToHere;
 
 		// Try each direction
-		for (int d = 1; d <= CoordinateSystemUtils.getMaxDirection (sys.getCoordinateSystemType ()); d++)
+		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
 		{
-			final MapCoordinates coords = new MapCoordinates ();
+			final MapCoordinates2D coords = new MapCoordinates2D ();
 			coords.setX (cellX);
 			coords.setY (cellY);
 
-			if (CoordinateSystemUtils.moveCoordinates (sys, coords, d))
+			if (getCoordinateSystemUtils ().moveCoordinates (sys, coords, d))
 			{
 				// Don't bother rechecking if we can already move here for free since we know we can't improve on that
 				final int doubleCurrentDistanceToNewCoords = doubleMovementDistances [cellPlane] [coords.getY ()] [coords.getX ()];
@@ -411,7 +414,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 
 		// Rather than iterating out distances from the centre, process rings around each location before proceeding to the next location
 		// This is to prevent the situation in the original MoM where you are on Enchanced Road, hit 'Up' and the game decides to move you up-left and then right to get there
-		final List<MapCoordinates> cellsLeftToCheck = new ArrayList<MapCoordinates> ();
+		final List<MapCoordinates2D> cellsLeftToCheck = new ArrayList<MapCoordinates2D> ();
 		calculateOverlandMovementDistances_Cell (startX, startY, startPlane, movingPlayerID, map, units, nodeLairTowerKnownUnitIDs,
 			doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 			doubleMovementToEnterTile, cellsLeftToCheck, sys, db);
@@ -531,5 +534,21 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

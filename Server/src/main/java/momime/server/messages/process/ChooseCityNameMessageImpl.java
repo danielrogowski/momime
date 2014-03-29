@@ -42,7 +42,7 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Check and update true map cell
-		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (getCityLocation ().getPlane ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		if (sender.getPlayerDescription ().getPlayerID ().equals (tc.getCityData ().getCityOwnerID ()))
 		{
 			tc.getCityData ().setCityName (getCityName ());

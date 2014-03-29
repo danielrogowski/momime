@@ -15,6 +15,7 @@ import momime.common.database.v0_9_4.RaceCannotBuild;
 import momime.common.messages.OverlandMapCoordinatesEx;
 import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
 import momime.common.messages.v0_9_4.FogOfWarMemory;
+import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_4.MemoryBuilding;
 import momime.common.messages.v0_9_4.MemoryGridCell;
 import momime.common.messages.v0_9_4.MemoryUnit;
@@ -32,6 +33,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -68,19 +70,19 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * @param trueMap True map details
 	 * @param cityLocation Location where they want to set the construction project
 	 * @param buildingOrUnitID The building or unit that we want to construct
-	 * @param sd Session description
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return null if choice is acceptable; message to send back to client if choices isn't acceptable
 	 * @throws RecordNotFoundException If the race inhabiting the city cannot be found
 	 */
 	@Override
 	public final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinatesEx cityLocation,
-		final String buildingOrUnitID, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final String buildingOrUnitID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
 		log.entering (CityServerUtilsImpl.class.getName (), "validateCityConstruction", new String [] {new Integer (player.getPlayerDescription ().getPlayerID ()).toString (), buildingOrUnitID});
 
-		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		String msg = null;
 		if ((cityData == null) || (cityData.getCityOwnerID () == null) || (!cityData.getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())))
@@ -132,7 +134,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 						msg = "This city doesn't have the necessary pre-requisite buildings for the building you're trying to build - change ignored.";
 
 					// Check if this building can only be built next to an ocean (shoreline) tile i.e. Ship Wrights' Guild
-					else if (!getCityCalculations ().buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, building, sd.getMapSize ()))
+					else if (!getCityCalculations ().buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, building, overlandMapCoordinateSystem))
 						msg = "That building can only be built when there is a certain tile type close to the city - change ignored.";
 				}
 			}
@@ -162,20 +164,18 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * Validates that a number of optional farmers we want to set a particular city to is a valid choice
 	 *
 	 * @param player Player who wants to set farmers
-	 * @param trueMap True map details
+	 * @param trueTerrain True terrain details
 	 * @param cityLocation Location where they want to set the farmers
 	 * @param optionalFarmers The number of optional farmers we want
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
 	 * @return null if choice is acceptable; message to send back to client if choices isn't acceptable
 	 */
 	@Override
-	public final String validateOptionalFarmers (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinatesEx cityLocation,
-		final int optionalFarmers, final MomSessionDescription sd, final ServerDatabaseEx db)
+	public final String validateOptionalFarmers (final PlayerServerDetails player, final MapVolumeOfMemoryGridCells trueTerrain, final OverlandMapCoordinatesEx cityLocation,
+		final int optionalFarmers)
 	{
 		log.entering (CityServerUtilsImpl.class.getName (), "validateOptionalFarmers", new Integer [] {player.getPlayerDescription ().getPlayerID (), optionalFarmers});
 
-		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = trueTerrain.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		String msg = null;
 		if ((cityData == null) || (cityData.getCityOwnerID () == null) || (!cityData.getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())))
@@ -215,7 +215,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		
 		// Add the city on the server
 		final OverlandMapCoordinatesEx cityLocation = (OverlandMapCoordinatesEx) settler.getUnitLocation ();
-		final MemoryGridCell tc = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final MemoryGridCell tc = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final Unit settlerUnit = db.findUnit (settler.getUnitID (), "buildCityFromSettler");
 		
 		final OverlandMapCityData cityData = new OverlandMapCityData ();

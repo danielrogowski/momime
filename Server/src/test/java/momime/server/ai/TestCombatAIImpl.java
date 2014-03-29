@@ -203,7 +203,7 @@ public final class TestCombatAIImpl
 		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
 		combatLocation.setX (x);
 		combatLocation.setY (10);
-		combatLocation.setPlane (1);
+		combatLocation.setZ (1);
 		return combatLocation;
 	}
 }

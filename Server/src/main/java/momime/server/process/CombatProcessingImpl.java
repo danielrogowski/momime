@@ -171,6 +171,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** Random number generator */
 	private RandomUtils randomUtils;
 
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
 	/**
 	 * Sets up a potential combat on the server.  If we're attacking an enemy unit stack or city, then all this does is calls StartCombat.
 	 * If we're attacking a node/lair/tower, then this handles scouting the node/lair/tower, sending to the client the details
@@ -220,7 +223,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// Record the scouted monster ID on the server too
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-			priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (defendingLocation.getPlane ()).getRow ().get
+			priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (defendingLocation.getZ ()).getRow ().get
 				(defendingLocation.getY ()).getCell ().set (defendingLocation.getX (), monsterUnitID);
 		}
 		else
@@ -263,7 +266,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
 		combatLocation.setX (defendingLocation.getX ());
 		combatLocation.setY (defendingLocation.getY ());
-		combatLocation.setPlane (Math.max (defendingLocation.getPlane (), attackingFrom.getPlane ()));
+		combatLocation.setZ (Math.max (defendingLocation.getZ (), attackingFrom.getZ ()));
 		
 		// If this is a scheduled combat then check it out... WalkInWithoutAFight may be switched on, in which case we want to move rather than setting up a combat
 		boolean walkInWithoutAFight = false;
@@ -273,12 +276,12 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Record the scheduled combat ID
 		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		tc.setScheduledCombatURN (scheduledCombatURN);
 		
 		// Find out who we're attacking - if an empty lair, we can get null here
 		final MemoryUnit firstDefendingUnit = getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-			defendingLocation.getX (), defendingLocation.getY (), defendingLocation.getPlane (), 0);
+			defendingLocation.getX (), defendingLocation.getY (), defendingLocation.getZ (), 0);
 		PlayerServerDetails defendingPlayer = (firstDefendingUnit == null) ? null : MultiplayerSessionServerUtils.findPlayerWithID
 			(mom.getPlayers (), firstDefendingUnit.getOwningPlayerID (), "startCombat");
 		final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
@@ -412,7 +415,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// Move down-left to start of row...
 			for (int n = 0; n < COMBAT_SETUP_UNITS_PER_ROW/2; n++)
-				CoordinateSystemUtils.moveCoordinates (combatMapCoordinateSystem, coords, 6);
+				getCoordinateSystemUtils ().moveCoordinates (combatMapCoordinateSystem, coords, 6);
 			
 			// ..then position units in an up-right fashion to fill the row
 			for (int n = 0; n < COMBAT_SETUP_UNITS_PER_ROW; n++)
@@ -420,12 +423,12 @@ public final class CombatProcessingImpl implements CombatProcessing
 				if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0)
 					maxUnitsInThisRow++;
 				
-				CoordinateSystemUtils.moveCoordinates (combatMapCoordinateSystem, coords, 2);
+				getCoordinateSystemUtils ().moveCoordinates (combatMapCoordinateSystem, coords, 2);
 			}
 			
 			maxUnitsInRow.add (maxUnitsInThisRow);
-			CoordinateSystemUtils.moveCoordinates (combatMapCoordinateSystem, centre,
-				CoordinateSystemUtils.normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), unitHeading + 4));
+			getCoordinateSystemUtils ().moveCoordinates (combatMapCoordinateSystem, centre,
+				getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), unitHeading + 4));
 		}
 		
 		return maxUnitsInRow;
@@ -681,14 +684,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 				
 			// Move down-left to start of row...
 			for (int n = 0; n < unitsOnThisRow/2; n++)
-				CoordinateSystemUtils.moveCoordinates (combatMapCoordinateSystem, coords, 6);
+				getCoordinateSystemUtils ().moveCoordinates (combatMapCoordinateSystem, coords, 6);
 				
 			// ..then position units in an up-right fashion to fill the row
 			for (int n = 0; n < unitsOnThisRow; n++)
 			{
 				// Make sure the cell is passable
 				while (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) < 0)
-					CoordinateSystemUtils.moveCoordinates (combatMapCoordinateSystem, coords, 2);
+					getCoordinateSystemUtils ().moveCoordinates (combatMapCoordinateSystem, coords, 2);
 				
 				// Place unit
 				final MemoryUnit trueUnit = unitsToPosition.get (unitNo).getUnit ();
@@ -767,11 +770,11 @@ public final class CombatProcessingImpl implements CombatProcessing
 				
 				// Move up-right to next position
 				unitNo++;
-				CoordinateSystemUtils.moveCoordinates (combatMapCoordinateSystem, coords, 2);
+				getCoordinateSystemUtils ().moveCoordinates (combatMapCoordinateSystem, coords, 2);
 			}
 				
-			CoordinateSystemUtils.moveCoordinates (combatMapCoordinateSystem, centre,
-				CoordinateSystemUtils.normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), unitHeading + 4));
+			getCoordinateSystemUtils ().moveCoordinates (combatMapCoordinateSystem, centre,
+				getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), unitHeading + 4));
 		}
 			
 		log.exiting (CombatProcessingImpl.class.getName (), "placeCombatUnits");
@@ -874,7 +877,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			{combatLocation.toString (), new Boolean (initialFirstTurn).toString (), new Boolean (initialAutoControlHumanPlayer).toString ()});
 
 		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
 		// These get modified by the loop
 		boolean firstTurn = initialFirstTurn;
@@ -984,7 +987,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		log.entering (CombatProcessingImpl.class.getName (), "combatEnded", combatLocation);
 		
 		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
 		// If we're walking into a city that we don't already own (its possible we're moving into our own city if this is a "walk in without a fight")
 		// then don't end the combat just yet - first ask the winner whether they want to capture or raze the city
@@ -1065,7 +1068,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			{
 				log.finest ("Attacking player " + attackingPlayer.getPlayerDescription ().getPlayerName () + " now knows the node/lair/tower to be empty");
 				final MomPersistentPlayerPrivateKnowledge atkPub = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-				atkPub.getNodeLairTowerKnownUnitIDs ().getPlane ().get (combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().set (combatLocation.getX (), "");
+				atkPub.getNodeLairTowerKnownUnitIDs ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().set (combatLocation.getX (), "");
 			}
 			
 			// If the attacker won then advance their units to the target square
@@ -1079,10 +1082,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 				moveTo.setY (combatLocation.getY ());
 				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
 				{
-					moveTo.setPlane (0);
+					moveTo.setZ (0);
 				}
 				else
-					moveTo.setPlane (combatLocation.getPlane ());
+					moveTo.setZ (combatLocation.getZ ());
 				
 				// Put all the attackers in a list, and figure out moveFrom
 				final OverlandMapCoordinatesEx moveFrom = new OverlandMapCoordinatesEx ();
@@ -1094,7 +1097,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 						unitStack.add (trueUnit);
 						moveFrom.setX (trueUnit.getUnitLocation ().getX ());
 						moveFrom.setY (trueUnit.getUnitLocation ().getY ());
-						moveFrom.setPlane (trueUnit.getUnitLocation ().getPlane ());
+						moveFrom.setZ (trueUnit.getUnitLocation ().getZ ());
 					}
 
 				getFogOfWarMidTurnChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
@@ -1120,9 +1123,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 						final OverlandMapCoordinatesEx towerCoords = new OverlandMapCoordinatesEx ();
 						towerCoords.setX (combatLocation.getX ());
 						towerCoords.setY (combatLocation.getY ());
-						towerCoords.setPlane (plane.getPlaneNumber ());
+						towerCoords.setZ (plane.getPlaneNumber ());
 						
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get
 							(combatLocation.getX ()).getTerrainData ().setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 							mom.getPlayers (), towerCoords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
@@ -1286,7 +1289,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	{
 		log.entering (CombatProcessingImpl.class.getName (), "purgeDeadUnitsAndCombatSummonsFromCombat", combatLocation);
 		
-		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
 		// Is this someone attacking a node/lair/tower?
 		// If DefendingPlayer is nil (we wiped out the monsters), there'll be no monsters to remove, so in which case we don't care that we get this value wrong
@@ -1423,7 +1426,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		log.entering (CombatProcessingImpl.class.getName (), "setUnitIntoOrTakeUnitOutOfCombat", new String [] {new Integer (trueUnit.getUnitURN ()).toString (),
 			(combatSide == null) ? "Side null" : combatSide.toString (), (combatLocation == null) ? "Loc null" : combatLocation.toString ()});
 
-		final MemoryGridCell tc = trueTerrain.getPlane ().get (terrainLocation.getPlane ()).getRow ().get (terrainLocation.getY ()).getCell ().get (terrainLocation.getX ());
+		final MemoryGridCell tc = trueTerrain.getPlane ().get (terrainLocation.getZ ()).getRow ().get (terrainLocation.getY ()).getCell ().get (terrainLocation.getX ());
 		
 		// Is this someone attacking a node/lair/tower, and the combat is ending?
 		// If DefendingPlayer is nil (we wiped out the monsters), there'll be no monsters to remove, so in which case we don't care that we get this value wrong
@@ -1564,7 +1567,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Get the grid cell, so we can access the combat map
 		final ServerGridCell combatCell = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
 		// Ranged attacks always reduce movement remaining to zero and never result in the unit actually moving.
 		// The value gets sent to the client by resolveAttack below.
@@ -1584,8 +1587,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 				final int d = movementDirections [movePath.getY ()] [movePath.getX ()];
 				directions.add (0, d);
 				
-				if (!CoordinateSystemUtils.moveCoordinates (mom.getCombatMapCoordinateSystem (), movePath,
-					CoordinateSystemUtils.normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), d+4)))
+				if (!getCoordinateSystemUtils ().moveCoordinates (mom.getCombatMapCoordinateSystem (), movePath,
+					getCoordinateSystemUtils ().normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), d+4)))
 					
 					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (B)");
 			}
@@ -1610,7 +1613,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				moveStep.setX (movePath.getX ());
 				moveStep.setY (movePath.getY ());
 
-				if (!CoordinateSystemUtils.moveCoordinates (mom.getCombatMapCoordinateSystem (), moveStep, d))
+				if (!getCoordinateSystemUtils ().moveCoordinates (mom.getCombatMapCoordinateSystem (), moveStep, d))
 					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (F)");
 				
 				// How much movement did it take us to walk into this cell?
@@ -1668,7 +1671,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			case RANGED:
 				resolveAttack (tu, getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 					combatLocation, moveTo), attackingPlayer, defendingPlayer,
-					CoordinateSystemUtils.determineDirectionTo (mom.getCombatMapCoordinateSystem (), tu.getCombatPosition (), moveTo),
+					getCoordinateSystemUtils ().determineDirectionTo (mom.getCombatMapCoordinateSystem (), tu.getCombatPosition (), moveTo),
 					true, combatLocation, mom);
 				break;
 				
@@ -1743,7 +1746,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Make the units face each other
 		attacker.setCombatHeading (attackerDirection);
-		defender.setCombatHeading (CoordinateSystemUtils.normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), attackerDirection + 4));
+		defender.setCombatHeading (getCoordinateSystemUtils ().normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), attackerDirection + 4));
 		
 		// Both attack simultaneously, before damage is applied
 		// Defender only retaliates against close combat attacks, not ranged attacks
@@ -2276,5 +2279,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

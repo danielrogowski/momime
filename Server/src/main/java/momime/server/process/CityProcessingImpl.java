@@ -49,7 +49,7 @@ import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
 
-import com.ndg.map.areas.StringMapArea2DArray;
+import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -122,7 +122,7 @@ public final class CityProcessingImpl implements CityProcessing
 		final int totalFoodBonusFromBuildings = getServerCityCalculations ().calculateTotalFoodBonusFromBuildings (db);
 
 		// Allocate a race to each continent of land for raider cities
-		final List<StringMapArea2DArray> continentalRace = getOverlandMapServerUtils ().decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getMapSize (), db);
+		final MapArea3D<String> continentalRace = getOverlandMapServerUtils ().decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getMapSize (), db);
 
 		// Now create cities for each player
 		for (final PlayerServerDetails thisPlayer : players)
@@ -182,7 +182,7 @@ public final class CityProcessingImpl implements CityProcessing
 					// Have a good chance of just picking the continental race ID
 					if (getRandomUtils ().nextInt (100) < sd.getMapSize ().getContinentalRaceChance ())
 					{
-						final String raceID = continentalRace.get (plane).get (cityLocation);
+						final String raceID = continentalRace.get (cityLocation);
 						if (raceID == null)
 							throw new MomException ("createStartingCities: Tried to create Raider city with Continental race, but this tile has no continental race");
 
@@ -219,7 +219,7 @@ public final class CityProcessingImpl implements CityProcessing
 							final OverlandMapCoordinatesEx buildingCoords = new OverlandMapCoordinatesEx ();
 							buildingCoords.setX (cityLocation.getX ());
 							buildingCoords.setY (cityLocation.getY ());
-							buildingCoords.setPlane (cityLocation.getPlane ());
+							buildingCoords.setZ (cityLocation.getZ ());
 
 							final MemoryBuilding wizardBuilding = new MemoryBuilding ();
 							wizardBuilding.setBuildingID (thisBuilding.getBuildingID ());
@@ -237,7 +237,7 @@ public final class CityProcessingImpl implements CityProcessing
 							final OverlandMapCoordinatesEx buildingCoords = new OverlandMapCoordinatesEx ();
 							buildingCoords.setX (cityLocation.getX ());
 							buildingCoords.setY (cityLocation.getY ());
-							buildingCoords.setPlane (cityLocation.getPlane ());
+							buildingCoords.setZ (cityLocation.getZ ());
 
 							final MemoryBuilding raiderBuilding = new MemoryBuilding ();
 							raiderBuilding.setBuildingID (thisBuilding.getBuildingID ());
@@ -254,7 +254,7 @@ public final class CityProcessingImpl implements CityProcessing
 							final OverlandMapCoordinatesEx unitCoords = new OverlandMapCoordinatesEx ();
 							unitCoords.setX (cityLocation.getX ());
 							unitCoords.setY (cityLocation.getY ());
-							unitCoords.setPlane (cityLocation.getPlane ());
+							unitCoords.setZ (cityLocation.getZ ());
 
 							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db);
 						}
@@ -302,7 +302,7 @@ public final class CityProcessingImpl implements CityProcessing
 						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
-						cityLocation.setPlane (plane.getPlaneNumber ());
+						cityLocation.setZ (plane.getPlaneNumber ());
 
 						final CalculateCityProductionResults cityProductions = getCityCalculations ().calculateAllCityProductions
 							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db);
@@ -498,7 +498,7 @@ public final class CityProcessingImpl implements CityProcessing
 	{
 		log.entering (CityProcessingImpl.class.getName (), "sellBuilding", new String [] {cityLocation.toString (), buildingID});
 
-		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, tc.getCityData ().getCityOwnerID (), "sellBuilding");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
@@ -619,7 +619,7 @@ public final class CityProcessingImpl implements CityProcessing
 								(cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())))
 							{
 								final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
-								cityLocation.setPlane (plane.getPlaneNumber ());
+								cityLocation.setZ (plane.getPlaneNumber ());
 								cityLocation.setX (x);
 								cityLocation.setY (y);
 								

@@ -1654,7 +1654,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u1loc = new OverlandMapCoordinatesEx ();
 		u1loc.setX (20);
 		u1loc.setY (10);
-		u1loc.setPlane (1);
+		u1loc.setZ (1);
 
 		final MemoryUnit u1 = new MemoryUnit ();
 		u1.setUnitID ("A");
@@ -1667,7 +1667,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u2loc = new OverlandMapCoordinatesEx ();
 		u2loc.setX (21);
 		u2loc.setY (10);
-		u2loc.setPlane (1);
+		u2loc.setZ (1);
 
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setUnitID ("A");
@@ -1680,7 +1680,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u3loc = new OverlandMapCoordinatesEx ();
 		u3loc.setX (20);
 		u3loc.setY (10);
-		u3loc.setPlane (1);
+		u3loc.setZ (1);
 
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setUnitID ("A");
@@ -1692,7 +1692,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u4loc = new OverlandMapCoordinatesEx ();
 		u4loc.setX (20);
 		u4loc.setY (10);
-		u4loc.setPlane (1);
+		u4loc.setZ (1);
 
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setUnitID ("A");
@@ -1705,7 +1705,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u5loc = new OverlandMapCoordinatesEx ();
 		u5loc.setX (20);
 		u5loc.setY (10);
-		u5loc.setPlane (1);
+		u5loc.setZ (1);
 
 		final MemoryUnit u5 = new MemoryUnit ();
 		u5.setUnitID ("B");
@@ -1721,7 +1721,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx loc = new OverlandMapCoordinatesEx ();
 		loc.setX (20);
 		loc.setY (10);
-		loc.setPlane (1);
+		loc.setZ (1);
 
 		utils.resetUnitCombatMovement (units, 1, loc, db);
 
@@ -1783,7 +1783,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 		u2location.setX (2);
 		u2location.setY (3);
-		u2location.setPlane (0);
+		u2location.setZ (0);
 
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setOwningPlayerID (5);
@@ -1795,7 +1795,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u3location = new OverlandMapCoordinatesEx ();
 		u3location.setX (2);
 		u3location.setY (3);
-		u3location.setPlane (1);
+		u3location.setZ (1);
 
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setOwningPlayerID (4);
@@ -1807,7 +1807,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u4location = new OverlandMapCoordinatesEx ();
 		u4location.setX (2);
 		u4location.setY (3);
-		u4location.setPlane (1);
+		u4location.setZ (1);
 
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setOwningPlayerID (5);
@@ -1818,7 +1818,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u5location = new OverlandMapCoordinatesEx ();
 		u5location.setX (2);
 		u5location.setY (3);
-		u5location.setPlane (1);
+		u5location.setZ (1);
 
 		final MemoryUnit u5 = new MemoryUnit ();
 		u5.setOwningPlayerID (5);
@@ -1833,7 +1833,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u6location = new OverlandMapCoordinatesEx ();
 		u6location.setX (2);
 		u6location.setY (3);
-		u6location.setPlane (1);
+		u6location.setZ (1);
 
 		final MemoryUnit u6 = new MemoryUnit ();
 		u6.setOwningPlayerID (5);
@@ -1863,7 +1863,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
 		u2location.setX (2);
 		u2location.setY (3);
-		u2location.setPlane (0);
+		u2location.setZ (0);
 
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setOwningPlayerID (5);
@@ -1875,7 +1875,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u3location = new OverlandMapCoordinatesEx ();
 		u3location.setX (2);
 		u3location.setY (3);
-		u3location.setPlane (1);
+		u3location.setZ (1);
 
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setOwningPlayerID (4);
@@ -1887,7 +1887,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u4location = new OverlandMapCoordinatesEx ();
 		u4location.setX (2);
 		u4location.setY (3);
-		u4location.setPlane (1);
+		u4location.setZ (1);
 
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setOwningPlayerID (5);
@@ -1898,7 +1898,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u5location = new OverlandMapCoordinatesEx ();
 		u5location.setX (2);
 		u5location.setY (3);
-		u5location.setPlane (1);
+		u5location.setZ (1);
 
 		final MemoryUnit u5 = new MemoryUnit ();
 		u5.setOwningPlayerID (5);
@@ -1913,7 +1913,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u6location = new OverlandMapCoordinatesEx ();
 		u6location.setX (2);
 		u6location.setY (3);
-		u6location.setPlane (1);
+		u6location.setZ (1);
 
 		final MemoryUnit u6 = new MemoryUnit ();
 		u6.setOwningPlayerID (5);
@@ -1927,7 +1927,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx u7location = new OverlandMapCoordinatesEx ();
 		u7location.setX (2);
 		u7location.setY (3);
-		u7location.setPlane (1);
+		u7location.setZ (1);
 
 		final MemoryUnit u7 = new MemoryUnit ();
 		u7.setOwningPlayerID (5);
@@ -1980,7 +1980,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx loc1 = new OverlandMapCoordinatesEx ();
 		loc1.setX (20);
 		loc1.setY (10);
-		loc1.setPlane (1);
+		loc1.setZ (1);
 		
 		final CombatMapCoordinatesEx pos1 = new CombatMapCoordinatesEx ();
 		pos1.setX (14);
@@ -1997,7 +1997,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx loc2 = new OverlandMapCoordinatesEx ();
 		loc2.setX (21);
 		loc2.setY (10);
-		loc2.setPlane (1);
+		loc2.setZ (1);
 		
 		final CombatMapCoordinatesEx pos2 = new CombatMapCoordinatesEx ();
 		pos2.setX (14);
@@ -2014,7 +2014,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx loc3 = new OverlandMapCoordinatesEx ();
 		loc3.setX (20);
 		loc3.setY (10);
-		loc3.setPlane (1);
+		loc3.setZ (1);
 		
 		final CombatMapCoordinatesEx pos3 = new CombatMapCoordinatesEx ();
 		pos3.setX (15);
@@ -2034,7 +2034,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx loc = new OverlandMapCoordinatesEx ();
 		loc.setX (20);
 		loc.setY (10);
-		loc.setPlane (1);
+		loc.setZ (1);
 		
 		final CombatMapCoordinatesEx pos = new CombatMapCoordinatesEx ();
 		pos.setX (14);
@@ -2046,7 +2046,7 @@ public final class TestUnitUtilsImpl
 		final OverlandMapCoordinatesEx loc4 = new OverlandMapCoordinatesEx ();
 		loc4.setX (20);
 		loc4.setY (10);
-		loc4.setPlane (1);
+		loc4.setZ (1);
 		
 		final CombatMapCoordinatesEx pos4 = new CombatMapCoordinatesEx ();
 		pos4.setX (14);

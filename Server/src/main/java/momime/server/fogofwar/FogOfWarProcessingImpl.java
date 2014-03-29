@@ -55,7 +55,7 @@ import momime.server.messages.ServerMemoryGridCellUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.MapCoordinates;
+import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -97,6 +97,9 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	
 	/** Server-only unit calculations */
 	private MomServerUnitCalculations serverUnitCalculations;
+
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
 	 * Marks that we can see a particular cell
@@ -148,21 +151,21 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		canSee (fogOfWarArea, x, y, plane);
 
 		// Then around the each square 'ring'
-		final MapCoordinates coords = new MapCoordinates ();
+		final MapCoordinates2D coords = new MapCoordinates2D ();
 		coords.setX (x);
 		coords.setY (y);
 
 		for (int ringNumber = 1; ringNumber <= radius; ringNumber++)
 		{
 			// Move down-left
-			CoordinateSystemUtils.moveCoordinates (sys, coords, SquareMapDirection.SOUTHWEST.getDirectionID ());
+			getCoordinateSystemUtils ().moveCoordinates (sys, coords, SquareMapDirection.SOUTHWEST.getDirectionID ());
 
 			// Go around the ring
 			for (int directionChk = 0; directionChk < 4; directionChk++)
 			{
 				final int d = (directionChk * 2) + 1;
 				for (int traceSide = 0; traceSide < ringNumber * 2; traceSide++)
-					if (CoordinateSystemUtils.moveCoordinates (sys, coords, d))
+					if (getCoordinateSystemUtils ().moveCoordinates (sys, coords, d))
 						canSee (fogOfWarArea, coords.getX (), coords.getY (), plane);
 			}
 		}
@@ -216,7 +219,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 							final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 							coords.setX (x);
 							coords.setY (y);
-							coords.setPlane (plane.getPlaneNumber ());
+							coords.setZ (plane.getPlaneNumber ());
 
 							// Our city
 							if ((trueCity.getCityOwnerID () != null) && (trueCity.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
@@ -230,8 +233,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 								{
 									// Standard city pattern
 									for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-										if (CoordinateSystemUtils.moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
-											canSee (priv.getFogOfWar (), coords.getX (), coords.getY (), coords.getPlane ());
+										if (getCoordinateSystemUtils ().moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
+											canSee (priv.getFogOfWar (), coords.getX (), coords.getY (), coords.getZ ());
 								}
 							}
 
@@ -251,7 +254,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 						(thisUnit, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db);
 
 					// If standing in a tower, can see both planes
-					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
+					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ()))
 					{
 						for (final Plane plane : db.getPlane ())
@@ -259,7 +262,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					}
 					else
 						// Can see single plane only
-						canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), thisUnit.getUnitLocation ().getPlane (), scoutingRange);
+						canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), thisUnit.getUnitLocation ().getZ (), scoutingRange);
 				}
 
 			// Check what areas we can see because of visibility spells
@@ -271,7 +274,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					final Integer scoutingRange = db.findSpell (thisSpell.getSpellID (), "markVisibleArea").getSpellScoutingRange ();
 					if (scoutingRange != null)
 						canSeeRadius (priv.getFogOfWar (), sd.getMapSize (), thisSpell.getCityLocation ().getX (),
-							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getPlane (), scoutingRange);
+							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getZ (), scoutingRange);
 				}
 		}
 
@@ -404,7 +407,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 					coords.setX (x);
 					coords.setY (y);
-					coords.setPlane (plane.getPlaneNumber ());
+					coords.setZ (plane.getPlaneNumber ());
 
 					// Check for changes in the terrain
 					switch (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ()))
@@ -512,7 +515,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			//
 			// In both cases action will be 'update', but that isn't enough to go on, since in (2) just because action=update doesn't mean that we don't
 			// still have the building in our list from remembering it from last time we saw it
-			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisBuilding.getCityLocation ().getPlane ()).getRow ().get
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisBuilding.getCityLocation ().getZ ()).getRow ().get
 				(thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ());
 
 			if (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
@@ -537,7 +540,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			// This can happen one of two ways:
 			// 1) We need to forget what's at that location (FOW setting = forget, and we've walked away)
 			// 2) We've remembered the buildings that used to be at a city, but in between scouting it last time and it coming into view now, some of those buildings have been destroyed
-			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisBuilding.getCityLocation ().getPlane ()).getRow ().get
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisBuilding.getCityLocation ().getZ ()).getRow ().get
 				(thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ());
 
 			final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
@@ -567,7 +570,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				final PlayerServerDetails unitOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, thisUnit.getOwningPlayerID (), "canSeeUnitMidTurn");
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
 				
-				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
+				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 					(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ();
 				
 				if ((thisUnit.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ()) &&
@@ -599,7 +602,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					}
 					else
 						// Outside of a tower - only one plane to consider
-						states.add (priv.getFogOfWar ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
+						states.add (priv.getFogOfWar ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 
 					// Convert to update actions
@@ -621,12 +624,12 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 							msg.getAddUnit ().add (getFogOfWarDuplication ().createAddUnitMessage (thisUnit, db));
 
 						// If this is a unit standing on a node or tower, then that proves that the node or tower has been cleared of monsters
-						final String nodeLairTowerKnownUnitID = priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
+						final String nodeLairTowerKnownUnitID = priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ());
 
 						if ((ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)) && (!CompareUtils.safeStringCompare (nodeLairTowerKnownUnitID, "")))	// know it to be empty
 						{
-							priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
+							priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 								(thisUnit.getUnitLocation ().getY ()).getCell ().set (thisUnit.getUnitLocation ().getX (), "");
 
 							if (msg != null)
@@ -635,7 +638,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 									final OverlandMapCoordinatesEx scoutMsgCoords = new OverlandMapCoordinatesEx ();
 									scoutMsgCoords.setX (thisUnit.getUnitLocation ().getX ());
 									scoutMsgCoords.setY (thisUnit.getUnitLocation ().getY ());
-									scoutMsgCoords.setPlane (thisUnit.getUnitLocation ().getPlane ());
+									scoutMsgCoords.setZ (thisUnit.getUnitLocation ().getZ ());
 
 									final UpdateNodeLairTowerUnitIDMessageData scoutMsg = new UpdateNodeLairTowerUnitIDMessageData ();
 									scoutMsg.setNodeLairTowerLocation (scoutMsgCoords);
@@ -661,7 +664,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				final PlayerServerDetails unitOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, thisUnit.getOwningPlayerID (), "canSeeUnitMidTurn");
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
 
-				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
+				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 					(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ();
 
 				if ((ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))
@@ -688,7 +691,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					}
 					else
 						// Outside of a tower - only one plane to consider
-						states.add (priv.getFogOfWar ().getPlane ().get (thisUnit.getUnitLocation ().getPlane ()).getRow ().get
+						states.add (priv.getFogOfWar ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 
 					// Convert to update actions
@@ -760,7 +763,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					//
 					// In both cases action will be 'update', but that isn't enough to go on, since in (2) just because action=update doesn't mean that we don't
 					// still have the spell in our list from remembering it from last time we saw it
-					final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisSpell.getCityLocation ().getPlane ()).getRow ().get
+					final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisSpell.getCityLocation ().getZ ()).getRow ().get
 						(thisSpell.getCityLocation ().getY ()).getCell ().get (thisSpell.getCityLocation ().getX ());
 
 					needToUpdate = (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE);
@@ -793,7 +796,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					// This can happen one of two ways:
 					// 1) We need to forget what's at that location (FOW setting = forget, and we've walked away)
 					// 2) We've remembered a CAE that used to be here, but in between scouting it last time and it coming into view now, some of those CAEs have been switched off
-					final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisSpell.getCityLocation ().getPlane ()).getRow ().get
+					final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisSpell.getCityLocation ().getZ ()).getRow ().get
 						(thisSpell.getCityLocation ().getY ()).getCell ().get (thisSpell.getCityLocation ().getX ());
 
 					final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
@@ -836,7 +839,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				//
 				// In both cases action will be 'update', but that isn't enough to go on, since in (2) just because action=update doesn't mean that we don't
 				// still have the CAE in our list from remembering it from last time we saw it
-				final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisCAE.getMapLocation ().getPlane ()).getRow ().get
+				final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisCAE.getMapLocation ().getZ ()).getRow ().get
 					(thisCAE.getMapLocation ().getY ()).getCell ().get (thisCAE.getMapLocation ().getX ());
 
 				if (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
@@ -863,7 +866,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				// This can happen one of two ways:
 				// 1) We need to forget what's at that location (FOW setting = forget, and we've walked away)
 				// 2) We've remembered a CAE that used to be here, but in between scouting it last time and it coming into view now, some of those CAEs have been switched off
-				final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisCAE.getMapLocation ().getPlane ()).getRow ().get
+				final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (thisCAE.getMapLocation ().getZ ()).getRow ().get
 					(thisCAE.getMapLocation ().getY ()).getCell ().get (thisCAE.getMapLocation ().getX ());
 
 				final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
@@ -897,7 +900,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 					coords.setX (x);
 					coords.setY (y);
-					coords.setPlane (plane.getPlaneNumber ());
+					coords.setZ (plane.getPlaneNumber ());
 
 					switch (row.get (x))
 					{
@@ -1072,5 +1075,21 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	public final void setServerUnitCalculations (final MomServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

@@ -87,7 +87,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		if (error == null)
 		{
 			final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(tu.getCombatLocation ().getPlane ()).getRow ().get (tu.getCombatLocation ().getY ()).getCell ().get (tu.getCombatLocation ().getX ());
+				(tu.getCombatLocation ().getZ ()).getRow ().get (tu.getCombatLocation ().getY ()).getCell ().get (tu.getCombatLocation ().getX ());
 
 			final int [] [] doubleMovementDistances = new int [mom.getCombatMapCoordinateSystem ().getHeight ()] [mom.getCombatMapCoordinateSystem ().getWidth ()];
 			

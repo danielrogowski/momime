@@ -83,7 +83,7 @@ public final class TestCityProcessingImpl
 		
 		// City location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 		cityLocation.setX (20);
 		cityLocation.setY (10);
 		
@@ -160,7 +160,7 @@ public final class TestCityProcessingImpl
 		
 		// City location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 		cityLocation.setX (20);
 		cityLocation.setY (10);
 		
@@ -237,7 +237,7 @@ public final class TestCityProcessingImpl
 		
 		// City location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 		cityLocation.setX (20);
 		cityLocation.setY (10);
 		
@@ -315,7 +315,7 @@ public final class TestCityProcessingImpl
 		
 		// City location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 		cityLocation.setX (20);
 		cityLocation.setY (10);
 		
@@ -373,7 +373,7 @@ public final class TestCityProcessingImpl
 		final OverlandMapCoordinatesEx cityLocation1 = new OverlandMapCoordinatesEx ();
 		cityLocation1.setX (23);
 		cityLocation1.setY (15);
-		cityLocation1.setPlane (0);
+		cityLocation1.setZ (0);
 		
 		final OverlandMapCityData cityData1 = new OverlandMapCityData ();
 		cityData1.setCityOwnerID (3);
@@ -386,7 +386,7 @@ public final class TestCityProcessingImpl
 		final OverlandMapCoordinatesEx cityLocation2 = new OverlandMapCoordinatesEx ();
 		cityLocation2.setX (24);
 		cityLocation2.setY (15);
-		cityLocation2.setPlane (0);
+		cityLocation2.setZ (0);
 		
 		final OverlandMapCityData cityData2 = new OverlandMapCityData ();
 		cityData2.setCityOwnerID (3);
@@ -399,7 +399,7 @@ public final class TestCityProcessingImpl
 		final OverlandMapCoordinatesEx cityLocation3 = new OverlandMapCoordinatesEx ();
 		cityLocation3.setX (25);
 		cityLocation3.setY (15);
-		cityLocation3.setPlane (0);
+		cityLocation3.setZ (0);
 		
 		final OverlandMapCityData cityData3 = new OverlandMapCityData ();
 		cityData3.setCityOwnerID (4);

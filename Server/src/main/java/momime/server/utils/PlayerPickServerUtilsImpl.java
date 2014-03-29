@@ -132,12 +132,12 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 *
 	 * @param player Player choosing custom picks
 	 * @param picks The custom picks they have requested
-	 * @param sd Session description
+	 * @param humanSpellPicks Number of picks that human players get at the start of the game, from the session description - difficulty level
 	 * @param db Lookup lists built over the XML database
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
 	@Override
-	public final String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final MomSessionDescription sd, final ServerDatabaseEx db)
+	public final String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final int humanSpellPicks, final ServerDatabaseEx db)
 	{
 		log.entering (PlayerPickServerUtilsImpl.class.getName (), "validateCustomPicks", new Integer [] {player.getPlayerDescription ().getPlayerID (), picks.size ()});
 
@@ -167,7 +167,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 				}
 
 				// Right total?
-				if (totalPickCost != sd.getDifficultyLevel ().getHumanSpellPicks ())
+				if (totalPickCost != humanSpellPicks)
 					msg = "Incorrect number of custom picks chosen, please try again";
 			}
 			catch (final RecordNotFoundException e)
@@ -190,7 +190,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @return Message containing magic realm and counts of how many spells we need to pick of each rank - can be an empty list; null indicates that the quantity of pick we have doesn't grant any free spells
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
-	private final ChooseInitialSpellsNowMessage countFreeSpellsLeftToChoose (final PlayerServerDetails player, final PlayerPick pick, final ServerDatabaseEx db)
+	final ChooseInitialSpellsNowMessage countFreeSpellsLeftToChoose (final PlayerServerDetails player, final PlayerPick pick, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
 		log.entering (PlayerPickServerUtilsImpl.class.getName (), "countFreeSpellsLeftToChoose", player.getPlayerDescription ().getPlayerID ());

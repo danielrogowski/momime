@@ -64,7 +64,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 			tc = null;
 		else
 			tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(getCityLocation ().getPlane ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		
 		final Building building;
 		final int goldFromSellingBuilding;

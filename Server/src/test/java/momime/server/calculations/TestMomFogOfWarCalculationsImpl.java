@@ -68,14 +68,14 @@ public final class TestMomFogOfWarCalculationsImpl
 		final OverlandMapCoordinatesEx towerOnMyrror = new OverlandMapCoordinatesEx ();
 		towerOnMyrror.setX (2);
 		towerOnMyrror.setY (2);
-		towerOnMyrror.setPlane (1);
+		towerOnMyrror.setZ (1);
 
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (3).setTerrainData (new OverlandMapTerrainData ());
 
 		final OverlandMapCoordinatesEx otherLocationOnMyrror = new OverlandMapCoordinatesEx ();
 		otherLocationOnMyrror.setX (3);
 		otherLocationOnMyrror.setY (2);
-		otherLocationOnMyrror.setPlane (1);
+		otherLocationOnMyrror.setZ (1);
 
 		// Never seen location on either plane
 		assertFalse (calc.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));

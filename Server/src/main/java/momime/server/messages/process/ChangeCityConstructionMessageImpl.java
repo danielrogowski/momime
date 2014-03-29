@@ -49,7 +49,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final String error = getCityServerUtils ().validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			(OverlandMapCoordinatesEx) getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription (), mom.getServerDB ());
+			(OverlandMapCoordinatesEx) getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription ().getMapSize (), mom.getServerDB ());
 
 		if (error != null)
 		{
@@ -64,7 +64,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 		{
 			// Update construction on true map
 			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(getCityLocation ().getPlane ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 			cityData.setCurrentlyConstructingBuildingOrUnitID (getBuildingOrUnitID ());
 
 			// Send update to clients

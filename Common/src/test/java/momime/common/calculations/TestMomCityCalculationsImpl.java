@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
@@ -33,7 +33,9 @@ import momime.common.utils.PlayerPickUtilsImpl;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.map.areas.BooleanMapArea2DArray;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.areas.operations.MapAreaOperations2DImpl;
+import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -52,12 +54,13 @@ public final class TestMomCityCalculationsImpl
 	{
 		// Set up object to test
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -91,12 +94,13 @@ public final class TestMomCityCalculationsImpl
 	{
 		// Set up object to test
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -137,12 +141,13 @@ public final class TestMomCityCalculationsImpl
 	{
 		// Set up object to test
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -172,12 +177,13 @@ public final class TestMomCityCalculationsImpl
 	{
 		// Set up object to test
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -209,12 +215,13 @@ public final class TestMomCityCalculationsImpl
 	{
 		// Set up object to test
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -295,7 +302,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -386,7 +393,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx granaryLocation = new OverlandMapCoordinatesEx ();
 		granaryLocation.setX (2);
 		granaryLocation.setY (2);
-		granaryLocation.setPlane (0);
+		granaryLocation.setZ (0);
 
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID (GenerateTestData.GRANARY);
@@ -396,7 +403,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx farmersMarketLocation = new OverlandMapCoordinatesEx ();
 		farmersMarketLocation.setX (2);
 		farmersMarketLocation.setY (2);
-		farmersMarketLocation.setPlane (0);
+		farmersMarketLocation.setZ (0);
 
 		final MemoryBuilding farmersMarket = new MemoryBuilding ();
 		farmersMarket.setBuildingID (GenerateTestData.FARMERS_MARKET);
@@ -406,7 +413,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx sagesGuildLocation = new OverlandMapCoordinatesEx ();
 		sagesGuildLocation.setX (2);
 		sagesGuildLocation.setY (2);
-		sagesGuildLocation.setPlane (0);
+		sagesGuildLocation.setZ (0);
 
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
 		sagesGuild.setBuildingID (GenerateTestData.SAGES_GUILD);
@@ -500,7 +507,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (0);
+		cityLocation.setZ (0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -574,7 +581,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx shrineLocation = new OverlandMapCoordinatesEx ();
 		shrineLocation.setX (2);
 		shrineLocation.setY (2);
-		shrineLocation.setPlane (0);
+		shrineLocation.setZ (0);
 
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID (GenerateTestData.SHRINE);
@@ -604,7 +611,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx secondBuildingLocation = new OverlandMapCoordinatesEx ();
 		secondBuildingLocation.setX (2);
 		secondBuildingLocation.setY (2);
-		secondBuildingLocation.setPlane (0);
+		secondBuildingLocation.setZ (0);
 
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID (GenerateTestData.ANIMISTS_GUILD);
@@ -649,7 +656,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx normalUnitLocation = new OverlandMapCoordinatesEx ();
 		normalUnitLocation.setX (2);
 		normalUnitLocation.setY (2);
-		normalUnitLocation.setPlane (0);
+		normalUnitLocation.setZ (0);
 
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
@@ -679,7 +686,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx heroUnitLocation = new OverlandMapCoordinatesEx ();
 		heroUnitLocation.setX (2);
 		heroUnitLocation.setY (2);
-		heroUnitLocation.setPlane (0);
+		heroUnitLocation.setZ (0);
 
 		final MemoryUnit heroUnit = new MemoryUnit ();
 		heroUnit.setUnitID (GenerateTestData.DWARF_HERO);
@@ -711,7 +718,7 @@ public final class TestMomCityCalculationsImpl
 			final OverlandMapCoordinatesEx deadUnitLocation = new OverlandMapCoordinatesEx ();
 			deadUnitLocation.setX (2);
 			deadUnitLocation.setY (2);
-			deadUnitLocation.setPlane (0);
+			deadUnitLocation.setZ (0);
 
 			final MemoryUnit deadUnit = new MemoryUnit ();
 			deadUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
@@ -722,7 +729,7 @@ public final class TestMomCityCalculationsImpl
 			final OverlandMapCoordinatesEx summonedUnitLocation = new OverlandMapCoordinatesEx ();
 			summonedUnitLocation.setX (2);
 			summonedUnitLocation.setY (2);
-			summonedUnitLocation.setPlane (0);
+			summonedUnitLocation.setZ (0);
 
 			final MemoryUnit summonedUnit = new MemoryUnit ();
 			summonedUnit.setUnitID (GenerateTestData.WAR_BEARS_UNIT);
@@ -753,7 +760,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx fortressLocation = new OverlandMapCoordinatesEx ();
 		fortressLocation.setX (2);
 		fortressLocation.setY (2);
-		fortressLocation.setPlane (0);
+		fortressLocation.setZ (0);
 
 		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
@@ -803,7 +810,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx capitalCityLocation = new OverlandMapCoordinatesEx ();
 		capitalCityLocation.setX (20);
 		capitalCityLocation.setY (2);
-		capitalCityLocation.setPlane (0);
+		capitalCityLocation.setZ (0);
 
 		final OverlandMapCityData capitalCityData = new OverlandMapCityData ();
 		capitalCityData.setCityRaceID (GenerateTestData.DWARVES);
@@ -845,12 +852,13 @@ public final class TestMomCityCalculationsImpl
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -994,7 +1002,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx fortressLocation = new OverlandMapCoordinatesEx ();
 		fortressLocation.setX (2);
 		fortressLocation.setY (2);
-		fortressLocation.setPlane (1);
+		fortressLocation.setZ (1);
 
 		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
@@ -1039,7 +1047,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx sagesGuildLocation = new OverlandMapCoordinatesEx ();
 		sagesGuildLocation.setX (2);
 		sagesGuildLocation.setY (2);
-		sagesGuildLocation.setPlane (1);
+		sagesGuildLocation.setZ (1);
 
 		final MemoryBuilding sagesGuildBuilding = new MemoryBuilding ();
 		sagesGuildBuilding.setBuildingID (GenerateTestData.SAGES_GUILD);
@@ -1049,7 +1057,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx sawmillLocation = new OverlandMapCoordinatesEx ();
 		sawmillLocation.setX (2);
 		sawmillLocation.setY (2);
-		sawmillLocation.setPlane (1);
+		sawmillLocation.setZ (1);
 
 		final MemoryBuilding sawmillBuilding = new MemoryBuilding ();
 		sawmillBuilding.setBuildingID (GenerateTestData.SAWMILL);
@@ -1144,7 +1152,7 @@ public final class TestMomCityCalculationsImpl
 		final OverlandMapCoordinatesEx minersGuildLocation = new OverlandMapCoordinatesEx ();
 		minersGuildLocation.setX (2);
 		minersGuildLocation.setY (2);
-		minersGuildLocation.setPlane (1);
+		minersGuildLocation.setZ (1);
 
 		final MemoryBuilding minersGuildBuilding = new MemoryBuilding ();
 		minersGuildBuilding.setBuildingID (GenerateTestData.MINERS_GUILD);
@@ -1386,13 +1394,14 @@ public final class TestMomCityCalculationsImpl
 		// Set up object to test
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// This is the same initial setup as the calculateAllCityProductions test
 		// Location
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -1541,10 +1550,12 @@ public final class TestMomCityCalculationsImpl
 	{
 		// Set up object to test
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final MapAreaOperations2DImpl<Boolean> op = new MapAreaOperations2DImpl<Boolean> (); 
 
 		// Coordinate system
 		final MapSizeData mapSize = new MapSizeData ();
@@ -1557,24 +1568,24 @@ public final class TestMomCityCalculationsImpl
 		mapSize.setCitySeparation (3);
 
 		// No cities
-		final BooleanMapArea2DArray none = calc.markWithinExistingCityRadius (map, 1, mapSize);
-		assertEquals (0, none.countCellsEqualTo (true));
+		final MapArea2D<Boolean> none = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		assertEquals (0, op.countCellsEqualTo (none, true));
 
 		// City on the wrong plane
 		final OverlandMapCityData wrongPlaneCity = new OverlandMapCityData ();
 		wrongPlaneCity.setCityPopulation (1);
 		map.getPlane ().get (0).getRow ().get (4).getCell ().get (6).setCityData (wrongPlaneCity);
 
-		final BooleanMapArea2DArray wrongPlane = calc.markWithinExistingCityRadius (map, 1, mapSize);
-		assertEquals (0, wrongPlane.countCellsEqualTo (true));
+		final MapArea2D<Boolean> wrongPlane = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		assertEquals (0, op.countCellsEqualTo (wrongPlane, true));
 
 		// City in the middle of the map
 		final OverlandMapCityData oneCity = new OverlandMapCityData ();
 		oneCity.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (4).getCell ().get (6).setCityData (oneCity);
 
-		final BooleanMapArea2DArray one = calc.markWithinExistingCityRadius (map, 1, mapSize);
-		assertEquals (49, one.countCellsEqualTo (true));
+		final MapArea2D<Boolean> one = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		assertEquals (49, op.countCellsEqualTo (one, true));
 
 		for (int x = 3; x <= 9; x++)
 			for (int y = 1; y <= 7; y++)
@@ -1585,16 +1596,16 @@ public final class TestMomCityCalculationsImpl
 		twoCities.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (1).getCell ().get (16).setCityData (twoCities);
 
-		final BooleanMapArea2DArray two = calc.markWithinExistingCityRadius (map, 1, mapSize);
-		assertEquals (49 + 35, two.countCellsEqualTo (true));
+		final MapArea2D<Boolean> two = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		assertEquals (49 + 35, op.countCellsEqualTo (two, true));
 
 		// 3nd city at left edge of map so some of it gets wrapped
 		final OverlandMapCityData threeCities = new OverlandMapCityData ();
 		threeCities.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (14).getCell ().get (1).setCityData (threeCities);
 
-		final BooleanMapArea2DArray three = calc.markWithinExistingCityRadius (map, 1, mapSize);
-		assertEquals (49 + 49 + 35, three.countCellsEqualTo (true));
+		final MapArea2D<Boolean> three = calc.markWithinExistingCityRadius (map, 1, mapSize);
+		assertEquals (49 + 49 + 35, op.countCellsEqualTo (three, true));
 	}
 
 	/**

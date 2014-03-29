@@ -288,7 +288,7 @@ public final class TestSpellProcessingImpl
 		final OverlandMapCoordinatesEx summoningCircleLocation = new OverlandMapCoordinatesEx ();
 		summoningCircleLocation.setX (15);
 		summoningCircleLocation.setY (25);
-		summoningCircleLocation.setPlane (0);
+		summoningCircleLocation.setZ (0);
 		
 		final MemoryBuilding summoningCircle = new MemoryBuilding ();
 		summoningCircle.setCityLocation (summoningCircleLocation);
@@ -378,7 +378,7 @@ public final class TestSpellProcessingImpl
 		final OverlandMapCoordinatesEx summoningCircleLocation = new OverlandMapCoordinatesEx ();
 		summoningCircleLocation.setX (15);
 		summoningCircleLocation.setY (25);
-		summoningCircleLocation.setPlane (0);
+		summoningCircleLocation.setZ (0);
 		
 		final MemoryBuilding summoningCircle = new MemoryBuilding ();
 		summoningCircle.setCityLocation (summoningCircleLocation);
@@ -494,7 +494,7 @@ public final class TestSpellProcessingImpl
 		final OverlandMapCoordinatesEx summoningCircleLocation = new OverlandMapCoordinatesEx ();
 		summoningCircleLocation.setX (15);
 		summoningCircleLocation.setY (25);
-		summoningCircleLocation.setPlane (0);
+		summoningCircleLocation.setZ (0);
 		
 		final MemoryBuilding summoningCircle = new MemoryBuilding ();
 		summoningCircle.setCityLocation (summoningCircleLocation);

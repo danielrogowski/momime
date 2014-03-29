@@ -51,7 +51,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Validate the requested picks
-		final String error = getPlayerPickServerUtils ().validateCustomPicks (sender, getPick (), mom.getSessionDescription (), mom.getServerDB ());
+		final String error = getPlayerPickServerUtils ().validateCustomPicks (sender, getPick (), mom.getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks (), mom.getServerDB ());
 		if (error != null)
 		{
 			// Return error

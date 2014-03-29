@@ -141,6 +141,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	
 	/** Simultaneous turns combat scheduler */
 	private CombatScheduler combatScheduler;
+
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
 	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
@@ -161,7 +164,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	{
 		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfTerrain", coords);
 
-		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 		// First build the message
 		final UpdateTerrainMessageData terrainMsg = new UpdateTerrainMessageData ();
@@ -175,12 +178,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		for (final PlayerServerDetails thisPlayer : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
-			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 			if (getFogOfWarCalculations ().canSeeMidTurn (state, terrainAndNodeAurasSetting))
 			{
 				// Update player's memory on server
-				final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+				final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 				if (getFogOfWarDuplication ().copyTerrainAndNodeAura (tc, mc))
 
 					// Update player's memory on client
@@ -211,7 +214,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	{
 		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfCity", coords);
 
-		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 		// First build the message
 		final UpdateCityMessageData cityMsg = new UpdateCityMessageData ();
@@ -224,12 +227,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		for (final PlayerServerDetails thisPlayer : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
-			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 			if (getFogOfWarCalculations ().canSeeMidTurn (state, fogOfWarSettings.getTerrainAndNodeAuras ()))
 			{
 				// Update player's memory on server
-				final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getPlane ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+				final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
 				final boolean includeCurrentlyConstructing;
 				if (tc.getCityData () == null)
@@ -284,7 +287,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 			
-			final OverlandMapTerrainData unitLocationTerrain = trueTerrain.getPlane ().get (unit.getUnitLocation ().getPlane ()).getRow ().get
+			final OverlandMapTerrainData unitLocationTerrain = trueTerrain.getPlane ().get (unit.getUnitLocation ().getZ ()).getRow ().get
 				(unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ();
 
 			/*
@@ -313,7 +316,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				}
 				else
 					// Rampaging monsters walking around the map - treat just like regular units
-					canSee = getFogOfWarCalculations ().canSeeMidTurn (priv.getFogOfWar ().getPlane ().get (unit.getUnitLocation ().getPlane ()).getRow ().get
+					canSee = getFogOfWarCalculations ().canSeeMidTurn (priv.getFogOfWar ().getPlane ().get (unit.getUnitLocation ().getZ ()).getRow ().get
 						(unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()), sd.getFogOfWarSetting ().getUnits ());
 			}
 			else
@@ -362,7 +365,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 			
-			canSee = getFogOfWarCalculations ().canSeeMidTurn (priv.getFogOfWar ().getPlane ().get (spell.getCityLocation ().getPlane ()).getRow ().get
+			canSee = getFogOfWarCalculations ().canSeeMidTurn (priv.getFogOfWar ().getPlane ().get (spell.getCityLocation ().getZ ()).getRow ().get
 				(spell.getCityLocation ().getY ()).getCell ().get (spell.getCityLocation ().getX ()), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 		}
 
@@ -388,7 +391,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Localized CAE?
 		if (cae.getMapLocation () != null)
-			canSee = getFogOfWarCalculations ().canSeeMidTurn (fogOfWarArea.getPlane ().get (cae.getMapLocation ().getPlane ()).getRow ().get
+			canSee = getFogOfWarCalculations ().canSeeMidTurn (fogOfWarArea.getPlane ().get (cae.getMapLocation ().getZ ()).getRow ().get
 				(cae.getMapLocation ().getY ()).getCell ().get (cae.getMapLocation ().getX ()), setting);
 
 		// Global CAE - so can see it everywhere
@@ -501,7 +504,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
 		unitLocation.setX (locationToAddUnit.getX ());
 		unitLocation.setY (locationToAddUnit.getY ());
-		unitLocation.setPlane (locationToAddUnit.getPlane ());
+		unitLocation.setZ (locationToAddUnit.getZ ());
 
 		trueUnit.setUnitLocation (unitLocation);
 		trueUnit.setStatus (UnitStatusID.ALIVE);
@@ -765,7 +768,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			spellLocation = new OverlandMapCoordinatesEx ();
 			spellLocation.setX (cityLocation.getX ());
 			spellLocation.setY (cityLocation.getY ());
-			spellLocation.setPlane (cityLocation.getPlane ());
+			spellLocation.setZ (cityLocation.getZ ());
 		}
 
 		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
@@ -970,7 +973,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			caeLocation = new OverlandMapCoordinatesEx ();
 			caeLocation.setX (mapLocation.getX ());
 			caeLocation.setY (mapLocation.getY ());
-			caeLocation.setPlane (mapLocation.getPlane ());
+			caeLocation.setZ (mapLocation.getZ ());
 		}
 
 		final MemoryCombatAreaEffect trueCAE = new MemoryCombatAreaEffect ();
@@ -1120,7 +1123,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			final OverlandMapCoordinatesEx firstBuildingLocation = new OverlandMapCoordinatesEx ();
 			firstBuildingLocation.setX (cityLocation.getX ());
 			firstBuildingLocation.setY (cityLocation.getY ());
-			firstBuildingLocation.setPlane (cityLocation.getPlane ());
+			firstBuildingLocation.setZ (cityLocation.getZ ());
 
 			firstTrueBuilding = new MemoryBuilding ();
 			firstTrueBuilding.setCityLocation (firstBuildingLocation);
@@ -1136,7 +1139,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			final OverlandMapCoordinatesEx secondBuildingLocation = new OverlandMapCoordinatesEx ();
 			secondBuildingLocation.setX (cityLocation.getX ());
 			secondBuildingLocation.setY (cityLocation.getY ());
-			secondBuildingLocation.setPlane (cityLocation.getPlane ());
+			secondBuildingLocation.setZ (cityLocation.getZ ());
 
 			secondTrueBuilding = new MemoryBuilding ();
 			secondTrueBuilding.setCityLocation (secondBuildingLocation);
@@ -1160,7 +1163,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		for (final PlayerServerDetails player : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 			if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
 			{
 				// Add into player's memory on server
@@ -1179,7 +1182,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// The new building might be an Oracle, so recalculate fog of war
 		// Buildings added at the start of the game are added straight to the TrueMap without using this
 		// routine, so this doesn't cause a bunch of FOW recalculations before the game starts
-		final OverlandMapCityData cityData = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "addBuildingOnServerAndClients");
 		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), cityOwner, players, false, "addBuildingOnServerAndClients", sd, db);
 
@@ -1224,7 +1227,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		for (final PlayerServerDetails player : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 			if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
 			{
 				// Remove from player's memory on server
@@ -1237,7 +1240,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}
 
 		// The destroyed building might be an Oracle, so recalculate fog of war
-		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "destroyBuildingOnServerAndClients");
 		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, cityOwner, players, false, "destroyBuildingOnServerAndClients", sd, db);
 
@@ -1691,7 +1694,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		clearNodeLairTowerMessage.setData (clearNodeLairTowerMessageData);
 
 		// Need this lower down
-		final MemoryGridCell trueMoveToCell = trueMap.getMap ().getPlane ().get (moveTo.getPlane ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
+		final MemoryGridCell trueMoveToCell = trueMap.getMap ().getPlane ().get (moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
 
 		// Check each player in turn
 		for (final PlayerServerDetails thisPlayer : players)
@@ -1742,10 +1745,10 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				// If we see someone else moving onto a node/lair/tower, then we know it must be empty
 				// NB. If they move onto a tower, moveTo.getPlane () by definition must be 0 so don't need to worry about that here
 				if ((canSeeAfterMove) && (ServerMemoryGridCellUtils.isNodeLairTower (trueMoveToCell.getTerrainData (), db)) &&
-					(!CompareUtils.safeStringCompare (priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (moveTo.getPlane ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ()), "")))
+					(!CompareUtils.safeStringCompare (priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ()), "")))
 				{
 					// Set on server
-					priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (moveTo.getPlane ()).getRow ().get (moveTo.getY ()).getCell ().set (moveTo.getX (), "");
+					priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().set (moveTo.getX (), "");
 
 					// Set on client
 					if (thisPlayer.getPlayerDescription ().isHuman ())
@@ -1764,7 +1767,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			final OverlandMapCoordinatesEx newLocation = new OverlandMapCoordinatesEx ();
 			newLocation.setX (moveTo.getX ());
 			newLocation.setY (moveTo.getY ());
-			newLocation.setPlane (moveTo.getPlane ());
+			newLocation.setZ (moveTo.getZ ());
 
 			thisUnit.setUnitLocation (newLocation);
 		}
@@ -1776,7 +1779,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final OverlandMapCoordinatesEx [] cityLocations = new OverlandMapCoordinatesEx [] {moveFrom, moveTo};
 		for (final OverlandMapCoordinatesEx cityLocation : cityLocations)
 		{
-			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getPlane ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 			if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () > 0))
 			{
 				final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "moveUnitStackOneCellOnServerAndClients");
@@ -1817,13 +1820,13 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 		coords.setX (moveTo.getX ());
 		coords.setY (moveTo.getY ());
-		coords.setPlane (moveTo.getPlane ());
+		coords.setZ (moveTo.getZ ());
 
 		int direction = -1;
 		while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
 		{
-			direction = movementDirections [coords.getPlane ()] [coords.getY ()] [coords.getX ()];
-			if (!CoordinateSystemUtils.moveCoordinates (sys, coords, CoordinateSystemUtils.normalizeDirection (sys.getCoordinateSystemType (), direction + 4)))
+			direction = movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()];
+			if (!getCoordinateSystemUtils ().moveCoordinates (sys, coords, getCoordinateSystemUtils ().normalizeDirection (sys.getCoordinateSystemType (), direction + 4)))
 				throw new MomException ("determineMovementDirection: Server map tracing moved to a cell off the map");
 		}
 
@@ -1921,12 +1924,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			final boolean [] [] [] canMoveToInOneTurn										= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 
-			getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getPlane (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+			getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 				priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (), unitStack, doubleMovementRemaining,
 				doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
 
 			// Is there a route to where we want to go?
-			validMoveFound = (doubleMovementDistances [moveTo.getPlane ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
+			validMoveFound = (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
 
 			// Make 1 move as long as there is a valid move, and we're not allocating movement in a simultaneous turns game
 			if ((validMoveFound) && (!forceAsPendingMovement))
@@ -1938,14 +1941,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				final OverlandMapCoordinatesEx oneStep = new OverlandMapCoordinatesEx ();
 				oneStep.setX (moveFrom.getX ());
 				oneStep.setY (moveFrom.getY ());
-				oneStep.setPlane (moveFrom.getPlane ());
-				CoordinateSystemUtils.moveCoordinates (mom.getSessionDescription ().getMapSize (), oneStep, movementDirection);
+				oneStep.setZ (moveFrom.getZ ());
+				getCoordinateSystemUtils ().moveCoordinates (mom.getSessionDescription ().getMapSize (), oneStep, movementDirection);
 
 				final MemoryGridCell oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(oneStep.getPlane ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
+					(oneStep.getZ ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
 
 				// Does this initiate a combat?
-				typeOfCombatInitiated = movingHereResultsInAttack [oneStep.getPlane ()] [oneStep.getY ()] [oneStep.getX ()];
+				typeOfCombatInitiated = movingHereResultsInAttack [oneStep.getZ ()] [oneStep.getY ()] [oneStep.getX ()];
 
 				// Update the movement remaining for each unit
 				if (typeOfCombatInitiated == MoveResultsInAttackTypeID.NO)
@@ -1981,7 +1984,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				{
 					// Adjust move to plane if moving onto a tower
 					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (oneStepTrueTile.getTerrainData ()))
-						oneStep.setPlane (0);
+						oneStep.setZ (0);
 
 					// Actually move the units
 					moveUnitStackOneCellOnServerAndClients (unitStack, unitStackOwner, moveFrom, oneStep, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
@@ -2008,11 +2011,11 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				final boolean [] [] [] canMoveToInOneTurn										= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 				final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 
-				getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getPlane (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+				getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 					priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (), unitStack, doubleMovementRemaining,
 					doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
 
-				validMoveFound = (doubleMovementDistances [moveTo.getPlane ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
+				validMoveFound = (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
 			}
 
 			if (validMoveFound)
@@ -2029,15 +2032,15 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
 				coords.setX (moveTo.getX ());
 				coords.setY (moveTo.getY ());
-				coords.setPlane (moveTo.getPlane ());
+				coords.setZ (moveTo.getZ ());
 
 				while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
 				{
-					final int direction = movementDirections [coords.getPlane ()] [coords.getY ()] [coords.getX ()];
+					final int direction = movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()];
 
 					pending.getPath ().add (direction);
 
-					if (!CoordinateSystemUtils.moveCoordinates (mom.getSessionDescription ().getMapSize (), coords, CoordinateSystemUtils.normalizeDirection (mom.getSessionDescription ().getMapSize ().getCoordinateSystemType (), direction + 4)))
+					if (!getCoordinateSystemUtils ().moveCoordinates (mom.getSessionDescription ().getMapSize (), coords, getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getMapSize ().getCoordinateSystemType (), direction + 4)))
 						throw new MomException ("moveUnitStack: Server map tracing moved to a cell off the map");
 				}
 
@@ -2060,13 +2063,13 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			// What plane will the monsters/defenders be on?
 			final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(moveTo.getPlane ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
+				(moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
 			
 			final int towerPlane;
 			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
 				towerPlane = 0;
 			else
-				towerPlane = moveTo.getPlane ();
+				towerPlane = moveTo.getZ ();
 			
 			// Find a defending unit
 			final MemoryUnit defUnit = getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), moveTo.getX (), moveTo.getY (), towerPlane, 0);
@@ -2115,7 +2118,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			final OverlandMapCoordinatesEx defendingLocation = new OverlandMapCoordinatesEx ();
 			defendingLocation.setX (moveTo.getX ());
 			defendingLocation.setY (moveTo.getY ());
-			defendingLocation.setPlane (towerPlane);
+			defendingLocation.setZ (towerPlane);
 
 			final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 			for (final MemoryUnit tu : unitStack)
@@ -2373,5 +2376,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void setCombatScheduler (final CombatScheduler scheduler)
 	{
 		combatScheduler = scheduler;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

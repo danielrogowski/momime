@@ -2,14 +2,15 @@ package momime.server.utils;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
-import momime.common.database.v0_9_4.Spell;
 import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_4.SpellResearchStatus;
 import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.utils.SpellUtilsImpl;
-import momime.server.ServerTestData;
+import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.v0_9_4.Spell;
 
 import org.junit.Test;
 
@@ -17,85 +18,323 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
- * Tests the SpellServerUtils class
+ * Tests the SpellServerUtilsImpl class
  */
 public final class TestSpellServerUtilsImpl
 {
 	/**
-	 * Tests the validateResearch method
+	 * Tests the validateResearch method when we're researching nothing, and make a valid choice
 	 * @throws Exception If there is a problem
 	 */
 	@Test
 	public final void testValidateResearch () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
+		// Spell details
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
-
-		// Initialize spell research
-		for (final Spell thisSpell : db.getSpell ())
-		{
-			final SpellResearchStatus thisStatus = new SpellResearchStatus ();
-			thisStatus.setSpellID (thisSpell.getSpellID ());
-			thisStatus.setStatus (SpellResearchStatusID.UNAVAILABLE);
-
-			if (thisSpell.getResearchCost () != null)
-				thisStatus.setRemainingResearchCost (thisSpell.getResearchCost ());
-
-			priv.getSpellResearchStatus ().add (thisStatus);
-		}
 		
+		// Research status
+		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
+
 		// Set up object to test
 		final SpellServerUtilsImpl utils = new SpellServerUtilsImpl ();
-		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNull (utils.validateResearch (player, "SP001", SwitchResearch.DISALLOWED, db));
+	}
 
-		// Can't research anything if its unavailable
-		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNotNull (utils.validateResearch (player, "SP100", switchResearch, db));
+	/**
+	 * Tests the validateResearch method when we try to research something that isn't available to us yet
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateResearch_NotAvailable () throws Exception
+	{
+		// Spell details
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
 
-		// Other statuses don't help either
-		final SpellResearchStatus spell100 = spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP100");
-		spell100.setStatus (SpellResearchStatusID.NOT_IN_SPELL_BOOK);
-		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNotNull (utils.validateResearch (player, "SP100", switchResearch, db));
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
+		
+		// Research status
+		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE);		// <---
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 
-		spell100.setStatus (SpellResearchStatusID.AVAILABLE);
-		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNotNull (utils.validateResearch (player, "SP100", switchResearch, db));
+		// Set up object to test
+		final SpellServerUtilsImpl utils = new SpellServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNotNull (utils.validateResearch (player, "SP001", SwitchResearch.DISALLOWED, db));
+	}
+	
+	/**
+	 * Tests the validateResearch method switching to the spell we're already researching 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateResearch_ResearchingSame () throws Exception
+	{
+		// Spell details
+		final Spell spell = new Spell ();
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findSpell ("SP001", "validateResearch")).thenReturn (spell);
+		
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
 
-		spell100.setStatus (SpellResearchStatusID.RESEARCHABLE);
-		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNotNull (utils.validateResearch (player, "SP100", switchResearch, db));
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setSpellIDBeingResearched ("SP001");
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
+		
+		// Research status
+		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
+		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 
-		// Now can research it regardless of setting because we have no current research
-		spell100.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
-		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNull (utils.validateResearch (player, "SP100", switchResearch, db));
+		// Set up object to test
+		final SpellServerUtilsImpl utils = new SpellServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNull (utils.validateResearch (player, "SP001", SwitchResearch.DISALLOWED, db));
+	}
 
-		// Also always fine if we're just setting research to what it already is
-		priv.setSpellIDBeingResearched ("SP100");
-		for (final SwitchResearch switchResearch : SwitchResearch.values ())
-			assertNull (utils.validateResearch (player, "SP100", switchResearch, db));
+	/**
+	 * Tests the validateResearch method trying to swap research when it isn't allowed 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateResearch_SwitchDisallowed () throws Exception
+	{
+		// Spell details
+		final Spell oldSpell = new Spell ();
+		oldSpell.setResearchCost (80);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
+		
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
 
-		// Now set it to something different, disallowed then won't let us switch research
-		priv.setSpellIDBeingResearched ("SP101");
-		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.FREE, db));
-		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.LOSE_CURRENT_RESEARCH, db));
-		assertNotNull (utils.validateResearch (player, "SP100", SwitchResearch.DISALLOWED, db));
-		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.ONLY_IF_NOT_STARTED, db));
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setSpellIDBeingResearched ("SP002");
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
+		
+		// Research status
+		final SpellResearchStatus oldResearchStatus = new SpellResearchStatus ();
+		oldResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		oldResearchStatus.setRemainingResearchCost (40);
 
-		// If we spent 1 BP on the spell previously being researched, that stops us swapping research if that is the chosen setting
-		final SpellResearchStatus spell101 = spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP101");
-		spell101.setRemainingResearchCost (spell101.getRemainingResearchCost () - 1);
-		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.FREE, db));
-		assertNull (utils.validateResearch (player, "SP100", SwitchResearch.LOSE_CURRENT_RESEARCH, db));
-		assertNotNull (utils.validateResearch (player, "SP100", SwitchResearch.DISALLOWED, db));
-		assertNotNull (utils.validateResearch (player, "SP100", SwitchResearch.ONLY_IF_NOT_STARTED, db));
+		final SpellResearchStatus newResearchStatus = new SpellResearchStatus ();
+		newResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (newResearchStatus);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP002")).thenReturn (oldResearchStatus);
+
+		// Set up object to test
+		final SpellServerUtilsImpl utils = new SpellServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNotNull (utils.validateResearch (player, "SP001", SwitchResearch.DISALLOWED, db));
+	}
+	
+	/**
+	 * Tests the validateResearch method trying to swap research when it its fine 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateResearch_SwitchFreely () throws Exception
+	{
+		// Spell details
+		final Spell oldSpell = new Spell ();
+		oldSpell.setResearchCost (80);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
+		
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setSpellIDBeingResearched ("SP002");
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
+		
+		// Research status
+		final SpellResearchStatus oldResearchStatus = new SpellResearchStatus ();
+		oldResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		oldResearchStatus.setRemainingResearchCost (40);
+
+		final SpellResearchStatus newResearchStatus = new SpellResearchStatus ();
+		newResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (newResearchStatus);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP002")).thenReturn (oldResearchStatus);
+
+		// Set up object to test
+		final SpellServerUtilsImpl utils = new SpellServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNull (utils.validateResearch (player, "SP001", SwitchResearch.FREE, db));
+	}
+	
+	/**
+	 * Tests the validateResearch method trying to swap research when it its fine but we'll lose previous research (that's dealt with elsewhere, we just validate that its OK)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateResearch_SwitchButLose () throws Exception
+	{
+		// Spell details
+		final Spell oldSpell = new Spell ();
+		oldSpell.setResearchCost (80);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
+		
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setSpellIDBeingResearched ("SP002");
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
+		
+		// Research status
+		final SpellResearchStatus oldResearchStatus = new SpellResearchStatus ();
+		oldResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		oldResearchStatus.setRemainingResearchCost (40);
+
+		final SpellResearchStatus newResearchStatus = new SpellResearchStatus ();
+		newResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (newResearchStatus);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP002")).thenReturn (oldResearchStatus);
+
+		// Set up object to test
+		final SpellServerUtilsImpl utils = new SpellServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNull (utils.validateResearch (player, "SP001", SwitchResearch.LOSE_CURRENT_RESEARCH, db));
+	}
+	
+	/**
+	 * Tests the validateResearch method trying to swap research when its set to "only if not started" but we had started 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateResearch_SwitchAfterStarted () throws Exception
+	{
+		// Spell details
+		final Spell oldSpell = new Spell ();
+		oldSpell.setResearchCost (80);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
+		
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setSpellIDBeingResearched ("SP002");
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
+		
+		// Research status
+		final SpellResearchStatus oldResearchStatus = new SpellResearchStatus ();
+		oldResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		oldResearchStatus.setRemainingResearchCost (40);
+
+		final SpellResearchStatus newResearchStatus = new SpellResearchStatus ();
+		newResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (newResearchStatus);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP002")).thenReturn (oldResearchStatus);
+
+		// Set up object to test
+		final SpellServerUtilsImpl utils = new SpellServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNotNull (utils.validateResearch (player, "SP001", SwitchResearch.ONLY_IF_NOT_STARTED, db));
+	}
+
+	/**
+	 * Tests the validateResearch method trying to swap research when its set to "only if not started" but we hadn't started 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testValidateResearch_SwitchBeforeStarted () throws Exception
+	{
+		// Spell details
+		final Spell oldSpell = new Spell ();
+		oldSpell.setResearchCost (80);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
+		
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setSpellIDBeingResearched ("SP002");
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
+		
+		// Research status
+		final SpellResearchStatus oldResearchStatus = new SpellResearchStatus ();
+		oldResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		oldResearchStatus.setRemainingResearchCost (80);		// <---
+
+		final SpellResearchStatus newResearchStatus = new SpellResearchStatus ();
+		newResearchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (newResearchStatus);
+		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP002")).thenReturn (oldResearchStatus);
+
+		// Set up object to test
+		final SpellServerUtilsImpl utils = new SpellServerUtilsImpl ();
+		utils.setSpellUtils (spellUtils);
+		
+		// Run method
+		assertNull (utils.validateResearch (player, "SP001", SwitchResearch.ONLY_IF_NOT_STARTED, db));
 	}
 }

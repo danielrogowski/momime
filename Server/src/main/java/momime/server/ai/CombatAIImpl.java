@@ -49,6 +49,9 @@ public final class CombatAIImpl implements CombatAI
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
 	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
 	/**
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param currentPlayerID AI player whose turn we are taking
@@ -266,8 +269,8 @@ public final class CombatAIImpl implements CombatAI
 					if (d < 1)
 						throw new MomException ("AI Combat routine traced an invalid direction");
 					
-					if (!CoordinateSystemUtils.moveCoordinates (mom.getCombatMapCoordinateSystem (), moveTo,
-						CoordinateSystemUtils.normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), d+4)))
+					if (!getCoordinateSystemUtils ().moveCoordinates (mom.getCombatMapCoordinateSystem (), moveTo,
+						getCoordinateSystemUtils ().normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), d+4)))
 						
 						throw new MomException ("AI Combat routine traced a location off the edge of the combat map");
 				}				
@@ -302,7 +305,7 @@ public final class CombatAIImpl implements CombatAI
 		
 		// Get the combat terrain
 		final ServerGridCell serverGridCell = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getPlane ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
 		final MapAreaOfCombatTiles combatMap = serverGridCell.getCombatMap ();
 		
@@ -376,5 +379,21 @@ public final class CombatAIImpl implements CombatAI
 	public final void setCombatProcessing (final CombatProcessing proc)
 	{
 		combatProcessing = proc;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

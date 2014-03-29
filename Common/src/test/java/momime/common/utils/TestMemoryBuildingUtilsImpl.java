@@ -48,7 +48,7 @@ public final class TestMemoryBuildingUtilsImpl
 		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
 		cityLocation.setX (15 + offset);
 		cityLocation.setY (10);
-		cityLocation.setPlane (1);
+		cityLocation.setZ (1);
 
 		return cityLocation;
 	}
@@ -226,7 +226,7 @@ public final class TestMemoryBuildingUtilsImpl
 		final OverlandMapCoordinatesEx buildingLocation = new OverlandMapCoordinatesEx ();
 		buildingLocation.setX (2);
 		buildingLocation.setY (2);
-		buildingLocation.setPlane (0);
+		buildingLocation.setZ (0);
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		final MemoryBuilding building = new MemoryBuilding ();

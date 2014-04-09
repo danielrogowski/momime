@@ -5,9 +5,10 @@ import java.util.List;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Spell;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Methods for working with list of MemoryMaintainedSpells
@@ -31,7 +32,7 @@ public interface MemoryMaintainedSpellUtils
 	 */
 	public MemoryMaintainedSpell findMaintainedSpell (final List<MemoryMaintainedSpell> spells,
 		final Integer castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID);
+		final MapCoordinates3DEx cityLocation, final String citySpellEffectID);
 
 	/**
 	 * Removes a maintained spell from the list
@@ -47,7 +48,7 @@ public interface MemoryMaintainedSpellUtils
 	 */
 	public void switchOffMaintainedSpell (final List<MemoryMaintainedSpell> spells,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID)
+		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
 		throws RecordNotFoundException;
 
 	/**
@@ -83,7 +84,7 @@ public interface MemoryMaintainedSpellUtils
 	 * @return Null = this spell has no citySpellEffectIDs defined; empty list = has effect(s) defined but they're all cast on this city already; non-empty list = list of effects that can still be cast
 	 */
 	public List<String> listCitySpellEffectsNotYetCastAtLocation (final List<MemoryMaintainedSpell> spells, final Spell spell,
-		final int castingPlayerID, final OverlandMapCoordinatesEx cityLocation);
+		final int castingPlayerID, final MapCoordinates3DEx cityLocation);
 	
 	/**
 	 * Checks whether the specified spell can be targetted at the specified unit.  There's lots of validation to do for this, and the

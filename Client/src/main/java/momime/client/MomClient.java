@@ -22,10 +22,10 @@ import momime.client.ui.MessageBoxUI;
 import momime.client.ui.NewGameUI;
 import momime.client.ui.PrototypeFrameCreator;
 import momime.common.MomCommonConstants;
-import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

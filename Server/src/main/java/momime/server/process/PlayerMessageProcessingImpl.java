@@ -14,37 +14,36 @@ import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.WizardPick;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.AddNewTurnMessagesMessage;
-import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage;
-import momime.common.messages.servertoclient.v0_9_4.ChooseYourRaceNowMessage;
-import momime.common.messages.servertoclient.v0_9_4.ChosenCustomPhotoMessage;
-import momime.common.messages.servertoclient.v0_9_4.ChosenStandardPhotoMessage;
-import momime.common.messages.servertoclient.v0_9_4.ChosenWizardMessage;
-import momime.common.messages.servertoclient.v0_9_4.EndOfContinuedMovementMessage;
-import momime.common.messages.servertoclient.v0_9_4.ErasePendingMovementsMessage;
-import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
-import momime.common.messages.servertoclient.v0_9_4.OnePlayerSimultaneousTurnDoneMessage;
-import momime.common.messages.servertoclient.v0_9_4.ReplacePicksMessage;
-import momime.common.messages.servertoclient.v0_9_4.SetCurrentPlayerMessage;
-import momime.common.messages.servertoclient.v0_9_4.StartGameMessage;
-import momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage;
-import momime.common.messages.servertoclient.v0_9_4.StartGameProgressStageID;
-import momime.common.messages.servertoclient.v0_9_4.StartSimultaneousTurnMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.PendingMovement;
-import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.messages.v0_9_4.SpellResearchStatus;
-import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.messages.v0_9_4.TurnSystem;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.AddNewTurnMessagesMessage;
+import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowMessage;
+import momime.common.messages.servertoclient.v0_9_5.ChooseYourRaceNowMessage;
+import momime.common.messages.servertoclient.v0_9_5.ChosenCustomPhotoMessage;
+import momime.common.messages.servertoclient.v0_9_5.ChosenStandardPhotoMessage;
+import momime.common.messages.servertoclient.v0_9_5.ChosenWizardMessage;
+import momime.common.messages.servertoclient.v0_9_5.EndOfContinuedMovementMessage;
+import momime.common.messages.servertoclient.v0_9_5.ErasePendingMovementsMessage;
+import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
+import momime.common.messages.servertoclient.v0_9_5.OnePlayerSimultaneousTurnDoneMessage;
+import momime.common.messages.servertoclient.v0_9_5.ReplacePicksMessage;
+import momime.common.messages.servertoclient.v0_9_5.SetCurrentPlayerMessage;
+import momime.common.messages.servertoclient.v0_9_5.StartGameMessage;
+import momime.common.messages.servertoclient.v0_9_5.StartGameProgressMessage;
+import momime.common.messages.servertoclient.v0_9_5.StartGameProgressStageID;
+import momime.common.messages.servertoclient.v0_9_5.StartSimultaneousTurnMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.PendingMovement;
+import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.messages.v0_9_5.TurnSystem;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -61,11 +60,12 @@ import momime.server.database.v0_9_4.Wizard;
 import momime.server.database.v0_9_4.WizardPickCount;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.PlayerServerUtils;
 import momime.server.utils.UnitServerUtils;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -100,8 +100,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/** City processing methods */
 	private CityProcessing cityProcessing;
 
-	/** Spell processing methods */
-	private SpellProcessing spellProcessing;
+	/** Spell queueing methods */
+	private SpellQueueing spellQueueing;
 	
 	/** Fog of war update methods */
 	private FogOfWarProcessing fogOfWarProcessing;
@@ -642,7 +642,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		// Heal hurt units 1pt and gain 1exp
 		getFogOfWarMidTurnChanges ().healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
-			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 
 		// Allow another building to be sold
 		getMemoryGridCellUtils ().blankBuildingsSoldThisTurn (mom.getGeneralServerKnowledge ().getTrueMap ().getMap ());
@@ -864,7 +864,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// Put mana into casting spells
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
-				getSpellProcessing ().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				getSpellQueueing().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		// Kick off the next turn
 		mom.getSessionLogger ().info ("Kicking off next turn...");
@@ -1018,7 +1018,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						(mom.getPlayers (), unitStack.get (0).getOwningPlayerID (), "continueMovement");
 					
 					getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, unitStackOwner,
-						(OverlandMapCoordinatesEx) thisMove.getMoveFrom (), (OverlandMapCoordinatesEx) thisMove.getMoveTo (), false, mom);
+						(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), false, mom);
 				}
 			}
 
@@ -1122,19 +1122,19 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	}
 
 	/**
-	 * @return Spell processing methods
+	 * @return Spell queueing methods
 	 */
-	public final SpellProcessing getSpellProcessing ()
+	public final SpellQueueing getSpellQueueing ()
 	{
-		return spellProcessing;
+		return spellQueueing;
 	}
 
 	/**
-	 * @param obj Spell processing methods
+	 * @param obj Spell queueing methods
 	 */
-	public final void setSpellProcessing (final SpellProcessing obj)
+	public final void setSpellQueueing (final SpellQueueing obj)
 	{
-		spellProcessing = obj;
+		spellQueueing = obj;
 	}
 
 	/**

@@ -8,13 +8,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.messages.servertoclient.v0_9_4.AddNewTurnMessagesMessage;
-import momime.common.messages.servertoclient.v0_9_4.SetCurrentPlayerMessage;
-import momime.common.messages.servertoclient.v0_9_4.StartSimultaneousTurnMessage;
-import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.NewTurnMessageData;
-import momime.common.messages.v0_9_4.TurnSystem;
+import momime.common.messages.servertoclient.v0_9_5.AddNewTurnMessagesMessage;
+import momime.common.messages.servertoclient.v0_9_5.SetCurrentPlayerMessage;
+import momime.common.messages.servertoclient.v0_9_5.StartSimultaneousTurnMessage;
+import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.TurnSystem;
 import momime.server.DummyServerToClientConnection;
 
 import org.junit.Test;
@@ -23,7 +23,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
- * Tests the PlayerMessageProcessing class
+ * Tests the PlayerMessageProcessingImpl class
  */
 public final class TestPlayerMessageProcessingImpl
 {

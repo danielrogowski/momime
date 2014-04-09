@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
 
 import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Tests the MemoryCombatAreaEffectUtils class
@@ -51,7 +52,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			newCAE.setCastingPlayerID (n);
 			newCAE.setCombatAreaEffectID ("CAE0" + n);
 
-			final OverlandMapCoordinatesEx thisLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx thisLocation = new MapCoordinates3DEx ();
 			thisLocation.setX (10 + n);
 			thisLocation.setY (20 + n);
 			thisLocation.setZ (30 + n);
@@ -60,7 +61,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			CAEs.add (newCAE);
 		}
 
-		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx ();
 		desiredLocation.setX (12);
 		desiredLocation.setY (22);
 		desiredLocation.setZ (32);
@@ -101,7 +102,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			final MemoryCombatAreaEffect newCAE = new MemoryCombatAreaEffect ();
 			newCAE.setCombatAreaEffectID ("CAE0" + n);
 
-			final OverlandMapCoordinatesEx thisLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx thisLocation = new MapCoordinates3DEx ();
 			thisLocation.setX (10 + n);
 			thisLocation.setY (20 + n);
 			thisLocation.setZ (30 + n);
@@ -110,7 +111,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			CAEs.add (newCAE);
 		}
 
-		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx ();
 		desiredLocation.setX (12);
 		desiredLocation.setY (22);
 		desiredLocation.setZ (32);
@@ -158,7 +159,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			newCAE.setCastingPlayerID (n);
 			newCAE.setCombatAreaEffectID ("CAE0" + n);
 
-			final OverlandMapCoordinatesEx thisLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx thisLocation = new MapCoordinates3DEx ();
 			thisLocation.setX (10 + n);
 			thisLocation.setY (20 + n);
 			thisLocation.setZ (30 + n);
@@ -167,7 +168,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			CAEs.add (newCAE);
 		}
 
-		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx ();
 		desiredLocation.setX (12);
 		desiredLocation.setY (22);
 		desiredLocation.setZ (32);
@@ -216,7 +217,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			final MemoryCombatAreaEffect newCAE = new MemoryCombatAreaEffect ();
 			newCAE.setCombatAreaEffectID ("CAE0" + n);
 
-			final OverlandMapCoordinatesEx thisLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx thisLocation = new MapCoordinates3DEx ();
 			thisLocation.setX (10 + n);
 			thisLocation.setY (20 + n);
 			thisLocation.setZ (30 + n);
@@ -225,7 +226,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			CAEs.add (newCAE);
 		}
 
-		final OverlandMapCoordinatesEx desiredLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx ();
 		desiredLocation.setX (12);
 		desiredLocation.setY (22);
 		desiredLocation.setZ (32);

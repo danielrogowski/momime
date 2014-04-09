@@ -7,8 +7,8 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_4.ChatMessage;
-import momime.common.messages.servertoclient.v0_9_4.BroadcastChatMessage;
+import momime.common.messages.clienttoserver.v0_9_5.ChatMessage;
+import momime.common.messages.servertoclient.v0_9_5.BroadcastChatMessage;
 import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.MultiplayerServerUtils;

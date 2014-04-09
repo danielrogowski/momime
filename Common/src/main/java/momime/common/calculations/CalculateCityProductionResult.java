@@ -112,7 +112,7 @@ public class CalculateCityProductionResult implements Comparable<CalculateCityPr
 	/**
 	 * @param newAmount The amount of this type of production the city is producing, after the value is halved
 	 */
-	final void setBaseProductionAmount (final int newAmount)
+	public final void setBaseProductionAmount (final int newAmount)
 	{
 		baseProductionAmount = newAmount;
 	}

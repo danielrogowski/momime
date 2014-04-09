@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import momime.common.messages.v0_9_4.PendingMovement;
+import momime.common.messages.v0_9_5.PendingMovement;
 
 /**
  * Helper methods for dealing with pending movement paths

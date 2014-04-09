@@ -2,8 +2,8 @@ package momime.server.messages.process;
 
 import java.util.logging.Logger;
 
-import momime.common.messages.clienttoserver.v0_9_4.ChooseCustomFlagColourMessage;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.clienttoserver.v0_9_5.ChooseCustomFlagColourMessage;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;

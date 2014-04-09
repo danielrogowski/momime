@@ -12,47 +12,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.DamageCalculationMessage;
-import momime.common.messages.servertoclient.v0_9_4.DamageCalculationMessageTypeID;
-import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
-import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
-import momime.common.messages.servertoclient.v0_9_4.SetUnitIntoOrTakeUnitOutOfCombatMessage;
-import momime.common.messages.servertoclient.v0_9_4.StartCombatMessage;
-import momime.common.messages.servertoclient.v0_9_4.StartCombatMessageUnit;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomCombatTile;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.UnitCombatSideID;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
+import momime.common.messages.servertoclient.v0_9_5.FoundLairNodeTowerMessage;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitMessage;
+import momime.common.messages.servertoclient.v0_9_5.MoveUnitInCombatMessage;
+import momime.common.messages.servertoclient.v0_9_5.SetUnitIntoOrTakeUnitOutOfCombatMessage;
+import momime.common.messages.servertoclient.v0_9_5.StartCombatMessage;
+import momime.common.messages.servertoclient.v0_9_5.StartCombatMessageUnit;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomCombatTile;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.TurnSystem;
+import momime.common.messages.v0_9_5.UnitCombatSideID;
+import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatPlayers;
 import momime.common.utils.MomUnitAttributeComponent;
 import momime.common.utils.MomUnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.CombatMapElement;
+import momime.server.database.v0_9_4.TileType;
+import momime.server.database.v0_9_4.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.ServerGridCell;
 
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the CombatProcessingImpl class
@@ -64,15 +73,170 @@ public final class TestCombatProcessingImpl
 	 * @param x X coord
 	 * @return Coordinates object
 	 */
-	private final OverlandMapCoordinatesEx createCoordinates (final int x)
+	private final MapCoordinates3DEx createCoordinates (final int x)
 	{
-		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
 		combatLocation.setX (x);
 		combatLocation.setY (10);
 		combatLocation.setZ (1);
 		return combatLocation;
 	}
+	
+	/**
+	 * Tests the initiateCombat method, with one unit stack attacking another on the open map, in a one-at-a-time turns game
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testInitiateCombat () throws Exception
+	{
+		// Attacking player
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (true);
+		attackingPd.setPlayerID (3);
+		
+		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
+		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
+		// Locations
+		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
+		final MapCoordinates3DEx attackingFrom = createCoordinates (21);		
+
+		// The subset of units who're in "attackingFrom" who are actually attacking
+		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
+		
+		// Set up object to test
+		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
+		
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setCombatStartAndEnd (combatStartAndEnd);
+		
+		// Call method
+		proc.initiateCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, MoveResultsInAttackTypeID.YES, null, mom);
+		
+		// Check results
+		verify (combatStartAndEnd, times (1)).startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
+	}
+
+	/**
+	 * Tests the initiateCombat method, with one unit stack attacking another on the open map, in a simultaneous turns game
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testInitiateCombat_Simultaneous () throws Exception
+	{
+		// Attacking player
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (true);
+		attackingPd.setPlayerID (3);
+		
+		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setTurnSystem (TurnSystem.SIMULTANEOUS);		// <---
+
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getPlayers ()).thenReturn (players);
+		
+		// Locations
+		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
+		final MapCoordinates3DEx attackingFrom = createCoordinates (21);		
+
+		// The subset of units who're in "attackingFrom" who are actually attacking
+		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
+		
+		// Set up object to test
+		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
+		final CombatScheduler combatScheduler = mock (CombatScheduler.class);
+		
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setCombatStartAndEnd (combatStartAndEnd);
+		proc.setCombatScheduler (combatScheduler);
+		
+		// Call method
+		proc.initiateCombat (defendingLocation, attackingFrom, 55, attackingPlayer, attackingUnitURNs, MoveResultsInAttackTypeID.YES, null, mom);
+		
+		// Check results
+		verify (combatScheduler, times (1)).informClientsOfPlayerBusyInCombat (attackingPlayer, players, true);
+		verify (combatStartAndEnd, times (1)).startCombat (defendingLocation, attackingFrom, 55, attackingPlayer, attackingUnitURNs, mom);
+	}
+
+	/**
+	 * Tests the initiateCombat method, when we're scouting a lair, so there's no actual combat yet while we wait for the player to click yes/no
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testInitiateCombat_Scout () throws Exception
+	{
+		// Attacking player
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (true);
+		attackingPd.setPlayerID (3);
+		
+		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
+		
+		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingMsgs);
+		
+		// Player's memory
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		attackingPriv.setNodeLairTowerKnownUnitIDs (ServerTestData.createStringsVolume (sys));
+		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
+
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
+		// Locations
+		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
+		final MapCoordinates3DEx attackingFrom = createCoordinates (21);		
+
+		// The subset of units who're in "attackingFrom" who are actually attacking
+		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
+		
+		// Set up object to test
+		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
+		
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setCombatStartAndEnd (combatStartAndEnd);
+		
+		// Call method
+		proc.initiateCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, MoveResultsInAttackTypeID.SCOUT, "UN001", mom);		// <---
+		
+		// Check generated message
+		assertEquals (1, attackingMsgs.getMessages ().size ());
+		assertEquals (FoundLairNodeTowerMessage.class.getName (), attackingMsgs.getMessages ().get (0).getClass ().getName ());
+		final FoundLairNodeTowerMessage msg = (FoundLairNodeTowerMessage) attackingMsgs.getMessages ().get (0);
+		
+		assertEquals (defendingLocation, msg.getDefendingLocation ());
+		assertEquals (attackingFrom, msg.getAttackingFrom ());
+		assertEquals ("UN001", msg.getMonsterUnitID ());
+		assertNull (msg.getScheduledCombatURN ());
+		
+		// Check we scouted it
+		assertEquals ("UN001", attackingPriv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (1).getRow ().get (10).getCell ().get (20));
+	
+		// Check combat *didn't* start
+		verify (combatStartAndEnd, times (0)).startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
+	}
+	
 	/**
 	 * Tests the determineMaxUnitsInRow method
 	 * This does a mock setup for a defender in a city with city walls (see layout pattern in the comments of the main method)
@@ -81,7 +245,8 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testDetermineMaxUnitsInRow () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
 		// Combat map
 		final CoordinateSystem combatMapCoordinateSystem = ServerTestData.createCombatMapCoordinateSystem ();
@@ -90,12 +255,11 @@ public final class TestCombatProcessingImpl
 		// Fake impassable tile
 		final MomCombatTile impassable = new MomCombatTile ();
 		
-		// Rather than hard coding the coords here, use the server XML to find the location of city wall corners + wizard's fortress
-		for (final CombatMapElement element : db.getCombatMapElement ())
-			if ((CommonDatabaseConstants.VALUE_BUILDING_FORTRESS.equals (element.getBuildingID ())) ||
-				("CTB02".equals (element.getCombatTileBorderID ())))
-				
-				combatMap.getRow ().get (element.getLocationY ()).getCell ().set (element.getLocationX (), impassable);
+		// This is a copy of the pattern layout of city wall corners + wizard's fortress, i.e. BL99 and CTB02 combatMapElements from the server XML
+		final int [] [] wallsAndFortress = new int [] [] {{3, 9}, {5, 9}, {3, 5}, {1, 9}, {3, 13}};
+		
+		for (final int [] coords : wallsAndFortress)
+			combatMap.getRow ().get (coords [1]).getCell ().set (coords [0], impassable);
 		
 		// Set up test object
 		final MomUnitCalculations calc = mock (MomUnitCalculations.class);
@@ -106,9 +270,9 @@ public final class TestCombatProcessingImpl
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		final List<Integer> maxUnitsInRow = proc.determineMaxUnitsInRow (CombatProcessingImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X,
-			CombatProcessingImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y, CombatProcessingImpl.COMBAT_SETUP_DEFENDER_FACING,
-			CombatProcessingImpl.COMBAT_SETUP_DEFENDER_ROWS, combatMapCoordinateSystem, combatMap, db);
+		final List<Integer> maxUnitsInRow = proc.determineMaxUnitsInRow (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X,
+			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y, CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FACING,
+			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_ROWS, combatMapCoordinateSystem, combatMap, db);
 		
 		// Check results
 		assertEquals (5, maxUnitsInRow.size ());
@@ -126,8 +290,28 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testCalculateUnitCombatClass () throws Exception
 	{
-		// Use real DB since it knows which units are heroes and which are normal
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final Unit dwarfHeroDef = new Unit ();
+		dwarfHeroDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		final Unit spearmenDef = new Unit ();
+		spearmenDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		final Unit archerHeroDef = new Unit ();
+		archerHeroDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		final Unit bowmenDef = new Unit ();
+		bowmenDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		final Unit settlersDef = new Unit ();
+		settlersDef.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnit ("UN001", "calculateUnitCombatClass")).thenReturn (dwarfHeroDef);
+		when (db.findUnit ("UN040", "calculateUnitCombatClass")).thenReturn (spearmenDef);
+		when (db.findUnit ("UN031", "calculateUnitCombatClass")).thenReturn (archerHeroDef);
+		when (db.findUnit ("UN042", "calculateUnitCombatClass")).thenReturn (bowmenDef);
+		when (db.findUnit ("UN045", "calculateUnitCombatClass")).thenReturn (settlersDef);
 		
 		// Don't need anything real here since we're mocking the attribute calculation
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -389,7 +573,10 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testPlaceCombatUnits_Attackers () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Message to populate
 		final StartCombatMessage msg = new StartCombatMessage ();
 		
 		// This isn't used directly, but easier to do the checks at the end if we have a true FOW memory object
@@ -403,7 +590,7 @@ public final class TestCombatProcessingImpl
 		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
 		
 		// Combat location
-		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
 		combatLocation.setX (20);
 		combatLocation.setY (10);
 		combatLocation.setZ (1);
@@ -466,8 +653,8 @@ public final class TestCombatProcessingImpl
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		proc.placeCombatUnits (combatLocation, CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X,
-			CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y, CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FACING,
+		proc.placeCombatUnits (combatLocation, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X,
+			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING,
 			UnitCombatSideID.ATTACKER, unitsToPosition, unitsInRow, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, combatMap, db);
 		
 		// Check server's true memory, attacker's memory, defender's memory
@@ -480,7 +667,7 @@ public final class TestCombatProcessingImpl
 			assertSame (combatLocation, unit1.getCombatLocation ());
 			assertEquals (7, unit1.getCombatPosition ().getX ());
 			assertEquals (17, unit1.getCombatPosition ().getY ());
-			assertEquals (CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FACING, unit1.getCombatHeading ().intValue ());
+			assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit1.getCombatHeading ().intValue ());
 			assertEquals (UnitCombatSideID.ATTACKER, unit1.getCombatSide ());
 			
 			final MemoryUnit unit2 = fow.getUnit ().get (1);
@@ -488,7 +675,7 @@ public final class TestCombatProcessingImpl
 			assertSame (combatLocation, unit2.getCombatLocation ());
 			assertEquals (7, unit2.getCombatPosition ().getX ());
 			assertEquals (19, unit2.getCombatPosition ().getY ());
-			assertEquals (CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FACING, unit2.getCombatHeading ().intValue ());
+			assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit2.getCombatHeading ().intValue ());
 			assertEquals (UnitCombatSideID.ATTACKER, unit2.getCombatSide ());
 
 			final MemoryUnit unit3 = fow.getUnit ().get (2);
@@ -496,7 +683,7 @@ public final class TestCombatProcessingImpl
 			assertSame (combatLocation, unit3.getCombatLocation ());
 			assertEquals (8, unit3.getCombatPosition ().getX ());
 			assertEquals (18, unit3.getCombatPosition ().getY ());
-			assertEquals (CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ().intValue ());
+			assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ().intValue ());
 			assertEquals (UnitCombatSideID.ATTACKER, unit3.getCombatSide ());
 		}
 		
@@ -507,7 +694,7 @@ public final class TestCombatProcessingImpl
 		assertEquals (1, unit1.getUnitURN ());
 		assertEquals (7, unit1.getCombatPosition ().getX ());
 		assertEquals (17, unit1.getCombatPosition ().getY ());
-		assertEquals (CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FACING, unit1.getCombatHeading ());
+		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit1.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit1.getCombatSide ());
 		assertNull (unit1.getUnitDetails ());
 
@@ -515,7 +702,7 @@ public final class TestCombatProcessingImpl
 		assertEquals (2, unit2.getUnitURN ());
 		assertEquals (7, unit2.getCombatPosition ().getX ());
 		assertEquals (19, unit2.getCombatPosition ().getY ());
-		assertEquals (CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FACING, unit2.getCombatHeading ());
+		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit2.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit2.getCombatSide ());
 		assertNull (unit2.getUnitDetails ());
 
@@ -523,7 +710,7 @@ public final class TestCombatProcessingImpl
 		assertEquals (3, unit3.getUnitURN ());
 		assertEquals (8, unit3.getCombatPosition ().getX ());
 		assertEquals (18, unit3.getCombatPosition ().getY ());
-		assertEquals (CombatProcessingImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ());
+		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit3.getCombatSide ());
 		assertNull (unit3.getUnitDetails ());
 	}
@@ -535,10 +722,26 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_AttackingOtherPlayer () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final Unit longbowmen = new Unit ();
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		final Unit hero = new Unit ();
+		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		final Unit phantomWarriors = new Unit ();
+		phantomWarriors.setUnitMagicRealm ("MB01");
+		
+		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
+		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
+		
+		// Session description
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
@@ -660,7 +863,7 @@ public final class TestCombatProcessingImpl
 		trueMap.getUnit ().add (defenderDeadLongbowmen);
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -671,17 +874,17 @@ public final class TestCombatProcessingImpl
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -718,10 +921,29 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_AttackingRampagingMonsters () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final TileType tt = new TileType ();
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		final Unit longbowmen = new Unit ();
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		final Unit hero = new Unit ();
+		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		final Unit phantomWarriors = new Unit ();
+		phantomWarriors.setUnitMagicRealm ("MB01");
+		
+		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
+		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
+		
+		// Session description
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
@@ -840,7 +1062,7 @@ public final class TestCombatProcessingImpl
 		trueMap.getUnit ().add (defenderDeadLongbowmen);
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -851,17 +1073,17 @@ public final class TestCombatProcessingImpl
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -892,10 +1114,30 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_AttackingNode () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final TileType tt = new TileType ();
+		tt.setMagicRealmID ("X");
+		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
+		
+		final Unit longbowmen = new Unit ();
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		final Unit hero = new Unit ();
+		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		final Unit phantomWarriors = new Unit ();
+		phantomWarriors.setUnitMagicRealm ("MB01");
+		
+		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
+		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
+		
+		// Session description
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
@@ -1014,7 +1256,7 @@ public final class TestCombatProcessingImpl
 		trueMap.getUnit ().add (defenderDeadLongbowmen);
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -1025,17 +1267,17 @@ public final class TestCombatProcessingImpl
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1069,10 +1311,26 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_AttackingEmptyNode () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final Unit longbowmen = new Unit ();
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		final Unit hero = new Unit ();
+		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		final Unit phantomWarriors = new Unit ();
+		phantomWarriors.setUnitMagicRealm ("MB01");
+		
+		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
+		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
+		
+		// Session description
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
@@ -1160,7 +1418,7 @@ public final class TestCombatProcessingImpl
 		trueMap.getUnit ().add (attackerDeadLongbowmenInADifferentCombat);
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -1171,15 +1429,15 @@ public final class TestCombatProcessingImpl
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, sd, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1204,10 +1462,26 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_WalkInWithoutAFight () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final Unit longbowmen = new Unit ();
+		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		final Unit hero = new Unit ();
+		hero.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
+		final Unit phantomWarriors = new Unit ();
+		phantomWarriors.setUnitMagicRealm ("MB01");
+		
+		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
+		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
+		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
+		
+		// Session description
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
@@ -1295,7 +1569,7 @@ public final class TestCombatProcessingImpl
 		trueMap.getUnit ().add (attackerDeadLongbowmenInADifferentCombat);
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -1306,15 +1580,15 @@ public final class TestCombatProcessingImpl
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, sd, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, sd, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, null, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, null, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1337,10 +1611,12 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_TwoHumanPlayers () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");		// regular map tile
@@ -1424,10 +1700,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -1496,10 +1772,12 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_AgainstRampagingMonsters () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");		// regular map tile
@@ -1580,10 +1858,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -1645,10 +1923,12 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_RampagingMonstersAgainstUs () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");		// regular map tile
@@ -1729,10 +2009,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -1794,10 +2074,12 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_AgainstNode () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT12");		// node
@@ -1878,10 +2160,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -1943,10 +2225,12 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_NodeAgainstUs () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT12");		// node
@@ -2029,10 +2313,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -2084,10 +2368,12 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_TwoHumanPlayers () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");		// regular map tile
@@ -2147,10 +2433,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -2243,10 +2529,15 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_AgainstRampagingMonsters () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final TileType tt = new TileType ();
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");		// regular map tile
@@ -2303,10 +2594,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -2381,7 +2672,6 @@ public final class TestCombatProcessingImpl
 		assertNull (attackingMsg.getSummonedBySpellID ());
 
 		// Defending player is now AI so has no connection
-
 		assertEquals (0, otherPlayerConnection.getMessages ().size ());
 	}
 	
@@ -2392,10 +2682,15 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_RampagingMonstersAgainstUs () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final TileType tt = new TileType ();
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");		// regular map tile
@@ -2452,10 +2747,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -2530,7 +2825,6 @@ public final class TestCombatProcessingImpl
 		assertNull (attackingMsg.getSummonedBySpellID ());
 
 		// Defending player is now AI so has no connection
-
 		assertEquals (0, otherPlayerConnection.getMessages ().size ());
 	}
 
@@ -2541,10 +2835,16 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_AgainstNode () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final TileType tt = new TileType ();
+		tt.setMagicRealmID ("X");
+		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT12");		// node
@@ -2601,10 +2901,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -2680,7 +2980,6 @@ public final class TestCombatProcessingImpl
 		assertNull (attackingMsg.getSummonedBySpellID ());
 
 		// Defending player is now AI so has no connection
-
 		assertEquals (0, otherPlayerConnection.getMessages ().size ());
 	}
 	
@@ -2691,10 +2990,16 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_NodeAgainstUs () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final TileType tt = new TileType ();
+		tt.setMagicRealmID ("X");
+		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
+		
+		// Overland map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT12");		// node
@@ -2751,10 +3056,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Combat position
-		final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 		combatPosition.setX (7);
 		combatPosition.setY (12);
 		
@@ -2821,175 +3126,534 @@ public final class TestCombatProcessingImpl
 		assertEquals (0, attackingPlayerConnection.getMessages ().size ());
 
 		// Defending player is now AI so has no connection
-
 		assertEquals (0, otherPlayerConnection.getMessages ().size ());
 	}
 	
 	/**
-	 * Tests the countUnitsInCombat method
+	 * Tests the reduceMovementRemaining method
 	 */
 	@Test
-	public final void testCountUnitsInCombat ()
+	public final void testReduceMovementRemaining ()
 	{
-		// Set up sample units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		
-		// Right
-		final MemoryUnit unit1 = new MemoryUnit ();
-		unit1.setStatus (UnitStatusID.ALIVE);
-		unit1.setCombatLocation (createCoordinates (20));
-		unit1.setCombatPosition (new CombatMapCoordinatesEx ());
-		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
-		units.add (unit1);
-		
-		// Wrong location
-		final MemoryUnit unit2 = new MemoryUnit ();
-		unit2.setStatus (UnitStatusID.ALIVE);
-		unit2.setCombatLocation (createCoordinates (21));
-		unit2.setCombatPosition (new CombatMapCoordinatesEx ());
-		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
-		units.add (unit2);
-		
-		// Defender
-		final MemoryUnit unit3 = new MemoryUnit ();
-		unit3.setStatus (UnitStatusID.ALIVE);
-		unit3.setCombatLocation (createCoordinates (20));
-		unit3.setCombatPosition (new CombatMapCoordinatesEx ());
-		unit3.setCombatSide (UnitCombatSideID.DEFENDER);
-		units.add (unit3);
-		
-		// Dead
-		final MemoryUnit unit4 = new MemoryUnit ();
-		unit4.setStatus (UnitStatusID.DEAD);
-		unit4.setCombatLocation (createCoordinates (20));
-		unit4.setCombatPosition (new CombatMapCoordinatesEx ());
-		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
-		units.add (unit4);
-		
-		// Not in combat
-		final MemoryUnit unit5 = new MemoryUnit ();
-		unit5.setStatus (UnitStatusID.ALIVE);
-		unit5.setCombatLocation (createCoordinates (20));
-		unit5.setCombatSide (UnitCombatSideID.ATTACKER);
-		units.add (unit5);
-		
-		// Another right one
-		final MemoryUnit unit6 = new MemoryUnit ();
-		unit6.setStatus (UnitStatusID.ALIVE);
-		unit6.setCombatLocation (createCoordinates (20));
-		unit6.setCombatPosition (new CombatMapCoordinatesEx ());
-		unit6.setCombatSide (UnitCombatSideID.ATTACKER);
-		units.add (unit6);
-		
+		// Test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setDoubleCombatMovesLeft (8);
+
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		
-		// Run test
-		assertEquals (2, proc.countUnitsInCombat (createCoordinates (20), UnitCombatSideID.ATTACKER, units));
+		// Normal reduction
+		proc.reduceMovementRemaining (unit, 5);
+		assertEquals (3, unit.getDoubleCombatMovesLeft ().intValue ());		
+		
+		// Try to put below 0
+		proc.reduceMovementRemaining (unit, 5);
+		assertEquals (0, unit.getDoubleCombatMovesLeft ().intValue ());		
 	}
 	
 	/**
-	 * Tests the calculateDamage method
+	 * Tests the okToMoveUnitInCombat method to make a move (rather than an attack)
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateDamage () throws Exception
+	public final void testOkToMoveUnitInCombat_Move () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		// Set up other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
+		// General server knowledge
+		final CoordinateSystem overlandMapCoordinateSystem = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapCoordinateSystem);
 		
-		// Set up players
-		final PlayerDescription attackingPD = new PlayerDescription ();
-		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
 		
-		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
-		attackingPlayer.setConnection (attackingMsgs);
+		// Human attacker
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (true);
+		attackingPd.setPlayerID (5);
+
+		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final PlayerDescription defendingPD = new PlayerDescription ();
-		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (msgs);
+
+		// AI defender
+		final PlayerDescription defendingPd = new PlayerDescription ();
+		defendingPd.setHuman (false);
+		defendingPd.setPlayerID (-1);
+
+		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, defendingPriv, null, null);
 		
-		// Set up units
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitURN (22);
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
 		
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (33);
+		// Session variables
+		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
+
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatMapCoordinateSystem ()).thenReturn (sys);
+		when (mom.getServerDB ()).thenReturn (db);
 		
-		// Set up attacker stats
-		final MomUnitCalculations unitCalculations = mock (MomUnitCalculations.class);
+		// Where the combat is taking place
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
+		combatLocation.setX (25);
+		combatLocation.setY (15);
+		combatLocation.setZ (1);
+		
+		// Combat map
+		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
+		final ServerGridCell combatCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		combatCell.setCombatMap (combatMap);
+		
+		// True unit
+		final MemoryUnit tu = new MemoryUnit ();
+		tu.setCombatLocation (combatLocation);
+		tu.setDoubleCombatMovesLeft (6);
+		tu.setUnitURN (101);
+
+		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx ();
+		tuMoveFrom.setX (1);
+		tuMoveFrom.setY (7);
+		tu.setCombatPosition (tuMoveFrom);
+		
+		// Players' memories of unit
+		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();
+		attackingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
+		attackingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
+		attackingPlayerMemoryOfUnit.setUnitURN (101);
+
+		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
+		attackingPlayerMemoryOfUnitMoveFrom.setX (1);
+		attackingPlayerMemoryOfUnitMoveFrom.setY (7);
+		attackingPlayerMemoryOfUnit.setCombatPosition (attackingPlayerMemoryOfUnitMoveFrom);
+
+		final MemoryUnit defendingPlayerMemoryOfUnit = new MemoryUnit ();
+		defendingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
+		defendingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
+		defendingPlayerMemoryOfUnit.setUnitURN (101);
+
+		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
+		defendingPlayerMemoryOfUnitMoveFrom.setX (1);
+		defendingPlayerMemoryOfUnitMoveFrom.setY (7);
+		defendingPlayerMemoryOfUnit.setCombatPosition (defendingPlayerMemoryOfUnitMoveFrom);
+		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findUnitURN (101, attackingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A")).thenReturn (attackingPlayerMemoryOfUnit);
+		when (unitUtils.findUnitURN (101, defendingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-D")).thenReturn (defendingPlayerMemoryOfUnit);
 		
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, spells, combatAreaEffects, db)).thenReturn (6);		// Attacker has 6 figures...
+		// Players in combat
+		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
+		
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		
+		// Where we want to move to
+		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
+		moveTo.setX (3);
+		moveTo.setY (8);
+		
+		// Movement areas
+		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
+		final CombatMoveType [] [] movementTypes = new CombatMoveType [sys.getHeight ()] [sys.getWidth ()];
 
-		when (unitUtils.getModifiedAttributeValue (attacker, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);	// ..and 3 swords, so 18 hits...
+		// From 1,7 we move down-right to 2,8 and then right to 3,8 
+		movementDirections [8] [2] = 4;
+		movementDirections [8] [3] = 3;
+		
+		movementTypes [8] [3] = CombatMoveType.MOVE;
+		
+		// Movement points to enter each tile
+		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
 
-		when (unitUtils.getModifiedAttributeValue (attacker, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (1);	// ..with 40% chance to hit on each
-		
-		// Set up defender stats
-		when (unitCalculations.calculateAliveFigureCount (defender, players, spells, combatAreaEffects, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
-		
-		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_DEFENCE,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (4);	// ..and 4 shields...
-
-		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (2);	// ..with 50% chance to block on each
-
-		when (unitUtils.getModifiedAttributeValue (defender, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_HIT_POINTS,
-			MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, spells, combatAreaEffects, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
-		
-		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, spells, combatAreaEffects, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
-		
-		// Fix random number generator rolls
-		final RandomUtils random = mock (RandomUtils.class);
-		when (random.nextInt (10)).thenReturn (0, 2, 6, 7, 3, 6, 7, 4, 2, 5, 7, 9, 2, 4, 3, 6, 6, 8,		// Attack rolls, 6 of them are <4
-			5, 8, 3, 9,		// First figure is unlucky and only blocks 1 hit, then loses its 2 HP and dies
-			1, 5, 8, 2);		// Second figure blocks 2 of the hits, then loses 1 HP
-								// So in total, 3 of the dmg went against HP (which is the overall result of the method call)
-		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
-		proc.setUnitCalculations (unitCalculations);
+		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		proc.setCombatMapUtils (combatMapUtils);
+		proc.setUnitCalculations (unitCalc);
 		proc.setUnitUtils (unitUtils);
-		proc.setRandomUtils (random);
 		
-		// Run test
-		final DamageCalculationMessage msg = new DamageCalculationMessage ();
-		assertEquals (3, proc.calculateDamage (attacker, defender, attackingPlayer, defendingPlayer, CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			msg, players, spells, combatAreaEffects, db));
+		// Run method
+		proc.okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
 		
-		// Check the message that got sent to the attacker
-		assertEquals (1, attackingMsgs.getMessages ().size ());
-		assertSame (msg, attackingMsgs.getMessages ().get (0));
+		// Check movement path messages
+		assertEquals (2, msgs.getMessages ().size ());
 		
-		assertEquals (DamageCalculationMessageTypeID.ATTACK_AND_DEFENCE_STATISTICS, msg.getMessageType ());
-		assertEquals (22, msg.getAttackerUnitURN ().intValue ());
-		assertEquals (33, msg.getDefenderUnitURN ().intValue ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_MELEE_ATTACK, msg.getAttackAttributeID ());
+		assertEquals (MoveUnitInCombatMessage.class.getName (), msgs.getMessages ().get (0).getClass ().getName ());
+		final MoveUnitInCombatMessage msg1 = (MoveUnitInCombatMessage) msgs.getMessages ().get (0);
+		assertEquals (101, msg1.getUnitURN ());
+		assertEquals (4, msg1.getDirection ());
+		assertEquals (1, msg1.getMoveFrom ().getX ());
+		assertEquals (7, msg1.getMoveFrom ().getY ());
+		assertEquals (4, msg1.getDoubleCombatMovesLeft ());
 		
-		assertEquals (6, msg.getAttackerFigures ().intValue ());
-		assertEquals (3, msg.getAttackStrength ().intValue ());
-		assertEquals (18, msg.getPotentialDamage ().intValue ());
-		assertEquals (4, msg.getChanceToHit ().intValue ());
-		assertEquals (72, msg.getTenTimesAverageDamage ().intValue ());		// 18 hits * 0.4 chance = 7.2 average hits
-		assertEquals (6, msg.getActualDamage ().intValue ());
+		assertEquals (MoveUnitInCombatMessage.class.getName (), msgs.getMessages ().get (1).getClass ().getName ());
+		final MoveUnitInCombatMessage msg2 = (MoveUnitInCombatMessage) msgs.getMessages ().get (1);
+		assertEquals (101, msg2.getUnitURN ());
+		assertEquals (3, msg2.getDirection ());
+		assertEquals (2, msg2.getMoveFrom ().getX ());
+		assertEquals (8, msg2.getMoveFrom ().getY ());
+		assertEquals (3, msg2.getDoubleCombatMovesLeft ());
 		
-		assertEquals (3, msg.getDefenderFigures ().intValue ());
-		assertEquals (4, msg.getDefenceStrength ().intValue ());
-		assertEquals (5, msg.getChanceToDefend ().intValue ());
-		assertEquals (20, msg.getTenTimesAverageBlock ().intValue ());		// 4 shields * 0.5 chance = 2.0 average blocked
-		assertEquals ("1,2", msg.getActualBlockedHits ());		// 1st figure blocked 1 hit, 2nd figure blocked 2 hits
+		// Check the unit ended up where it was supposed to
+		assertEquals (moveTo, tu.getCombatPosition ());
+		assertEquals (moveTo, attackingPlayerMemoryOfUnit.getCombatPosition ());
+		assertEquals (moveTo, defendingPlayerMemoryOfUnit.getCombatPosition ());
+		
+		// Check its movement got reduced
+		assertEquals (3, tu.getDoubleCombatMovesLeft ().intValue ());
+	}
+
+	/**
+	 * Tests the okToMoveUnitInCombat method to make a ranged attack
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testOkToMoveUnitInCombat_Ranged () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// General server knowledge
+		final CoordinateSystem overlandMapCoordinateSystem = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapCoordinateSystem);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Human attacker
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (true);
+		attackingPd.setPlayerID (5);
+
+		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
+		
+		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (msgs);
+
+		// AI defender
+		final PlayerDescription defendingPd = new PlayerDescription ();
+		defendingPd.setHuman (false);
+		defendingPd.setPlayerID (-1);
+
+		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, defendingPriv, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
+		
+		// Session variables
+		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
+
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatMapCoordinateSystem ()).thenReturn (sys);
+		when (mom.getServerDB ()).thenReturn (db);
+		
+		// Where the combat is taking place
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
+		combatLocation.setX (25);
+		combatLocation.setY (15);
+		combatLocation.setZ (1);
+		
+		// Combat map
+		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
+		final ServerGridCell combatCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		combatCell.setCombatMap (combatMap);
+		
+		// True unit
+		final MemoryUnit tu = new MemoryUnit ();
+		tu.setCombatLocation (combatLocation);
+		tu.setDoubleCombatMovesLeft (6);
+		tu.setUnitURN (101);
+
+		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx ();
+		tuMoveFrom.setX (1);
+		tuMoveFrom.setY (7);
+		tu.setCombatPosition (tuMoveFrom);
+		
+		// Players' memories of unit
+		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();
+		attackingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
+		attackingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
+		attackingPlayerMemoryOfUnit.setUnitURN (101);
+
+		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
+		attackingPlayerMemoryOfUnitMoveFrom.setX (1);
+		attackingPlayerMemoryOfUnitMoveFrom.setY (7);
+		attackingPlayerMemoryOfUnit.setCombatPosition (attackingPlayerMemoryOfUnitMoveFrom);
+
+		final MemoryUnit defendingPlayerMemoryOfUnit = new MemoryUnit ();
+		defendingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
+		defendingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
+		defendingPlayerMemoryOfUnit.setUnitURN (101);
+
+		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
+		defendingPlayerMemoryOfUnitMoveFrom.setX (1);
+		defendingPlayerMemoryOfUnitMoveFrom.setY (7);
+		defendingPlayerMemoryOfUnit.setCombatPosition (defendingPlayerMemoryOfUnitMoveFrom);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findUnitURN (101, attackingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A")).thenReturn (attackingPlayerMemoryOfUnit);
+		when (unitUtils.findUnitURN (101, defendingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-D")).thenReturn (defendingPlayerMemoryOfUnit);
+		
+		// Players in combat
+		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
+		
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		
+		// Where we want to move to
+		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
+		moveTo.setX (3);
+		moveTo.setY (8);
+		
+		// Movement areas
+		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
+		final CombatMoveType [] [] movementTypes = new CombatMoveType [sys.getHeight ()] [sys.getWidth ()];
+
+		// From 1,7 we move down-right to 2,8 and then right to 3,8 
+		movementDirections [8] [2] = 4;
+		movementDirections [8] [3] = 3;
+		
+		movementTypes [8] [3] = CombatMoveType.RANGED;		// <---
+		
+		// Movement points to enter each tile
+		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
+		
+		// The unit we're attacking
+		final MemoryUnit defender = new MemoryUnit ();
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, moveTo)).thenReturn (defender);
+
+		// Set up object to test
+		final DamageProcessor damageProcessor = mock (DamageProcessor.class); 
+		
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		proc.setCombatMapUtils (combatMapUtils);
+		proc.setUnitCalculations (unitCalc);
+		proc.setUnitUtils (unitUtils);
+		proc.setDamageProcessor (damageProcessor);
+		
+		// Run method
+		proc.okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
+		
+		// Check there were no movement path messages
+		assertEquals (0, msgs.getMessages ().size ());
+		
+		// Check the unit stayed where it was
+		assertEquals (tuMoveFrom, tu.getCombatPosition ());
+		assertEquals (tuMoveFrom, attackingPlayerMemoryOfUnit.getCombatPosition ());
+		assertEquals (tuMoveFrom, defendingPlayerMemoryOfUnit.getCombatPosition ());
+		
+		// Check its movement got zeroed
+		assertEquals (0, tu.getDoubleCombatMovesLeft ().intValue ());
+		
+		// Check the attack happened
+		verify (damageProcessor, times (1)).resolveAttack (tu, defender, attackingPlayer, defendingPlayer, 4, true, combatLocation, mom);
+	}
+
+	/**
+	 * Tests the okToMoveUnitInCombat method to move 1 tile then make a melee attack
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testOkToMoveUnitInCombat_Melee () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final Unit unit = new Unit ();
+		unit.setDoubleMovement (6);
+		when (db.findUnit ("UN001", "okToMoveUnitInCombat")).thenReturn (unit);
+		
+		// General server knowledge
+		final CoordinateSystem overlandMapCoordinateSystem = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapCoordinateSystem);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Human attacker
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (true);
+		attackingPd.setPlayerID (5);
+
+		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
+		
+		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (msgs);
+
+		// AI defender
+		final PlayerDescription defendingPd = new PlayerDescription ();
+		defendingPd.setHuman (false);
+		defendingPd.setPlayerID (-1);
+
+		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
+		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, defendingPriv, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
+		
+		// Session variables
+		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
+
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatMapCoordinateSystem ()).thenReturn (sys);
+		when (mom.getServerDB ()).thenReturn (db);
+		
+		// Where the combat is taking place
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
+		combatLocation.setX (25);
+		combatLocation.setY (15);
+		combatLocation.setZ (1);
+		
+		// Combat map
+		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
+		final ServerGridCell combatCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		combatCell.setCombatMap (combatMap);
+		
+		// True unit
+		final MemoryUnit tu = new MemoryUnit ();
+		tu.setCombatLocation (combatLocation);
+		tu.setDoubleCombatMovesLeft (6);
+		tu.setUnitURN (101);
+		tu.setUnitID ("UN001");
+
+		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx ();
+		tuMoveFrom.setX (1);
+		tuMoveFrom.setY (7);
+		tu.setCombatPosition (tuMoveFrom);
+		
+		// Players' memories of unit
+		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();
+		attackingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
+		attackingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
+		attackingPlayerMemoryOfUnit.setUnitURN (101);
+
+		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
+		attackingPlayerMemoryOfUnitMoveFrom.setX (1);
+		attackingPlayerMemoryOfUnitMoveFrom.setY (7);
+		attackingPlayerMemoryOfUnit.setCombatPosition (attackingPlayerMemoryOfUnitMoveFrom);
+
+		final MemoryUnit defendingPlayerMemoryOfUnit = new MemoryUnit ();
+		defendingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
+		defendingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
+		defendingPlayerMemoryOfUnit.setUnitURN (101);
+
+		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
+		defendingPlayerMemoryOfUnitMoveFrom.setX (1);
+		defendingPlayerMemoryOfUnitMoveFrom.setY (7);
+		defendingPlayerMemoryOfUnit.setCombatPosition (defendingPlayerMemoryOfUnitMoveFrom);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findUnitURN (101, attackingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A")).thenReturn (attackingPlayerMemoryOfUnit);
+		when (unitUtils.findUnitURN (101, defendingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-D")).thenReturn (defendingPlayerMemoryOfUnit);
+		
+		// Players in combat
+		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
+		
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		
+		// Where we want to move to
+		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
+		moveTo.setX (3);
+		moveTo.setY (8);
+		
+		// Movement areas
+		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
+		final CombatMoveType [] [] movementTypes = new CombatMoveType [sys.getHeight ()] [sys.getWidth ()];
+
+		// From 1,7 we move down-right to 2,8 and then right to 3,8 
+		movementDirections [8] [2] = 4;
+		movementDirections [8] [3] = 3;
+		
+		movementTypes [8] [3] = CombatMoveType.MELEE;
+		
+		// Movement points to enter each tile
+		final MomUnitCalculations unitCalc = mock (MomUnitCalculations.class);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
+
+		// The unit we're attacking
+		final MemoryUnit defender = new MemoryUnit ();
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, moveTo)).thenReturn (defender);
+
+		// Set up object to test
+		final DamageProcessor damageProcessor = mock (DamageProcessor.class);
+		
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		proc.setCombatMapUtils (combatMapUtils);
+		proc.setUnitCalculations (unitCalc);
+		proc.setUnitUtils (unitUtils);
+		proc.setDamageProcessor (damageProcessor);
+		
+		// Run method
+		proc.okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
+		
+		// Check movement path messages
+		assertEquals (1, msgs.getMessages ().size ());
+		
+		assertEquals (MoveUnitInCombatMessage.class.getName (), msgs.getMessages ().get (0).getClass ().getName ());
+		final MoveUnitInCombatMessage msg1 = (MoveUnitInCombatMessage) msgs.getMessages ().get (0);
+		assertEquals (101, msg1.getUnitURN ());
+		assertEquals (4, msg1.getDirection ());
+		assertEquals (1, msg1.getMoveFrom ().getX ());
+		assertEquals (7, msg1.getMoveFrom ().getY ());
+		assertEquals (4, msg1.getDoubleCombatMovesLeft ());
+		
+		// Check the unit ended up where it was supposed to
+		final MapCoordinates2DEx middle = new MapCoordinates2DEx ();
+		middle.setX (2);
+		middle.setY (8);
+		
+		assertEquals (middle, tu.getCombatPosition ());
+		assertEquals (middle, attackingPlayerMemoryOfUnit.getCombatPosition ());
+		assertEquals (middle, defendingPlayerMemoryOfUnit.getCombatPosition ());
+		
+		// Check its movement got reduced
+		assertEquals (1, tu.getDoubleCombatMovesLeft ().intValue ());
+
+		// Check the attack happened
+		verify (damageProcessor, times (1)).resolveAttack (tu, defender, attackingPlayer, defendingPlayer, 3, false, combatLocation, mom);
 	}
 }

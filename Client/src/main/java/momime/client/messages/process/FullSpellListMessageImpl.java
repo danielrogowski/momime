@@ -8,9 +8,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
-import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
-import momime.common.messages.v0_9_4.SpellResearchStatus;
-import momime.common.messages.v0_9_4.SpellResearchStatusID;
+import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
+import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;

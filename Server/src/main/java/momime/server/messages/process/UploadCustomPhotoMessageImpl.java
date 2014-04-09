@@ -5,9 +5,9 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.clienttoserver.v0_9_4.UploadCustomPhotoMessage;
-import momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.clienttoserver.v0_9_5.UploadCustomPhotoMessage;
+import momime.common.messages.servertoclient.v0_9_5.YourPhotoIsOkMessage;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;

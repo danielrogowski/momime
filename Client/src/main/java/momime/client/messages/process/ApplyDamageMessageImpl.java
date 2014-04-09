@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.ApplyDamageMessage;
+import momime.common.messages.servertoclient.v0_9_5.ApplyDamageMessage;
 
 /**
  * Message server sends to all clients when an attack takes place, this might damage the attacker and/or the defender.

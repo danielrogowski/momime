@@ -22,7 +22,7 @@ import momime.client.database.v0_9_4.ClientDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
+import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
 import momime.server.ServerTestData;
 import momime.server.database.v0_9_4.ServerDatabase;
 

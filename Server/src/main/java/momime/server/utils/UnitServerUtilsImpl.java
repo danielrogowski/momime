@@ -12,18 +12,17 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.UnitSettingData;
 import momime.common.database.v0_9_4.UnitHasSkill;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.SetSpecialOrderMessage;
-import momime.common.messages.v0_9_4.AvailableUnit;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
-import momime.common.messages.v0_9_4.UnitSpecialOrder;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.SetSpecialOrderMessage;
+import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.UnitAddBumpTypeID;
+import momime.common.messages.v0_9_5.UnitSpecialOrder;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.MomServerUnitCalculations;
@@ -33,6 +32,7 @@ import momime.server.database.v0_9_4.UnitSkill;
 import momime.server.messages.ServerMemoryGridCellUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
 
@@ -219,7 +219,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @return Whether unit can be added here or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	final boolean canUnitBeAddedHere (final OverlandMapCoordinatesEx addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
+	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
 		final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
@@ -286,7 +286,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	@Override
-	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final OverlandMapCoordinatesEx desiredLocation, final String unitID, final int playerID,
+	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final MapCoordinates3DEx desiredLocation, final String unitID, final int playerID,
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
@@ -304,7 +304,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			testUnitSkillList.add (testUnitSkill.getUnitSkillID ());
 
 		// First try the centre
-		OverlandMapCoordinatesEx addLocation = null;
+		MapCoordinates3DEx addLocation = null;
 		UnitAddBumpTypeID bumpType = UnitAddBumpTypeID.NO_ROOM;
 
 		if (canUnitBeAddedHere (desiredLocation, testUnit, testUnitSkillList, trueMap, sd.getUnitSetting (), db))
@@ -317,12 +317,12 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			int direction = 1;
 			while ((addLocation == null) && (direction <= getCoordinateSystemUtils ().getMaxDirection (sd.getMapSize ().getCoordinateSystemType ())))
 			{
-				final OverlandMapCoordinatesEx adjacentLocation = new OverlandMapCoordinatesEx ();
+				final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx ();
 				adjacentLocation.setX (desiredLocation.getX ());
 				adjacentLocation.setY (desiredLocation.getY ());
 				adjacentLocation.setZ (desiredLocation.getZ ());
 
-				if (getCoordinateSystemUtils ().moveCoordinates (sd.getMapSize (), adjacentLocation, direction))
+				if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), adjacentLocation, direction))
 					if (canUnitBeAddedHere (adjacentLocation, testUnit, testUnitSkillList, trueMap, sd.getUnitSetting (), db))
 					{
 						addLocation = adjacentLocation;

@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 

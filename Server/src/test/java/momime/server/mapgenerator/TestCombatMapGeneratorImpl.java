@@ -8,18 +8,17 @@ import static org.junit.Assert.assertTrue;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.v0_9_4.CombatMapLayerID;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
-import momime.common.messages.v0_9_4.MapRowOfCombatTiles;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MomCombatTile;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.v0_9_5.MapRowOfCombatTiles;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MomCombatTile;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.MemoryBuildingUtilsImpl;
@@ -31,6 +30,7 @@ import momime.server.database.ServerDatabaseValues;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
 import com.ndg.random.RandomUtilsImpl;
 
@@ -138,7 +138,7 @@ public final class TestCombatMapGeneratorImpl
 		trueTerrain.setMap (trueMap);
 		
 		// Overland map location to test
-		final OverlandMapCoordinatesEx combatMapLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx combatMapLocation = new MapCoordinates3DEx ();
 		combatMapLocation.setX (20);
 		combatMapLocation.setY (15);
 		combatMapLocation.setZ (1);
@@ -367,7 +367,7 @@ public final class TestCombatMapGeneratorImpl
 		mapGen.setRandomUtils (random);
 		
 		// Location
-		final OverlandMapCoordinatesEx combatMapLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx combatMapLocation = new MapCoordinates3DEx ();
 		combatMapLocation.setX (20);
 		combatMapLocation.setY (15);
 		combatMapLocation.setZ (1);

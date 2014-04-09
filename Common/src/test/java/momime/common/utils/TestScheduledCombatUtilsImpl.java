@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_4.MomScheduledCombat;
+import momime.common.messages.v0_9_5.MomScheduledCombat;
 
 import org.junit.Test;
 

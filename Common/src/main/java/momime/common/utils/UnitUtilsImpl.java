@@ -23,17 +23,17 @@ import momime.common.database.v0_9_4.UnitType;
 import momime.common.database.v0_9_4.UnitUpkeep;
 import momime.common.database.v0_9_4.WeaponGradeAttributeBonus;
 import momime.common.database.v0_9_4.WeaponGradeSkillBonus;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.AvailableUnit;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.messages.v0_9_5.UnitStatusID;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -431,9 +431,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		log.entering (UnitUtilsImpl.class.getName (), "doesCombatAreaEffectApplyToUnit", new String [] {unit.getUnitID (), effect.getCombatAreaEffectID ()});
 
 		// Check if unit is in combat (available units can never be in combat)
-		final OverlandMapCoordinatesEx combatLocation;
+		final MapCoordinates3DEx combatLocation;
 		if (unit instanceof MemoryUnit)
-			combatLocation = (OverlandMapCoordinatesEx) ((MemoryUnit) unit).getCombatLocation ();
+			combatLocation = (MapCoordinates3DEx) ((MemoryUnit) unit).getCombatLocation ();
 		else
 			combatLocation = null;
 
@@ -879,7 +879,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @throws RecordNotFoundException If we can't find the definition for one of the units
 	 */
 	@Override
-	public final void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final OverlandMapCoordinatesEx combatLocation, final CommonDatabase db)
+	public final void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final MapCoordinates3DEx combatLocation, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "resetUnitCombatMovement", new String []
@@ -1000,7 +1000,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @return Unit at this position, or null if there isn't one
 	 */
 	@Override
-	public final MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatPosition)
+	public final MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition)
 	{
 		log.entering (UnitUtilsImpl.class.getName (), "findAliveUnitInCombatAt", new String [] {combatLocation.toString (), combatPosition.toString ()});
 

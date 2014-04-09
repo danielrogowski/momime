@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.UpdateDamageTakenAndExperienceMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateDamageTakenAndExperienceMessage;
 
 /**
  * Server sends this to to update these values without showing any animations.

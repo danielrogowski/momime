@@ -7,11 +7,11 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.AttackNodeLairTowerMessage;
+import momime.common.messages.clienttoserver.v0_9_5.AttackNodeLairTowerMessage;
 import momime.server.MomSessionVariables;
-import momime.server.process.CombatProcessing;
+import momime.server.process.CombatStartAndEnd;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -26,8 +26,8 @@ public final class AttackNodeLairTowerMessageImpl extends AttackNodeLairTowerMes
 	/** Class logger */
 	private final Logger log = Logger.getLogger (AttackNodeLairTowerMessageImpl.class.getName ());
 
-	/** Combat processing */
-	private CombatProcessing combatProcessing;
+	/** Starting and ending combats */
+	private CombatStartAndEnd combatStartAndEnd;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -48,25 +48,25 @@ public final class AttackNodeLairTowerMessageImpl extends AttackNodeLairTowerMes
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		getCombatProcessing ().startCombat ((OverlandMapCoordinatesEx) getDefendingLocation (), (OverlandMapCoordinatesEx) getAttackingFrom (),
+		getCombatStartAndEnd ().startCombat ((MapCoordinates3DEx) getDefendingLocation (), (MapCoordinates3DEx) getAttackingFrom (),
 			getScheduledCombatURN (), sender, getUnitURN (), mom);
 
 		log.exiting (AttackNodeLairTowerMessageImpl.class.getName (), "process");
 	}
 
 	/**
-	 * @return Combat processing
+	 * @return Starting and ending combats
 	 */
-	public final CombatProcessing getCombatProcessing ()
+	public final CombatStartAndEnd getCombatStartAndEnd ()
 	{
-		return combatProcessing;
+		return combatStartAndEnd;
 	}
 
 	/**
-	 * @param proc Combat processing
+	 * @param cse Starting and ending combats
 	 */
-	public final void setCombatProcessing (final CombatProcessing proc)
+	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
-		combatProcessing = proc;
+		combatStartAndEnd = cse;
 	}
 }

@@ -8,19 +8,19 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.AddScheduledCombatMessage;
-import momime.common.messages.servertoclient.v0_9_4.PlayerCombatRequestStatusMessage;
-import momime.common.messages.servertoclient.v0_9_4.ScheduledCombatWalkInWithoutAFightMessage;
-import momime.common.messages.servertoclient.v0_9_4.ShowListAndOtherScheduledCombatsMessage;
-import momime.common.messages.servertoclient.v0_9_4.UpdateOtherScheduledCombatsMessage;
-import momime.common.messages.v0_9_4.MomScheduledCombat;
-import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
+import momime.common.messages.servertoclient.v0_9_5.AddScheduledCombatMessage;
+import momime.common.messages.servertoclient.v0_9_5.PlayerCombatRequestStatusMessage;
+import momime.common.messages.servertoclient.v0_9_5.ScheduledCombatWalkInWithoutAFightMessage;
+import momime.common.messages.servertoclient.v0_9_5.ShowListAndOtherScheduledCombatsMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateOtherScheduledCombatsMessage;
+import momime.common.messages.v0_9_5.MomScheduledCombat;
+import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.server.MomSessionVariables;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -59,7 +59,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	 */
 	@Override
 	public final void addScheduledCombatGeneratedURN (final MomGeneralServerKnowledge gsk,
-		final OverlandMapCoordinatesEx defendingLocation, final OverlandMapCoordinatesEx attackingFrom,
+		final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
 		final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs,
 		final MoveResultsInAttackTypeID typeOfCombat, final String monsterUnitID)
 	{
@@ -77,13 +77,13 @@ public final class CombatSchedulerImpl implements CombatScheduler
 			combat.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
 		
 	    // Copy locations into new objects, to be safe
-		final OverlandMapCoordinatesEx defLoc = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx defLoc = new MapCoordinates3DEx ();
 		defLoc.setX (defendingLocation.getX ());
 		defLoc.setY (defendingLocation.getY ());
 		defLoc.setZ (defendingLocation.getZ ());
 		combat.setDefendingLocation (defLoc);
 		
-		final OverlandMapCoordinatesEx attFrom = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx attFrom = new MapCoordinates3DEx ();
 		attFrom.setX (attackingFrom.getX ());
 		attFrom.setY (attackingFrom.getY ());
 		attFrom.setZ (attackingFrom.getZ ());

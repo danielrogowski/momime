@@ -7,9 +7,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_4.RequestUpdateUnitNameMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.clienttoserver.v0_9_5.RequestUpdateUnitNameMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -81,7 +81,7 @@ public final class RequestUpdateUnitNameMessageImpl extends RequestUpdateUnitNam
 			
 			// Rename it in players' memories and on clients
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit_UnitName (trueUnit,
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
 
 		log.exiting (RequestUpdateUnitNameMessageImpl.class.getName (), "process");

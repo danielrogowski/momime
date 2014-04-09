@@ -7,14 +7,14 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.NewTurnMessageData;
-import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.process.SpellProcessing;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -126,7 +126,7 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 
 		getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (),
 			getSpell ().getCastingPlayerID (), getSpell ().getSpellID (), getSpell ().getUnitURN (), getSpell ().getUnitSkillID (),
-			getSpell ().isCastInCombat (), (OverlandMapCoordinatesEx) getSpell ().getCityLocation (), getSpell ().getCitySpellEffectID (),
+			getSpell ().isCastInCombat (), (MapCoordinates3DEx) getSpell ().getCityLocation (), getSpell ().getCitySpellEffectID (),
 			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())

@@ -7,12 +7,12 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.EndCombatTurnMessage;
+import momime.common.messages.clienttoserver.v0_9_5.EndCombatTurnMessage;
 import momime.server.MomSessionVariables;
-import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.process.CombatProcessing;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -52,7 +52,7 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 		if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayer ()))
 			log.warning ("Received EndCombatTurnMessage from wrong player - ignored");
 		else
-			getCombatProcessing ().progressCombat ((OverlandMapCoordinatesEx) getCombatLocation (), false, false, mom);
+			getCombatProcessing ().progressCombat ((MapCoordinates3DEx) getCombatLocation (), false, false, mom);
 
 		log.exiting (EndCombatTurnMessageImpl.class.getName (), "process");
 	}

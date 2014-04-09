@@ -11,17 +11,17 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.PickProductionBonus;
 import momime.common.database.v0_9_4.Spell;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.PlayerPick;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
@@ -288,7 +288,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 	 * @return Double the range penalty for casting spells in combat; or null if the player simply can't cast any spells at all right now because they're banished
 	 */
 	@Override
-	public final Integer calculateDoubleCombatCastingRangePenalty (final PlayerPublicDetails player, final OverlandMapCoordinatesEx combatLocation,
+	public final Integer calculateDoubleCombatCastingRangePenalty (final PlayerPublicDetails player, final MapCoordinates3DEx combatLocation,
 		final boolean allowEitherPlane, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CoordinateSystem overlandMapCoordinateSystem)
 	{
 		log.entering (MomSpellCalculationsImpl.class.getName (), "calculateDoubleCombatCastingRangePenalty",
@@ -296,7 +296,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 			
 		// First need to find where the wizard's fortress is
 		Integer penalty;
-		final OverlandMapCoordinatesEx fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
+		final MapCoordinates3DEx fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
 			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings);
 		if (fortressLocation == null)
 			penalty = null;
@@ -309,7 +309,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 			{
 				// This gives a real distance, e.g. 1.4 for a 1x1 diagonal
 				// Remember we need to return double the value in the table
-				final double distance = getCoordinateSystemUtils ().determineRealDistanceBetween (overlandMapCoordinateSystem, combatLocation, fortressLocation);
+				final double distance = getCoordinateSystemUtils ().determineReal2DDistanceBetween (overlandMapCoordinateSystem, combatLocation, fortressLocation);
 				penalty = (((int) distance) + 9) / 5;
 				if (penalty > 6)
 					penalty = 6;

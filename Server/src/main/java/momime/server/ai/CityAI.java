@@ -7,14 +7,14 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.server.database.ServerDatabaseEx;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -35,7 +35,7 @@ public interface CityAI
 	 * @return Best possible location to put a new city, or null if there's no space left for any new cities on this plane
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 */
-	public OverlandMapCoordinatesEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
+	public MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
 		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseEx db)
 		throws RecordNotFoundException;
 
@@ -68,7 +68,7 @@ public interface CityAI
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
-	public void decideWhatToBuild (final OverlandMapCoordinatesEx cityLocation, final OverlandMapCityData cityData,
+	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryBuilding> trueBuildings,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException;

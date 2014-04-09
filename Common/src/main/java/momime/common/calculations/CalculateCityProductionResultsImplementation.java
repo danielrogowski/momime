@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
@@ -19,17 +19,18 @@ import momime.common.database.v0_9_4.Plane;
 import momime.common.database.v0_9_4.Race;
 import momime.common.database.v0_9_4.RacePopulationTask;
 import momime.common.database.v0_9_4.RacePopulationTaskProduction;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.PlayerPick;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Internal implementation of the list of all types of production generated from a city returned from calculateAllCityProductions ()
  * Provides all the update methods that the routine needs to build up the list
  */
-final class CalculateCityProductionResultsImplementation implements CalculateCityProductionResults
+public final class CalculateCityProductionResultsImplementation implements CalculateCityProductionResults
 {
 	/** Underlying list */
 	private final List<CalculateCityProductionResult> results;
@@ -43,7 +44,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	/**
 	 * Creates underlying list
 	 */
-	CalculateCityProductionResultsImplementation ()
+	public CalculateCityProductionResultsImplementation ()
 	{
 		results = new ArrayList<CalculateCityProductionResult> ();
 	}
@@ -95,7 +96,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	/**
 	 * @return Direct access to the underlying list
 	 */
-	final List<CalculateCityProductionResult> getResults ()
+	public final List<CalculateCityProductionResult> getResults ()
 	{
 		return results;
 	}
@@ -185,7 +186,7 @@ final class CalculateCityProductionResultsImplementation implements CalculateCit
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
-	final void addProductionFromPopulation (final Race race, final String populationTaskID, final int numberDoingTask, final OverlandMapCoordinatesEx cityLocation,
+	final void addProductionFromPopulation (final Race race, final String populationTaskID, final int numberDoingTask, final MapCoordinates3DEx cityLocation,
 		final List<MemoryBuilding> buildings, final CommonDatabase db) throws RecordNotFoundException
 	{
 		if (numberDoingTask > 0)

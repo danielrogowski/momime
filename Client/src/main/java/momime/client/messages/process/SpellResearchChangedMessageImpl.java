@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.SpellResearchChangedMessage;
+import momime.common.messages.servertoclient.v0_9_5.SpellResearchChangedMessage;
 
 /**
  * Server sends this back to a client who requested a change in research to let them know the change was OK.

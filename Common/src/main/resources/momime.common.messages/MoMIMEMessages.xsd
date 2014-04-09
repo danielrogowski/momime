@@ -3,7 +3,7 @@
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
 	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
 	xmlns:momimeclient="http://momime/client/database/v0_9_4"
-	xmlns:momimemsgs="http://momime/common/messages/v0_9_4" targetNamespace="http://momime/common/messages/v0_9_4"
+	xmlns:momimemsgs="http://momime/common/messages/v0_9_5" targetNamespace="http://momime/common/messages/v0_9_5"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://www.ndg.com/map"/>
@@ -134,7 +134,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 			<xsd:element minOccurs="0" maxOccurs="1" name="otherPlayerID" type="mps:playerID"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="oldPopulation" type="momimenewgame:cityPopulation"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="newPopulation" type="momimenewgame:cityPopulation"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="location" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingOrUnitID" type="momimecommon:unitID"/>		<!-- Tied in to that constructing stores both in single field - should fix this -->
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
@@ -272,18 +272,6 @@ Values must add up to a total of 240.</xsd:documentation>
         </xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:complexType name="overlandMapCoordinates">
-		<xsd:complexContent>
-			<xsd:extension base="map:mapCoordinates3D"/>
-		</xsd:complexContent>
-	</xsd:complexType>
-	
-	<xsd:complexType name="combatMapCoordinates">
-		<xsd:complexContent>
-			<xsd:extension base="map:mapCoordinates2D"/>
-        </xsd:complexContent>
-	</xsd:complexType>
-
 	<xsd:complexType name="overlandMapTerrainData">
 	    <xsd:annotation>
     		<xsd:documentation>Stores terrain values we remember about a map grid cell after it becomes obscured by Fog of War.
@@ -343,7 +331,7 @@ So the server just duplicates these values into the city owner's memory only.  S
 		</xsd:annotation>
         <xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
         </xsd:sequence>
 	</xsd:complexType>
 
@@ -357,7 +345,7 @@ happened yet, e.g. so if we scout a node and look at the stats of the creatures 
 		</xsd:annotation>
         <xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatAreaEffectID" type="momimecommon:combatAreaEffectID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="mapLocation" type="momimemsgs:overlandMapCoordinates">
+			<xsd:element minOccurs="0" maxOccurs="1" name="mapLocation" type="map:mapCoordinates3D">
 			    <xsd:annotation>
     				<xsd:documentation>Optional - omitted if the effect applies to the entire map (e.g. eternal night) and therefore cannot be dispelled in combat.</xsd:documentation>
 				</xsd:annotation>
@@ -392,7 +380,7 @@ Spell Ward is SP072, but it provides one of the effects SE072C,D,L,N,S (player's
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="castInCombat" type="xsd:boolean"/>
 			
-			<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectID" type="momimecommon:citySpellEffectID"/>
         </xsd:sequence>
 	</xsd:complexType>
@@ -425,8 +413,8 @@ Spell Ward is SP072, but it provides one of the effects SE072C,D,L,N,S (player's
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="momimemsgs:overlandMapCoordinates"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="map:mapCoordinates3D"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="defendingPlayerID" type="mps:playerID">
 			    <xsd:annotation>
     				<xsd:documentation>Null if scouting an empty node/lair/tower, so there are no defending units at all.</xsd:documentation>
@@ -469,8 +457,8 @@ players only - AI players will never set a movement point outside of their curre
 They are used in simultaneous movement games for all movement, including AI players.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="momimemsgs:overlandMapCoordinates"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates3D"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
 			<xsd:element minOccurs="1" maxOccurs="unbounded" name="path" type="map:mapDirection"/>
 		</xsd:sequence>
@@ -483,7 +471,7 @@ They are used in simultaneous movement games for all movement, including AI play
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="owningPlayerID" type="mps:playerID"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitID" type="momimecommon:unitID"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitLocation" type="momimemsgs:overlandMapCoordinates">
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitLocation" type="map:mapCoordinates3D">
 			    <xsd:annotation>
     				<xsd:documentation>The current location of the unit - on the client, units being animated
 to show them moving from one cell to another have their GridCell set to null.</xsd:documentation>
@@ -518,8 +506,8 @@ until it is dead and disappears, then from the second, and so on).</xsd:document
 					<xsd:element minOccurs="1" maxOccurs="1" name="wasSummonedInCombat" type="xsd:boolean"/>
 
 					<!-- Combat -->
-					<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
-					<xsd:element minOccurs="0" maxOccurs="1" name="combatPosition" type="momimemsgs:combatMapCoordinates"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="combatPosition" type="map:mapCoordinates2D"/>
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatHeading" type="map:mapDirection"/>
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatSide" type="momimemsgs:unitCombatSideID"/>
 					<xsd:element minOccurs="0" maxOccurs="1" name="doubleCombatMovesLeft" type="momimecommon:doubleMovement"/>

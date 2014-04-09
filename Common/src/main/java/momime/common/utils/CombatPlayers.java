@@ -17,7 +17,7 @@ public final class CombatPlayers
 	 * @param anAttackingPlayer Player who is attacking
 	 * @param aDefendingPlayer Player who is defending
 	 */
-	CombatPlayers (final PlayerPublicDetails anAttackingPlayer, final PlayerPublicDetails aDefendingPlayer)
+	public CombatPlayers (final PlayerPublicDetails anAttackingPlayer, final PlayerPublicDetails aDefendingPlayer)
 	{
 		attackingPlayer = anAttackingPlayer;
 		defendingPlayer = aDefendingPlayer;

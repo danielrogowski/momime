@@ -20,25 +20,24 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.RoundingDirectionID;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
-import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
-import momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomResourceValue;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.SpellResearchStatus;
-import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateRemainingResearchCostMessage;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomResourceValue;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.PlayerPickUtilsImpl;
 import momime.common.utils.ResourceValueUtils;
@@ -59,6 +58,7 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -209,7 +209,7 @@ public final class TestMomServerResourceCalculationsImpl
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
 
 		// Add a granary, costs 1 gold but produces 2 rations and 2 food (city size)
-		final OverlandMapCoordinatesEx granaryLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx granaryLocation = new MapCoordinates3DEx ();
 		granaryLocation.setX (2);
 		granaryLocation.setY (2);
 		granaryLocation.setZ (0);
@@ -239,7 +239,7 @@ public final class TestMomServerResourceCalculationsImpl
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
 
 		// Add a temple, costs 2 gold but produces 2 magic power
-		final OverlandMapCoordinatesEx templeLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx templeLocation = new MapCoordinates3DEx ();
 		templeLocation.setX (2);
 		templeLocation.setY (2);
 		templeLocation.setZ (0);
@@ -426,7 +426,7 @@ public final class TestMomServerResourceCalculationsImpl
 		trueMap.getUnit ().add (gargoylesOtherStatus);
 
 		// Building with wrong type of consumption
-		final OverlandMapCoordinatesEx parthenonLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx parthenonLocation = new MapCoordinates3DEx ();
 		parthenonLocation.setX (20);
 		parthenonLocation.setY (10);
 		parthenonLocation.setZ (1);
@@ -437,7 +437,7 @@ public final class TestMomServerResourceCalculationsImpl
 		trueMap.getBuilding ().add (parthenon);
 
 		// Building with right type of consumption
-		final OverlandMapCoordinatesEx wizardsGuildLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx wizardsGuildLocation = new MapCoordinates3DEx ();
 		wizardsGuildLocation.setX (20);
 		wizardsGuildLocation.setY (10);
 		wizardsGuildLocation.setZ (1);
@@ -448,7 +448,7 @@ public final class TestMomServerResourceCalculationsImpl
 		trueMap.getBuilding ().add (wizardsGuild);
 
 		// Building with wrong owner
-		final OverlandMapCoordinatesEx wizardsGuildEnemyCityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx wizardsGuildEnemyCityLocation = new MapCoordinates3DEx ();
 		wizardsGuildEnemyCityLocation.setX (21);
 		wizardsGuildEnemyCityLocation.setY (10);
 		wizardsGuildEnemyCityLocation.setZ (1);

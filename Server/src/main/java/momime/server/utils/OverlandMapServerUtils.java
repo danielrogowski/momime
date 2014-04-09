@@ -7,18 +7,18 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.UnitCombatSideID;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.UnitCombatSideID;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Race;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -85,6 +85,6 @@ public interface OverlandMapServerUtils
 	 * @return Which map cell the requested sides' units are in (i.e. for defender probably=combatLocation, for attacker will be some adjacent map cell)
 	 * @throws MomException If the requested side is wiped out
 	 */
-	public OverlandMapCoordinatesEx findMapLocationOfUnitsInCombat (final OverlandMapCoordinatesEx combatLocation,
+	public MapCoordinates3DEx findMapLocationOfUnitsInCombat (final MapCoordinates3DEx combatLocation,
 		final UnitCombatSideID combatSide, final List<MemoryUnit> units) throws MomException;
 }

@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.StartCombatMessage;
+import momime.common.messages.servertoclient.v0_9_5.StartCombatMessage;
 
 /**
  * Server sends this to the client when they are involved in a combat to start things off - this includes

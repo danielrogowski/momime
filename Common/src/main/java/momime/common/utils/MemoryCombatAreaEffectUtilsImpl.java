@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Helper methods for dealing with MemoryCombatAreaEffect objects
@@ -26,7 +27,7 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 	 */
 	@Override
 	public final boolean findCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
-		final OverlandMapCoordinatesEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID)
+		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID)
 	{
 		log.entering (MemoryCombatAreaEffectUtilsImpl.class.getName (), "findCombatAreaEffect",
 			new String [] {(mapLocation == null) ? "Global" : mapLocation.toString (), combatAreaEffectID});
@@ -37,7 +38,7 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 		{
 			final MemoryCombatAreaEffect thisCAE = iter.next ();
 
-			if ((CompareUtils.safeOverlandMapCoordinatesCompare (mapLocation, (OverlandMapCoordinatesEx) thisCAE.getMapLocation ())) &&
+			if ((CompareUtils.safeOverlandMapCoordinatesCompare (mapLocation, (MapCoordinates3DEx) thisCAE.getMapLocation ())) &&
 				(combatAreaEffectID.equals (thisCAE.getCombatAreaEffectID ())) &&
 				(CompareUtils.safeIntegerCompare (castingPlayerID, thisCAE.getCastingPlayerID ())))
 
@@ -58,7 +59,7 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 	 */
 	@Override
 	public final void cancelCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
-		final OverlandMapCoordinatesEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID) throws RecordNotFoundException
+		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID) throws RecordNotFoundException
 	{
 		log.entering (MemoryCombatAreaEffectUtilsImpl.class.getName (), "cancelCombatAreaEffect",
 			new String [] {(mapLocation == null) ? "Global" : mapLocation.toString (), combatAreaEffectID});
@@ -69,7 +70,7 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 		{
 			final MemoryCombatAreaEffect thisCAE = iter.next ();
 
-			if ((CompareUtils.safeOverlandMapCoordinatesCompare (mapLocation, (OverlandMapCoordinatesEx) thisCAE.getMapLocation ())) &&
+			if ((CompareUtils.safeOverlandMapCoordinatesCompare (mapLocation, (MapCoordinates3DEx) thisCAE.getMapLocation ())) &&
 				(combatAreaEffectID.equals (thisCAE.getCombatAreaEffectID ())) && (castingPlayerID == thisCAE.getCastingPlayerID ()))
 			{
 				iter.remove ();

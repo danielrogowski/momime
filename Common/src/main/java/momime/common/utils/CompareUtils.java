@@ -1,7 +1,7 @@
 package momime.common.utils;
 
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Equivalents of my StringUtils unit in Delphi
@@ -50,7 +50,7 @@ public final class CompareUtils
 	 * @param second Second value to compare
 	 * @return True if both coords are null, or both are non-null and identical
 	 */
-	public final static boolean safeOverlandMapCoordinatesCompare (final OverlandMapCoordinatesEx first, final OverlandMapCoordinatesEx second)
+	public final static boolean safeOverlandMapCoordinatesCompare (final MapCoordinates3DEx first, final MapCoordinates3DEx second)
 	{
 		if ((first == null) && (second == null))
 			return true;
@@ -68,7 +68,7 @@ public final class CompareUtils
 	 * @param second Second value to compare
 	 * @return True if both coords are null, or both are non-null and identical
 	 */
-	public final static boolean safeCombatMapCoordinatesCompare (final CombatMapCoordinatesEx first, final CombatMapCoordinatesEx second)
+	public final static boolean safeCombatMapCoordinatesCompare (final MapCoordinates2DEx first, final MapCoordinates2DEx second)
 	{
 		if ((first == null) && (second == null))
 			return true;

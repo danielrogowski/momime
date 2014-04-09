@@ -21,19 +21,18 @@ import momime.common.database.v0_9_4.RaceUnrest;
 import momime.common.database.v0_9_4.RoundingDirectionID;
 import momime.common.database.v0_9_4.TaxRate;
 import momime.common.database.v0_9_4.TileType;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 
@@ -43,6 +42,7 @@ import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
 import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -90,21 +90,21 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
 	@Override
-	public final int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
+	public final int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
 		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateProductionBonus", cityLocation);
 
 		int productionBonus = 0;
-		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 		coords.setX (cityLocation.getX ());
 		coords.setY (cityLocation.getY ());
 		coords.setZ (cityLocation.getZ ());
 
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 		{
-			if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
+			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
@@ -129,7 +129,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
 	@Override
-	public final int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
+	public final int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
 		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -149,12 +149,12 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		int d = 1;
 		while ((goldBonus == 0) && (d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ())))
 		{
-			final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 			coords.setX (cityLocation.getX ());
 			coords.setY (cityLocation.getY ());
 			coords.setZ (cityLocation.getZ ());
 
-			if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, d))
+			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, d))
 			{
 				// Bonus only applies if adjacent flag is set
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
@@ -181,7 +181,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @return True if the surrounding terrain has one of the tile type options that we need to construct this building
 	 */
 	@Override
-	public final boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation, final Building building,
+	public final boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation, final Building building,
 		final CoordinateSystem overlandMapCoordinateSystem)
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "buildingPassesTileTypeRequirements", new String [] {cityLocation.toString (), building.getBuildingID ()});
@@ -217,12 +217,12 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 						int d = 1;
 						while ((!thisRequirementPasses) && (d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ()))) 
 						{
-							final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+							final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 							coords.setX (cityLocation.getX ());
 							coords.setY (cityLocation.getY ());
 							coords.setZ (cityLocation.getZ ());
 
-							if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, d))
+							if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, d))
 							{
 								final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 								if ((terrainData != null) && (thisRequirement.getTileTypeID ().equals (terrainData.getTileTypeID ())))
@@ -235,7 +235,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 					else
 					{
 						// Trace over all 21 city squares
-						final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 						coords.setX (cityLocation.getX ());
 						coords.setY (cityLocation.getY ());
 						coords.setZ (cityLocation.getZ ());
@@ -243,7 +243,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 						int directionIndex = 0;
 						while ((!thisRequirementPasses) && (directionIndex < DIRECTIONS_TO_TRAVERSE_CITY_RADIUS.length))
 						{
-							if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, DIRECTIONS_TO_TRAVERSE_CITY_RADIUS [directionIndex].getDirectionID ()))
+							if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, DIRECTIONS_TO_TRAVERSE_CITY_RADIUS [directionIndex].getDirectionID ()))
 							{
 								final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 								if ((terrainData != null) && (thisRequirement.getTileTypeID ().equals (terrainData.getTileTypeID ())))
@@ -279,7 +279,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 */
 	@Override
 	public final int calculateMaxCitySize (final MapVolumeOfMemoryGridCells map,
-		final OverlandMapCoordinatesEx cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
+		final MapCoordinates3DEx cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
 		final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -287,14 +287,14 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			new Integer (sessionDescription.getDifficultyLevel ().getCityMaxSize ()).toString (), new Boolean (includeBonusesFromMapFeatures).toString (), new Boolean (halveAndCapResult).toString ()});
 
 		int maxCitySize = 0;
-		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 		coords.setX (cityLocation.getX ());
 		coords.setY (cityLocation.getY ());
 		coords.setZ (cityLocation.getZ ());
 
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 		{
-			if (getCoordinateSystemUtils ().moveCoordinates (sessionDescription.getMapSize (), coords, direction.getDirectionID ()))
+			if (getCoordinateSystemUtils ().move3DCoordinates (sessionDescription.getMapSize (), coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 
@@ -342,7 +342,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 */
 	@Override
 	public final CalculateCityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation, final int maxCitySize, final CommonDatabase db)
+		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateCityGrowthRate", cityLocation);
@@ -475,7 +475,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	@Override
 	public final CalculateCityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final CommonDatabase db)
+		final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateCityRebels", cityLocation);
@@ -488,7 +488,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 
 		// Add on racial unrest percentage
 		// To do this, need to find the player's capital race, i.e. the race inhabiting the city where their fortress is
-		final OverlandMapCoordinatesEx fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
+		final MapCoordinates3DEx fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
 			(cityData.getCityOwnerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings);
 		final int racialPercentage;
 		final int racialLiteral;
@@ -681,7 +681,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	@Override
 	public final CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
+		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
 		final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
@@ -788,13 +788,13 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			mineralPercentageBonus = mineralPercentageResult.getPercentageBonus ();
 
 		// Production from nearby map features
-		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 		coords.setX (cityLocation.getX ());
 		coords.setY (cityLocation.getY ());
 		coords.setZ (cityLocation.getZ ());
 
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-			if (getCoordinateSystemUtils ().moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
+			if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 				if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
@@ -882,7 +882,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	@Override
 	public final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinatesEx cityLocation, final String taxRateID, final MomSessionDescription sd,
+		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd,
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{

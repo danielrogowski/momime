@@ -7,10 +7,10 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_4.ChooseRaceMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.clienttoserver.v0_9_5.ChooseRaceMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.servertoclient.v0_9_5.YourRaceIsOkMessage;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
 import momime.server.MomSessionVariables;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.PlayerPickServerUtils;

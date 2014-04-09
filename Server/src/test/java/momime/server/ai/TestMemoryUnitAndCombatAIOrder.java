@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_5.MemoryUnit;
 
 import org.junit.Test;
 

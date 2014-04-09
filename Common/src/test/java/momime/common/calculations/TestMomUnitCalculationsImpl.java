@@ -20,18 +20,17 @@ import momime.common.database.v0_9_4.ExperienceLevel;
 import momime.common.database.v0_9_4.RangedAttackType;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitHasSkill;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.AvailableUnit;
-import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomCombatTile;
-import momime.common.messages.v0_9_4.MomCombatTileLayer;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomCombatTile;
+import momime.common.messages.v0_9_5.MomCombatTileLayer;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.PlayerPick;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.MomUnitAttributeComponent;
 import momime.common.utils.MomUnitAttributePositiveNegative;
@@ -42,6 +41,7 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
@@ -68,7 +68,7 @@ public final class TestMomUnitCalculationsImpl
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -96,7 +96,7 @@ public final class TestMomUnitCalculationsImpl
 		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Add the wrong type of building, to prove that it doesn't help
-		final OverlandMapCoordinatesEx sagesGuildLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx sagesGuildLocation = new MapCoordinates3DEx ();
 		sagesGuildLocation.setX (2);
 		sagesGuildLocation.setY (2);
 		sagesGuildLocation.setZ (0);
@@ -109,7 +109,7 @@ public final class TestMomUnitCalculationsImpl
 		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Add an alchemists' guild, in the wrong place
-		final OverlandMapCoordinatesEx alchemistsGuildLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx alchemistsGuildLocation = new MapCoordinates3DEx ();
 		alchemistsGuildLocation.setX (2);
 		alchemistsGuildLocation.setY (2);
 		alchemistsGuildLocation.setZ (1);

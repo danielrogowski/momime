@@ -259,7 +259,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				<ref bean="multiplayerSessionClientServerToClientObjectFactory" />
 				<ref bean="momClientServerToClientObjectFactory" />
 				<ref bean="clientDatabaseFactory" />
-				<ref bean="objectFactoryMessages" />
+				<ref bean="objectFactoryMap" />
 			</array>
 		</property>
 		<property name="mainMenuUI" ref="mainMenuUI" />

@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
-import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessage;
 
 /**
  * Server sends this to the client to tell them the map scenery

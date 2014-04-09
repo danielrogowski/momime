@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
-import momime.common.messages.servertoclient.v0_9_4.KillUnitMessage;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitMessage;
 
 /**
  * Server sends this to everyone to notify of dead units, except where it is already obvious from an Apply Damage message that a unit is dead

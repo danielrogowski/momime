@@ -8,18 +8,19 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.SpellHasCityEffect;
 import momime.common.database.v0_9_4.UnitSpellEffect;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
 
 import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Tests the MemoryMaintainedSpellUtils class
@@ -141,7 +142,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spell.setCastingPlayerID (10 + n);
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
-			spell.setCityLocation (new OverlandMapCoordinatesEx ());		// 0, 0, 0 is good enough for this test
+			spell.setCityLocation (new MapCoordinates3DEx ());		// 0, 0, 0 is good enough for this test
 
 			spells.add (spell);
 		}
@@ -241,7 +242,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
 
-			final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 			cityLocation.setX (100 + n);
 			cityLocation.setY (200 + n);
 			cityLocation.setZ (300 + n);
@@ -250,7 +251,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spells.add (spell);
 		}
 
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (104);
 		cityLocation.setY (204);
 		cityLocation.setZ (304);
@@ -278,7 +279,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
 
-			final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 			cityLocation.setX (100 + n);
 			cityLocation.setY (200 + n);
 			cityLocation.setZ (300 + n);
@@ -287,7 +288,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spells.add (spell);
 		}
 
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (104);
 		cityLocation.setY (204);
 		cityLocation.setZ (304);
@@ -313,7 +314,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
 
-			final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 			cityLocation.setX (100 + n);
 			cityLocation.setY (200 + n);
 			cityLocation.setZ (300 + n);
@@ -322,7 +323,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spells.add (spell);
 		}
 
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (104);
 		cityLocation.setY (204);
 		cityLocation.setZ (304);
@@ -370,7 +371,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		for (int n = 1; n <= 5; n++)
 		{
-			final OverlandMapCoordinatesEx spellLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx spellLocation = new MapCoordinates3DEx ();
 			spellLocation.setX (20 + n);
 			spellLocation.setY (10 + n);
 			spellLocation.setZ (n);
@@ -384,7 +385,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spells.add (spell);
 		}
 
-		final OverlandMapCoordinatesEx switchOffLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx switchOffLocation = new MapCoordinates3DEx ();
 		switchOffLocation.setX (24);
 		switchOffLocation.setY (14);
 		switchOffLocation.setZ (4);
@@ -578,7 +579,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (20);
 		cityLocation.setY (10);
 		cityLocation.setZ (1);
@@ -596,7 +597,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertEquals ("A", listOne.get (0));
 
 		// Spell with exactly one citySpellEffectID, that is already cast yet
-		final OverlandMapCoordinatesEx effectLocationA = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx effectLocationA = new MapCoordinates3DEx ();
 		effectLocationA.setX (20);
 		effectLocationA.setY (10);
 		effectLocationA.setZ (1);
@@ -636,7 +637,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spells.add (existingEffectC);
 		
 		// One in wrong location
-		final OverlandMapCoordinatesEx effectLocationD = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx effectLocationD = new MapCoordinates3DEx ();
 		effectLocationD.setX (20);
 		effectLocationD.setY (11);
 		effectLocationD.setZ (1);

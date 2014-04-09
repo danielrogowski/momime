@@ -6,24 +6,25 @@ import java.util.List;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.UnitHasSkill;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessageData;
-import momime.common.messages.servertoclient.v0_9_4.AddUnitMessageData;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
+import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessageData;
+import momime.common.messages.servertoclient.v0_9_5.AddUnitMessageData;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.utils.CompareUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
+
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Methods for comparing and copying data from one source against a destination container
@@ -193,11 +194,11 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	{
 		// Since buildings can't change, only be added or destroyed, we don't need to worry about whether the
 		// building in the list but somehow changed, that's can't happen
-		final boolean needToAdd = !getMemoryBuildingUtils ().findBuilding (destination, (OverlandMapCoordinatesEx) source.getCityLocation (), source.getBuildingID ());
+		final boolean needToAdd = !getMemoryBuildingUtils ().findBuilding (destination, (MapCoordinates3DEx) source.getCityLocation (), source.getBuildingID ());
 
 		if (needToAdd)
 		{
-			final OverlandMapCoordinatesEx destinationCoords = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx destinationCoords = new MapCoordinates3DEx ();
 			destinationCoords.setX (source.getCityLocation ().getX ());
 			destinationCoords.setY (source.getCityLocation ().getY ());
 			destinationCoords.setZ (source.getCityLocation ().getZ ());
@@ -236,7 +237,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			// AvailableUnit fields + number of skills
 			needToUpdate = (source.getOwningPlayerID () != dest.getOwningPlayerID ()) ||
 				(!CompareUtils.safeStringCompare (source.getUnitID (), dest.getUnitID ())) ||
-				(!CompareUtils.safeOverlandMapCoordinatesCompare ((OverlandMapCoordinatesEx) source.getUnitLocation (), (OverlandMapCoordinatesEx) dest.getUnitLocation ())) ||
+				(!CompareUtils.safeOverlandMapCoordinatesCompare ((MapCoordinates3DEx) source.getUnitLocation (), (MapCoordinates3DEx) dest.getUnitLocation ())) ||
 				(!CompareUtils.safeIntegerCompare (source.getWeaponGrade (), dest.getWeaponGrade ())) ||
 				(source.getUnitHasSkill ().size () != dest.getUnitHasSkill ().size ()) ||
 
@@ -248,8 +249,8 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(source.getDamageTaken () != dest.getDamageTaken ()) ||
 				(source.getStatus () != dest.getStatus ()) ||
 				(source.isWasSummonedInCombat () != dest.isWasSummonedInCombat ()) ||
-				(!CompareUtils.safeOverlandMapCoordinatesCompare ((OverlandMapCoordinatesEx) source.getCombatLocation (), (OverlandMapCoordinatesEx) dest.getCombatLocation ())) ||
-				(!CompareUtils.safeCombatMapCoordinatesCompare ((CombatMapCoordinatesEx) source.getCombatPosition (), (CombatMapCoordinatesEx) dest.getCombatPosition ())) ||
+				(!CompareUtils.safeOverlandMapCoordinatesCompare ((MapCoordinates3DEx) source.getCombatLocation (), (MapCoordinates3DEx) dest.getCombatLocation ())) ||
+				(!CompareUtils.safeCombatMapCoordinatesCompare ((MapCoordinates2DEx) source.getCombatPosition (), (MapCoordinates2DEx) dest.getCombatPosition ())) ||
 				(!CompareUtils.safeIntegerCompare (source.getCombatHeading (), dest.getCombatHeading ())) ||
 				(source.getCombatSide () != dest.getCombatSide ()) ||
 
@@ -282,7 +283,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				dest.setUnitLocation (null);
 			else
 			{
-				final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
+				final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
 				unitLocation.setX (source.getUnitLocation ().getX ());
 				unitLocation.setY (source.getUnitLocation ().getY ());
 				unitLocation.setZ (source.getUnitLocation ().getZ ());
@@ -317,7 +318,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				dest.setCombatLocation (null);
 			else
 			{
-				final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
+				final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
 				combatLocation.setX (source.getCombatLocation ().getX ());
 				combatLocation.setY (source.getCombatLocation ().getY ());
 				combatLocation.setZ (source.getCombatLocation ().getZ ());
@@ -328,7 +329,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				dest.setCombatPosition (null);
 			else
 			{
-				final CombatMapCoordinatesEx combatPosition = new CombatMapCoordinatesEx ();
+				final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
 				combatPosition.setX (source.getCombatPosition ().getX ());
 				combatPosition.setY (source.getCombatPosition ().getY ());
 				dest.setCombatPosition (combatPosition);
@@ -350,7 +351,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		// Since spells can't change, only be cast or cancelled, we don't need to worry about whether the
 		// spell in the list but somehow changed, that's can't happen
 		final boolean needToAdd = (getMemoryMaintainedSpellUtils ().findMaintainedSpell (destination, source.getCastingPlayerID (), source.getSpellID (),
-			source.getUnitURN (), source.getUnitSkillID (), (OverlandMapCoordinatesEx) source.getCityLocation (), source.getCitySpellEffectID ()) == null);
+			source.getUnitURN (), source.getUnitSkillID (), (MapCoordinates3DEx) source.getCityLocation (), source.getCitySpellEffectID ()) == null);
 
 		if (needToAdd)
 		{
@@ -367,7 +368,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				destinationSpell.setCityLocation (null);
 			else
 			{
-				final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+				final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 				cityLocation.setX (source.getCityLocation ().getX ());
 				cityLocation.setY (source.getCityLocation ().getY ());
 				cityLocation.setZ (source.getCityLocation ().getZ ());
@@ -392,7 +393,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		// Since CAEs can't change, only be added or destroyed, we don't need to worry about whether the
 		// CAE in the list but somehow changed, that's can't happen
 		final boolean needToAdd = !getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
-			(destination, (OverlandMapCoordinatesEx) source.getMapLocation (), source.getCombatAreaEffectID (), source.getCastingPlayerID ());
+			(destination, (MapCoordinates3DEx) source.getMapLocation (), source.getCombatAreaEffectID (), source.getCastingPlayerID ());
 
 		if (needToAdd)
 		{
@@ -405,7 +406,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				destinationCAE.setMapLocation (null);
 			else
 			{
-				final OverlandMapCoordinatesEx mapLocation = new OverlandMapCoordinatesEx ();
+				final MapCoordinates3DEx mapLocation = new MapCoordinates3DEx ();
 				mapLocation.setX (source.getMapLocation ().getX ());
 				mapLocation.setY (source.getMapLocation ().getY ());
 				mapLocation.setZ (source.getMapLocation ().getZ ());

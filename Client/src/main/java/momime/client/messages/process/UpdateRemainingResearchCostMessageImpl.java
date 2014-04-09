@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateRemainingResearchCostMessage;
 
 /**
  * Server sends this to client to update the number of research points they have left to spend before getting a particular spell.

@@ -3,14 +3,14 @@ package momime.server.fogofwar;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.v0_9_4.AddMaintainedSpellMessageData;
-import momime.common.messages.servertoclient.v0_9_4.AddUnitMessageData;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
+import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessageData;
+import momime.common.messages.servertoclient.v0_9_5.AddUnitMessageData;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.server.database.ServerDatabaseEx;
 
 /**

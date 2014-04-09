@@ -3,7 +3,7 @@ package momime.server.ui;
 import java.util.List;
 import java.util.logging.Logger;
 
-import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.MomServer;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;

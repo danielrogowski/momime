@@ -14,23 +14,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Building;
 import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.BuildingPrerequisite;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitPrerequisite;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
 
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Tests the MemoryBuildingUtils class
@@ -43,9 +43,9 @@ public final class TestMemoryBuildingUtilsImpl
 	 * @param offset If 0 generates city at standard location; set this to a non-zero value to generate a different location
 	 * @return City location
 	 */
-	private final OverlandMapCoordinatesEx createCityLocation (final int offset)
+	private final MapCoordinates3DEx createCityLocation (final int offset)
 	{
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (15 + offset);
 		cityLocation.setY (10);
 		cityLocation.setZ (1);
@@ -223,7 +223,7 @@ public final class TestMemoryBuildingUtilsImpl
 	@Test
 	public final void testFindCityWithBuilding ()
 	{
-		final OverlandMapCoordinatesEx buildingLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx ();
 		buildingLocation.setX (2);
 		buildingLocation.setY (2);
 		buildingLocation.setZ (0);

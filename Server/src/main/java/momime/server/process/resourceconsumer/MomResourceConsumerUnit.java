@@ -8,11 +8,11 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.NewTurnMessageData;
-import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
@@ -133,7 +133,7 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 			action = KillUnitActionID.UNIT_LACK_OF_PRODUCTION;
 
 		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (getUnit (), action, null,
-			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{

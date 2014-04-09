@@ -12,18 +12,18 @@ import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.UnitHasSkill;
-import momime.common.messages.v0_9_4.AvailableUnit;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapVolumeOfStrings;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapVolumeOfStrings;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
@@ -36,6 +36,7 @@ import momime.server.messages.ServerMemoryGridCellUtils;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.MapCoordinates2D;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -333,11 +334,11 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		// Try each direction
 		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
 		{
-			final MapCoordinates2D coords = new MapCoordinates2D ();
+			final MapCoordinates2DEx coords = new MapCoordinates2DEx ();
 			coords.setX (cellX);
 			coords.setY (cellY);
 
-			if (getCoordinateSystemUtils ().moveCoordinates (sys, coords, d))
+			if (getCoordinateSystemUtils ().move2DCoordinates (sys, coords, d))
 			{
 				// Don't bother rechecking if we can already move here for free since we know we can't improve on that
 				final int doubleCurrentDistanceToNewCoords = doubleMovementDistances [cellPlane] [coords.getY ()] [coords.getX ()];

@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.PendingSaleMessage;
+import momime.common.messages.servertoclient.v0_9_5.PendingSaleMessage;
 
 /**
  * Server sends this in a simultaneous turns game to inform the city owner *only* that a building will be sold at the end of the turn.

@@ -7,9 +7,9 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.messages.v0_9_4.SpellResearchStatus;
-import momime.common.messages.v0_9_4.SpellResearchStatusID;
+import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;

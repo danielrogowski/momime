@@ -13,33 +13,32 @@ import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessageData;
-import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessageData;
-import momime.common.messages.servertoclient.v0_9_4.FogOfWarStateMessageData;
-import momime.common.messages.servertoclient.v0_9_4.FogOfWarVisibleAreaChangedMessage;
-import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
-import momime.common.messages.servertoclient.v0_9_4.KillUnitMessageData;
-import momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessageData;
-import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessageData;
-import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessageData;
-import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessageData;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.FogOfWarStateID;
-import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessageData;
+import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
+import momime.common.messages.servertoclient.v0_9_5.CancelCombatAreaEffectMessageData;
+import momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessageData;
+import momime.common.messages.servertoclient.v0_9_5.FogOfWarStateMessageData;
+import momime.common.messages.servertoclient.v0_9_5.FogOfWarVisibleAreaChangedMessage;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitMessageData;
+import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessageData;
+import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessageData;
+import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
+import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessageData;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.FogOfWarStateID;
+import momime.common.messages.v0_9_5.MapVolumeOfFogOfWarStates;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.CompareUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -55,8 +54,9 @@ import momime.server.messages.ServerMemoryGridCellUtils;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.SquareMapDirection;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -151,21 +151,21 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		canSee (fogOfWarArea, x, y, plane);
 
 		// Then around the each square 'ring'
-		final MapCoordinates2D coords = new MapCoordinates2D ();
+		final MapCoordinates2DEx coords = new MapCoordinates2DEx ();
 		coords.setX (x);
 		coords.setY (y);
 
 		for (int ringNumber = 1; ringNumber <= radius; ringNumber++)
 		{
 			// Move down-left
-			getCoordinateSystemUtils ().moveCoordinates (sys, coords, SquareMapDirection.SOUTHWEST.getDirectionID ());
+			getCoordinateSystemUtils ().move2DCoordinates (sys, coords, SquareMapDirection.SOUTHWEST.getDirectionID ());
 
 			// Go around the ring
 			for (int directionChk = 0; directionChk < 4; directionChk++)
 			{
 				final int d = (directionChk * 2) + 1;
 				for (int traceSide = 0; traceSide < ringNumber * 2; traceSide++)
-					if (getCoordinateSystemUtils ().moveCoordinates (sys, coords, d))
+					if (getCoordinateSystemUtils ().move2DCoordinates (sys, coords, d))
 						canSee (fogOfWarArea, coords.getX (), coords.getY (), plane);
 			}
 		}
@@ -216,7 +216,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 						final OverlandMapCityData trueCity = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 						if ((trueCity != null) && (trueCity.getCityPopulation () != null) && (trueCity.getCityPopulation () > 0))
 						{
-							final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+							final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 							coords.setX (x);
 							coords.setY (y);
 							coords.setZ (plane.getPlaneNumber ());
@@ -233,7 +233,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 								{
 									// Standard city pattern
 									for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-										if (getCoordinateSystemUtils ().moveCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
+										if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
 											canSee (priv.getFogOfWar (), coords.getX (), coords.getY (), coords.getZ ());
 								}
 							}
@@ -330,13 +330,13 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	}
 
 	/**
-	 * I think now that there is a OverlandMapCoordinatesEx.equals () method, that this could just be done with coordinateList.contains (), but leaving it for now
+	 * I think now that there is a MapCoordinates3DEx.equals () method, that this could just be done with coordinateList.contains (), but leaving it for now
 	 * 
 	 * @param coordinateList List of coordinates to check
 	 * @param coordinates Coordinates to look for
 	 * @return True if coordinates are already in the list
 	 */
-	final boolean areCoordinatesIncludedInMessage (final List<UpdateNodeLairTowerUnitIDMessageData> coordinateList, final OverlandMapCoordinatesEx coordinates)
+	final boolean areCoordinatesIncludedInMessage (final List<UpdateNodeLairTowerUnitIDMessageData> coordinateList, final MapCoordinates3DEx coordinates)
 	{
 		boolean result = false;
 		final Iterator<UpdateNodeLairTowerUnitIDMessageData> iter = coordinateList.iterator ();
@@ -404,7 +404,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 					final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 
-					final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 					coords.setX (x);
 					coords.setY (y);
 					coords.setZ (plane.getPlaneNumber ());
@@ -546,7 +546,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			final FogOfWarUpdateAction action = determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ());
 
 			if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
-				(!getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), (OverlandMapCoordinatesEx) thisBuilding.getCityLocation (), thisBuilding.getBuildingID ()))))
+				(!getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), (MapCoordinates3DEx) thisBuilding.getCityLocation (), thisBuilding.getBuildingID ()))))
 			{
 				if (msg != null)
 				{
@@ -633,9 +633,9 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 								(thisUnit.getUnitLocation ().getY ()).getCell ().set (thisUnit.getUnitLocation ().getX (), "");
 
 							if (msg != null)
-								if (!areCoordinatesIncludedInMessage (msg.getUpdateNodeLairTowerUnitID (), (OverlandMapCoordinatesEx) thisUnit.getUnitLocation ()))
+								if (!areCoordinatesIncludedInMessage (msg.getUpdateNodeLairTowerUnitID (), (MapCoordinates3DEx) thisUnit.getUnitLocation ()))
 								{
-									final OverlandMapCoordinatesEx scoutMsgCoords = new OverlandMapCoordinatesEx ();
+									final MapCoordinates3DEx scoutMsgCoords = new MapCoordinates3DEx ();
 									scoutMsgCoords.setX (thisUnit.getUnitLocation ().getX ());
 									scoutMsgCoords.setY (thisUnit.getUnitLocation ().getY ());
 									scoutMsgCoords.setZ (thisUnit.getUnitLocation ().getZ ());
@@ -803,7 +803,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 					needToRemoveSpell = ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
 						(getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), thisSpell.getCastingPlayerID (), thisSpell.getSpellID (),
-							thisSpell.getUnitURN (), thisSpell.getUnitSkillID (), (OverlandMapCoordinatesEx) thisSpell.getCityLocation (), thisSpell.getCitySpellEffectID ()) == null)));
+							thisSpell.getUnitURN (), thisSpell.getUnitSkillID (), (MapCoordinates3DEx) thisSpell.getCityLocation (), thisSpell.getCitySpellEffectID ()) == null)));
 				}
 
 				if (needToRemoveSpell)
@@ -873,7 +873,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 				if ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET) || ((action == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE) &&
 					(!getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (trueMap.getCombatAreaEffect (),
-						(OverlandMapCoordinatesEx) thisCAE.getMapLocation (), thisCAE.getCombatAreaEffectID (), thisCAE.getCastingPlayerID ()))))
+						(MapCoordinates3DEx) thisCAE.getMapLocation (), thisCAE.getCombatAreaEffectID (), thisCAE.getCastingPlayerID ()))))
 				{
 					if (msg != null)
 					{
@@ -897,7 +897,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				{
 					final List<FogOfWarStateID> row = priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ();
 
-					final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 					coords.setX (x);
 					coords.setY (y);
 					coords.setZ (plane.getPlaneNumber ());

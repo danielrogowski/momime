@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
-import momime.common.messages.servertoclient.v0_9_4.SwitchOffMaintainedSpellMessage;
+import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessage;
 
 /**
  * Server sends this to notify clients of cancelled maintained spells, or those that have gone out of view

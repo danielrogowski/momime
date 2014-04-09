@@ -2,7 +2,7 @@ package momime.client.messages;
 
 import momime.client.database.ClientDatabaseEx;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 
 /**
  * Client specific helper methods for dealing with MemoryGridCell objects

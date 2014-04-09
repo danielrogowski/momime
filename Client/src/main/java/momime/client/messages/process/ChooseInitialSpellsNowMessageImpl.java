@@ -7,7 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.ui.NewGameUI;
-import momime.common.messages.servertoclient.v0_9_4.ChooseInitialSpellsNowMessage;
+import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowMessage;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;

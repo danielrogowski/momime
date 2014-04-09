@@ -3,10 +3,10 @@ package momime.common.utils;
 import java.util.List;
 
 import momime.common.database.v0_9_4.CombatMapLayerID;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomCombatTile;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomCombatTile;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
@@ -42,7 +42,7 @@ public interface CombatMapUtils
 	 * @return Who the attacking and defending players are
 	 * @throws PlayerNotFoundException If we determine the attacking or defending player ID, but that ID then can't be found in the players list
 	 */
-	public CombatPlayers determinePlayersInCombatFromLocation (final OverlandMapCoordinatesEx combatLocation,
+	public CombatPlayers determinePlayersInCombatFromLocation (final MapCoordinates3DEx combatLocation,
 		final List<MemoryUnit> units, final List<? extends PlayerPublicDetails> players) throws PlayerNotFoundException;
 	
 	/**
@@ -51,5 +51,5 @@ public interface CombatMapUtils
 	 * @param units List of units
 	 * @return Number of alive units belonging to this player at this location
 	 */
-	public int countPlayersAliveUnitsAtCombatLocation (final int playerID, final OverlandMapCoordinatesEx combatLocation, final List<MemoryUnit> units);
+	public int countPlayersAliveUnitsAtCombatLocation (final int playerID, final MapCoordinates3DEx combatLocation, final List<MemoryUnit> units);
 }

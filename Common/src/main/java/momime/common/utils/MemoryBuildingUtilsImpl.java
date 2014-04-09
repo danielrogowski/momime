@@ -12,10 +12,11 @@ import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_4.BuildingPrerequisite;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitPrerequisite;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Methods for working with list of MemoryBuildings
@@ -34,7 +35,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	 */
 	@Override
 	public final boolean findBuilding (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinatesEx cityLocation, final String buildingID)
+		final MapCoordinates3DEx cityLocation, final String buildingID)
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "findBuilding", new String [] {cityLocation.toString (), buildingID});
 
@@ -60,7 +61,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	 */
 	@Override
 	public final void destroyBuilding (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinatesEx cityLocation, final String buildingID)
+		final MapCoordinates3DEx cityLocation, final String buildingID)
 		throws RecordNotFoundException
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "destroyBuilding", new String [] {cityLocation.toString (), buildingID});
@@ -91,17 +92,17 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	 * @return Location of the first of this type of building we find for this player, or null if they don't have one anywhere (or at least, one we can see)
 	 */
 	@Override
-	public final OverlandMapCoordinatesEx findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
+	public final MapCoordinates3DEx findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
 		final List<MemoryBuilding> buildings)
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "findCityWithBuilding", new String [] {new Integer (playerID).toString (), buildingID});
 
-		OverlandMapCoordinatesEx found = null;
+		MapCoordinates3DEx found = null;
 		final Iterator<MemoryBuilding> iter = buildings.iterator ();
 		while ((found == null) && (iter.hasNext ()))
 		{
 			final MemoryBuilding thisBuilding = iter.next ();
-			final OverlandMapCoordinatesEx coords = (OverlandMapCoordinatesEx) thisBuilding.getCityLocation ();
+			final MapCoordinates3DEx coords = (MapCoordinates3DEx) thisBuilding.getCityLocation ();
 			final OverlandMapCityData cityData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getCityData ();
 
 			if ((thisBuilding.getBuildingID ().equals (buildingID)) && (cityData != null) && (cityData.getCityOwnerID () == playerID) &&
@@ -123,7 +124,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	 */
 	@Override
 	public final boolean meetsBuildingRequirements (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinatesEx cityLocation, final Building building)
+		final MapCoordinates3DEx cityLocation, final Building building)
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "meetsBuildingRequirements", new String [] {cityLocation.toString (), building.getBuildingID ()});
 
@@ -145,7 +146,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	 * @return Whether or not the city has the necessary pre-requisite buildings
 	 */
 	@Override
-	public final boolean meetsUnitRequirements (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinatesEx cityLocation, final Unit unit)
+	public final boolean meetsUnitRequirements (final List<MemoryBuilding> buildingsList, final MapCoordinates3DEx cityLocation, final Unit unit)
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "meetsUnitRequirements", new String [] {cityLocation.toString (), unit.getUnitID ()});
 
@@ -169,7 +170,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	@Override
-	public final String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final OverlandMapCoordinatesEx cityLocation,
+	public final String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final MapCoordinates3DEx cityLocation,
 		final String buildingID, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "doAnyBuildingsDependOn", new String [] {cityLocation.toString (), buildingID});
@@ -251,7 +252,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	 */
 	@Override
 	public final int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinatesEx cityLocation, final CommonDatabase db) throws RecordNotFoundException
+		final MapCoordinates3DEx cityLocation, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "experienceFromBuildings", cityLocation);
 
@@ -282,7 +283,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	 */
 	@Override
 	public final int totalBonusProductionPerPersonFromBuildings (final List<MemoryBuilding> buildingsList,
-		final OverlandMapCoordinatesEx cityLocation, final String populationTaskID, final String productionTypeID,
+		final MapCoordinates3DEx cityLocation, final String populationTaskID, final String productionTypeID,
 		final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (MemoryBuildingUtilsImpl.class.getName (), "totalBonusProductionPerPersonFromBuildings", cityLocation);

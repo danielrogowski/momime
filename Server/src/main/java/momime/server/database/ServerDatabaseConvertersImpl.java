@@ -24,7 +24,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.MapFeatureProduction;
 import momime.common.database.v0_9_4.TaxRate;
 import momime.common.database.v0_9_4.WizardPick;
-import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
+import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
 import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.CombatAreaEffect;
 import momime.server.database.v0_9_4.CombatTileBorder;

@@ -12,16 +12,15 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.RaceCannotBuild;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -31,9 +30,10 @@ import momime.server.database.v0_9_4.Race;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -76,7 +76,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * @throws RecordNotFoundException If the race inhabiting the city cannot be found
 	 */
 	@Override
-	public final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final OverlandMapCoordinatesEx cityLocation,
+	public final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final MapCoordinates3DEx cityLocation,
 		final String buildingOrUnitID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
@@ -170,7 +170,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * @return null if choice is acceptable; message to send back to client if choices isn't acceptable
 	 */
 	@Override
-	public final String validateOptionalFarmers (final PlayerServerDetails player, final MapVolumeOfMemoryGridCells trueTerrain, final OverlandMapCoordinatesEx cityLocation,
+	public final String validateOptionalFarmers (final PlayerServerDetails player, final MapVolumeOfMemoryGridCells trueTerrain, final MapCoordinates3DEx cityLocation,
 		final int optionalFarmers)
 	{
 		log.entering (CityServerUtilsImpl.class.getName (), "validateOptionalFarmers", new Integer [] {player.getPlayerDescription ().getPlayerID (), optionalFarmers});
@@ -214,7 +214,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		log.entering (CityServerUtilsImpl.class.getName (), "buildCityFromSettler", settler.getUnitURN ());
 		
 		// Add the city on the server
-		final OverlandMapCoordinatesEx cityLocation = (OverlandMapCoordinatesEx) settler.getUnitLocation ();
+		final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) settler.getUnitLocation ();
 		final MemoryGridCell tc = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final Unit settlerUnit = db.findUnit (settler.getUnitID (), "buildCityFromSettler");
 		
@@ -239,7 +239,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), true);
 		
 		// Kill off the settler
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (settler, KillUnitActionID.FREE, null, gsk.getTrueMap (), players, sd, db);
+		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (settler, KillUnitActionID.FREE, null, gsk.getTrueMap (), players, sd.getFogOfWarSetting (), db);
 		
 		// Update our own FOW (the city can see further than the settler could)
 		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), player, players, false, "buildCityFromSettler", sd, db);
@@ -255,7 +255,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * @throws RecordNotFoundException If one of the buildings can't be found in the db
 	 */
 	@Override
-	public final int totalCostOfBuildingsAtLocation (final OverlandMapCoordinatesEx cityLocation, final List<MemoryBuilding> buildings, final ServerDatabaseEx db)
+	public final int totalCostOfBuildingsAtLocation (final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
 		log.entering (CityServerUtilsImpl.class.getName (), "totalCostOfBuildingsAtLocation", cityLocation);

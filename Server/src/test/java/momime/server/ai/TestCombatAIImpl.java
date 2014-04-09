@@ -11,17 +11,17 @@ import java.util.List;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.v0_9_4.UnitHasSkill;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 
 import org.junit.Test;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
@@ -36,7 +36,7 @@ public final class TestCombatAIImpl
 	public final void testListUnitsToMove ()
 	{
 		// Combat location
-		final OverlandMapCoordinatesEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
 		
 		// Test unit list
 		final List<MemoryUnit> trueUnits = new ArrayList<MemoryUnit> ();
@@ -198,9 +198,9 @@ public final class TestCombatAIImpl
 	 * @param x X coord
 	 * @return Coordinates object
 	 */
-	private final OverlandMapCoordinatesEx createCoordinates (final int x)
+	private final MapCoordinates3DEx createCoordinates (final int x)
 	{
-		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
 		combatLocation.setX (x);
 		combatLocation.setY (10);
 		combatLocation.setZ (1);

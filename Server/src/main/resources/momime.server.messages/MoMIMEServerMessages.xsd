@@ -2,8 +2,8 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
 	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
-	xmlns:momimesvr="http://momime/server/database/v0_9_4" xmlns:momimemsgs="http://momime/common/messages/v0_9_4"
-	xmlns:momimesvrmsgs="http://momime/server/messages/v0_9_4" targetNamespace="http://momime/server/messages/v0_9_4"
+	xmlns:momimesvr="http://momime/server/database/v0_9_4" xmlns:momimemsgs="http://momime/common/messages/v0_9_5"
+	xmlns:momimesvrmsgs="http://momime/server/messages/v0_9_5" targetNamespace="http://momime/server/messages/v0_9_5"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://www.ndg.com/map"/>
@@ -12,7 +12,7 @@
 	<xsd:import namespace="http://momime/common/database/v0_9_4"/>
 	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4"/>
 	<xsd:import namespace="http://momime/server/database/v0_9_4"/>
-	<xsd:import namespace="http://momime/common/messages/v0_9_4"/>
+	<xsd:import namespace="http://momime/common/messages/v0_9_5"/>
     
 	<xsd:complexType name="momGeneralServerKnowledge">
 	    <xsd:annotation>
@@ -46,7 +46,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:memoryGridCell">
 		        <xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="1" name="auraFromNode" type="momimemsgs:overlandMapCoordinates">
+					<xsd:element minOccurs="0" maxOccurs="1" name="auraFromNode" type="map:mapCoordinates3D">
 					    <xsd:annotation>
     						<xsd:documentation>Links a squad of node aura back to the node that it eminates from - this relationship is only known by the server,
     														the client only sees who owns each square of node aura but cannot tell which node it comes from.</xsd:documentation>

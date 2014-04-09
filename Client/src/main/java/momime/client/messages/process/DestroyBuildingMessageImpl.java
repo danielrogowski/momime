@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
-import momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessage;
 
 /**
  * Server sends this to clients to tell them about a building destroyed (or sold) from a city

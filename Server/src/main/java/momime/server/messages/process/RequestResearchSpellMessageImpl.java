@@ -7,12 +7,12 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
-import momime.common.messages.clienttoserver.v0_9_4.RequestResearchSpellMessage;
-import momime.common.messages.servertoclient.v0_9_4.SpellResearchChangedMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.SpellResearchStatus;
+import momime.common.messages.clienttoserver.v0_9_5.RequestResearchSpellMessage;
+import momime.common.messages.servertoclient.v0_9_5.SpellResearchChangedMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateRemainingResearchCostMessage;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_4.Spell;

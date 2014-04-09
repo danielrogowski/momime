@@ -6,7 +6,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.MomServer;
 import momime.server.logging.SingleLineFormatter;
 

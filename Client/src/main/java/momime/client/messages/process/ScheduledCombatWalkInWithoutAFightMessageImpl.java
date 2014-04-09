@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.ScheduledCombatWalkInWithoutAFightMessage;
+import momime.common.messages.servertoclient.v0_9_5.ScheduledCombatWalkInWithoutAFightMessage;
 
 /**
  * Server sends this to tell client that a combat isn't a combat anymore (that player

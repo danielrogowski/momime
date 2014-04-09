@@ -9,7 +9,7 @@ import javax.xml.bind.Unmarshaller;
 import momime.client.database.v0_9_4.ClientDatabase;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
+import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
 
 /**
  * Converters for building derivative XML files from the server XML file

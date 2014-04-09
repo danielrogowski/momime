@@ -3,11 +3,11 @@ package momime.common.utils;
 import java.util.logging.Logger;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 
 /**
  * Helper methods for dealing with MemoryGridCell objects

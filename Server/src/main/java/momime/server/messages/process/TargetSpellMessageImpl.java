@@ -8,14 +8,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.TargetSpellMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.SpellResearchStatus;
+import momime.common.messages.clienttoserver.v0_9_5.TargetSpellMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellUtils;
@@ -26,6 +25,7 @@ import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -122,7 +122,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					
 					// Get the list of possible citySpellEffectIDs that this spell might cast
 					final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
-						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (OverlandMapCoordinatesEx) getCityLocation ());
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getCityLocation ());
 					
 					if ((spell.getBuildingID () == null) && (citySpellEffectIDs == null))
 						error = "Spell does not specify any city effects or a building ID so code doesn't know what to do with it";
@@ -145,7 +145,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						error = "This city already has this enchantment cast on it";
 					
 					else if ((citySpellEffectIDs == null) && (getMemoryBuildingUtils ().findBuilding
-						(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), (OverlandMapCoordinatesEx) getCityLocation (), spell.getBuildingID ())))
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), (MapCoordinates3DEx) getCityLocation (), spell.getBuildingID ())))
 						error = "This city already has the type of building that this spell creates";
 					
 					else
@@ -230,7 +230,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					(spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)))
 				{
 					// Find & remove the main building for this spell
-					final OverlandMapCoordinatesEx destroyBuildingLocation = getMemoryBuildingUtils ().findCityWithBuilding
+					final MapCoordinates3DEx destroyBuildingLocation = getMemoryBuildingUtils ().findCityWithBuilding
 						(sender.getPlayerDescription ().getPlayerID (), spell.getBuildingID (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 					
@@ -242,7 +242,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						// Move summoning circle as well if its in the same place as the wizard's fortress
 						if (spell.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
 						{
-							final OverlandMapCoordinatesEx summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding
+							final MapCoordinates3DEx summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding
 								(sender.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
 									mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 							
@@ -260,7 +260,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				
 				// First create the building(s) on the server
 				getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
-					mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
+					mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
 					mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Remove the maintained spell on the server (clients would never have gotten it to begin with)

@@ -18,19 +18,18 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.UnitSettingData;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.SetSpecialOrderMessage;
-import momime.common.messages.v0_9_4.AvailableUnit;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
-import momime.common.messages.v0_9_4.UnitSpecialOrder;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.SetSpecialOrderMessage;
+import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.UnitAddBumpTypeID;
+import momime.common.messages.v0_9_5.UnitSpecialOrder;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
@@ -46,6 +45,7 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -656,7 +656,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -715,7 +715,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -775,7 +775,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -835,7 +835,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -891,7 +891,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -946,7 +946,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -1007,7 +1007,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -1068,7 +1068,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -1130,7 +1130,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -1217,7 +1217,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);
@@ -1279,7 +1279,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
-		final OverlandMapCoordinatesEx addLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);

@@ -14,27 +14,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessage;
-import momime.common.messages.servertoclient.v0_9_4.DestroyBuildingMessage;
-import momime.common.messages.servertoclient.v0_9_4.UpdateCityMessage;
-import momime.common.messages.servertoclient.v0_9_4.UpdateTerrainMessage;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.FogOfWarStateID;
-import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessage;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.FogOfWarStateID;
+import momime.common.messages.v0_9_5.MapVolumeOfFogOfWarStates;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.UnitUtils;
@@ -43,11 +43,12 @@ import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomFogOfWarCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -76,7 +77,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().set (20, tc);
 		
 		// Set up coordinates
-		final OverlandMapCoordinatesEx coords = createCoordinates (20);
+		final MapCoordinates3DEx coords = createCoordinates (20);
 		
 		// Human player who can't see the location
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -233,7 +234,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().set (20, tc);
 		
 		// Set up coordinates
-		final OverlandMapCoordinatesEx coords = createCoordinates (20);
+		final MapCoordinates3DEx coords = createCoordinates (20);
 		
 		// Human player who can't see the location
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -384,10 +385,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 	public final void testCanSeeUnitMidTurn () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
 
 		// True terrain
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		// player1 owns the unit, player2 is trying to see it
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -407,7 +409,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd2.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
-		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sys));
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		players.add (player2);
@@ -423,7 +425,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		// The unit we're trying to see
 		// Note creating units like this defaults them to ALIVE, so we don't need to set that
-		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
 		unitLocation.setZ (0);
@@ -433,51 +435,51 @@ public final class TestFogOfWarMidTurnChangesImpl
 		spearmen.setUnitLocation (unitLocation);
 		
 		// Regular situation of a unit we can't see because we can't see that location
-		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, sd.getFogOfWarSetting ().getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (false);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, sd));
+		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, settings.getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (false);
+		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
 
 		// Regular situation of a unit we can see because we can see that location
-		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, sd.getFogOfWarSetting ().getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (true);
-		assertTrue (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, sd));
+		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, settings.getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (true);
+		assertTrue (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
 
 		// Can't see dead units, even if we can see their location
 		spearmen.setStatus (UnitStatusID.DEAD);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, sd));
+		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
 		
 		// Rampaging monsters running around map that we can't see because we can't see that location
 		spearmen.setStatus (UnitStatusID.ALIVE);
 		pub1.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 
-		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getUnits ())).thenReturn (false);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, sd));
+		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, settings.getUnits ())).thenReturn (false);
+		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
 		
 		// Rampaging monsters running around map that we can see because we can see that location
 		priv2.getFogOfWar ().getPlane ().get (0).getRow ().get (10).getCell ().set (20,  FogOfWarStateID.CAN_SEE);
-		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getUnits ())).thenReturn (true);
-		assertTrue (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, sd));
+		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, settings.getUnits ())).thenReturn (true);
+		assertTrue (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
 		
 		// Rampaging monsters that we can't see because they're hiding in a node/lair/tower
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT14");
 		trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, sd));
+		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
 		
 		// Still can't see them if someone else is attacking the lair
-		final OverlandMapCoordinatesEx unitCombatLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx unitCombatLocation = new MapCoordinates3DEx ();
 		unitCombatLocation.setX (21);
 		unitCombatLocation.setY (10);
 		unitCombatLocation.setZ (0);
 		spearmen.setCombatLocation (unitCombatLocation);
 		
-		final OverlandMapCoordinatesEx playerCombatLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx playerCombatLocation = new MapCoordinates3DEx ();
 		playerCombatLocation.setX (21);
 		playerCombatLocation.setY (10);
 		playerCombatLocation.setZ (0);
 		
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, playerCombatLocation, player3, player1, db, sd));
+		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, playerCombatLocation, player3, player1, db, settings));
 		
 		// But can see them if we're attacking it
-		assertTrue (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, playerCombatLocation, player3, player2, db, sd));
+		assertTrue (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, playerCombatLocation, player3, player2, db, settings));
 	}
 	
 	/**
@@ -488,10 +490,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 	public final void testCanSeeSpellMidTurn_UnitEnchantment () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
 
 		// True terrain
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
 
 		// player1 owns the unit, player2 is trying to see it
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -511,7 +514,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		pd2.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
-		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv2.setFogOfWar (ServerTestData.createFogOfWarArea (sys));
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		players.add (player2);
@@ -530,7 +533,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		// The unit we're trying to see
 		// Note creating units like this defaults them to ALIVE, so we don't need to set that
-		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
 		unitLocation.setZ (0);
@@ -544,12 +547,12 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (unitUtils.findUnitURN (11, trueUnits, "canSeeSpellMidTurn")).thenReturn (spearmen);
 		
 		// Regular situation of a unit we can't see because we can't see that location
-		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, sd.getFogOfWarSetting ().getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (false);
-		assertFalse (calc.canSeeSpellMidTurn (spell, players, trueTerrain, trueUnits, player2, null, null, null, db, sd));
+		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, settings.getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (false);
+		assertFalse (calc.canSeeSpellMidTurn (spell, players, trueTerrain, trueUnits, player2, null, null, null, db, settings));
 
 		// Regular situation of a unit we can see because we can see that location
-		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, sd.getFogOfWarSetting ().getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (true);
-		assertTrue (calc.canSeeSpellMidTurn (spell, players, trueTerrain, trueUnits, player2, null, null, null, db, sd));
+		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, settings.getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (true);
+		assertTrue (calc.canSeeSpellMidTurn (spell, players, trueTerrain, trueUnits, player2, null, null, null, db, settings));
 	}
 	
 	/**
@@ -560,16 +563,20 @@ public final class TestFogOfWarMidTurnChangesImpl
 	public final void testCanSeeSpellMidTurn_CityEnchantment () throws Exception
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		
+		final FogOfWarSettingData settings = new FogOfWarSettingData ();
+		settings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
+		
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 
 		// Player who is trying to see it
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
+		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sys));
 		
 		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
 
 		// The location of the city that has the spell we're trying to see
-		final OverlandMapCoordinatesEx spellLocation = createCoordinates (20);
+		final MapCoordinates3DEx spellLocation = createCoordinates (20);
 
 		// Spell to check
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
@@ -584,10 +591,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setFogOfWarCalculations (single);
 		
 		// Run test
-		assertFalse (calc.canSeeSpellMidTurn (spell, null, null, null, player, null, null, null, db, sd));
+		assertFalse (calc.canSeeSpellMidTurn (spell, null, null, null, player, null, null, null, db, settings));
 		
 		priv.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		assertTrue (calc.canSeeSpellMidTurn (spell, null, null, null, player, null, null, null, db, sd));
+		assertTrue (calc.canSeeSpellMidTurn (spell, null, null, null, player, null, null, null, db, settings));
 	}
 	
 	/**
@@ -650,7 +657,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (21, FogOfWarStateID.NEVER_SEEN);
 		
 		// CAE
-		final OverlandMapCoordinatesEx caeLocation = createCoordinates (20);
+		final MapCoordinates3DEx caeLocation = createCoordinates (20);
 
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
 		cae.setMapLocation (caeLocation);
@@ -741,7 +748,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// City location
-		final OverlandMapCoordinatesEx cityLocation = createCoordinates (20);
+		final MapCoordinates3DEx cityLocation = createCoordinates (20);
 		
 		// Set up test object
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
@@ -868,7 +875,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// City location
-		final OverlandMapCoordinatesEx cityLocation = createCoordinates (20);
+		final MapCoordinates3DEx cityLocation = createCoordinates (20);
 		
 		// Set up test object
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
@@ -1024,7 +1031,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// City location
-		final OverlandMapCoordinatesEx cityLocation = createCoordinates (20);
+		final MapCoordinates3DEx cityLocation = createCoordinates (20);
 
 		// Set up test object
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
@@ -1166,7 +1173,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// City location
-		final OverlandMapCoordinatesEx cityLocation = createCoordinates (20);
+		final MapCoordinates3DEx cityLocation = createCoordinates (20);
 
 		// Set up test object
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
@@ -1206,9 +1213,9 @@ public final class TestFogOfWarMidTurnChangesImpl
 	 * @param x X coord
 	 * @return Coordinates object
 	 */
-	private final OverlandMapCoordinatesEx createCoordinates (final int x)
+	private final MapCoordinates3DEx createCoordinates (final int x)
 	{
-		final OverlandMapCoordinatesEx combatLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
 		combatLocation.setX (x);
 		combatLocation.setY (10);
 		combatLocation.setZ (1);

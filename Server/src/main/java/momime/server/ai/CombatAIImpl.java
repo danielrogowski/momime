@@ -14,20 +14,20 @@ import momime.common.calculations.MomUnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.process.CombatProcessing;
 
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -58,7 +58,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @param trueUnits List of true units held on server
 	 * @return List of units this AI player needs to take actions for in combat
 	 */
-	final List<MemoryUnit> listUnitsToMove (final OverlandMapCoordinatesEx combatLocation, final int currentPlayerID,
+	final List<MemoryUnit> listUnitsToMove (final MapCoordinates3DEx combatLocation, final int currentPlayerID,
 		final List<MemoryUnit> trueUnits)
 	{
 		log.entering (CombatAIImpl.class.getName (), "listOurUnits", currentPlayerID);
@@ -180,7 +180,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
-	final MemoryUnit selectBestTarget (final MemoryUnit attacker, final OverlandMapCoordinatesEx combatLocation,
+	final MemoryUnit selectBestTarget (final MemoryUnit attacker, final MapCoordinates3DEx combatLocation,
 		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes,
 		final List<MemoryUnit> units, final List<PlayerServerDetails> players, final List<MemoryMaintainedSpell> spells,
 		final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
@@ -229,7 +229,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	final void moveOneUnit (final MemoryUnit tu, final OverlandMapCoordinatesEx combatLocation,
+	final void moveOneUnit (final MemoryUnit tu, final MapCoordinates3DEx combatLocation,
 		final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -252,7 +252,7 @@ public final class CombatAIImpl implements CombatAI
 		if (bestUnit != null)
 		{
 			// If we can attack at range then shoot it - if not then start walking towards it, or if adjacent to it already then attack it
-			final CombatMapCoordinatesEx moveTo = new CombatMapCoordinatesEx ();
+			final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
 			moveTo.setX (bestUnit.getCombatPosition ().getX ());
 			moveTo.setY (bestUnit.getCombatPosition ().getY ());
 			
@@ -269,7 +269,7 @@ public final class CombatAIImpl implements CombatAI
 					if (d < 1)
 						throw new MomException ("AI Combat routine traced an invalid direction");
 					
-					if (!getCoordinateSystemUtils ().moveCoordinates (mom.getCombatMapCoordinateSystem (), moveTo,
+					if (!getCoordinateSystemUtils ().move2DCoordinates (mom.getCombatMapCoordinateSystem (), moveTo,
 						getCoordinateSystemUtils ().normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), d+4)))
 						
 						throw new MomException ("AI Combat routine traced a location off the edge of the combat map");
@@ -298,7 +298,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void aiCombatTurn (final OverlandMapCoordinatesEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
+	public final void aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.entering (CombatAIImpl.class.getName (), "aiCombatTurn", currentPlayer.getPlayerDescription ().getPlayerID ());

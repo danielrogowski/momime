@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
-import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessage;
 
 /**
  * Server sends this as part of the main FOW message if we need to update our knowledge of what monsters are in

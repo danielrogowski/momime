@@ -10,7 +10,7 @@ import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
 import momime.client.ui.NewGameUI;
-import momime.common.messages.servertoclient.v0_9_4.YourRaceIsOkMessage;
+import momime.common.messages.servertoclient.v0_9_5.YourRaceIsOkMessage;
 
 /**
  * Message server sends to a player to let them know their choice of race was OK,

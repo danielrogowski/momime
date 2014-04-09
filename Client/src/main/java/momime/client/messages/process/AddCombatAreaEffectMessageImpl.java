@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
-import momime.common.messages.servertoclient.v0_9_4.AddCombatAreaEffectMessage;
+import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessage;
 
 /**
  * Server sends this to notify clients of new CAEs, or those that have newly come into view.

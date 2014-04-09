@@ -9,16 +9,16 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.RequestMoveCombatUnitMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.clienttoserver.v0_9_5.RequestMoveCombatUnitMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.process.CombatProcessing;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -111,7 +111,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		else
 		{
 			// Proceed with move
-			getCombatProcessing ().okToMoveUnitInCombat (tu, (CombatMapCoordinatesEx) getMoveTo (), movementDirections, movementTypes, mom);
+			getCombatProcessing ().okToMoveUnitInCombat (tu, (MapCoordinates2DEx) getMoveTo (), movementDirections, movementTypes, mom);
 		}
 		
 		log.exiting (RequestMoveCombatUnitMessageImpl.class.getName (), "process");

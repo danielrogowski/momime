@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase"
+	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
 	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
-	xmlns:momimemsgs="http://momime/common/messages/v0_9_4"
-	xmlns:momimectos="http://momime/common/messages/clienttoserver/v0_9_4" targetNamespace="http://momime/common/messages/clienttoserver/v0_9_4"
+	xmlns:momimemsgs="http://momime/common/messages/v0_9_5"
+	xmlns:momimectos="http://momime/common/messages/clienttoserver/v0_9_5" targetNamespace="http://momime/common/messages/clienttoserver/v0_9_5"
 	jaxb:version="2.0">
 
+	<xsd:import namespace="http://www.ndg.com/map"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/base"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
 	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4"/>
 	<xsd:import namespace="http://momime/common/database/v0_9_4"/>
-	<xsd:import namespace="http://momime/common/messages/v0_9_4"/>
+	<xsd:import namespace="http://momime/common/messages/v0_9_5"/>
     
     <xsd:annotation>
     	<xsd:documentation>Defines all the messages sent from the MoM IME client to the server.</xsd:documentation>
@@ -165,7 +166,7 @@ Server figures out the effect, based on the type of game (one-at-a-time or simul
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="cityName" type="momimecommon:description"/>
 		        	</xsd:sequence>
 				</xsd:extension>
@@ -181,7 +182,7 @@ Server figures out the effect, based on the type of game (one-at-a-time or simul
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="buildingOrUnitID" type="momimecommon:unitID"/>		<!-- In future should split this into an xsd:choice -->
 		        	</xsd:sequence>
 				</xsd:extension>
@@ -198,7 +199,7 @@ Server uses standard updateCity to reply.</xsd:documentation>
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="optionalFarmers" type="momimenewgame:cityPopulationDiv1000"/>
 		        	</xsd:sequence>
 				</xsd:extension>
@@ -214,7 +215,7 @@ Server uses standard updateCity to reply.</xsd:documentation>
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -229,7 +230,7 @@ Server uses standard updateCity to reply.</xsd:documentation>
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID">
 						    <xsd:annotation><xsd:documentation>null = Cancel pending sale</xsd:documentation></xsd:annotation>
 						</xsd:element>
@@ -296,7 +297,7 @@ Server uses standard updateCity to reply.</xsd:documentation>
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
 		        	</xsd:sequence>
 				</xsd:extension>
@@ -312,8 +313,8 @@ Server uses standard updateCity to reply.</xsd:documentation>
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="momimemsgs:overlandMapCoordinates"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates3D"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
 		        	</xsd:sequence>
 				</xsd:extension>
@@ -345,7 +346,7 @@ Server uses standard updateCity to reply.</xsd:documentation>
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="specialOrder" type="momimemsgs:unitSpecialOrder"/>
 						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
 		        	</xsd:sequence>
@@ -365,8 +366,8 @@ These will be the actual cells containing the units, so if either side is in a t
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="momimemsgs:overlandMapCoordinates"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="map:mapCoordinates3D"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
 						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
 		        	</xsd:sequence>
@@ -384,7 +385,7 @@ These will be the actual cells containing the units, so if either side is in a t
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="momimemsgs:combatMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="map:mapCoordinates2D"/>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -399,7 +400,7 @@ These will be the actual cells containing the units, so if either side is in a t
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D"/>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -416,7 +417,7 @@ Auto switched on or not - this makes it easier to allow the player to switch Aut
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D"/>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -431,7 +432,7 @@ Auto switched on or not - this makes it easier to allow the player to switch Aut
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="defendingPlayerID" type="mps:playerID"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="captureCityDecision" type="momimemsgs:captureCityDecisionID"/>
 		        	</xsd:sequence>
@@ -556,8 +557,8 @@ If in combat, and casting at a location (e.g. summoning), combatTargetLocation w
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
-						<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
-						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetLocation" type="momimemsgs:combatMapCoordinates"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetLocation" type="map:mapCoordinates2D"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetUnitURN" type="momimemsgs:unitURN"/>
 		        	</xsd:sequence>
 				</xsd:extension>
@@ -577,7 +578,7 @@ Note because spells don't get allocated any kind of spellURN, we basically have 
 		        		<!-- Could import most of this from momimemsgs:maintainedSpell; decided not to because of castInCombat element, and expect might add spellURNs later -->
 						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-						<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 			
 						<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID"/>
@@ -599,7 +600,7 @@ Note because spells don't get allocated any kind of spellURN, we basically have 
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-						<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

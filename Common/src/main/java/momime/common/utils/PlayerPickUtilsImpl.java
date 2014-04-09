@@ -13,7 +13,7 @@ import momime.common.database.v0_9_4.Pick;
 import momime.common.database.v0_9_4.PickExclusiveFrom;
 import momime.common.database.v0_9_4.PickPrerequisite;
 import momime.common.database.v0_9_4.PickProductionBonus;
-import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.messages.v0_9_5.PlayerPick;
 
 /**
  * Methods for working with list of PlayerPicks

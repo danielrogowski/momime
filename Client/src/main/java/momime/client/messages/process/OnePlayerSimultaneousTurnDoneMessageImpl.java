@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.OnePlayerSimultaneousTurnDoneMessage;
+import momime.common.messages.servertoclient.v0_9_5.OnePlayerSimultaneousTurnDoneMessage;
 
 /**
  * Server sends this to all clients to notify that one player has finished allocating simultaneous movement

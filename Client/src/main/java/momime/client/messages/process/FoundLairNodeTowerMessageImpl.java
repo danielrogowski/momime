@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.FoundLairNodeTowerMessage;
+import momime.common.messages.servertoclient.v0_9_5.FoundLairNodeTowerMessage;
 
 /**
  * Server sends this to client when a unit tries to move into a monster-type square, to make the

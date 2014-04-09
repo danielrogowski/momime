@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.AddNewTurnMessagesMessage;
+import momime.common.messages.servertoclient.v0_9_5.AddNewTurnMessagesMessage;
 
 /**
  * Server sends this if additional messages are generated during a turn

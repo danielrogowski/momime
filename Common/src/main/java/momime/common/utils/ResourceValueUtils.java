@@ -6,9 +6,9 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomResourceValue;
-import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomResourceValue;
+import momime.common.messages.v0_9_5.PlayerPick;
 
 /**
  * Methods for working with list of MomResourceValues

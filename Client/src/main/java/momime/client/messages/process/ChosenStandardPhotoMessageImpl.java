@@ -8,9 +8,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.common.messages.servertoclient.v0_9_4.ChosenStandardPhotoMessage;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.servertoclient.v0_9_5.ChosenStandardPhotoMessage;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;

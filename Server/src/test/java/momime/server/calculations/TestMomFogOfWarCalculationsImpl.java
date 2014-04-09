@@ -4,11 +4,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.FogOfWarStateID;
-import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.FogOfWarStateID;
+import momime.common.messages.v0_9_5.MapVolumeOfFogOfWarStates;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -16,6 +15,7 @@ import momime.server.database.ServerDatabaseEx;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Tests the MomFogOfWarCalculations class
@@ -65,14 +65,14 @@ public final class TestMomFogOfWarCalculationsImpl
 		towerData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (2).setTerrainData (towerData);
 
-		final OverlandMapCoordinatesEx towerOnMyrror = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx towerOnMyrror = new MapCoordinates3DEx ();
 		towerOnMyrror.setX (2);
 		towerOnMyrror.setY (2);
 		towerOnMyrror.setZ (1);
 
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (3).setTerrainData (new OverlandMapTerrainData ());
 
-		final OverlandMapCoordinatesEx otherLocationOnMyrror = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx otherLocationOnMyrror = new MapCoordinates3DEx ();
 		otherLocationOnMyrror.setX (3);
 		otherLocationOnMyrror.setY (2);
 		otherLocationOnMyrror.setZ (1);

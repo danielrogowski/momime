@@ -16,11 +16,10 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.CastingReductionCombination;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.newgame.v0_9_4.SwitchResearch;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.PlayerPick;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.PlayerPick;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtilsImpl;
@@ -29,6 +28,7 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -359,7 +359,7 @@ public final class TestMomSpellCalculationsImpl
 		calc.setPlayerPickUtils (picks);
 		
 		// We're banished
-		final OverlandMapCoordinatesEx location1 = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx location1 = new MapCoordinates3DEx ();
 		location1.setX (3);
 		location1.setY (7);
 		location1.setZ (0);
@@ -367,7 +367,7 @@ public final class TestMomSpellCalculationsImpl
 		assertNull (calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem));
 		
 		// Combat at wizard's fortress
-		final OverlandMapCoordinatesEx fortressLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx fortressLocation = new MapCoordinates3DEx ();
 		fortressLocation.setX (3);
 		fortressLocation.setY (7);
 		fortressLocation.setZ (0);
@@ -376,7 +376,7 @@ public final class TestMomSpellCalculationsImpl
 		assertEquals (1, calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// Combat right next to wizard's fortress
-		final OverlandMapCoordinatesEx location2 = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx location2 = new MapCoordinates3DEx ();
 		location2.setX (4);
 		location2.setY (7);
 		location2.setZ (0);
@@ -384,7 +384,7 @@ public final class TestMomSpellCalculationsImpl
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location2, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// Combat 1 square away but on other plane
-		final OverlandMapCoordinatesEx location3 = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx location3 = new MapCoordinates3DEx ();
 		location3.setX (4);
 		location3.setY (7);
 		location3.setZ (1);
@@ -393,7 +393,7 @@ public final class TestMomSpellCalculationsImpl
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location3, true, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// 5 across, 3 down = 5.83 distance away
-		final OverlandMapCoordinatesEx location4 = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx location4 = new MapCoordinates3DEx ();
 		location4.setX (3+5);
 		location4.setY (7+3);
 		location4.setZ (0);
@@ -401,7 +401,7 @@ public final class TestMomSpellCalculationsImpl
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location4, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 
 		// Same, but go left, across the wrapping boundary
-		final OverlandMapCoordinatesEx location5 = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx location5 = new MapCoordinates3DEx ();
 		location5.setX (58);
 		location5.setY (7+3);
 		location5.setZ (0);
@@ -409,7 +409,7 @@ public final class TestMomSpellCalculationsImpl
 		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location5, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// 6 across, 0 down = 6.00 away
-		final OverlandMapCoordinatesEx location6 = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx location6 = new MapCoordinates3DEx ();
 		location6.setX (3+6);
 		location6.setY (7);
 		location6.setZ (0);
@@ -417,7 +417,7 @@ public final class TestMomSpellCalculationsImpl
 		assertEquals (3, calc.calculateDoubleCombatCastingRangePenalty (player, location6, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 
 		// 6 across, 20 down = 20.88 away
-		final OverlandMapCoordinatesEx location7 = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx location7 = new MapCoordinates3DEx ();
 		location7.setX (3+6);
 		location7.setY (7+20);
 		location7.setZ (0);
@@ -425,7 +425,7 @@ public final class TestMomSpellCalculationsImpl
 		assertEquals (5, calc.calculateDoubleCombatCastingRangePenalty (player, location7, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 
 		// Prove caps at 3x
-		final OverlandMapCoordinatesEx location8 = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx location8 = new MapCoordinates3DEx ();
 		location8.setX (3+30);
 		location8.setY (7+20);
 		location8.setZ (0);

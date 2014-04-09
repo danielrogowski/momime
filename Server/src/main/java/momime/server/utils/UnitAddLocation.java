@@ -1,7 +1,8 @@
 package momime.server.utils;
 
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
+import momime.common.messages.v0_9_5.UnitAddBumpTypeID;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Small class to allow multiple outputs from findNearestLocationWhereUnitCanBeAdded
@@ -9,7 +10,7 @@ import momime.common.messages.v0_9_4.UnitAddBumpTypeID;
 public final class UnitAddLocation
 {
 	/** Location to add unit; null if it won't fit */
-	private final OverlandMapCoordinatesEx unitLocation;
+	private final MapCoordinates3DEx unitLocation;
 
 	/** Whether this is the requested location or not */
 	private final UnitAddBumpTypeID bumpType;
@@ -18,7 +19,7 @@ public final class UnitAddLocation
 	 * @param aUnitLocation Location to add unit; null if it won't fit
 	 * @param aBumpType Whether this is the requested location or not
 	 */
-	UnitAddLocation (final OverlandMapCoordinatesEx aUnitLocation, final UnitAddBumpTypeID aBumpType)
+	public UnitAddLocation (final MapCoordinates3DEx aUnitLocation, final UnitAddBumpTypeID aBumpType)
 	{
 		super ();
 
@@ -29,7 +30,7 @@ public final class UnitAddLocation
 	/**
 	 * @return Location to add unit; null if it won't fit
 	 */
-	public final OverlandMapCoordinatesEx getUnitLocation ()
+	public final MapCoordinates3DEx getUnitLocation ()
 	{
 		return unitLocation;
 	}

@@ -12,7 +12,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_4.ChoseNotToDoScheduledCombatMessage;
+import momime.common.messages.clienttoserver.v0_9_5.ChoseNotToDoScheduledCombatMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatScheduler;
 

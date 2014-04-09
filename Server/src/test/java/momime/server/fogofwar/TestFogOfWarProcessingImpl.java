@@ -9,20 +9,19 @@ import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_4.FogOfWarValue;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.UpdateNodeLairTowerUnitIDMessageData;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.FogOfWarStateID;
-import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.FogOfWarStateID;
+import momime.common.messages.v0_9_5.MapVolumeOfFogOfWarStates;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
@@ -43,6 +42,7 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -183,7 +183,7 @@ public final class TestFogOfWarProcessingImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (1).getCell ().get (1).setCityData (ourCityThree);
 
 		// Put buildings in that give cityTwo scouting range 3, and cityThree scouting range 4
-		final OverlandMapCoordinatesEx cityWallsLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityWallsLocation = new MapCoordinates3DEx ();
 		cityWallsLocation.setX (50);
 		cityWallsLocation.setY (12);
 		cityWallsLocation.setZ (0);
@@ -194,7 +194,7 @@ public final class TestFogOfWarProcessingImpl
 
 		trueMap.getBuilding ().add (cityWalls);
 
-		final OverlandMapCoordinatesEx ourOracleLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx ourOracleLocation = new MapCoordinates3DEx ();
 		ourOracleLocation.setX (1);
 		ourOracleLocation.setY (1);
 		ourOracleLocation.setZ (1);
@@ -217,7 +217,7 @@ public final class TestFogOfWarProcessingImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (32).getCell ().get (54).setCityData (enemyCityTwo);
 
 		// We can see enemy cities that we have a curse on, but having an oracle doesn't increase how much we can see
-		final OverlandMapCoordinatesEx curseLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx curseLocation = new MapCoordinates3DEx ();
 		curseLocation.setX (54);
 		curseLocation.setY (32);
 		curseLocation.setZ (1);
@@ -230,7 +230,7 @@ public final class TestFogOfWarProcessingImpl
 
 		trueMap.getMaintainedSpell ().add (curse);
 
-		final OverlandMapCoordinatesEx enemyOracleLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx enemyOracleLocation = new MapCoordinates3DEx ();
 		enemyOracleLocation.setX (54);
 		enemyOracleLocation.setY (32);
 		enemyOracleLocation.setZ (1);
@@ -242,7 +242,7 @@ public final class TestFogOfWarProcessingImpl
 		trueMap.getBuilding ().add (enemyOracle);
 
 		// Units - a regular unit, flying unit (sees distance 2) and unit with actual scouting III skill
-		final OverlandMapCoordinatesEx unitOneLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx unitOneLocation = new MapCoordinates3DEx ();
 		unitOneLocation.setX (54);
 		unitOneLocation.setY (4);
 		unitOneLocation.setZ (1);
@@ -253,7 +253,7 @@ public final class TestFogOfWarProcessingImpl
 
 		trueMap.getUnit ().add (unitOne);
 
-		final OverlandMapCoordinatesEx unitTwoLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx unitTwoLocation = new MapCoordinates3DEx ();
 		unitTwoLocation.setX (14);
 		unitTwoLocation.setY (34);
 		unitTwoLocation.setZ (1);
@@ -264,7 +264,7 @@ public final class TestFogOfWarProcessingImpl
 
 		trueMap.getUnit ().add (unitTwo);
 
-		final OverlandMapCoordinatesEx unitThreeLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx unitThreeLocation = new MapCoordinates3DEx ();
 		unitThreeLocation.setX (44);
 		unitThreeLocation.setY (17);
 		unitThreeLocation.setZ (0);
@@ -284,7 +284,7 @@ public final class TestFogOfWarProcessingImpl
 			trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (22).getCell ().get (22).setTerrainData (terrainData);
 		}
 
-		final OverlandMapCoordinatesEx unitFourLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx unitFourLocation = new MapCoordinates3DEx ();
 		unitFourLocation.setX (22);
 		unitFourLocation.setY (22);
 		unitFourLocation.setZ (0);
@@ -296,7 +296,7 @@ public final class TestFogOfWarProcessingImpl
 		trueMap.getUnit ().add (unitFour);
 
 		// Enemy unit
-		final OverlandMapCoordinatesEx unitFiveLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx unitFiveLocation = new MapCoordinates3DEx ();
 		unitFiveLocation.setX (23);
 		unitFiveLocation.setY (9);
 		unitFiveLocation.setZ (1);
@@ -308,7 +308,7 @@ public final class TestFogOfWarProcessingImpl
 		trueMap.getUnit ().add (unitFive);
 
 		// Nature's eye spell
-		final OverlandMapCoordinatesEx naturesEyeLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx naturesEyeLocation = new MapCoordinates3DEx ();
 		naturesEyeLocation.setX (11);
 		naturesEyeLocation.setY (35);
 		naturesEyeLocation.setZ (0);
@@ -446,7 +446,7 @@ public final class TestFogOfWarProcessingImpl
 		// Put 3 sets of coordinates in the list
 		for (int n = 1; n <= 3; n++)
 		{
-			final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 			coords.setX (n);
 			coords.setY (n + 1);
 			coords.setZ (n + 2);
@@ -461,7 +461,7 @@ public final class TestFogOfWarProcessingImpl
 		final FogOfWarProcessingImpl proc = new FogOfWarProcessingImpl ();
 
 		// Test some coordinates that are in the list
-		final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 		coords.setX (2);
 		coords.setY (3);
 		coords.setZ (4);

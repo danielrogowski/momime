@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.DamageCalculationMessage;
+import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessage;
 
 /**
  * Server telling the two players involved in a combat how damage was calculated.

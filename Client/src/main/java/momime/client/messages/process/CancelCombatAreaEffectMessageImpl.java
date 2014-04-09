@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
-import momime.common.messages.servertoclient.v0_9_4.CancelCombatAreaEffectMessage;
+import momime.common.messages.servertoclient.v0_9_5.CancelCombatAreaEffectMessage;
 
 /**
  * Server sends this to notify clients of cancelled CAEs, or those that have gone out of view.

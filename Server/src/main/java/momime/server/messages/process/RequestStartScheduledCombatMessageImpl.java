@@ -7,16 +7,16 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.RequestStartScheduledCombatMessage;
-import momime.common.messages.servertoclient.v0_9_4.PlayerCombatRequestStatusMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.MomScheduledCombat;
-import momime.common.messages.v0_9_4.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.clienttoserver.v0_9_5.RequestStartScheduledCombatMessage;
+import momime.common.messages.servertoclient.v0_9_5.PlayerCombatRequestStatusMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.MomScheduledCombat;
+import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatProcessing;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -116,7 +116,7 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 		else
 		{
 			// Actually start the combat (Or pop up the 'found node/lair/tower' window if applicable)
-			getCombatProcessing ().initiateCombat ((OverlandMapCoordinatesEx) combat.getDefendingLocation (), (OverlandMapCoordinatesEx) combat.getAttackingFrom (),
+			getCombatProcessing ().initiateCombat ((MapCoordinates3DEx) combat.getDefendingLocation (), (MapCoordinates3DEx) combat.getAttackingFrom (),
 				getScheduledCombatURN (), sender, combat.getAttackingUnitURN (), combat.getTypeOfCombat (), combat.getMonsterUnitID (), mom);
 		}
 	

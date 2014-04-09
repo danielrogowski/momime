@@ -8,21 +8,25 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.CaptureCityDecisionID;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
-import momime.common.messages.v0_9_4.UnitCombatSideID;
+import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
+import momime.common.messages.servertoclient.v0_9_5.StartCombatMessage;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
+import momime.common.messages.v0_9_5.UnitCombatSideID;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
- * Routines dealing with initiating, progressing and ending combats
+ * Routines dealing with initiating and progressing combats, as well as moving and attacking
  */
 public interface CombatProcessing
 {
@@ -46,30 +50,41 @@ public interface CombatProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void initiateCombat (final OverlandMapCoordinatesEx defendingLocation, final OverlandMapCoordinatesEx attackingFrom,
+	public void initiateCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
 		final Integer scheduledCombatURN, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs,
 		final MoveResultsInAttackTypeID typeOfCombat, final String monsterUnitID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
-	 * Sets up a combat on the server and any client(s) who are involved
-	 *
-	 * @param defendingLocation Location where defending units are standing
-	 * @param attackingFrom Location where attacking units are standing (which will be a map tile adjacent to defendingLocation)
-	 * @param scheduledCombatURN Scheduled combat URN, if simultaneous turns game; null for one-at-a-time games
+	 * Sets units into combat (e.g. sets their combatLocation to put them into combat, and sets their position, heading and side within that combat)
+	 * and adds the info to the StartCombatMessage to inform the the two clients involved to do the same.
+	 * One call does units on one side (attacking or defending) of the combat.
+	 * 
+	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
+	 * @param startCombatMessage Message being built up ready to send to human participants; if combat is between two AI players can pass this in as null
 	 * @param attackingPlayer Player who is attacking
-	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind
+	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param currentLocation The overland map location where the units being put into combat are standing - so attackers are 1 tile away from the actual combatLocation
+	 * @param startX X coordinate within the combat map to centre the units around
+	 * @param startY Y coordinate within the combat map to centre the units around
+	 * @param maxRows Number of rows the units need to be arranged into in order to fit
+	 * @param unitHeading Heading the units should be set to face
+	 * @param combatSide Side the units should be set to be on
+	 * @param onlyUnitURNs If null, all units at currentLocation will be put into combat; if non-null, only the listed Unit URNs will be put into combat
+	 * 	This is because the attacker may elect to not attack with every single unit in their stack
+	 * @param combatMap Combat scenery we are placing the units onto (important because some tiles will be impassable to some types of unit)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws JAXBException If there is a problem converting the object into XML
-	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws MomException If there is a logic failure, e.g. not enough space to fit all the units
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws PlayerNotFoundException If we can't find the player who owns one of the units
 	 */
-	public void startCombat (final OverlandMapCoordinatesEx defendingLocation, final OverlandMapCoordinatesEx attackingFrom,
-		final Integer scheduledCombatURN, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
-
+	public void positionCombatUnits (final MapCoordinates3DEx combatLocation, final StartCombatMessage startCombatMessage,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CoordinateSystem combatMapCoordinateSystem,
+		final MapCoordinates3DEx currentLocation, final int startX, final int startY, final int maxRows, final int unitHeading,
+		final UnitCombatSideID combatSide, final List<Integer> onlyUnitURNs, final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException;
+	
 	/**
 	 * Progresses the combat happening at the specified location.
 	 * Will cycle through playing out AI players' combat turns until either the combat ends or it is a human players turn, at which
@@ -85,32 +100,40 @@ public interface CombatProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void progressCombat (final OverlandMapCoordinatesEx combatLocation, final boolean initialFirstTurn,
+	public void progressCombat (final MapCoordinates3DEx combatLocation, final boolean initialFirstTurn,
 		final boolean initialAutoControlHumanPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
-	
+
 	/**
-	 * Handles tidying up when a combat ends
+	 * Regular units who die in combat are only set to status=DEAD - they are not actually freed immediately in case someone wants to cast Animate Dead on them.
+	 * After a combat ends, this routine properly frees them both on the server and all clients.
 	 * 
-	 * If the combat results in the attacker capturing a city, and the attacker is a human player, then this gets called twice - the first time it
-	 * will spot that CaptureCityDecision = cdcUndecided, send a message to the player to ask them for the decision, and when we get an answer back, it'll be called again
+	 * Heroes who die in combat are set to musDead on the server and the client who owns them - they're freed immediately on the other clients.
+	 * This means we don't have to touch dead heroes here, just leave them as they are.
+	 * 
+	 * It also removes combat summons, e.g. Phantom Warriors, even if they are not dead.
+	 * 
+	 * It also removes monsters left alive guarding nodes/lairs/towers from the client (leaving them on the server) - these only ever exist
+	 * temporarily on the client who is attacking, and the "knows about unit" routine the FOW is based on always returns False for them,
+	 * so we have handle them as a special case here.
 	 * 
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
-	 * @param winningPlayer Player who won
-	 * @param captureCityDecision If taken a city and winner has decided whether to raze or capture it then is passed in here; null = player hasn't decided yet (see comment above)
-	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void combatEnded (final OverlandMapCoordinatesEx combatLocation,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
-		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	public void purgeDeadUnitsAndCombatSummonsFromCombat (final MapCoordinates3DEx combatLocation,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final FogOfWarSettingData fogOfWarSettings, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 	
 	/**
 	 * Units are put into combat initially as part of the big StartCombat message rather than here.
@@ -137,8 +160,24 @@ public interface CombatProcessing
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 */
 	public void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapVolumeOfMemoryGridCells trueTerrain,
-		final MemoryUnit trueUnit, final OverlandMapCoordinatesEx terrainLocation, final OverlandMapCoordinatesEx combatLocation, final CombatMapCoordinatesEx combatPosition,
+		final MemoryUnit trueUnit, final MapCoordinates3DEx terrainLocation, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
 		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException;
+	
+	/**
+	 * At the end of a combat, takes all units out of combat by nulling out all their combat values
+	 * 
+	 * @param attackingPlayer Player who is attacking
+	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param combatLocation The location the combat took place
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 */
+	public void removeUnitsFromCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
+		final MapCoordinates3DEx combatLocation, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
 	
 	/**
@@ -158,7 +197,7 @@ public interface CombatProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void okToMoveUnitInCombat (final MemoryUnit tu, final CombatMapCoordinatesEx moveTo,
+	public void okToMoveUnitInCombat (final MemoryUnit tu, final MapCoordinates2DEx moveTo,
 		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes, final MomSessionVariables mom)
 		throws MomException, PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException;
 }

@@ -29,8 +29,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.TurnSystem;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.TurnSystem;
 import momime.server.MomServer;
 import momime.server.logging.LoggingConstants;
 import momime.server.logging.SingleLineFormatter;

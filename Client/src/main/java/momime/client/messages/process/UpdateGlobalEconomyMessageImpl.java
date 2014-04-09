@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
 
 /**
  * Server sends this to each client to tell them what their current production rates and storage are.

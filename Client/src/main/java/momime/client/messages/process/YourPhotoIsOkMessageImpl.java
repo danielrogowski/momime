@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.YourPhotoIsOkMessage;
+import momime.common.messages.servertoclient.v0_9_5.YourPhotoIsOkMessage;
 
 /**
  * Message server sends to a player to let them know their choice of photo was OK (regardless of whether it was a

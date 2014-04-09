@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateProductionSoFarMessage;
 
 /**
  * Server sends this to the owner of a city to tell them how many production points they've put into the current construction project so far.

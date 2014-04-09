@@ -9,7 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
-import momime.common.messages.servertoclient.v0_9_4.AddBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessage;
 
 /**
  * Server sends this to clients to tell them about a building added to a city

@@ -15,21 +15,21 @@ import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.database.v0_9_4.DifficultyLevelNodeStrength;
-import momime.common.messages.v0_9_4.FogOfWarStateID;
-import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
-import momime.common.messages.v0_9_4.MapAreaOfFogOfWarStates;
-import momime.common.messages.v0_9_4.MapAreaOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapAreaOfStrings;
-import momime.common.messages.v0_9_4.MapRowOfCombatTiles;
-import momime.common.messages.v0_9_4.MapRowOfFogOfWarStates;
-import momime.common.messages.v0_9_4.MapRowOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapRowOfStrings;
-import momime.common.messages.v0_9_4.MapVolumeOfFogOfWarStates;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapVolumeOfStrings;
-import momime.common.messages.v0_9_4.MomCombatTile;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.FogOfWarStateID;
+import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.v0_9_5.MapAreaOfFogOfWarStates;
+import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapAreaOfStrings;
+import momime.common.messages.v0_9_5.MapRowOfCombatTiles;
+import momime.common.messages.v0_9_5.MapRowOfFogOfWarStates;
+import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapRowOfStrings;
+import momime.common.messages.v0_9_5.MapVolumeOfFogOfWarStates;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapVolumeOfStrings;
+import momime.common.messages.v0_9_5.MomCombatTile;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseExImpl;
@@ -43,7 +43,7 @@ import momime.server.database.v0_9_4.ServerDatabase;
 import momime.server.database.v0_9_4.SpellSetting;
 import momime.server.database.v0_9_4.UnitSetting;
 import momime.server.mapgenerator.CombatMapGeneratorImpl;
-import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.messages.v0_9_5.ServerGridCell;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -189,6 +189,10 @@ public final class ServerTestData
 		sys.setHeight (40);
 		sys.setDepth (2);
 		sys.setWrapsLeftToRight (true);
+		
+		sys.setCitySeparation (3);
+		sys.setContinentalRaceChance (75);
+		
 		return sys;
 	}
 
@@ -233,7 +237,7 @@ public final class ServerTestData
 	 * @param sys Overland map coordinate system
 	 * @return Strings area prepopulated with nulls
 	 */
-	public final static MapVolumeOfStrings createStringsArea (final CoordinateSystem sys)
+	public final static MapVolumeOfStrings createStringsVolume (final CoordinateSystem sys)
 	{
 		final MapVolumeOfStrings map = new MapVolumeOfStrings ();
 		for (int plane = 0; plane < 2; plane++)

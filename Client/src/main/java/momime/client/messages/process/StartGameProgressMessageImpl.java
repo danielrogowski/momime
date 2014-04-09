@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.servertoclient.v0_9_4.StartGameProgressMessage;
+import momime.common.messages.servertoclient.v0_9_5.StartGameProgressMessage;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;

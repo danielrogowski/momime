@@ -13,22 +13,21 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.TaxRate;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.PendingSaleMessage;
-import momime.common.messages.servertoclient.v0_9_4.TaxRateChangedMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.servertoclient.v0_9_4.UpdateProductionSoFarMessage;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.NewTurnMessageData;
-import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.PendingSaleMessage;
+import momime.common.messages.servertoclient.v0_9_5.TaxRateChangedMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateProductionSoFarMessage;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -42,14 +41,15 @@ import momime.server.database.v0_9_4.Building;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
 
 import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -150,7 +150,7 @@ public final class CityProcessingImpl implements CityProcessing
 					plane = db.getPlane ().get (getRandomUtils ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
-				final OverlandMapCoordinatesEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db);
+				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db);
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 
@@ -216,7 +216,7 @@ public final class CityProcessingImpl implements CityProcessing
 					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
 						{
-							final OverlandMapCoordinatesEx buildingCoords = new OverlandMapCoordinatesEx ();
+							final MapCoordinates3DEx buildingCoords = new MapCoordinates3DEx ();
 							buildingCoords.setX (cityLocation.getX ());
 							buildingCoords.setY (cityLocation.getY ());
 							buildingCoords.setZ (cityLocation.getZ ());
@@ -234,7 +234,7 @@ public final class CityProcessingImpl implements CityProcessing
 						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
 							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
 						{
-							final OverlandMapCoordinatesEx buildingCoords = new OverlandMapCoordinatesEx ();
+							final MapCoordinates3DEx buildingCoords = new MapCoordinates3DEx ();
 							buildingCoords.setX (cityLocation.getX ());
 							buildingCoords.setY (cityLocation.getY ());
 							buildingCoords.setZ (cityLocation.getZ ());
@@ -251,7 +251,7 @@ public final class CityProcessingImpl implements CityProcessing
 					if ((thisUnit.getUnitRaceID () != null) && (thisUnit.getFreeAtStartCount () != null) && (thisUnit.getUnitRaceID ().equals (city.getCityRaceID ())))
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
-							final OverlandMapCoordinatesEx unitCoords = new OverlandMapCoordinatesEx ();
+							final MapCoordinates3DEx unitCoords = new MapCoordinates3DEx ();
 							unitCoords.setX (cityLocation.getX ());
 							unitCoords.setY (cityLocation.getY ());
 							unitCoords.setZ (cityLocation.getZ ());
@@ -299,7 +299,7 @@ public final class CityProcessingImpl implements CityProcessing
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
 
-						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
 						cityLocation.setZ (plane.getPlaneNumber ());
@@ -491,7 +491,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void sellBuilding (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final OverlandMapCoordinatesEx cityLocation, final String buildingID,
+		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final String buildingID,
 		final boolean pendingSale, final boolean voluntarySale,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
@@ -618,7 +618,7 @@ public final class CityProcessingImpl implements CityProcessing
 							if ((cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) &&
 								(cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())))
 							{
-								final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 								cityLocation.setZ (plane.getPlaneNumber ());
 								cityLocation.setX (x);
 								cityLocation.setY (y);

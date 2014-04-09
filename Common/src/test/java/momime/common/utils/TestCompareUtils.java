@@ -2,10 +2,11 @@ package momime.common.utils;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
 
 import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Tests the CompareUtils class
@@ -44,17 +45,17 @@ public final class TestCompareUtils
 	@Test
 	public final void testSafeOverlandMapCoordinatesCompare ()
 	{
-		final OverlandMapCoordinatesEx firstCoords = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx firstCoords = new MapCoordinates3DEx ();
 		firstCoords.setX (56);
 		firstCoords.setY (0);
 		firstCoords.setZ (-12);
 
-		final OverlandMapCoordinatesEx secondCoords = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx secondCoords = new MapCoordinates3DEx ();
 		secondCoords.setX (56);
 		secondCoords.setY (0);
 		secondCoords.setZ (-12);
 		
-		final OverlandMapCoordinatesEx thirdCoords = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx thirdCoords = new MapCoordinates3DEx ();
 		thirdCoords.setX (56);
 		thirdCoords.setY (10);
 		thirdCoords.setZ (-12);
@@ -73,15 +74,15 @@ public final class TestCompareUtils
 	@Test
 	public final void testSafeCombatMapCoordinatesCompare ()
 	{
-		final CombatMapCoordinatesEx firstCoords = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx firstCoords = new MapCoordinates2DEx ();
 		firstCoords.setX (56);
 		firstCoords.setY (0);
 
-		final CombatMapCoordinatesEx secondCoords = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx secondCoords = new MapCoordinates2DEx ();
 		secondCoords.setX (56);
 		secondCoords.setY (0);
 		
-		final CombatMapCoordinatesEx thirdCoords = new CombatMapCoordinatesEx ();
+		final MapCoordinates2DEx thirdCoords = new MapCoordinates2DEx ();
 		thirdCoords.setX (56);
 		thirdCoords.setY (10);
 		

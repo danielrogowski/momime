@@ -17,25 +17,24 @@ import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.EnforceProductionID;
 import momime.common.database.v0_9_4.SpellUpkeep;
 import momime.common.database.v0_9_4.UnitUpkeep;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.FullSpellListMessage;
-import momime.common.messages.servertoclient.v0_9_4.UpdateGlobalEconomyMessage;
-import momime.common.messages.servertoclient.v0_9_4.UpdateRemainingResearchCostMessage;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.NewTurnMessageData;
-import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.SpellResearchStatus;
-import momime.common.messages.v0_9_4.SpellResearchStatusID;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateRemainingResearchCostMessage;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -48,7 +47,7 @@ import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.ProductionType;
 import momime.server.database.v0_9_4.Spell;
 import momime.server.database.v0_9_4.Unit;
-import momime.server.process.SpellProcessing;
+import momime.server.process.SpellQueueing;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerFactory;
@@ -56,6 +55,7 @@ import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
 import momime.server.utils.UnitServerUtils;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -68,8 +68,8 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	/** Class logger */
 	private final Logger log = Logger.getLogger (MomServerResourceCalculationsImpl.class.getName ());
 
-	/** Spell processing methods */
-	private SpellProcessing spellProcessing;
+	/** Spell queueing methods */
+	private SpellQueueing spellQueueing;
 
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
@@ -162,7 +162,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 					if ( (cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
 					{
 						// Calculate all productions from this city
-						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
 						cityLocation.setZ (plane.getPlaneNumber ());
@@ -591,7 +591,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 
 						// Continue casting spells
 						// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used
-						if (getSpellProcessing ().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
+						if (getSpellQueueing ().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
 
 							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 					}
@@ -606,19 +606,19 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	}
 
 	/**
-	 * @return Spell processing methods
+	 * @return Spell queueing methods
 	 */
-	public final SpellProcessing getSpellProcessing ()
+	public final SpellQueueing getSpellQueueing ()
 	{
-		return spellProcessing;
+		return spellQueueing;
 	}
 
 	/**
-	 * @param obj Spell processing methods
+	 * @param obj Spell queueing methods
 	 */
-	public final void setSpellProcessing (final SpellProcessing obj)
+	public final void setSpellQueueing (final SpellQueueing obj)
 	{
-		spellProcessing = obj;
+		spellQueueing = obj;
 	}
 
 	/**

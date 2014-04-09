@@ -5,15 +5,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.Spell;
 import momime.common.database.v0_9_4.SpellHasCityEffect;
 import momime.common.database.v0_9_4.UnitSpellEffect;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Methods for working with list of MemoryMaintainedSpells
@@ -47,7 +48,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	@Override
 	public final MemoryMaintainedSpell findMaintainedSpell (final List<MemoryMaintainedSpell> spells,
 		final Integer castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID)
+		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
 	{
 		log.entering (MemoryMaintainedSpellUtilsImpl.class.getName (), "findMaintainedSpell", new String []
 			{(castingPlayerID == null) ? "null" : castingPlayerID.toString (), spellID,
@@ -64,7 +65,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 				((spellID == null) || (spellID.equals (thisSpell.getSpellID ()))) &&
 				(CompareUtils.safeIntegerCompare (unitURN,  thisSpell.getUnitURN ())) &&
 				((unitSkillID == null) || (unitSkillID.equals (thisSpell.getUnitSkillID ()))) &&
-				(CompareUtils.safeOverlandMapCoordinatesCompare (cityLocation, (OverlandMapCoordinatesEx) thisSpell.getCityLocation ())) &&
+				(CompareUtils.safeOverlandMapCoordinatesCompare (cityLocation, (MapCoordinates3DEx) thisSpell.getCityLocation ())) &&
 				((citySpellEffectID == null) || (citySpellEffectID.equals (thisSpell.getCitySpellEffectID ()))))
 
 				match = thisSpell;
@@ -89,7 +90,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	@Override
 	public final void switchOffMaintainedSpell (final List<MemoryMaintainedSpell> spells,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final OverlandMapCoordinatesEx cityLocation, final String citySpellEffectID)
+		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
 		throws RecordNotFoundException
 	{
 		log.entering (MemoryMaintainedSpellUtilsImpl.class.getName (), "switchOffMaintainedSpell", new String []
@@ -106,7 +107,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 				(spellID.equals (thisSpell.getSpellID ())) &&
 				(CompareUtils.safeIntegerCompare (unitURN,  thisSpell.getUnitURN ())) &&
 				((unitSkillID == null) || (unitSkillID.equals (thisSpell.getUnitSkillID ()))) &&
-				(CompareUtils.safeOverlandMapCoordinatesCompare (cityLocation, (OverlandMapCoordinatesEx) thisSpell.getCityLocation ())) &&
+				(CompareUtils.safeOverlandMapCoordinatesCompare (cityLocation, (MapCoordinates3DEx) thisSpell.getCityLocation ())) &&
 				((citySpellEffectID == null) || (citySpellEffectID.equals (thisSpell.getCitySpellEffectID ()))))
 			{
 				iter.remove ();
@@ -193,7 +194,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 */
 	@Override
 	public final List<String> listCitySpellEffectsNotYetCastAtLocation (final List<MemoryMaintainedSpell> spells, final Spell spell,
-		final int castingPlayerID, final OverlandMapCoordinatesEx cityLocation)
+		final int castingPlayerID, final MapCoordinates3DEx cityLocation)
 	{
     	log.entering (MemoryMaintainedSpellUtilsImpl.class.getName (), "listCitySpellEffectsNotYetCastAtLocation", new String [] {spell.getSpellID (), cityLocation.toString ()});
     	

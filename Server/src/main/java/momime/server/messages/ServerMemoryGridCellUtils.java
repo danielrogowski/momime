@@ -1,7 +1,7 @@
 package momime.server.messages;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.server.database.ServerDatabaseEx;
 
 /**

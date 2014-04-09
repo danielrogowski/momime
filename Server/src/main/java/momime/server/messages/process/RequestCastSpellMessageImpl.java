@@ -7,12 +7,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.RequestCastSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_5.RequestCastSpellMessage;
 import momime.server.MomSessionVariables;
-import momime.server.process.SpellProcessing;
+import momime.server.process.SpellQueueing;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -33,8 +33,8 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 	/** Class logger */
 	private final Logger log = Logger.getLogger (RequestCastSpellMessageImpl.class.getName ());
 
-	/** Spell processing methods */
-	private SpellProcessing spellProcessing;
+	/** Spell queueing methods */
+	private SpellQueueing spellQueueing;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -52,25 +52,25 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		getSpellProcessing ().requestCastSpell (sender, getSpellID (),
-			(OverlandMapCoordinatesEx) getCombatLocation (), (CombatMapCoordinatesEx) getCombatTargetLocation (), getCombatTargetUnitURN (), mom);
+		getSpellQueueing ().requestCastSpell (sender, getSpellID (),
+			(MapCoordinates3DEx) getCombatLocation (), (MapCoordinates2DEx) getCombatTargetLocation (), getCombatTargetUnitURN (), mom);
 
 		log.exiting (RequestCastSpellMessageImpl.class.getName (), "process");
 	}
 
 	/**
-	 * @return Spell processing methods
+	 * @return Spell queueing methods
 	 */
-	public final SpellProcessing getSpellProcessing ()
+	public final SpellQueueing getSpellQueueing ()
 	{
-		return spellProcessing;
+		return spellQueueing;
 	}
 
 	/**
-	 * @param obj Spell processing methods
+	 * @param obj Spell queueing methods
 	 */
-	public final void setSpellProcessing (final SpellProcessing obj)
+	public final void setSpellQueueing (final SpellQueueing obj)
 	{
-		spellProcessing = obj;
+		spellQueueing = obj;
 	}
 }

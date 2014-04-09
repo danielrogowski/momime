@@ -6,11 +6,11 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.CaptureCityDecisionMessage;
+import momime.common.messages.clienttoserver.v0_9_5.CaptureCityDecisionMessage;
 import momime.server.MomSessionVariables;
-import momime.server.process.CombatProcessing;
+import momime.server.process.CombatStartAndEnd;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -24,8 +24,8 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	/** Class logger */
 	private final Logger log = Logger.getLogger (CaptureCityDecisionMessageImpl.class.getName ());
 
-	/** Combat processing */
-	private CombatProcessing combatProcessing;
+	/** Starting and ending combats */
+	private CombatStartAndEnd combatStartAndEnd;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -44,24 +44,24 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		final PlayerServerDetails defendingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
-		getCombatProcessing ().combatEnded ((OverlandMapCoordinatesEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
+		getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
 
 		log.exiting (CaptureCityDecisionMessageImpl.class.getName (), "process");
 	}	
 
 	/**
-	 * @return Combat processing
+	 * @return Starting and ending combats
 	 */
-	public final CombatProcessing getCombatProcessing ()
+	public final CombatStartAndEnd getCombatStartAndEnd ()
 	{
-		return combatProcessing;
+		return combatStartAndEnd;
 	}
 
 	/**
-	 * @param proc Combat processing
+	 * @param cse Starting and ending combats
 	 */
-	public final void setCombatProcessing (final CombatProcessing proc)
+	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
-		combatProcessing = proc;
+		combatStartAndEnd = cse;
 	}
 }

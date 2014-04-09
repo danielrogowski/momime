@@ -6,11 +6,11 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.v0_9_4.MomGeneralPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;

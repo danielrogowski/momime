@@ -7,12 +7,12 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MomScheduledCombat;
-import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
+import momime.common.messages.v0_9_5.MomScheduledCombat;
+import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.server.MomSessionVariables;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -36,7 +36,7 @@ public interface CombatScheduler
 	 * @param monsterUnitID Type of unit scouted here; empty string if "known to be empty"
 	 */
 	public void addScheduledCombatGeneratedURN (final MomGeneralServerKnowledge gsk,
-		final OverlandMapCoordinatesEx defendingLocation, final OverlandMapCoordinatesEx attackingFrom,
+		final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
 		final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs,
 		final MoveResultsInAttackTypeID typeOfCombat, final String monsterUnitID);
 	

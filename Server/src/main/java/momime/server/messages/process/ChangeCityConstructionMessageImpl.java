@@ -6,14 +6,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.ChangeCityConstructionMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
+import momime.common.messages.clienttoserver.v0_9_5.ChangeCityConstructionMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -49,7 +49,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final String error = getCityServerUtils ().validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			(OverlandMapCoordinatesEx) getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription ().getMapSize (), mom.getServerDB ());
+			(MapCoordinates3DEx) getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription ().getMapSize (), mom.getServerDB ());
 
 		if (error != null)
 		{
@@ -69,7 +69,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 
 			// Send update to clients
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), (OverlandMapCoordinatesEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), false);
+				mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), false);
 		}
 
 		log.exiting (ChangeCityConstructionMessageImpl.class.getName (), "process");

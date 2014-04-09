@@ -11,34 +11,33 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
-import momime.common.messages.v0_9_4.AvailableUnit;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.NewTurnMessageData;
-import momime.common.messages.v0_9_4.NewTurnMessageTypeID;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.UnitCombatSideID;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
+import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.UnitCombatSideID;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.CityNameContainer;
 import momime.server.database.v0_9_4.Plane;
 import momime.server.database.v0_9_4.Race;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_4.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.ServerGridCell;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.MapCoordinates3D;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -92,12 +91,12 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		// Now branch out in every direction from here
 		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
 		{
-			final MapCoordinates3D coords = new MapCoordinates3D ();
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 			coords.setX (x);
 			coords.setY (y);
 			coords.setZ (plane);
 
-			if (getCoordinateSystemUtils ().moveCoordinates (sys, coords, d))
+			if (getCoordinateSystemUtils ().move3DCoordinates (sys, coords, d))
 			{
 				final OverlandMapTerrainData terrain = map.getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 
@@ -290,7 +289,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 							aura.getTerrainData ().setNodeOwnerID (attackingSpirit.getOwningPlayerID ());
 							
 							// Update players' memory and clients
-							final OverlandMapCoordinatesEx auraLocation = new OverlandMapCoordinatesEx ();
+							final MapCoordinates3DEx auraLocation = new MapCoordinates3DEx ();
 							auraLocation.setX (x);
 							auraLocation.setY (y);
 							auraLocation.setZ (plane.getPlaneNumber ());
@@ -302,7 +301,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		}
 		
 		// Kill off the spirit
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd, db);
+		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
 
 		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "attemptToMeldWithNode", successful);
 	}
@@ -343,13 +342,13 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @throws MomException If the requested side is wiped out
 	 */
 	@Override
-	public final OverlandMapCoordinatesEx findMapLocationOfUnitsInCombat (final OverlandMapCoordinatesEx combatLocation,
+	public final MapCoordinates3DEx findMapLocationOfUnitsInCombat (final MapCoordinates3DEx combatLocation,
 		final UnitCombatSideID combatSide, final List<MemoryUnit> units) throws MomException
 	{
 		log.entering (OverlandMapServerUtilsImpl.class.getName (), "findMapLocationOfUnitsInCombat",
 			new String [] {combatLocation.toString (), combatSide.value ()});
 		
-		OverlandMapCoordinatesEx location = null;
+		MapCoordinates3DEx location = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
 		while ((location == null) && (iter.hasNext ()))
 		{
@@ -357,7 +356,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) &&
 				(unit.getCombatSide () == combatSide) && (combatLocation.equals (unit.getCombatLocation ())))
 				
-				location = (OverlandMapCoordinatesEx) unit.getUnitLocation ();
+				location = (MapCoordinates3DEx) unit.getUnitLocation ();
 		}
 		
 		if (location == null)

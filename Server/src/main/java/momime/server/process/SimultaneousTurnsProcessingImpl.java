@@ -1,6 +1,5 @@
 package momime.server.process;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -11,13 +10,11 @@ import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.servertoclient.v0_9_4.KillUnitActionID;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.UnitSpecialOrder;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.UnitSpecialOrder;
 import momime.server.MomSessionVariables;
 import momime.server.database.v0_9_4.MapFeature;
 import momime.server.database.v0_9_4.Plane;
@@ -27,6 +24,7 @@ import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -62,7 +60,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	private RandomUtils randomUtils;
 	
 	/**
-	 * Processes all unit & building special orders in a simultaneous turns game 'end phase'	 * 
+	 * Processes all unit & building special orders in a simultaneous turns game 'end phase'
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -79,22 +77,18 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		
 		// Dismiss units with pending dismiss orders.
 		// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server.
-		// Run over copy of units list, since we're killing them by other means than calling .remove on the iterator
-		final List<MemoryUnit> trueUnitsCopy = new ArrayList<MemoryUnit> ();
-		trueUnitsCopy.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-		
-		for (final MemoryUnit trueUnit : trueUnitsCopy)
-			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (trueUnit.getSpecialOrder () == UnitSpecialOrder.DISMISS))
-			{
-				final KillUnitActionID action;
-				if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "processSpecialOrders-d").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-					action = KillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
-				else
-					action = KillUnitActionID.FREE;
-
-				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, null,
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-			}
+		final List<MemoryUnit> dismisses = getUnitServerUtils ().listUnitsWithSpecialOrder (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), UnitSpecialOrder.DISMISS);
+		for (final MemoryUnit trueUnit : dismisses)
+		{
+			final KillUnitActionID action;
+			if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "processSpecialOrders-d").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+				action = KillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
+			else
+				action = KillUnitActionID.FREE;
+			
+			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, null,
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+		}
 		
 		// Sell buildings
 		for (final Plane plane : mom.getServerDB ().getPlane ())
@@ -107,7 +101,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 					if ((tc.getCityData () != null) && (tc.getBuildingIdSoldThisTurn () != null) && (tc.getCityData ().getCityPopulation () != null) &&
 						(tc.getCityData ().getCityPopulation () > 0))
 					{
-						final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 						cityLocation.setX (x);
 						cityLocation.setY (y);
 						cityLocation.setZ (plane.getPlaneNumber ());
@@ -177,7 +171,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		// put multiple spirits all on meld orders in the same turn, especially if trying to take a node from an
 		// enemy wizard - that way can put say 4 spirits all on meld orders and have a good chance that one of them will succeed.
 		final List<MemoryUnit> spirits = getUnitServerUtils ().listUnitsWithSpecialOrder (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), UnitSpecialOrder.MELD_WITH_NODE);
-		while (settlers.size () > 0)
+		while (spirits.size () > 0)
 		{
 			// Pick a random spirit and remove them from the list
 			final int spiritIndex = getRandomUtils ().nextInt (spirits.size ());

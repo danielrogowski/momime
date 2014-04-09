@@ -51,7 +51,7 @@ public final class CalculateCityGrowthRateBreakdown
 	 * @param aCityDeathRate Number of people dying each turn (only filled in if direction = DYING)
 	 * @param aFinalTotal Either totalGrowthRate or -cityDeathRate, as appropriate
 	 */
-	CalculateCityGrowthRateBreakdown (final int aCurrentPopulation, final int aMaximumPopulation, final MomCityGrowthDirection aDirection,
+	public CalculateCityGrowthRateBreakdown (final int aCurrentPopulation, final int aMaximumPopulation, final MomCityGrowthDirection aDirection,
 		final int aBaseGrowthRate, final int aRacialGrowthModifier, final CalculateCityGrowthRateBreakdown_Building [] aBuildingsModifyingGrowthRate,
 		final int aTotalGrowthRate, final int aCappedGrowthRate, final int aBaseDeathRate, final int aCityDeathRate, final int aFinalTotal)
 	{

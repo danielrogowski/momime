@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.PendingMovementMessage;
+import momime.common.messages.servertoclient.v0_9_5.PendingMovementMessage;
 
 /**
  * Server sends this to clients who request that units move further than they can reach in one turn, or in "simultaneous turns" mode.

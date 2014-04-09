@@ -13,12 +13,11 @@ import momime.common.database.v0_9_4.BuildingPrerequisite;
 import momime.common.database.v0_9_4.RaceCannotBuild;
 import momime.common.database.v0_9_4.RacePopulationTask;
 import momime.common.database.v0_9_4.RacePopulationTaskProduction;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.Building;
@@ -26,6 +25,7 @@ import momime.server.database.v0_9_4.CitySize;
 import momime.server.database.v0_9_4.Race;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -89,7 +89,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	 */
 	@Override
 	public final int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation, final ServerDatabaseEx db)
+		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException
 	{
 		log.entering (MomServerCityCalculationsImpl.class.getName (), "calculateDoubleFarmingRate", cityLocation);
@@ -158,7 +158,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	 */
 	@Override
 	public final void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final OverlandMapCoordinatesEx cityLocation,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -254,7 +254,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	 */
 	@Override
 	public final int calculateCityScoutingRange (final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinatesEx cityLocation, final ServerDatabaseEx db) throws RecordNotFoundException
+		final MapCoordinates3DEx cityLocation, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.entering (MomServerCityCalculationsImpl.class.getName (), "calculateCityScoutingRange", cityLocation);
 
@@ -290,7 +290,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	 */
 	@Override
 	public final boolean canEventuallyConstructBuilding (final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
-		final OverlandMapCoordinatesEx cityLocation, final Building building,
+		final MapCoordinates3DEx cityLocation, final Building building,
 		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{

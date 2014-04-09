@@ -3,8 +3,9 @@ package momime.common.utils;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Helper methods for dealing with MemoryCombatAreaEffect objects
@@ -20,7 +21,7 @@ public interface MemoryCombatAreaEffectUtils
 	 * @return Whether or not the specified combat area effect exists
 	 */
 	public boolean findCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
-		final OverlandMapCoordinatesEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID);
+		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID);
 
 	/**
 	 * Removes a CAE
@@ -31,5 +32,5 @@ public interface MemoryCombatAreaEffectUtils
 	 * @throws RecordNotFoundException If the CAE doesn't exist
 	 */
 	public void cancelCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
-		final OverlandMapCoordinatesEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID) throws RecordNotFoundException;
+		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID) throws RecordNotFoundException;
 }

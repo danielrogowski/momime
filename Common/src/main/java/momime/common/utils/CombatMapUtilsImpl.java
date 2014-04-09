@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.database.v0_9_4.CombatMapLayerID;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomCombatTile;
-import momime.common.messages.v0_9_4.MomCombatTileLayer;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomCombatTile;
+import momime.common.messages.v0_9_5.MomCombatTileLayer;
+import momime.common.messages.v0_9_5.UnitStatusID;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -96,7 +96,7 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	 * @throws PlayerNotFoundException If we determine the attacking or defending player ID, but that ID then can't be found in the players list
 	 */
 	@Override
-	public final CombatPlayers determinePlayersInCombatFromLocation (final OverlandMapCoordinatesEx combatLocation,
+	public final CombatPlayers determinePlayersInCombatFromLocation (final MapCoordinates3DEx combatLocation,
 		final List<MemoryUnit> units, final List<? extends PlayerPublicDetails> players) throws PlayerNotFoundException
 	{
 		log.entering (CombatMapUtilsImpl.class.getName (), "determinePlayersInCombatFromLocation", combatLocation);
@@ -140,7 +140,7 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	 * @return Number of alive units belonging to this player at this location
 	 */
 	@Override
-	public final int countPlayersAliveUnitsAtCombatLocation (final int playerID, final OverlandMapCoordinatesEx combatLocation, final List<MemoryUnit> units)
+	public final int countPlayersAliveUnitsAtCombatLocation (final int playerID, final MapCoordinates3DEx combatLocation, final List<MemoryUnit> units)
 	{
 		log.entering (CombatMapUtilsImpl.class.getName (), "countPlayersAliveUnitsAtCombatLocation",
 			new String [] {new Integer (playerID).toString (), combatLocation.toString ()});

@@ -12,11 +12,10 @@ import java.util.List;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.v0_9_4.RaceCannotBuild;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -27,6 +26,7 @@ import momime.server.database.v0_9_4.Unit;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -59,7 +59,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -113,7 +113,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -176,7 +176,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -236,7 +236,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -292,7 +292,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -348,7 +348,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -403,7 +403,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -453,7 +453,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -503,7 +503,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -553,7 +553,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -603,7 +603,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -642,7 +642,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (2);
 		cityLocation.setY (2);
 		cityLocation.setZ (0);
@@ -696,7 +696,7 @@ public final class TestCityServerUtilsImpl
 		when (db.findBuilding (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, "totalCostOfBuildingsAtLocation")).thenReturn (summoningCircleDef);
 		
 		// City location
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (20);
 		cityLocation.setY (10);
 		cityLocation.setZ (1);
@@ -704,7 +704,7 @@ public final class TestCityServerUtilsImpl
 		// Buildings list
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
-		final OverlandMapCoordinatesEx buildersHallLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx buildersHallLocation = new MapCoordinates3DEx ();
 		buildersHallLocation.setX (20);
 		buildersHallLocation.setY (10);
 		buildersHallLocation.setZ (1);
@@ -714,7 +714,7 @@ public final class TestCityServerUtilsImpl
 		buildersHall.setCityLocation (buildersHallLocation);
 		buildings.add (buildersHall);
 
-		final OverlandMapCoordinatesEx bankLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx bankLocation = new MapCoordinates3DEx ();
 		bankLocation.setX (20);
 		bankLocation.setY (10);
 		bankLocation.setZ (1);
@@ -724,7 +724,7 @@ public final class TestCityServerUtilsImpl
 		bank.setCityLocation (bankLocation);
 		buildings.add (bank);
 
-		final OverlandMapCoordinatesEx summoningCircleLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx summoningCircleLocation = new MapCoordinates3DEx ();
 		summoningCircleLocation.setX (20);
 		summoningCircleLocation.setY (10);
 		summoningCircleLocation.setZ (1);
@@ -734,7 +734,7 @@ public final class TestCityServerUtilsImpl
 		summoningCircle.setCityLocation (summoningCircleLocation);
 		buildings.add (summoningCircle);
 		
-		final OverlandMapCoordinatesEx bankElsewhereLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx bankElsewhereLocation = new MapCoordinates3DEx ();
 		bankElsewhereLocation.setX (20);
 		bankElsewhereLocation.setY (11);
 		bankElsewhereLocation.setZ (1);

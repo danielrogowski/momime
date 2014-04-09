@@ -9,16 +9,16 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.RequestMoveOverlandUnitStackMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.TurnSystem;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.clienttoserver.v0_9_5.RequestMoveOverlandUnitStackMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.TurnSystem;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -101,7 +101,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		else
 		{
 			// Proceed with move
-			getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, (OverlandMapCoordinatesEx) getMoveFrom (), (OverlandMapCoordinatesEx) getMoveTo (),
+			getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, sender, (MapCoordinates3DEx) getMoveFrom (), (MapCoordinates3DEx) getMoveTo (),
 				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
 		}
 

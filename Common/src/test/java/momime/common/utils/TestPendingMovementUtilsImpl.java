@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.messages.v0_9_4.PendingMovement;
+import momime.common.messages.v0_9_5.PendingMovement;
 
 import org.junit.Test;
 

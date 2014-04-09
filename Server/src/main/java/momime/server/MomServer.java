@@ -14,8 +14,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomCommonConstants;
-import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
-import momime.common.messages.v0_9_4.MomSessionDescription;
+import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
+import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseExImpl;

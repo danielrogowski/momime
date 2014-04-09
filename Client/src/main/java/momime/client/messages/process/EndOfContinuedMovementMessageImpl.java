@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.EndOfContinuedMovementMessage;
+import momime.common.messages.servertoclient.v0_9_5.EndOfContinuedMovementMessage;
 
 /**
  * Server sends to client to tell them that it has finished processed their continued unit movement

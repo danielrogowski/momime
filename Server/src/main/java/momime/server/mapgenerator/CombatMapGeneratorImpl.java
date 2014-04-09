@@ -6,13 +6,12 @@ import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.CombatMapLayerID;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
-import momime.common.messages.v0_9_4.MapRowOfCombatTiles;
-import momime.common.messages.v0_9_4.MemoryGridCell;
-import momime.common.messages.v0_9_4.MomCombatTile;
-import momime.common.messages.v0_9_4.MomCombatTileLayer;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.v0_9_5.MapRowOfCombatTiles;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MomCombatTile;
+import momime.common.messages.v0_9_5.MomCombatTileLayer;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -21,10 +20,11 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_4.CombatMapElement;
 import momime.server.database.v0_9_4.CombatTileType;
 import momime.server.database.v0_9_4.TileType;
-import momime.server.messages.v0_9_4.ServerGridCell;
+import momime.server.messages.v0_9_5.ServerGridCell;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.MapCoordinates2D;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
 
 
@@ -73,7 +73,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 */
 	@Override
 	public final MapAreaOfCombatTiles generateCombatMap (final CoordinateSystem combatMapCoordinateSystem,
-		final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final OverlandMapCoordinatesEx combatMapLocation)
+		final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		log.entering (CombatMapGeneratorImpl.class.getName (), "generateCombatMap");
@@ -254,7 +254,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 * @param combatMapLocation The location that the map is being generated for (we need this in order to look for buildings, etc)
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
-	final void placeCombatMapElements (final MapAreaOfCombatTiles map, final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final OverlandMapCoordinatesEx combatMapLocation)
+	final void placeCombatMapElements (final MapAreaOfCombatTiles map, final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		log.entering (CombatMapGeneratorImpl.class.getName (), "placeCombatMapElements");

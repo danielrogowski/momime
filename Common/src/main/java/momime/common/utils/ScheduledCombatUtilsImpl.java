@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_4.MomScheduledCombat;
+import momime.common.messages.v0_9_5.MomScheduledCombat;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;

@@ -15,20 +15,18 @@ import momime.common.database.v0_9_4.CombatTileBorderBlocksMovementID;
 import momime.common.database.v0_9_4.RangedAttackType;
 import momime.common.database.v0_9_4.Unit;
 import momime.common.database.v0_9_4.UnitHasSkill;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.AvailableUnit;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapAreaOfCombatTiles;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MemoryBuilding;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomCombatTile;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.PlayerPick;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomCombatTile;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.MomUnitAttributeComponent;
 import momime.common.utils.MomUnitAttributePositiveNegative;
@@ -39,6 +37,8 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
@@ -80,7 +80,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 	 */
 	@Override
 	public final int calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final OverlandMapCoordinatesEx cityLocation,
+		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
 		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.entering (MomUnitCalculationsImpl.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", cityLocation);
@@ -99,14 +99,14 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		// We can only use these if we found a building that granted some level of magic weapons
 		if (bestWeaponGrade > 0)
 		{
-			final OverlandMapCoordinatesEx coords = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
 			coords.setX (cityLocation.getX ());
 			coords.setY (cityLocation.getY ());
 			coords.setZ (cityLocation.getZ ());
 
 			for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			{
-				if (getCoordinateSystemUtils ().moveCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
+				if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 				{
 					final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 					if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
@@ -432,7 +432,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
-	final void processCell (final CombatMapCoordinatesEx moveFrom, final MemoryUnit unitBeingMoved, final List<CombatMapCoordinatesEx> cellsLeftToCheck,
+	final void processCell (final MapCoordinates2DEx moveFrom, final MemoryUnit unitBeingMoved, final List<MapCoordinates2DEx> cellsLeftToCheck,
 		final int [] [] doubleMovementDistances, final int [] [] movementDirections, final CombatMoveType [] [] movementTypes,
 		final boolean [] [] ourUnits, final boolean [] [] enemyUnits,
 		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
@@ -443,11 +443,11 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		
 		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (combatMapCoordinateSystem.getCoordinateSystemType ()); d++)
 		{
-			final CombatMapCoordinatesEx moveTo = new CombatMapCoordinatesEx ();
+			final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
 			moveTo.setX (moveFrom.getX ());
 			moveTo.setY (moveFrom.getY ());
 			
-			if (getCoordinateSystemUtils ().moveCoordinates (combatMapCoordinateSystem, moveTo, d))
+			if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, moveTo, d))
 				if (doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] >= MOVEMENT_DISTANCE_NOT_YET_CHECKED)
 				{
 					// This is a valid location on the map that we've either not visited before or that we've already found another path to
@@ -550,7 +550,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 			}
 		
 		// We know combatLocation from the unit being moved
-		final OverlandMapCoordinatesEx combatLocation = (OverlandMapCoordinatesEx) unitBeingMoved.getCombatLocation ();
+		final MapCoordinates3DEx combatLocation = (MapCoordinates3DEx) unitBeingMoved.getCombatLocation ();
 		
 		// Mark locations of units on both sides (including the unit being moved)
 		for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
@@ -569,8 +569,8 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		// Rather than iterating out distances from the centre, process rings around each location before proceeding to the next location.
 		// This is to prevent the situation in the original MoM where you are on Enchanced Road,
 		// hit 'Up' and the game decides to move you up-left and then right to get there.
-		final List<CombatMapCoordinatesEx> cellsLeftToCheck = new ArrayList<CombatMapCoordinatesEx> ();
-		processCell ((CombatMapCoordinatesEx) unitBeingMoved.getCombatPosition (), unitBeingMoved, cellsLeftToCheck,
+		final List<MapCoordinates2DEx> cellsLeftToCheck = new ArrayList<MapCoordinates2DEx> ();
+		processCell ((MapCoordinates2DEx) unitBeingMoved.getCombatPosition (), unitBeingMoved, cellsLeftToCheck,
 			doubleMovementDistances, movementDirections, movementTypes, ourUnits, enemyUnits, combatMap, combatMapCoordinateSystem, db);
 		
 		// Keep going until there's nowhere left to check

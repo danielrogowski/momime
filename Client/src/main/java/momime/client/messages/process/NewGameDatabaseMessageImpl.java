@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.ConnectToServerUI;
-import momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage;
+import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;

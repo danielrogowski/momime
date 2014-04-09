@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_4.SetCombatPlayerMessage;
+import momime.common.messages.servertoclient.v0_9_5.SetCombatPlayerMessage;
 
 /**
  * Server sends this to clients involved in particular combat to tell them whose turn it is next

@@ -2,8 +2,8 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
 	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
-	xmlns:momimeclient="http://momime/client/database/v0_9_4" xmlns:momimemsgs="http://momime/common/messages/v0_9_4"
-	xmlns:momimestoc="http://momime/common/messages/servertoclient/v0_9_4" targetNamespace="http://momime/common/messages/servertoclient/v0_9_4"
+	xmlns:momimeclient="http://momime/client/database/v0_9_4" xmlns:momimemsgs="http://momime/common/messages/v0_9_5"
+	xmlns:momimestoc="http://momime/common/messages/servertoclient/v0_9_5" targetNamespace="http://momime/common/messages/servertoclient/v0_9_5"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://www.ndg.com/map"/>
@@ -11,7 +11,7 @@
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
 	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4"/>
 	<xsd:import namespace="http://momime/common/database/v0_9_4"/>
-	<xsd:import namespace="http://momime/common/messages/v0_9_4"/>
+	<xsd:import namespace="http://momime/common/messages/v0_9_5"/>
 	<xsd:import namespace="http://momime/client/database/v0_9_4"/>
     
     <xsd:annotation>
@@ -309,7 +309,7 @@ Only the owner of the city gets this - so you cannot tell how much production ha
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="productionSoFar" type="momimecommon:productionCost"/>
 					</xsd:sequence>
 				</xsd:extension>
@@ -326,7 +326,7 @@ It can also be sent with buildingID omitted, to cancel selling anything at the e
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
 					</xsd:sequence>
 				</xsd:extension>
@@ -501,8 +501,8 @@ These will be the actual cells containing the units, so if either side is in a t
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="momimemsgs:overlandMapCoordinates"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="map:mapCoordinates3D"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="monsterUnitID" type="momimecommon:unitID"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
 						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN">
@@ -526,8 +526,8 @@ For taking units out of combat, all the values will be omitted except for the un
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-						<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
-						<xsd:element minOccurs="0" maxOccurs="1" name="combatPosition" type="momimemsgs:combatMapCoordinates"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatPosition" type="map:mapCoordinates2D"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatHeading" type="map:mapDirection"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatSide" type="momimemsgs:unitCombatSideID"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="summonedBySpellID" type="momimecommon:spellID">
@@ -551,7 +551,7 @@ Since this is only used to add monsters, ReadSkillsFromXML for unit details will
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="combatPosition" type="momimemsgs:combatMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="combatPosition" type="map:mapCoordinates2D"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatHeading" type="map:mapDirection"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatSide" type="momimemsgs:unitCombatSideID"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitDetails" type="momimestoc:addUnitMessageData"/>
@@ -567,7 +567,7 @@ details of all the units in the combat and the terrain, so is probably the most 
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTerrain" type="momimemsgs:mapAreaOfCombatTiles"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="createDefenders" type="xsd:boolean">
@@ -591,7 +591,7 @@ case the client won't know about these units so we send all their details as par
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID"/>
 					</xsd:sequence>
 				</xsd:extension>
@@ -608,7 +608,7 @@ case the client won't know about these units so we send all their details as par
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="momimemsgs:combatMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates2D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="direction" type="map:mapDirection"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="doubleCombatMovesLeft" type="momimenewgame:integerMapDistance"/>
 					</xsd:sequence>
@@ -658,7 +658,7 @@ Either attackSkillID or attackAttributeID will be filled in, but not both:
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="winningPlayerID" type="mps:playerID"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="captureCityDecisionID" type="momimemsgs:captureCityDecisionID"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
@@ -768,7 +768,7 @@ already captured the target square in another combat) and they can just walk in 
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="defendingPlayerID" type="mps:playerID"/>
 					</xsd:sequence>
 				</xsd:extension>
@@ -882,7 +882,7 @@ and just as types so that they can be included in the massive fogOfWarVisibleAre
     		<xsd:documentation>Server sends this to the client to tell them the map scenery.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="terrainData" type="momimemsgs:overlandMapTerrainData"/>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -904,7 +904,7 @@ and just as types so that they can be included in the massive fogOfWarVisibleAre
     		<xsd:documentation>Server sends this to the client to tell them the map scenery.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityData" type="momimemsgs:overlandMapCityData"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="askForCityName" type="xsd:boolean">
 			    <xsd:annotation>
@@ -931,7 +931,7 @@ and just as types so that they can be included in the massive fogOfWarVisibleAre
     		<xsd:documentation>Server sends this to clients to tell them about a building added to a city.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="firstBuildingID" type="momimecommon:buildingID"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="secondBuildingID" type="momimecommon:buildingID">
 			    <xsd:annotation>
@@ -966,7 +966,7 @@ come into view (i.e. sent as part of 'visible area changed').</xsd:documentation
     		<xsd:documentation>Server sends this to clients to tell them about a building destroyed (or sold) from a city.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="updateBuildingSoldThisTurn" type="xsd:boolean">
 			    <xsd:annotation>
@@ -1052,7 +1052,7 @@ Apply Damage message that a unit is dead.</xsd:documentation>
 nodes/lairs/towers other than by scouting (initiating a combat). Or can send single message.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="nodeLairTowerLocation" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="nodeLairTowerLocation" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="monsterUnitID" type="momimecommon:unitID"/>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -1164,7 +1164,7 @@ Besides the info we remember, the client also needs the spell ID for animation p
 This is never sent as a message by itself, hence has no element wrapper defined.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="momimemsgs:overlandMapCoordinates"/>
+			<xsd:element minOccurs="1" maxOccurs="1" name="mapLocation" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="state" type="momimemsgs:fogOfWarStateID"/>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -1213,7 +1213,7 @@ Server sends this to clients to tell them about a new unit that already existed 
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="unitLocation" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="unitLocation" type="map:mapCoordinates3D"/>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -1244,8 +1244,8 @@ Server sends this to clients to tell them about a new unit that already existed 
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="momimemsgs:overlandMapCoordinates"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="momimemsgs:overlandMapCoordinates"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates3D"/>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="1" maxOccurs="1" name="freeAfterMoving" type="xsd:boolean">
 						    <xsd:annotation>
     							<xsd:documentation>Set if this move will result in this unit stack going out of visible range -

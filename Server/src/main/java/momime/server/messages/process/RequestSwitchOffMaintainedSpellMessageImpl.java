@@ -7,15 +7,15 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.clienttoserver.v0_9_4.RequestSwitchOffMaintainedSpellMessage;
-import momime.common.messages.servertoclient.v0_9_4.TextPopupMessage;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
+import momime.common.messages.clienttoserver.v0_9_5.RequestSwitchOffMaintainedSpellMessage;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.process.SpellProcessing;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -59,7 +59,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		// Look for the spell
 		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), getCastingPlayerID (), getSpellID (),
-			getUnitURN (), getUnitSkillID (), (OverlandMapCoordinatesEx) getCityLocation (), getCitySpellEffectID ());
+			getUnitURN (), getUnitSkillID (), (MapCoordinates3DEx) getCityLocation (), getCitySpellEffectID ());
 		
 		// Do some checks
 		final String error;
@@ -84,7 +84,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		{
 			// Switch off spell + associated CAEs
 			getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (), trueSpell.getCastingPlayerID (), trueSpell.getSpellID (),
-				trueSpell.getUnitURN (), trueSpell.getUnitSkillID (), trueSpell.isCastInCombat (), (OverlandMapCoordinatesEx) trueSpell.getCityLocation (),
+				trueSpell.getUnitURN (), trueSpell.getUnitSkillID (), trueSpell.isCastInCombat (), (MapCoordinates3DEx) trueSpell.getCityLocation (),
 				trueSpell.getCitySpellEffectID (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			
 			// Spell no longer using mana

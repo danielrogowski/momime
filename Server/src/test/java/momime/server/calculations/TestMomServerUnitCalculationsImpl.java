@@ -9,19 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.FogOfWarMemory;
-import momime.common.messages.v0_9_4.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_4.MapVolumeOfStrings;
-import momime.common.messages.v0_9_4.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_4.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_4.MomSessionDescription;
-import momime.common.messages.v0_9_4.MoveResultsInAttackTypeID;
-import momime.common.messages.v0_9_4.OverlandMapCityData;
-import momime.common.messages.v0_9_4.OverlandMapTerrainData;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapVolumeOfStrings;
+import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.PlayerPickUtilsImpl;
@@ -38,6 +37,7 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -121,7 +121,7 @@ public final class TestMomServerUnitCalculationsImpl
 		// 3 at first location
 		for (int n = 0; n < 3; n++)
 		{
-			final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx u2location = new MapCoordinates3DEx ();
 			u2location.setX (20);
 			u2location.setY (10);
 			u2location.setZ (0);
@@ -136,7 +136,7 @@ public final class TestMomServerUnitCalculationsImpl
 		// 4 at second location
 		for (int n = 0; n < 4; n++)
 		{
-			final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx u2location = new MapCoordinates3DEx ();
 			u2location.setX (30);
 			u2location.setY (20);
 			u2location.setZ (1);
@@ -149,7 +149,7 @@ public final class TestMomServerUnitCalculationsImpl
 		}
 
 		// Wrong player
-		final OverlandMapCoordinatesEx u2location = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx u2location = new MapCoordinates3DEx ();
 		u2location.setX (20);
 		u2location.setY (10);
 		u2location.setZ (0);
@@ -161,7 +161,7 @@ public final class TestMomServerUnitCalculationsImpl
 		units.add (u2);
 
 		// Null status
-		final OverlandMapCoordinatesEx u3location = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx u3location = new MapCoordinates3DEx ();
 		u3location.setX (20);
 		u3location.setY (10);
 		u3location.setZ (0);
@@ -172,7 +172,7 @@ public final class TestMomServerUnitCalculationsImpl
 		units.add (u3);
 
 		// Unit is dead
-		final OverlandMapCoordinatesEx u4location = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx u4location = new MapCoordinates3DEx ();
 		u4location.setX (20);
 		u4location.setY (10);
 		u4location.setZ (0);
@@ -214,7 +214,7 @@ public final class TestMomServerUnitCalculationsImpl
 		// This is a really key method so there's a ton of test conditions
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
-		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsArea (sys);
+		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsVolume (sys);
 
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
@@ -306,7 +306,7 @@ public final class TestMomServerUnitCalculationsImpl
 			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
 
 		// Tower that we've previously cleared but now occupied by our units
-		final OverlandMapCoordinatesEx unitLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
 		unitLocation.setX (20);
 		unitLocation.setY (10);
 		unitLocation.setZ (0);
@@ -770,14 +770,14 @@ public final class TestMomServerUnitCalculationsImpl
 		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack =
 			new MoveResultsInAttackTypeID [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
-		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsArea (sd.getMapSize ());
+		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsVolume (sd.getMapSize ());
 
 		// Units that are moving - two units of high men spearmen
 		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 
 		for (int n = 1; n <= 2; n++)
 		{
-			final OverlandMapCoordinatesEx spearmenLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx spearmenLocation = new MapCoordinates3DEx ();
 			spearmenLocation.setX (20);
 			spearmenLocation.setY (10);
 			spearmenLocation.setZ (1);
@@ -903,7 +903,7 @@ public final class TestMomServerUnitCalculationsImpl
 		// Put 3 nodes on Arcanus - one we haven't scouted, one we have scouted and know its contents, and the last we already cleared
 		// The one that we previously cleared we can walk right through and out the other side; the other two we can move onto but not past
 		// Nature nodes, so forest, same as there before so we don't alter movement rates - all we alter is that we can't move through them
-		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsArea (sd.getMapSize ());
+		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsVolume (sd.getMapSize ());
 		for (int y = 9; y <= 11; y++)
 			terrain.getPlane ().get (0).getRow ().get (y).getCell ().get (18).getTerrainData ().setTileTypeID ("TT13");
 
@@ -926,7 +926,7 @@ public final class TestMomServerUnitCalculationsImpl
 
 		for (int n = 1; n <= 2; n++)
 		{
-			final OverlandMapCoordinatesEx spearmenLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx spearmenLocation = new MapCoordinates3DEx ();
 			spearmenLocation.setX (20);
 			spearmenLocation.setY (10);
 			spearmenLocation.setZ (1);
@@ -944,7 +944,7 @@ public final class TestMomServerUnitCalculationsImpl
 		// Our units become impassable terrain because we can't fit that many in one map cell; enemy units we can walk onto the tile but not through it
 		for (int n = 1; n <= 8; n++)
 		{
-			final OverlandMapCoordinatesEx ourLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx ourLocation = new MapCoordinates3DEx ();
 			ourLocation.setX (19);
 			ourLocation.setY (9);
 			ourLocation.setZ (1);
@@ -956,7 +956,7 @@ public final class TestMomServerUnitCalculationsImpl
 
 			map.getUnit ().add (our);
 
-			final OverlandMapCoordinatesEx theirLocation = new OverlandMapCoordinatesEx ();
+			final MapCoordinates3DEx theirLocation = new MapCoordinates3DEx ();
 			theirLocation.setX (20);
 			theirLocation.setY (9);
 			theirLocation.setZ (1);

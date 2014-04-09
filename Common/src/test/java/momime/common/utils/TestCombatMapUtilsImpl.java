@@ -2,24 +2,24 @@ package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.v0_9_4.CombatMapLayerID;
-import momime.common.messages.CombatMapCoordinatesEx;
-import momime.common.messages.OverlandMapCoordinatesEx;
-import momime.common.messages.v0_9_4.MemoryUnit;
-import momime.common.messages.v0_9_4.MomCombatTile;
-import momime.common.messages.v0_9_4.MomCombatTileLayer;
-import momime.common.messages.v0_9_4.UnitCombatSideID;
-import momime.common.messages.v0_9_4.UnitStatusID;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.MomCombatTile;
+import momime.common.messages.v0_9_5.MomCombatTileLayer;
+import momime.common.messages.v0_9_5.UnitCombatSideID;
+import momime.common.messages.v0_9_5.UnitStatusID;
 
 import org.junit.Test;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -35,9 +35,9 @@ public final class TestCombatMapUtilsImpl
 	 * @param offset If 0 generates city at standard location; set this to a non-zero value to generate a different location
 	 * @return City location
 	 */
-	private final OverlandMapCoordinatesEx createLocation (final int offset)
+	private final MapCoordinates3DEx createLocation (final int offset)
 	{
-		final OverlandMapCoordinatesEx cityLocation = new OverlandMapCoordinatesEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
 		cityLocation.setX (15 + offset);
 		cityLocation.setY (10);
 		cityLocation.setZ (1);
@@ -143,7 +143,7 @@ public final class TestCombatMapUtilsImpl
 		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 		
 		// Combat location
-		final OverlandMapCoordinatesEx combatLocation = createLocation (0);
+		final MapCoordinates3DEx combatLocation = createLocation (0);
 		
 		// Players
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -170,7 +170,7 @@ public final class TestCombatMapUtilsImpl
 		unit1.setStatus (UnitStatusID.DEAD);
 		unit1.setOwningPlayerID (attackerPd.getPlayerID ());
 		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
-		unit1.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit1.setCombatPosition (new MapCoordinates2DEx ());
 		units.add (unit1);
 		
 		// Unit at wrong place
@@ -180,7 +180,7 @@ public final class TestCombatMapUtilsImpl
 		unit2.setStatus (UnitStatusID.ALIVE);
 		unit2.setOwningPlayerID (attackerPd.getPlayerID ());
 		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
-		unit2.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit2.setCombatPosition (new MapCoordinates2DEx ());
 		units.add (unit2);
 		
 		// Doesn't have a location within the combat
@@ -198,7 +198,7 @@ public final class TestCombatMapUtilsImpl
 		unit4.setCombatLocation (createLocation (0));
 		unit4.setStatus (UnitStatusID.ALIVE);
 		unit4.setOwningPlayerID (attackerPd.getPlayerID ());
-		unit4.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit4.setCombatPosition (new MapCoordinates2DEx ());
 		units.add (unit4);
 		
 		// Neither player found so far
@@ -214,7 +214,7 @@ public final class TestCombatMapUtilsImpl
 		unit5.setStatus (UnitStatusID.ALIVE);
 		unit5.setOwningPlayerID (defenderPd.getPlayerID ());
 		unit5.setCombatSide (UnitCombatSideID.DEFENDER);
-		unit5.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit5.setCombatPosition (new MapCoordinates2DEx ());
 		units.add (unit5);
 		
 		final CombatPlayers result2 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players);
@@ -229,7 +229,7 @@ public final class TestCombatMapUtilsImpl
 		unit6.setStatus (UnitStatusID.ALIVE);
 		unit6.setOwningPlayerID (attackerPd.getPlayerID ());
 		unit6.setCombatSide (UnitCombatSideID.ATTACKER);
-		unit6.setCombatPosition (new CombatMapCoordinatesEx ());
+		unit6.setCombatPosition (new MapCoordinates2DEx ());
 		units.add (unit6);
 		
 		final CombatPlayers result3 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players);
@@ -286,7 +286,7 @@ public final class TestCombatMapUtilsImpl
 		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 		
 		// Run test
-		final OverlandMapCoordinatesEx combatLocation = createLocation (0);
+		final MapCoordinates3DEx combatLocation = createLocation (0);
 		
 		assertEquals (2, utils.countPlayersAliveUnitsAtCombatLocation (3, combatLocation, units));
 	}

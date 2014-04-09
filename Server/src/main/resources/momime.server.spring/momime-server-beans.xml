@@ -174,7 +174,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="captureCityDecisionMessage" class="momime.server.messages.process.CaptureCityDecisionMessageImpl" scope="prototype">
-		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 	</bean>
 	
 	<bean id="dismissUnitMessage" class="momime.server.messages.process.DismissUnitMessageImpl" scope="prototype">
@@ -202,7 +202,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="requestCastSpellMessage" class="momime.server.messages.process.RequestCastSpellMessageImpl" scope="prototype">
-		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="spellQueueing" ref="spellQueueing" />
 	</bean>
 	
 	<bean id="targetSpellMessage" class="momime.server.messages.process.TargetSpellMessageImpl" scope="prototype">
@@ -227,7 +227,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="attackNodeLairTowerMessage" class="momime.server.messages.process.AttackNodeLairTowerMessageImpl" scope="prototype">
-		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 	</bean>
 
 	<bean id="endCombatTurnMessage" class="momime.server.messages.process.EndCombatTurnMessageImpl" scope="prototype">
@@ -273,7 +273,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConvertersImpl" />
 	
-	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.v0_9_4.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
+	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
 		<constructor-arg value="#{serverConfig.pathToServerXmlDatabases}" />
 		<constructor-arg ref="serverDatabaseUnmarshaller" />
 	</bean>
@@ -285,7 +285,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			<array>
 				<ref bean="multiplayerSessionServerClientToServerObjectFactory" />
 				<ref bean="momServerClientToServerObjectFactory" />
-				<ref bean="objectFactoryMessages" />
+				<ref bean="objectFactoryMap" />
 			</array>
 		</property>
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
@@ -363,7 +363,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="serverResourceCalculations" class="momime.server.calculations.MomServerResourceCalculationsImpl">
-		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
@@ -373,6 +373,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="momResourceConsumerFactory" ref="momResourceConsumerFactory" />
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
+	<bean id="damageCalculator" class="momime.server.calculations.DamageCalculatorImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	
@@ -410,7 +416,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="cityProcessing" ref="cityProcessing" />
-		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
@@ -459,12 +465,22 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
-	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
+	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
+	</bean>
+
+	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="damageCalculator" ref="damageCalculator" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
+	</bean>
+
+	<bean id="combatStartAndEnd" class="momime.server.process.CombatStartAndEndImpl">
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
@@ -472,14 +488,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
-		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />
 		<property name="scheduledCombatUtils" ref="scheduledCombatUtils" />
 		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
+		<property name="combatProcessing" ref="combatProcessing" />
+	</bean>
+
+	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />
+		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="combatAI" ref="combatAI" />
-		<property name="randomUtils" ref="randomUtils" />
+		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 	</bean>
 	
 	<bean id="combatScheduler" class="momime.server.process.CombatSchedulerImpl">
@@ -585,15 +610,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serviceLocatorInterface" value="momime.server.MomSessionThreadFactory" />
 	</bean>			
 
-	<bean id="trueMap" class="momime.common.messages.v0_9_4.FogOfWarMemory" scope="prototype" />
+	<bean id="trueMap" class="momime.common.messages.v0_9_5.FogOfWarMemory" scope="prototype" />
 
-	<bean id="gsk" class="momime.server.messages.v0_9_4.MomGeneralServerKnowledge" scope="prototype">
+	<bean id="gsk" class="momime.server.messages.v0_9_5.MomGeneralServerKnowledge" scope="prototype">
 		<property name="trueMap" ref="trueMap" />
 		<property name="nextFreeUnitURN" value="1" />
 		<property name="nextFreeScheduledCombatURN" value="1" />
 	</bean>
 
-	<bean id="gpk" class="momime.common.messages.v0_9_4.MomGeneralPublicKnowledge" scope="prototype" />
+	<bean id="gpk" class="momime.common.messages.v0_9_5.MomGeneralPublicKnowledge" scope="prototype" />
 	
 	<bean id="overlandMapGenerator" class="momime.server.mapgenerator.OverlandMapGeneratorImpl" scope="prototype">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />

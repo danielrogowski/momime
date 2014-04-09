@@ -10,7 +10,7 @@ import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
 import momime.client.ui.NewGameUI;
-import momime.common.messages.servertoclient.v0_9_4.ChooseYourRaceNowMessage;
+import momime.common.messages.servertoclient.v0_9_5.ChooseYourRaceNowMessage;
 
 /**
  * Message server sends to a player when they've finished picking free spells at the start of the game, since the

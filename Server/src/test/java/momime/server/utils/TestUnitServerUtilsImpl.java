@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -21,6 +22,7 @@ import momime.common.database.newgame.v0_9_4.UnitSettingData;
 import momime.common.messages.servertoclient.v0_9_5.SetSpecialOrderMessage;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
@@ -1080,7 +1082,6 @@ public final class TestUnitServerUtilsImpl
 	 * Tests the findNearestLocationWhereUnitCanBeAdded method in the simple situation where we do fit in the city
 	 * @throws Exception If there is a problem
 	 */
-	@SuppressWarnings ("unchecked")
 	@Test
 	public final void testFindNearestLocationWhereUnitCanBeAdded_City () throws Exception
 	{
@@ -1113,7 +1114,8 @@ public final class TestUnitServerUtilsImpl
 		
 		// Unit can enter this type of tile
 		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT01"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
+			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
 		
 		// Put 8 units in the city so we just fit
 		final MemoryUnit ourUnit = new MemoryUnit ();
@@ -1147,7 +1149,6 @@ public final class TestUnitServerUtilsImpl
 	 * Tests the findNearestLocationWhereUnitCanBeAdded method where we can't fit inside the city or the first few surrounding tiles
 	 * @throws Exception If there is a problem
 	 */
-	@SuppressWarnings ("unchecked")
 	@Test
 	public final void testFindNearestLocationWhereUnitCanBeAdded_Bumped () throws Exception
 	{
@@ -1187,9 +1188,12 @@ public final class TestUnitServerUtilsImpl
 		
 		// Unit can enter tiles TT01 and TT02, but TT03 is impassable
 		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT01"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (1);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT02"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (1);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT03"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (null);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
+			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT02"),
+			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT03"),
+			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (null);
 		
 		// Put 9 units in the city so we can't fit
 		final MemoryUnit ourUnit = new MemoryUnit ();
@@ -1234,7 +1238,6 @@ public final class TestUnitServerUtilsImpl
 	 * Tests the findNearestLocationWhereUnitCanBeAdded method where we can't fit either in the city or any of the 8 surrounding tiles
 	 * @throws Exception If there is a problem
 	 */
-	@SuppressWarnings ("unchecked")
 	@Test
 	public final void testFindNearestLocationWhereUnitCanBeAdded_NoRoom () throws Exception
 	{
@@ -1267,7 +1270,8 @@ public final class TestUnitServerUtilsImpl
 		
 		// Easiest thing to do is make the tile type impassable, then we can't fit anywhere
 		final MomServerUnitCalculations calc = mock (MomServerUnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), any (List.class), eq ("TT01"), any (List.class), any (ServerDatabaseEx.class))).thenReturn (null);
+		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
+			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (null);
 
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);

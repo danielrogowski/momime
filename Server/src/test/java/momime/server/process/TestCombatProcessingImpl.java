@@ -20,6 +20,7 @@ import momime.common.messages.servertoclient.v0_9_5.FoundLairNodeTowerMessage;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_5.MoveUnitInCombatMessage;
+import momime.common.messages.servertoclient.v0_9_5.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.v0_9_5.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.messages.servertoclient.v0_9_5.StartCombatMessage;
 import momime.common.messages.servertoclient.v0_9_5.StartCombatMessageUnit;
@@ -47,6 +48,7 @@ import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
+import momime.server.ai.CombatAI;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_4.TileType;
 import momime.server.database.v0_9_4.Unit;
@@ -713,6 +715,375 @@ public final class TestCombatProcessingImpl
 		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit3.getCombatSide ());
 		assertNull (unit3.getUnitDetails ());
+	}
+	
+	/**
+	 * Tests the progressCombat method on a combat just starting with an AI player attacking a human player
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressCombat_AIAttackingHuman_Starting () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// General server knowledge
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Attacking player
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (false);
+		attackingPd.setPlayerID (-1);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
+		
+		// Defending player
+		final PlayerDescription defendingPd = new PlayerDescription ();
+		defendingPd.setHuman (true);
+		defendingPd.setPlayerID (3);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
+
+		final DummyServerToClientConnection defendingMsgs = new DummyServerToClientConnection ();
+		defendingPlayer.setConnection (defendingMsgs);
+		
+		// Players list
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		
+		// Combat location
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		gc.setSpellCastThisCombatTurn (true);
+
+		// Players in combat
+		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
+		
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+				
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setCombatMapUtils (combatMapUtils);
+		proc.setUnitUtils (unitUtils);
+		
+		// Run method
+		proc.progressCombat (combatLocation, true, false, mom);
+		
+		// Check player set correctly on server
+		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayer ());
+		
+		// Check player set correctly on client
+		assertEquals (1, defendingMsgs.getMessages ().size ());
+		assertEquals (SetCombatPlayerMessage.class.getName (), defendingMsgs.getMessages ().get (0).getClass ().getName ());
+		final SetCombatPlayerMessage msg = (SetCombatPlayerMessage) defendingMsgs.getMessages ().get (0);
+		assertEquals (combatLocation, msg.getCombatLocation ());
+		assertEquals (defendingPd.getPlayerID ().intValue (), msg.getPlayerID ());
+		
+		// Check other setup
+		assertNull (gc.isSpellCastThisCombatTurn ());
+		verify (unitUtils, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+	}
+
+	/**
+	 * Tests the progressCombat method on a combat with an AI player attacking a human player where we've just finished taking a turn
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressCombat_AIAttackingHuman_Continuing () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// General server knowledge
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Attacking player
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (false);
+		attackingPd.setPlayerID (-1);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
+		
+		// Defending player
+		final PlayerDescription defendingPd = new PlayerDescription ();
+		defendingPd.setHuman (true);
+		defendingPd.setPlayerID (3);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
+
+		final DummyServerToClientConnection defendingMsgs = new DummyServerToClientConnection ();
+		defendingPlayer.setConnection (defendingMsgs);
+		
+		// Players list
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		
+		// Combat location
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		gc.setSpellCastThisCombatTurn (true);
+
+		// Players in combat
+		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
+		
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		
+		// Defender/human player just finished turn
+		gc.setCombatCurrentPlayer (defendingPd.getPlayerID ());
+				
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final CombatAI ai = mock (CombatAI.class);
+		
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setCombatMapUtils (combatMapUtils);
+		proc.setUnitUtils (unitUtils);
+		proc.setCombatAI (ai);
+		
+		// Run method
+		proc.progressCombat (combatLocation, false, false, mom);
+		
+		// Check the AI player took their turn
+		verify (ai, times (1)).aiCombatTurn (combatLocation, attackingPlayer, mom);
+		
+		// Check player set correctly on server
+		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayer ());
+		
+		// Check player set correctly on client (attacker, then back to defender)
+		assertEquals (2, defendingMsgs.getMessages ().size ());
+		
+		assertEquals (SetCombatPlayerMessage.class.getName (), defendingMsgs.getMessages ().get (0).getClass ().getName ());
+		final SetCombatPlayerMessage msg1 = (SetCombatPlayerMessage) defendingMsgs.getMessages ().get (0);
+		assertEquals (combatLocation, msg1.getCombatLocation ());
+		assertEquals (attackingPd.getPlayerID ().intValue (), msg1.getPlayerID ());
+
+		assertEquals (SetCombatPlayerMessage.class.getName (), defendingMsgs.getMessages ().get (1).getClass ().getName ());
+		final SetCombatPlayerMessage msg2 = (SetCombatPlayerMessage) defendingMsgs.getMessages ().get (1);
+		assertEquals (combatLocation, msg2.getCombatLocation ());
+		assertEquals (defendingPd.getPlayerID ().intValue (), msg2.getPlayerID ());
+		
+		// Check other setup
+		assertNull (gc.isSpellCastThisCombatTurn ());
+		verify (unitUtils, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+	}
+
+	/**
+	 * Tests the progressCombat where a human player hits Auto after being attacked by an AI player
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressCombat_AIAttackingHuman_Auto () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// General server knowledge
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Attacking player
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (false);
+		attackingPd.setPlayerID (-1);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
+		
+		// Defending player
+		final PlayerDescription defendingPd = new PlayerDescription ();
+		defendingPd.setHuman (true);
+		defendingPd.setPlayerID (3);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
+
+		final DummyServerToClientConnection defendingMsgs = new DummyServerToClientConnection ();
+		defendingPlayer.setConnection (defendingMsgs);
+		
+		// Players list
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		
+		// Combat location
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		gc.setSpellCastThisCombatTurn (true);
+
+		// Players in combat
+		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
+		
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+
+		// Its the Defender/human player's turn
+		gc.setCombatCurrentPlayer (defendingPd.getPlayerID ());
+		
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final CombatAI ai = mock (CombatAI.class);
+		
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setCombatMapUtils (combatMapUtils);
+		proc.setUnitUtils (unitUtils);
+		proc.setCombatAI (ai);
+		
+		// Run method
+		proc.progressCombat (combatLocation, false, true, mom);
+
+		// Check the AI played our turn for us, then took their turn
+		verify (ai, times (1)).aiCombatTurn (combatLocation, defendingPlayer, mom);
+		verify (ai, times (1)).aiCombatTurn (combatLocation, attackingPlayer, mom);
+		
+		// Check its now the defenders turn again (the method doesn't loop despite the human player
+		// being on auto, to give the client a chance to turn auto off again)
+		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayer ());
+		
+		// Check player set correctly on client (attacker after AI takes our defender's turn, then back to defender)
+		assertEquals (2, defendingMsgs.getMessages ().size ());
+		
+		assertEquals (SetCombatPlayerMessage.class.getName (), defendingMsgs.getMessages ().get (0).getClass ().getName ());
+		final SetCombatPlayerMessage msg1 = (SetCombatPlayerMessage) defendingMsgs.getMessages ().get (0);
+		assertEquals (combatLocation, msg1.getCombatLocation ());
+		assertEquals (attackingPd.getPlayerID ().intValue (), msg1.getPlayerID ());
+
+		assertEquals (SetCombatPlayerMessage.class.getName (), defendingMsgs.getMessages ().get (1).getClass ().getName ());
+		final SetCombatPlayerMessage msg2 = (SetCombatPlayerMessage) defendingMsgs.getMessages ().get (1);
+		assertEquals (combatLocation, msg2.getCombatLocation ());
+		assertEquals (defendingPd.getPlayerID ().intValue (), msg2.getPlayerID ());
+		
+		// Check other setup
+		assertNull (gc.isSpellCastThisCombatTurn ());
+		verify (unitUtils, times (1)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation, db);
+		verify (unitUtils, times (1)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+	}
+	
+	/**
+	 * Tests the progressCombat method on a combat with two AI players fighting each other
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressCombat_AIOnly () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// General server knowledge
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Attacking player
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (false);
+		attackingPd.setPlayerID (-1);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
+		
+		// Defending player
+		final PlayerDescription defendingPd = new PlayerDescription ();
+		defendingPd.setHuman (false);
+		defendingPd.setPlayerID (-2);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
+
+		// Players list
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		
+		// Combat location
+		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		gc.setSpellCastThisCombatTurn (true);
+
+		// Players in combat, after a few turns the attacker wins
+		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
+		final CombatPlayers attackerWins = new CombatPlayers (attackingPlayer, null);
+		
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn
+			(combatPlayers, combatPlayers, combatPlayers, combatPlayers, attackerWins);
+		
+		// Defender/human player just finished turn
+		gc.setCombatCurrentPlayer (defendingPd.getPlayerID ());
+				
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final CombatAI ai = mock (CombatAI.class);
+		
+		final CombatProcessingImpl proc = new CombatProcessingImpl ();
+		proc.setCombatMapUtils (combatMapUtils);
+		proc.setUnitUtils (unitUtils);
+		proc.setCombatAI (ai);
+		
+		// Run method
+		proc.progressCombat (combatLocation, true, false, mom);
+		
+		// Check each AI player had 2 turns
+		verify (ai, times (2)).aiCombatTurn (combatLocation, defendingPlayer, mom);
+		verify (ai, times (2)).aiCombatTurn (combatLocation, attackingPlayer, mom);
+		
+		// Attacker had their turn last
+		assertEquals (attackingPd.getPlayerID (), gc.getCombatCurrentPlayer ());
+		
+		// Check other setup
+		assertNull (gc.isSpellCastThisCombatTurn ());
+		verify (unitUtils, times (2)).resetUnitCombatMovement (trueMap.getUnit (), defendingPd.getPlayerID (), combatLocation, db);
+		verify (unitUtils, times (2)).resetUnitCombatMovement (trueMap.getUnit (), attackingPd.getPlayerID (), combatLocation, db);
 	}
 	
 	/**

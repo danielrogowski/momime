@@ -4,21 +4,34 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import momime.common.messages.servertoclient.v0_9_5.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.v0_9_5.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.v0_9_5.StartSimultaneousTurnMessage;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
+import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.PendingMovement;
 import momime.common.messages.v0_9_5.TurnSystem;
+import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
+import momime.server.MomSessionVariables;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import org.junit.Test;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -284,5 +297,177 @@ public final class TestPlayerMessageProcessingImpl
 		assertEquals (2, msg3.getMessage ().size ());
 		assertSame (player3message1, msg3.getMessage ().get (0));
 		assertSame (player3message2, msg3.getMessage ().get (1));
+	}
+	
+	/**
+	 * Tests the continueMovement method for all players (i.e. as in a simultaneous turns game)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testContinueMovement_AllPlayers () throws Exception
+	{
+		// General server knowledge
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Players
+		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final PlayerServerDetails player1 = new PlayerServerDetails (null, null, null, null, trans1);
+
+		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final PlayerServerDetails player2 = new PlayerServerDetails (null, null, null, null, trans2);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player1);
+		players.add (player2);	
+		
+		// Units
+		final MemoryUnit unit1 = new MemoryUnit ();
+		final MemoryUnit unit2 = new MemoryUnit ();
+		
+		final List<MemoryUnit> unitStack1 = new ArrayList<MemoryUnit> ();
+		unitStack1.add (unit1);
+		
+		final List<MemoryUnit> unitStack2 = new ArrayList<MemoryUnit> ();
+		unitStack2.add (unit2);
+		
+		// Pending moves
+		final PendingMovement move1 = new PendingMovement ();
+		move1.setMoveFrom (createCoordinates (1));
+		move1.setMoveTo (createCoordinates (2));
+		move1.getPath ().add (3);
+		move1.getUnitURN ().add (1);
+
+		final PendingMovement move2 = new PendingMovement ();
+		move2.setMoveFrom (createCoordinates (4));
+		move2.setMoveTo (createCoordinates (3));
+		move2.getPath ().add (7);
+		move2.getUnitURN ().add (2);
+		
+		trans1.getPendingMovement ().add (move1);
+		trans2.getPendingMovement ().add (move2);
+		
+		// Unit searches
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findUnitURN (1, trueMap.getUnit (), "continueMovement")).thenReturn (unit1);
+		when (unitUtils.findUnitURN (2, trueMap.getUnit (), "continueMovement")).thenReturn (unit2);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionLogger ()).thenReturn (Logger.getLogger (TestPlayerMessageProcessingImpl.class.getName ()));
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
+		// Set up test object
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
+		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
+		proc.setUnitUtils (unitUtils);
+		proc.setFogOfWarMidTurnChanges (midTurn);
+		
+		// Run method
+		proc.continueMovement (0, mom);
+		
+		// Check results
+		verify (midTurn, times (1)).moveUnitStack (unitStack1, player1, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
+		verify (midTurn, times (1)).moveUnitStack (unitStack2, player2, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
+	}
+
+	/**
+	 * Tests the continueMovement method for a single players (i.e. as in a one-at-a-time turns game)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testContinueMovement_OnePlayers () throws Exception
+	{
+		// General server knowledge
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Players
+		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (1);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, trans1);
+
+		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (2);
+		
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, trans2);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player1);
+		players.add (player2);	
+		
+		// Units
+		final MemoryUnit unit1 = new MemoryUnit ();
+		final MemoryUnit unit2 = new MemoryUnit ();
+		
+		final List<MemoryUnit> unitStack1 = new ArrayList<MemoryUnit> ();
+		unitStack1.add (unit1);
+		
+		final List<MemoryUnit> unitStack2 = new ArrayList<MemoryUnit> ();
+		unitStack2.add (unit2);
+		
+		// Pending moves
+		final PendingMovement move1 = new PendingMovement ();
+		move1.setMoveFrom (createCoordinates (1));
+		move1.setMoveTo (createCoordinates (2));
+		move1.getPath ().add (3);
+		move1.getUnitURN ().add (1);
+
+		final PendingMovement move2 = new PendingMovement ();
+		move2.setMoveFrom (createCoordinates (4));
+		move2.setMoveTo (createCoordinates (3));
+		move2.getPath ().add (7);
+		move2.getUnitURN ().add (2);
+		
+		trans1.getPendingMovement ().add (move1);
+		trans2.getPendingMovement ().add (move2);
+		
+		// Unit searches
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.findUnitURN (1, trueMap.getUnit (), "continueMovement")).thenReturn (unit1);
+		when (unitUtils.findUnitURN (2, trueMap.getUnit (), "continueMovement")).thenReturn (unit2);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionLogger ()).thenReturn (Logger.getLogger (TestPlayerMessageProcessingImpl.class.getName ()));
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
+		// Set up test object
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
+		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
+		proc.setUnitUtils (unitUtils);
+		proc.setFogOfWarMidTurnChanges (midTurn);
+		
+		// Run method
+		proc.continueMovement (2, mom);
+		
+		// Check results
+		verify (midTurn, times (0)).moveUnitStack (unitStack1, player1, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
+		verify (midTurn, times (1)).moveUnitStack (unitStack2, player2, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
+	}
+
+	/**
+	 * Just to save repeating this a dozen times in the test cases
+	 * @param x X coord
+	 * @return Coordinates object
+	 */
+	private final MapCoordinates3DEx createCoordinates (final int x)
+	{
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
+		combatLocation.setX (x);
+		combatLocation.setY (10);
+		combatLocation.setZ (1);
+		return combatLocation;
 	}
 }

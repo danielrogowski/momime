@@ -864,7 +864,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// Put mana into casting spells
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
-				getSpellQueueing().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				getSpellQueueing ().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		// Kick off the next turn
 		mom.getSessionLogger ().info ("Kicking off next turn...");
@@ -985,7 +985,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final void continueMovement (final int onlyOnePlayerID, final MomSessionVariables mom)
+	final void continueMovement (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		log.entering (PlayerMessageProcessingImpl.class.getName (), "continueMovement", onlyOnePlayerID);
@@ -1014,10 +1014,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					for (final Integer unitURN : thisMove.getUnitURN ())
 						unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "continueMovement"));
 					
-					final PlayerServerDetails unitStackOwner =MultiplayerSessionServerUtils.findPlayerWithID
-						(mom.getPlayers (), unitStack.get (0).getOwningPlayerID (), "continueMovement");
-					
-					getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, unitStackOwner,
+					getFogOfWarMidTurnChanges ().moveUnitStack (unitStack, player,
 						(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), false, mom);
 				}
 			}

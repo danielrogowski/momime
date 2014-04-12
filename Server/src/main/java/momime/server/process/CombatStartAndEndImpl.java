@@ -147,8 +147,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			new String [] {defendingLocation.toString (), attackingFrom.toString (), (scheduledCombatURN == null) ? "NotSched" : scheduledCombatURN.toString (),
 			attackingPlayer.getPlayerDescription ().getPlayerID ().toString ()});
 		
-		// If attacking a tower in Myrror, then Defending-AttackingFrom will be 1-0
-		// If attacking from a tower onto Myrror, then Defending-AttackingFrom will be 0-1 - both of these should be shown on Myrror only
+		// If attacking a tower in Myrror, then Defending-AttackingFrom will be 0-1
+		// If attacking from a tower onto Myrror, then Defending-AttackingFrom will be 1-0 - both of these should be shown on Myrror only
 		// Any tower combats to/from Arcanus will be 0-0, and should appear on Arcanus only
 		// Hence the reason for the Max
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
@@ -363,8 +363,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			if ((winningPlayer == attackingPlayer) && (ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), mom.getServerDB ())))
 			{
 				log.finest ("Attacking player " + attackingPlayer.getPlayerDescription ().getPlayerName () + " now knows the node/lair/tower to be empty");
-				final MomPersistentPlayerPrivateKnowledge atkPub = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-				atkPub.getNodeLairTowerKnownUnitIDs ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().set (combatLocation.getX (), "");
+				atkPriv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().set (combatLocation.getX (), "");
 			}
 			
 			// If the attacker won then advance their units to the target square
@@ -377,9 +376,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				moveTo.setX (combatLocation.getX ());
 				moveTo.setY (combatLocation.getY ());
 				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
-				{
 					moveTo.setZ (0);
-				}
 				else
 					moveTo.setZ (combatLocation.getZ ());
 				

@@ -450,22 +450,27 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
-		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
-		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
-		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
-		<property name="combatMapUtils" ref="combatMapUtils" />
-		<property name="spellCalculations" ref="spellCalculations" />
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="spellCalculations" ref="spellCalculations" />
+		<property name="spellProcessing" ref="spellProcessing" />
 	</bean>
 
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">

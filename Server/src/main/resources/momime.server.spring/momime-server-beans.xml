@@ -6,7 +6,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<import resource="../momime.common.spring/momime-common-beans.xml"/>
 	
-	<!-- General XSD objects (may move these into common project at some stage)-->
+	<!-- General XSD objects (may move these into common project at some stage) -->
 	
 	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
 	

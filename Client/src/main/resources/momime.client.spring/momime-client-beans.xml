@@ -6,7 +6,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<import resource="../momime.common.spring/momime-common-beans.xml"/>
 	
-	<!-- General XSD objects (may move these into common project at some stage)-->
+	<!-- General XSD objects (may move these into common project at some stage) -->
 	
 	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
 	
@@ -70,7 +70,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
    		</constructor-arg>
 	</bean>
 	
-	<bean id="graphicsDatabaseFactory" class="momime.client.graphics.database.GraphicsDatabaseFactory" />		<!-- Creates GraphicsDatabaseExImpl instead of GraphicsDatabase -->
+	<bean id="graphicsDatabaseFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.client.graphics.database.GraphicsDatabaseFactory" />
+	</bean>			
+	
+	<bean id="graphicsDatabaseObjectFactory" class="momime.client.graphics.database.GraphicsDatabaseObjectFactory">		<!-- Creates GraphicsDatabaseExImpl instead of GraphicsDatabase -->
+		<property name="factory" ref="graphicsDatabaseFactory" />
+	</bean>
 		
 	<bean id="graphicsDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="graphicsDatabaseJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="graphicsDatabaseSchema" />
@@ -83,7 +89,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			<list>
 				<value>com.sun.xml.bind.ObjectFactory</value>
 				<array>
-					<ref bean="graphicsDatabaseFactory" />
+					<ref bean="graphicsDatabaseObjectFactory" />
 				</array>
 			</list>
 		</property>
@@ -91,6 +97,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="graphicsDatabase" class="momime.client.graphics.database.v0_9_5.GraphicsDatabase" factory-bean="graphicsDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg value="#{clientConfig.graphicsXmlFilename}" />
+	</bean>
+	
+	<bean id="smoothedTileType" class="momime.client.graphics.database.SmoothedTileTypeEx" scope="prototype">
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
+	<bean id="tileSet" class="momime.client.graphics.database.TileSetEx" scope="prototype">
+		<property name="utils" ref="uiUtils" />
+	</bean>
+
+	<bean id="animation" class="momime.client.graphics.database.AnimationEx" scope="prototype">
+		<property name="utils" ref="uiUtils" />
 	</bean>
 	
 	<!-- Language XML -->
@@ -190,7 +208,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype" />
 	<bean id="pendingMovementMessage" class="momime.client.messages.process.PendingMovementMessageImpl" scope="prototype" />
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
-	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype" />
 	<bean id="startGameMessage" class="momime.client.messages.process.StartGameMessageImpl" scope="prototype" />
 	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
@@ -215,7 +232,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype" />
-	<bean id="updateTerrainMessage" class="momime.client.messages.process.UpdateTerrainMessageImpl" scope="prototype" />
 	<bean id="overlandCastQueuedMessage" class="momime.client.messages.process.OverlandCastQueuedMessageImpl" scope="prototype" />
 	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype" />
 	<bean id="addUnitMessage" class="momime.client.messages.process.AddUnitMessageImpl" scope="prototype" />
@@ -238,6 +254,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="cancelCombatAreaEffectMessage" class="momime.client.messages.process.CancelCombatAreaEffectMessageImpl" scope="prototype" />
 	<bean id="askForCaptureCityDecisionMessage" class="momime.client.messages.process.AskForCaptureCityDecisionMessageImpl" scope="prototype" />
 	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
+	
+	<bean id="updateTerrainMessage" class="momime.client.messages.process.UpdateTerrainMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
+	</bean>
+
+	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="factory" ref="momClientServerToClientServerFactory" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+	</bean>
 	
 	<!-- Version of the client -->
 	
@@ -265,6 +293,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	
@@ -348,6 +377,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
+	<bean id="overlandMapUI" class="momime.client.ui.OverlandMapUI">
+		<property name="client" ref="momClient" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="utils" ref="uiUtils" />
 	</bean>
 	
 	<!-- Prototype UI components -->

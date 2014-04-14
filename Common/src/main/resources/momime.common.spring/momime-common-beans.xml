@@ -221,5 +221,9 @@
 	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
 	
 	<bean id="coordinateSystemUtils" class="com.ndg.map.CoordinateSystemUtilsImpl" />
+	
+	<bean id="booleanMapAreaOperations3D" class="com.ndg.map.areas.operations.BooleanMapAreaOperations3DImpl">
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+	</bean>
 
 </beans>

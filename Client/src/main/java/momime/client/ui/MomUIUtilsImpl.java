@@ -7,6 +7,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +46,11 @@ public final class MomUIUtilsImpl implements MomUIUtils
 		BufferedImage image = imageCache.get (resourceName);
 		if (image == null)
 		{
-			image = ImageIO.read (getClass ().getResource (resourceName));
+			final URL resource = getClass ().getResource (resourceName);
+			if (resource == null)
+				throw new IOException ("Image \"" + resourceName + "\" not found on classpath");
+			
+			image = ImageIO.read (resource);
 			imageCache.put (resourceName, image);
 		}
 		return image;

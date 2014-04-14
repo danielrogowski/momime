@@ -2,6 +2,7 @@ package momime.client.graphics.database;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
+import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.ObjectFactory;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
@@ -12,8 +13,11 @@ import momime.client.graphics.database.v0_9_5.TileSet;
  * Creates our custom extended GraphicsDatabase when it is unmarshalled with JAXB
  */
 @XmlRegistry
-public final class GraphicsDatabaseFactory extends ObjectFactory
+public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 {
+	/** Factory for creating prototype message beans from spring */
+	private GraphicsDatabaseFactory factory;
+	
 	/**
 	 * @return Custom extended GraphicsDatabase 
 	 */
@@ -29,7 +33,7 @@ public final class GraphicsDatabaseFactory extends ObjectFactory
 	@Override
 	public final TileSet createTileSet ()
 	{
-		return new TileSetEx ();
+		return getFactory ().createTileSet ();
 	}
 
 	/**
@@ -38,7 +42,7 @@ public final class GraphicsDatabaseFactory extends ObjectFactory
 	@Override
 	public final SmoothedTileType createSmoothedTileType ()
 	{
-		return new SmoothedTileTypeEx ();
+		return getFactory ().createSmoothedTileType ();
 	}
 
 	/**
@@ -48,5 +52,30 @@ public final class GraphicsDatabaseFactory extends ObjectFactory
 	public final SmoothingSystem createSmoothingSystem ()
 	{
 		return new SmoothingSystemEx ();
+	}
+	
+	/**
+	 * @return Custom extended Animation 
+	 */
+	@Override
+	public final Animation createAnimation ()
+	{
+		return getFactory ().createAnimation ();
+	}
+
+	/**
+	 * @return Factory for creating prototype message beans from spring
+	 */
+	public final GraphicsDatabaseFactory getFactory ()
+	{
+		return factory;
+	}
+
+	/**
+	 * @param fac Factory for creating prototype message beans from spring
+	 */
+	public final void setFactory (final GraphicsDatabaseFactory fac)
+	{
+		factory = fac;
 	}
 }

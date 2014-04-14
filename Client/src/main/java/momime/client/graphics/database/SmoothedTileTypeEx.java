@@ -72,7 +72,12 @@ public final class SmoothedTileTypeEx extends SmoothedTileType
 			for (final String unsmoothedBitmask : smoothedBitmask.getValue ())
 				bitmasksMap.put (unsmoothedBitmask, images);
 		}
-		log.finest ("Built map of " + bitmasksMap.size () + " unsmoothed bitmasks for this tile set"); 
+		log.finest ("Built map of " + bitmasksMap.size () + " unsmoothed bitmasks for this tile set");
+		
+		// If there's a listing for "NoSmooth" then just copy it directly, but don't complain if it isn't there, since its missing from some special tiles like the FOW boundaries
+		final List<SmoothedTile> noSmoothImages = smoothedMap.get (GraphicsDatabaseConstants.VALUE_TILE_BITMASK_NO_SMOOTHING);
+		if (noSmoothImages != null)
+			bitmasksMap.put (GraphicsDatabaseConstants.VALUE_TILE_BITMASK_NO_SMOOTHING, noSmoothImages);
 		
 		log.exiting (SmoothingSystemEx.class.getName (), "buildMap", bitmasksMap.size ());
 	}

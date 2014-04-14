@@ -20,6 +20,7 @@ import momime.client.ui.ConnectToServerUI;
 import momime.client.ui.MainMenuUI;
 import momime.client.ui.MessageBoxUI;
 import momime.client.ui.NewGameUI;
+import momime.client.ui.OverlandMapUI;
 import momime.client.ui.PrototypeFrameCreator;
 import momime.common.MomCommonConstants;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
@@ -59,6 +60,9 @@ public final class MomClient extends MultiplayerSessionClient
 	
 	/** New Game UI */
 	private NewGameUI newGameUI;
+	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -198,6 +202,7 @@ public final class MomClient extends MultiplayerSessionClient
 			{
 				((ClientDatabaseExImpl) getClientDB ()).buildMaps ();
 				getNewGameUI ().afterJoinedSession ();
+				getOverlandMapUI ().afterJoinedSession ();
 			}
 
 			/**
@@ -447,6 +452,22 @@ public final class MomClient extends MultiplayerSessionClient
 	public final void setNewGameUI (final NewGameUI ui)
 	{
 		newGameUI = ui;
+	}
+	
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
 	}
 	
 	/**

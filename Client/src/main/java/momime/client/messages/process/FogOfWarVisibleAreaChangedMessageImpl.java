@@ -6,20 +6,13 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessageData;
-import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessageData;
-import momime.common.messages.servertoclient.v0_9_5.AddUnitMessageData;
-import momime.common.messages.servertoclient.v0_9_5.CancelCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessageData;
-import momime.common.messages.servertoclient.v0_9_5.FogOfWarStateMessageData;
+import momime.client.MomClient;
+import momime.client.ui.OverlandMapUI;
 import momime.common.messages.servertoclient.v0_9_5.FogOfWarVisibleAreaChangedMessage;
-import momime.common.messages.servertoclient.v0_9_5.KillUnitMessageData;
-import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessageData;
-import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessageData;
-import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessageData;
 
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
@@ -32,6 +25,15 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	/** Class logger */
 	private final Logger log = Logger.getLogger (FogOfWarVisibleAreaChangedMessageImpl.class.getName ());
 
+	/** Multiplayer client */
+	private MomClient client;
+	
+	/** Factory for creating prototype message beans from spring */
+	private ServerToClientMessagesFactory factory;
+	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
+	
 	/**
 	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -51,13 +53,21 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			new Integer (getCancelCombaAreaEffect ().size ()).toString (), new Integer (getFogOfWarUpdate ().size ()).toString ()});
 		
 		// Changes in Terrain
-		for (final UpdateTerrainMessageData data : getTerrainUpdate ())
+		if (getTerrainUpdate ().size () > 0)
 		{
-			final UpdateTerrainMessageImpl proc = new UpdateTerrainMessageImpl ();
-			proc.setData (data);
-			proc.process (sender);
+			final MapArea3D<Boolean> areaToSmooth = new MapArea3DArrayListImpl<Boolean> ();
+			areaToSmooth.setCoordinateSystem (getClient ().getSessionDescription ().getMapSize ());
+			
+			final UpdateTerrainMessageImpl proc = getFactory ().createUpdateTerrainMessage ();
+			for (final UpdateTerrainMessageData data : getTerrainUpdate ())
+			{				
+				proc.setData (data);
+				proc.processOneUpdate (areaToSmooth);
+			}
+			proc.endUpdates (areaToSmooth);
 		}
 		
+		/*
 		// Changes in Cities
 		for (final UpdateCityMessageData data : getCityUpdate ())
 		{
@@ -141,8 +151,59 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		// Changes in Fog of War area
 		for (final FogOfWarStateMessageData data : getFogOfWarUpdate ())
 		{
-		}
+		} */
+		
+		// So much will have changed (terrain, cities, node auras, fog of war area, units) that best to just regenerate the lot
+		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 
 		log.exiting (FogOfWarVisibleAreaChangedMessageImpl.class.getName (), "process");
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+
+	/**
+	 * @return Factory for creating prototype message beans from spring
+	 */
+	public final ServerToClientMessagesFactory getFactory ()
+	{
+		return factory;
+	}
+
+	/**
+	 * @param fac Factory for creating prototype message beans from spring
+	 */
+	public final void setFactory (final ServerToClientMessagesFactory fac)
+	{
+		factory = fac;
+	}
+
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
 	}
 }

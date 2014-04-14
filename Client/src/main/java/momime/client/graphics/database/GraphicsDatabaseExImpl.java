@@ -1,5 +1,6 @@
 package momime.client.graphics.database;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -9,7 +10,6 @@ import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Wizard;
-import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 
 /**
@@ -26,15 +26,17 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
 
+	/** Map of tileSet IDs to tileSet objects */
+	private Map<String, TileSetEx> tileSetsMap;
+
 	/** Map of animation IDs to animation objects */
-	private Map<String, Animation> animationsMap;
+	private Map<String, AnimationEx> animationsMap;
 	
 	/**
 	 * Builds all the hash maps to enable finding records faster
-	 * @throws MomException If there are invalid rules defined, i.e. with a mixture of null and non-null condition/set rules
-	 * @throws RecordNotFoundException If an image is missing, or a tile type refers to a smoothing system that doesn't exist
+	 * @throws IOException If any images cannot be loaded, or any consistency checks fail
 	 */
-	public final void buildMaps () throws MomException, RecordNotFoundException
+	public final void buildMaps () throws IOException
 	{
 		log.entering (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
 		log.info ("Processing graphics XML file");
@@ -48,18 +50,26 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		wizardsMap = new HashMap<String, Wizard> ();
 		for (final Wizard thisWizard : getWizard ())
 			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
+
+		// Create animations map, and check for consistency
+		animationsMap = new HashMap<String, AnimationEx> ();
+		for (final Animation anim : getAnimation ())
+		{
+			final AnimationEx aex = (AnimationEx) anim;
+			aex.deriveAnimationWidthAndHeight ();
+			animationsMap.put (aex.getAnimationID (), aex);
+		}
+		log.info ("All " + getAnimation ().size () + " animations passed consistency checks");		
 		
-		// Create animations map
-		animationsMap = new HashMap<String, Animation> ();
-		for (final Animation thisAnimation : getAnimation ())
-			animationsMap.put (thisAnimation.getAnimationID (), thisAnimation);
-		
-		// Build all the smoothing rule bitmask maps
+		// Create tileSets map, and build all the smoothing rule bitmask maps
+		tileSetsMap = new HashMap<String, TileSetEx> ();
 		for (final TileSet ts : getTileSet ())
 		{
 			final TileSetEx tsex = (TileSetEx) ts;
 			tsex.buildMaps ();
 			tsex.deriveAnimationFrameCountAndSpeed (this);
+			tsex.deriveTileWidthAndHeight (this);
+			tileSetsMap.put (tsex.getTileSetID (), tsex);
 		}
 
 		log.exiting (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
@@ -98,15 +108,31 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 
 	/**
+	 * @param tileSetID Tile set ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Tile set object
+	 * @throws RecordNotFoundException If the tileSetID doesn't exist
+	 */
+	@Override
+	public final TileSetEx findTileSet (final String tileSetID, final String caller) throws RecordNotFoundException
+	{
+		final TileSetEx found = tileSetsMap.get (tileSetID);
+		if (found == null)
+			throw new RecordNotFoundException (TileSet.class.getName (), tileSetID, caller);
+
+		return found;
+	}
+
+	/**
 	 * @param animationID Animation ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Animation object
 	 * @throws RecordNotFoundException If the animationID doesn't exist
 	 */
 	@Override
-	public final Animation findAnimation (final String animationID, final String caller) throws RecordNotFoundException
+	public final AnimationEx findAnimation (final String animationID, final String caller) throws RecordNotFoundException
 	{
-		final Animation found = animationsMap.get (animationID);
+		final AnimationEx found = animationsMap.get (animationID);
 		if (found == null)
 			throw new RecordNotFoundException (Animation.class.getName (), animationID, caller);
 

@@ -1,16 +1,20 @@
 package momime.client.graphics.database;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.SmoothedTile;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.client.graphics.database.v0_9_5.SmoothingSystem;
 import momime.client.graphics.database.v0_9_5.TileSet;
+import momime.client.ui.MomUIUtils;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.utils.CompareUtils;
 
 /**
  * Links together the cached smoothing reduction rules against the actual images for each tile type
@@ -25,6 +29,18 @@ public final class TileSetEx extends TileSet
 
 	/** All animations used by tiles in the same tile set must share the same animation speed, which gets set here; if tile set is all static images, will be left as null */
 	private Double animationSpeed;
+
+	/** All images and animation frames used by tiles in the same tile set must share the same width */
+	private int tileWidth;
+	
+	/** All images and animation frames used by tiles in the same tile set must share the same height */
+	private int tileHeight;
+	
+	/** Map of smoothing system IDs to smoothing systems */
+	private Map<String, SmoothingSystemEx> smoothingSystemsMap;
+	
+	/** Helper methods and constants for creating and laying out Swing components */
+	private MomUIUtils utils;
 	
 	/**
 	 * Builds all of the maps on all child objects.
@@ -37,10 +53,7 @@ public final class TileSetEx extends TileSet
 		
 		// Have to do this in two passes, since we need all smoothing systems loaded before we can start loading smoothed tile types.
 		// i.e. one smoothing system may be shared by multiple tile types.
-		
-		// Put them in a map as we go - I don't think this map has any use after the end of this routine (i.e. nothing cares about the smoothing
-		// system anymore once the bitmask -> images map is built) so scoping it locally for now.
-		final Map<String, SmoothingSystemEx> smoothingSystemsMap = new HashMap<String, SmoothingSystemEx> ();
+		smoothingSystemsMap = new HashMap<String, SmoothingSystemEx> ();
 		
 		for (final SmoothingSystem ss : getSmoothingSystem ())
 		{
@@ -60,6 +73,7 @@ public final class TileSetEx extends TileSet
 			ttex.buildMap (ss.getBitmasksMap ());
 		}
 		
+		log.info ("Processed all smoothing system rules for the " + getTileSetName () + " tile set");		
 		log.exiting (TileSetEx.class.getName (), "buildMaps");
 	}
 	
@@ -79,11 +93,7 @@ public final class TileSetEx extends TileSet
 			for (final SmoothedTile tile : tt.getSmoothedTile ())
 				if (tile.getTileAnimation () != null)
 				{
-					final Animation anim = db.findAnimation (tile.getTileAnimation (), "deriveAnimationFrameCountAndSpeed");
-					
-					// Animations must be non-empty
-					if (anim.getFrame ().size () == 0)
-						throw new MomException ("Tile set " + getTileSetID () + " references animation " + tile.getTileAnimation () + " which has 0 frames");
+					final AnimationEx anim = db.findAnimation (tile.getTileAnimation (), "deriveAnimationFrameCountAndSpeed");
 					
 					// If they've never been set, set now
 					if (animationSpeed == null)
@@ -111,6 +121,108 @@ public final class TileSetEx extends TileSet
 		log.info (getTileSetName () + " tile set consistently has " + animationFrameCount + " frames at " + animationSpeed + " FPS");		
 		log.exiting (TileSetEx.class.getName (), "deriveAnimationFrameCountAndSpeed");
 	}
+	
+	/**
+	 * Derives tileWidth and tileHeight values above from all of the tiles of all of the tile types for this tile set.
+	 * Could have just made this part of buildMaps (), but decided to split the methods above since it gives more relevant and clear unit tests.
+	 * 
+	 * This assumes all the animations in the DB have already had deriveAnimationWidthAndHeight ran on them to set the animationWidth + Height values correctly.
+	 * 
+	 * @param db Graphics database, so we can look up animations
+	 * @throws IOException If there is a problem loading any of the images, or we fail the consistency checks
+	 */
+	final void deriveTileWidthAndHeight (final GraphicsDatabaseEx db) throws IOException
+	{
+		log.entering (TileSetEx.class.getName (), "deriveTileWidthAndHeight", getTileSetID ());
+
+		boolean first = true;
+		
+		for (final SmoothedTileType tt : getSmoothedTileType ())
+			
+			// Features (like rocks and trees) and buildings are smaller or larger than the actual diagonal combat tiles, so exclude them from the check
+			// Checking this on the code is a bit of a hack, it should look the code up in the DB and check if the layer = BUILDINGS_AND_TERRAIN_FEATURES
+			// but the client DB doesn't have that info at the moment - need to fix that
+			if ((tt.getCombatTileTypeID () == null) || (!tt.getCombatTileTypeID ().startsWith ("CBL")))
+				for (final SmoothedTile tile : tt.getSmoothedTile ())
+					if (tile.getTileFile () != null)
+					{
+						final BufferedImage image = getUtils ().loadImage (tile.getTileFile ());
+						if (first)
+						{
+							tileWidth = image.getWidth ();
+							tileHeight = image.getHeight ();
+							first = false;
+						}
+						else if ((tileWidth != image.getWidth ()) || (tileHeight != image.getHeight ()))
+							throw new MomException ("Images and/or animations referenced by tile set " + getTileSetID () + " are not consistent sizes (some are " +
+								tileWidth + "x" + tileHeight + " and some are " + image.getWidth () + "x" + image.getHeight () + ")");
+					}
+				
+					else if (tile.getTileAnimation () != null)
+					{
+						final AnimationEx anim = db.findAnimation (tile.getTileAnimation (), "deriveTileWidthAndHeight");
+						if (first)
+						{
+							tileWidth = anim.getAnimationWidth ();
+							tileHeight = anim.getAnimationHeight ();
+							first = false;
+						}
+						else if ((tileWidth != anim.getAnimationWidth ()) || (tileHeight != anim.getAnimationHeight ()))
+							throw new MomException ("Images and/or animations referenced by tile set " + getTileSetID () + " are not consistent sizes (some are " +
+								tileWidth + "x" + tileHeight + " and some are " + anim.getAnimationWidth () + "x" + anim.getAnimationHeight () + ")");
+					}
+		
+					else
+						throw new MomException ("Tile set " + getTileSetID () + " includes a tile that neither includes an image filename or an animation ID");
+		
+		log.info (getTileSetName () + " tile set consistently has all tiles of size " + tileWidth + "x" + tileHeight);		
+		log.exiting (TileSetEx.class.getName (), "deriveTileWidthAndHeight");
+	}
+	
+	/**
+	 * @param smoothingSystemID Smoothing system ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Smoothing system object
+	 * @throws RecordNotFoundException If the smoothingSystemID doesn't exist
+	 */
+	public final SmoothingSystemEx findSmoothingSystem (final String smoothingSystemID, final String caller) throws RecordNotFoundException
+	{
+		final SmoothingSystemEx found = smoothingSystemsMap.get (smoothingSystemID);
+		if (found == null)
+			throw new RecordNotFoundException (SmoothingSystemEx.class.getName (), smoothingSystemID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param overlandMapTileTypeID Overland map tile type ID to search for
+	 * @param planeNumber Plane number to search for
+	 * @param combatTileTypeID Combat map tile type ID to search for; pass null for searching for overland map tiles
+	 * @return Requested smoothed tile type
+	 * @throws RecordNotFoundException If no matching tile type is found
+	 */
+	public final SmoothedTileTypeEx findSmoothedTileType (final String overlandMapTileTypeID, final Integer planeNumber, final String combatTileTypeID)
+		throws RecordNotFoundException
+	{
+		// Note the overlandMapTileTypeID and planeNumber *in the database* are optional, in which case will match regardless of what values are passed in
+		// This is why we have to do the search the hard way, rather than using a map
+		SmoothedTileTypeEx match = null;
+		final Iterator<SmoothedTileType> iter = getSmoothedTileType ().iterator ();
+		while ((match == null) && (iter.hasNext ()))
+		{
+			final SmoothedTileTypeEx thisTileType = (SmoothedTileTypeEx) iter.next ();
+			if (((thisTileType.getTileTypeID () == null) || (thisTileType.getTileTypeID ().equals (overlandMapTileTypeID))) &&
+				((thisTileType.getPlaneNumber () == null) || (thisTileType.getPlaneNumber ().equals (planeNumber))) &&
+				(CompareUtils.safeStringCompare (combatTileTypeID, thisTileType.getCombatTileTypeID ())))
+				
+				match = thisTileType;
+		}
+		
+		if (match == null)
+			throw new RecordNotFoundException (SmoothedTileTypeEx.class.getName (), overlandMapTileTypeID + "/" + planeNumber + "/" + combatTileTypeID, "findSmoothedTileType");
+		
+		return match;
+	}
 
 	/** 
 	 * @return All animations used by tiles in the same tile set must share the same number of frames, which gets set here; if tile set is all static images, will be set to 1
@@ -126,5 +238,37 @@ public final class TileSetEx extends TileSet
 	public final Double getAnimationSpeed ()
 	{
 		return animationSpeed;
+	}
+
+	/**
+	 * @return All images and animation frames used by tiles in the same tile set must share the same width
+	 */
+	public final int getTileWidth ()
+	{
+		return tileWidth;
+	}
+	
+	/**
+	 * @return All images and animation frames used by tiles in the same tile set must share the same height
+	 */
+	public final int getTileHeight ()
+	{
+		return tileHeight;
+	}
+
+	/**
+	 * @return Helper methods and constants for creating and laying out Swing components
+	 */
+	public final MomUIUtils getUtils ()
+	{
+		return utils;
+	}
+
+	/**
+	 * @param util Helper methods and constants for creating and laying out Swing components
+	 */
+	public final void setUtils (final MomUIUtils util)
+	{
+		utils = util;
 	}
 }

@@ -95,8 +95,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		</property>
 	</bean>
 
-	<bean id="graphicsDatabase" class="momime.client.graphics.database.v0_9_5.GraphicsDatabase" factory-bean="graphicsDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="graphicsDatabase" class="momime.client.graphics.database.GraphicsDatabaseExImpl" factory-bean="graphicsDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMapsAndRunConsistencyChecks">
 		<constructor-arg value="#{clientConfig.graphicsXmlFilename}" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 	
 	<bean id="smoothedTileType" class="momime.client.graphics.database.SmoothedTileTypeEx" scope="prototype">
@@ -148,7 +149,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		</property>
 	</bean>
 
-	<bean id="languageDatabase" class="momime.client.language.database.v0_9_5.LanguageDatabase" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+	<bean id="languageDatabase" class="momime.client.language.database.LanguageDatabaseExImpl" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.File" value="#{clientConfig.pathToLanguageXmlFiles + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
 	</bean>
 	
@@ -227,7 +228,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="foundLairNodeTowerMessage" class="momime.client.messages.process.FoundLairNodeTowerMessageImpl" scope="prototype" />
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype" />
 	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype" />
-	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype" />
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype" />
@@ -263,6 +263,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="momClient" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
+	</bean>
+
+	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">

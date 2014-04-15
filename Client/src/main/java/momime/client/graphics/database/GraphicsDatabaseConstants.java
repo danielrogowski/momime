@@ -16,6 +16,9 @@ public final class GraphicsDatabaseConstants
 	
 	/** Special bitmask for when smoothing is turned off */
 	public static final String VALUE_TILE_BITMASK_NO_SMOOTHING = "NoSmooth";
+	
+	/** City flag image */
+	public static final String IMAGE_CITY_FLAG = "/momime.client.graphics/overland/cities/cityFlag.png";
 
 	/**
 	 * Prevent instatiation of this class

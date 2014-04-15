@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.ui.OverlandMapUI;
 import momime.common.messages.servertoclient.v0_9_5.FogOfWarVisibleAreaChangedMessage;
+import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessageData;
 
 import com.ndg.map.areas.storage.MapArea3D;
@@ -67,15 +68,18 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			proc.endUpdates (areaToSmooth);
 		}
 		
-		/*
 		// Changes in Cities
-		for (final UpdateCityMessageData data : getCityUpdate ())
+		if (getCityUpdate ().size () > 0)
 		{
-			final UpdateCityMessageImpl proc = new UpdateCityMessageImpl ();
-			proc.setData (data);
-			proc.process (sender);
+			final UpdateCityMessageImpl proc = getFactory ().createUpdateCityMessage ();
+			for (final UpdateCityMessageData data : getCityUpdate ())
+			{
+				proc.setData (data);
+				proc.processOneUpdate ();
+			}
 		}
 		
+		/*
 		// Buildings added or come into view
 		for (final AddBuildingMessageData data : getAddBuilding ())
 		{

@@ -1,20 +1,25 @@
 package momime.client.graphics.database;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import momime.client.graphics.database.v0_9_5.AnimationFrame;
-import momime.client.graphics.database.v0_9_5.MapFeature;
+import momime.client.graphics.database.v0_9_5.CityImage;
+import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.Wizard;
-import momime.client.ui.MomUIUtils;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.utils.MemoryBuildingUtils;
 
 import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Tests the GraphicsDatabaseExImpl class
@@ -151,7 +156,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapFeature newMapFeature = new MapFeature ();
+			final MapFeatureEx newMapFeature = new MapFeatureEx ();
 			newMapFeature.setMapFeatureID ("MF0" + n);
 			db.getMapFeature ().add (newMapFeature);
 		}
@@ -171,7 +176,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapFeature newMapFeature = new MapFeature ();
+			final MapFeatureEx newMapFeature = new MapFeatureEx ();
 			newMapFeature.setMapFeatureID ("MF0" + n);
 			db.getMapFeature ().add (newMapFeature);
 		}
@@ -182,15 +187,109 @@ public final class TestGraphicsDatabaseExImpl
 	}
 	
 	/**
+	 * Tests the findBestCityImage method
+	 * @throws RecordNotFoundException If no city size entries match the requested citySizeID
+	 */
+	@Test
+	public final void testFindBestCityImage_Exists () throws RecordNotFoundException
+	{
+		// City location
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
+		cityLocation.setX (25);
+		cityLocation.setY (10);
+		cityLocation.setZ (1);
+
+		// Buildings that we have
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		
+		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL01")).thenReturn (true);
+		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL02")).thenReturn (false);
+		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL03")).thenReturn (true);
+		
+		// Set up object to test
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		db.setMemoryBuildingUtils (memoryBuildingUtils);
+		
+		// An image for CS01 needing no buildings
+		final CityImage image1 = new CityImage ();
+		image1.setCitySizeID ("CS01");
+		db.getCityImage ().add (image1);
+		
+		// An image for CS01 needing a building that we have (this should get chosen)
+		final CityImagePrerequisite image2prereq = new CityImagePrerequisite ();
+		image2prereq.setPrerequisiteID ("BL01");
+		
+		final CityImage image2 = new CityImage ();
+		image2.setCitySizeID ("CS01");
+		image2.getCityImagePrerequisite ().add (image2prereq);
+		db.getCityImage ().add (image2);
+
+		// An image for CS01 needing a building that we have plus one that we don't
+		final CityImagePrerequisite image3prereq1 = new CityImagePrerequisite ();
+		image3prereq1.setPrerequisiteID ("BL01");
+		final CityImagePrerequisite image3prereq2 = new CityImagePrerequisite ();
+		image3prereq2.setPrerequisiteID ("BL02");
+		
+		final CityImage image3 = new CityImage ();
+		image3.setCitySizeID ("CS01");
+		image3.getCityImagePrerequisite ().add (image3prereq1);
+		image3.getCityImagePrerequisite ().add (image3prereq2);
+		db.getCityImage ().add (image3);
+		
+		// An image for CS02 needing two building that we have
+		final CityImagePrerequisite image4prereq1 = new CityImagePrerequisite ();
+		image4prereq1.setPrerequisiteID ("BL01");
+		final CityImagePrerequisite image4prereq2 = new CityImagePrerequisite ();
+		image4prereq2.setPrerequisiteID ("BL03");
+		
+		final CityImage image4 = new CityImage ();
+		image4.setCitySizeID ("CS02");
+		image4.getCityImagePrerequisite ().add (image4prereq1);
+		image4.getCityImagePrerequisite ().add (image4prereq2);
+		db.getCityImage ().add (image4);
+		
+		// Run test
+		assertSame (image2, db.findBestCityImage ("CS01", cityLocation, buildings, "testFindBestCityImage"));
+	}
+	
+	/**
+	 * Tests the findBestCityImage method looking for a citySizeID that doesn't exist
+	 * @throws RecordNotFoundException If no city size entries match the requested citySizeID
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindBestCityImage_NotExists () throws RecordNotFoundException
+	{
+		// City location
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
+		cityLocation.setX (25);
+		cityLocation.setY (10);
+		cityLocation.setZ (1);
+
+		// Buildings that we have
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		
+		// Set up object to test
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		db.setMemoryBuildingUtils (memoryBuildingUtils);
+		
+		// An image for CS01 needing no buildings
+		final CityImage image1 = new CityImage ();
+		image1.setCitySizeID ("CS01");
+		db.getCityImage ().add (image1);
+		
+		// Run test
+		db.findBestCityImage ("CS02", cityLocation, buildings, "testFindBestCityImage");
+	}
+	
+	/**
 	 * Tests the findAnimation method to find a animation ID that does exist
 	 * @throws IOException If there is a problem
 	 */
 	@Test
 	public final void testFindAnimation_Exists () throws IOException
 	{
-		// Mock some images
-		final MomUIUtils utils = mock (MomUIUtils.class);
-		
 		// Set up object to test
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -198,16 +297,6 @@ public final class TestGraphicsDatabaseExImpl
 			final AnimationEx newAnimation = new AnimationEx ();
 			newAnimation.setAnimationID ("AN0" + n);
 			db.getAnimation ().add (newAnimation);
-			
-			// Have to go to some lengths to make the animation pass consistency checks performed by buildMaps below
-			final BufferedImage image = new BufferedImage (10, 5, BufferedImage.TYPE_INT_ARGB);
-			when (utils.loadImage ("ImageFile" + n)).thenReturn (image);
-
-			final AnimationFrame frame = new AnimationFrame ();
-			frame.setFrameImageFile ("ImageFile" + n);
-			
-			newAnimation.setUtils (utils);
-			newAnimation.getFrame ().add (frame);
 		}
 
 		db.buildMaps ();
@@ -223,9 +312,6 @@ public final class TestGraphicsDatabaseExImpl
 	@Test(expected=RecordNotFoundException.class)
 	public final void testFindAnimation_NotExists () throws IOException
 	{
-		// Mock some images
-		final MomUIUtils utils = mock (MomUIUtils.class);
-		
 		// Set up object to test
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -233,16 +319,6 @@ public final class TestGraphicsDatabaseExImpl
 			final AnimationEx newAnimation = new AnimationEx ();
 			newAnimation.setAnimationID ("AN0" + n);
 			db.getAnimation ().add (newAnimation);
-			
-			// Have to go to some lengths to make the animation pass consistency checks performed by buildMaps below
-			final BufferedImage image = new BufferedImage (10, 5, BufferedImage.TYPE_INT_ARGB);
-			when (utils.loadImage ("ImageFile" + n)).thenReturn (image);
-
-			final AnimationFrame frame = new AnimationFrame ();
-			frame.setFrameImageFile ("ImageFile" + n);
-			
-			newAnimation.setUtils (utils);
-			newAnimation.getFrame ().add (frame);
 		}
 
 		db.buildMaps ();

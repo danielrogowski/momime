@@ -2,11 +2,10 @@ package momime.client.ui;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationEx;
@@ -15,14 +14,18 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.MapFeatureEx;
 import momime.client.graphics.database.SmoothedTileTypeEx;
 import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.SmoothedTile;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Screen for displaying the overland map, including the buttons and side panels and so on that appear in the same frame
@@ -49,6 +52,9 @@ public final class OverlandMapUI
 	
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
+	
+	/** Colour multiplied flags for each player's cities */
+	final Map<Integer, BufferedImage> cityFlagImages = new HashMap<Integer, BufferedImage> ();
 	
 	/** The plane that the UI is currently displaying */
 	private int mapViewPlane = 0;
@@ -244,15 +250,64 @@ public final class OverlandMapUI
 				}
 			}
 		
+		// Cities have to be done in a 2nd pass, since they're larger than the terrain tiles
+		for (int y = 0; y < mapSize.getHeight (); y++) 
+			for (int x = 0; x < mapSize.getWidth (); x++)
+			{
+				final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(mapViewPlane).getRow ().get (y).getCell ().get (x);
+				final String citySizeID = (gc.getCityData () == null) ? null : gc.getCityData ().getCitySizeID ();
+				if (citySizeID != null)
+				{
+					final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
+					cityLocation.setX (x);
+					cityLocation.setY (y);
+					cityLocation.setZ (mapViewPlane);
+					
+					final CityImage cityImage = getGraphicsDB ().findBestCityImage (citySizeID, cityLocation,
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "regenerateOverlandMapBitmaps");
+					final BufferedImage image = getUtils ().loadImage (cityImage.getCityImageFile ());
+					
+					final int xpos = (x * overlandMapTileSet.getTileWidth ()) - ((image.getWidth () - overlandMapTileSet.getTileWidth ()) / 2);
+					final int ypos = (y * overlandMapTileSet.getTileHeight ()) - ((image.getHeight () - overlandMapTileSet.getTileHeight ()) / 2);
+
+					// Use same image for all frames
+					final BufferedImage cityFlagImage = getCityFlagImage (gc.getCityData ().getCityOwnerID ());
+					for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+					{
+						g [frameNo].drawImage (image, xpos, ypos, null);
+						g [frameNo].drawImage (cityFlagImage, xpos + cityImage.getFlagOffsetX (), ypos + cityImage.getFlagOffsetY (), null);
+					}
+				}
+			}
+		
 		// Clean up the drawing contexts 
 		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 			g [frameNo].dispose ();
 		
-		// For debug purposes for now
-		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-			ImageIO.write (overlandMapBitmaps [frameNo], "png", new File ("F:\\MoMIMEClient overland map frame " + frameNo + ".png"));
-		
 		log.exiting (OverlandMapUI.class.getName (), "regenerateOverlandMapBitmaps"); 
+	}
+	
+	/**
+	 * @param playerID City owner player ID
+	 * @return City flag image in their correct colour 
+	 * @throws IOException If there is a problem loading the flag image
+	 */
+	private final BufferedImage getCityFlagImage (final int playerID) throws IOException
+	{
+		BufferedImage image = cityFlagImages.get (playerID);
+		if (image == null)
+		{
+			// Generate a new one
+			final BufferedImage whiteImage = getUtils ().loadImage (GraphicsDatabaseConstants.IMAGE_CITY_FLAG);
+			
+			final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), playerID);
+			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+			
+			image = getUtils ().multiplyImageByColour (whiteImage, Integer.parseInt (trans.getFlagColour (), 16));
+			cityFlagImages.put (playerID, image);
+		}
+		return image;
 	}
 
 	/**

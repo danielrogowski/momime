@@ -2,6 +2,7 @@ package momime.server.database;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_4.TaxRate;
@@ -32,6 +33,9 @@ import momime.server.database.v0_9_4.Wizard;
  */
 public final class ServerDatabaseExImpl extends ServerDatabase implements ServerDatabaseEx
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (ServerDatabaseExImpl.class.getName ());
+	
 	/** Map of city size IDs to city size XML objects */
 	private Map<String, CitySize> citySizesMap;
 
@@ -100,6 +104,8 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	 */
 	public final void buildMaps ()
 	{
+		log.entering (ServerDatabaseExImpl.class.getName (), "buildMaps");
+		
 		// Create city sizes map
 		citySizesMap = new HashMap<String, CitySize> ();
 		for (final CitySize thisCitySize : getCitySize ())
@@ -204,6 +210,8 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		combatTileBordersMap = new HashMap<String, CombatTileBorder> ();
 		for (final CombatTileBorder thisCombatTileBorder : getCombatTileBorder ())
 			combatTileBordersMap.put (thisCombatTileBorder.getCombatTileBorderID (), thisCombatTileBorder);
+		
+		log.exiting (ServerDatabaseExImpl.class.getName (), "buildMaps");
 	}
 
 	/**

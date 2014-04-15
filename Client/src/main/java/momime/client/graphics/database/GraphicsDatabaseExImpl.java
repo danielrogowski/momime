@@ -2,16 +2,24 @@ package momime.client.graphics.database;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import momime.client.graphics.database.v0_9_5.Animation;
+import momime.client.graphics.database.v0_9_5.CityImage;
+import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.utils.MemoryBuildingUtils;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Implementation of graphics XML database - extends stubs auto-generated from XSD to add additional functionality from the interface
@@ -36,14 +44,15 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationEx> animationsMap;
 	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
+	
 	/**
 	 * Builds all the hash maps to enable finding records faster
-	 * @throws IOException If any images cannot be loaded, or any consistency checks fail
 	 */
-	public final void buildMaps () throws IOException
+	public final void buildMaps ()
 	{
 		log.entering (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
-		log.info ("Processing graphics XML file");
 		
 		// Create picks map
 		picksMap = new HashMap<String, Pick> ();
@@ -58,38 +67,73 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		// Create animations map, and check for consistency
 		animationsMap = new HashMap<String, AnimationEx> ();
 		for (final Animation anim : getAnimation ())
-		{
-			final AnimationEx aex = (AnimationEx) anim;
-			aex.deriveAnimationWidthAndHeight ();
-			animationsMap.put (aex.getAnimationID (), aex);
-		}
-		log.info ("All " + getAnimation ().size () + " animations passed consistency checks");		
+			animationsMap.put (anim.getAnimationID (), (AnimationEx) anim);
 		
 		// Create tileSets map, and build all the smoothing rule bitmask maps
 		tileSetsMap = new HashMap<String, TileSetEx> ();
+		for (final TileSet ts : getTileSet ())
+			tileSetsMap.put (ts.getTileSetID (), (TileSetEx) ts);
+
+		// Create map features map, and check for consistency
+		mapFeaturesMap = new HashMap<String, MapFeatureEx> ();
+		for (final MapFeature mf : getMapFeature ())
+			mapFeaturesMap.put (mf.getMapFeatureID (), (MapFeatureEx) mf);
+		
+		log.exiting (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
+	}
+
+	/**
+	 * Builds all the hash maps to enable finding records faster
+	 * @throws IOException If any images cannot be loaded, or any consistency checks fail
+	 */
+	public final void consistencyChecks () throws IOException
+	{
+		log.entering (GraphicsDatabaseExImpl.class.getName (), "consistencyChecks");
+		log.info ("Processing graphics XML file");
+		
+		// Check all animations have frames with consistent sizes
+		for (final Animation anim : getAnimation ())
+		{
+			final AnimationEx aex = (AnimationEx) anim;
+			aex.deriveAnimationWidthAndHeight ();
+		}
+		log.info ("All " + getAnimation ().size () + " animations passed consistency checks");		
+		
+		// Build all the smoothing rule bitmask maps, and determine the size of tiles in each set
 		for (final TileSet ts : getTileSet ())
 		{
 			final TileSetEx tsex = (TileSetEx) ts;
 			tsex.buildMaps ();
 			tsex.deriveAnimationFrameCountAndSpeed (this);
 			tsex.deriveTileWidthAndHeight (this);
-			tileSetsMap.put (tsex.getTileSetID (), tsex);
 		}
-		final TileSetEx overlandMapTileSet = findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "buildMaps");
+		final TileSetEx overlandMapTileSet = findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "consistencyChecks");
 
-		// Create map features map, and check for consistency
-		mapFeaturesMap = new HashMap<String, MapFeatureEx> ();
+		// Ensure all map features match the size of the overland map tiles
 		for (final MapFeature mf : getMapFeature ())
 		{
 			final MapFeatureEx mfex = (MapFeatureEx) mf;
 			mfex.checkWidthAndHeight (overlandMapTileSet);
-			mapFeaturesMap.put (mfex.getMapFeatureID (), mfex);
 		}
 		log.info ("All " + getMapFeature ().size () + " map features passed consistency checks");		
 		
-		log.exiting (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
+		log.exiting (GraphicsDatabaseExImpl.class.getName (), "consistencyChecks");
 	}
 
+	/**
+	 * Method triggered by Spring when the the DB is created
+	 * @throws IOException If any images cannot be loaded, or any consistency checks fail
+	 */
+	public final void buildMapsAndRunConsistencyChecks () throws IOException
+	{
+		log.entering (GraphicsDatabaseExImpl.class.getName (), "buildMapsAndRunConsistencyChecks");
+
+		buildMaps ();
+		consistencyChecks ();
+
+		log.exiting (GraphicsDatabaseExImpl.class.getName (), "buildMapsAndRunConsistencyChecks");
+	}
+	
 	/**
 	 * @param pickID Pick ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -155,6 +199,54 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 	
 	/**
+	 * Note this isn't straightforward like the other lookups, since one citySizeID can have multiple entries in the graphics XML,
+	 * some with specialised graphics showing particular buildings.  So this must pick the most appropriate entry.
+	 * 
+	 * @param citySizeID City size ID to search for
+	 * @param cityLocation Location of the city, so we can check what buildings it has
+	 * @param buildings List of known buildings
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return City size object
+	 * @throws RecordNotFoundException If no city size entries match the requested citySizeID
+	 */
+	@Override
+	public final CityImage findBestCityImage (final String citySizeID, final MapCoordinates3DEx cityLocation,
+		final List<MemoryBuilding> buildings, final String caller) throws RecordNotFoundException
+	{
+		CityImage bestMatch = null;
+		int bestMatchBuildingCount = 0;
+		
+		for (final CityImage image : getCityImage ())
+			if (image.getCitySizeID ().equals (citySizeID))
+			{
+				// So the size matches - but does this image require buildings to be present?  If so, count how many
+				boolean buildingsMatch = true;
+				int buildingCount = 0;
+				final Iterator<CityImagePrerequisite> iter = image.getCityImagePrerequisite ().iterator ();
+				while ((buildingsMatch) && (iter.hasNext ()))
+				{
+					final String buildingID = iter.next ().getPrerequisiteID ();
+					if (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, buildingID))
+						buildingCount++;
+					else
+						buildingsMatch = false;
+				}
+				
+				// Is it a better match than we had already?
+				if ((buildingsMatch) && ((bestMatch == null) || (buildingCount > bestMatchBuildingCount)))
+				{
+					bestMatch = image;
+					bestMatchBuildingCount = buildingCount;
+				}
+			}
+		
+		if (bestMatch == null)
+			throw new RecordNotFoundException (CityImage.class.getName (), citySizeID, caller);
+			
+		return bestMatch;
+	}
+	
+	/**
 	 * @param animationID Animation ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Animation object
@@ -168,5 +260,21 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			throw new RecordNotFoundException (Animation.class.getName (), animationID, caller);
 
 		return found;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
 	}
 }

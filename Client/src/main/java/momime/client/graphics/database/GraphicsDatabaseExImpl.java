@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
+import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -29,6 +30,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of tileSet IDs to tileSet objects */
 	private Map<String, TileSetEx> tileSetsMap;
 
+	/** Map of map feature IDs to map feature XML objects */
+	private Map<String, MapFeatureEx> mapFeaturesMap;
+	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationEx> animationsMap;
 	
@@ -71,7 +75,18 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			tsex.deriveTileWidthAndHeight (this);
 			tileSetsMap.put (tsex.getTileSetID (), tsex);
 		}
+		final TileSetEx overlandMapTileSet = findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "buildMaps");
 
+		// Create map features map, and check for consistency
+		mapFeaturesMap = new HashMap<String, MapFeatureEx> ();
+		for (final MapFeature mf : getMapFeature ())
+		{
+			final MapFeatureEx mfex = (MapFeatureEx) mf;
+			mfex.checkWidthAndHeight (overlandMapTileSet);
+			mapFeaturesMap.put (mfex.getMapFeatureID (), mfex);
+		}
+		log.info ("All " + getMapFeature ().size () + " map features passed consistency checks");		
+		
 		log.exiting (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
 	}
 
@@ -123,6 +138,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		return found;
 	}
 
+	/**
+	 * @param mapFeatureID Map feature ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Map feature object
+	 * @throws RecordNotFoundException If the mapFeatureID doesn't exist
+	 */
+	@Override
+	public final MapFeatureEx findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException
+	{
+		final MapFeatureEx found = mapFeaturesMap.get (mapFeatureID);
+		if (found == null)
+			throw new RecordNotFoundException (MapFeature.class.getName (), mapFeatureID, caller);
+
+		return found;
+	}
+	
 	/**
 	 * @param animationID Animation ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

@@ -14,6 +14,11 @@ public interface GraphicsDatabaseFactory
 	 * @return Newly created tile set
 	 */
 	public TileSetEx createTileSet ();
+
+	/**
+	 * @return Newly created map feature
+	 */
+	public MapFeatureEx createMapFeature ();
 	
 	/**
 	 * @return Newly created animation

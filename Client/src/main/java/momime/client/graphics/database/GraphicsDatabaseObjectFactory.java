@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
+import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.ObjectFactory;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.client.graphics.database.v0_9_5.SmoothingSystem;
@@ -54,6 +55,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 		return new SmoothingSystemEx ();
 	}
 	
+	/**
+	 * @return Custom extended MapFeature 
+	 */
+	@Override
+	public final MapFeature createMapFeature ()
+	{
+		return getFactory ().createMapFeature ();
+	}
+
 	/**
 	 * @return Custom extended Animation 
 	 */

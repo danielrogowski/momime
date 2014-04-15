@@ -31,10 +31,10 @@ public final class TileSetEx extends TileSet
 	private Double animationSpeed;
 
 	/** All images and animation frames used by tiles in the same tile set must share the same width */
-	private int tileWidth;
+	int tileWidth;
 	
 	/** All images and animation frames used by tiles in the same tile set must share the same height */
-	private int tileHeight;
+	int tileHeight;
 	
 	/** Map of smoothing system IDs to smoothing systems */
 	private Map<String, SmoothingSystemEx> smoothingSystemsMap;
@@ -141,7 +141,9 @@ public final class TileSetEx extends TileSet
 			
 			// Features (like rocks and trees) and buildings are smaller or larger than the actual diagonal combat tiles, so exclude them from the check
 			// Checking this on the code is a bit of a hack, it should look the code up in the DB and check if the layer = BUILDINGS_AND_TERRAIN_FEATURES
-			// but the client DB doesn't have that info at the moment - need to fix that
+			// but that's not possible with the current setup because even if we include the map layer in the client DB, the server doesn't send us the client
+			// DB until we join a game, and I really want the graphics XML parsing to be done at startup.  So, unless I do some kind of merger of all the XML
+			// files in future, for now this is the only way.
 			if ((tt.getCombatTileTypeID () == null) || (!tt.getCombatTileTypeID ().startsWith ("CBL")))
 				for (final SmoothedTile tile : tt.getSmoothedTile ())
 					if (tile.getTileFile () != null)

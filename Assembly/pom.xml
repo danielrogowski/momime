@@ -43,31 +43,31 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-editors</artifactId>
-			<version>0.9.4</version>
+			<version>0.9.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-server</artifactId>
-			<version>0.9.4</version>
+			<version>0.9.5-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Get the classpath artifacts included as 'dependencies' -->
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-editors</artifactId>
-			<version>0.9.4</version>
+			<version>0.9.5-SNAPSHOT</version>
 			<classifier>classpath</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-server</artifactId>
-			<version>0.9.4</version>
+			<version>0.9.5-SNAPSHOT</version>
 			<classifier>classpath</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>0.9.4</version>
+			<version>0.9.5-SNAPSHOT</version>
 			<classifier>classpath</classifier>
 		</dependency>
 	</dependencies>

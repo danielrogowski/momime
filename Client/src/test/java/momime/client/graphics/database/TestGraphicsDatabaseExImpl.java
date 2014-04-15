@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import momime.client.graphics.database.v0_9_5.AnimationFrame;
+import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.client.ui.MomUIUtils;
@@ -140,6 +141,46 @@ public final class TestGraphicsDatabaseExImpl
 		db.findTileSet ("WZ04", "testFindTileSet_NotExists");
 	}
 
+	/**
+	 * Tests the findMapFeatureID method to find a mapFeature ID that does exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testFindMapFeatureID_Exists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MapFeature newMapFeature = new MapFeature ();
+			newMapFeature.setMapFeatureID ("MF0" + n);
+			db.getMapFeature ().add (newMapFeature);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("MF02", db.findMapFeature ("MF02", "testFindMapFeatureID_Exists").getMapFeatureID ());
+	}
+
+	/**
+	 * Tests the findMapFeatureID method to find a mapFeature ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindMapFeatureID_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MapFeature newMapFeature = new MapFeature ();
+			newMapFeature.setMapFeatureID ("MF0" + n);
+			db.getMapFeature ().add (newMapFeature);
+		}
+
+		db.buildMaps ();
+
+		db.findMapFeature ("MF04", "testFindMapFeatureID_NotExists");
+	}
+	
 	/**
 	 * Tests the findAnimation method to find a animation ID that does exist
 	 * @throws IOException If there is a problem

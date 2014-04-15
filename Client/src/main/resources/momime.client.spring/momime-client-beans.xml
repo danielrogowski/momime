@@ -107,6 +107,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 
+	<bean id="mapFeature" class="momime.client.graphics.database.MapFeatureEx" scope="prototype">
+		<property name="utils" ref="uiUtils" />
+	</bean>
+
 	<bean id="animation" class="momime.client.graphics.database.AnimationEx" scope="prototype">
 		<property name="utils" ref="uiUtils" />
 	</bean>

@@ -12,6 +12,7 @@ import momime.client.MomClient;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.MapFeatureEx;
 import momime.client.graphics.database.SmoothedTileTypeEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.SmoothedTile;
@@ -177,6 +178,8 @@ public final class OverlandMapUI
 	
 	/**
 	 * Generates big bitmaps of the entire overland map in each frame of animation
+	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView
+	 * 
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	public final void regenerateOverlandMapBitmaps () throws IOException
@@ -203,6 +206,7 @@ public final class OverlandMapUI
 		for (int y = 0; y < mapSize.getHeight (); y++) 
 			for (int x = 0; x < mapSize.getWidth (); x++)
 			{
+				// Terrain
 				final SmoothedTile tile = smoothedTiles [mapViewPlane] [y] [x];
 				if (tile != null)
 				{
@@ -223,6 +227,20 @@ public final class OverlandMapUI
 							g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 						}
 					}
+				}
+				
+				// Map feature
+				final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(mapViewPlane).getRow ().get (y).getCell ().get (x);
+				final String mapFeatureID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getMapFeatureID ();
+				if (mapFeatureID != null)
+				{
+					final MapFeatureEx mapFeature = getGraphicsDB ().findMapFeature (mapFeatureID, "regenerateOverlandMapBitmaps");
+					final BufferedImage image = getUtils ().loadImage (mapFeature.getOverlandMapImageFile ());
+
+					// Use same image for all frames
+					for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+						g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 				}
 			}
 		

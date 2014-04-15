@@ -34,6 +34,14 @@ public interface GraphicsDatabaseEx
 	public TileSetEx findTileSet (final String tileSetID, final String caller) throws RecordNotFoundException;
 
 	/**
+	 * @param mapFeatureID Map feature ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Map feature object
+	 * @throws RecordNotFoundException If the mapFeatureID doesn't exist
+	 */
+	public MapFeatureEx findMapFeature (final String mapFeatureID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @param animationID Animation ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Animation object

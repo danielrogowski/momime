@@ -8,8 +8,18 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.OverlandMapUI;
+import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessageData;
+import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
+import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessageData;
+import momime.common.messages.servertoclient.v0_9_5.AddUnitMessageData;
+import momime.common.messages.servertoclient.v0_9_5.CancelCombatAreaEffectMessageData;
+import momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessageData;
+import momime.common.messages.servertoclient.v0_9_5.FogOfWarStateMessageData;
 import momime.common.messages.servertoclient.v0_9_5.FogOfWarVisibleAreaChangedMessage;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitMessageData;
+import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessageData;
+import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessageData;
 
 import com.ndg.map.areas.storage.MapArea3D;
@@ -79,13 +89,15 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			}
 		}
 		
-		/*
 		// Buildings added or come into view
-		for (final AddBuildingMessageData data : getAddBuilding ())
+		if (getAddBuilding ().size () > 0)
 		{
-			final AddBuildingMessageImpl proc = new AddBuildingMessageImpl ();
-			proc.setData (data);
-			proc.process (sender);
+			final AddBuildingMessageImpl proc = getFactory ().createAddBuildingMessage ();
+			for (final AddBuildingMessageData data : getAddBuilding ())
+			{
+				proc.setData (data);
+				proc.processOneUpdate ();
+			}
 		}
 		
 		// Buildings destroyed or gone out of view
@@ -97,11 +109,14 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		}
 		
 		// Units added or come into view
-		for (final AddUnitMessageData data : getAddUnit ())
+		if (getAddUnit ().size () > 0)
 		{
-			final AddUnitMessageImpl proc = new AddUnitMessageImpl ();
-			proc.setData (data);
-			proc.process (sender);
+			final AddUnitMessageImpl proc = getFactory ().createAddUnitMessage ();
+			for (final AddUnitMessageData data : getAddUnit ())
+			{
+				proc.setData (data);
+				proc.process (sender);
+			}
 		}
 		
 		// Units killed or gone out of view
@@ -155,7 +170,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		// Changes in Fog of War area
 		for (final FogOfWarStateMessageData data : getFogOfWarUpdate ())
 		{
-		} */
+		}
 		
 		// So much will have changed (terrain, cities, node auras, fog of war area, units) that best to just regenerate the lot
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();

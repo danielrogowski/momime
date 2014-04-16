@@ -204,6 +204,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="momClient" />
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
+
+	<bean id="startGameMessage" class="momime.client.messages.process.StartGameMessageImpl" scope="prototype">
+		<property name="newGameUI" ref="newGameUI" />
+	</bean>
+
+	<bean id="updateGlobalEconomyMessage" class="momime.client.messages.process.UpdateGlobalEconomyMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+	</bean>
+
+	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="unitUtils" ref="unitUtils" />
+	</bean>
+
+	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype" />
@@ -213,12 +230,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype" />
 	<bean id="pendingMovementMessage" class="momime.client.messages.process.PendingMovementMessageImpl" scope="prototype" />
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
-	<bean id="startGameMessage" class="momime.client.messages.process.StartGameMessageImpl" scope="prototype" />
-	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
 	<bean id="updateOverlandMovementRemainingMessage" class="momime.client.messages.process.UpdateOverlandMovementRemainingMessageImpl" scope="prototype" />
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
-	<bean id="updateGlobalEconomyMessage" class="momime.client.messages.process.UpdateGlobalEconomyMessageImpl" scope="prototype" />
 	<bean id="startSimultaneousTurnMessage" class="momime.client.messages.process.StartSimultaneousTurnMessageImpl" scope="prototype" />
 	<bean id="addNewTurnMessagesMessage" class="momime.client.messages.process.AddNewTurnMessagesMessageImpl" scope="prototype" />
 	<bean id="taxRateChangedMessage" class="momime.client.messages.process.TaxRateChangedMessageImpl" scope="prototype" />
@@ -237,9 +251,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype" />
 	<bean id="overlandCastQueuedMessage" class="momime.client.messages.process.OverlandCastQueuedMessageImpl" scope="prototype" />
-	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype" />
-	<bean id="addUnitMessage" class="momime.client.messages.process.AddUnitMessageImpl" scope="prototype" />
-	<bean id="addBuildingMessage" class="momime.client.messages.process.AddBuildingMessageImpl" scope="prototype" />
 	<bean id="destroyBuildingMessage" class="momime.client.messages.process.DestroyBuildingMessageImpl" scope="prototype" />
 	<bean id="endOfContinuedMovementMessage" class="momime.client.messages.process.EndOfContinuedMovementMessageImpl" scope="prototype" />
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype" />
@@ -268,6 +279,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype">
 		<property name="client" ref="momClient" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+	</bean>
+
+	<bean id="addBuildingMessage" class="momime.client.messages.process.AddBuildingMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+	</bean>
+
+	<bean id="addUnitMessage" class="momime.client.messages.process.AddUnitMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">

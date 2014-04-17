@@ -207,6 +207,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="startGameMessage" class="momime.client.messages.process.StartGameMessageImpl" scope="prototype">
 		<property name="newGameUI" ref="newGameUI" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="mainMenuUI" ref="mainMenuUI" />
 	</bean>
 
 	<bean id="updateGlobalEconomyMessage" class="momime.client.messages.process.UpdateGlobalEconomyMessageImpl" scope="prototype">
@@ -410,6 +412,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="overlandMapUI" class="momime.client.ui.OverlandMapUI">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="client" ref="momClient" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />

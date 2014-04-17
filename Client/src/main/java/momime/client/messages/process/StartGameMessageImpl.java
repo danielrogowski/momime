@@ -9,7 +9,9 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
+import momime.client.ui.MainMenuUI;
 import momime.client.ui.NewGameUI;
+import momime.client.ui.OverlandMapUI;
 import momime.common.messages.servertoclient.v0_9_5.StartGameMessage;
 
 /**
@@ -22,7 +24,13 @@ public final class StartGameMessageImpl extends StartGameMessage implements Sess
 
 	/** New Game UI */
 	private NewGameUI newGameUI;
-
+	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
+	
+	/** Main menu UI */
+	private MainMenuUI mainMenuUI;
+	
 	/**
 	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -36,6 +44,8 @@ public final class StartGameMessageImpl extends StartGameMessage implements Sess
 		log.entering (StartGameMessageImpl.class.getName (), "process");
 
 		getNewGameUI ().setVisible (false);
+		getMainMenuUI ().setVisible (false);
+		getOverlandMapUI ().setVisible (true);
 		
 		log.exiting (StartGameMessageImpl.class.getName (), "process");
 	}
@@ -54,5 +64,37 @@ public final class StartGameMessageImpl extends StartGameMessage implements Sess
 	public final void setNewGameUI (final NewGameUI ui)
 	{
 		newGameUI = ui;
+	}
+
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Main menu UI
+	 */
+	public final MainMenuUI getMainMenuUI ()
+	{
+		return mainMenuUI;
+	}
+
+	/**
+	 * @param ui Main menu UI
+	 */
+	public final void setMainMenuUI (final MainMenuUI ui)
+	{
+		mainMenuUI = ui;
 	}
 }

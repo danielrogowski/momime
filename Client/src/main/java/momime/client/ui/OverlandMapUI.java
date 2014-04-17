@@ -1,11 +1,27 @@
 package momime.client.ui;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Box;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationEx;
@@ -30,7 +46,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Screen for displaying the overland map, including the buttons and side panels and so on that appear in the same frame
  */
-public final class OverlandMapUI
+public final class OverlandMapUI extends MomClientAbstractUI
 {
 	/** Class logger */
 	private final Logger log = Logger.getLogger (OverlandMapUI.class.getName ());
@@ -44,8 +60,8 @@ public final class OverlandMapUI
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
-	/** Helper methods and constants for creating and laying out Swing components */
-	private MomUIUtils utils;
+	/** Small font */
+	private Font smallFont;
 	
 	/** Smoothed tiles to display at every map cell */
 	private SmoothedTile [] [] [] smoothedTiles;
@@ -59,13 +75,329 @@ public final class OverlandMapUI
 	/** The plane that the UI is currently displaying */
 	private int mapViewPlane = 0;
 	
+	// UI Components
+
+	/** Typical inset used on this screen layout */
+	private final static int INSET = 0;
+	
+	/** Frame number being displayed */
+	private int terrainAnimFrame;
+	
+	/** Game action */
+	private Action gameAction;
+	
+	/** Spells action */
+	private Action spellsAction;
+	
+	/** Armies action */
+	private Action armiesAction;
+	
+	/** Cities action */
+	private Action citiesAction;
+	
+	/** Magic action */
+	private Action magicAction;
+	
+	/** Plane action */
+	private Action planeAction;
+	
+	/** Messages action */
+	private Action messagesAction;
+	
+	/** Chat action */
+	private Action chatAction;
+	
+	/** Info action */
+	private Action infoAction;
+	
+	/** Zoom in action */
+	private Action zoomInAction;
+	
+	/** Zoom out action */
+	private Action zoomOutAction;
+	
+	/** Options action */
+	private Action optionsAction;
+	
+	/** Turn label */
+	private JLabel turnLabel;
+	
 	/**
 	 * Creates the smoothedTiles array as the correct size
+	 * Can't just do this at the start of init (), because the server sends the first FogOfWarVisibleAreaChanged prior to the overland map being displayed,
+	 * so we can prepare the map image before displaying it - so we have to create the area for it to prepare it into
 	 */
 	public final void afterJoinedSession ()
 	{
 		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
 		smoothedTiles = new SmoothedTile [mapSize.getDepth ()] [mapSize.getHeight ()] [mapSize.getWidth ()];
+	}
+	
+	/**
+	 * Sets up the frame once all values have been injected
+	 * @throws IOException If a resource cannot be found
+	 */
+	@Override
+	protected final void init () throws IOException
+	{
+		// Load images
+		final BufferedImage topBarBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/background.png");
+		final BufferedImage topBarGoldButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/goldNormal.png");
+		final BufferedImage topBarGoldButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/goldPressed.png");
+		final BufferedImage topBarInfoNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/infoNormal.png");
+		final BufferedImage topBarInfoPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/infoPressed.png");
+		final BufferedImage topBarZoomInNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/zoomInNormal.png");
+		final BufferedImage topBarZoomInPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/zoomInPressed.png");
+		final BufferedImage topBarZoomOutNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/zoomOutNormal.png");
+		final BufferedImage topBarZoomOutPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/zoomOutPressed.png");
+		final BufferedImage topBarOptionsNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/optionsNormal.png");
+		final BufferedImage topBarOptionsPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/optionsPressed.png");
+
+		final BufferedImage rightHandPanelBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/background.png");
+
+		// Actions
+		gameAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		spellsAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		armiesAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		citiesAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		magicAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		planeAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		messagesAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		chatAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		infoAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		zoomInAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		zoomOutAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+
+		optionsAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+		
+		// Initialize the frame
+		getFrame ().setTitle ("Overland Map");
+		getFrame ().setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
+		
+		// Initialize the content pane
+		final JPanel contentPane = new JPanel ();
+		contentPane.setBackground (Color.BLACK);
+		contentPane.setPreferredSize (new Dimension (640, 480));
+		
+		// Set up main layout
+ 		// This is a 2x2 grid, with the top two cells being joined into one long bar
+		contentPane.setLayout (new GridBagLayout ());
+		
+		final Dimension mapButtonBarSize = new Dimension (topBarBackground.getWidth (), topBarBackground.getHeight ());
+		final JPanel mapButtonBar = new JPanel ()
+		{
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				super.paintComponent (g);
+				g.drawImage (topBarBackground, 0, 0, null);
+			}
+		};
+		
+		mapButtonBar.setMinimumSize (mapButtonBarSize);
+		mapButtonBar.setMaximumSize (mapButtonBarSize);
+		mapButtonBar.setPreferredSize (mapButtonBarSize);
+		contentPane.add (mapButtonBar, getUtils ().createConstraints (0, 0, 2, INSET, GridBagConstraints.WEST));
+
+		final Dimension rightHandPanelSize = new Dimension (rightHandPanelBackground.getWidth (), rightHandPanelBackground.getHeight ());
+		final JPanel rightHandPanel = new JPanel ()
+		{
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				super.paintComponent (g);
+				g.drawImage (rightHandPanelBackground, 0, 0, null);
+			}
+		};
+		rightHandPanel.setBackground (Color.BLACK);
+		
+		rightHandPanel.setMinimumSize (rightHandPanelSize);
+		rightHandPanel.setMaximumSize (rightHandPanelSize);
+		rightHandPanel.setPreferredSize (rightHandPanelSize);
+		contentPane.add (rightHandPanel, getUtils ().createConstraints (1, 1, 1, INSET, GridBagConstraints.NORTH));
+		
+		final JPanel sceneryPanel = new JPanel ()
+		{
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				super.paintComponent (g);
+				g.drawImage (overlandMapBitmaps [terrainAnimFrame], 0, 0, null);
+			}
+		};
+		sceneryPanel.setBackground (Color.BLACK);
+		
+		// Let the scenery panel take up as much space as possible
+		final GridBagConstraints sceneryConstraints = getUtils ().createConstraints (0, 1, 1, INSET, GridBagConstraints.CENTER);
+		sceneryConstraints.fill = GridBagConstraints.BOTH;
+		sceneryConstraints.weightx = 1;
+		sceneryConstraints.weighty = 1;
+		
+		contentPane.add (sceneryPanel, sceneryConstraints);
+	
+		// Animate the terrain tiles
+		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
+		new Timer ((int) (1000 / overlandMapTileSet.getAnimationSpeed ()), new ActionListener ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent e)
+			{
+				final int newFrame = terrainAnimFrame + 1;
+				terrainAnimFrame = (newFrame >= overlandMapTileSet.getAnimationFrameCount ()) ? 0 : newFrame;
+				sceneryPanel.repaint ();
+			}
+		}).start ();
+		
+		// Set up the row of gold buttons along the top
+		mapButtonBar.setLayout (new GridBagLayout ());
+		mapButtonBar.add (Box.createRigidArea (new Dimension (7, 0)), getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER));
+
+		mapButtonBar.add (getUtils ().createImageButton (gameAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraints (1, 0, 1, INSET, GridBagConstraints.CENTER));
+		
+		mapButtonBar.add (getUtils ().createImageButton (spellsAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraints (2, 0, 1, INSET, GridBagConstraints.CENTER));
+			
+		mapButtonBar.add (getUtils ().createImageButton (armiesAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraints (3, 0, 1, INSET, GridBagConstraints.CENTER));
+			
+		mapButtonBar.add (getUtils ().createImageButton (citiesAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraints (4, 0, 1, INSET, GridBagConstraints.CENTER));
+			
+		mapButtonBar.add (getUtils ().createImageButton (magicAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraints (5, 0, 1, INSET, GridBagConstraints.CENTER));
+
+		mapButtonBar.add (getUtils ().createImageButton (planeAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraints (6, 0, 1, INSET, GridBagConstraints.CENTER));
+
+		mapButtonBar.add (getUtils ().createImageButton (messagesAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraints (7, 0, 1, INSET, GridBagConstraints.CENTER));
+
+		mapButtonBar.add (getUtils ().createImageButton (chatAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarGoldButtonNormal, topBarGoldButtonPressed, topBarGoldButtonNormal), getUtils ().createConstraints (8, 0, 1, INSET, GridBagConstraints.CENTER));
+
+		mapButtonBar.add (getUtils ().createImageButton (infoAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarInfoNormal, topBarInfoPressed, topBarInfoNormal), getUtils ().createConstraints (9, 0, 1, INSET, GridBagConstraints.CENTER));
+		
+		mapButtonBar.add (getUtils ().createImageButton (zoomInAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarZoomInNormal, topBarZoomInPressed, topBarZoomInNormal), getUtils ().createConstraints (10, 0, 1, INSET, GridBagConstraints.CENTER));
+			
+		mapButtonBar.add (getUtils ().createImageButton (zoomOutAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarZoomOutNormal, topBarZoomOutPressed, topBarZoomOutNormal), getUtils ().createConstraints (11, 0, 1, INSET, GridBagConstraints.CENTER));
+			
+		mapButtonBar.add (getUtils ().createImageButton (optionsAction, MomUIUtils.GOLD, Color.BLACK, getSmallFont (),
+			topBarOptionsNormal, topBarOptionsPressed, topBarOptionsNormal), getUtils ().createConstraints (12, 0, 1, INSET, GridBagConstraints.CENTER));
+
+		final GridBagConstraints turnLabelConstraints = getUtils ().createConstraints (13, 0, 1, INSET, GridBagConstraints.EAST);
+		turnLabelConstraints.weightx = 1;		// Right justify the label
+		turnLabel = getUtils ().createLabel (MomUIUtils.GOLD, getSmallFont (), "January 1400 (Turn X)");
+		mapButtonBar.add (turnLabel, turnLabelConstraints);
+
+		mapButtonBar.add (Box.createRigidArea (new Dimension (7, 0)), getUtils ().createConstraints (14, 0, 1, INSET, GridBagConstraints.CENTER));
+		
+		// Stop frame being shrunk smaller than this
+		getFrame ().setContentPane (contentPane);
+		getFrame ().pack ();
+		getFrame ().setMinimumSize (getFrame ().getSize ());
+		getFrame ().setLocationRelativeTo (null);
+	}
+	
+	/**
+	 * Update all labels and such from the chosen language 
+	 */
+	@Override
+	public final void languageChanged ()
+	{
+		gameAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Game"));
+		spellsAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Spells"));
+		armiesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Armies"));
+		citiesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Cities"));
+		magicAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Magic"));
+		planeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Plane"));
+		messagesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "NewTurnMessages"));
+		chatAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Chat"));
 	}
 	
 	/**
@@ -359,18 +691,18 @@ public final class OverlandMapUI
 	}
 
 	/**
-	 * @return Helper methods and constants for creating and laying out Swing components
+	 * @return Small font
 	 */
-	public final MomUIUtils getUtils ()
+	public final Font getSmallFont ()
 	{
-		return utils;
+		return smallFont;
 	}
 
 	/**
-	 * @param util Helper methods and constants for creating and laying out Swing components
+	 * @param font Small font
 	 */
-	public final void setUtils (final MomUIUtils util)
+	public final void setSmallFont (final Font font)
 	{
-		utils = util;
+		smallFont = font;
 	}
 }

@@ -1854,7 +1854,7 @@ public final class NewGameUI extends MomClientAbstractUI
 		if (!changeDebugOptionsAction.getSelectedItem ())
 		{
 			// No debug options, set defaults
-			sd.setDisableFogOfWar (true);		// temporary, for testing drawing the overland map
+			sd.setDisableFogOfWar (false);
 		}
 		else
 		{

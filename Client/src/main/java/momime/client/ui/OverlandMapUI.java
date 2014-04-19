@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -75,6 +77,27 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	/** The plane that the UI is currently displaying */
 	private int mapViewPlane = 0;
 	
+	/** Zoom factor for the overland map; between 10 (1x) and 20 (2x) */
+	private int mapViewZoom = 10;
+	
+	/** Pixel offset into the map where the top left of the window is currently positioned, for scrolling around */
+	private int mapViewX = 0;
+
+	/** Pixel offset into the map where the top left of the window is currently positioned, for scrolling around */
+	private int mapViewY = 0;
+	
+	/** Border around the top row of gold buttons */ 
+	private BufferedImage topBarBackground;
+
+	/** Right hand panel where the surveyor, next turn button and so on go */
+	private BufferedImage rightHandPanelBackground;
+	
+	/** Number of pixels at the edge of the window where the map scrolls */
+	private final static int MOUSE_SCROLL_WIDTH = 8;
+	
+	/** Number of pixels the map scrolls with each tick of the timer */
+	private final static int MOUSE_SCROLL_SPEED = 4;
+	
 	// UI Components
 
 	/** Typical inset used on this screen layout */
@@ -141,7 +164,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	protected final void init () throws IOException
 	{
 		// Load images
-		final BufferedImage topBarBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/background.png");
+		topBarBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/background.png");
 		final BufferedImage topBarGoldButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/goldNormal.png");
 		final BufferedImage topBarGoldButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/goldPressed.png");
 		final BufferedImage topBarInfoNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/infoNormal.png");
@@ -153,7 +176,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		final BufferedImage topBarOptionsNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/optionsNormal.png");
 		final BufferedImage topBarOptionsPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/optionsPressed.png");
 
-		final BufferedImage rightHandPanelBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/background.png");
+		rightHandPanelBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/background.png");
 
 		// Actions
 		gameAction = new AbstractAction ()
@@ -228,22 +251,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 			}
 		};
 
-		zoomInAction = new AbstractAction ()
-		{
-			@Override
-			public void actionPerformed (final ActionEvent e)
-			{
-			}
-		};
-
-		zoomOutAction = new AbstractAction ()
-		{
-			@Override
-			public void actionPerformed (final ActionEvent e)
-			{
-			}
-		};
-
 		optionsAction = new AbstractAction ()
 		{
 			@Override
@@ -254,7 +261,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		
 		// Initialize the frame
 		getFrame ().setTitle ("Overland Map");
-		getFrame ().setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
+		getFrame ().setDefaultCloseOperation (WindowConstants.EXIT_ON_CLOSE);
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ();
@@ -268,6 +275,8 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		final Dimension mapButtonBarSize = new Dimension (topBarBackground.getWidth (), topBarBackground.getHeight ());
 		final JPanel mapButtonBar = new JPanel ()
 		{
+			private static final long serialVersionUID = -7651440273728992760L;
+
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
@@ -284,6 +293,8 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		final Dimension rightHandPanelSize = new Dimension (rightHandPanelBackground.getWidth (), rightHandPanelBackground.getHeight ());
 		final JPanel rightHandPanel = new JPanel ()
 		{
+			private static final long serialVersionUID = -2570535503816766972L;
+
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
@@ -300,11 +311,34 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		
 		final JPanel sceneryPanel = new JPanel ()
 		{
+			private static final long serialVersionUID = -266294091485642841L;
+
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
 				super.paintComponent (g);
-				g.drawImage (overlandMapBitmaps [terrainAnimFrame], 0, 0, null);
+				
+				// Scale the map image up smoothly
+				final Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+				g2.setRenderingHint (RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+				// If the size of the map is smaller than the size of the space we're drawing it in, clip the right and/or bottom off, so that
+				// the same bit doesn't get drawn twice
+				final int mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+				final int mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+				
+				g.setClip (0, 0, mapZoomedWidth, mapZoomedHeight);
+				
+				// Need to draw it 1-2 times in each direction, depending on wrapping params
+				final int xRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight () ? 2 : 1;
+				final int yRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom () ? 2 : 1;
+				
+				for (int x = 0; x < xRepeatCount; x++)
+					for (int y = 0; y < yRepeatCount; y++)
+						g.drawImage (overlandMapBitmaps [terrainAnimFrame],
+							(mapZoomedWidth * x) - mapViewX, (mapZoomedHeight * y) - mapViewY,
+							mapZoomedWidth, mapZoomedHeight, null);
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);
@@ -329,6 +363,77 @@ public final class OverlandMapUI extends MomClientAbstractUI
 				sceneryPanel.repaint ();
 			}
 		}).start ();
+
+		// Zoom actions (need the sceneryPanel, hence why defined down here)
+		zoomInAction = new AbstractAction ()
+		{
+			private static final long serialVersionUID = -1891817301226938020L;
+
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+				if (mapViewZoom < 20)
+				{
+					// Make the zoom take effect from the centrepoint of the map, not the top-left corner
+					double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+					final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2)) / mapZoomedWidth;
+
+					double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+					final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2)) / mapZoomedHeight;
+					
+					mapViewZoom++;
+					
+					mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+					final int newMapViewX = (int) ((scaledX * mapZoomedWidth) - (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2));
+
+					mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+					final int newMapViewY = (int) ((scaledY * mapZoomedHeight) - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
+					
+					mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
+						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
+
+					mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
+						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
+					
+					sceneryPanel.repaint ();
+				}
+			}
+		};
+
+		zoomOutAction = new AbstractAction ()
+		{
+			private static final long serialVersionUID = 6611489435130331341L;
+
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+				if (mapViewZoom > 10)
+				{
+					// Make the zoom take effect from the centrepoint of the map, not the top-left corner
+					double mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+					final double scaledX = (mapViewX + (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2)) / mapZoomedWidth;
+
+					double mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+					final double scaledY = (mapViewY + (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2)) / mapZoomedHeight;
+					
+					mapViewZoom--;
+					
+					mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+					final int newMapViewX = (int) ((scaledX * mapZoomedWidth) - (Math.min (sceneryPanel.getWidth (), mapZoomedWidth) / 2));
+
+					mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+					final int newMapViewY = (int) ((scaledY * mapZoomedHeight) - (Math.min (sceneryPanel.getHeight (), mapZoomedHeight) / 2));
+					
+					mapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
+						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
+
+					mapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
+						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
+					
+					sceneryPanel.repaint ();
+				}
+			}
+		};
 		
 		// Set up the row of gold buttons along the top
 		mapButtonBar.setLayout (new GridBagLayout ());
@@ -380,8 +485,52 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		// Stop frame being shrunk smaller than this
 		getFrame ().setContentPane (contentPane);
 		getFrame ().pack ();
-		getFrame ().setMinimumSize (getFrame ().getSize ());
 		getFrame ().setLocationRelativeTo (null);
+		getFrame ().setMinimumSize (getFrame ().getSize ());
+		
+		// We should also set a MaximumSize both here and whenever the zoom is changed, but JFrame.setMaximumSize doesn't work and
+		// any workaround listening to componentResized events and forcibly setting the size after just doesn't work cleanly or look at all nice.
+		// So I'd rather just allow the window to be made too big and leave a black area.
+		
+		// Scroll the map around if the mouse pointer is near the edges
+		new Timer (20, new ActionListener ()
+		{
+			@Override
+			public final void actionPerformed (final ActionEvent e)
+			{
+				final Point pos = contentPane.getMousePosition ();
+				if (pos != null)
+				{
+					int newMapViewX = mapViewX;
+					int newMapViewY = mapViewY;
+					
+					if (pos.x < MOUSE_SCROLL_WIDTH)
+						newMapViewX = newMapViewX - MOUSE_SCROLL_SPEED;
+					
+					if (pos.y < MOUSE_SCROLL_WIDTH)
+						newMapViewY = newMapViewY - MOUSE_SCROLL_SPEED;
+
+					if (pos.x >= contentPane.getWidth () - MOUSE_SCROLL_WIDTH)
+						newMapViewX = newMapViewX + MOUSE_SCROLL_SPEED;
+
+					if (pos.y >= contentPane.getHeight () - MOUSE_SCROLL_WIDTH)
+						newMapViewY = newMapViewY + MOUSE_SCROLL_SPEED;
+					
+					newMapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
+						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
+
+					newMapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
+						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
+					
+					if ((newMapViewX != mapViewX) || (newMapViewY != mapViewY))
+					{
+						mapViewX = newMapViewX;
+						mapViewY = newMapViewY;
+						sceneryPanel.repaint ();
+					}
+				}
+			}
+		}).start ();
 	}
 	
 	/**
@@ -398,6 +547,36 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		planeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Plane"));
 		messagesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "NewTurnMessages"));
 		chatAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Chat"));
+	}
+	
+	/**
+	 * Make sure map scroll value doesn't go outside acceptable range; if it does then constrain it back or wrap, as appropriate
+	 * 
+	 * @param value Desired value
+	 * @param mapSize Size of the map in this direction (width or height of the map taking current zoom level into account)
+	 * @param windowSize Size of the window that the map is displayed in
+	 * @param wrapping Whether the map wraps in this direction
+	 * @return Corrected value
+	 */
+	final int fixMapViewLimits (final int value, final int mapSize, final int windowSize, final boolean wrapping)
+	{
+		int newValue = value;
+		
+		if (wrapping)
+		{
+			while (newValue < 0)
+				newValue = newValue + mapSize;
+
+			while (newValue >= mapSize)
+				newValue = newValue - mapSize;
+		}
+		else
+		{
+			newValue = Math.min (newValue, mapSize - windowSize);
+			newValue = Math.max (0, newValue);
+		}
+		
+		return newValue;
 	}
 	
 	/**
@@ -641,7 +820,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		}
 		return image;
 	}
-
+	
 	/**
 	 * @return Multiplayer client
 	 */

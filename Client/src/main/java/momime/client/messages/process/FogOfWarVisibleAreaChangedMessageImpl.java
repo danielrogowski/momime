@@ -169,11 +169,12 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		
 		// Changes in Fog of War area
 		for (final FogOfWarStateMessageData data : getFogOfWarUpdate ())
-		{
-		}
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+				(data.getMapLocation ().getZ ()).getRow ().get (data.getMapLocation ().getY ()).getCell ().set (data.getMapLocation ().getX (), data.getState ());
 		
 		// So much will have changed (terrain, cities, node auras, fog of war area, units) that best to just regenerate the lot
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+		getOverlandMapUI ().regenerateFogOfWarBitmap ();
 
 		log.exiting (FogOfWarVisibleAreaChangedMessageImpl.class.getName (), "process");
 	}

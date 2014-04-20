@@ -34,8 +34,10 @@ import momime.client.graphics.database.SmoothedTileTypeEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.SmoothedTile;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
+import momime.common.messages.v0_9_5.FogOfWarStateID;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 
@@ -70,6 +72,9 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
+	
+	/** Bitmap for the shading at the edges of the area we can see */
+	private BufferedImage fogOfWarBitmap;
 	
 	/** Colour multiplied flags for each player's cities */
 	final Map<Integer, BufferedImage> cityFlagImages = new HashMap<Integer, BufferedImage> ();
@@ -336,9 +341,17 @@ public final class OverlandMapUI extends MomClientAbstractUI
 				
 				for (int x = 0; x < xRepeatCount; x++)
 					for (int y = 0; y < yRepeatCount; y++)
+					{
+						// Draw the terrain
 						g.drawImage (overlandMapBitmaps [terrainAnimFrame],
 							(mapZoomedWidth * x) - mapViewX, (mapZoomedHeight * y) - mapViewY,
 							mapZoomedWidth, mapZoomedHeight, null);
+						
+						// Shade the fog of war edges
+						g.drawImage (fogOfWarBitmap,
+							(mapZoomedWidth * x) - mapViewX, (mapZoomedHeight * y) - mapViewY,
+							mapZoomedWidth, mapZoomedHeight, null);
+					}
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);
@@ -797,6 +810,113 @@ public final class OverlandMapUI extends MomClientAbstractUI
 			g [frameNo].dispose ();
 		
 		log.exiting (OverlandMapUI.class.getName (), "regenerateOverlandMapBitmaps"); 
+	}
+	
+	/**
+	 * Generates big bitmap of the smoothed edges of blackness that obscure the edges
+	 * of the outermost tiles we can see, so that the edges aren't just a solid black line
+	 * 
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	public final void regenerateFogOfWarBitmap () throws IOException
+	{
+		log.entering (OverlandMapUI.class.getName (), "regenerateFogOfWarBitmap");
+		
+		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
+		
+		// Choose the appropriate tile sets
+		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "regenerateFogOfWarBitmap");
+		final SmoothedTileTypeEx fullFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, null, null);
+		final SmoothedTileTypeEx partialFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR_HAVE_SEEN, null, null);
+
+		// Create the empty bitmap
+		fogOfWarBitmap = new BufferedImage
+			(mapSize.getWidth () * overlandMapTileSet.getTileWidth (), mapSize.getHeight () * overlandMapTileSet.getTileHeight (), BufferedImage.TYPE_INT_ARGB);
+			
+		final Graphics2D g = fogOfWarBitmap.createGraphics ();
+		
+		// Run through each tile
+		for (int y = 0; y < mapSize.getHeight (); y++) 
+			for (int x = 0; x < mapSize.getWidth (); x++)
+			{
+				final FogOfWarStateID state = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+					(mapViewPlane).getRow ().get (y).getCell ().get (x);
+				
+				// First deal with the "full" fog of war, i.e. the border between areas we either
+				// can or have seen, & haven't seen, which is a totally black smoothing border
+				if (state != FogOfWarStateID.NEVER_SEEN)
+				{
+					// Generate the bitmask for this map cell
+					final StringBuffer bitmask = new StringBuffer ();
+					for (int d = 1; d <= maxDirection; d++)
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
+						coords.setX (x);
+						coords.setY (y);
+						coords.setZ (mapViewPlane);
+						if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
+						{
+							final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+							
+							if (otherState == FogOfWarStateID.NEVER_SEEN)
+								bitmask.append ("0");
+							else
+								bitmask.append ("1");
+						}
+						else
+							bitmask.append ("1");
+					}
+
+					// If this tile has no Fog of War anywhere around it, then we don't need to obscure its edges in any way
+					final String bitmaskString = bitmask.toString ();
+					if (!bitmaskString.equals ("11111111"))
+					{
+						final BufferedImage image = getUtils ().loadImage (fullFogOfWar.getRandomImage (bitmaskString).getTileFile ());
+						g.drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+					}							 
+				}
+				
+				// Now deal with the "partial" fog of war, i.e. the border between areas we can see now, and areas we've seen
+				// before and are remembering, which is greyed out slightly on the map display
+				if (state == FogOfWarStateID.CAN_SEE)
+				{
+					// Generate the bitmask for this map cell
+					final StringBuffer bitmask = new StringBuffer ();
+					for (int d = 1; d <= maxDirection; d++)
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
+						coords.setX (x);
+						coords.setY (y);
+						coords.setZ (mapViewPlane);
+						if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
+						{
+							final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+							
+							if (otherState == FogOfWarStateID.HAVE_SEEN)
+								bitmask.append ("0");
+							else
+								bitmask.append ("1");
+						}
+						else
+							bitmask.append ("1");
+					}
+
+					// If this tile has no Fog of War anywhere around it, then we don't need to obscure its edges in any way
+					final String bitmaskString = bitmask.toString ();
+					if (!bitmaskString.equals ("11111111"))
+					{
+						final BufferedImage image = getUtils ().loadImage (partialFogOfWar.getRandomImage (bitmaskString).getTileFile ());
+						g.drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+					}							 
+				}
+			}
+		
+		g.dispose ();
+		
+		log.exiting (OverlandMapUI.class.getName (), "regenerateFogOfWarBitmap"); 
 	}
 	
 	/**

@@ -7,10 +7,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.EditStringUI;
 import momime.client.ui.OverlandMapUI;
+import momime.client.ui.PrototypeFrameCreator;
 import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessage;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
@@ -27,6 +30,9 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/**
 	 * Method called when this message is sent in isolation
@@ -65,6 +71,18 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 		// Server works out whether or not this is our city and if it has just been newly added, and so we need to name it
 		if ((getData ().isAskForCityName () != null) && (getData ().isAskForCityName ()))
 		{
+			final EditStringUI askForCityName = getPrototypeFrameCreator ().createEditString ();
+			askForCityName.setPrompt ("Enter name for new City");
+			askForCityName.setCityBeingNamed ((MapCoordinates3DEx) getData ().getMapLocation ());
+			askForCityName.setText (getData ().getCityData ().getCityName ());
+			try
+			{
+				askForCityName.setVisible (true);
+			}
+			catch (final Exception e)
+			{
+				e.printStackTrace ();
+			}
 		}
 		
 		// If any city screen(s) are displaying this city then we need to update the display
@@ -102,5 +120,21 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 	public final void setOverlandMapUI (final OverlandMapUI ui)
 	{
 		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

@@ -281,6 +281,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype">
 		<property name="client" ref="momClient" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="addBuildingMessage" class="momime.client.messages.process.AddBuildingMessageImpl" scope="prototype">
@@ -433,5 +434,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
+	
+	<bean id="editStringUI" class="momime.client.ui.EditStringUI" scope="prototype">
+		<property name="largeFont" ref="largeFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="momClient" />
+	</bean>	
 	
 </beans>

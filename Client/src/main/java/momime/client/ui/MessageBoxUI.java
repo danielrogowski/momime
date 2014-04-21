@@ -4,10 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -83,13 +81,7 @@ public final class MessageBoxUI extends MomClientAbstractUI
 			protected final void paintComponent (final Graphics g)
 			{
 				super.paintComponent (g);
-				
-				// Scale the background image up smoothly
-				final Graphics2D g2 = (Graphics2D) g;
-				g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-				g2.setRenderingHint (RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-				
-				g.drawImage (background, 0, 0, getWidth (), getHeight (), null);
+				g.drawImage (background, 0, 0, null);
 			}
 		};
 		contentPane.setBackground (Color.BLACK);

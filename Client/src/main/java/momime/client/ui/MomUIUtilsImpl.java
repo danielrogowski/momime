@@ -1,6 +1,7 @@
 package momime.client.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
@@ -243,6 +244,34 @@ public final class MomUIUtilsImpl implements MomUIUtils
 		
 		// Leave small gap at left and right so the text doesn't overlap the borders drawn on the image
 		tf.setBorder (new EmptyBorder (3, 6, 3, 6));
+		
+		return tf;
+	}
+
+	/**
+	 * Creates a transparent text field
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @param size Fixed size for the text field
+	 * @return New text field
+	 */
+	@Override
+	public final JTextField createTransparentTextField (final Color colour, final Font font, final Dimension size)
+	{
+		final JTextField tf = new JTextField ();
+
+		tf.setFont (font);
+		tf.setForeground (colour);
+		tf.setMinimumSize (size);
+		tf.setMaximumSize (size);
+		tf.setPreferredSize (size);
+		
+		// Setting background to null just paints it black - to make it invisible we have to explicitly create a colour with 0 alpha component (4th param)
+		tf.setBackground (new Color (0, 0, 0, 0));
+		
+		// Assume since its transparent that we created it exactly the right size, so don't need any border
+		tf.setBorder (null);
 		
 		return tf;
 	}

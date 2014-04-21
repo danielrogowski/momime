@@ -9,4 +9,9 @@ public interface PrototypeFrameCreator
 	 * @return New message box UI
 	 */
 	public MessageBoxUI createMessageBox ();
+	
+	/**
+	 * @return New edit string UI
+	 */
+	public EditStringUI createEditString ();	
 }

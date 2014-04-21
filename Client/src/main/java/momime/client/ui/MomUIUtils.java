@@ -1,6 +1,7 @@
 package momime.client.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
@@ -135,6 +136,16 @@ public interface MomUIUtils
 	 * @return New text field
 	 */
 	public JTextField createTextFieldWithBackgroundImage (final Color colour, final Font font, final BufferedImage backgroundImage);
+	
+	/**
+	 * Creates a transparent text field
+	 * 
+	 * @param colour Colour to set the text in
+	 * @param font Font to set the text in
+	 * @param size Fixed size for the text field
+	 * @return New text field
+	 */
+	public JTextField createTransparentTextField (final Color colour, final Font font, final Dimension size);
 	
 	/**
 	 * Creates a password field that uses an image for its background rather than the standard drawing.

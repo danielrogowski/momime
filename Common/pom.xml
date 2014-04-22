@@ -236,7 +236,7 @@
 		<dependency>
 			<groupId>com.ndg.map</groupId>
 			<artifactId>ndgmap</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
+			<version>0.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

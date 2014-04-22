@@ -209,14 +209,9 @@ public final class TestMomServerResourceCalculationsImpl
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
 
 		// Add a granary, costs 1 gold but produces 2 rations and 2 food (city size)
-		final MapCoordinates3DEx granaryLocation = new MapCoordinates3DEx ();
-		granaryLocation.setX (2);
-		granaryLocation.setY (2);
-		granaryLocation.setZ (0);
-
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID ("BL29");
-		granary.setCityLocation (granaryLocation);
+		granary.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 
 		trueMap.getBuilding ().add (granary);
 
@@ -239,14 +234,9 @@ public final class TestMomServerResourceCalculationsImpl
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
 
 		// Add a temple, costs 2 gold but produces 2 magic power
-		final MapCoordinates3DEx templeLocation = new MapCoordinates3DEx ();
-		templeLocation.setX (2);
-		templeLocation.setY (2);
-		templeLocation.setZ (0);
-
 		final MemoryBuilding temple = new MemoryBuilding ();
 		temple.setBuildingID ("BL23");
-		temple.setCityLocation (templeLocation);
+		temple.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 
 		trueMap.getBuilding ().add (temple);
 
@@ -426,36 +416,21 @@ public final class TestMomServerResourceCalculationsImpl
 		trueMap.getUnit ().add (gargoylesOtherStatus);
 
 		// Building with wrong type of consumption
-		final MapCoordinates3DEx parthenonLocation = new MapCoordinates3DEx ();
-		parthenonLocation.setX (20);
-		parthenonLocation.setY (10);
-		parthenonLocation.setZ (1);
-
 		final MemoryBuilding parthenon = new MemoryBuilding ();
 		parthenon.setBuildingID ("BL24");
-		parthenon.setCityLocation (parthenonLocation);
+		parthenon.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getBuilding ().add (parthenon);
 
 		// Building with right type of consumption
-		final MapCoordinates3DEx wizardsGuildLocation = new MapCoordinates3DEx ();
-		wizardsGuildLocation.setX (20);
-		wizardsGuildLocation.setY (10);
-		wizardsGuildLocation.setZ (1);
-
 		final MemoryBuilding wizardsGuild = new MemoryBuilding ();
 		wizardsGuild.setBuildingID ("BL21");
-		wizardsGuild.setCityLocation (wizardsGuildLocation);
+		wizardsGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getBuilding ().add (wizardsGuild);
 
 		// Building with wrong owner
-		final MapCoordinates3DEx wizardsGuildEnemyCityLocation = new MapCoordinates3DEx ();
-		wizardsGuildEnemyCityLocation.setX (21);
-		wizardsGuildEnemyCityLocation.setY (10);
-		wizardsGuildEnemyCityLocation.setZ (1);
-
 		final MemoryBuilding wizardsGuildEnemyCity = new MemoryBuilding ();
 		wizardsGuildEnemyCity.setBuildingID ("BL21");
-		wizardsGuildEnemyCity.setCityLocation (wizardsGuildEnemyCityLocation);
+		wizardsGuildEnemyCity.setCityLocation (new MapCoordinates3DEx (21, 10, 1));
 		trueMap.getBuilding ().add (wizardsGuildEnemyCity);
 
 		// All spells have same type of consumption, but can test with a spell that doesn't have any consumption at all

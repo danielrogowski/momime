@@ -142,7 +142,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spell.setCastingPlayerID (10 + n);
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
-			spell.setCityLocation (new MapCoordinates3DEx ());		// 0, 0, 0 is good enough for this test
+			spell.setCityLocation (new MapCoordinates3DEx (25, 10, 1));
 
 			spells.add (spell);
 		}
@@ -241,17 +241,12 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spell.setCastingPlayerID (10 + n);
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
-
-			final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-			cityLocation.setX (100 + n);
-			cityLocation.setY (200 + n);
-			cityLocation.setZ (300 + n);
-			spell.setCityLocation (cityLocation);
+			spell.setCityLocation (new MapCoordinates3DEx (100 + n, 200 + n, 300 + n));
 
 			spells.add (spell);
 		}
 
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (104, 204, 304);
 		cityLocation.setX (104);
 		cityLocation.setY (204);
 		cityLocation.setZ (304);
@@ -278,20 +273,12 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spell.setCastingPlayerID (10 + n);
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
-
-			final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-			cityLocation.setX (100 + n);
-			cityLocation.setY (200 + n);
-			cityLocation.setZ (300 + n);
-			spell.setCityLocation (cityLocation);
+			spell.setCityLocation (new MapCoordinates3DEx (100 + n, 200 + n, 300 + n));
 
 			spells.add (spell);
 		}
 
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (104);
-		cityLocation.setY (204);
-		cityLocation.setZ (304);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (104, 204, 304);
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, "SP004", null, null, cityLocation, "CSE034").getSpellID ());
@@ -313,20 +300,12 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			spell.setCastingPlayerID (10 + n);
 			spell.setUnitSkillID ("SS02" + n);
 			spell.setCitySpellEffectID ("CSE03" + n);
-
-			final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-			cityLocation.setX (100 + n);
-			cityLocation.setY (200 + n);
-			cityLocation.setZ (300 + n);
-			spell.setCityLocation (cityLocation);
+			spell.setCityLocation (new MapCoordinates3DEx (100 + n, 200 + n, 300 + n));
 
 			spells.add (spell);
 		}
 
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (104);
-		cityLocation.setY (204);
-		cityLocation.setZ (304);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (104, 204, 304);
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertEquals ("SP004", utils.findMaintainedSpell (spells, null, null, null, null, cityLocation, "CSE034").getSpellID ());
@@ -371,24 +350,16 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		for (int n = 1; n <= 5; n++)
 		{
-			final MapCoordinates3DEx spellLocation = new MapCoordinates3DEx ();
-			spellLocation.setX (20 + n);
-			spellLocation.setY (10 + n);
-			spellLocation.setZ (n);
-
 			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
 			spell.setSpellID ("SP00" + n);
 			spell.setCastingPlayerID (10 + n);
 			spell.setCitySpellEffectID ("CSE00" + n);
-			spell.setCityLocation (spellLocation);
+			spell.setCityLocation (new MapCoordinates3DEx (20 + n, 10 + n, n));
 
 			spells.add (spell);
 		}
 
-		final MapCoordinates3DEx switchOffLocation = new MapCoordinates3DEx ();
-		switchOffLocation.setX (24);
-		switchOffLocation.setY (14);
-		switchOffLocation.setZ (4);
+		final MapCoordinates3DEx switchOffLocation = new MapCoordinates3DEx (24, 14, 4);
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.switchOffMaintainedSpell (spells, 14, "SP004", null, null, switchOffLocation, "CSE004");
@@ -579,10 +550,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (20);
-		cityLocation.setY (10);
-		cityLocation.setZ (1);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Spell has no citySpellEffectIDs defined
 		assertNull (utils.listCitySpellEffectsNotYetCastAtLocation (spells, spell, 1, cityLocation));
@@ -597,16 +565,11 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertEquals ("A", listOne.get (0));
 
 		// Spell with exactly one citySpellEffectID, that is already cast yet
-		final MapCoordinates3DEx effectLocationA = new MapCoordinates3DEx ();
-		effectLocationA.setX (20);
-		effectLocationA.setY (10);
-		effectLocationA.setZ (1);
-
 		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
 		existingEffectA.setSpellID ("SP001");
 		existingEffectA.setCastingPlayerID (1);
 		existingEffectA.setCitySpellEffectID ("A");
-		existingEffectA.setCityLocation (effectLocationA);
+		existingEffectA.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		spells.add (existingEffectA);
 		
 		final List<String> listZero = utils.listCitySpellEffectsNotYetCastAtLocation (spells, spell, 1, cityLocation);
@@ -625,7 +588,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		existingEffectB.setSpellID ("SP002");
 		existingEffectB.setCastingPlayerID (1);
 		existingEffectB.setCitySpellEffectID ("B");
-		existingEffectB.setCityLocation (effectLocationA);
+		existingEffectB.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		spells.add (existingEffectB);
 		
 		// One for wrong player
@@ -633,20 +596,15 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		existingEffectC.setSpellID ("SP001");
 		existingEffectC.setCastingPlayerID (2);
 		existingEffectC.setCitySpellEffectID ("C");
-		existingEffectC.setCityLocation (effectLocationA);
+		existingEffectC.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		spells.add (existingEffectC);
 		
 		// One in wrong location
-		final MapCoordinates3DEx effectLocationD = new MapCoordinates3DEx ();
-		effectLocationD.setX (20);
-		effectLocationD.setY (11);
-		effectLocationD.setZ (1);
-
 		final MemoryMaintainedSpell existingEffectD = new MemoryMaintainedSpell ();
 		existingEffectD.setSpellID ("SP001");
 		existingEffectD.setCastingPlayerID (1);
 		existingEffectD.setCitySpellEffectID ("D");
-		existingEffectD.setCityLocation (effectLocationD);
+		existingEffectD.setCityLocation (new MapCoordinates3DEx (20, 11, 1));
 		spells.add (existingEffectD);
 		
 		// All three effect should still be listed

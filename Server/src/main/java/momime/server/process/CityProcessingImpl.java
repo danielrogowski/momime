@@ -216,14 +216,9 @@ public final class CityProcessingImpl implements CityProcessing
 					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
 						{
-							final MapCoordinates3DEx buildingCoords = new MapCoordinates3DEx ();
-							buildingCoords.setX (cityLocation.getX ());
-							buildingCoords.setY (cityLocation.getY ());
-							buildingCoords.setZ (cityLocation.getZ ());
-
 							final MemoryBuilding wizardBuilding = new MemoryBuilding ();
 							wizardBuilding.setBuildingID (thisBuilding.getBuildingID ());
-							wizardBuilding.setCityLocation (buildingCoords);
+							wizardBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
 							gsk.getTrueMap ().getBuilding ().add (wizardBuilding);
 						}
 				}
@@ -234,14 +229,9 @@ public final class CityProcessingImpl implements CityProcessing
 						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
 							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
 						{
-							final MapCoordinates3DEx buildingCoords = new MapCoordinates3DEx ();
-							buildingCoords.setX (cityLocation.getX ());
-							buildingCoords.setY (cityLocation.getY ());
-							buildingCoords.setZ (cityLocation.getZ ());
-
 							final MemoryBuilding raiderBuilding = new MemoryBuilding ();
 							raiderBuilding.setBuildingID (thisBuilding.getBuildingID ());
-							raiderBuilding.setCityLocation (buildingCoords);
+							raiderBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
 							gsk.getTrueMap ().getBuilding ().add (raiderBuilding);
 						}
 				}
@@ -251,11 +241,7 @@ public final class CityProcessingImpl implements CityProcessing
 					if ((thisUnit.getUnitRaceID () != null) && (thisUnit.getFreeAtStartCount () != null) && (thisUnit.getUnitRaceID ().equals (city.getCityRaceID ())))
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
-							final MapCoordinates3DEx unitCoords = new MapCoordinates3DEx ();
-							unitCoords.setX (cityLocation.getX ());
-							unitCoords.setY (cityLocation.getY ());
-							unitCoords.setZ (cityLocation.getZ ());
-
+							final MapCoordinates3DEx unitCoords = new MapCoordinates3DEx (cityLocation);
 							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db);
 						}
 			}
@@ -299,10 +285,7 @@ public final class CityProcessingImpl implements CityProcessing
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
 
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-						cityLocation.setX (x);
-						cityLocation.setY (y);
-						cityLocation.setZ (plane.getPlaneNumber ());
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 						final CalculateCityProductionResults cityProductions = getCityCalculations ().calculateAllCityProductions
 							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db);
@@ -618,10 +601,7 @@ public final class CityProcessingImpl implements CityProcessing
 							if ((cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) &&
 								(cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID ().equals (player.getPlayerDescription ().getPlayerID ())))
 							{
-								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-								cityLocation.setZ (plane.getPlaneNumber ());
-								cityLocation.setX (x);
-								cityLocation.setY (y);
+								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 								
 								cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels 
 									(mom.getPlayers (), trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, taxRateID, mom.getServerDB ()).getFinalTotal ());

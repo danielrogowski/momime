@@ -71,20 +71,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 public final class TestCombatProcessingImpl
 {
 	/**
-	 * Just to save repeating this a dozen times in the test cases
-	 * @param x X coord
-	 * @return Coordinates object
-	 */
-	private final MapCoordinates3DEx createCoordinates (final int x)
-	{
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (x);
-		combatLocation.setY (10);
-		combatLocation.setZ (1);
-		return combatLocation;
-	}
-	
-	/**
 	 * Tests the initiateCombat method, with one unit stack attacking another on the open map, in a one-at-a-time turns game
 	 * @throws Exception If there is a problem
 	 */
@@ -108,8 +94,8 @@ public final class TestCombatProcessingImpl
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Locations
-		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
-		final MapCoordinates3DEx attackingFrom = createCoordinates (21);		
+		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);		
 
 		// The subset of units who're in "attackingFrom" who are actually attacking
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
@@ -154,8 +140,8 @@ public final class TestCombatProcessingImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Locations
-		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
-		final MapCoordinates3DEx attackingFrom = createCoordinates (21);		
+		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);		
 
 		// The subset of units who're in "attackingFrom" who are actually attacking
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
@@ -207,8 +193,8 @@ public final class TestCombatProcessingImpl
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Locations
-		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
-		final MapCoordinates3DEx attackingFrom = createCoordinates (21);		
+		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);		
 
 		// The subset of units who're in "attackingFrom" who are actually attacking
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
@@ -592,10 +578,7 @@ public final class TestCombatProcessingImpl
 		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (20);
-		combatLocation.setY (10);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 
 		// 1 in front row and 2 behind
 		final List<Integer> unitsInRow = new ArrayList<Integer> ();
@@ -766,7 +749,7 @@ public final class TestCombatProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
 
@@ -850,7 +833,7 @@ public final class TestCombatProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
 
@@ -948,7 +931,7 @@ public final class TestCombatProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
 
@@ -1046,7 +1029,7 @@ public final class TestCombatProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
 
@@ -1173,7 +1156,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveLongbowmen.setUnitID ("UN102");
 		attackerAliveLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveLongbowmen.setStatus (UnitStatusID.ALIVE);
-		attackerAliveLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerAliveLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveLongbowmen);
 		
 		final MemoryUnit attackerAliveHero = new MemoryUnit ();
@@ -1181,7 +1164,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveHero.setUnitID ("UN002");
 		attackerAliveHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveHero.setStatus (UnitStatusID.ALIVE);
-		attackerAliveHero.setCombatLocation (createCoordinates (20));
+		attackerAliveHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveHero);
 
 		final MemoryUnit attackerDeadLongbowmen = new MemoryUnit ();
@@ -1189,7 +1172,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmen.setUnitID ("UN102");
 		attackerDeadLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmen.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerDeadLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmen);
 		
 		final MemoryUnit attackerDeadHero = new MemoryUnit ();
@@ -1197,7 +1180,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadHero.setUnitID ("UN002");
 		attackerDeadHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadHero.setStatus (UnitStatusID.DEAD);
-		attackerDeadHero.setCombatLocation (createCoordinates (20));
+		attackerDeadHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadHero);
 
 		final MemoryUnit attackerAlivePhantomWarriors = new MemoryUnit ();
@@ -1205,7 +1188,7 @@ public final class TestCombatProcessingImpl
 		attackerAlivePhantomWarriors.setUnitID ("UN193");
 		attackerAlivePhantomWarriors.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAlivePhantomWarriors.setStatus (UnitStatusID.ALIVE);
-		attackerAlivePhantomWarriors.setCombatLocation (createCoordinates (20));
+		attackerAlivePhantomWarriors.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		attackerAlivePhantomWarriors.setWasSummonedInCombat (true);
 		trueMap.getUnit ().add (attackerAlivePhantomWarriors);
 
@@ -1214,7 +1197,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmenInADifferentCombat.setUnitID ("UN102");
 		attackerDeadLongbowmenInADifferentCombat.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmenInADifferentCombat.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (createCoordinates (21));
+		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmenInADifferentCombat);
 		
 		final MemoryUnit defenderAliveLongbowmen = new MemoryUnit ();
@@ -1222,7 +1205,7 @@ public final class TestCombatProcessingImpl
 		defenderAliveLongbowmen.setUnitID ("UN102");
 		defenderAliveLongbowmen.setOwningPlayerID (defendingPD.getPlayerID ());
 		defenderAliveLongbowmen.setStatus (UnitStatusID.ALIVE);
-		defenderAliveLongbowmen.setCombatLocation (createCoordinates (20));
+		defenderAliveLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (defenderAliveLongbowmen);
 		
 		final MemoryUnit defenderDeadLongbowmen = new MemoryUnit ();
@@ -1230,11 +1213,11 @@ public final class TestCombatProcessingImpl
 		defenderDeadLongbowmen.setUnitID ("UN102");
 		defenderDeadLongbowmen.setOwningPlayerID (defendingPD.getPlayerID ());
 		defenderDeadLongbowmen.setStatus (UnitStatusID.DEAD);
-		defenderDeadLongbowmen.setCombatLocation (createCoordinates (20));
+		defenderDeadLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (defenderDeadLongbowmen);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -1372,7 +1355,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveLongbowmen.setUnitID ("UN102");
 		attackerAliveLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveLongbowmen.setStatus (UnitStatusID.ALIVE);
-		attackerAliveLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerAliveLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveLongbowmen);
 		
 		final MemoryUnit attackerAliveHero = new MemoryUnit ();
@@ -1380,7 +1363,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveHero.setUnitID ("UN002");
 		attackerAliveHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveHero.setStatus (UnitStatusID.ALIVE);
-		attackerAliveHero.setCombatLocation (createCoordinates (20));
+		attackerAliveHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveHero);
 
 		final MemoryUnit attackerDeadLongbowmen = new MemoryUnit ();
@@ -1388,7 +1371,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmen.setUnitID ("UN102");
 		attackerDeadLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmen.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerDeadLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmen);
 		
 		final MemoryUnit attackerDeadHero = new MemoryUnit ();
@@ -1396,7 +1379,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadHero.setUnitID ("UN002");
 		attackerDeadHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadHero.setStatus (UnitStatusID.DEAD);
-		attackerDeadHero.setCombatLocation (createCoordinates (20));
+		attackerDeadHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadHero);
 
 		final MemoryUnit attackerAlivePhantomWarriors = new MemoryUnit ();
@@ -1404,7 +1387,7 @@ public final class TestCombatProcessingImpl
 		attackerAlivePhantomWarriors.setUnitID ("UN193");
 		attackerAlivePhantomWarriors.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAlivePhantomWarriors.setStatus (UnitStatusID.ALIVE);
-		attackerAlivePhantomWarriors.setCombatLocation (createCoordinates (20));
+		attackerAlivePhantomWarriors.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		attackerAlivePhantomWarriors.setWasSummonedInCombat (true);
 		trueMap.getUnit ().add (attackerAlivePhantomWarriors);
 
@@ -1413,7 +1396,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmenInADifferentCombat.setUnitID ("UN102");
 		attackerDeadLongbowmenInADifferentCombat.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmenInADifferentCombat.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (createCoordinates (21));
+		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmenInADifferentCombat);
 		
 		final MemoryUnit defenderAliveLongbowmen = new MemoryUnit ();
@@ -1421,7 +1404,7 @@ public final class TestCombatProcessingImpl
 		defenderAliveLongbowmen.setUnitID ("UN102");
 		defenderAliveLongbowmen.setOwningPlayerID (defendingPD.getPlayerID ());
 		defenderAliveLongbowmen.setStatus (UnitStatusID.ALIVE);
-		defenderAliveLongbowmen.setCombatLocation (createCoordinates (20));
+		defenderAliveLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (defenderAliveLongbowmen);
 		
 		final MemoryUnit defenderDeadLongbowmen = new MemoryUnit ();
@@ -1429,11 +1412,11 @@ public final class TestCombatProcessingImpl
 		defenderDeadLongbowmen.setUnitID ("UN102");
 		defenderDeadLongbowmen.setOwningPlayerID (defendingPD.getPlayerID ());
 		defenderDeadLongbowmen.setStatus (UnitStatusID.DEAD);
-		defenderDeadLongbowmen.setCombatLocation (createCoordinates (20));
+		defenderDeadLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (defenderDeadLongbowmen);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -1566,7 +1549,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveLongbowmen.setUnitID ("UN102");
 		attackerAliveLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveLongbowmen.setStatus (UnitStatusID.ALIVE);
-		attackerAliveLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerAliveLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveLongbowmen);
 		
 		final MemoryUnit attackerAliveHero = new MemoryUnit ();
@@ -1574,7 +1557,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveHero.setUnitID ("UN002");
 		attackerAliveHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveHero.setStatus (UnitStatusID.ALIVE);
-		attackerAliveHero.setCombatLocation (createCoordinates (20));
+		attackerAliveHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveHero);
 
 		final MemoryUnit attackerDeadLongbowmen = new MemoryUnit ();
@@ -1582,7 +1565,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmen.setUnitID ("UN102");
 		attackerDeadLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmen.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerDeadLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmen);
 		
 		final MemoryUnit attackerDeadHero = new MemoryUnit ();
@@ -1590,7 +1573,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadHero.setUnitID ("UN002");
 		attackerDeadHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadHero.setStatus (UnitStatusID.DEAD);
-		attackerDeadHero.setCombatLocation (createCoordinates (20));
+		attackerDeadHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadHero);
 
 		final MemoryUnit attackerAlivePhantomWarriors = new MemoryUnit ();
@@ -1598,7 +1581,7 @@ public final class TestCombatProcessingImpl
 		attackerAlivePhantomWarriors.setUnitID ("UN193");
 		attackerAlivePhantomWarriors.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAlivePhantomWarriors.setStatus (UnitStatusID.ALIVE);
-		attackerAlivePhantomWarriors.setCombatLocation (createCoordinates (20));
+		attackerAlivePhantomWarriors.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		attackerAlivePhantomWarriors.setWasSummonedInCombat (true);
 		trueMap.getUnit ().add (attackerAlivePhantomWarriors);
 
@@ -1607,7 +1590,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmenInADifferentCombat.setUnitID ("UN102");
 		attackerDeadLongbowmenInADifferentCombat.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmenInADifferentCombat.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (createCoordinates (21));
+		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmenInADifferentCombat);
 		
 		final MemoryUnit defenderAliveLongbowmen = new MemoryUnit ();
@@ -1615,7 +1598,7 @@ public final class TestCombatProcessingImpl
 		defenderAliveLongbowmen.setUnitID ("UN102");
 		defenderAliveLongbowmen.setOwningPlayerID (defendingPD.getPlayerID ());
 		defenderAliveLongbowmen.setStatus (UnitStatusID.ALIVE);
-		defenderAliveLongbowmen.setCombatLocation (createCoordinates (20));
+		defenderAliveLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (defenderAliveLongbowmen);
 		
 		final MemoryUnit defenderDeadLongbowmen = new MemoryUnit ();
@@ -1623,11 +1606,11 @@ public final class TestCombatProcessingImpl
 		defenderDeadLongbowmen.setUnitID ("UN102");
 		defenderDeadLongbowmen.setOwningPlayerID (defendingPD.getPlayerID ());
 		defenderDeadLongbowmen.setStatus (UnitStatusID.DEAD);
-		defenderDeadLongbowmen.setCombatLocation (createCoordinates (20));
+		defenderDeadLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (defenderDeadLongbowmen);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -1744,7 +1727,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveLongbowmen.setUnitID ("UN102");
 		attackerAliveLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveLongbowmen.setStatus (UnitStatusID.ALIVE);
-		attackerAliveLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerAliveLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveLongbowmen);
 		
 		final MemoryUnit attackerAliveHero = new MemoryUnit ();
@@ -1752,7 +1735,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveHero.setUnitID ("UN002");
 		attackerAliveHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveHero.setStatus (UnitStatusID.ALIVE);
-		attackerAliveHero.setCombatLocation (createCoordinates (20));
+		attackerAliveHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveHero);
 
 		final MemoryUnit attackerDeadLongbowmen = new MemoryUnit ();
@@ -1760,7 +1743,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmen.setUnitID ("UN102");
 		attackerDeadLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmen.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerDeadLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmen);
 		
 		final MemoryUnit attackerDeadHero = new MemoryUnit ();
@@ -1768,7 +1751,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadHero.setUnitID ("UN002");
 		attackerDeadHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadHero.setStatus (UnitStatusID.DEAD);
-		attackerDeadHero.setCombatLocation (createCoordinates (20));
+		attackerDeadHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadHero);
 
 		final MemoryUnit attackerAlivePhantomWarriors = new MemoryUnit ();
@@ -1776,7 +1759,7 @@ public final class TestCombatProcessingImpl
 		attackerAlivePhantomWarriors.setUnitID ("UN193");
 		attackerAlivePhantomWarriors.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAlivePhantomWarriors.setStatus (UnitStatusID.ALIVE);
-		attackerAlivePhantomWarriors.setCombatLocation (createCoordinates (20));
+		attackerAlivePhantomWarriors.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		attackerAlivePhantomWarriors.setWasSummonedInCombat (true);
 		trueMap.getUnit ().add (attackerAlivePhantomWarriors);
 
@@ -1785,11 +1768,11 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmenInADifferentCombat.setUnitID ("UN102");
 		attackerDeadLongbowmenInADifferentCombat.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmenInADifferentCombat.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (createCoordinates (21));
+		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmenInADifferentCombat);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -1895,7 +1878,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveLongbowmen.setUnitID ("UN102");
 		attackerAliveLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveLongbowmen.setStatus (UnitStatusID.ALIVE);
-		attackerAliveLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerAliveLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveLongbowmen);
 		
 		final MemoryUnit attackerAliveHero = new MemoryUnit ();
@@ -1903,7 +1886,7 @@ public final class TestCombatProcessingImpl
 		attackerAliveHero.setUnitID ("UN002");
 		attackerAliveHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAliveHero.setStatus (UnitStatusID.ALIVE);
-		attackerAliveHero.setCombatLocation (createCoordinates (20));
+		attackerAliveHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerAliveHero);
 
 		final MemoryUnit attackerDeadLongbowmen = new MemoryUnit ();
@@ -1911,7 +1894,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmen.setUnitID ("UN102");
 		attackerDeadLongbowmen.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmen.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmen.setCombatLocation (createCoordinates (20));
+		attackerDeadLongbowmen.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmen);
 		
 		final MemoryUnit attackerDeadHero = new MemoryUnit ();
@@ -1919,7 +1902,7 @@ public final class TestCombatProcessingImpl
 		attackerDeadHero.setUnitID ("UN002");
 		attackerDeadHero.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadHero.setStatus (UnitStatusID.DEAD);
-		attackerDeadHero.setCombatLocation (createCoordinates (20));
+		attackerDeadHero.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getUnit ().add (attackerDeadHero);
 
 		final MemoryUnit attackerAlivePhantomWarriors = new MemoryUnit ();
@@ -1927,7 +1910,7 @@ public final class TestCombatProcessingImpl
 		attackerAlivePhantomWarriors.setUnitID ("UN193");
 		attackerAlivePhantomWarriors.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerAlivePhantomWarriors.setStatus (UnitStatusID.ALIVE);
-		attackerAlivePhantomWarriors.setCombatLocation (createCoordinates (20));
+		attackerAlivePhantomWarriors.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		attackerAlivePhantomWarriors.setWasSummonedInCombat (true);
 		trueMap.getUnit ().add (attackerAlivePhantomWarriors);
 
@@ -1936,11 +1919,11 @@ public final class TestCombatProcessingImpl
 		attackerDeadLongbowmenInADifferentCombat.setUnitID ("UN102");
 		attackerDeadLongbowmenInADifferentCombat.setOwningPlayerID (attackingPD.getPlayerID ());
 		attackerDeadLongbowmenInADifferentCombat.setStatus (UnitStatusID.DEAD);
-		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (createCoordinates (21));
+		attackerDeadLongbowmenInADifferentCombat.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		trueMap.getUnit ().add (attackerDeadLongbowmenInADifferentCombat);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -2052,7 +2035,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 		trueUnit.setWasSummonedInCombat (true);
 		
 		// Both players and the outside observer all already know about the unit
@@ -2063,7 +2046,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 			playerUnit.setWasSummonedInCombat (true);
 			
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -2071,12 +2054,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -2210,7 +2191,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 		trueUnit.setWasSummonedInCombat (true);
 		
 		// Both players and the outside observer all already know about the unit
@@ -2221,7 +2202,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 			playerUnit.setWasSummonedInCombat (true);
 			
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -2229,12 +2210,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -2361,7 +2340,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (defendingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (20));
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueUnit.setWasSummonedInCombat (true);
 		
 		// Both players and the outside observer all already know about the unit
@@ -2372,7 +2351,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (defendingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (20));
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 			playerUnit.setWasSummonedInCombat (true);
 			
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -2380,12 +2359,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -2512,7 +2489,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 		trueUnit.setWasSummonedInCombat (true);
 		
 		// Both players and the outside observer all already know about the unit - outside observer can see it because was the attacker who summoned it
@@ -2523,7 +2500,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 			playerUnit.setWasSummonedInCombat (true);
 			
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -2531,12 +2508,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -2663,7 +2638,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (defendingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (20));
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueUnit.setWasSummonedInCombat (true);
 		
 		// Both players already know about the unit, but the outside observer can't see it because its a monster in a node
@@ -2676,7 +2651,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (defendingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (20));
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 			playerUnit.setWasSummonedInCombat (true);
 			
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -2684,12 +2659,10 @@ public final class TestCombatProcessingImpl
 		}
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -2804,12 +2777,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2817,7 +2788,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 		
 		trueUnit.setCombatLocation (combatLocation);
 		trueUnit.setCombatHeading (7);
@@ -2832,7 +2803,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 
 			if (thisPlayer != otherPlayer)
 			{
@@ -2965,12 +2936,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2978,7 +2947,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 		
 		trueUnit.setCombatLocation (combatLocation);
 		trueUnit.setCombatHeading (7);
@@ -2993,7 +2962,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 
 			if (thisPlayer != otherPlayer)
 			{
@@ -3118,12 +3087,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -3131,7 +3098,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (defendingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (20));
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		
 		trueUnit.setCombatLocation (combatLocation);
 		trueUnit.setCombatHeading (7);
@@ -3146,7 +3113,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (defendingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (20));
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 
 			if (thisPlayer != otherPlayer)
 			{
@@ -3272,12 +3239,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -3285,7 +3250,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 		
 		trueUnit.setCombatLocation (combatLocation);
 		trueUnit.setCombatHeading (7);
@@ -3301,7 +3266,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (19));		// Attacking from adjacent square
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (19, 10, 1));		// Attacking from adjacent square
 
 			if (thisPlayer != otherPlayer)
 			{
@@ -3427,12 +3392,10 @@ public final class TestCombatProcessingImpl
 		players.add (otherPlayer);
 
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Combat position
-		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-		combatPosition.setX (7);
-		combatPosition.setY (12);
+		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -3440,7 +3403,7 @@ public final class TestCombatProcessingImpl
 		trueUnit.setUnitID ("UN193");
 		trueUnit.setOwningPlayerID (defendingPD.getPlayerID ());
 		trueUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnit.setUnitLocation (createCoordinates (20));
+		trueUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		
 		trueUnit.setCombatLocation (combatLocation);
 		trueUnit.setCombatHeading (7);
@@ -3457,7 +3420,7 @@ public final class TestCombatProcessingImpl
 			playerUnit.setUnitID ("UN193");
 			playerUnit.setOwningPlayerID (defendingPD.getPlayerID ());
 			playerUnit.setStatus (UnitStatusID.ALIVE);
-			playerUnit.setUnitLocation (createCoordinates (20));
+			playerUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 
 			playerUnit.setCombatLocation (combatLocation);
 			playerUnit.setCombatHeading (7);
@@ -3579,10 +3542,7 @@ public final class TestCombatProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Where the combat is taking place
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
 		// Combat map
 		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
@@ -3595,9 +3555,7 @@ public final class TestCombatProcessingImpl
 		tu.setDoubleCombatMovesLeft (6);
 		tu.setUnitURN (101);
 
-		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx ();
-		tuMoveFrom.setX (1);
-		tuMoveFrom.setY (7);
+		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx (1, 7);
 		tu.setCombatPosition (tuMoveFrom);
 		
 		// Players' memories of unit
@@ -3606,9 +3564,7 @@ public final class TestCombatProcessingImpl
 		attackingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		attackingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
-		attackingPlayerMemoryOfUnitMoveFrom.setX (1);
-		attackingPlayerMemoryOfUnitMoveFrom.setY (7);
+		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
 		attackingPlayerMemoryOfUnit.setCombatPosition (attackingPlayerMemoryOfUnitMoveFrom);
 
 		final MemoryUnit defendingPlayerMemoryOfUnit = new MemoryUnit ();
@@ -3616,9 +3572,7 @@ public final class TestCombatProcessingImpl
 		defendingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		defendingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
-		defendingPlayerMemoryOfUnitMoveFrom.setX (1);
-		defendingPlayerMemoryOfUnitMoveFrom.setY (7);
+		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
 		defendingPlayerMemoryOfUnit.setCombatPosition (defendingPlayerMemoryOfUnitMoveFrom);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -3632,9 +3586,7 @@ public final class TestCombatProcessingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Where we want to move to
-		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
-		moveTo.setX (3);
-		moveTo.setY (8);
+		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (3, 8);
 		
 		// Movement areas
 		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
@@ -3746,10 +3698,7 @@ public final class TestCombatProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Where the combat is taking place
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
 		// Combat map
 		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
@@ -3762,9 +3711,7 @@ public final class TestCombatProcessingImpl
 		tu.setDoubleCombatMovesLeft (6);
 		tu.setUnitURN (101);
 
-		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx ();
-		tuMoveFrom.setX (1);
-		tuMoveFrom.setY (7);
+		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx (1, 7);
 		tu.setCombatPosition (tuMoveFrom);
 		
 		// Players' memories of unit
@@ -3773,9 +3720,7 @@ public final class TestCombatProcessingImpl
 		attackingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		attackingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
-		attackingPlayerMemoryOfUnitMoveFrom.setX (1);
-		attackingPlayerMemoryOfUnitMoveFrom.setY (7);
+		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
 		attackingPlayerMemoryOfUnit.setCombatPosition (attackingPlayerMemoryOfUnitMoveFrom);
 
 		final MemoryUnit defendingPlayerMemoryOfUnit = new MemoryUnit ();
@@ -3783,9 +3728,7 @@ public final class TestCombatProcessingImpl
 		defendingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		defendingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
-		defendingPlayerMemoryOfUnitMoveFrom.setX (1);
-		defendingPlayerMemoryOfUnitMoveFrom.setY (7);
+		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
 		defendingPlayerMemoryOfUnit.setCombatPosition (defendingPlayerMemoryOfUnitMoveFrom);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -3799,9 +3742,7 @@ public final class TestCombatProcessingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Where we want to move to
-		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
-		moveTo.setX (3);
-		moveTo.setY (8);
+		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (3, 8);
 		
 		// Movement areas
 		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
@@ -3911,10 +3852,7 @@ public final class TestCombatProcessingImpl
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Where the combat is taking place
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
 		// Combat map
 		final MapAreaOfCombatTiles combatMap = ServerTestData.createCombatMap ();
@@ -3928,9 +3866,7 @@ public final class TestCombatProcessingImpl
 		tu.setUnitURN (101);
 		tu.setUnitID ("UN001");
 
-		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx ();
-		tuMoveFrom.setX (1);
-		tuMoveFrom.setY (7);
+		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx (1, 7);
 		tu.setCombatPosition (tuMoveFrom);
 		
 		// Players' memories of unit
@@ -3939,9 +3875,7 @@ public final class TestCombatProcessingImpl
 		attackingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		attackingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
-		attackingPlayerMemoryOfUnitMoveFrom.setX (1);
-		attackingPlayerMemoryOfUnitMoveFrom.setY (7);
+		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
 		attackingPlayerMemoryOfUnit.setCombatPosition (attackingPlayerMemoryOfUnitMoveFrom);
 
 		final MemoryUnit defendingPlayerMemoryOfUnit = new MemoryUnit ();
@@ -3949,9 +3883,7 @@ public final class TestCombatProcessingImpl
 		defendingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		defendingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx ();
-		defendingPlayerMemoryOfUnitMoveFrom.setX (1);
-		defendingPlayerMemoryOfUnitMoveFrom.setY (7);
+		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
 		defendingPlayerMemoryOfUnit.setCombatPosition (defendingPlayerMemoryOfUnitMoveFrom);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -3965,9 +3897,7 @@ public final class TestCombatProcessingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Where we want to move to
-		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
-		moveTo.setX (3);
-		moveTo.setY (8);
+		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (3, 8);
 		
 		// Movement areas
 		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
@@ -4013,9 +3943,7 @@ public final class TestCombatProcessingImpl
 		assertEquals (4, msg1.getDoubleCombatMovesLeft ());
 		
 		// Check the unit ended up where it was supposed to
-		final MapCoordinates2DEx middle = new MapCoordinates2DEx ();
-		middle.setX (2);
-		middle.setY (8);
+		final MapCoordinates2DEx middle = new MapCoordinates2DEx (2, 8);
 		
 		assertEquals (middle, tu.getCombatPosition ());
 		assertEquals (middle, attackingPlayerMemoryOfUnit.getCombatPosition ());

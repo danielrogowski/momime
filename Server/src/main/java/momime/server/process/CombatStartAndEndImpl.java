@@ -151,10 +151,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		// If attacking from a tower onto Myrror, then Defending-AttackingFrom will be 1-0 - both of these should be shown on Myrror only
 		// Any tower combats to/from Arcanus will be 0-0, and should appear on Arcanus only
 		// Hence the reason for the Max
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (defendingLocation.getX ());
-		combatLocation.setY (defendingLocation.getY ());
-		combatLocation.setZ (Math.max (defendingLocation.getZ (), attackingFrom.getZ ()));
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (defendingLocation.getX (), defendingLocation.getY (),
+			Math.max (defendingLocation.getZ (), attackingFrom.getZ ()));
 		
 		// If this is a scheduled combat then check it out... WalkInWithoutAFight may be switched on, in which case we want to move rather than setting up a combat
 		boolean walkInWithoutAFight = false;
@@ -372,25 +370,19 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				log.finest ("Attacker won");
 				
 				// Work out moveToPlane - If attackers are capturing a tower from Myrror, in which case they jump to Arcanus as part of the move
-				final MapCoordinates3DEx moveTo = new MapCoordinates3DEx ();
-				moveTo.setX (combatLocation.getX ());
-				moveTo.setY (combatLocation.getY ());
+				final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (combatLocation);
 				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
 					moveTo.setZ (0);
-				else
-					moveTo.setZ (combatLocation.getZ ());
 				
 				// Put all the attackers in a list, and figure out moveFrom
-				final MapCoordinates3DEx moveFrom = new MapCoordinates3DEx ();
+				MapCoordinates3DEx moveFrom = null;
 				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 				for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
 						(trueUnit.getCombatSide () == UnitCombatSideID.ATTACKER))
 					{
 						unitStack.add (trueUnit);
-						moveFrom.setX (trueUnit.getUnitLocation ().getX ());
-						moveFrom.setY (trueUnit.getUnitLocation ().getY ());
-						moveFrom.setZ (trueUnit.getUnitLocation ().getZ ());
+						moveFrom = new MapCoordinates3DEx ((MapCoordinates3DEx) trueUnit.getUnitLocation ());
 					}
 
 				getFogOfWarMidTurnChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
@@ -413,10 +405,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					log.finest ("Turning light on in tower");
 					for (final Plane plane : mom.getServerDB ().getPlane ())
 					{
-						final MapCoordinates3DEx towerCoords = new MapCoordinates3DEx ();
-						towerCoords.setX (combatLocation.getX ());
-						towerCoords.setY (combatLocation.getY ());
-						towerCoords.setZ (plane.getPlaneNumber ());
+						final MapCoordinates3DEx towerCoords = new MapCoordinates3DEx (combatLocation.getX (), combatLocation.getY (), plane.getPlaneNumber ());
 						
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get
 							(combatLocation.getX ()).getTerrainData ().setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);

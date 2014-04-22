@@ -335,14 +335,14 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Pending moves
 		final PendingMovement move1 = new PendingMovement ();
-		move1.setMoveFrom (createCoordinates (1));
-		move1.setMoveTo (createCoordinates (2));
+		move1.setMoveFrom (new MapCoordinates3DEx (1, 10, 1));
+		move1.setMoveTo (new MapCoordinates3DEx (2, 10, 1));
 		move1.getPath ().add (3);
 		move1.getUnitURN ().add (1);
 
 		final PendingMovement move2 = new PendingMovement ();
-		move2.setMoveFrom (createCoordinates (4));
-		move2.setMoveTo (createCoordinates (3));
+		move2.setMoveFrom (new MapCoordinates3DEx (4, 10, 1));
+		move2.setMoveTo (new MapCoordinates3DEx (3, 10, 1));
 		move2.getPath ().add (7);
 		move2.getUnitURN ().add (2);
 		
@@ -417,14 +417,14 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Pending moves
 		final PendingMovement move1 = new PendingMovement ();
-		move1.setMoveFrom (createCoordinates (1));
-		move1.setMoveTo (createCoordinates (2));
+		move1.setMoveFrom (new MapCoordinates3DEx (1, 10, 1));
+		move1.setMoveTo (new MapCoordinates3DEx (2, 10, 1));
 		move1.getPath ().add (3);
 		move1.getUnitURN ().add (1);
 
 		final PendingMovement move2 = new PendingMovement ();
-		move2.setMoveFrom (createCoordinates (4));
-		move2.setMoveTo (createCoordinates (3));
+		move2.setMoveFrom (new MapCoordinates3DEx (4, 10, 1));
+		move2.setMoveTo (new MapCoordinates3DEx (3, 10, 1));
 		move2.getPath ().add (7);
 		move2.getUnitURN ().add (2);
 		
@@ -455,19 +455,5 @@ public final class TestPlayerMessageProcessingImpl
 		// Check results
 		verify (midTurn, times (0)).moveUnitStack (unitStack1, player1, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
 		verify (midTurn, times (1)).moveUnitStack (unitStack2, player2, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
-	}
-
-	/**
-	 * Just to save repeating this a dozen times in the test cases
-	 * @param x X coord
-	 * @return Coordinates object
-	 */
-	private final MapCoordinates3DEx createCoordinates (final int x)
-	{
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (x);
-		combatLocation.setY (10);
-		combatLocation.setZ (1);
-		return combatLocation;
 	}
 }

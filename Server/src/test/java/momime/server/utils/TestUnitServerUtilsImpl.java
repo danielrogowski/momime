@@ -658,11 +658,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
-		
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
 	}
 
@@ -717,11 +713,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
-		
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
 	}
 
@@ -777,11 +769,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
-		
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
 	}
 
@@ -837,11 +825,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
-		
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
 	}
 	
@@ -893,11 +877,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
-		
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
 	}
 	
@@ -948,11 +928,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
-		
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
 	}
 	
@@ -1009,11 +985,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
-		
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
 	}
 	
@@ -1070,11 +1042,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setServerUnitCalculations (calc);
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
-		
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
 	}
 
@@ -1132,10 +1100,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// So we eventually end up being positioned down-right of our preferred location
 		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, sd, db);
@@ -1221,10 +1186,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
-		addLocation.setX (20);
-		addLocation.setY (10);
-		addLocation.setZ (1);
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// So we eventually end up being positioned down-right of our preferred location
 		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, sd, db);
@@ -1283,7 +1245,7 @@ public final class TestUnitServerUtilsImpl
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
-		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx ();
+		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		addLocation.setX (20);
 		addLocation.setY (10);
 		addLocation.setZ (1);

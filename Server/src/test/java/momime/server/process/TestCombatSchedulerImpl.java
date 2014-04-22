@@ -251,10 +251,7 @@ public final class TestCombatSchedulerImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Details about the combat that ended
-		final MapCoordinates3DEx endingCombatLocation = new MapCoordinates3DEx ();
-		endingCombatLocation.setX (25);
-		endingCombatLocation.setY (15);
-		endingCombatLocation.setZ (1);
+		final MapCoordinates3DEx endingCombatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
 		final MomScheduledCombat endingCombat = new MomScheduledCombat ();
 		endingCombat.setScheduledCombatURN (101);
@@ -262,10 +259,7 @@ public final class TestCombatSchedulerImpl
 		endingCombat.setDefendingLocation (endingCombatLocation);
 		gsk.getScheduledCombat ().add (endingCombat);
 
-		final MapCoordinates3DEx otherCombat1Location = new MapCoordinates3DEx ();		// <-- Same loc
-		otherCombat1Location.setX (25);
-		otherCombat1Location.setY (15);
-		otherCombat1Location.setZ (1);
+		final MapCoordinates3DEx otherCombat1Location = new MapCoordinates3DEx (25, 15, 1);		// <-- Same loc
 		
 		final MomScheduledCombat otherCombat1 = new MomScheduledCombat ();
 		otherCombat1.setScheduledCombatURN (102);
@@ -273,10 +267,7 @@ public final class TestCombatSchedulerImpl
 		otherCombat1.setDefendingLocation (otherCombat1Location);
 		gsk.getScheduledCombat ().add (otherCombat1);
 
-		final MapCoordinates3DEx otherCombat2Location = new MapCoordinates3DEx ();		// <--- Diff loc
-		otherCombat2Location.setX (26);
-		otherCombat2Location.setY (15);
-		otherCombat2Location.setZ (1);
+		final MapCoordinates3DEx otherCombat2Location = new MapCoordinates3DEx (26, 15, 1);		// <--- Diff loc
 		
 		final MomScheduledCombat otherCombat2 = new MomScheduledCombat ();
 		otherCombat2.setScheduledCombatURN (103);

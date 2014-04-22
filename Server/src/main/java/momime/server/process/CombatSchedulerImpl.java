@@ -77,17 +77,8 @@ public final class CombatSchedulerImpl implements CombatScheduler
 			combat.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
 		
 	    // Copy locations into new objects, to be safe
-		final MapCoordinates3DEx defLoc = new MapCoordinates3DEx ();
-		defLoc.setX (defendingLocation.getX ());
-		defLoc.setY (defendingLocation.getY ());
-		defLoc.setZ (defendingLocation.getZ ());
-		combat.setDefendingLocation (defLoc);
-		
-		final MapCoordinates3DEx attFrom = new MapCoordinates3DEx ();
-		attFrom.setX (attackingFrom.getX ());
-		attFrom.setY (attackingFrom.getY ());
-		attFrom.setZ (attackingFrom.getZ ());
-		combat.setAttackingFrom (attFrom);
+		combat.setDefendingLocation (new MapCoordinates3DEx (defendingLocation));
+		combat.setAttackingFrom (new MapCoordinates3DEx (attackingFrom));
 	    
 		// Add to list
 		gsk.getScheduledCombat ().add (combat);

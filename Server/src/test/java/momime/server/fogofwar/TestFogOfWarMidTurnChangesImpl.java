@@ -77,7 +77,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().set (20, tc);
 		
 		// Set up coordinates
-		final MapCoordinates3DEx coords = createCoordinates (20);
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Human player who can't see the location
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -234,7 +234,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().set (20, tc);
 		
 		// Set up coordinates
-		final MapCoordinates3DEx coords = createCoordinates (20);
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Human player who can't see the location
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -425,10 +425,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		// The unit we're trying to see
 		// Note creating units like this defaults them to ALIVE, so we don't need to set that
-		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
-		unitLocation.setX (20);
-		unitLocation.setY (10);
-		unitLocation.setZ (0);
+		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (20, 10, 0);
 
 		final MemoryUnit spearmen = new UnitUtilsImpl ().createMemoryUnit ("UN105", 1, 0, 0, true, db);
 		spearmen.setOwningPlayerID (pd1.getPlayerID ());
@@ -465,17 +462,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
 		
 		// Still can't see them if someone else is attacking the lair
-		final MapCoordinates3DEx unitCombatLocation = new MapCoordinates3DEx ();
-		unitCombatLocation.setX (21);
-		unitCombatLocation.setY (10);
-		unitCombatLocation.setZ (0);
+		final MapCoordinates3DEx unitCombatLocation = new MapCoordinates3DEx (21, 10, 0);
 		spearmen.setCombatLocation (unitCombatLocation);
 		
-		final MapCoordinates3DEx playerCombatLocation = new MapCoordinates3DEx ();
-		playerCombatLocation.setX (21);
-		playerCombatLocation.setY (10);
-		playerCombatLocation.setZ (0);
-		
+		final MapCoordinates3DEx playerCombatLocation = new MapCoordinates3DEx (21, 10, 0);
 		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, playerCombatLocation, player3, player1, db, settings));
 		
 		// But can see them if we're attacking it
@@ -533,10 +523,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		// The unit we're trying to see
 		// Note creating units like this defaults them to ALIVE, so we don't need to set that
-		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
-		unitLocation.setX (20);
-		unitLocation.setY (10);
-		unitLocation.setZ (0);
+		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (20, 10, 0);
 
 		final MemoryUnit spearmen = new UnitUtilsImpl ().createMemoryUnit ("UN105", 11, 0, 0, true, db);
 		spearmen.setOwningPlayerID (pd1.getPlayerID ());
@@ -576,7 +563,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
 
 		// The location of the city that has the spell we're trying to see
-		final MapCoordinates3DEx spellLocation = createCoordinates (20);
+		final MapCoordinates3DEx spellLocation = new MapCoordinates3DEx (20, 10, 1);
 
 		// Spell to check
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
@@ -657,7 +644,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		fogOfWarArea.getPlane ().get (1).getRow ().get (10).getCell ().set (21, FogOfWarStateID.NEVER_SEEN);
 		
 		// CAE
-		final MapCoordinates3DEx caeLocation = createCoordinates (20);
+		final MapCoordinates3DEx caeLocation = new MapCoordinates3DEx (20, 10, 1);
 
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
 		cae.setMapLocation (caeLocation);
@@ -748,7 +735,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// City location
-		final MapCoordinates3DEx cityLocation = createCoordinates (20);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up test object
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
@@ -875,7 +862,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// City location
-		final MapCoordinates3DEx cityLocation = createCoordinates (20);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up test object
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
@@ -945,7 +932,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 
 		final MemoryBuilding trueBuilding = new MemoryBuilding ();		// The building being destroyed
 		trueBuilding.setBuildingID ("BL03");
-		trueBuilding.setCityLocation (createCoordinates (20));
+		trueBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getBuilding ().add (trueBuilding);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -962,7 +949,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MemoryBuilding building1 = new MemoryBuilding ();		// Some other building, just to make the building lists unique
 		building1.setBuildingID ("BL04");
-		building1.setCityLocation (createCoordinates (21));
+		building1.setCityLocation (new MapCoordinates3DEx (21, 10, 1));
 		priv1.getFogOfWarMemory ().getBuilding ().add (building1);
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
@@ -980,7 +967,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 
 		final MemoryBuilding building2 = new MemoryBuilding ();		// Some other building, just to make the building lists unique
 		building2.setBuildingID ("BL04");
-		building2.setCityLocation (createCoordinates (21));
+		building2.setCityLocation (new MapCoordinates3DEx (21, 10, 1));
 		priv2.getFogOfWarMemory ().getBuilding ().add (building2);
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
@@ -998,7 +985,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MemoryBuilding building3 = new MemoryBuilding ();		// The building being destroyed
 		building3.setBuildingID ("BL03");
-		building3.setCityLocation (createCoordinates (20));
+		building3.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		priv3.getFogOfWarMemory ().getBuilding ().add (building3);
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
@@ -1019,7 +1006,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MemoryBuilding building4 = new MemoryBuilding ();		// The building being destroyed
 		building4.setBuildingID ("BL03");
-		building4.setCityLocation (createCoordinates (20));
+		building4.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		priv4.getFogOfWarMemory ().getBuilding ().add (building4);
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
@@ -1031,7 +1018,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// City location
-		final MapCoordinates3DEx cityLocation = createCoordinates (20);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 
 		// Set up test object
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
@@ -1082,12 +1069,12 @@ public final class TestFogOfWarMidTurnChangesImpl
 
 		final MemoryBuilding trueBuilding = new MemoryBuilding ();		// The building being destroyed
 		trueBuilding.setBuildingID ("BL03");
-		trueBuilding.setCityLocation (createCoordinates (20));
+		trueBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		trueMap.getBuilding ().add (trueBuilding);
 
 		final MemoryBuilding otherBuilding = new MemoryBuilding ();		// Some building in another location so it doesn't get destroyed
 		otherBuilding.setBuildingID ("BL04");
-		otherBuilding.setCityLocation (createCoordinates (21));
+		otherBuilding.setCityLocation (new MapCoordinates3DEx (21, 10, 1));
 		trueMap.getBuilding ().add (otherBuilding);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1104,7 +1091,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MemoryBuilding building1 = new MemoryBuilding ();		// Some other building, just to make the building lists unique
 		building1.setBuildingID ("BL04");
-		building1.setCityLocation (createCoordinates (21));
+		building1.setCityLocation (new MapCoordinates3DEx (21, 10, 1));
 		priv1.getFogOfWarMemory ().getBuilding ().add (building1);
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
@@ -1122,7 +1109,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 
 		final MemoryBuilding building2 = new MemoryBuilding ();		// Some other building, just to make the building lists unique
 		building2.setBuildingID ("BL04");
-		building2.setCityLocation (createCoordinates (21));
+		building2.setCityLocation (new MapCoordinates3DEx (21, 10, 1));
 		priv2.getFogOfWarMemory ().getBuilding ().add (building2);
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
@@ -1140,7 +1127,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MemoryBuilding building3 = new MemoryBuilding ();		// The building being destroyed
 		building3.setBuildingID ("BL03");
-		building3.setCityLocation (createCoordinates (20));
+		building3.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		priv3.getFogOfWarMemory ().getBuilding ().add (building3);
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
@@ -1161,7 +1148,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		final MemoryBuilding building4 = new MemoryBuilding ();		// The building being destroyed
 		building4.setBuildingID ("BL03");
-		building4.setCityLocation (createCoordinates (20));
+		building4.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		priv4.getFogOfWarMemory ().getBuilding ().add (building4);
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
@@ -1173,7 +1160,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// City location
-		final MapCoordinates3DEx cityLocation = createCoordinates (20);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 
 		// Set up test object
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
@@ -1206,19 +1193,5 @@ public final class TestFogOfWarMidTurnChangesImpl
 		assertEquals (cityLocation, msg.getData ().getCityLocation ());
 		assertEquals ("BL03", msg.getData ().getBuildingID ());
 		assertFalse (msg.getData ().isUpdateBuildingSoldThisTurn ());
-	}
-
-	/**
-	 * Just to save repeating this a dozen times in the test cases
-	 * @param x X coord
-	 * @return Coordinates object
-	 */
-	private final MapCoordinates3DEx createCoordinates (final int x)
-	{
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (x);
-		combatLocation.setY (10);
-		combatLocation.setZ (1);
-		return combatLocation;
 	}
 }

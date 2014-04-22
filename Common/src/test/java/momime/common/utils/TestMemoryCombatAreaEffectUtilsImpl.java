@@ -52,20 +52,11 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			newCAE.setCastingPlayerID (n);
 			newCAE.setCombatAreaEffectID ("CAE0" + n);
 
-			final MapCoordinates3DEx thisLocation = new MapCoordinates3DEx ();
-			thisLocation.setX (10 + n);
-			thisLocation.setY (20 + n);
-			thisLocation.setZ (30 + n);
-
-			newCAE.setMapLocation (thisLocation);
+			newCAE.setMapLocation (new MapCoordinates3DEx (10 + n, 20 + n, 30 + n));
 			CAEs.add (newCAE);
 		}
 
-		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx ();
-		desiredLocation.setX (12);
-		desiredLocation.setY (22);
-		desiredLocation.setZ (32);
-
+		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx (12, 22, 32);
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		assertTrue (utils.findCombatAreaEffect (CAEs, desiredLocation, "CAE02", 2));
 	}
@@ -102,20 +93,11 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			final MemoryCombatAreaEffect newCAE = new MemoryCombatAreaEffect ();
 			newCAE.setCombatAreaEffectID ("CAE0" + n);
 
-			final MapCoordinates3DEx thisLocation = new MapCoordinates3DEx ();
-			thisLocation.setX (10 + n);
-			thisLocation.setY (20 + n);
-			thisLocation.setZ (30 + n);
-
-			newCAE.setMapLocation (thisLocation);
+			newCAE.setMapLocation (new MapCoordinates3DEx (10 + n, 20 + n, 30 + n));
 			CAEs.add (newCAE);
 		}
 
-		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx ();
-		desiredLocation.setX (12);
-		desiredLocation.setY (22);
-		desiredLocation.setZ (32);
-
+		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx (12, 22, 32);
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		assertTrue (utils.findCombatAreaEffect (CAEs, desiredLocation, "CAE02", null));
 	}
@@ -159,19 +141,11 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			newCAE.setCastingPlayerID (n);
 			newCAE.setCombatAreaEffectID ("CAE0" + n);
 
-			final MapCoordinates3DEx thisLocation = new MapCoordinates3DEx ();
-			thisLocation.setX (10 + n);
-			thisLocation.setY (20 + n);
-			thisLocation.setZ (30 + n);
-
-			newCAE.setMapLocation (thisLocation);
+			newCAE.setMapLocation (new MapCoordinates3DEx (10 + n, 20 + n, 30 + n));
 			CAEs.add (newCAE);
 		}
 
-		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx ();
-		desiredLocation.setX (12);
-		desiredLocation.setY (22);
-		desiredLocation.setZ (32);
+		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx (12, 22, 32);
 
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.cancelCombatAreaEffect (CAEs, desiredLocation, "CAE02", 2);
@@ -217,19 +191,11 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 			final MemoryCombatAreaEffect newCAE = new MemoryCombatAreaEffect ();
 			newCAE.setCombatAreaEffectID ("CAE0" + n);
 
-			final MapCoordinates3DEx thisLocation = new MapCoordinates3DEx ();
-			thisLocation.setX (10 + n);
-			thisLocation.setY (20 + n);
-			thisLocation.setZ (30 + n);
-
-			newCAE.setMapLocation (thisLocation);
+			newCAE.setMapLocation (new MapCoordinates3DEx (10 + n, 20 + n, 30 + n));
 			CAEs.add (newCAE);
 		}
 
-		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx ();
-		desiredLocation.setX (12);
-		desiredLocation.setY (22);
-		desiredLocation.setZ (32);
+		final MapCoordinates3DEx desiredLocation = new MapCoordinates3DEx (12, 22, 32);
 
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		utils.cancelCombatAreaEffect (CAEs, desiredLocation, "CAE02", null);

@@ -145,28 +145,19 @@ public final class TestSimultaneousTurnsProcessingImpl
 		tc.setBuildingIdSoldThisTurn ("BL01");
 		tc.setCityData (cityData);
 		
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (25);
-		cityLocation.setY (15);
-		cityLocation.setZ (1);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (25, 15, 1);
 
 		// Two settlers trying to build cities right next to each other - so only one can "win"
 		final List<MemoryUnit> settlers = new ArrayList<MemoryUnit> ();
 
-		final MapCoordinates3DEx settler1Location = new MapCoordinates3DEx ();
-		settler1Location.setX (40);
-		settler1Location.setY (20);
-		settler1Location.setZ (1);
+		final MapCoordinates3DEx settler1Location = new MapCoordinates3DEx (40, 20, 1);
 		
 		final MemoryUnit settler1 = new MemoryUnit ();
 		settler1.setOwningPlayerID (pd1.getPlayerID ());
 		settler1.setUnitLocation (settler1Location);
 		settlers.add (settler1);
 
-		final MapCoordinates3DEx settler2Location = new MapCoordinates3DEx ();
-		settler2Location.setX (41);
-		settler2Location.setY (20);
-		settler2Location.setZ (1);
+		final MapCoordinates3DEx settler2Location = new MapCoordinates3DEx (41, 20, 1);
 		
 		final MemoryUnit settler2 = new MemoryUnit ();
 		settler2.setOwningPlayerID (pd2.getPlayerID ());
@@ -205,14 +196,9 @@ public final class TestSimultaneousTurnsProcessingImpl
 		final List<MemoryUnit> spirits = new ArrayList<MemoryUnit> ();
 		for (int n = 0; n < 2; n++)
 		{
-			final MapCoordinates3DEx spiritLocation = new MapCoordinates3DEx ();
-			spiritLocation.setX (50);
-			spiritLocation.setY (20);
-			spiritLocation.setZ (0);
-		
 			final MemoryUnit spirit = new MemoryUnit ();
 			spirit.setOwningPlayerID (pd2.getPlayerID ());
-			spirit.setUnitLocation (spiritLocation);
+			spirit.setUnitLocation (new MapCoordinates3DEx (50, 20, 0));
 			spirits.add (spirit);
 		}
 

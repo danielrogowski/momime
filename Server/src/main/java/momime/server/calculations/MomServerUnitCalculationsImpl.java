@@ -334,10 +334,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		// Try each direction
 		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
 		{
-			final MapCoordinates2DEx coords = new MapCoordinates2DEx ();
-			coords.setX (cellX);
-			coords.setY (cellY);
-
+			final MapCoordinates2DEx coords = new MapCoordinates2DEx (cellX, cellY);
 			if (getCoordinateSystemUtils ().move2DCoordinates (sys, coords, d))
 			{
 				// Don't bother rechecking if we can already move here for free since we know we can't improve on that

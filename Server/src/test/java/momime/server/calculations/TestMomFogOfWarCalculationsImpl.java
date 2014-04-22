@@ -65,17 +65,11 @@ public final class TestMomFogOfWarCalculationsImpl
 		towerData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (2).setTerrainData (towerData);
 
-		final MapCoordinates3DEx towerOnMyrror = new MapCoordinates3DEx ();
-		towerOnMyrror.setX (2);
-		towerOnMyrror.setY (2);
-		towerOnMyrror.setZ (1);
+		final MapCoordinates3DEx towerOnMyrror = new MapCoordinates3DEx (2, 2, 1);
 
 		map.getPlane ().get (1).getRow ().get (2).getCell ().get (3).setTerrainData (new OverlandMapTerrainData ());
 
-		final MapCoordinates3DEx otherLocationOnMyrror = new MapCoordinates3DEx ();
-		otherLocationOnMyrror.setX (3);
-		otherLocationOnMyrror.setY (2);
-		otherLocationOnMyrror.setZ (1);
+		final MapCoordinates3DEx otherLocationOnMyrror = new MapCoordinates3DEx (3, 2, 1);
 
 		// Never seen location on either plane
 		assertFalse (calc.canSeeMidTurnOnAnyPlaneIfTower (towerOnMyrror, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN, map, fogOfWarArea, db));

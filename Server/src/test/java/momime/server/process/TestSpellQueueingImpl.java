@@ -202,7 +202,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (false);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -257,7 +257,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.OVERLAND)).thenReturn (true);
 		
 		// Cell to target in combat
-		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx ();
+		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (10, 5);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -320,7 +320,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -376,7 +376,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -608,10 +608,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
 		// One side is wiped out already
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, null);
@@ -697,10 +694,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
@@ -798,10 +792,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
 		// Two sides in combat (ok this makes the variable names a little misleading, because attackingPlayer isn't really attacking, but it suits the test)
 		final CombatPlayers combatPlayers = new CombatPlayers (new PlayerServerDetails (null, null, null, null, null), defendingPlayer);
@@ -898,11 +889,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
-
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
@@ -1011,11 +998,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
-
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
@@ -1128,11 +1111,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
-
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
@@ -1245,11 +1224,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
-
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
@@ -1364,11 +1339,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
-
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
@@ -1486,11 +1457,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
-
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
@@ -1615,11 +1582,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
-
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
@@ -1746,11 +1709,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
-
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
@@ -1775,9 +1734,7 @@ public final class TestSpellQueueingImpl
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
-		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx ();
-		combatTargetLocation.setX (9);
-		combatTargetLocation.setY (7);
+		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (9, 7);
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1878,11 +1835,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
-
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		
 		// Two sides in combat
@@ -1907,9 +1860,7 @@ public final class TestSpellQueueingImpl
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
-		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx ();
-		combatTargetLocation.setX (9);
-		combatTargetLocation.setY (7);
+		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (9, 7);
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -2013,10 +1964,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		gc.setCombatMap (ServerTestData.createCombatMap ());
@@ -2043,9 +1991,7 @@ public final class TestSpellQueueingImpl
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
-		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx ();
-		combatTargetLocation.setX (9);
-		combatTargetLocation.setY (7);
+		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (9, 7);
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -2154,10 +2100,7 @@ public final class TestSpellQueueingImpl
 		when (spellUtils.spellCanBeCastIn (spell, MomSpellCastType.COMBAT)).thenReturn (true);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (25);
-		combatLocation.setY (15);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		gc.setCombatMap (ServerTestData.createCombatMap ());
@@ -2184,7 +2127,7 @@ public final class TestSpellQueueingImpl
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
-		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx ();
+		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (9, 7);
 		combatTargetLocation.setX (9);
 		combatTargetLocation.setY (7);
 		

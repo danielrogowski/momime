@@ -194,10 +194,7 @@ public final class TestGraphicsDatabaseExImpl
 	public final void testFindBestCityImage_Exists () throws RecordNotFoundException
 	{
 		// City location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (25);
-		cityLocation.setY (10);
-		cityLocation.setZ (1);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (25, 10, 1);
 
 		// Buildings that we have
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -261,10 +258,7 @@ public final class TestGraphicsDatabaseExImpl
 	public final void testFindBestCityImage_NotExists () throws RecordNotFoundException
 	{
 		// City location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (25);
-		cityLocation.setY (10);
-		cityLocation.setZ (1);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (25, 10, 1);
 
 		// Buildings that we have
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();

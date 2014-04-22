@@ -71,10 +71,7 @@ public final class MomAIImpl implements MomAI
 					if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () != null) &&
 						(cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 					{
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-						cityLocation.setX (x);
-						cityLocation.setY (y);
-						cityLocation.setZ (plane.getPlaneNumber ());
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 						getCityAI ().decideWhatToBuild (cityLocation, cityData, trueMap.getMap (), trueMap.getBuilding (), sd, db);
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);

@@ -112,10 +112,7 @@ public final class CityAIImpl implements CityAI
 						(canBuildCityOnThisFeature != null) && (canBuildCityOnThisFeature))
 					{
 						// How good will this city be?
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-						cityLocation.setX (x);
-						cityLocation.setY (y);
-						cityLocation.setZ (plane);
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
 
 						// First find what the max. size will be after we've built all buildings, and re-cap this at the game maximum
 						// This ensures cities with max size 20 are considered just as good as cities with max size 25+
@@ -130,11 +127,8 @@ public final class CityAIImpl implements CityAI
 							getCityCalculations ().calculateProductionBonus (map, cityLocation, sd.getMapSize (), db);	// Typically 0-80 usefully
 
 						// Improve the estimate according to nearby map features e.g. always stick cities next to adamantium!
-						final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-						coords.setX (x);
-						coords.setY (y);
-						coords.setZ (plane);
-
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
+						
 						for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 							if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
 							{
@@ -195,10 +189,7 @@ public final class CityAIImpl implements CityAI
 						if (((tradeGoods) && (cityData.getCurrentlyConstructingBuildingOrUnitID ().equals (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS))) ||
 							((!tradeGoods) && (!cityData.getCurrentlyConstructingBuildingOrUnitID ().equals (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS))))
 						{
-							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-							cityLocation.setX (x);
-							cityLocation.setY (y);
-							cityLocation.setZ (plane.getPlaneNumber ());
+							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 							final int numberOfWorkers = (cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getNumberOfRebels ();
 							for (int workerNo = 0; workerNo < numberOfWorkers; workerNo++)
@@ -272,10 +263,7 @@ public final class CityAIImpl implements CityAI
 					{
 						cityData.setOptionalFarmers (0);
 
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-						cityLocation.setX (x);
-						cityLocation.setY (y);
-						cityLocation.setZ (plane.getPlaneNumber ());
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 						rationsNeeded = rationsNeeded - getCityCalculations ().calculateSingleCityProduction (players, trueMap.getMap (),
 							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db,
@@ -309,10 +297,7 @@ public final class CityAIImpl implements CityAI
 					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) &&
 						(cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
 					{
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-						cityLocation.setX (x);
-						cityLocation.setY (y);
-						cityLocation.setZ (plane.getPlaneNumber ());
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 					}

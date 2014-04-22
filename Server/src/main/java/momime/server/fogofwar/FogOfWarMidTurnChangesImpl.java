@@ -501,10 +501,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "updateUnitStatusToAliveOnServerAndClients", trueUnit.getUnitURN ());
 
 		// Update on server
-		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
-		unitLocation.setX (locationToAddUnit.getX ());
-		unitLocation.setY (locationToAddUnit.getY ());
-		unitLocation.setZ (locationToAddUnit.getZ ());
+		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (locationToAddUnit);
 
 		trueUnit.setUnitLocation (unitLocation);
 		trueUnit.setStatus (UnitStatusID.ALIVE);
@@ -764,12 +761,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		if (cityLocation == null)
 			spellLocation = null;
 		else
-		{
-			spellLocation = new MapCoordinates3DEx ();
-			spellLocation.setX (cityLocation.getX ());
-			spellLocation.setY (cityLocation.getY ());
-			spellLocation.setZ (cityLocation.getZ ());
-		}
+			spellLocation = new MapCoordinates3DEx (cityLocation);
 
 		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
 		trueSpell.setCastingPlayerID (castingPlayerID);
@@ -969,12 +961,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		if (mapLocation == null)
 			caeLocation = null;
 		else
-		{
-			caeLocation = new MapCoordinates3DEx ();
-			caeLocation.setX (mapLocation.getX ());
-			caeLocation.setY (mapLocation.getY ());
-			caeLocation.setZ (mapLocation.getZ ());
-		}
+			caeLocation = new MapCoordinates3DEx (mapLocation);
 
 		final MemoryCombatAreaEffect trueCAE = new MemoryCombatAreaEffect ();
 		trueCAE.setCombatAreaEffectID (combatAreaEffectID);
@@ -1120,13 +1107,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			firstTrueBuilding = null;
 		else
 		{
-			final MapCoordinates3DEx firstBuildingLocation = new MapCoordinates3DEx ();
-			firstBuildingLocation.setX (cityLocation.getX ());
-			firstBuildingLocation.setY (cityLocation.getY ());
-			firstBuildingLocation.setZ (cityLocation.getZ ());
-
 			firstTrueBuilding = new MemoryBuilding ();
-			firstTrueBuilding.setCityLocation (firstBuildingLocation);
+			firstTrueBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
 			firstTrueBuilding.setBuildingID (firstBuildingID);
 			gsk.getTrueMap ().getBuilding ().add (firstTrueBuilding);
 		}
@@ -1136,13 +1118,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			secondTrueBuilding = null;
 		else
 		{
-			final MapCoordinates3DEx secondBuildingLocation = new MapCoordinates3DEx ();
-			secondBuildingLocation.setX (cityLocation.getX ());
-			secondBuildingLocation.setY (cityLocation.getY ());
-			secondBuildingLocation.setZ (cityLocation.getZ ());
-
 			secondTrueBuilding = new MemoryBuilding ();
-			secondTrueBuilding.setCityLocation (secondBuildingLocation);
+			secondTrueBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
 			secondTrueBuilding.setBuildingID (secondBuildingID);
 			gsk.getTrueMap ().getBuilding ().add (secondTrueBuilding);
 		}
@@ -1763,14 +1740,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Move units on true map
 		for (final MemoryUnit thisUnit : unitStack)
-		{
-			final MapCoordinates3DEx newLocation = new MapCoordinates3DEx ();
-			newLocation.setX (moveTo.getX ());
-			newLocation.setY (moveTo.getY ());
-			newLocation.setZ (moveTo.getZ ());
-
-			thisUnit.setUnitLocation (newLocation);
-		}
+			thisUnit.setUnitLocation (new MapCoordinates3DEx (moveTo));
 
 		// See what the units can see from their new location
 		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, unitStackOwner, players, false, "moveUnitStackOneCellOnServerAndClients", sd, db);
@@ -1817,10 +1787,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// The value at each cell of the directions grid is the direction we need to have come FROM to get there
 		// So we need to start at the destinationand follow backwards down the movement path until we
 		// get back to the From location, and the direction we want is the one that led us to the From location
-		final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-		coords.setX (moveTo.getX ());
-		coords.setY (moveTo.getY ());
-		coords.setZ (moveTo.getZ ());
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveTo);
 
 		int direction = -1;
 		while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
@@ -1938,10 +1905,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				final int movementDirection = determineMovementDirection (moveFrom, moveTo, movementDirections, mom.getSessionDescription ().getMapSize ());
 
 				// Work out where this moves us to
-				final MapCoordinates3DEx oneStep = new MapCoordinates3DEx ();
-				oneStep.setX (moveFrom.getX ());
-				oneStep.setY (moveFrom.getY ());
-				oneStep.setZ (moveFrom.getZ ());
+				final MapCoordinates3DEx oneStep = new MapCoordinates3DEx (moveFrom);
 				getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getMapSize (), oneStep, movementDirection);
 
 				final MemoryGridCell oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -2029,11 +1993,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					pending.getUnitURN ().add (thisUnit.getUnitURN ());
 
 				// Record the movement path
-				final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-				coords.setX (moveTo.getX ());
-				coords.setY (moveTo.getY ());
-				coords.setZ (moveTo.getZ ());
-
+				final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveTo);
 				while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
 				{
 					final int direction = movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()];
@@ -2117,10 +2077,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 			
 			// Scheduled the combat or start it immediately
-			final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx ();
-			defendingLocation.setX (moveTo.getX ());
-			defendingLocation.setY (moveTo.getY ());
-			defendingLocation.setZ (towerPlane);
+			final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (moveTo.getX (), moveTo.getY (), towerPlane);
 
 			final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 			for (final MemoryUnit tu : unitStack)

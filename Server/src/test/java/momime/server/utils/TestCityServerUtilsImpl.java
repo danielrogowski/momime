@@ -59,10 +59,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -113,10 +110,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -176,10 +170,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -236,10 +227,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -292,10 +280,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -348,10 +333,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -403,10 +385,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -453,10 +432,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -503,10 +479,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -553,10 +526,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -603,10 +573,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
@@ -642,10 +609,7 @@ public final class TestCityServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Set up object
 		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
@@ -696,52 +660,29 @@ public final class TestCityServerUtilsImpl
 		when (db.findBuilding (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, "totalCostOfBuildingsAtLocation")).thenReturn (summoningCircleDef);
 		
 		// City location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (20);
-		cityLocation.setY (10);
-		cityLocation.setZ (1);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Buildings list
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
-		final MapCoordinates3DEx buildersHallLocation = new MapCoordinates3DEx ();
-		buildersHallLocation.setX (20);
-		buildersHallLocation.setY (10);
-		buildersHallLocation.setZ (1);
-		
 		final MemoryBuilding buildersHall = new MemoryBuilding ();
 		buildersHall.setBuildingID ("BL32");	// costs 60
-		buildersHall.setCityLocation (buildersHallLocation);
+		buildersHall.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		buildings.add (buildersHall);
 
-		final MapCoordinates3DEx bankLocation = new MapCoordinates3DEx ();
-		bankLocation.setX (20);
-		bankLocation.setY (10);
-		bankLocation.setZ (1);
-		
 		final MemoryBuilding bank = new MemoryBuilding ();
 		bank.setBuildingID ("BL27");	// costs 250
-		bank.setCityLocation (bankLocation);
+		bank.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		buildings.add (bank);
 
-		final MapCoordinates3DEx summoningCircleLocation = new MapCoordinates3DEx ();
-		summoningCircleLocation.setX (20);
-		summoningCircleLocation.setY (10);
-		summoningCircleLocation.setZ (1);
-		
 		final MemoryBuilding summoningCircle = new MemoryBuilding ();
 		summoningCircle.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE);	// no cost defined
-		summoningCircle.setCityLocation (summoningCircleLocation);
+		summoningCircle.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		buildings.add (summoningCircle);
-		
-		final MapCoordinates3DEx bankElsewhereLocation = new MapCoordinates3DEx ();
-		bankElsewhereLocation.setX (20);
-		bankElsewhereLocation.setY (11);
-		bankElsewhereLocation.setZ (1);
 		
 		final MemoryBuilding bankElsewhere = new MemoryBuilding ();
 		bankElsewhere.setBuildingID ("BL27");	// costs 250
-		bankElsewhere.setCityLocation (bankElsewhereLocation);
+		bankElsewhere.setCityLocation (new MapCoordinates3DEx (20, 11, 1));
 		buildings.add (bankElsewhere);
 		
 		// Run method

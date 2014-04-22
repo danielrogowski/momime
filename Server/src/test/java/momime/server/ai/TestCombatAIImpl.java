@@ -36,7 +36,7 @@ public final class TestCombatAIImpl
 	public final void testListUnitsToMove ()
 	{
 		// Combat location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Test unit list
 		final List<MemoryUnit> trueUnits = new ArrayList<MemoryUnit> ();
@@ -47,35 +47,35 @@ public final class TestCombatAIImpl
 		trueUnits.add (notInCombat);
 		
 		final MemoryUnit inDifferentCombat = new MemoryUnit ();
-		inDifferentCombat.setCombatLocation (createCoordinates (21));
+		inDifferentCombat.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
 		inDifferentCombat.setOwningPlayerID (1);
 		inDifferentCombat.setDoubleCombatMovesLeft (2);
 		inDifferentCombat.setStatus (UnitStatusID.ALIVE);
 		trueUnits.add (inDifferentCombat);
 		
 		final MemoryUnit noMovesLeft = new MemoryUnit ();
-		noMovesLeft.setCombatLocation (createCoordinates (20));
+		noMovesLeft.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		noMovesLeft.setOwningPlayerID (1);
 		noMovesLeft.setDoubleCombatMovesLeft (0);
 		noMovesLeft.setStatus (UnitStatusID.ALIVE);
 		trueUnits.add (noMovesLeft);
 		
 		final MemoryUnit deadUnit = new MemoryUnit ();
-		deadUnit.setCombatLocation (createCoordinates (20));
+		deadUnit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		deadUnit.setOwningPlayerID (1);
 		deadUnit.setDoubleCombatMovesLeft (2);
 		deadUnit.setStatus (UnitStatusID.DEAD);
 		trueUnits.add (deadUnit);
 
 		final MemoryUnit correctUnit = new MemoryUnit ();
-		correctUnit.setCombatLocation (createCoordinates (20));
+		correctUnit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		correctUnit.setOwningPlayerID (1);
 		correctUnit.setDoubleCombatMovesLeft (2);
 		correctUnit.setStatus (UnitStatusID.ALIVE);
 		trueUnits.add (correctUnit);
 		
 		final MemoryUnit someoneElsesUnit = new MemoryUnit ();
-		someoneElsesUnit.setCombatLocation (createCoordinates (20));
+		someoneElsesUnit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		someoneElsesUnit.setOwningPlayerID (2);
 		someoneElsesUnit.setDoubleCombatMovesLeft (2);
 		someoneElsesUnit.setStatus (UnitStatusID.ALIVE);
@@ -191,19 +191,5 @@ public final class TestCombatAIImpl
 		casterWithoutMP.getUnitHasSkill ().add (casterSkill);
 		
 		assertEquals (1, ai.evaluateTarget (attacker, casterWithoutMP, players, spells, combatAreaEffects, db));
-	}
-
-	/**
-	 * Just to save repeating this a dozen times in the test cases
-	 * @param x X coord
-	 * @return Coordinates object
-	 */
-	private final MapCoordinates3DEx createCoordinates (final int x)
-	{
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (x);
-		combatLocation.setY (10);
-		combatLocation.setZ (1);
-		return combatLocation;
 	}
 }

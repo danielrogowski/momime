@@ -47,20 +47,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 public final class TestDamageProcessorImpl
 {
 	/**
-	 * Just to save repeating this a dozen times in the test cases
-	 * @param x X coord
-	 * @return Coordinates object
-	 */
-	private final MapCoordinates3DEx createCoordinates (final int x)
-	{
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (x);
-		combatLocation.setY (10);
-		combatLocation.setZ (1);
-		return combatLocation;
-	}
-	
-	/**
 	 * Tests the resolveAttack method on a melee attack which kills the defender (owned by the attackingPlayer)
 	 * but the attacker (owned by the defendingPlayer) still has some figures left, and both sides still have units left so the combat continues
 	 * @throws Exception If there is a problem
@@ -128,7 +114,7 @@ public final class TestDamageProcessorImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Damage amounts
 		final DamageCalculator calc = mock (DamageCalculator.class);
@@ -162,8 +148,8 @@ public final class TestDamageProcessorImpl
 			final MemoryUnit survivingUnit = new MemoryUnit ();
 			survivingUnit.setOwningPlayerID (thisPlayer.getPlayerDescription ().getPlayerID ());
 			survivingUnit.setStatus (UnitStatusID.ALIVE);
-			survivingUnit.setCombatPosition (new MapCoordinates2DEx ());
-			survivingUnit.setCombatLocation (createCoordinates (20));
+			survivingUnit.setCombatPosition (new MapCoordinates2DEx (7, 9));
+			survivingUnit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 			survivingUnit.setCombatSide ((thisPlayer == attackingPlayer) ? UnitCombatSideID.ATTACKER : UnitCombatSideID.DEFENDER);
 			trueMap.getUnit ().add (survivingUnit);
 		}
@@ -268,7 +254,7 @@ public final class TestDamageProcessorImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Damage amounts
 		final DamageCalculator calc = mock (DamageCalculator.class);
@@ -300,8 +286,8 @@ public final class TestDamageProcessorImpl
 		final MemoryUnit survivingUnit = new MemoryUnit ();
 		survivingUnit.setOwningPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
 		survivingUnit.setStatus (UnitStatusID.ALIVE);
-		survivingUnit.setCombatPosition (new MapCoordinates2DEx ());
-		survivingUnit.setCombatLocation (createCoordinates (20));
+		survivingUnit.setCombatPosition (new MapCoordinates2DEx (7, 9));
+		survivingUnit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		survivingUnit.setCombatSide (UnitCombatSideID.DEFENDER);
 		trueMap.getUnit ().add (survivingUnit);
 		
@@ -350,47 +336,47 @@ public final class TestDamageProcessorImpl
 		// Right
 		final MemoryUnit unit1 = new MemoryUnit ();
 		unit1.setStatus (UnitStatusID.ALIVE);
-		unit1.setCombatLocation (createCoordinates (20));
-		unit1.setCombatPosition (new MapCoordinates2DEx ());
+		unit1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit1.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit1);
 		
 		// Wrong location
 		final MemoryUnit unit2 = new MemoryUnit ();
 		unit2.setStatus (UnitStatusID.ALIVE);
-		unit2.setCombatLocation (createCoordinates (21));
-		unit2.setCombatPosition (new MapCoordinates2DEx ());
+		unit2.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
+		unit2.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit2);
 		
 		// Defender
 		final MemoryUnit unit3 = new MemoryUnit ();
 		unit3.setStatus (UnitStatusID.ALIVE);
-		unit3.setCombatLocation (createCoordinates (20));
-		unit3.setCombatPosition (new MapCoordinates2DEx ());
+		unit3.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit3.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit3.setCombatSide (UnitCombatSideID.DEFENDER);
 		units.add (unit3);
 		
 		// Dead
 		final MemoryUnit unit4 = new MemoryUnit ();
 		unit4.setStatus (UnitStatusID.DEAD);
-		unit4.setCombatLocation (createCoordinates (20));
-		unit4.setCombatPosition (new MapCoordinates2DEx ());
+		unit4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit4.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit4);
 		
 		// Not in combat
 		final MemoryUnit unit5 = new MemoryUnit ();
 		unit5.setStatus (UnitStatusID.ALIVE);
-		unit5.setCombatLocation (createCoordinates (20));
+		unit5.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		unit5.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit5);
 		
 		// Another right one
 		final MemoryUnit unit6 = new MemoryUnit ();
 		unit6.setStatus (UnitStatusID.ALIVE);
-		unit6.setCombatLocation (createCoordinates (20));
-		unit6.setCombatPosition (new MapCoordinates2DEx ());
+		unit6.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		unit6.setCombatPosition (new MapCoordinates2DEx (7, 9));
 		unit6.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit6);
 		
@@ -398,6 +384,6 @@ public final class TestDamageProcessorImpl
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		
 		// Run test
-		assertEquals (2, proc.countUnitsInCombat (createCoordinates (20), UnitCombatSideID.ATTACKER, units));
+		assertEquals (2, proc.countUnitsInCombat (new MapCoordinates3DEx (20, 10, 1), UnitCombatSideID.ATTACKER, units));
 	}
 }

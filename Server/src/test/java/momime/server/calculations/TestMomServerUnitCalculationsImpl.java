@@ -121,66 +121,41 @@ public final class TestMomServerUnitCalculationsImpl
 		// 3 at first location
 		for (int n = 0; n < 3; n++)
 		{
-			final MapCoordinates3DEx u2location = new MapCoordinates3DEx ();
-			u2location.setX (20);
-			u2location.setY (10);
-			u2location.setZ (0);
-
 			final MemoryUnit u2 = new MemoryUnit ();
 			u2.setOwningPlayerID (2);
 			u2.setStatus (UnitStatusID.ALIVE);
-			u2.setUnitLocation (u2location);
+			u2.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 			units.add (u2);
 		}
 
 		// 4 at second location
 		for (int n = 0; n < 4; n++)
 		{
-			final MapCoordinates3DEx u2location = new MapCoordinates3DEx ();
-			u2location.setX (30);
-			u2location.setY (20);
-			u2location.setZ (1);
-
 			final MemoryUnit u2 = new MemoryUnit ();
 			u2.setOwningPlayerID (2);
 			u2.setStatus (UnitStatusID.ALIVE);
-			u2.setUnitLocation (u2location);
+			u2.setUnitLocation (new MapCoordinates3DEx (30, 20, 1));
 			units.add (u2);
 		}
 
 		// Wrong player
-		final MapCoordinates3DEx u2location = new MapCoordinates3DEx ();
-		u2location.setX (20);
-		u2location.setY (10);
-		u2location.setZ (0);
-
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setOwningPlayerID (3);
 		u2.setStatus (UnitStatusID.ALIVE);
-		u2.setUnitLocation (u2location);
+		u2.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 		units.add (u2);
 
 		// Null status
-		final MapCoordinates3DEx u3location = new MapCoordinates3DEx ();
-		u3location.setX (20);
-		u3location.setY (10);
-		u3location.setZ (0);
-
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setOwningPlayerID (2);
-		u3.setUnitLocation (u3location);
+		u3.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 		units.add (u3);
 
 		// Unit is dead
-		final MapCoordinates3DEx u4location = new MapCoordinates3DEx ();
-		u4location.setX (20);
-		u4location.setY (10);
-		u4location.setZ (0);
-
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setOwningPlayerID (2);
 		u4.setStatus (UnitStatusID.DEAD);
-		u4.setUnitLocation (u4location);
+		u4.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 		units.add (u4);
 
 		// Set up object to test
@@ -306,10 +281,7 @@ public final class TestMomServerUnitCalculationsImpl
 			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
 
 		// Tower that we've previously cleared but now occupied by our units
-		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
-		unitLocation.setX (20);
-		unitLocation.setY (10);
-		unitLocation.setZ (0);
+		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (20, 10, 0);
 
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setOwningPlayerID (2);
@@ -777,14 +749,9 @@ public final class TestMomServerUnitCalculationsImpl
 
 		for (int n = 1; n <= 2; n++)
 		{
-			final MapCoordinates3DEx spearmenLocation = new MapCoordinates3DEx ();
-			spearmenLocation.setX (20);
-			spearmenLocation.setY (10);
-			spearmenLocation.setZ (1);
-
 			final MemoryUnit spearmen = unitUtils.createMemoryUnit ("UN105", n, 0, 0, true, db);
 			spearmen.setOwningPlayerID (2);
-			spearmen.setUnitLocation (spearmenLocation);
+			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 
 			unitStack.add (spearmen);
 		}
@@ -926,15 +893,10 @@ public final class TestMomServerUnitCalculationsImpl
 
 		for (int n = 1; n <= 2; n++)
 		{
-			final MapCoordinates3DEx spearmenLocation = new MapCoordinates3DEx ();
-			spearmenLocation.setX (20);
-			spearmenLocation.setY (10);
-			spearmenLocation.setZ (1);
-
 			nextUnitURN++;
 			final MemoryUnit spearmen = unitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db);
 			spearmen.setOwningPlayerID (2);
-			spearmen.setUnitLocation (spearmenLocation);
+			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 
 			unitStack.add (spearmen);
 		}
@@ -944,27 +906,17 @@ public final class TestMomServerUnitCalculationsImpl
 		// Our units become impassable terrain because we can't fit that many in one map cell; enemy units we can walk onto the tile but not through it
 		for (int n = 1; n <= 8; n++)
 		{
-			final MapCoordinates3DEx ourLocation = new MapCoordinates3DEx ();
-			ourLocation.setX (19);
-			ourLocation.setY (9);
-			ourLocation.setZ (1);
-
 			nextUnitURN++;
 			final MemoryUnit our = unitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db);
 			our.setOwningPlayerID (2);
-			our.setUnitLocation (ourLocation);
+			our.setUnitLocation (new MapCoordinates3DEx (19, 9, 1));
 
 			map.getUnit ().add (our);
-
-			final MapCoordinates3DEx theirLocation = new MapCoordinates3DEx ();
-			theirLocation.setX (20);
-			theirLocation.setY (9);
-			theirLocation.setZ (1);
 
 			nextUnitURN++;
 			final MemoryUnit their = unitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db);
 			their.setOwningPlayerID (1);
-			their.setUnitLocation (theirLocation);
+			their.setUnitLocation (new MapCoordinates3DEx (20, 9, 1));
 
 			map.getUnit ().add (their);
 		}

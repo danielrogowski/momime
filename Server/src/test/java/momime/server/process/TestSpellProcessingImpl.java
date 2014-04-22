@@ -321,10 +321,7 @@ public final class TestSpellProcessingImpl
 		players.add (player3);
 		
 		// Summoning circle location
-		final MapCoordinates3DEx summoningCircleLocation = new MapCoordinates3DEx ();
-		summoningCircleLocation.setX (15);
-		summoningCircleLocation.setY (25);
-		summoningCircleLocation.setZ (0);
+		final MapCoordinates3DEx summoningCircleLocation = new MapCoordinates3DEx (15, 25, 0);
 		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
@@ -412,10 +409,7 @@ public final class TestSpellProcessingImpl
 		players.add (player3);
 		
 		// Summoning circle location
-		final MapCoordinates3DEx summoningCircleLocation = new MapCoordinates3DEx ();
-		summoningCircleLocation.setX (15);
-		summoningCircleLocation.setY (25);
-		summoningCircleLocation.setZ (0);
+		final MapCoordinates3DEx summoningCircleLocation = new MapCoordinates3DEx (15, 25, 0);
 		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
@@ -535,11 +529,6 @@ public final class TestSpellProcessingImpl
 		players.add (player3);
 		
 		// Summoning circle location
-		final MapCoordinates3DEx summoningCircleLocation = new MapCoordinates3DEx ();
-		summoningCircleLocation.setX (15);
-		summoningCircleLocation.setY (25);
-		summoningCircleLocation.setZ (0);
-		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE,
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (null);		// <---
@@ -647,10 +636,7 @@ public final class TestSpellProcessingImpl
 		spell.setSpellID ("SP001");
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (15);
-		combatLocation.setY (25);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 
 		// Players involved
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (null, null, null, null, null); 
@@ -706,10 +692,7 @@ public final class TestSpellProcessingImpl
 		}
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (15);
-		combatLocation.setY (25);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
 		gc.setCombatAttackerCastingSkillRemaining (45);
@@ -810,10 +793,7 @@ public final class TestSpellProcessingImpl
 		when (memoryMaintainedSpellUtils.listUnitSpellEffectsNotYetCastOnUnit (trueMap.getMaintainedSpell (), spell, 7, targetUnit.getUnitURN ())).thenReturn (effects);
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (15);
-		combatLocation.setY (25);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
 		gc.setCombatAttackerCastingSkillRemaining (45);
@@ -916,10 +896,7 @@ public final class TestSpellProcessingImpl
 		}
 		
 		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (15);
-		combatLocation.setY (25);
-		combatLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
 		final ServerGridCell gc = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
 		gc.setCombatAttackerCastingSkillRemaining (45);
@@ -952,16 +929,13 @@ public final class TestSpellProcessingImpl
 		when (randomUtils.nextInt (5)).thenReturn (3);
 		
 		// Attacker is attacking from 1 cell away
-		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx ();
-		attackingFrom.setX (16);
-		attackingFrom.setY (25);
-		attackingFrom.setZ (1);
+		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (16, 25, 1);
 
 		final OverlandMapServerUtils overlandMapServerUtils = mock (OverlandMapServerUtils.class);
 		when (overlandMapServerUtils.findMapLocationOfUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap.getUnit ())).thenReturn (attackingFrom);
 		
 		// Position on the combat field where we clicked to summon the unit
-		final MapCoordinates2DEx targetLocation = new MapCoordinates2DEx ();
+		final MapCoordinates2DEx targetLocation = new MapCoordinates2DEx (9, 7);
 		
 		// Mock the creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);

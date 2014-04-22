@@ -138,11 +138,7 @@ public final class TestCombatMapGeneratorImpl
 		trueTerrain.setMap (trueMap);
 		
 		// Overland map location to test
-		final MapCoordinates3DEx combatMapLocation = new MapCoordinates3DEx ();
-		combatMapLocation.setX (20);
-		combatMapLocation.setY (15);
-		combatMapLocation.setZ (1);
-
+		final MapCoordinates3DEx combatMapLocation = new MapCoordinates3DEx (20, 15, 1);
 		final MemoryGridCell mc = trueTerrain.getMap ().getPlane ().get (1).getRow ().get (15).getCell ().get (20);
 		
 		// Set up class
@@ -367,10 +363,7 @@ public final class TestCombatMapGeneratorImpl
 		mapGen.setRandomUtils (random);
 		
 		// Location
-		final MapCoordinates3DEx combatMapLocation = new MapCoordinates3DEx ();
-		combatMapLocation.setX (20);
-		combatMapLocation.setY (15);
-		combatMapLocation.setZ (1);
+		final MapCoordinates3DEx combatMapLocation = new MapCoordinates3DEx (20, 15, 1);
 		
 		// Put a city here so we get some buildings
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();

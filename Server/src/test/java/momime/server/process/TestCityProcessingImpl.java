@@ -250,25 +250,10 @@ public final class TestCityProcessingImpl
 		when (playerPickServerUtils.chooseRandomRaceForPlane (1, db)).thenReturn ("RC04");
 		
 		// Locations of each starter city
-		final MapCoordinates3DEx humanLocation = new MapCoordinates3DEx ();
-		humanLocation.setX (25);
-		humanLocation.setY (15);
-		humanLocation.setZ (1);
-
-		final MapCoordinates3DEx aiLocation = new MapCoordinates3DEx ();
-		aiLocation.setX (40);
-		aiLocation.setY (20);
-		aiLocation.setZ (0);
-		
-		final MapCoordinates3DEx raidersMyrrorLocation = new MapCoordinates3DEx ();
-		raidersMyrrorLocation.setX (23);
-		raidersMyrrorLocation.setY (13);
-		raidersMyrrorLocation.setZ (1);
-
-		final MapCoordinates3DEx raidersArcanusLocation = new MapCoordinates3DEx ();
-		raidersArcanusLocation.setX (7);
-		raidersArcanusLocation.setY (27);
-		raidersArcanusLocation.setZ (0);
+		final MapCoordinates3DEx humanLocation = new MapCoordinates3DEx (25, 15, 1);
+		final MapCoordinates3DEx aiLocation = new MapCoordinates3DEx (40, 20, 0);
+		final MapCoordinates3DEx raidersMyrrorLocation = new MapCoordinates3DEx (23, 13, 1);
+		final MapCoordinates3DEx raidersArcanusLocation = new MapCoordinates3DEx (7, 27, 0);
 		
 		final CityAI cityAI = mock (CityAI.class);
 		when (cityAI.chooseCityLocation (trueTerrain, 1, sd, 5, db)).thenReturn (humanLocation, raidersMyrrorLocation);
@@ -509,10 +494,7 @@ public final class TestCityProcessingImpl
 		players.add (raidersPlayer);
 		
 		// Human player is constructing a building, and won't finish it this turn
-		final MapCoordinates3DEx humanLocation = new MapCoordinates3DEx ();
-		humanLocation.setX (25);
-		humanLocation.setY (15);
-		humanLocation.setZ (1);
+		final MapCoordinates3DEx humanLocation = new MapCoordinates3DEx (25, 15, 1);
 
 		final MemoryGridCell humanCell = trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		final OverlandMapCityData humanCity = new OverlandMapCityData ();
@@ -524,10 +506,7 @@ public final class TestCityProcessingImpl
 		final int humanCityMaxSize = 12;
 		
 		// AI player is constructing a building, and will finish it now
-		final MapCoordinates3DEx aiLocation = new MapCoordinates3DEx ();
-		aiLocation.setX (40);
-		aiLocation.setY (20);
-		aiLocation.setZ (0);
+		final MapCoordinates3DEx aiLocation = new MapCoordinates3DEx (40, 20, 0);
 
 		final MemoryGridCell aiCell = trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (40);
 		final OverlandMapCityData aiCity = new OverlandMapCityData ();
@@ -539,10 +518,7 @@ public final class TestCityProcessingImpl
 		final int aiCityMaxSize = 11;
 		
 		// Raiders player is constructing a unit, and will finish it now 
-		final MapCoordinates3DEx raidersLocation = new MapCoordinates3DEx ();
-		raidersLocation.setX (7);
-		raidersLocation.setY (27);
-		raidersLocation.setZ (0);
+		final MapCoordinates3DEx raidersLocation = new MapCoordinates3DEx (7, 27, 0);
 
 		final ServerGridCell raidersCell = (ServerGridCell) trueTerrain.getPlane ().get (0).getRow ().get (27).getCell ().get (7);
 		final OverlandMapCityData raidersCity = new OverlandMapCityData ();
@@ -709,10 +685,7 @@ public final class TestCityProcessingImpl
 		players.add (cityOwner);
 		
 		// City location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setZ (1);
-		cityLocation.setX (20);
-		cityLocation.setY (10);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// City data
 		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -795,10 +768,7 @@ public final class TestCityProcessingImpl
 		players.add (cityOwner);
 		
 		// City location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setZ (1);
-		cityLocation.setX (20);
-		cityLocation.setY (10);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// City data
 		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -881,10 +851,7 @@ public final class TestCityProcessingImpl
 		players.add (cityOwner);
 		
 		// City location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setZ (1);
-		cityLocation.setX (20);
-		cityLocation.setY (10);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// City data
 		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -968,10 +935,7 @@ public final class TestCityProcessingImpl
 		cityOwner.setConnection (msgs);
 		
 		// City location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setZ (1);
-		cityLocation.setX (20);
-		cityLocation.setY (10);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// City data
 		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -1044,10 +1008,7 @@ public final class TestCityProcessingImpl
 		players.add (player);
 		
 		// One of our cities
-		final MapCoordinates3DEx cityLocation1 = new MapCoordinates3DEx ();
-		cityLocation1.setX (23);
-		cityLocation1.setY (15);
-		cityLocation1.setZ (0);
+		final MapCoordinates3DEx cityLocation1 = new MapCoordinates3DEx (23, 15, 0);
 		
 		final OverlandMapCityData cityData1 = new OverlandMapCityData ();
 		cityData1.setCityOwnerID (3);
@@ -1057,10 +1018,7 @@ public final class TestCityProcessingImpl
 		final CalculateCityUnrestBreakdown breakdown1 = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 4, null, null);
 		
 		// Another of our cities
-		final MapCoordinates3DEx cityLocation2 = new MapCoordinates3DEx ();
-		cityLocation2.setX (24);
-		cityLocation2.setY (15);
-		cityLocation2.setZ (0);
+		final MapCoordinates3DEx cityLocation2 = new MapCoordinates3DEx (24, 15, 0);
 		
 		final OverlandMapCityData cityData2 = new OverlandMapCityData ();
 		cityData2.setCityOwnerID (3);
@@ -1070,10 +1028,7 @@ public final class TestCityProcessingImpl
 		final CalculateCityUnrestBreakdown breakdown2 = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 5, null, null);
 		
 		// Someone else's city
-		final MapCoordinates3DEx cityLocation3 = new MapCoordinates3DEx ();
-		cityLocation3.setX (25);
-		cityLocation3.setY (15);
-		cityLocation3.setZ (0);
+		final MapCoordinates3DEx cityLocation3 = new MapCoordinates3DEx (25, 15, 0);
 		
 		final OverlandMapCityData cityData3 = new OverlandMapCityData ();
 		cityData3.setCityOwnerID (4);

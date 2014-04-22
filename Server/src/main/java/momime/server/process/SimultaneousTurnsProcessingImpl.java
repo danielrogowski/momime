@@ -101,10 +101,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 					if ((tc.getCityData () != null) && (tc.getBuildingIdSoldThisTurn () != null) && (tc.getCityData ().getCityPopulation () != null) &&
 						(tc.getCityData ().getCityPopulation () > 0))
 					{
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-						cityLocation.setX (x);
-						cityLocation.setY (y);
-						cityLocation.setZ (plane.getPlaneNumber ());
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 						
 						getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), cityLocation, tc.getBuildingIdSoldThisTurn (),
 							false, true, mom.getSessionDescription (), mom.getServerDB ());

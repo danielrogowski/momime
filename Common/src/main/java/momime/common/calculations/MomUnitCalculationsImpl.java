@@ -99,11 +99,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		// We can only use these if we found a building that granted some level of magic weapons
 		if (bestWeaponGrade > 0)
 		{
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-			coords.setX (cityLocation.getX ());
-			coords.setY (cityLocation.getY ());
-			coords.setZ (cityLocation.getZ ());
-
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
 			for (final SquareMapDirection direction : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			{
 				if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
@@ -443,10 +439,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		
 		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (combatMapCoordinateSystem.getCoordinateSystemType ()); d++)
 		{
-			final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
-			moveTo.setX (moveFrom.getX ());
-			moveTo.setY (moveFrom.getY ());
-			
+			final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (moveFrom);
 			if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, moveTo, d))
 				if (doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] >= MOVEMENT_DISTANCE_NOT_YET_CHECKED)
 				{

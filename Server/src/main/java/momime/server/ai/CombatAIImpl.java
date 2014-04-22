@@ -252,9 +252,7 @@ public final class CombatAIImpl implements CombatAI
 		if (bestUnit != null)
 		{
 			// If we can attack at range then shoot it - if not then start walking towards it, or if adjacent to it already then attack it
-			final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ();
-			moveTo.setX (bestUnit.getCombatPosition ().getX ());
-			moveTo.setY (bestUnit.getCombatPosition ().getY ());
+			final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) bestUnit.getCombatPosition ());
 			
 			if ((movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.MELEE) || (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.RANGED))
 			{

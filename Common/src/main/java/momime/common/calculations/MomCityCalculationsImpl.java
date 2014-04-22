@@ -97,11 +97,8 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateProductionBonus", cityLocation);
 
 		int productionBonus = 0;
-		final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-		coords.setX (cityLocation.getX ());
-		coords.setY (cityLocation.getY ());
-		coords.setZ (cityLocation.getZ ());
-
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
+		
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 		{
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
@@ -149,11 +146,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		int d = 1;
 		while ((goldBonus == 0) && (d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ())))
 		{
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-			coords.setX (cityLocation.getX ());
-			coords.setY (cityLocation.getY ());
-			coords.setZ (cityLocation.getZ ());
-
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, d))
 			{
 				// Bonus only applies if adjacent flag is set
@@ -217,11 +210,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 						int d = 1;
 						while ((!thisRequirementPasses) && (d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ()))) 
 						{
-							final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-							coords.setX (cityLocation.getX ());
-							coords.setY (cityLocation.getY ());
-							coords.setZ (cityLocation.getZ ());
-
+							final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
 							if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, d))
 							{
 								final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
@@ -235,11 +224,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 					else
 					{
 						// Trace over all 21 city squares
-						final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-						coords.setX (cityLocation.getX ());
-						coords.setY (cityLocation.getY ());
-						coords.setZ (cityLocation.getZ ());
-
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
 						int directionIndex = 0;
 						while ((!thisRequirementPasses) && (directionIndex < DIRECTIONS_TO_TRAVERSE_CITY_RADIUS.length))
 						{
@@ -287,11 +272,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			new Integer (sessionDescription.getDifficultyLevel ().getCityMaxSize ()).toString (), new Boolean (includeBonusesFromMapFeatures).toString (), new Boolean (halveAndCapResult).toString ()});
 
 		int maxCitySize = 0;
-		final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-		coords.setX (cityLocation.getX ());
-		coords.setY (cityLocation.getY ());
-		coords.setZ (cityLocation.getZ ());
-
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 		{
 			if (getCoordinateSystemUtils ().move3DCoordinates (sessionDescription.getMapSize (), coords, direction.getDirectionID ()))
@@ -788,11 +769,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			mineralPercentageBonus = mineralPercentageResult.getPercentageBonus ();
 
 		// Production from nearby map features
-		final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-		coords.setX (cityLocation.getX ());
-		coords.setY (cityLocation.getY ());
-		coords.setZ (cityLocation.getZ ());
-
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 			if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
 			{

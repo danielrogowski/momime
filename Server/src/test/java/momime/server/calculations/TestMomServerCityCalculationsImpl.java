@@ -87,10 +87,7 @@ public final class TestMomServerCityCalculationsImpl
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Set up object to test
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
@@ -105,40 +102,25 @@ public final class TestMomServerCityCalculationsImpl
 		assertEquals (4, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Add an irrelevant building
-		final MapCoordinates3DEx firstBuildingLocation = new MapCoordinates3DEx ();
-		firstBuildingLocation.setX (2);
-		firstBuildingLocation.setY (2);
-		firstBuildingLocation.setZ (0);
-
 		final MemoryBuilding firstBuilding = new MemoryBuilding ();
 		firstBuilding.setBuildingID ("BL15");		// Sawmill
-		firstBuilding.setCityLocation (firstBuildingLocation);
+		firstBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 
 		buildings.add (firstBuilding);
 		assertEquals (4, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Add an animists' guild in the wrong location
-		final MapCoordinates3DEx secondBuildingLocation = new MapCoordinates3DEx ();
-		secondBuildingLocation.setX (2);
-		secondBuildingLocation.setY (2);
-		secondBuildingLocation.setZ (1);
-
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL10");
-		secondBuilding.setCityLocation (secondBuildingLocation);
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
 
 		buildings.add (secondBuilding);
 		assertEquals (4, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
 
 		// Add an animists' guild in the right location
-		final MapCoordinates3DEx thirdBuildingLocation = new MapCoordinates3DEx ();
-		thirdBuildingLocation.setX (2);
-		thirdBuildingLocation.setY (2);
-		thirdBuildingLocation.setZ (0);
-
 		final MemoryBuilding thirdBuilding = new MemoryBuilding ();
 		thirdBuilding.setBuildingID ("BL10");
-		thirdBuilding.setCityLocation (thirdBuildingLocation);
+		thirdBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 
 		buildings.add (thirdBuilding);
 		assertEquals (6, calc.calculateDoubleFarmingRate (map, buildings, cityLocation, db));
@@ -175,10 +157,7 @@ public final class TestMomServerCityCalculationsImpl
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Set up object to test
 		final MomCityCalculationsImpl cityCalc = new MomCityCalculationsImpl ();
@@ -195,14 +174,9 @@ public final class TestMomServerCityCalculationsImpl
 		assertEquals (2, cityData.getMinimumFarmers ().intValue ());
 
 		// If we add a granary, that feeds 2 of the population so we need 1 less farmer
-		final MapCoordinates3DEx granaryLocation = new MapCoordinates3DEx ();
-		granaryLocation.setX (2);
-		granaryLocation.setY (2);
-		granaryLocation.setZ (0);
-
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID ("BL29");
-		granary.setCityLocation (granaryLocation);
+		granary.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 
 		buildings.add (granary);
 
@@ -291,10 +265,7 @@ public final class TestMomServerCityCalculationsImpl
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Set up object to test
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
@@ -303,53 +274,33 @@ public final class TestMomServerCityCalculationsImpl
 		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// City walls in wrong location
-		final MapCoordinates3DEx firstBuildingLocation = new MapCoordinates3DEx ();
-		firstBuildingLocation.setX (2);
-		firstBuildingLocation.setY (3);
-		firstBuildingLocation.setZ (0);
-
 		final MemoryBuilding firstBuilding = new MemoryBuilding ();
 		firstBuilding.setBuildingID ("BL35");
-		firstBuilding.setCityLocation (firstBuildingLocation);
+		firstBuilding.setCityLocation (new MapCoordinates3DEx (2, 3, 0));
 
 		buildings.add (firstBuilding);
 		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// Irrelevant building in right location
-		final MapCoordinates3DEx secondBuildingLocation = new MapCoordinates3DEx ();
-		secondBuildingLocation.setX (2);
-		secondBuildingLocation.setY (2);
-		secondBuildingLocation.setZ (0);
-
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL34");
-		secondBuilding.setCityLocation (secondBuildingLocation);
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 
 		buildings.add (secondBuilding);
 		assertEquals (-1, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// City walls increase to 3
-		final MapCoordinates3DEx cityWallsLocation = new MapCoordinates3DEx ();
-		cityWallsLocation.setX (2);
-		cityWallsLocation.setY (2);
-		cityWallsLocation.setZ (0);
-
 		final MemoryBuilding cityWalls = new MemoryBuilding ();
 		cityWalls.setBuildingID ("BL35");
-		cityWalls.setCityLocation (cityWallsLocation);
+		cityWalls.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 
 		buildings.add (cityWalls);
 		assertEquals (3, calc.calculateCityScoutingRange (buildings, cityLocation, db));
 
 		// Oracle increases to 4
-		final MapCoordinates3DEx oracleLocation = new MapCoordinates3DEx ();
-		oracleLocation.setX (2);
-		oracleLocation.setY (2);
-		oracleLocation.setZ (0);
-
 		final MemoryBuilding oracle = new MemoryBuilding ();
 		oracle.setBuildingID ("BL18");
-		oracle.setCityLocation (oracleLocation);
+		oracle.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 
 		buildings.add (oracle);
 		assertEquals (4, calc.calculateCityScoutingRange (buildings, cityLocation, db));
@@ -383,10 +334,7 @@ public final class TestMomServerCityCalculationsImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
 
 		// Set up city
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (20);
-		cityLocation.setY (10);
-		cityLocation.setZ (1);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
@@ -436,13 +384,8 @@ public final class TestMomServerCityCalculationsImpl
 
 		// If we got a Ship Wrights' Guild and subsequently the water all dried up then we *can* then construct the other building types
 		// (Ok bad example, but similar with Sawmills + forests disappearing is definitely possible)
-		final MapCoordinates3DEx shipWrightsGuildLocation = new MapCoordinates3DEx ();
-		shipWrightsGuildLocation.setX (20);
-		shipWrightsGuildLocation.setY (10);
-		shipWrightsGuildLocation.setZ (1);
-
 		final MemoryBuilding shipWrightsGuild = new MemoryBuilding ();
-		shipWrightsGuild.setCityLocation (shipWrightsGuildLocation);
+		shipWrightsGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		shipWrightsGuild.setBuildingID ("BL12");
 
 		buildings.add (shipWrightsGuild);

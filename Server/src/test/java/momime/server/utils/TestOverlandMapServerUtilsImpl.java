@@ -103,9 +103,7 @@ public final class TestOverlandMapServerUtilsImpl
 				}
 
 		// Mark a city radius around the tile - just to test a non-square area
-		final MapCoordinates2DEx coords = new MapCoordinates2DEx ();
-		coords.setX (20);
-		coords.setY (10);
+		final MapCoordinates2DEx coords = new MapCoordinates2DEx (20, 10);
 		map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
 
 		for (final SquareMapDirection d : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
@@ -175,9 +173,7 @@ public final class TestOverlandMapServerUtilsImpl
 				}
 
 		// Mark two city radiuses
-		final MapCoordinates2DEx coords = new MapCoordinates2DEx ();
-		coords.setX (20);
-		coords.setY (10);
+		final MapCoordinates2DEx coords = new MapCoordinates2DEx (20, 10);
 		map.getPlane ().get (1).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setTileTypeID ("G");
 
 		for (final SquareMapDirection d : MomCityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
@@ -295,10 +291,7 @@ public final class TestOverlandMapServerUtilsImpl
 		trueMap.setMap (trueTerrain);
 
 		// Node location
-		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx ();
-		nodeLocation.setX (20);
-		nodeLocation.setY (10);
-		nodeLocation.setZ (1);
+		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Node
 		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -325,14 +318,9 @@ public final class TestOverlandMapServerUtilsImpl
 		players.add (attacker);
 		
 		// Units
-		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
-		unitLocation.setX (20);
-		unitLocation.setY (10);
-		unitLocation.setZ (1);
-
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
 		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
-		attackingSpirit.setUnitLocation (unitLocation);
+		attackingSpirit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		attackingSpirit.setUnitID ("GS");
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
 		
@@ -361,11 +349,7 @@ public final class TestOverlandMapServerUtilsImpl
 		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
-		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx ();
-		adjacentLocation.setX (21);
-		adjacentLocation.setY (10);
-		adjacentLocation.setZ (1);
-
+		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 	}
 	
@@ -403,10 +387,7 @@ public final class TestOverlandMapServerUtilsImpl
 		trueMap.setMap (trueTerrain);
 
 		// Node location
-		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx ();
-		nodeLocation.setX (20);
-		nodeLocation.setY (10);
-		nodeLocation.setZ (1);
+		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Node
 		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -433,14 +414,9 @@ public final class TestOverlandMapServerUtilsImpl
 		players.add (attacker);
 		
 		// Units
-		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
-		unitLocation.setX (20);
-		unitLocation.setY (10);
-		unitLocation.setZ (1);
-
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
 		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
-		attackingSpirit.setUnitLocation (unitLocation);
+		attackingSpirit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		attackingSpirit.setUnitID ("GS");
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
 		
@@ -463,11 +439,7 @@ public final class TestOverlandMapServerUtilsImpl
 		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
-		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx ();
-		adjacentLocation.setX (21);
-		adjacentLocation.setY (10);
-		adjacentLocation.setZ (1);
-
+		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 	}
 
@@ -505,10 +477,7 @@ public final class TestOverlandMapServerUtilsImpl
 		trueMap.setMap (trueTerrain);
 
 		// Node location
-		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx ();
-		nodeLocation.setX (20);
-		nodeLocation.setY (10);
-		nodeLocation.setZ (1);
+		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Node
 		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -548,14 +517,9 @@ public final class TestOverlandMapServerUtilsImpl
 		players.add (defender);
 		
 		// Units
-		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
-		unitLocation.setX (20);
-		unitLocation.setY (10);
-		unitLocation.setZ (1);
-
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
 		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
-		attackingSpirit.setUnitLocation (unitLocation);
+		attackingSpirit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		attackingSpirit.setUnitID ("GS");
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
 		
@@ -604,11 +568,7 @@ public final class TestOverlandMapServerUtilsImpl
 		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
-		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx ();
-		adjacentLocation.setX (21);
-		adjacentLocation.setY (10);
-		adjacentLocation.setZ (1);
-
+		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 	}
 	
@@ -646,10 +606,7 @@ public final class TestOverlandMapServerUtilsImpl
 		trueMap.setMap (trueTerrain);
 
 		// Node location
-		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx ();
-		nodeLocation.setX (20);
-		nodeLocation.setY (10);
-		nodeLocation.setZ (1);
+		final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Node
 		final ServerGridCell nodeCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -689,14 +646,9 @@ public final class TestOverlandMapServerUtilsImpl
 		players.add (defender);
 		
 		// Units
-		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
-		unitLocation.setX (20);
-		unitLocation.setY (10);
-		unitLocation.setZ (1);
-
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
 		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
-		attackingSpirit.setUnitLocation (unitLocation);
+		attackingSpirit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		attackingSpirit.setUnitID ("GS");
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
 		
@@ -732,11 +684,7 @@ public final class TestOverlandMapServerUtilsImpl
 		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (0)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
-		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx ();
-		adjacentLocation.setX (21);
-		adjacentLocation.setY (10);
-		adjacentLocation.setZ (1);
-
+		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
 		verify (fogOfWarMidTurnChanges, times (0)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 	}
 	
@@ -798,25 +746,10 @@ public final class TestOverlandMapServerUtilsImpl
 	public final void testFindMapLocationOfUnitsInCombat_Found () throws MomException
 	{
 		// Locations
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (20);
-		combatLocation.setY (10);
-		combatLocation.setZ (1);
-
-		final MapCoordinates3DEx defenderLocation = new MapCoordinates3DEx ();
-		defenderLocation.setX (20);
-		defenderLocation.setY (10);
-		defenderLocation.setZ (1);
-
-		final MapCoordinates3DEx attackerLocation = new MapCoordinates3DEx ();
-		attackerLocation.setX (21);
-		attackerLocation.setY (10);
-		attackerLocation.setZ (1);
-
-		final MapCoordinates3DEx otherLocation = new MapCoordinates3DEx ();
-		otherLocation.setX (22);
-		otherLocation.setY (10);
-		otherLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx defenderLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx attackerLocation = new MapCoordinates3DEx (21, 10, 1);
+		final MapCoordinates3DEx otherLocation = new MapCoordinates3DEx (22, 10, 1);
 		
 		// Units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -825,7 +758,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final MemoryUnit unit1 = new MemoryUnit ();
 		unit1.setUnitLocation (otherLocation);
 		unit1.setStatus (UnitStatusID.ALIVE);
-		unit1.setCombatPosition (new MapCoordinates2DEx ());
+		unit1.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit1);
 
@@ -834,7 +767,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit2.setCombatLocation (combatLocation);
 		unit2.setUnitLocation (otherLocation);
 		unit2.setStatus (UnitStatusID.DEAD);
-		unit2.setCombatPosition (new MapCoordinates2DEx ());
+		unit2.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit2);
 		
@@ -851,7 +784,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit4.setCombatLocation (otherLocation);
 		unit4.setUnitLocation (otherLocation);
 		unit4.setStatus (UnitStatusID.ALIVE);
-		unit4.setCombatPosition (new MapCoordinates2DEx ());
+		unit4.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit4);
 
@@ -860,7 +793,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit5.setCombatLocation (combatLocation);
 		unit5.setUnitLocation (otherLocation);
 		unit5.setStatus (UnitStatusID.ALIVE);
-		unit5.setCombatPosition (new MapCoordinates2DEx ());
+		unit5.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		units.add (unit5);
 		
 		// Matches
@@ -868,7 +801,7 @@ public final class TestOverlandMapServerUtilsImpl
 		attackingUnit.setCombatLocation (combatLocation);
 		attackingUnit.setUnitLocation (attackerLocation);
 		attackingUnit.setStatus (UnitStatusID.ALIVE);
-		attackingUnit.setCombatPosition (new MapCoordinates2DEx ());
+		attackingUnit.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		attackingUnit.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (attackingUnit);
 
@@ -876,7 +809,7 @@ public final class TestOverlandMapServerUtilsImpl
 		defendingUnit.setCombatLocation (combatLocation);
 		defendingUnit.setUnitLocation (defenderLocation);
 		defendingUnit.setStatus (UnitStatusID.ALIVE);
-		defendingUnit.setCombatPosition (new MapCoordinates2DEx ());
+		defendingUnit.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		defendingUnit.setCombatSide (UnitCombatSideID.DEFENDER);
 		units.add (defendingUnit);
 		
@@ -884,10 +817,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 
 		// Run method, recreate location so = would find no match
-		final MapCoordinates3DEx searchLocation = new MapCoordinates3DEx ();
-		searchLocation.setX (20);
-		searchLocation.setY (10);
-		searchLocation.setZ (1);
+		final MapCoordinates3DEx searchLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		assertSame (attackerLocation, utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.ATTACKER, units));
 		assertSame (defenderLocation, utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.DEFENDER, units));
@@ -901,25 +831,9 @@ public final class TestOverlandMapServerUtilsImpl
 	public final void testFindMapLocationOfUnitsInCombat_WipedOut () throws MomException
 	{
 		// Locations
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (20);
-		combatLocation.setY (10);
-		combatLocation.setZ (1);
-
-		final MapCoordinates3DEx defenderLocation = new MapCoordinates3DEx ();
-		defenderLocation.setX (20);
-		defenderLocation.setY (10);
-		defenderLocation.setZ (1);
-
-		final MapCoordinates3DEx attackerLocation = new MapCoordinates3DEx ();
-		attackerLocation.setX (21);
-		attackerLocation.setY (10);
-		attackerLocation.setZ (1);
-
-		final MapCoordinates3DEx otherLocation = new MapCoordinates3DEx ();
-		otherLocation.setX (22);
-		otherLocation.setY (10);
-		otherLocation.setZ (1);
+		final MapCoordinates3DEx combatLocation =new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx defenderLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx otherLocation = new MapCoordinates3DEx (22, 10, 1);
 		
 		// Units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -928,7 +842,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final MemoryUnit unit1 = new MemoryUnit ();
 		unit1.setUnitLocation (otherLocation);
 		unit1.setStatus (UnitStatusID.ALIVE);
-		unit1.setCombatPosition (new MapCoordinates2DEx ());
+		unit1.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		unit1.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit1);
 
@@ -937,7 +851,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit2.setCombatLocation (combatLocation);
 		unit2.setUnitLocation (otherLocation);
 		unit2.setStatus (UnitStatusID.DEAD);
-		unit2.setCombatPosition (new MapCoordinates2DEx ());
+		unit2.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		unit2.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit2);
 		
@@ -954,7 +868,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit4.setCombatLocation (otherLocation);
 		unit4.setUnitLocation (otherLocation);
 		unit4.setStatus (UnitStatusID.ALIVE);
-		unit4.setCombatPosition (new MapCoordinates2DEx ());
+		unit4.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		unit4.setCombatSide (UnitCombatSideID.ATTACKER);
 		units.add (unit4);
 
@@ -963,7 +877,7 @@ public final class TestOverlandMapServerUtilsImpl
 		unit5.setCombatLocation (combatLocation);
 		unit5.setUnitLocation (otherLocation);
 		unit5.setStatus (UnitStatusID.ALIVE);
-		unit5.setCombatPosition (new MapCoordinates2DEx ());
+		unit5.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		units.add (unit5);
 		
 		// Matches
@@ -971,7 +885,7 @@ public final class TestOverlandMapServerUtilsImpl
 		defendingUnit.setCombatLocation (combatLocation);
 		defendingUnit.setUnitLocation (defenderLocation);
 		defendingUnit.setStatus (UnitStatusID.ALIVE);
-		defendingUnit.setCombatPosition (new MapCoordinates2DEx ());
+		defendingUnit.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		defendingUnit.setCombatSide (UnitCombatSideID.DEFENDER);
 		units.add (defendingUnit);
 		
@@ -979,11 +893,7 @@ public final class TestOverlandMapServerUtilsImpl
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 
 		// Run method, recreate location so = would find no match
-		final MapCoordinates3DEx searchLocation = new MapCoordinates3DEx ();
-		searchLocation.setX (20);
-		searchLocation.setY (10);
-		searchLocation.setZ (1);
-		
+		final MapCoordinates3DEx searchLocation = new MapCoordinates3DEx (20, 10, 1);
 		utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.ATTACKER, units);
 	}
 }

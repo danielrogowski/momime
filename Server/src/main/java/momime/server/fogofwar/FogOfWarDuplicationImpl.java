@@ -198,14 +198,9 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 
 		if (needToAdd)
 		{
-			final MapCoordinates3DEx destinationCoords = new MapCoordinates3DEx ();
-			destinationCoords.setX (source.getCityLocation ().getX ());
-			destinationCoords.setY (source.getCityLocation ().getY ());
-			destinationCoords.setZ (source.getCityLocation ().getZ ());
-
 			final MemoryBuilding destinationBuilding = new MemoryBuilding ();
 			destinationBuilding.setBuildingID (source.getBuildingID ());
-			destinationBuilding.setCityLocation (destinationCoords);
+			destinationBuilding.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getCityLocation ()));
 
 			destination.add (destinationBuilding);
 		}
@@ -282,13 +277,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			if (source.getUnitLocation () == null)
 				dest.setUnitLocation (null);
 			else
-			{
-				final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx ();
-				unitLocation.setX (source.getUnitLocation ().getX ());
-				unitLocation.setY (source.getUnitLocation ().getY ());
-				unitLocation.setZ (source.getUnitLocation ().getZ ());
-				dest.setUnitLocation (unitLocation);
-			}
+				dest.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getUnitLocation ()));
 
 			dest.getUnitHasSkill ().clear ();
 			for (final UnitHasSkill srcSkill : source.getUnitHasSkill ())
@@ -317,23 +306,12 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			if (source.getCombatLocation () == null)
 				dest.setCombatLocation (null);
 			else
-			{
-				final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-				combatLocation.setX (source.getCombatLocation ().getX ());
-				combatLocation.setY (source.getCombatLocation ().getY ());
-				combatLocation.setZ (source.getCombatLocation ().getZ ());
-				dest.setCombatLocation (combatLocation);
-			}
+				dest.setCombatLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getCombatLocation ()));
 
 			if (source.getCombatPosition () == null)
 				dest.setCombatPosition (null);
 			else
-			{
-				final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx ();
-				combatPosition.setX (source.getCombatPosition ().getX ());
-				combatPosition.setY (source.getCombatPosition ().getY ());
-				dest.setCombatPosition (combatPosition);
-			}
+				dest.setCombatPosition (new MapCoordinates2DEx ((MapCoordinates2DEx) source.getCombatPosition ()));
 		}
 
 		return needToUpdate;
@@ -367,13 +345,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			if (source.getCityLocation () == null)
 				destinationSpell.setCityLocation (null);
 			else
-			{
-				final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-				cityLocation.setX (source.getCityLocation ().getX ());
-				cityLocation.setY (source.getCityLocation ().getY ());
-				cityLocation.setZ (source.getCityLocation ().getZ ());
-				destinationSpell.setCityLocation (cityLocation);
-			}
+				destinationSpell.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getCityLocation ()));
 
 			destination.add (destinationSpell);
 		}
@@ -405,13 +377,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			if (source.getMapLocation () == null)
 				destinationCAE.setMapLocation (null);
 			else
-			{
-				final MapCoordinates3DEx mapLocation = new MapCoordinates3DEx ();
-				mapLocation.setX (source.getMapLocation ().getX ());
-				mapLocation.setY (source.getMapLocation ().getY ());
-				mapLocation.setZ (source.getMapLocation ().getZ ());
-				destinationCAE.setMapLocation (mapLocation);
-			}
+				destinationCAE.setMapLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getMapLocation ()));
 
 			destination.add (destinationCAE);
 		}

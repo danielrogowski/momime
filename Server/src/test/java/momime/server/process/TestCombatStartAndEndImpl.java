@@ -76,20 +76,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 public final class TestCombatStartAndEndImpl
 {
 	/**
-	 * Just to save repeating this a dozen times in the test cases
-	 * @param x X coord
-	 * @return Coordinates object
-	 */
-	private final MapCoordinates3DEx createCoordinates (final int x)
-	{
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx ();
-		combatLocation.setX (x);
-		combatLocation.setY (10);
-		combatLocation.setZ (1);
-		return combatLocation;
-	}
-	
-	/**
 	 * Tests the startCombat method for the normal situation of one unit stack attacking another on the open map
 	 * @throws Exception If there is a problem
 	 */
@@ -160,8 +146,8 @@ public final class TestCombatStartAndEndImpl
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (defendingUnit);
 
 		// Attacking and defending locations
-		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
-		final MapCoordinates3DEx attackingFrom = createCoordinates (21);
+		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
@@ -299,8 +285,8 @@ public final class TestCombatStartAndEndImpl
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (defendingUnit);
 
 		// Attacking and defending locations
-		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
-		final MapCoordinates3DEx attackingFrom = createCoordinates (21);
+		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
@@ -432,12 +418,12 @@ public final class TestCombatStartAndEndImpl
 			final MemoryUnit tu = new MemoryUnit ();
 			tu.setUnitURN (n);
 			tu.setStatus (UnitStatusID.ALIVE);
-			tu.setUnitLocation (createCoordinates (21));
+			tu.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
 			
 			if (n < 3)
 			{
 				tu.setCombatSide (UnitCombatSideID.ATTACKER);
-				tu.setCombatLocation (createCoordinates (20));
+				tu.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 				advancingUnits.add (tu);
 			}
 			
@@ -449,8 +435,8 @@ public final class TestCombatStartAndEndImpl
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (null);
 
 		// Attacking and defending locations
-		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
-		final MapCoordinates3DEx attackingFrom = createCoordinates (21);
+		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
@@ -555,7 +541,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward into where the lair used to be
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			createCoordinates (21), createCoordinates (20), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
 	}
 
 	/**
@@ -622,8 +608,8 @@ public final class TestCombatStartAndEndImpl
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (null);
 
 		// Attacking and defending locations
-		final MapCoordinates3DEx defendingLocation = createCoordinates (20);
-		final MapCoordinates3DEx attackingFrom = createCoordinates (21);
+		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
@@ -734,7 +720,7 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// There's a city here, owned by the defender
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
@@ -808,7 +794,7 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -918,7 +904,7 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
@@ -938,12 +924,12 @@ public final class TestCombatStartAndEndImpl
 			final MemoryUnit tu = new MemoryUnit ();
 			tu.setUnitURN (n);
 			tu.setStatus (UnitStatusID.ALIVE);
-			tu.setUnitLocation (createCoordinates (21));
+			tu.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
 			
 			if (n < 3)
 			{
 				tu.setCombatSide (UnitCombatSideID.ATTACKER);
-				tu.setCombatLocation (createCoordinates (20));
+				tu.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 				advancingUnits.add (tu);
 			}
 			
@@ -1003,7 +989,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward into where the lair used to be
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			createCoordinates (21), createCoordinates (20), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
 	}
 
 	/**
@@ -1064,7 +1050,7 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
@@ -1084,12 +1070,12 @@ public final class TestCombatStartAndEndImpl
 			final MemoryUnit tu = new MemoryUnit ();
 			tu.setUnitURN (n);
 			tu.setStatus (UnitStatusID.ALIVE);
-			tu.setUnitLocation (createCoordinates (21));
+			tu.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
 			
 			if (n < 3)
 			{
 				tu.setCombatSide (UnitCombatSideID.ATTACKER);
-				tu.setCombatLocation (createCoordinates (20));
+				tu.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 				advancingUnits.add (tu);
 			}
 			
@@ -1147,7 +1133,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward into where the lair used to be
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			createCoordinates (21), createCoordinates (20), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
 	}
 
 	/**
@@ -1224,7 +1210,7 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Location - note the comments in startCombat (), when we're attacking a tower from Myrror, combatLocation.getZ () = 1
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
@@ -1244,12 +1230,12 @@ public final class TestCombatStartAndEndImpl
 			final MemoryUnit tu = new MemoryUnit ();
 			tu.setUnitURN (n);
 			tu.setStatus (UnitStatusID.ALIVE);
-			tu.setUnitLocation (createCoordinates (21));
+			tu.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
 			
 			if (n < 3)
 			{
 				tu.setCombatSide (UnitCombatSideID.ATTACKER);
-				tu.setCombatLocation (createCoordinates (20));
+				tu.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 				advancingUnits.add (tu);
 			}
 			
@@ -1308,13 +1294,10 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurn, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, combatLocation, fowSettings.getTerrainAndNodeAuras ());
 		
 		// Check the attacker's units advanced forward, in the process jumping to plane 0
-		final MapCoordinates3DEx towerOnArcanus = new MapCoordinates3DEx ();
-		towerOnArcanus.setX (20);
-		towerOnArcanus.setY (10);
-		towerOnArcanus.setZ (0);
+		final MapCoordinates3DEx towerOnArcanus = new MapCoordinates3DEx (20, 10, 0);
 		
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			createCoordinates (21), towerOnArcanus, players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), towerOnArcanus, players, trueMap, sd, db);
 	}
 	
 	/**
@@ -1381,7 +1364,7 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
@@ -1427,12 +1410,12 @@ public final class TestCombatStartAndEndImpl
 			final MemoryUnit tu = new MemoryUnit ();
 			tu.setUnitURN (n);
 			tu.setStatus (UnitStatusID.ALIVE);
-			tu.setUnitLocation (createCoordinates (21));
+			tu.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
 			
 			if (n < 3)
 			{
 				tu.setCombatSide (UnitCombatSideID.ATTACKER);
-				tu.setCombatLocation (createCoordinates (20));
+				tu.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 				advancingUnits.add (tu);
 			}
 			
@@ -1497,7 +1480,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward into the city
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			createCoordinates (21), createCoordinates (20), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
 		
 		// Check the attacker swiped gold from the defender
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, goldSwiped);
@@ -1578,7 +1561,7 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Location
-		final MapCoordinates3DEx combatLocation = createCoordinates (20);
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
@@ -1628,12 +1611,12 @@ public final class TestCombatStartAndEndImpl
 			final MemoryUnit tu = new MemoryUnit ();
 			tu.setUnitURN (n);
 			tu.setStatus (UnitStatusID.ALIVE);
-			tu.setUnitLocation (createCoordinates (21));
+			tu.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
 			
 			if (n < 3)
 			{
 				tu.setCombatSide (UnitCombatSideID.ATTACKER);
-				tu.setCombatLocation (createCoordinates (20));
+				tu.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 				advancingUnits.add (tu);
 			}
 			
@@ -1697,7 +1680,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// Check the attacker's units advanced forward into where the city used to be
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			createCoordinates (21), createCoordinates (20), players, trueMap, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, trueMap, sd, db);
 		
 		// Check the attacker swiped gold from the defender
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);

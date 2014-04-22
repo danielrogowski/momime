@@ -600,7 +600,7 @@ public final class TestUnitUtilsImpl
 	{
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		unit.setUnitLocation (new MapCoordinates3DEx ());
+		unit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		unit.setOwningPlayerID (1);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -621,12 +621,12 @@ public final class TestUnitUtilsImpl
 	{
 		final AvailableUnit ourUnit = new AvailableUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new MapCoordinates3DEx ());
+		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new MapCoordinates3DEx ());
+		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -639,12 +639,12 @@ public final class TestUnitUtilsImpl
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units - should still apply
-		effect.setMapLocation (new MapCoordinates3DEx ());
+		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE to a different spot than the units - should no longer apply
-		effect.getMapLocation ().setX (1);
+		effect.getMapLocation ().setX (16);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 	}
@@ -658,12 +658,12 @@ public final class TestUnitUtilsImpl
 	{
 		final AvailableUnit ourUnit = new AvailableUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new MapCoordinates3DEx ());
+		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new MapCoordinates3DEx ());
+		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -676,12 +676,12 @@ public final class TestUnitUtilsImpl
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units - however for Caster Only, this means the units also have to be in combat, which they aren't so it still doesn't apply
-		effect.setMapLocation (new MapCoordinates3DEx ());
+		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE to a different spot than the units - should no longer apply
-		effect.getMapLocation ().setX (1);
+		effect.getMapLocation ().setX (16);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 	}
@@ -695,12 +695,12 @@ public final class TestUnitUtilsImpl
 	{
 		final AvailableUnit ourUnit = new AvailableUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new MapCoordinates3DEx ());
+		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new MapCoordinates3DEx ());
+		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -715,12 +715,12 @@ public final class TestUnitUtilsImpl
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units
-		effect.setMapLocation (new MapCoordinates3DEx ());
+		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE to a different spot than the units
-		effect.getMapLocation ().setX (1);
+		effect.getMapLocation ().setX (16);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 	}
@@ -734,12 +734,12 @@ public final class TestUnitUtilsImpl
 	{
 		final AvailableUnit ourUnit = new AvailableUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new MapCoordinates3DEx ());
+		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final AvailableUnit theirUnit = new AvailableUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new MapCoordinates3DEx ());
+		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -754,12 +754,12 @@ public final class TestUnitUtilsImpl
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units
-		effect.setMapLocation (new MapCoordinates3DEx ());
+		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE to a different spot than the units
-		effect.getMapLocation ().setX (1);
+		effect.getMapLocation ().setX (16);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 	}
@@ -773,7 +773,7 @@ public final class TestUnitUtilsImpl
 	{
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		unit.setUnitLocation (new MapCoordinates3DEx ());
+		unit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		unit.setOwningPlayerID (1);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -794,12 +794,12 @@ public final class TestUnitUtilsImpl
 	{
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new MapCoordinates3DEx ());
+		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new MapCoordinates3DEx ());
+		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -812,25 +812,23 @@ public final class TestUnitUtilsImpl
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units - should still apply
-		effect.setMapLocation (new MapCoordinates3DEx ());
+		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE to a different spot than the units - should no longer apply
-		effect.getMapLocation ().setX (1);
+		effect.getMapLocation ().setX (16);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
-		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
-		ourUnit.setCombatLocation (new MapCoordinates3DEx ());
-		ourUnit.getCombatLocation ().setX (1);
-		theirUnit.setCombatLocation (new MapCoordinates3DEx ());
-		theirUnit.getCombatLocation ().setX (1);
+		// Put the unit into combat - Note the units are at 15,10,1 but in a combat at 16,10,1 which is the location of the effect, so it should apply
+		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		theirUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE away from the combat (note we're moving it to the location the units are actually at) - should no longer apply
-		effect.getMapLocation ().setX (0);
+		effect.getMapLocation ().setX (15);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 	}
@@ -844,12 +842,12 @@ public final class TestUnitUtilsImpl
 	{
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new MapCoordinates3DEx ());
+		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new MapCoordinates3DEx ());
+		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -862,25 +860,23 @@ public final class TestUnitUtilsImpl
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units - however for Caster Only, this means the units also have to be in combat, which they aren't so it still doesn't apply
-		effect.setMapLocation (new MapCoordinates3DEx ());
+		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE to a different spot than the units - should no longer apply
-		effect.getMapLocation ().setX (1);
+		effect.getMapLocation ().setX (16);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
-		ourUnit.setCombatLocation (new MapCoordinates3DEx ());
-		ourUnit.getCombatLocation ().setX (1);
-		theirUnit.setCombatLocation (new MapCoordinates3DEx ());
-		theirUnit.getCombatLocation ().setX (1);
+		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		theirUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE away from the combat (note we're moving it to the location the units are actually at) - should no longer apply
-		effect.getMapLocation ().setX (0);
+		effect.getMapLocation ().setX (15);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 	}
@@ -894,12 +890,12 @@ public final class TestUnitUtilsImpl
 	{
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new MapCoordinates3DEx ());
+		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new MapCoordinates3DEx ());
+		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -914,25 +910,23 @@ public final class TestUnitUtilsImpl
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units
-		effect.setMapLocation (new MapCoordinates3DEx ());
+		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE to a different spot than the units
-		effect.getMapLocation ().setX (1);
+		effect.getMapLocation ().setX (16);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
-		ourUnit.setCombatLocation (new MapCoordinates3DEx ());
-		ourUnit.getCombatLocation ().setX (1);
-		theirUnit.setCombatLocation (new MapCoordinates3DEx ());
-		theirUnit.getCombatLocation ().setX (1);
+		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		theirUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE away from the combat (note we're moving it to the location the units are actually at) - should no longer apply
-		effect.getMapLocation ().setX (0);
+		effect.getMapLocation ().setX (15);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 	}
@@ -946,12 +940,12 @@ public final class TestUnitUtilsImpl
 	{
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		ourUnit.setUnitLocation (new MapCoordinates3DEx ());
+		ourUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		ourUnit.setOwningPlayerID (1);
 
 		final MemoryUnit theirUnit = new MemoryUnit ();
 		theirUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		theirUnit.setUnitLocation (new MapCoordinates3DEx ());
+		theirUnit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		theirUnit.setOwningPlayerID (2);
 
 		final MemoryCombatAreaEffect effect = new MemoryCombatAreaEffect ();
@@ -966,25 +960,23 @@ public final class TestUnitUtilsImpl
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Localise the CAE in the same spot as the units
-		effect.setMapLocation (new MapCoordinates3DEx ());
+		effect.setMapLocation (new MapCoordinates3DEx (15, 10, 1));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE to a different spot than the units
-		effect.getMapLocation ().setX (1);
+		effect.getMapLocation ().setX (16);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Put the unit into combat - Note the units are at 0,0,0 but in a combat at 1,0,0 which is the location of the effect, so it should apply
-		ourUnit.setCombatLocation (new MapCoordinates3DEx ());
-		ourUnit.getCombatLocation ().setX (1);
-		theirUnit.setCombatLocation (new MapCoordinates3DEx ());
-		theirUnit.getCombatLocation ().setX (1);
+		ourUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
+		theirUnit.setCombatLocation (new MapCoordinates3DEx (16, 10, 1));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertTrue (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 
 		// Move the CAE away from the combat (note we're moving it to the location the units are actually at) - should no longer apply
-		effect.getMapLocation ().setX (0);
+		effect.getMapLocation ().setX (15);
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (ourUnit, effect, GenerateTestData.createDB ()));
 		assertFalse (utils.doesCombatAreaEffectApplyToUnit (theirUnit, effect, GenerateTestData.createDB ()));
 	}
@@ -1065,7 +1057,7 @@ public final class TestUnitUtilsImpl
 		final AvailableUnit unit = new AvailableUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		unit.setOwningPlayerID (1);
-		unit.setUnitLocation (new MapCoordinates3DEx ());
+		unit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 
 		final UnitHasSkill experience = new UnitHasSkill ();
 		experience.setUnitSkillID (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
@@ -1121,8 +1113,7 @@ public final class TestUnitUtilsImpl
 
 		// Put a CAE in the wrong location
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
-		final MapCoordinates3DEx caeCoords = new MapCoordinates3DEx ();
-		caeCoords.setX (1);
+		final MapCoordinates3DEx caeCoords = new MapCoordinates3DEx (16, 10, 1);
 		cae.setMapLocation (caeCoords);
 		cae.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_ALL);
 		combatAreaEffects.add (cae);
@@ -1130,7 +1121,7 @@ public final class TestUnitUtilsImpl
 		assertEquals (8, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
 
 		// Fix location
-		caeCoords.setX (0);
+		caeCoords.setX (15);
 		assertEquals (9, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
 	}
 
@@ -1147,7 +1138,7 @@ public final class TestUnitUtilsImpl
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 		unit.setOwningPlayerID (1);
-		unit.setUnitLocation (new MapCoordinates3DEx ());
+		unit.setUnitLocation (new MapCoordinates3DEx (15, 10, 1));
 		unit.setUnitURN (1);
 
 		final UnitHasSkill experience = new UnitHasSkill ();
@@ -1200,8 +1191,7 @@ public final class TestUnitUtilsImpl
 
 		// Put a CAE in the wrong location
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
-		final MapCoordinates3DEx caeCoords = new MapCoordinates3DEx ();
-		caeCoords.setX (1);
+		final MapCoordinates3DEx caeCoords = new MapCoordinates3DEx (16, 10, 1);
 		cae.setMapLocation (caeCoords);
 		cae.setCombatAreaEffectID (GenerateTestData.CAE_AFFECTS_ALL);
 		combatAreaEffects.add (cae);
@@ -1209,7 +1199,7 @@ public final class TestUnitUtilsImpl
 		assertEquals (8, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
 
 		// Fix location
-		caeCoords.setX (0);
+		caeCoords.setX (15);
 		assertEquals (9, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
 
 		// The CAE is set to only apply to normal units - so if we chaos channel it, the CAE won't apply anymore, but we'll get a new skill
@@ -1651,78 +1641,49 @@ public final class TestUnitUtilsImpl
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Unit A that matches
-		final MapCoordinates3DEx u1loc = new MapCoordinates3DEx ();
-		u1loc.setX (20);
-		u1loc.setY (10);
-		u1loc.setZ (1);
-
 		final MemoryUnit u1 = new MemoryUnit ();
 		u1.setUnitID ("A");
 		u1.setOwningPlayerID (1);
-		u1.setCombatLocation (u1loc);
-		u1.setCombatPosition (new MapCoordinates2DEx ());
+		u1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u1.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		units.add (u1);
 
 		// Wrong location
-		final MapCoordinates3DEx u2loc = new MapCoordinates3DEx ();
-		u2loc.setX (21);
-		u2loc.setY (10);
-		u2loc.setZ (1);
-
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setUnitID ("A");
 		u2.setOwningPlayerID (1);
-		u2.setCombatLocation (u2loc);
-		u2.setCombatPosition (new MapCoordinates2DEx ());
+		u2.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
+		u2.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		units.add (u2);
 
 		// No combat position
-		final MapCoordinates3DEx u3loc = new MapCoordinates3DEx ();
-		u3loc.setX (20);
-		u3loc.setY (10);
-		u3loc.setZ (1);
-
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setUnitID ("A");
 		u3.setOwningPlayerID (1);
-		u3.setCombatLocation (u3loc);
+		u3.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		units.add (u3);
 		
 		// Wrong player
-		final MapCoordinates3DEx u4loc = new MapCoordinates3DEx ();
-		u4loc.setX (20);
-		u4loc.setY (10);
-		u4loc.setZ (1);
-
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setUnitID ("A");
 		u4.setOwningPlayerID (2);
-		u4.setCombatLocation (u4loc);
-		u4.setCombatPosition (new MapCoordinates2DEx ());
+		u4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u4.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		units.add (u4);
 		
 		// Unit B that matches
-		final MapCoordinates3DEx u5loc = new MapCoordinates3DEx ();
-		u5loc.setX (20);
-		u5loc.setY (10);
-		u5loc.setZ (1);
-
 		final MemoryUnit u5 = new MemoryUnit ();
 		u5.setUnitID ("B");
 		u5.setOwningPlayerID (1);
-		u5.setCombatLocation (u5loc);
-		u5.setCombatPosition (new MapCoordinates2DEx ());
+		u5.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u5.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		units.add (u5);
 		
 		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		
 		// Run method
-		final MapCoordinates3DEx loc = new MapCoordinates3DEx ();
-		loc.setX (20);
-		loc.setY (10);
-		loc.setZ (1);
-
+		final MapCoordinates3DEx loc = new MapCoordinates3DEx (20, 10, 1);
 		utils.resetUnitCombatMovement (units, 1, loc, db);
 
 		// Check results
@@ -1780,65 +1741,40 @@ public final class TestUnitUtilsImpl
 		units.add (u1);
 
 		// Wrong location
-		final MapCoordinates3DEx u2location = new MapCoordinates3DEx ();
-		u2location.setX (2);
-		u2location.setY (3);
-		u2location.setZ (0);
-
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setOwningPlayerID (5);
 		u2.setStatus (UnitStatusID.ALIVE);
-		u2.setUnitLocation (u2location);
+		u2.setUnitLocation (new MapCoordinates3DEx (2, 3, 0));
 		units.add (u2);
 
 		// Wrong player (i.e. player matches)
-		final MapCoordinates3DEx u3location = new MapCoordinates3DEx ();
-		u3location.setX (2);
-		u3location.setY (3);
-		u3location.setZ (1);
-
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setOwningPlayerID (4);
 		u3.setStatus (UnitStatusID.ALIVE);
-		u3.setUnitLocation (u3location);
+		u3.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u3);
 
 		// Null status
-		final MapCoordinates3DEx u4location = new MapCoordinates3DEx ();
-		u4location.setX (2);
-		u4location.setY (3);
-		u4location.setZ (1);
-
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setOwningPlayerID (5);
-		u4.setUnitLocation (u4location);
+		u4.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u4);
 
 		// Unit is dead
-		final MapCoordinates3DEx u5location = new MapCoordinates3DEx ();
-		u5location.setX (2);
-		u5location.setY (3);
-		u5location.setZ (1);
-
 		final MemoryUnit u5 = new MemoryUnit ();
 		u5.setOwningPlayerID (5);
 		u5.setStatus (UnitStatusID.DEAD);
-		u5.setUnitLocation (u5location);
+		u5.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u5);
 
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertNull (utils.findFirstAliveEnemyAtLocation (units, 2, 3, 1, 4));
 
 		// Now add one that actually matches
-		final MapCoordinates3DEx u6location = new MapCoordinates3DEx ();
-		u6location.setX (2);
-		u6location.setY (3);
-		u6location.setZ (1);
-
 		final MemoryUnit u6 = new MemoryUnit ();
 		u6.setOwningPlayerID (5);
 		u6.setStatus (UnitStatusID.ALIVE);
-		u6.setUnitLocation (u6location);
+		u6.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u6);
 
 		assertEquals (u6, utils.findFirstAliveEnemyAtLocation (units, 2, 3, 1, 4));
@@ -1860,79 +1796,49 @@ public final class TestUnitUtilsImpl
 		units.add (u1);
 
 		// Wrong location
-		final MapCoordinates3DEx u2location = new MapCoordinates3DEx ();
-		u2location.setX (2);
-		u2location.setY (3);
-		u2location.setZ (0);
-
 		final MemoryUnit u2 = new MemoryUnit ();
 		u2.setOwningPlayerID (5);
 		u2.setStatus (UnitStatusID.ALIVE);
-		u2.setUnitLocation (u2location);
+		u2.setUnitLocation (new MapCoordinates3DEx (2, 3, 0));
 		units.add (u2);
 
 		// Wrong player (i.e. player matches)
-		final MapCoordinates3DEx u3location = new MapCoordinates3DEx ();
-		u3location.setX (2);
-		u3location.setY (3);
-		u3location.setZ (1);
-
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setOwningPlayerID (4);
 		u3.setStatus (UnitStatusID.ALIVE);
-		u3.setUnitLocation (u3location);
+		u3.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u3);
 
 		// Null status
-		final MapCoordinates3DEx u4location = new MapCoordinates3DEx ();
-		u4location.setX (2);
-		u4location.setY (3);
-		u4location.setZ (1);
-
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setOwningPlayerID (5);
-		u4.setUnitLocation (u4location);
+		u4.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u4);
 
 		// Unit is dead
-		final MapCoordinates3DEx u5location = new MapCoordinates3DEx ();
-		u5location.setX (2);
-		u5location.setY (3);
-		u5location.setZ (1);
-
 		final MemoryUnit u5 = new MemoryUnit ();
 		u5.setOwningPlayerID (5);
 		u5.setStatus (UnitStatusID.DEAD);
-		u5.setUnitLocation (u5location);
+		u5.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u5);
 
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		assertEquals (0, utils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4));
 
 		// Now add one that actually matches
-		final MapCoordinates3DEx u6location = new MapCoordinates3DEx ();
-		u6location.setX (2);
-		u6location.setY (3);
-		u6location.setZ (1);
-
 		final MemoryUnit u6 = new MemoryUnit ();
 		u6.setOwningPlayerID (5);
 		u6.setStatus (UnitStatusID.ALIVE);
-		u6.setUnitLocation (u6location);
+		u6.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u6);
 
 		assertEquals (1, utils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4));
 
 		// Add second matching unit
-		final MapCoordinates3DEx u7location = new MapCoordinates3DEx ();
-		u7location.setX (2);
-		u7location.setY (3);
-		u7location.setZ (1);
-
 		final MemoryUnit u7 = new MemoryUnit ();
 		u7.setOwningPlayerID (5);
 		u7.setStatus (UnitStatusID.ALIVE);
-		u7.setUnitLocation (u7location);
+		u7.setUnitLocation (new MapCoordinates3DEx (2, 3, 1));
 		units.add (u7);
 
 		assertEquals (2, utils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4));
@@ -1977,52 +1883,25 @@ public final class TestUnitUtilsImpl
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Unit is dead
-		final MapCoordinates3DEx loc1 = new MapCoordinates3DEx ();
-		loc1.setX (20);
-		loc1.setY (10);
-		loc1.setZ (1);
-		
-		final MapCoordinates2DEx pos1 = new MapCoordinates2DEx ();
-		pos1.setX (14);
-		pos1.setY (7);
-		
 		final MemoryUnit u1 = new MemoryUnit ();
-		u1.setCombatLocation (loc1);
-		u1.setCombatPosition (pos1);
+		u1.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u1.setCombatPosition (new MapCoordinates2DEx (14, 7));
 		u1.setStatus (UnitStatusID.DEAD);
 		
 		units.add (u1);
 		
 		// Wrong combat location
-		final MapCoordinates3DEx loc2 = new MapCoordinates3DEx ();
-		loc2.setX (21);
-		loc2.setY (10);
-		loc2.setZ (1);
-		
-		final MapCoordinates2DEx pos2 = new MapCoordinates2DEx ();
-		pos2.setX (14);
-		pos2.setY (7);
-		
 		final MemoryUnit u2 = new MemoryUnit ();
-		u2.setCombatLocation (loc2);
-		u2.setCombatPosition (pos2);
+		u2.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
+		u2.setCombatPosition (new MapCoordinates2DEx (14, 7));
 		u2.setStatus (UnitStatusID.ALIVE);
 		
 		units.add (u2);
 		
 		// Wrong combat position
-		final MapCoordinates3DEx loc3 = new MapCoordinates3DEx ();
-		loc3.setX (20);
-		loc3.setY (10);
-		loc3.setZ (1);
-		
-		final MapCoordinates2DEx pos3 = new MapCoordinates2DEx ();
-		pos3.setX (15);
-		pos3.setY (7);
-		
 		final MemoryUnit u3 = new MemoryUnit ();
-		u3.setCombatLocation (loc3);
-		u3.setCombatPosition (pos3);
+		u3.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u3.setCombatPosition (new MapCoordinates2DEx (15, 7));
 		u3.setStatus (UnitStatusID.ALIVE);
 		
 		units.add (u3);
@@ -2031,30 +1910,14 @@ public final class TestUnitUtilsImpl
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		
 		// Should get a null
-		final MapCoordinates3DEx loc = new MapCoordinates3DEx ();
-		loc.setX (20);
-		loc.setY (10);
-		loc.setZ (1);
-		
-		final MapCoordinates2DEx pos = new MapCoordinates2DEx ();
-		pos.setX (14);
-		pos.setY (7);
-
+		final MapCoordinates3DEx loc = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates2DEx pos = new MapCoordinates2DEx (14, 7);
 		assertNull (utils.findAliveUnitInCombatAt (units, loc, pos));
 		
 		// Add one that matches
-		final MapCoordinates3DEx loc4 = new MapCoordinates3DEx ();
-		loc4.setX (20);
-		loc4.setY (10);
-		loc4.setZ (1);
-		
-		final MapCoordinates2DEx pos4 = new MapCoordinates2DEx ();
-		pos4.setX (14);
-		pos4.setY (7);
-		
 		final MemoryUnit u4 = new MemoryUnit ();
-		u4.setCombatLocation (loc4);
-		u4.setCombatPosition (pos4);
+		u4.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		u4.setCombatPosition (new MapCoordinates2DEx (14, 7));
 		u4.setStatus (UnitStatusID.ALIVE);
 		
 		units.add (u4);

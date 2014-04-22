@@ -674,10 +674,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 											bitmask.append ("2");
 										else
 										{
-											final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-											coords.setX (x);
-											coords.setY (y);
-											coords.setZ (planeNo);
+											final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, planeNo);
 											if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
 											{
 												final MemoryGridCell otherGc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
@@ -783,10 +780,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 				final String citySizeID = (gc.getCityData () == null) ? null : gc.getCityData ().getCitySizeID ();
 				if (citySizeID != null)
 				{
-					final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-					cityLocation.setX (x);
-					cityLocation.setY (y);
-					cityLocation.setZ (mapViewPlane);
+					final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, mapViewPlane);
 					
 					final CityImage cityImage = getGraphicsDB ().findBestCityImage (citySizeID, cityLocation,
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "regenerateOverlandMapBitmaps");
@@ -851,10 +845,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 					final StringBuffer bitmask = new StringBuffer ();
 					for (int d = 1; d <= maxDirection; d++)
 					{
-						final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-						coords.setX (x);
-						coords.setY (y);
-						coords.setZ (mapViewPlane);
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, mapViewPlane);
 						if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
 						{
 							final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
@@ -886,10 +877,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 					final StringBuffer bitmask = new StringBuffer ();
 					for (int d = 1; d <= maxDirection; d++)
 					{
-						final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-						coords.setX (x);
-						coords.setY (y);
-						coords.setZ (mapViewPlane);
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, mapViewPlane);
 						if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
 						{
 							final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get

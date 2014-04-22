@@ -317,11 +317,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			int direction = 1;
 			while ((addLocation == null) && (direction <= getCoordinateSystemUtils ().getMaxDirection (sd.getMapSize ().getCoordinateSystemType ())))
 			{
-				final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx ();
-				adjacentLocation.setX (desiredLocation.getX ());
-				adjacentLocation.setY (desiredLocation.getY ());
-				adjacentLocation.setZ (desiredLocation.getZ ());
-
+				final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (desiredLocation);
 				if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), adjacentLocation, direction))
 					if (canUnitBeAddedHere (adjacentLocation, testUnit, testUnitSkillList, trueMap, sd.getUnitSetting (), db))
 					{

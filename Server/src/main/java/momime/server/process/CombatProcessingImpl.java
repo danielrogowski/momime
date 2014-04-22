@@ -192,19 +192,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final CoordinateSystem combatMapCoordinateSystem, final MapAreaOfCombatTiles combatMap, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		final List<Integer> maxUnitsInRow = new ArrayList<Integer> ();
-		final MapCoordinates2DEx centre = new MapCoordinates2DEx ();
-		centre.setX (startX);
-		centre.setY (startY);
+		final MapCoordinates2DEx centre = new MapCoordinates2DEx (startX, startY);
 	
 		for (int rowNo = 0; rowNo < maxRows; rowNo++)
 		{
 			int maxUnitsInThisRow = 0;
 			
-			final MapCoordinates2DEx coords = new MapCoordinates2DEx ();
-			coords.setX (centre.getX ());
-			coords.setY (centre.getY ());
-			
 			// Move down-left to start of row...
+			final MapCoordinates2DEx coords = new MapCoordinates2DEx (centre);
 			for (int n = 0; n < COMBAT_SETUP_UNITS_PER_ROW/2; n++)
 				getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 6);
 			
@@ -463,15 +458,11 @@ public final class CombatProcessingImpl implements CombatProcessing
 		log.entering (CombatProcessingImpl.class.getName (), "placeCombatUnits");
 		
 		int unitNo = 0;		// Index into unit list of unit being placed
-		final MapCoordinates2DEx centre = new MapCoordinates2DEx ();
-		centre.setX (startX);
-		centre.setY (startY);
+		final MapCoordinates2DEx centre = new MapCoordinates2DEx (startX, startY);
 		
 		for (final Integer unitsOnThisRow : unitsInRow)
 		{
-			final MapCoordinates2DEx coords = new MapCoordinates2DEx ();
-			coords.setX (centre.getX ());
-			coords.setY (centre.getY ());
+			final MapCoordinates2DEx coords = new MapCoordinates2DEx (centre);
 				
 			// Move down-left to start of row...
 			for (int n = 0; n < unitsOnThisRow/2; n++)
@@ -488,12 +479,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 				final MemoryUnit trueUnit = unitsToPosition.get (unitNo).getUnit ();
 				
 				// Update true unit on server
-				final MapCoordinates2DEx trueUnitPosition = new MapCoordinates2DEx ();
-				trueUnitPosition.setX (coords.getX ());
-				trueUnitPosition.setY (coords.getY ());
-				
 				trueUnit.setCombatLocation (combatLocation);
-				trueUnit.setCombatPosition (trueUnitPosition);
+				trueUnit.setCombatPosition (new MapCoordinates2DEx (coords));
 				trueUnit.setCombatHeading (unitHeading);
 				trueUnit.setCombatSide (combatSide);
 				
@@ -513,12 +500,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 					// Update values on existing unit in attacker's memory
 					atkUnit = getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), atkPriv.getFogOfWarMemory ().getUnit (), "placeCombatUnits-A");
 				
-					final MapCoordinates2DEx atkUnitPosition = new MapCoordinates2DEx ();
-					atkUnitPosition.setX (coords.getX ());
-					atkUnitPosition.setY (coords.getY ());
-				
 					atkUnit.setCombatLocation (combatLocation);
-					atkUnit.setCombatPosition (atkUnitPosition);
+					atkUnit.setCombatPosition (new MapCoordinates2DEx (coords));
 					atkUnit.setCombatHeading (unitHeading);
 					atkUnit.setCombatSide (combatSide);
 				}
@@ -527,14 +510,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 				if (defendingPlayer != null)
 				{
 					// Update player memory on server
-					final MapCoordinates2DEx defUnitPosition = new MapCoordinates2DEx ();
-					defUnitPosition.setX (coords.getX ());
-					defUnitPosition.setY (coords.getY ());
-
 					final MomPersistentPlayerPrivateKnowledge defPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
 					final MemoryUnit defUnit = getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), defPriv.getFogOfWarMemory ().getUnit (), "placeCombatUnits-D");
 					defUnit.setCombatLocation (combatLocation);
-					defUnit.setCombatPosition (defUnitPosition);
+					defUnit.setCombatPosition (new MapCoordinates2DEx (coords));
 					defUnit.setCombatHeading (unitHeading);
 					defUnit.setCombatSide (combatSide);
 				}
@@ -542,13 +521,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 				// Send unit positioning to clients
 				if (startCombatMessage != null)
 				{
-					final MapCoordinates2DEx msgUnitPosition = new MapCoordinates2DEx ();
-					msgUnitPosition.setX (coords.getX ());
-					msgUnitPosition.setY (coords.getY ());
-
 					final StartCombatMessageUnit unitPlacement = new StartCombatMessageUnit ();
 					unitPlacement.setUnitURN (trueUnit.getUnitURN ());
-					unitPlacement.setCombatPosition (msgUnitPosition);
+					unitPlacement.setCombatPosition (new MapCoordinates2DEx (coords));
 					unitPlacement.setCombatHeading (unitHeading);
 					unitPlacement.setCombatSide (combatSide);
 				
@@ -1076,9 +1051,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// The value at each cell of the directions grid is the direction we need to have come from to get there.
 			// So we need to start at the destination and follow backwards down the movement path until we get back to the From location.
 			final List<Integer> directions = new ArrayList<Integer> ();
-			final MapCoordinates2DEx movePath = new MapCoordinates2DEx ();
-			movePath.setX (moveTo.getX ());
-			movePath.setY (moveTo.getY ());
+			final MapCoordinates2DEx movePath = new MapCoordinates2DEx (moveTo);
 			
 			while (!movePath.equals (tu.getCombatPosition ()))
 			{
@@ -1101,14 +1074,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 			for (final int d : directions)
 			{
 				// Move to the new cell
-				// Message needs to keep the old coords, so copy them
-				final MapCoordinates2DEx msgMoveFrom = new MapCoordinates2DEx ();
-				msgMoveFrom.setX (movePath.getX ());
-				msgMoveFrom.setY (movePath.getY ());
-
 				final MoveUnitInCombatMessage msg = new MoveUnitInCombatMessage ();
 				msg.setUnitURN (tu.getUnitURN ());
-				msg.setMoveFrom (msgMoveFrom);
+				msg.setMoveFrom (new MapCoordinates2DEx (movePath));		// Message needs to keep the old coords, so copy them
 				msg.setDirection (d);
 				
 				if (!getCoordinateSystemUtils ().move2DCoordinates (mom.getCombatMapCoordinateSystem (), movePath, d))
@@ -1136,17 +1104,13 @@ public final class CombatProcessingImpl implements CombatProcessing
 			tu.setCombatPosition (movePath);
 		
 			// Update attacker's memory on server
-			final MapCoordinates2DEx movePathAttackersMemory = new MapCoordinates2DEx ();
-			movePathAttackersMemory.setX (movePath.getX ());
-			movePathAttackersMemory.setY (movePath.getY ());
+			final MapCoordinates2DEx movePathAttackersMemory = new MapCoordinates2DEx (movePath);
 			
 			final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 			getUnitUtils ().findUnitURN (tu.getUnitURN (), attackerPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A").setCombatPosition (movePathAttackersMemory);
 
 			// Update defender's memory on server
-			final MapCoordinates2DEx movePathDefendersMemory = new MapCoordinates2DEx ();
-			movePathDefendersMemory.setX (movePath.getX ());
-			movePathDefendersMemory.setY (movePath.getY ());
+			final MapCoordinates2DEx movePathDefendersMemory = new MapCoordinates2DEx (movePath);
 			
 			final MomPersistentPlayerPrivateKnowledge defenderPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
 			getUnitUtils ().findUnitURN (tu.getUnitURN (), defenderPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-D").setCombatPosition (movePathDefendersMemory);

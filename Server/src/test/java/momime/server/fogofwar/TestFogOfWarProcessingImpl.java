@@ -183,25 +183,15 @@ public final class TestFogOfWarProcessingImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (1).getCell ().get (1).setCityData (ourCityThree);
 
 		// Put buildings in that give cityTwo scouting range 3, and cityThree scouting range 4
-		final MapCoordinates3DEx cityWallsLocation = new MapCoordinates3DEx ();
-		cityWallsLocation.setX (50);
-		cityWallsLocation.setY (12);
-		cityWallsLocation.setZ (0);
-
 		final MemoryBuilding cityWalls = new MemoryBuilding ();
 		cityWalls.setBuildingID ("BL35");
-		cityWalls.setCityLocation (cityWallsLocation);
+		cityWalls.setCityLocation (new MapCoordinates3DEx (50, 12, 0));
 
 		trueMap.getBuilding ().add (cityWalls);
 
-		final MapCoordinates3DEx ourOracleLocation = new MapCoordinates3DEx ();
-		ourOracleLocation.setX (1);
-		ourOracleLocation.setY (1);
-		ourOracleLocation.setZ (1);
-
 		final MemoryBuilding ourOracle = new MemoryBuilding ();
 		ourOracle.setBuildingID ("BL18");
-		ourOracle.setCityLocation (ourOracleLocation);
+		ourOracle.setCityLocation (new MapCoordinates3DEx (1, 1, 1));
 
 		trueMap.getBuilding ().add (ourOracle);
 
@@ -217,60 +207,35 @@ public final class TestFogOfWarProcessingImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (32).getCell ().get (54).setCityData (enemyCityTwo);
 
 		// We can see enemy cities that we have a curse on, but having an oracle doesn't increase how much we can see
-		final MapCoordinates3DEx curseLocation = new MapCoordinates3DEx ();
-		curseLocation.setX (54);
-		curseLocation.setY (32);
-		curseLocation.setZ (1);
-
 		final MemoryMaintainedSpell curse = new MemoryMaintainedSpell ();
 		curse.setCastingPlayerID (2);
-		curse.setCityLocation (curseLocation);
+		curse.setCityLocation (new MapCoordinates3DEx (54, 32, 1));
 		curse.setSpellID ("SP110");
 		curse.setCitySpellEffectID ("SE110");
 
 		trueMap.getMaintainedSpell ().add (curse);
 
-		final MapCoordinates3DEx enemyOracleLocation = new MapCoordinates3DEx ();
-		enemyOracleLocation.setX (54);
-		enemyOracleLocation.setY (32);
-		enemyOracleLocation.setZ (1);
-
 		final MemoryBuilding enemyOracle = new MemoryBuilding ();
 		enemyOracle.setBuildingID ("BL18");
-		enemyOracle.setCityLocation (enemyOracleLocation);
+		enemyOracle.setCityLocation (new MapCoordinates3DEx (54, 32, 1));
 
 		trueMap.getBuilding ().add (enemyOracle);
 
 		// Units - a regular unit, flying unit (sees distance 2) and unit with actual scouting III skill
-		final MapCoordinates3DEx unitOneLocation = new MapCoordinates3DEx ();
-		unitOneLocation.setX (54);
-		unitOneLocation.setY (4);
-		unitOneLocation.setZ (1);
-
 		final MemoryUnit unitOne = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
-		unitOne.setUnitLocation (unitOneLocation);
+		unitOne.setUnitLocation (new MapCoordinates3DEx (54, 4, 1));
 		unitOne.setOwningPlayerID (2);
 
 		trueMap.getUnit ().add (unitOne);
 
-		final MapCoordinates3DEx unitTwoLocation = new MapCoordinates3DEx ();
-		unitTwoLocation.setX (14);
-		unitTwoLocation.setY (34);
-		unitTwoLocation.setZ (1);
-
 		final MemoryUnit unitTwo = unitUtils.createMemoryUnit ("UN067", 2, 0, 0, true, db);
-		unitTwo.setUnitLocation (unitTwoLocation);
+		unitTwo.setUnitLocation (new MapCoordinates3DEx (14, 34, 1));
 		unitTwo.setOwningPlayerID (2);
 
 		trueMap.getUnit ().add (unitTwo);
 
-		final MapCoordinates3DEx unitThreeLocation = new MapCoordinates3DEx ();
-		unitThreeLocation.setX (44);
-		unitThreeLocation.setY (17);
-		unitThreeLocation.setZ (0);
-
 		final MemoryUnit unitThree = unitUtils.createMemoryUnit ("UN005", 3, 0, 0, true, db);
-		unitThree.setUnitLocation (unitThreeLocation);
+		unitThree.setUnitLocation (new MapCoordinates3DEx (44, 17, 0));
 		unitThree.setOwningPlayerID (2);
 
 		trueMap.getUnit ().add (unitThree);
@@ -284,38 +249,23 @@ public final class TestFogOfWarProcessingImpl
 			trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (22).getCell ().get (22).setTerrainData (terrainData);
 		}
 
-		final MapCoordinates3DEx unitFourLocation = new MapCoordinates3DEx ();
-		unitFourLocation.setX (22);
-		unitFourLocation.setY (22);
-		unitFourLocation.setZ (0);
-
 		final MemoryUnit unitFour = unitUtils.createMemoryUnit ("UN105", 4, 0, 0, true, db);
-		unitFour.setUnitLocation (unitFourLocation);
+		unitFour.setUnitLocation (new MapCoordinates3DEx (22, 22, 0));
 		unitFour.setOwningPlayerID (2);
 
 		trueMap.getUnit ().add (unitFour);
 
 		// Enemy unit
-		final MapCoordinates3DEx unitFiveLocation = new MapCoordinates3DEx ();
-		unitFiveLocation.setX (23);
-		unitFiveLocation.setY (9);
-		unitFiveLocation.setZ (1);
-
 		final MemoryUnit unitFive = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
-		unitFive.setUnitLocation (unitFiveLocation);
+		unitFive.setUnitLocation (new MapCoordinates3DEx (23, 9, 1));
 		unitFive.setOwningPlayerID (1);
 
 		trueMap.getUnit ().add (unitFive);
 
 		// Nature's eye spell
-		final MapCoordinates3DEx naturesEyeLocation = new MapCoordinates3DEx ();
-		naturesEyeLocation.setX (11);
-		naturesEyeLocation.setY (35);
-		naturesEyeLocation.setZ (0);
-
 		final MemoryMaintainedSpell naturesEye = new MemoryMaintainedSpell ();
 		naturesEye.setCastingPlayerID (2);
-		naturesEye.setCityLocation (naturesEyeLocation);
+		naturesEye.setCityLocation (new MapCoordinates3DEx (11, 35, 0));
 		naturesEye.setSpellID ("SP012");
 		naturesEye.setCitySpellEffectID ("SE012");
 
@@ -446,11 +396,8 @@ public final class TestFogOfWarProcessingImpl
 		// Put 3 sets of coordinates in the list
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-			coords.setX (n);
-			coords.setY (n + 1);
-			coords.setZ (n + 2);
-
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (n, n+1, n+2);
+			
 			final UpdateNodeLairTowerUnitIDMessageData msgData = new UpdateNodeLairTowerUnitIDMessageData ();
 			msgData.setNodeLairTowerLocation (coords);
 
@@ -461,11 +408,7 @@ public final class TestFogOfWarProcessingImpl
 		final FogOfWarProcessingImpl proc = new FogOfWarProcessingImpl ();
 
 		// Test some coordinates that are in the list
-		final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-		coords.setX (2);
-		coords.setY (3);
-		coords.setZ (4);
-
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (2, 3, 4);
 		assertTrue (proc.areCoordinatesIncludedInMessage (coordinateList, coords));
 
 		// Test some coordinates that aren't in the list

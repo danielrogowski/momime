@@ -61,27 +61,17 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 			{getData ().getCityLocation ().toString (), getData ().getFirstBuildingID ()});
 		
 		// Add building(s)
-		final MapCoordinates3DEx firstLocation = new MapCoordinates3DEx ();
-		firstLocation.setX (getData ().getCityLocation ().getX ());
-		firstLocation.setY (getData ().getCityLocation ().getY ());
-		firstLocation.setZ (getData ().getCityLocation ().getZ ());
-		
 		final MemoryBuilding firstBuilding = new MemoryBuilding ();
 		firstBuilding.setBuildingID (getData ().getFirstBuildingID ());
-		firstBuilding.setCityLocation (firstLocation);
+		firstBuilding.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getData ().getCityLocation ()));
 		
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (firstBuilding);
 		
 		if (getData ().getSecondBuildingID () != null)
 		{
-			final MapCoordinates3DEx secondLocation = new MapCoordinates3DEx ();
-			secondLocation.setX (getData ().getCityLocation ().getX ());
-			secondLocation.setY (getData ().getCityLocation ().getY ());
-			secondLocation.setZ (getData ().getCityLocation ().getZ ());
-			
 			final MemoryBuilding secondBuilding = new MemoryBuilding ();
 			secondBuilding.setBuildingID (getData ().getSecondBuildingID ());
-			secondBuilding.setCityLocation (secondLocation);
+			secondBuilding.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getData ().getCityLocation ()));
 			
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (secondBuilding);
 		}		

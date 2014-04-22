@@ -162,14 +162,13 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 					if ( (cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
 					{
 						// Calculate all productions from this city
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-						cityLocation.setX (x);
-						cityLocation.setY (y);
-						cityLocation.setZ (plane.getPlaneNumber ());
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
-						for (final CalculateCityProductionResult cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db))
+						for (final CalculateCityProductionResult cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
+							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db))
 
-							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (), cityProduction.getModifiedProductionAmount () - cityProduction.getConsumptionAmount ());
+							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (),
+								cityProduction.getModifiedProductionAmount () - cityProduction.getConsumptionAmount ());
 					}
 				}
 

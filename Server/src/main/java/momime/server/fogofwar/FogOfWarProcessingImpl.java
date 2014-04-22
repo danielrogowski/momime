@@ -151,10 +151,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		canSee (fogOfWarArea, x, y, plane);
 
 		// Then around the each square 'ring'
-		final MapCoordinates2DEx coords = new MapCoordinates2DEx ();
-		coords.setX (x);
-		coords.setY (y);
-
+		final MapCoordinates2DEx coords = new MapCoordinates2DEx (x, y);
+		
 		for (int ringNumber = 1; ringNumber <= radius; ringNumber++)
 		{
 			// Move down-left
@@ -216,10 +214,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 						final OverlandMapCityData trueCity = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 						if ((trueCity != null) && (trueCity.getCityPopulation () != null) && (trueCity.getCityPopulation () > 0))
 						{
-							final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-							coords.setX (x);
-							coords.setY (y);
-							coords.setZ (plane.getPlaneNumber ());
+							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 							// Our city
 							if ((trueCity.getCityOwnerID () != null) && (trueCity.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
@@ -404,10 +399,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 					final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 
-					final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-					coords.setX (x);
-					coords.setY (y);
-					coords.setZ (plane.getPlaneNumber ());
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 					// Check for changes in the terrain
 					switch (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ()))
@@ -635,13 +627,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 							if (msg != null)
 								if (!areCoordinatesIncludedInMessage (msg.getUpdateNodeLairTowerUnitID (), (MapCoordinates3DEx) thisUnit.getUnitLocation ()))
 								{
-									final MapCoordinates3DEx scoutMsgCoords = new MapCoordinates3DEx ();
-									scoutMsgCoords.setX (thisUnit.getUnitLocation ().getX ());
-									scoutMsgCoords.setY (thisUnit.getUnitLocation ().getY ());
-									scoutMsgCoords.setZ (thisUnit.getUnitLocation ().getZ ());
-
 									final UpdateNodeLairTowerUnitIDMessageData scoutMsg = new UpdateNodeLairTowerUnitIDMessageData ();
-									scoutMsg.setNodeLairTowerLocation (scoutMsgCoords);
+									scoutMsg.setNodeLairTowerLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) thisUnit.getUnitLocation ()));
 									scoutMsg.setMonsterUnitID ("");
 
 									msg.getUpdateNodeLairTowerUnitID ().add (scoutMsg);
@@ -897,11 +884,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				{
 					final List<FogOfWarStateID> row = priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ();
 
-					final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-					coords.setX (x);
-					coords.setY (y);
-					coords.setZ (plane.getPlaneNumber ());
-
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 					switch (row.get (x))
 					{
 						// Could see this cell before - but now we can't

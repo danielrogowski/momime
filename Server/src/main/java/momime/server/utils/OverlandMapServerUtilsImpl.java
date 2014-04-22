@@ -91,11 +91,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		// Now branch out in every direction from here
 		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
 		{
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx ();
-			coords.setX (x);
-			coords.setY (y);
-			coords.setZ (plane);
-
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
 			if (getCoordinateSystemUtils ().move3DCoordinates (sys, coords, d))
 			{
 				final OverlandMapTerrainData terrain = map.getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
@@ -289,10 +285,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 							aura.getTerrainData ().setNodeOwnerID (attackingSpirit.getOwningPlayerID ());
 							
 							// Update players' memory and clients
-							final MapCoordinates3DEx auraLocation = new MapCoordinates3DEx ();
-							auraLocation.setX (x);
-							auraLocation.setY (y);
-							auraLocation.setZ (plane.getPlaneNumber ());
+							final MapCoordinates3DEx auraLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 							
 							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players, auraLocation,
 								sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());

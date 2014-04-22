@@ -276,10 +276,7 @@ public final class TestCityAIImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
 
 		// Set up city
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (20);
-		cityLocation.setY (10);
-		cityLocation.setZ (1);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
@@ -307,10 +304,7 @@ public final class TestCityAIImpl
 			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
 			{
-				final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx ();
-				buildingLocation.setX (20);
-				buildingLocation.setY (10);
-				buildingLocation.setZ (1);
+				final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx (20, 10, 1);
 
 				final MemoryBuilding building = new MemoryBuilding ();
 				building.setCityLocation (buildingLocation);
@@ -362,13 +356,8 @@ public final class TestCityAIImpl
 			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
 			{
-				final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx ();
-				buildingLocation.setX (20);
-				buildingLocation.setY (10);
-				buildingLocation.setZ (1);
-
 				final MemoryBuilding building = new MemoryBuilding ();
-				building.setCityLocation (buildingLocation);
+				building.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 				building.setBuildingID (cityData.getCurrentlyConstructingBuildingOrUnitID ());
 
 				trueBuildings.add (building);

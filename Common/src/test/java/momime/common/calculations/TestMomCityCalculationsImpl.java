@@ -57,10 +57,7 @@ public final class TestMomCityCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -97,10 +94,7 @@ public final class TestMomCityCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -144,10 +138,7 @@ public final class TestMomCityCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -180,10 +171,7 @@ public final class TestMomCityCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -218,10 +206,7 @@ public final class TestMomCityCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -299,10 +284,7 @@ public final class TestMomCityCalculationsImpl
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -390,34 +372,19 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (30, highElf.getFinalTotal ());
 
 		// Bonus from buildings
-		final MapCoordinates3DEx granaryLocation = new MapCoordinates3DEx ();
-		granaryLocation.setX (2);
-		granaryLocation.setY (2);
-		granaryLocation.setZ (0);
-
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID (GenerateTestData.GRANARY);
-		granary.setCityLocation (granaryLocation);
+		granary.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (granary);
-
-		final MapCoordinates3DEx farmersMarketLocation = new MapCoordinates3DEx ();
-		farmersMarketLocation.setX (2);
-		farmersMarketLocation.setY (2);
-		farmersMarketLocation.setZ (0);
 
 		final MemoryBuilding farmersMarket = new MemoryBuilding ();
 		farmersMarket.setBuildingID (GenerateTestData.FARMERS_MARKET);
-		farmersMarket.setCityLocation (farmersMarketLocation);
+		farmersMarket.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (farmersMarket);
-
-		final MapCoordinates3DEx sagesGuildLocation = new MapCoordinates3DEx ();
-		sagesGuildLocation.setX (2);
-		sagesGuildLocation.setY (2);
-		sagesGuildLocation.setZ (0);
 
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
 		sagesGuild.setBuildingID (GenerateTestData.SAGES_GUILD);
-		sagesGuild.setCityLocation (sagesGuildLocation);
+		sagesGuild.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (sagesGuild);
 
 		final CalculateCityGrowthRateBreakdown withBuildings = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
@@ -504,10 +471,7 @@ public final class TestMomCityCalculationsImpl
 		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -578,14 +542,9 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (11, maxPercent.getFinalTotal ());
 
 		// Add some buildings that reduce unrest - and back to 45% tax rate = 7.65
-		final MapCoordinates3DEx shrineLocation = new MapCoordinates3DEx ();
-		shrineLocation.setX (2);
-		shrineLocation.setY (2);
-		shrineLocation.setZ (0);
-
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID (GenerateTestData.SHRINE);
-		shrineBuilding.setCityLocation (shrineLocation);
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (shrineBuilding);
 
 		final CalculateCityUnrestBreakdown shrine = calc.calculateCityRebels
@@ -608,14 +567,9 @@ public final class TestMomCityCalculationsImpl
 		divinePower.setQuantity (1);
 		ppk.getPick ().add (divinePower);
 
-		final MapCoordinates3DEx secondBuildingLocation = new MapCoordinates3DEx ();
-		secondBuildingLocation.setX (2);
-		secondBuildingLocation.setY (2);
-		secondBuildingLocation.setZ (0);
-
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID (GenerateTestData.ANIMISTS_GUILD);
-		secondBuilding.setCityLocation (secondBuildingLocation);
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (secondBuilding);
 
 		final CalculateCityUnrestBreakdown animistsGuild = calc.calculateCityRebels
@@ -653,14 +607,9 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (4, temple.getFinalTotal ());
 
 		// 1 unit does nothing
-		final MapCoordinates3DEx normalUnitLocation = new MapCoordinates3DEx ();
-		normalUnitLocation.setX (2);
-		normalUnitLocation.setY (2);
-		normalUnitLocation.setZ (0);
-
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-		normalUnit.setUnitLocation (normalUnitLocation);
+		normalUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (normalUnit);
 
@@ -683,14 +632,9 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (4, firstUnit.getFinalTotal ());
 
 		// 2nd unit reduces unrest, even if one is normal and one a hero
-		final MapCoordinates3DEx heroUnitLocation = new MapCoordinates3DEx ();
-		heroUnitLocation.setX (2);
-		heroUnitLocation.setY (2);
-		heroUnitLocation.setZ (0);
-
 		final MemoryUnit heroUnit = new MemoryUnit ();
 		heroUnit.setUnitID (GenerateTestData.DWARF_HERO);
-		heroUnit.setUnitLocation (heroUnitLocation);
+		heroUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
 		heroUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (heroUnit);
 
@@ -715,25 +659,15 @@ public final class TestMomCityCalculationsImpl
 		// summoned units or dead units don't help (unitCount still = 2)
 		for (int n = 0; n < 2; n++)
 		{
-			final MapCoordinates3DEx deadUnitLocation = new MapCoordinates3DEx ();
-			deadUnitLocation.setX (2);
-			deadUnitLocation.setY (2);
-			deadUnitLocation.setZ (0);
-
 			final MemoryUnit deadUnit = new MemoryUnit ();
 			deadUnit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
-			deadUnit.setUnitLocation (deadUnitLocation);
+			deadUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
 			deadUnit.setStatus (UnitStatusID.DEAD);
 			units.add (deadUnit);
 
-			final MapCoordinates3DEx summonedUnitLocation = new MapCoordinates3DEx ();
-			summonedUnitLocation.setX (2);
-			summonedUnitLocation.setY (2);
-			summonedUnitLocation.setZ (0);
-
 			final MemoryUnit summonedUnit = new MemoryUnit ();
 			summonedUnit.setUnitID (GenerateTestData.WAR_BEARS_UNIT);
-			summonedUnit.setUnitLocation (summonedUnitLocation);
+			summonedUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
 			summonedUnit.setStatus (UnitStatusID.ALIVE);
 			units.add (summonedUnit);
 		}
@@ -757,14 +691,9 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (3, extraUnits.getFinalTotal ());
 
 		// Put our captial here, and its klackons so we get -2
-		final MapCoordinates3DEx fortressLocation = new MapCoordinates3DEx ();
-		fortressLocation.setX (2);
-		fortressLocation.setY (2);
-		fortressLocation.setZ (0);
-
 		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
-		fortressBuilding.setCityLocation (fortressLocation);
+		fortressBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (fortressBuilding);
 
 		final CalculateCityUnrestBreakdown klackons = calc.calculateCityRebels
@@ -807,18 +736,13 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (3, highElves.getFinalTotal ());
 
 		// Move capital to a different city with a different race
-		final MapCoordinates3DEx capitalCityLocation = new MapCoordinates3DEx ();
-		capitalCityLocation.setX (20);
-		capitalCityLocation.setY (2);
-		capitalCityLocation.setZ (0);
-
 		final OverlandMapCityData capitalCityData = new OverlandMapCityData ();
 		capitalCityData.setCityRaceID (GenerateTestData.DWARVES);
 		capitalCityData.setCityOwnerID (1);
 		capitalCityData.setCityPopulation (1000);
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (20).setCityData (capitalCityData);
 
-		fortressBuilding.setCityLocation (capitalCityLocation);
+		fortressBuilding.setCityLocation (new MapCoordinates3DEx (20, 2, 0));
 
 		final CalculateCityUnrestBreakdown racialUnrest = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
@@ -855,10 +779,7 @@ public final class TestMomCityCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (1);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 1);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -999,14 +920,9 @@ public final class TestMomCityCalculationsImpl
 		summoner.setQuantity (1);
 		ppk.getPick ().add (summoner);
 
-		final MapCoordinates3DEx fortressLocation = new MapCoordinates3DEx ();
-		fortressLocation.setX (2);
-		fortressLocation.setY (2);
-		fortressLocation.setZ (1);
-
 		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
-		fortressBuilding.setCityLocation (fortressLocation);
+		fortressBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
 		buildings.add (fortressBuilding);
 
 		final CalculateCityProductionResultsImplementation fortress = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
@@ -1044,24 +960,14 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, fortress.getResults ().get (4).getConsumptionAmount ());
 
 		// Add some buildings that give production (both regular like sages guild, and percentage like sawmill), and consumption
-		final MapCoordinates3DEx sagesGuildLocation = new MapCoordinates3DEx ();
-		sagesGuildLocation.setX (2);
-		sagesGuildLocation.setY (2);
-		sagesGuildLocation.setZ (1);
-
 		final MemoryBuilding sagesGuildBuilding = new MemoryBuilding ();
 		sagesGuildBuilding.setBuildingID (GenerateTestData.SAGES_GUILD);
-		sagesGuildBuilding.setCityLocation (sagesGuildLocation);
+		sagesGuildBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
 		buildings.add (sagesGuildBuilding);
-
-		final MapCoordinates3DEx sawmillLocation = new MapCoordinates3DEx ();
-		sawmillLocation.setX (2);
-		sawmillLocation.setY (2);
-		sawmillLocation.setZ (1);
 
 		final MemoryBuilding sawmillBuilding = new MemoryBuilding ();
 		sawmillBuilding.setBuildingID (GenerateTestData.SAWMILL);
-		sawmillBuilding.setCityLocation (sawmillLocation);
+		sawmillBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
 		buildings.add (sawmillBuilding);
 
 		final CalculateCityProductionResultsImplementation sawmill = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
@@ -1149,14 +1055,9 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, minerals.getResults ().get (5).getConsumptionAmount ());
 
 		// Miners' guild boosting bonuses from map features
-		final MapCoordinates3DEx minersGuildLocation = new MapCoordinates3DEx ();
-		minersGuildLocation.setX (2);
-		minersGuildLocation.setY (2);
-		minersGuildLocation.setZ (1);
-
 		final MemoryBuilding minersGuildBuilding = new MemoryBuilding ();
 		minersGuildBuilding.setBuildingID (GenerateTestData.MINERS_GUILD);
-		minersGuildBuilding.setCityLocation (minersGuildLocation);
+		minersGuildBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
 		buildings.add (minersGuildBuilding);
 
 		final CalculateCityProductionResultsImplementation minersGuild = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
@@ -1398,10 +1299,7 @@ public final class TestMomCityCalculationsImpl
 		
 		// This is the same initial setup as the calculateAllCityProductions test
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (1);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 1);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();

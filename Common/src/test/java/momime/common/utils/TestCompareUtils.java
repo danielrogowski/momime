@@ -45,20 +45,9 @@ public final class TestCompareUtils
 	@Test
 	public final void testSafeOverlandMapCoordinatesCompare ()
 	{
-		final MapCoordinates3DEx firstCoords = new MapCoordinates3DEx ();
-		firstCoords.setX (56);
-		firstCoords.setY (0);
-		firstCoords.setZ (-12);
-
-		final MapCoordinates3DEx secondCoords = new MapCoordinates3DEx ();
-		secondCoords.setX (56);
-		secondCoords.setY (0);
-		secondCoords.setZ (-12);
-		
-		final MapCoordinates3DEx thirdCoords = new MapCoordinates3DEx ();
-		thirdCoords.setX (56);
-		thirdCoords.setY (10);
-		thirdCoords.setZ (-12);
+		final MapCoordinates3DEx firstCoords = new MapCoordinates3DEx (56, 0, -12);
+		final MapCoordinates3DEx secondCoords = new MapCoordinates3DEx (56, 0, -12);
+		final MapCoordinates3DEx thirdCoords = new MapCoordinates3DEx (56, 10, -12);
 		
 		assertTrue (CompareUtils.safeOverlandMapCoordinatesCompare (null, null));
 		assertTrue (CompareUtils.safeOverlandMapCoordinatesCompare (firstCoords, firstCoords));
@@ -74,17 +63,9 @@ public final class TestCompareUtils
 	@Test
 	public final void testSafeCombatMapCoordinatesCompare ()
 	{
-		final MapCoordinates2DEx firstCoords = new MapCoordinates2DEx ();
-		firstCoords.setX (56);
-		firstCoords.setY (0);
-
-		final MapCoordinates2DEx secondCoords = new MapCoordinates2DEx ();
-		secondCoords.setX (56);
-		secondCoords.setY (0);
-		
-		final MapCoordinates2DEx thirdCoords = new MapCoordinates2DEx ();
-		thirdCoords.setX (56);
-		thirdCoords.setY (10);
+		final MapCoordinates2DEx firstCoords = new MapCoordinates2DEx (56, 0);
+		final MapCoordinates2DEx secondCoords = new MapCoordinates2DEx (56, 0);
+		final MapCoordinates2DEx thirdCoords = new MapCoordinates2DEx (56, 10);
 		
 		assertTrue (CompareUtils.safeCombatMapCoordinatesCompare (null, null));
 		assertTrue (CompareUtils.safeCombatMapCoordinatesCompare (firstCoords, firstCoords));

@@ -257,10 +257,7 @@ public final class TestFogOfWarDuplicationImpl
 		// Put 3 buildings into the list
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapCoordinates3DEx buildingCoords = new MapCoordinates3DEx ();
-			buildingCoords.setX (20 + n);
-			buildingCoords.setY (10 + n);
-			buildingCoords.setZ (1);
+			final MapCoordinates3DEx buildingCoords = new MapCoordinates3DEx (20 + n, 10 + n, 1);
 
 			final MemoryBuilding building = new MemoryBuilding ();
 			building.setBuildingID ("BL0" + n);
@@ -270,10 +267,7 @@ public final class TestFogOfWarDuplicationImpl
 		}
 
 		// Test a building already in the list
-		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx ();
-		existingCoords.setX (22);
-		existingCoords.setY (12);
-		existingCoords.setZ (1);
+		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx (22, 12, 1);
 
 		final MemoryBuilding existingBuilding = new MemoryBuilding ();
 		existingBuilding.setBuildingID ("BL02");
@@ -314,10 +308,7 @@ public final class TestFogOfWarDuplicationImpl
 		final List<MemoryUnit> destination = new ArrayList<MemoryUnit> ();
 
 		// First unit (spearmen)
-		final MapCoordinates3DEx unitOneLocation = new MapCoordinates3DEx ();
-		unitOneLocation.setX (22);
-		unitOneLocation.setY (12);
-		unitOneLocation.setZ (1);
+		final MapCoordinates3DEx unitOneLocation = new MapCoordinates3DEx (22, 12, 1);
 
 		final MemoryUnit unitOne = utils.createMemoryUnit ("UN105", 1, 1, 10, true, db);
 		unitOne.setUnitLocation (unitOneLocation);
@@ -334,10 +325,7 @@ public final class TestFogOfWarDuplicationImpl
 		assertFalse (dup.copyUnit (unitOne, destination));
 
 		// Second unit (magicians)
-		final MapCoordinates3DEx unitTwoLocation = new MapCoordinates3DEx ();
-		unitTwoLocation.setX (22);
-		unitTwoLocation.setY (12);
-		unitTwoLocation.setZ (1);
+		final MapCoordinates3DEx unitTwoLocation = new MapCoordinates3DEx (22, 12, 1);
 
 		final MemoryUnit unitTwo = utils.createMemoryUnit ("UN052", 2, 0, 25, true, db);
 		unitTwo.setUnitLocation (unitTwoLocation);
@@ -374,10 +362,7 @@ public final class TestFogOfWarDuplicationImpl
 		// Put 3 spells into the list
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapCoordinates3DEx spellCoords = new MapCoordinates3DEx ();
-			spellCoords.setX (20 + n);
-			spellCoords.setY (10 + n);
-			spellCoords.setZ (1);
+			final MapCoordinates3DEx spellCoords = new MapCoordinates3DEx (20 + n, 10 + n, 1);
 
 			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
 			spell.setSpellID ("SP00" + n);
@@ -388,10 +373,7 @@ public final class TestFogOfWarDuplicationImpl
 		}
 
 		// Test a spell already in the list
-		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx ();
-		existingCoords.setX (22);
-		existingCoords.setY (12);
-		existingCoords.setZ (1);
+		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx (22, 12, 1);
 
 		final MemoryMaintainedSpell existingSpell = new MemoryMaintainedSpell ();
 		existingSpell.setSpellID ("SP002");
@@ -433,10 +415,7 @@ public final class TestFogOfWarDuplicationImpl
 		// Put 3 combatAreaEffects into the list
 		for (int n = 1; n <= 3; n++)
 		{
-			final MapCoordinates3DEx combatAreaEffectCoords = new MapCoordinates3DEx ();
-			combatAreaEffectCoords.setX (20 + n);
-			combatAreaEffectCoords.setY (10 + n);
-			combatAreaEffectCoords.setZ (1);
+			final MapCoordinates3DEx combatAreaEffectCoords = new MapCoordinates3DEx (20 + n, 10 + n, 1);
 
 			final MemoryCombatAreaEffect combatAreaEffect = new MemoryCombatAreaEffect ();
 			combatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
@@ -447,10 +426,7 @@ public final class TestFogOfWarDuplicationImpl
 		}
 
 		// Test a combatAreaEffect already in the list
-		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx ();
-		existingCoords.setX (22);
-		existingCoords.setY (12);
-		existingCoords.setZ (1);
+		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx (22, 12, 1);
 
 		final MemoryCombatAreaEffect existingCombatAreaEffect = new MemoryCombatAreaEffect ();
 		existingCombatAreaEffect.setCombatAreaEffectID ("CAE02");

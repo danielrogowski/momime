@@ -68,10 +68,7 @@ public final class TestMomUnitCalculationsImpl
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 
 		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx ();
-		cityLocation.setX (2);
-		cityLocation.setY (2);
-		cityLocation.setZ (0);
+		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -96,33 +93,23 @@ public final class TestMomUnitCalculationsImpl
 		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Add the wrong type of building, to prove that it doesn't help
-		final MapCoordinates3DEx sagesGuildLocation = new MapCoordinates3DEx ();
-		sagesGuildLocation.setX (2);
-		sagesGuildLocation.setY (2);
-		sagesGuildLocation.setZ (0);
-
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();
-		sagesGuild.setCityLocation (sagesGuildLocation);
+		sagesGuild.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		sagesGuild.setBuildingID (GenerateTestData.SAGES_GUILD);
 		buildings.add (sagesGuild);
 
 		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Add an alchemists' guild, in the wrong place
-		final MapCoordinates3DEx alchemistsGuildLocation = new MapCoordinates3DEx ();
-		alchemistsGuildLocation.setX (2);
-		alchemistsGuildLocation.setY (2);
-		alchemistsGuildLocation.setZ (1);
-
 		final MemoryBuilding alchemistsGuild = new MemoryBuilding ();
-		alchemistsGuild.setCityLocation (alchemistsGuildLocation);
+		alchemistsGuild.setCityLocation (new MapCoordinates3DEx (2, 2, 1));
 		alchemistsGuild.setBuildingID (GenerateTestData.ALCHEMISTS_GUILD);
 		buildings.add (alchemistsGuild);
 
 		assertEquals (1, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 
 		// Move it to the right place
-		alchemistsGuildLocation.setZ (0);
+		alchemistsGuild.getCityLocation ().setZ (0);
 		assertEquals (3, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, GenerateTestData.createDB ()));
 	}
 	

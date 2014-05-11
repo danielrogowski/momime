@@ -20,6 +20,9 @@ public final class GraphicsDatabaseConstants
 	/** City flag image */
 	public static final String IMAGE_CITY_FLAG = "/momime.client.graphics/overland/cities/cityFlag.png";
 
+	/** Unit background image */
+	public static final String UNIT_BACKGROUND_FLAG = "/momime.client.graphics/ui/overland/unitBackground.png";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

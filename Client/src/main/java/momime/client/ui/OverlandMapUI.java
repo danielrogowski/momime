@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -39,7 +40,11 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.MapSizeData;
 import momime.common.messages.v0_9_5.FogOfWarStateID;
 import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.UnitSpecialOrder;
+import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.utils.MemoryGridCellUtils;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.areas.storage.MapArea3D;
@@ -64,6 +69,9 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
+	
 	/** Small font */
 	private Font smallFont;
 	
@@ -78,6 +86,9 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	
 	/** Colour multiplied flags for each player's cities */
 	final Map<Integer, BufferedImage> cityFlagImages = new HashMap<Integer, BufferedImage> ();
+
+	/** Colour backgrounds for each player's units */
+	final Map<Integer, BufferedImage> unitBackgroundImages = new HashMap<Integer, BufferedImage> ();
 	
 	/** The plane that the UI is currently displaying */
 	private int mapViewPlane = 0;
@@ -168,6 +179,8 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	@Override
 	protected final void init () throws IOException
 	{
+		log.entering (OverlandMapUI.class.getName (), "init");
+
 		// Load images
 		topBarBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/background.png");
 		final BufferedImage topBarGoldButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/goldNormal.png");
@@ -263,6 +276,9 @@ public final class OverlandMapUI extends MomClientAbstractUI
 			{
 			}
 		};
+
+		// Need the tile set in a few places
+		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
 		
 		// Initialize the frame
 		getFrame ().setTitle ("Overland Map");
@@ -321,6 +337,8 @@ public final class OverlandMapUI extends MomClientAbstractUI
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
+				log.entering (OverlandMapUI.class.getName (), "sceneryPanel.paintComponent");
+
 				super.paintComponent (g);
 				
 				// Scale the map image up smoothly
@@ -339,19 +357,60 @@ public final class OverlandMapUI extends MomClientAbstractUI
 				final int xRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight () ? 2 : 1;
 				final int yRepeatCount = getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom () ? 2 : 1;
 				
-				for (int x = 0; x < xRepeatCount; x++)
-					for (int y = 0; y < yRepeatCount; y++)
+				for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+					for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
 					{
 						// Draw the terrain
 						g.drawImage (overlandMapBitmaps [terrainAnimFrame],
-							(mapZoomedWidth * x) - mapViewX, (mapZoomedHeight * y) - mapViewY,
+							(mapZoomedWidth * xRepeat) - mapViewX, (mapZoomedHeight * yRepeat) - mapViewY,
 							mapZoomedWidth, mapZoomedHeight, null);
 						
 						// Shade the fog of war edges
 						g.drawImage (fogOfWarBitmap,
-							(mapZoomedWidth * x) - mapViewX, (mapZoomedHeight * y) - mapViewY,
+							(mapZoomedWidth * xRepeat) - mapViewX, (mapZoomedHeight * yRepeat) - mapViewY,
 							mapZoomedWidth, mapZoomedHeight, null);
 					}
+				
+				// Draw units dynamically, over the bitmap
+				final MemoryUnit [] [] unitToDrawAtEachLocation = chooseUnitToDrawAtEachLocation ();
+				for (int x = 0; x < getClient ().getSessionDescription ().getMapSize ().getWidth (); x++)
+					for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
+					{
+						final MemoryUnit unit = unitToDrawAtEachLocation [y] [x];
+						if (unit != null)
+						{
+							try
+							{
+								final BufferedImage unitBackground = getUnitBackgroundImage (unit.getOwningPlayerID ());
+								final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+
+								final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
+								final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
+								
+								final int xpos = (((x * overlandMapTileSet.getTileWidth ()) - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
+								final int ypos = (((y * overlandMapTileSet.getTileHeight ()) - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+
+								for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+									for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+									{
+										// Draw the unit
+										g.drawImage (unitBackground,
+											(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+											unitZoomedWidth, unitZoomedHeight, null);
+
+										g.drawImage (unitImage,
+											(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+											unitZoomedWidth, unitZoomedHeight, null);
+									}
+							}
+							catch (final IOException e)
+							{
+								log.log (Level.SEVERE, "Error trying to load graphics to draw Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
+							}
+						}
+					}
+
+				log.exiting (OverlandMapUI.class.getName (), "sceneryPanel.paintComponent");
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);
@@ -365,7 +424,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		contentPane.add (sceneryPanel, sceneryConstraints);
 	
 		// Animate the terrain tiles
-		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
 		new Timer ((int) (1000 / overlandMapTileSet.getAnimationSpeed ()), new ActionListener ()
 		{
 			@Override
@@ -544,6 +602,8 @@ public final class OverlandMapUI extends MomClientAbstractUI
 				}
 			}
 		}).start ();
+
+		log.exiting (OverlandMapUI.class.getName (), "init");
 	}
 	
 	/**
@@ -920,13 +980,69 @@ public final class OverlandMapUI extends MomClientAbstractUI
 			// Generate a new one
 			final BufferedImage whiteImage = getUtils ().loadImage (GraphicsDatabaseConstants.IMAGE_CITY_FLAG);
 			
-			final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), playerID);
+			final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), playerID, "getCityFlagImage");
 			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
 			
 			image = getUtils ().multiplyImageByColour (whiteImage, Integer.parseInt (trans.getFlagColour (), 16));
 			cityFlagImages.put (playerID, image);
 		}
 		return image;
+	}
+
+	/**
+	 * @param playerID Unit owner player ID
+	 * @return Unit background image in their correct colour 
+	 * @throws IOException If there is a problem loading the background image
+	 */
+	private final BufferedImage getUnitBackgroundImage (final int playerID) throws IOException
+	{
+		BufferedImage image = unitBackgroundImages.get (playerID);
+		if (image == null)
+		{
+			// Generate a new one
+			final BufferedImage whiteImage = getUtils ().loadImage (GraphicsDatabaseConstants.UNIT_BACKGROUND_FLAG);
+			
+			final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), playerID, "getUnitBackgroundImage");
+			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+			
+			image = getUtils ().multiplyImageByColour (whiteImage, Integer.parseInt (trans.getFlagColour (), 16));
+			unitBackgroundImages.put (playerID, image);
+		}
+		return image;
+	}
+	
+	/**
+	 * This prefers to units with the highest special order - this will make settlers always show on top if
+	 * they're building cities, and make non-patrolling units appear in preference to patrolling units
+	 * 
+	 * @return Array of units to draw at each map cell
+	 */
+	final MemoryUnit [] [] chooseUnitToDrawAtEachLocation ()
+	{
+		log.entering (OverlandMapUI.class.getName (), "chooseUnitToDrawAtEachLocation");
+		
+		final MemoryUnit [] [] bestUnits = new MemoryUnit
+			[getClient ().getSessionDescription ().getMapSize ().getHeight ()] [getClient ().getSessionDescription ().getMapSize ().getWidth ()];
+		
+		for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+
+			// Is it alive, and are we looking at the right plane to see it?
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && ((unit.getUnitLocation ().getZ () == mapViewPlane) ||
+				(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))))
+			{
+				final MemoryUnit existingUnit = bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()];
+				
+				// Show real special orders in preference to patrol
+				if ((existingUnit == null) ||
+					((existingUnit != null) && (existingUnit.getSpecialOrder () == null) && (unit.getSpecialOrder () != null)) ||
+					((existingUnit != null) && (existingUnit.getSpecialOrder () == UnitSpecialOrder.PATROL) && (unit.getSpecialOrder () != null) && (unit.getSpecialOrder () != UnitSpecialOrder.PATROL)))
+					
+					bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()] = unit;
+			}
+
+		log.exiting (OverlandMapUI.class.getName (), "chooseUnitToDrawAtEachLocation");
+		return bestUnits;
 	}
 	
 	/**
@@ -977,6 +1093,22 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		coordinateSystemUtils = csu;
 	}
 
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
+	}
+	
 	/**
 	 * @return Small font
 	 */

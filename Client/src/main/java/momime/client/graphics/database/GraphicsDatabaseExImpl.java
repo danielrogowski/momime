@@ -14,6 +14,7 @@ import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.TileSet;
+import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -35,6 +36,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
 
+	/** Map of unit IDs to unit objects */
+	private Map<String, Unit> unitsMap;
+	
 	/** Map of tileSet IDs to tileSet objects */
 	private Map<String, TileSetEx> tileSetsMap;
 
@@ -63,6 +67,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		wizardsMap = new HashMap<String, Wizard> ();
 		for (final Wizard thisWizard : getWizard ())
 			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
+
+		// Create units map
+		unitsMap = new HashMap<String, Unit> ();
+		for (final Unit thisUnit : getUnit ())
+			unitsMap.put (thisUnit.getUnitID (), thisUnit);
 
 		// Create animations map, and check for consistency
 		animationsMap = new HashMap<String, AnimationEx> ();
@@ -162,6 +171,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final Wizard found = wizardsMap.get (wizardID);
 		if (found == null)
 			throw new RecordNotFoundException (Wizard.class.getName (), wizardID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param unitID Unit ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit object
+	 * @throws RecordNotFoundException If the unitID doesn't exist
+	 */
+	@Override
+	public final Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException
+	{
+		final Unit found = unitsMap.get (unitID);
+		if (found == null)
+			throw new RecordNotFoundException (Unit.class.getName (), unitID, caller);
 
 		return found;
 	}

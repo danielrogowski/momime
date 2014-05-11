@@ -4,6 +4,7 @@ import java.util.List;
 
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -31,6 +32,14 @@ public interface GraphicsDatabaseEx
 	 */
 	public Wizard findWizard (final String wizardID, final String caller) throws RecordNotFoundException;
 
+	/**
+	 * @param unitID Unit ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit object
+	 * @throws RecordNotFoundException If the unitID doesn't exist
+	 */
+	public Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException;
+	
 	/**
 	 * @param tileSetID Tile set ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

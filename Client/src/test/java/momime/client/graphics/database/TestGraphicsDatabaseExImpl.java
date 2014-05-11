@@ -12,6 +12,7 @@ import java.util.List;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -104,6 +105,46 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		db.findWizard ("WZ04", "testFindWizard_NotExists");
+	}
+
+	/**
+	 * Tests the findUnit method to find a unit ID that does exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testFindUnit_Exists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Unit newUnit = new Unit ();
+			newUnit.setUnitID ("UN00" + n);
+			db.getUnit ().add (newUnit);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("UN002", db.findUnit ("UN002", "testFindUnit_Exists").getUnitID ());
+	}
+
+	/**
+	 * Tests the findUnit method to find a unit ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnit_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Unit newUnit = new Unit ();
+			newUnit.setUnitID ("UN00" + n);
+			db.getUnit ().add (newUnit);
+		}
+
+		db.buildMaps ();
+
+		db.findUnit ("UN004", "testFindUnit_NotExists");
 	}
 
 	/**

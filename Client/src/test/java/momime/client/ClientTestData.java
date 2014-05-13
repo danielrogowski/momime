@@ -9,6 +9,13 @@ import java.net.URL;
 
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.database.LanguageDatabaseConstants;
+import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemType;
 
 /**
  * Since the tests in the common project can't use the XML file (since the classes generated from the server XSD that allow
@@ -65,6 +72,45 @@ public final class ClientTestData
 		return graphicsXmlFile.getCanonicalFile ();
 	}
 
+	/**
+	 * @return Demo MoM overland map-like coordinate system with a 60x40 square map wrapping left-to-right but not top-to-bottom
+	 */
+	public final static CoordinateSystem createOverlandMapCoordinateSystem ()
+	{
+		final CoordinateSystem sys = new CoordinateSystem ();
+		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
+		sys.setWidth (60);
+		sys.setHeight (40);
+		sys.setDepth (2);
+		sys.setWrapsLeftToRight (true);
+		return sys;
+	}
+
+	/**
+	 * @param sys Overland map coordinate system
+	 * @return Map area prepopulated with empty cells
+	 */
+	public final static MapVolumeOfMemoryGridCells createOverlandMap (final CoordinateSystem sys)
+	{
+		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
+		for (int plane = 0; plane < 2; plane++)
+		{
+			final MapAreaOfMemoryGridCells area = new MapAreaOfMemoryGridCells ();
+			for (int y = 0; y < sys.getHeight (); y++)
+			{
+				final MapRowOfMemoryGridCells row = new MapRowOfMemoryGridCells ();
+				for (int x = 0; x < sys.getWidth (); x++)
+					row.getCell ().add (new MemoryGridCell ());
+
+				area.getRow ().add (row);
+			}
+
+			map.getPlane ().add (area);
+		}
+
+		return map;
+	}
+	
 	/**
 	 * Prevent instantiation
 	 */

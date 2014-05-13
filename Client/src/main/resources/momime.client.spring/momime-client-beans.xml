@@ -330,6 +330,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	
+	<bean id="overlandMapClientUtils" class="momime.client.utils.OverlandMapClientUtilsImpl">
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+	</bean>
+	
 	<!-- Fonts
 		Having to use same font for medium and large sizes, because I can't find anywhere a decent
 		Old English / Blackletter style font with sufficient foreign char support -->
@@ -421,6 +425,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="utils" ref="uiUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	
 	<!-- Prototype UI components -->
@@ -442,6 +447,25 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="momClient" />
-	</bean>	
+	</bean>
+	
+	<bean id="cityViewPanel" class="momime.client.ui.panels.CityViewPanel" scope="prototype">	
+		<property name="client" ref="momClient" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="utils" ref="uiUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="overlandMapClientUtils" ref="overlandMapClientUtils" />
+	</bean>
+	
+	<bean id="cityViewUI" class="momime.client.ui.CityViewUI" scope="prototype">
+		<property name="largeFont" ref="largeFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="cityViewPanel" ref="cityViewPanel" />		<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
+	</bean>
 	
 </beans>

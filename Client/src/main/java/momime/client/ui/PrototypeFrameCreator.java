@@ -14,4 +14,9 @@ public interface PrototypeFrameCreator
 	 * @return New edit string UI
 	 */
 	public EditStringUI createEditString ();	
+	
+	/**
+	 * @return New city view UI
+	 */
+	public CityViewUI createCityView ();
 }

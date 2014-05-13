@@ -11,6 +11,8 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,6 +44,7 @@ import momime.common.messages.v0_9_5.FogOfWarStateID;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.UnitSpecialOrder;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
@@ -74,6 +77,9 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	
 	/** Small font */
 	private Font smallFont;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** Smoothed tiles to display at every map cell */
 	private SmoothedTile [] [] [] smoothedTiles;
@@ -558,6 +564,55 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		getFrame ().pack ();
 		getFrame ().setLocationRelativeTo (null);
 		getFrame ().setMinimumSize (getFrame ().getSize ());
+		
+		// Capture mouse clicks on the scenery panel
+		sceneryPanel.addMouseListener (new MouseAdapter ()
+		{
+			/**
+			 * @param ev Click event
+			 */
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				// Ignore clicks in the black area if the window is too large for the map
+				final int mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
+				final int mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
+				if ((ev.getX () < mapZoomedWidth) && (ev.getY () < mapZoomedHeight))
+				{
+					// Convert pixel coordinates back into a map cell
+					int mapCellX = (((ev.getX () + mapViewX) * 10) / mapViewZoom) / overlandMapTileSet.getTileWidth ();
+					int mapCellY = (((ev.getY () + mapViewY) * 10) / mapViewZoom) / overlandMapTileSet.getTileHeight ();
+					
+					final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+					
+					while (mapCellX < 0) mapCellX = mapCellX + mapSize.getWidth ();
+					while (mapCellX >= mapSize.getWidth () - 1) mapCellX = mapCellX - mapSize.getWidth (); 
+					while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
+					while (mapCellY >= mapSize.getHeight () - 1) mapCellY = mapCellY - mapSize.getHeight ();
+					
+					// What's at that location
+					final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX).getCityData ();
+					if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
+					{
+						final CityViewUI cityView = getPrototypeFrameCreator ().createCityView ();
+						cityView.setCityLocation (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
+						try
+						{
+							cityView.setVisible (true);
+						}
+						catch (final IOException e)
+						{
+							e.printStackTrace ();
+						}
+					}
+					else
+					{
+						// Show selection boxes for any units at this location
+					}
+				}
+			}
+		});
 		
 		// We should also set a MaximumSize both here and whenever the zoom is changed, but JFrame.setMaximumSize doesn't work and
 		// any workaround listening to componentResized events and forcibly setting the size after just doesn't work cleanly or look at all nice.
@@ -1123,5 +1178,21 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	public final void setSmallFont (final Font font)
 	{
 		smallFont = font;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

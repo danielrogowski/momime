@@ -3,6 +3,7 @@ package momime.client.graphics.database;
 import java.util.List;
 
 import momime.client.graphics.database.v0_9_5.CityImage;
+import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -69,6 +70,11 @@ public interface GraphicsDatabaseEx
 	 */
 	public CityImage findBestCityImage (final String citySizeID, final MapCoordinates3DEx cityLocation,
 		final List<MemoryBuilding> buildings, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @return List of all city view elemenets (backgrounds, buildings, spell effects and so on)
+	 */
+    public List<CityViewElement> getCityViewElement ();
 	
 	/**
 	 * @param animationID Animation ID to search for

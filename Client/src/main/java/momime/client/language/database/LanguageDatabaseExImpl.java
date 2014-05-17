@@ -3,6 +3,7 @@ package momime.client.language.database;
 import java.util.HashMap;
 import java.util.Map;
 
+import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
 import momime.client.language.database.v0_9_5.LandProportion;
@@ -35,6 +36,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 
 	/** Map of race IDs to race objects */
 	private Map<String, Race> racesMap;
+	
+	/** Map of city size IDs to city size objects */
+	private Map<String, CitySize> citySizesMap;
 	
 	/** Map of spell rank IDs to spell rank objects */
 	private Map<String, SpellRank> spellRanksMap;
@@ -90,6 +94,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		racesMap = new HashMap<String, Race> ();
 		for (final Race thisRace : getRace ())
 			racesMap.put (thisRace.getRaceID (), thisRace);
+		
+		// Create city sizes map
+		citySizesMap = new HashMap<String, CitySize> ();
+		for (final CitySize thisCitySize : getCitySize ())
+			citySizesMap.put (thisCitySize.getCitySizeID (), thisCitySize);
 		
 		// Create spell ranks map
 		spellRanksMap = new HashMap<String, SpellRank> ();
@@ -185,6 +194,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final Race findRace (final String raceID)
 	{
 		return racesMap.get (raceID);
+	}
+	
+	/**
+	 * @param citySizeID City size ID to search for
+	 * @return City size descriptions object; or null if not found
+	 */
+	@Override
+	public final CitySize findCitySize (final String citySizeID)
+	{
+		return citySizesMap.get (citySizeID);
 	}
 	
 	/**

@@ -2,6 +2,7 @@ package momime.client.language.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
 import momime.client.language.database.v0_9_5.LandProportion;
@@ -106,6 +107,27 @@ public final class TestLanguageDatabaseExImpl
 
 		assertEquals ("RCDesc02", lang.findRace ("RC02").getRaceName ());
 		assertNull ("RC04", lang.findRace ("RC04"));
+	}
+	
+	/**
+	 * Tests the findCitySize method
+	 */
+	@Test
+	public final void findCitySize ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CitySize newCitySize = new CitySize ();
+			newCitySize.setCitySizeID ("CS0" + n);
+			newCitySize.setCitySizeName ("CSDesc0" + n);
+			lang.getCitySize ().add (newCitySize);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("CSDesc02", lang.findCitySize ("CS02").getCitySizeName ());
+		assertNull ("CS04", lang.findCitySize ("CS04"));
 	}
 	
 	/**

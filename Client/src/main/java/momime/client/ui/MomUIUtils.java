@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -167,6 +168,16 @@ public interface MomUIUtils
 	 */
 	public GridBagConstraints createConstraints (final int gridx, final int gridy, final int spanx, final int insets, final int anchor);
 
+	/**
+	 * @param gridx X cell we are putting a component into
+	 * @param gridy Y cell we are putting a component into
+	 * @param spanx Number of cells wide this component is
+	 * @param insets Custom insets object
+	 * @param anchor Position of the component within the grid cell
+	 * @return Constraints object
+	 */
+	public GridBagConstraints createConstraints (final int gridx, final int gridy, final int spanx, final Insets insets, final int anchor);
+	
 	/**
 	 * @param src Source white image
 	 * @param multRGB Colour to multiply the source image by

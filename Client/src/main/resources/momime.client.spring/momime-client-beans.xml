@@ -333,6 +333,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="overlandMapClientUtils" class="momime.client.utils.OverlandMapClientUtilsImpl">
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
+
+	<bean id="textUtils" class="momime.client.utils.TextUtilsImpl" />
 	
 	<!-- Fonts
 		Having to use same font for medium and large sizes, because I can't find anywhere a decent
@@ -459,12 +461,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="cityViewUI" class="momime.client.ui.CityViewUI" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
+		<property name="smallFont" ref="smallFont" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="cityViewPanel" ref="cityViewPanel" />		<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 	

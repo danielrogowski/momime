@@ -326,6 +326,27 @@ public final class MomUIUtilsImpl implements MomUIUtils
 	}
 
 	/**
+	 * @param gridx X cell we are putting a component into
+	 * @param gridy Y cell we are putting a component into
+	 * @param spanx Number of cells wide this component is
+	 * @param insets Custom insets
+	 * @param anchor Position of the component within the grid cell
+	 * @return Constraints object
+	 */
+	@Override
+	public final GridBagConstraints createConstraints (final int gridx, final int gridy, final int spanx, final Insets insets, final int anchor)
+	{
+		final GridBagConstraints c = new GridBagConstraints ();
+		c.gridx = gridx;
+		c.gridy = gridy;
+		c.gridwidth = spanx;
+		c.anchor = anchor;
+		c.insets = insets;
+		
+		return c;
+	}
+
+	/**
 	 * @param src Source white image
 	 * @param multRGB Colour to multiply the source image by
 	 * @return New image created by multiplying the RGB components of the source image against the RGB components of the colour, and preserving the image alpha

@@ -2,6 +2,7 @@ package momime.client.language.database;
 
 import java.util.List;
 
+import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.KnownServer;
 import momime.client.language.database.v0_9_5.Pick;
 import momime.client.language.database.v0_9_5.Plane;
@@ -36,6 +37,12 @@ public interface LanguageDatabaseEx
 	 * @return Race descriptions object; or null if not found
 	 */
 	public Race findRace (final String raceID);
+
+	/**
+	 * @param citySizeID City size ID to search for
+	 * @return City size descriptions object; or null if not found
+	 */
+	public CitySize findCitySize (final String citySizeID);
 	
 	/**
 	 * @param spellRankID Spell rank ID to search for

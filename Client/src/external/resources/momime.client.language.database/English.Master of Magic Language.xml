@@ -699,22 +699,22 @@ Also this means they cannot build Alchemists' Guilds and so cannot use Mithril o
 		<buildingHelpText>Each wizard resides in his or her own fortress.  This serves as a base of operations.  If the fortress is lost, the wizard is banished and must cast the Spell of Return.</buildingHelpText>
 	</building>
 	<citySize citySizeID="CS01">
-		<citySizeName>Outpost</citySizeName>
+		<citySizeName>Outpost of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS02">
-		<citySizeName>Hamlet</citySizeName>
+		<citySizeName>Hamlet of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS03">
-		<citySizeName>Village</citySizeName>
+		<citySizeName>Village of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS04">
-		<citySizeName>Town</citySizeName>
+		<citySizeName>Town of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS05">
-		<citySizeName>City</citySizeName>
+		<citySizeName>City of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS06">
-		<citySizeName>Capital</citySizeName>
+		<citySizeName>Capital of CITY_NAME</citySizeName>
 	</citySize>
 	<unitType unitTypeID="N">
 		<unitTypeInexperienced>Normal troops begin as recruits.</unitTypeInexperienced>
@@ -5119,6 +5119,44 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="Chat">
 			<languageEntryText>Chat</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="frmCity">
+		<languageEntry languageEntryID="Resources">
+			<languageEntryText>Resources</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Enchantments">
+			<languageEntryText>Enchantments/Curses</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Terrain">
+			<languageEntryText>Surrounding Terrain</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Buildings">
+			<languageEntryText>Buildings</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Units">
+			<languageEntryText>Units</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Production">
+			<languageEntryText>Producing</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="RushBuy">
+			<languageEntryText>Buy</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ChangeConstruction">
+			<languageEntryText>Change</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="MaxCitySize">
+			<languageEntryText>maximum MAX_CITY_SIZE</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PopulationMaxed">
+			<languageEntryText>Population: POPULATION (At maximum size)</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PopulationAndGrowth">
+			<languageEntryText>Population: POPULATION (GROWTH_RATE)</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmOptions">

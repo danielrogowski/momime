@@ -586,9 +586,9 @@ public final class OverlandMapUI extends MomClientAbstractUI
 					final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
 					
 					while (mapCellX < 0) mapCellX = mapCellX + mapSize.getWidth ();
-					while (mapCellX >= mapSize.getWidth () - 1) mapCellX = mapCellX - mapSize.getWidth (); 
+					while (mapCellX >= mapSize.getWidth ()) mapCellX = mapCellX - mapSize.getWidth (); 
 					while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
-					while (mapCellY >= mapSize.getHeight () - 1) mapCellY = mapCellY - mapSize.getHeight ();
+					while (mapCellY >= mapSize.getHeight ()) mapCellY = mapCellY - mapSize.getHeight ();
 					
 					// What's at that location
 					final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get

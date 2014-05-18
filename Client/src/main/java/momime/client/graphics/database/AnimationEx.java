@@ -54,7 +54,7 @@ public final class AnimationEx extends Animation
 					animationWidth + "x" + animationHeight + " and some are " + image.getWidth () + "x" + image.getHeight () + ")");
 		}
 		
-		log.exiting (AnimationEx.class.getName (), "deriveAnimationWidthAndHeight");
+		log.exiting (AnimationEx.class.getName (), "deriveAnimationWidthAndHeight", animationWidth + "x" + animationHeight);
 	}
 	
 	/**

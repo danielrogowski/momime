@@ -114,7 +114,7 @@ public interface MomUIUtils
 	 * @return New button
 	 */
 	public JButton createImageButton (final Action action, final Color backgroundColour, final Color foregroundColour, final Font font,
-		final BufferedImage normalImage, final BufferedImage pressedImage, final BufferedImage disabledImage);
+		final Image normalImage, final Image pressedImage, final Image disabledImage);
 
 	/**
 	 * Creates an image from an unticked image and a ticked image

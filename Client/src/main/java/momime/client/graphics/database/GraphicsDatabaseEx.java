@@ -34,6 +34,14 @@ public interface GraphicsDatabaseEx
 	public Wizard findWizard (final String wizardID, final String caller) throws RecordNotFoundException;
 
 	/**
+	 * @param raceID Race ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Race object
+	 * @throws RecordNotFoundException If the raceID doesn't exist
+	 */
+	public RaceEx findRace (final String raceID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @param unitID Unit ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit object

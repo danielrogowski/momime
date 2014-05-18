@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.CityViewUI;
 import momime.client.ui.EditStringUI;
 import momime.client.ui.OverlandMapUI;
 import momime.client.ui.PrototypeFrameCreator;
@@ -58,8 +59,9 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 	
 	/**
 	 * Method called for each individual update; so called once if message was sent in isolation, or multiple times if part of FogOfWarVisibleAreaChangedMessage
+	 * @throws IOException If there is a problem
 	 */
-	public final void processOneUpdate ()
+	public final void processOneUpdate () throws IOException
 	{
 		log.entering (UpdateCityMessageImpl.class.getName (), "processOneUpdate", getData ().getMapLocation ());
 		
@@ -86,6 +88,9 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 		}
 		
 		// If any city screen(s) are displaying this city then we need to update the display
+		final CityViewUI cityView = getClient ().getCityViews ().get (getData ().getMapLocation ().toString ());
+		if (cityView != null)
+			cityView.cityDataUpdated ();
 		
 		log.exiting (UpdateCityMessageImpl.class.getName (), "processOneUpdate");
 	}

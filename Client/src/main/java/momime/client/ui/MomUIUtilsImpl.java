@@ -177,7 +177,7 @@ public final class MomUIUtilsImpl implements MomUIUtils
 	 */
 	@Override
 	public final JButton createImageButton (final Action action, final Color backgroundColour, final Color foregroundColour, final Font font,
-		final BufferedImage normalImage, final BufferedImage pressedImage, final BufferedImage disabledImage)
+		final Image normalImage, final Image pressedImage, final Image disabledImage)
 	{
 		final JButton button = new JButton (action);
 		button.setUI (new OffsetShadowTextButtonUI ());

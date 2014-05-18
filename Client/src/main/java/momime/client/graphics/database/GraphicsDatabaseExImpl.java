@@ -13,6 +13,7 @@ import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -35,6 +36,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
+
+	/** Map of race IDs to race objects */
+	private Map<String, RaceEx> racesMap;
 
 	/** Map of unit IDs to unit objects */
 	private Map<String, Unit> unitsMap;
@@ -67,6 +71,15 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		wizardsMap = new HashMap<String, Wizard> ();
 		for (final Wizard thisWizard : getWizard ())
 			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
+
+		// Create races map
+		racesMap = new HashMap<String, RaceEx> ();
+		for (final Race thisRace : getRace ())
+		{
+			final RaceEx rex = (RaceEx) thisRace;
+			rex.buildMap ();
+			racesMap.put (rex.getRaceID (), rex);
+		}
 
 		// Create units map
 		unitsMap = new HashMap<String, Unit> ();
@@ -171,6 +184,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final Wizard found = wizardsMap.get (wizardID);
 		if (found == null)
 			throw new RecordNotFoundException (Wizard.class.getName (), wizardID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param raceID Race ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Race object
+	 * @throws RecordNotFoundException If the raceID doesn't exist
+	 */
+	@Override
+	public final RaceEx findRace (final String raceID, final String caller) throws RecordNotFoundException
+	{
+		final RaceEx found = racesMap.get (raceID);
+		if (found == null)
+			throw new RecordNotFoundException (Race.class.getName (), raceID, caller);
 
 		return found;
 	}

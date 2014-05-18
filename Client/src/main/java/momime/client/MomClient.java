@@ -3,7 +3,9 @@ package momime.client;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -16,6 +18,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.ClientDatabaseExImpl;
 import momime.client.database.v0_9_4.NewGameDatabase;
+import momime.client.ui.CityViewUI;
 import momime.client.ui.ConnectToServerUI;
 import momime.client.ui.MainMenuUI;
 import momime.client.ui.MessageBoxUI;
@@ -69,6 +72,9 @@ public final class MomClient extends MultiplayerSessionClient
 	
 	/** Info we need in order to create games; sent from server */
 	private NewGameDatabase newGameDatabase;
+	
+	/** List of all city views currently open, keyed by coordinates.toString () */
+	private Map<String, CityViewUI> cityViews = new HashMap<String, CityViewUI> (); 
 	
 	/**
 	 * Kick off method invoked by spring's init-method
@@ -500,6 +506,14 @@ public final class MomClient extends MultiplayerSessionClient
 	public final void setNewGameDatabase (final NewGameDatabase db)
 	{
 		newGameDatabase = db;
+	}
+
+	/**
+	 * @return List of all city views currently open, keyed by coordinates.toString ()
+	 */
+	public final Map<String, CityViewUI> getCityViews ()
+	{
+		return cityViews;
 	}
 	
 	/**

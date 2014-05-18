@@ -6,6 +6,7 @@ import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.ObjectFactory;
+import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.client.graphics.database.v0_9_5.SmoothingSystem;
 import momime.client.graphics.database.v0_9_5.TileSet;
@@ -28,6 +29,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 		return new GraphicsDatabaseExImpl ();
 	}
 
+	/**
+	 * @return Custom extended Race
+	 */
+	@Override
+	public final Race createRace ()
+	{
+		return new RaceEx ();
+	}
+	
 	/**
 	 * @return Custom extended TileSet 
 	 */

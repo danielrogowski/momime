@@ -108,6 +108,46 @@ public final class TestGraphicsDatabaseExImpl
 	}
 
 	/**
+	 * Tests the findRace method to find a race ID that does exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testFindRace_Exists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final RaceEx newRace = new RaceEx ();
+			newRace.setRaceID ("RC0" + n);
+			db.getRace ().add (newRace);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("RC02", db.findRace ("RC02", "testFindRace_Exists").getRaceID ());
+	}
+
+	/**
+	 * Tests the findRace method to find a race ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindRace_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final RaceEx newRace = new RaceEx ();
+			newRace.setRaceID ("RC0" + n);
+			db.getRace ().add (newRace);
+		}
+
+		db.buildMaps ();
+
+		db.findRace ("RC04", "testFindRace_NotExists");
+	}
+
+	/**
 	 * Tests the findUnit method to find a unit ID that does exist
 	 * @throws IOException If there is a problem
 	 */

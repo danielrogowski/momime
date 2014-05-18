@@ -6,10 +6,12 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -17,11 +19,11 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-import javax.swing.Box.Filler;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.RaceEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.Race;
@@ -32,6 +34,7 @@ import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResults;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -42,6 +45,9 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
  */
 public final class CityViewUI extends MomClientAbstractUI
 {
+	/** Class logger */
+	private final Logger log = Logger.getLogger (CityViewUI.class.getName ());
+	
 	/** Large font */
 	private Font largeFont;
 
@@ -114,6 +120,9 @@ public final class CityViewUI extends MomClientAbstractUI
 	/** OK (close) action */
 	private Action okAction;
 	
+	/** Panel where all the civilians are drawn */
+	private JPanel civilianPanel;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -121,6 +130,8 @@ public final class CityViewUI extends MomClientAbstractUI
 	@Override
 	protected final void init () throws IOException
 	{
+		log.entering (CityViewUI.class.getName (), "init", getCityLocation ());
+		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/background.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/cityViewButtonNormal.png");
@@ -153,6 +164,7 @@ public final class CityViewUI extends MomClientAbstractUI
 			public void actionPerformed (final ActionEvent ev)
 			{
 				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
+				getClient ().getCityViews ().remove (getCityLocation ().toString ());
 				getFrame ().dispose ();
 			}
 		};
@@ -216,6 +228,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		labelPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
 		
 		final JPanel labelsPanel = new JPanel ();
+		labelsPanel.setOpaque (false);
 		labelsPanel.setLayout (new GridBagLayout ());
 		contentPane.add (labelsPanel, labelPanelConstraints);
 		
@@ -267,7 +280,9 @@ public final class CityViewUI extends MomClientAbstractUI
 		// Set up the mini panel to hold all the civilians - this also has a 2 pixel gap to correct the labels above it
 		final Dimension civilianPanelSize = new Dimension (560, 36);
 		
-		final JPanel civilianPanel = new JPanel ();
+		civilianPanel = new JPanel ();
+		civilianPanel.setOpaque (false);
+		civilianPanel.setLayout (new GridBagLayout ());
 		civilianPanel.setMinimumSize (civilianPanelSize);
 		civilianPanel.setMaximumSize (civilianPanelSize);
 		civilianPanel.setPreferredSize (civilianPanelSize);
@@ -326,10 +341,14 @@ public final class CityViewUI extends MomClientAbstractUI
 		contentPane.add (constructionPanel, getUtils ().createConstraints (2, 9, 2, new Insets (0, 0, 2, 10), GridBagConstraints.SOUTHEAST));
 		
 		// Lock frame size
+		cityDataUpdated ();
+		
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
 		getFrame ().pack ();
 		getFrame ().setPreferredSize (getFrame ().getSize ());
+
+		log.exiting (CityViewUI.class.getName (), "init");
 	}
 
 	/**
@@ -338,6 +357,8 @@ public final class CityViewUI extends MomClientAbstractUI
 	@Override
 	public final void languageChanged ()
 	{
+		log.entering (CityViewUI.class.getName (), "languageChanged", getCityLocation ());
+		
 		// Get details about the city
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
@@ -399,8 +420,109 @@ public final class CityViewUI extends MomClientAbstractUI
 		rushBuyAction.putValue					(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "RushBuy"));
 		changeConstructionAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "ChangeConstruction"));
 		okAction.putValue							(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "OK"));
+
+		log.exiting (CityViewUI.class.getName (), "languageChanged");
 	}
 
+	/**
+	 * Performs any updates that need to be redone when the cityData changes
+	 * @throws IOException If there is a problem
+	 */
+	public final void cityDataUpdated () throws IOException
+	{
+		log.entering (CityViewUI.class.getName (), "cityDataUpdated", getCityLocation ());
+		civilianPanel.removeAll ();
+
+		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+
+		final RaceEx race = getGraphicsDB ().findRace (cityData.getCityRaceID (), "cityDataUpdated");
+		
+		// Start with farmers
+		Image civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER)));
+		final int civvyCount = cityData.getCityPopulation () / 1000;
+		int x = 0;
+		for (int civvyNo = 1; civvyNo <= civvyCount; civvyNo++)
+		{
+			// Is this the first rebel?
+			if (civvyNo == civvyCount - cityData.getNumberOfRebels () + 1)
+				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL)));
+			
+			// Is this the first worker?
+			else if (civvyNo == cityData.getMinimumFarmers () + cityData.getOptionalFarmers () + 1)
+				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER)));
+			
+			// Is this civilian changeable (between farmer and worker) - if so, create a button for them instead of a plain image
+			final Action action;
+			if ((civvyNo > civvyCount - cityData.getNumberOfRebels ()) ||	// Rebels
+				(civvyNo <= cityData.getMinimumFarmers ()))						// Enforced farmers
+			{
+				// Create as a 'show unrest calculation' button
+				action = null;
+			}
+			else
+			{
+				// Create as an 'optional farmers' button
+				final int civvyNoCopy = civvyNo;
+				action = new AbstractAction ()
+				{
+					private static final long serialVersionUID = 7655922473370295899L;
+
+					@Override
+					public void actionPerformed (final ActionEvent ev)
+					{
+						// Clicking on the same number toggles it, so we can turn the last optional farmer into a worker
+						int optionalFarmers = civvyNoCopy - cityData.getMinimumFarmers ();
+						if (optionalFarmers == cityData.getOptionalFarmers ())
+							optionalFarmers--;
+						
+						log.finest ("Requesting optional farmers in city " + getCityLocation () + " to be set to " + optionalFarmers);
+						
+						try
+						{
+							final ChangeOptionalFarmersMessage msg = new ChangeOptionalFarmersMessage ();
+							msg.setCityLocation (getCityLocation ());
+							msg.setOptionalFarmers (optionalFarmers);
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+						}
+						catch (final Exception e)
+						{
+							e.printStackTrace ();
+						}
+					}
+				}; 
+			}
+			
+			// Left justify all the civilians
+			final GridBagConstraints imageConstraints = getUtils ().createConstraints (x, 0, 1, 1, GridBagConstraints.SOUTHWEST);
+			if (civvyNo == civvyCount)
+				imageConstraints.weightx = 1;
+			
+			civilianPanel.add (getUtils ().createImageButton (action, null, null, null, civilianImage, civilianImage, civilianImage), imageConstraints);
+			x++;
+			
+			// If this is the last farmer who's necessary to feed the population (& so we cannot convert them to a worker) then leave a gap to show this
+			if (civvyNo == cityData.getMinimumFarmers ())
+			{
+				civilianPanel.add (Box.createRigidArea (new Dimension (10, 0)), getUtils ().createConstraints (x, 0, 1, 0, GridBagConstraints.SOUTHWEST));
+				x++;
+			}
+		}
+
+		civilianPanel.revalidate ();
+		civilianPanel.repaint ();
+		log.exiting (CityViewUI.class.getName (), "cityDataUpdated");
+	}
+	
+	/**
+	 * @param source Source image
+	 * @return Double sized image
+	 */
+	private final Image doubleSize (final BufferedImage source)
+	{
+		return source.getScaledInstance (source.getWidth () * 2, source.getHeight () * 2, Image.SCALE_FAST);
+	}
+	
 	/**
 	 * @return Large font
 	 */

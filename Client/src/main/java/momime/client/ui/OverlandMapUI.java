@@ -595,8 +595,16 @@ public final class OverlandMapUI extends MomClientAbstractUI
 						(mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX).getCityData ();
 					if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
 					{
-						final CityViewUI cityView = getPrototypeFrameCreator ().createCityView ();
-						cityView.setCityLocation (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
+						// Is there a city view already open for this city?
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane);
+						CityViewUI cityView = getClient ().getCityViews ().get (cityLocation.toString ());
+						if (cityView == null)
+						{
+							cityView = getPrototypeFrameCreator ().createCityView ();
+							cityView.setCityLocation (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
+							getClient ().getCityViews ().put (cityLocation.toString (), cityView);
+						}
+						
 						try
 						{
 							cityView.setVisible (true);

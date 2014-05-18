@@ -74,7 +74,10 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 		if ((getData ().isAskForCityName () != null) && (getData ().isAskForCityName ()))
 		{
 			final EditStringUI askForCityName = getPrototypeFrameCreator ().createEditString ();
-			askForCityName.setPrompt ("Enter name for new City");
+			askForCityName.setTitleLanguageCategoryID ("frmNameCity");
+			askForCityName.setTitleLanguageEntryID ("Title");
+			askForCityName.setPromptLanguageCategoryID ("frmNameCity");
+			askForCityName.setPromptLanguageEntryID ("Prompt");
 			askForCityName.setCityBeingNamed ((MapCoordinates3DEx) getData ().getMapLocation ());
 			askForCityName.setText (getData ().getCityData ().getCityName ());
 			try

@@ -4383,6 +4383,32 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Yes</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="Multiplayer">
+		<languageEntry languageEntryID="CreateAccountFailedTitle">
+			<languageEntryText>Create Account Failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="LoginFailedTitle">
+			<languageEntryText>Login Failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="LogoutFailedTitle">
+			<languageEntryText>Logout Failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="RequestSessionListFailedTitle">
+			<languageEntryText>Session List Failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="JoinSessionFailedTitle">
+			<languageEntryText>Join Failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="LeaveSessionFailedTitle">
+			<languageEntryText>Leave Session Failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="KickedTitle">
+			<languageEntryText>You were Kicked</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="KickedText">
+			<languageEntryText>Another player logged onto the server with your player name and password, so you have been kicked.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="CreateAccountFailedReason">
 		<languageEntry languageEntryID="E">
 			<languageEntryText>That player name is already in use on this server, please try another.</languageEntryText>
@@ -5121,6 +5147,14 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Chat</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmNameCity">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Name City</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Prompt">
+			<languageEntryText>Enter name for new City</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="frmCity">
 		<languageEntry languageEntryID="Resources">
 			<languageEntryText>Resources</languageEntryText>
@@ -5298,6 +5332,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Connection Error</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="10049">
 			<languageEntryText>Address unavailable.  Typically this means you entered a bad address that could not be resolved to an IP address by DNS.</languageEntryText>
 		</languageEntry>

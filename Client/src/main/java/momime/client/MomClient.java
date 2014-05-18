@@ -166,7 +166,10 @@ public final class MomClient extends MultiplayerSessionClient
 				throws JAXBException, XMLStreamException, IOException
 			{
 				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setText ("Another player logged onto the server with your player name and password, so you have been kicked");
+				msg.setTitleLanguageCategoryID ("Multiplayer");
+				msg.setTitleLanguageEntryID ("KickedTitle");
+				msg.setTextLanguageCategoryID ("Multiplayer");
+				msg.setTextLanguageEntryID ("KickedText");
 				try
 				{
 					msg.setVisible (true);
@@ -282,34 +285,41 @@ public final class MomClient extends MultiplayerSessionClient
 				// Get relevant entry from language XML
 				final String languageCategoryID;
 				final String languageEntryID;
+				final String titleEntryID;
 				
 				if (createAccountFailed != null)
 				{
+					titleEntryID = "CreateAccountFailedTitle";
 					languageCategoryID = "CreateAccountFailedReason";
 					languageEntryID = createAccountFailed.value ();
 				}
 				else if (loginFailed != null)
 				{
+					titleEntryID = "LoginFailedTitle";
 					languageCategoryID = "LoginFailedReason";
 					languageEntryID = loginFailed.value ();
 				}
 				else if (logoutFailed != null)
 				{
+					titleEntryID = "LogoutFailedTitle";
 					languageCategoryID = "LogoutFailedReason";
 					languageEntryID = logoutFailed.value ();
 				}
 				else if (requestSessionListFailed != null)
 				{
+					titleEntryID = "RequestSessionListFailedTitle";
 					languageCategoryID = "RequestSessionListFailedReason";
 					languageEntryID = requestSessionListFailed.value ();
 				}
 				else if (joinFailed != null)
 				{
+					titleEntryID = "JoinSessionFailedTitle";
 					languageCategoryID = "JoinFailedReason";
 					languageEntryID = joinFailed.value ();
 				}
 				else if (leaveSessionFailed != null)
 				{
+					titleEntryID = "LeaveSessionFailedTitle";
 					languageCategoryID = "LeaveSessionFailedReason";
 					languageEntryID = leaveSessionFailed.value ();
 				}
@@ -318,8 +328,10 @@ public final class MomClient extends MultiplayerSessionClient
 
 				// Display in window
 				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setLanguageCategoryID (languageCategoryID);
-				msg.setLanguageEntryID (languageEntryID);
+				msg.setTitleLanguageCategoryID ("Multiplayer");
+				msg.setTitleLanguageEntryID (titleEntryID);
+				msg.setTextLanguageCategoryID (languageCategoryID);
+				msg.setTextLanguageEntryID (languageEntryID);
 				try
 				{
 					msg.setVisible (true);

@@ -346,7 +346,6 @@ public final class CityViewUI extends MomClientAbstractUI
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
 		getFrame ().pack ();
-		getFrame ().setPreferredSize (getFrame ().getSize ());
 
 		log.exiting (CityViewUI.class.getName (), "init");
 	}

@@ -164,8 +164,10 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 
 					// Display in window
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setLanguageCategoryID ("ConnectionErrors");
-					msg.setLanguageEntryID (entryID);
+					msg.setTitleLanguageCategoryID ("ConnectionErrors");
+					msg.setTitleLanguageEntryID ("Title");
+					msg.setTextLanguageCategoryID ("ConnectionErrors");
+					msg.setTextLanguageEntryID (entryID);
 					try
 					{
 						msg.setVisible (true);

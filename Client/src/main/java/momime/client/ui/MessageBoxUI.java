@@ -29,12 +29,21 @@ public final class MessageBoxUI extends MomClientAbstractUI
 
 	/** Message text */
 	private JTextArea messageText;
+
+	/** Language category ID to use for the title; null if title is not language-variable */
+	private String titleLanguageCategoryID;
+	
+	/** Language entry ID to use for the title; null if title is not language-variable */
+	private String titleLanguageEntryID;
 	
 	/** Language category ID to use for the message; null if message is not language-variable */
-	private String languageCategoryID;
+	private String textLanguageCategoryID;
 	
 	/** Language entry ID to use for the message; null if message is not language-variable */
-	private String languageEntryID;
+	private String textLanguageEntryID;
+
+	/** Fixed title that isn't lanuage variant; null if title is language variable */
+	private String title;	
 	
 	/** Fixed text that isn't lanuage variant; null if message is language variable */
 	private String text;
@@ -104,11 +113,10 @@ public final class MessageBoxUI extends MomClientAbstractUI
 			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (0, 1, 1, INSET, GridBagConstraints.CENTER));
 		
 		// Lock frame size
-		getFrame ().setUndecorated (true);
 		getFrame ().setContentPane (contentPane);
+		getFrame ().setResizable (false);		// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
 		getFrame ().pack ();
 		getFrame ().setLocationRelativeTo (null);
-		getFrame ().setResizable (false);
 	}
 	
 	/**
@@ -117,11 +125,19 @@ public final class MessageBoxUI extends MomClientAbstractUI
 	@Override
 	public final void languageChanged ()
 	{
+		// Title
+		if (getTitle () != null)
+			getFrame ().setTitle (getTitle ());
+		else
+			getFrame ().setTitle (getLanguage ().findCategoryEntry (getTitleLanguageCategoryID (), getTitleLanguageEntryID ()));
+		
+		// Text
 		if (getText () != null)
 			messageText.setText (getText ());
 		else
-			messageText.setText (getLanguage ().findCategoryEntry (getLanguageCategoryID (), getLanguageEntryID ()));
+			messageText.setText (getLanguage ().findCategoryEntry (getTextLanguageCategoryID (), getTextLanguageEntryID ()));
 		
+		// Button
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "OK"));
 	}
 
@@ -142,37 +158,85 @@ public final class MessageBoxUI extends MomClientAbstractUI
 	}
 
 	/**
-	 * @return Language category ID to use for the message; null if message is not language-variable
+	 * @return Language category ID to use for the title; null if title is not language-variable
 	 */
-	public final String getLanguageCategoryID ()
+	public final String getTitleLanguageCategoryID ()
 	{
-		return languageCategoryID;
+		return titleLanguageCategoryID;
+	}
+
+	/**
+	 * @param cat Language category ID to use for the title; null if title is not language-variable
+	 */
+	public final void setTitleLanguageCategoryID (final String cat)
+	{
+		titleLanguageCategoryID = cat;
 	}
 	
+	/**
+	 * @return Language entry ID to use for the title; null if title is not language-variable
+	 */
+	public final String getTitleLanguageEntryID ()
+	{
+		return titleLanguageEntryID;
+	}
+
+	/**
+	 * @param entry Language entry ID to use for the title; null if title is not language-variable
+	 */
+	public final void setTitleLanguageEntryID (final String entry)
+	{
+		titleLanguageEntryID = entry;
+	}
+	
+	/**
+	 * @return Language category ID to use for the message; null if message is not language-variable
+	 */
+	public final String getTextLanguageCategoryID ()
+	{
+		return textLanguageCategoryID;
+	}
+
 	/**
 	 * @param cat Language category ID to use for the message; null if message is not language-variable
 	 */
-	public final void setLanguageCategoryID (final String cat)
+	public final void setTextLanguageCategoryID (final String cat)
 	{
-		languageCategoryID = cat;
-	}
-
-	/**
-	 * @return Language entry ID to use for the message; null if message is not language-variable
-	 */
-	public final String getLanguageEntryID ()
-	{
-		return languageEntryID;
+		textLanguageCategoryID = cat;
 	}
 	
 	/**
-	 * @param ent Language entry ID to use for the message; null if message is not language-variable
+	 * @return Language entry ID to use for the message; null if message is not language-variable
 	 */
-	public final void setLanguageEntryID (final String ent)
+	public final String getTextLanguageEntryID ()
 	{
-		languageEntryID = ent;
+		return textLanguageEntryID;
 	}
 
+	/**
+	 * @param entry Language entry ID to use for the message; null if message is not language-variable
+	 */
+	public final void setTextLanguageEntryID (final String entry)
+	{
+		textLanguageEntryID = entry;
+	}
+	
+	/**
+	 * @return Fixed title that isn't lanuage variant; null if title is language variable
+	 */
+	public final String getTitle ()
+	{
+		return title;
+	}
+
+	/**
+	 * @param txt Fixed title that isn't lanuage variant; null if title is language variable
+	 */
+	public final void setTitle (final String txt)
+	{
+		title = txt;
+	}
+	
 	/**
 	 * @return Fixed text that isn't lanuage variant; null if message is language variable
 	 */

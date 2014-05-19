@@ -9,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -155,7 +157,6 @@ public final class CityViewUI extends MomClientAbstractUI
 			}
 		};
 		
-		final CityViewUI ui = this;
 		okAction = new AbstractAction ()
 		{
 			private static final long serialVersionUID = 1562419693690602353L;
@@ -163,14 +164,22 @@ public final class CityViewUI extends MomClientAbstractUI
 			@Override
 			public void actionPerformed (final ActionEvent ev)
 			{
-				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
-				getClient ().getCityViews ().remove (getCityLocation ().toString ());
 				getFrame ().dispose ();
 			}
 		};
 		
 		// Initialize the frame
+		final CityViewUI ui = this;
 		getFrame ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		getFrame ().addWindowListener (new WindowAdapter ()
+		{
+			@Override
+			public final void windowClosed (final WindowEvent ev)
+			{
+				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
+				getClient ().getCityViews ().remove (getCityLocation ().toString ());
+			}
+		});
 		
 		// Do this "too early" on purpose, so that the window isn't centred over the map, but is a little down-right of it
 		getFrame ().setLocationRelativeTo (getOverlandMapUI ().getFrame ());
@@ -178,6 +187,8 @@ public final class CityViewUI extends MomClientAbstractUI
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
+			private static final long serialVersionUID = -63741181816458999L;
+
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{

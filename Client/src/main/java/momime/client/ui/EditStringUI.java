@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -87,7 +89,6 @@ public final class EditStringUI extends MomClientAbstractUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/okButton41x15Pressed.png");
 
 		// Actions
-		final EditStringUI ui = this;
 		okAction = new AbstractAction ()
 		{
 			private static final long serialVersionUID = -7614787019328142967L;
@@ -115,13 +116,21 @@ public final class EditStringUI extends MomClientAbstractUI
 				}
 				
 				// Close out the window
-				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
 				getFrame ().dispose ();
 			}
 		};
 		
 		// Initialize the frame
+		final EditStringUI ui = this;
 		getFrame ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		getFrame ().addWindowListener (new WindowAdapter ()
+		{
+			@Override
+			public final void windowClosed (final WindowEvent ev)
+			{
+				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
+			}
+		});
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()

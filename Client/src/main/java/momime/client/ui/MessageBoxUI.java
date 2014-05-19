@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -65,7 +67,6 @@ public final class MessageBoxUI extends MomClientAbstractUI
 		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Disabled.png");
 
 		// Actions
-		final MessageBoxUI ui = this;
 		okAction = new AbstractAction ()
 		{
 			private static final long serialVersionUID = -7614787019328142967L;
@@ -73,13 +74,21 @@ public final class MessageBoxUI extends MomClientAbstractUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
-				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
 				getFrame ().dispose ();
 			}
 		};
 		
 		// Initialize the frame
+		final MessageBoxUI ui = this;
 		getFrame ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		getFrame ().addWindowListener (new WindowAdapter ()
+		{
+			@Override
+			public final void windowClosed (final WindowEvent ev)
+			{
+				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
+			}
+		});
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()

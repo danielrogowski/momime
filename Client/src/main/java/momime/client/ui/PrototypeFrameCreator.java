@@ -9,6 +9,11 @@ public interface PrototypeFrameCreator
 	 * @return New message box UI
 	 */
 	public MessageBoxUI createMessageBox ();
+
+	/**
+	 * @return New calculation box UI
+	 */
+	public CalculationBoxUI createCalculationBox ();
 	
 	/**
 	 * @return New edit string UI

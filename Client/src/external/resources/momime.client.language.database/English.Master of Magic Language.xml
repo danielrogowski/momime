@@ -5571,6 +5571,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="UnrestCalculation">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Unrest calculation for CITY_SIZE_AND_NAME</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="TaxPercentage">
 			<languageEntryText>TAX_PERCENTAGE% unrest caused by tax rate</languageEntryText>
 		</languageEntry>

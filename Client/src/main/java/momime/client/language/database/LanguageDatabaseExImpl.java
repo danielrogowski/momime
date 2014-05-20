@@ -3,6 +3,7 @@ package momime.client.language.database;
 import java.util.HashMap;
 import java.util.Map;
 
+import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
@@ -36,6 +37,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 
 	/** Map of race IDs to race objects */
 	private Map<String, Race> racesMap;
+	
+	/** Map of building IDs to building objects */
+	private Map<String, Building> buildingsMap;
 	
 	/** Map of city size IDs to city size objects */
 	private Map<String, CitySize> citySizesMap;
@@ -94,6 +98,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		racesMap = new HashMap<String, Race> ();
 		for (final Race thisRace : getRace ())
 			racesMap.put (thisRace.getRaceID (), thisRace);
+		
+		// Create buildings map
+		buildingsMap = new HashMap<String, Building> ();
+		for (final Building thisBuilding : getBuilding ())
+			buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
 		
 		// Create city sizes map
 		citySizesMap = new HashMap<String, CitySize> ();
@@ -194,6 +203,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final Race findRace (final String raceID)
 	{
 		return racesMap.get (raceID);
+	}
+	
+	/**
+	 * @param buildingID Building ID to search for
+	 * @return Building descriptions object; or null if not found
+	 */
+	@Override
+	public final Building findBuilding (final String buildingID)
+	{
+		return buildingsMap.get (buildingID);
 	}
 	
 	/**

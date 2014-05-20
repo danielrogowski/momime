@@ -2,6 +2,7 @@ package momime.client.language.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
@@ -107,6 +108,27 @@ public final class TestLanguageDatabaseExImpl
 
 		assertEquals ("RCDesc02", lang.findRace ("RC02").getRaceName ());
 		assertNull ("RC04", lang.findRace ("RC04"));
+	}
+	
+	/**
+	 * Tests the findBuilding method
+	 */
+	@Test
+	public final void findBuilding ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Building newBuilding = new Building ();
+			newBuilding.setBuildingID ("BL0" + n);
+			newBuilding.setBuildingName ("BLDesc0" + n);
+			lang.getBuilding ().add (newBuilding);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("BLDesc02", lang.findBuilding ("BL02").getBuildingName ());
+		assertNull ("BL04", lang.findBuilding ("BL04"));
 	}
 	
 	/**

@@ -2,6 +2,7 @@ package momime.client.language.database;
 
 import java.util.List;
 
+import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.KnownServer;
 import momime.client.language.database.v0_9_5.Pick;
@@ -38,6 +39,12 @@ public interface LanguageDatabaseEx
 	 */
 	public Race findRace (final String raceID);
 
+	/**
+	 * @param buildingID Building ID to search for
+	 * @return Building descriptions object; or null if not found
+	 */
+	public Building findBuilding (final String buildingID);
+	
 	/**
 	 * @param citySizeID City size ID to search for
 	 * @return City size descriptions object; or null if not found

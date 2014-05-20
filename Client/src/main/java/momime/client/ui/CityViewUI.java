@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
+import momime.client.calculations.MomClientCityCalculations;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceEx;
@@ -34,6 +35,7 @@ import momime.client.utils.TextUtils;
 import momime.common.calculations.CalculateCityGrowthRateBreakdown;
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResults;
+import momime.common.calculations.CalculateCityUnrestBreakdown;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
@@ -73,9 +75,15 @@ public final class CityViewUI extends MomClientAbstractUI
 	
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
+
+	/** Client city calculations */
+	private MomClientCityCalculations clientCityCalculations;
 	
 	/** Text utils */
 	private TextUtils textUtils;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** The city being viewed */
 	private MapCoordinates3DEx cityLocation;
@@ -468,7 +476,30 @@ public final class CityViewUI extends MomClientAbstractUI
 				(civvyNo <= cityData.getMinimumFarmers ()))						// Enforced farmers
 			{
 				// Create as a 'show unrest calculation' button
-				action = null;
+				action = new AbstractAction ()
+				{
+					@Override
+					public final void actionPerformed (final ActionEvent ev)
+					{
+						try
+						{
+							final CalculateCityUnrestBreakdown breakdown = getCityCalculations ().calculateCityRebels (getClient ().getPlayers (),
+								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
+								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+								getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getClientDB ());
+							
+							final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+							calc.setTitle (getLanguage ().findCategoryEntry ("UnrestCalculation", "Title").replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
+							calc.setText (getClientCityCalculations ().describeCityUnrestCalculation (breakdown));
+							calc.setVisible (true);							
+						}
+						catch (final IOException e)
+						{
+							e.printStackTrace ();
+						}
+					}
+				}; 
 			}
 			else
 			{
@@ -479,7 +510,7 @@ public final class CityViewUI extends MomClientAbstractUI
 					private static final long serialVersionUID = 7655922473370295899L;
 
 					@Override
-					public void actionPerformed (final ActionEvent ev)
+					public final void actionPerformed (final ActionEvent ev)
 					{
 						// Clicking on the same number toggles it, so we can turn the last optional farmer into a worker
 						int optionalFarmers = civvyNoCopy - cityData.getMinimumFarmers ();
@@ -660,6 +691,22 @@ public final class CityViewUI extends MomClientAbstractUI
 	{
 		cityCalculations = calc;
 	}
+
+	/**
+	 * @return Client city calculations
+	 */
+	public final MomClientCityCalculations getClientCityCalculations ()
+	{
+		return clientCityCalculations;
+	}
+
+	/**
+	 * @param calc Client city calculations
+	 */
+	public final void setClientCityCalculations (final MomClientCityCalculations calc)
+	{
+		clientCityCalculations = calc;
+	}
 	
 	/**
 	 * @return Text utils
@@ -675,6 +722,22 @@ public final class CityViewUI extends MomClientAbstractUI
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+	
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 	
 	/**

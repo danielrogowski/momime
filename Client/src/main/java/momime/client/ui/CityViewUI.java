@@ -98,7 +98,7 @@ public final class CityViewUI extends MomClientAbstractUI
 	private JLabel raceLabel;
 	
 	/** Current population label */
-	private JLabel currentPopulationLabel;
+	private Action currentPopulationAction;
 	
 	/** Maximum population label */
 	private JLabel maximumPopulationLabel;
@@ -152,7 +152,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		rushBuyAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -160,7 +160,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		changeConstructionAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -170,9 +170,41 @@ public final class CityViewUI extends MomClientAbstractUI
 			private static final long serialVersionUID = 1562419693690602353L;
 
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				getFrame ().dispose ();
+			}
+		};
+
+		// Explain the city growth calculation
+		currentPopulationAction = new AbstractAction ()
+		{
+			private static final long serialVersionUID = -6963167374686168788L;
+
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				try
+				{
+					final int maxCitySize = getCityCalculations ().calculateSingleCityProduction
+						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (),
+						CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+				
+					final CalculateCityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize, getClient ().getClientDB ());
+
+					final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+					calc.setTitle (getLanguage ().findCategoryEntry ("CityGrowthRate", "Title").replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
+					calc.setText (getClientCityCalculations ().describeCityGrowthRateCalculation (breakdown));
+					calc.setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace ();
+				}
 			}
 		};
 		
@@ -257,8 +289,8 @@ public final class CityViewUI extends MomClientAbstractUI
 		raceLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
 		labelsPanel.add (raceLabel, raceLabelConstraints);
 
-		currentPopulationLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		labelsPanel.add (currentPopulationLabel, getUtils ().createConstraints (1, 0, 1, new Insets (0, 0, 0, 8), GridBagConstraints.EAST));
+		labelsPanel.add (getUtils ().createTextOnlyButton (currentPopulationAction, MomUIUtils.GOLD, getMediumFont ()),
+			getUtils ().createConstraints (1, 0, 1, new Insets (0, 0, 0, 8), GridBagConstraints.EAST));
 		
 		maximumPopulationLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
 		labelsPanel.add (maximumPopulationLabel, getUtils ().createConstraints (2, 0, 1, new Insets (0, 0, 0, 8), GridBagConstraints.EAST));
@@ -423,9 +455,9 @@ public final class CityViewUI extends MomClientAbstractUI
 				final String cityPopulation = getTextUtils ().intToStrCommas (cityData.getCityPopulation ());
 			
 				if (cityGrowth == 0)
-					currentPopulationLabel.setText (getLanguage ().findCategoryEntry ("frmCity", "PopulationMaxed").replaceAll ("POPULATION", cityPopulation));
+					currentPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "PopulationMaxed").replaceAll ("POPULATION", cityPopulation));
 				else
-					currentPopulationLabel.setText (getLanguage ().findCategoryEntry ("frmCity", "PopulationAndGrowth").replaceAll ("POPULATION", cityPopulation).replaceAll
+					currentPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "PopulationAndGrowth").replaceAll ("POPULATION", cityPopulation).replaceAll
 						("GROWTH_RATE", getTextUtils ().intToStrPlusMinus (cityGrowth)));
 			}
 			catch (final IOException e)
@@ -478,6 +510,8 @@ public final class CityViewUI extends MomClientAbstractUI
 				// Create as a 'show unrest calculation' button
 				action = new AbstractAction ()
 				{
+					private static final long serialVersionUID = -5279215265703452922L;
+
 					@Override
 					public final void actionPerformed (final ActionEvent ev)
 					{

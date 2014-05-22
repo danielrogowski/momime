@@ -5456,6 +5456,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="CityGrowthRate">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Growth rate calculation for CITY_SIZE_AND_NAME</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="CurrentPopulation">
 			<languageEntryText>Current population = CURRENT_POPULATION</languageEntryText>
 		</languageEntry>

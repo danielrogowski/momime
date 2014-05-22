@@ -1,5 +1,6 @@
 package momime.client.calculations;
 
+import momime.common.calculations.CalculateCityGrowthRateBreakdown;
 import momime.common.calculations.CalculateCityUnrestBreakdown;
 
 /**
@@ -12,4 +13,10 @@ public interface MomClientCityCalculations
 	 * @return Readable calculation details
 	 */
 	public String describeCityUnrestCalculation (final CalculateCityUnrestBreakdown breakdown);
+	
+	/**
+	 * @param breakdown Results of growth calculation
+	 * @return Readable calculation details
+	 */
+	public String describeCityGrowthRateCalculation (final CalculateCityGrowthRateBreakdown breakdown);
 }

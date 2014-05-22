@@ -5,6 +5,8 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.Pick;
 import momime.client.utils.TextUtils;
+import momime.common.calculations.CalculateCityGrowthRateBreakdown;
+import momime.common.calculations.CalculateCityGrowthRateBreakdown_Building;
 import momime.common.calculations.CalculateCityUnrestBreakdown;
 import momime.common.calculations.CalculateCityUnrestBreakdown_Building;
 
@@ -124,6 +126,74 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 			addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "MinimumFarmers").replaceAll
 				("MINIMUM_FARMERS", new Integer (breakdown.getMinimumFarmers ()).toString ()).replaceAll
 				("TOTAL_AFTER_FARMERS", new Integer (breakdown.getTotalAfterFarmers ()).toString ()));
+		
+		return text.toString ();
+	}
+	
+	/**
+	 * @param breakdown Results of growth calculation
+	 * @return Readable calculation details
+	 */
+	@Override
+	public final String describeCityGrowthRateCalculation (final CalculateCityGrowthRateBreakdown breakdown)
+	{
+		final StringBuilder text = new StringBuilder ();
+		
+		// Start off calculation description
+		addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CurrentPopulation").replaceAll
+			("CURRENT_POPULATION", new Integer (breakdown.getCurrentPopulation ()).toString ()));
+
+		addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "MaximumPopulation").replaceAll
+			("MAXIMUM_POPULATION", new Integer (breakdown.getMaximumPopulation ()).toString ()));
+		
+		switch (breakdown.getDirection ())
+		{
+			case GROWING:
+				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "BaseGrowthRate").replaceAll
+					("MAXIMUM_POPULATION_DIV_1000", new Integer (breakdown.getMaximumPopulation () / 1000).toString ()).replaceAll
+					("CURRENT_POPULATION_DIV_1000", new Integer (breakdown.getCurrentPopulation () / 1000).toString ()).replaceAll
+					("BASE_GROWTH_RATE", new Integer (breakdown.getBaseGrowthRate ()).toString ()));
+
+				boolean showTotal = false;
+				if (breakdown.getRacialGrowthModifier () != 0)
+				{
+					showTotal = true;
+					addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "RacialGrowthModifier").replaceAll
+						("RACIAL_GROWTH_MODIFIER", new Integer (breakdown.getRacialGrowthModifier ()).toString ()));
+				}
+				
+				// Bonuses from buildings
+				for (final CalculateCityGrowthRateBreakdown_Building buildingGrowth : breakdown.getBuildingsModifyingGrowthRate ())
+				{
+					showTotal = true;
+					final Building building = getLanguage ().findBuilding (buildingGrowth.getBuildingID ());
+					final String buildingName = (building == null) ? buildingGrowth.getBuildingID () : building.getBuildingName ();					
+					
+					addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "GrowthBonusFromBuilding").replaceAll
+						("BUILDING_NAME", buildingName).replaceAll
+						("BUILDING_GROWTH_MODIFIER", new Integer (buildingGrowth.getGrowthRateModifier ()).toString ()));
+				}
+				
+				if (showTotal)
+					addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateTotal").replaceAll
+						("TOTAL_GROWTH_RATE", new Integer (breakdown.getTotalGrowthRate ()).toString ()));
+				
+				if (breakdown.getCappedGrowthRate () < breakdown.getTotalGrowthRate ())
+					addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateCapped").replaceAll
+						("CAPPED_GROWTH_RATE", new Integer (breakdown.getCappedGrowthRate ()).toString ()));
+				
+				break;
+				
+			case DYING:
+				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "DeathRate").replaceAll
+					("BASE_DEATH_RATE", new Integer (breakdown.getBaseDeathRate ()).toString ()).replaceAll
+					("CITY_DEATH_RATE", new Integer (breakdown.getCityDeathRate ()).toString ()));
+				break;
+				
+			case MAXIMUM:
+				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "AtMaximumSize"));
+				break;
+		}
 		
 		return text.toString ();
 	}

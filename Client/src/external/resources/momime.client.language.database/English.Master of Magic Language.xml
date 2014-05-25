@@ -5488,6 +5488,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="CityProduction">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>PRODUCTION_TYPE production in CITY_SIZE_AND_NAME</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromSinglePopulation">
 			<languageEntryText>TASK_NAME_SINGULAR producing PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>

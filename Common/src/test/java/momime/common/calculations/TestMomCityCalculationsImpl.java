@@ -852,7 +852,7 @@ public final class TestMomCityCalculationsImpl
 		// c) people eating food
 		// d) gold from taxes
 		final CalculateCityProductionResultsImplementation baseNoPeople = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, false, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, false, GenerateTestData.createDB (), false);
 		assertEquals (4, baseNoPeople.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, baseNoPeople.getResults ().get (0).getProductionTypeID ());
 		assertEquals (8, baseNoPeople.getResults ().get (0).getDoubleProductionAmount ());
@@ -880,7 +880,7 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, baseNoPeople.getResults ().get (3).getConsumptionAmount ());
 
 		final CalculateCityProductionResultsImplementation baseWithPeople = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), false);
 		assertEquals (4, baseWithPeople.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, baseWithPeople.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, baseWithPeople.getResults ().get (0).getDoubleProductionAmount ());
@@ -926,7 +926,7 @@ public final class TestMomCityCalculationsImpl
 		buildings.add (fortressBuilding);
 
 		final CalculateCityProductionResultsImplementation fortress = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), false);
 		assertEquals (5, fortress.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, fortress.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, fortress.getResults ().get (0).getDoubleProductionAmount ());
@@ -971,7 +971,7 @@ public final class TestMomCityCalculationsImpl
 		buildings.add (sawmillBuilding);
 
 		final CalculateCityProductionResultsImplementation sawmill = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), false);
 		assertEquals (6, sawmill.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, sawmill.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, sawmill.getResults ().get (0).getDoubleProductionAmount ());
@@ -1015,7 +1015,7 @@ public final class TestMomCityCalculationsImpl
 		map.getPlane ().get (1).getRow ().get (1).getCell ().get (3).getTerrainData ().setMapFeatureID (GenerateTestData.ADAMANTIUM_ORE);
 
 		final CalculateCityProductionResultsImplementation minerals = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), false);
 		assertEquals (6, minerals.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, minerals.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, minerals.getResults ().get (0).getDoubleProductionAmount ());
@@ -1061,7 +1061,7 @@ public final class TestMomCityCalculationsImpl
 		buildings.add (minersGuildBuilding);
 
 		final CalculateCityProductionResultsImplementation minersGuild = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), false);
 		assertEquals (7, minersGuild.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, minersGuild.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, minersGuild.getResults ().get (0).getDoubleProductionAmount ());
@@ -1104,7 +1104,7 @@ public final class TestMomCityCalculationsImpl
 		cityData.setCityRaceID (GenerateTestData.DWARVES);
 
 		final CalculateCityProductionResultsImplementation dwarves = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), false);
 		assertEquals (7, dwarves.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, dwarves.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, dwarves.getResults ().get (0).getDoubleProductionAmount ());
@@ -1147,7 +1147,7 @@ public final class TestMomCityCalculationsImpl
 		cityData.setCityRaceID (GenerateTestData.HIGH_ELF);
 
 		final CalculateCityProductionResultsImplementation highElves = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), false);
 		assertEquals (7, highElves.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, highElves.getResults ().get (0).getProductionTypeID ());
 		assertEquals (40, highElves.getResults ().get (0).getDoubleProductionAmount ());
@@ -1193,7 +1193,7 @@ public final class TestMomCityCalculationsImpl
 		cityData.setNumberOfRebels (1);		// 6 -1 -1 -1 = 3 workers
 
 		final CalculateCityProductionResultsImplementation shrunk = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), false);
 		assertEquals (7, shrunk.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, shrunk.getResults ().get (0).getProductionTypeID ());
 		assertEquals (16, shrunk.getResults ().get (0).getDoubleProductionAmount ());
@@ -1243,7 +1243,7 @@ public final class TestMomCityCalculationsImpl
 		}
 
 		final CalculateCityProductionResultsImplementation maxSize = (CalculateCityProductionResultsImplementation) calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB ());
+			(players, map, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), false);
 		assertEquals (7, maxSize.getResults ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, maxSize.getResults ().get (0).getProductionTypeID ());
 		assertEquals (36, maxSize.getResults ().get (0).getDoubleProductionAmount ());

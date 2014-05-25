@@ -1,5 +1,8 @@
 package momime.common.calculations;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import momime.common.database.v0_9_4.RoundingDirectionID;
 
 /**
@@ -12,11 +15,8 @@ import momime.common.database.v0_9_4.RoundingDirectionID;
  * so it may need to add to an existing value.  However we also don't need read/update interfaces, because the values are only updated
  * inside calculateCityProductions () and are fixed once the routine ends (and so thread safe).
  * Note the update methods are all package private to try to enforce this.
- *
- * Note this doesn't have a breakdown list like the Delphi code because the server never uses it - intention is if the client gets ported to Java,
- * there will be a client-specific class that inherits from this, adding the breakdown list
  */
-public class CalculateCityProductionResult implements Comparable<CalculateCityProductionResult>
+public final class CalculateCityProductionResult implements Comparable<CalculateCityProductionResult>
 {
 	/** Type of production */
 	private final String productionTypeID;
@@ -32,6 +32,12 @@ public class CalculateCityProductionResult implements Comparable<CalculateCityPr
 
 	/** Percentage bonus to apply to the amount the city is producing */
 	private int percentageBonus;
+	
+	/** Whether to store breakdown objects or throw the details away and just keep the results */
+	private boolean storeBreakdown;
+	
+	/** Detailed calculation breakdowns */
+	private List<CalculateCityProductionResultBreakdown> breakdowns;
 
 	/**
 	 * @param aProductionTypeID Type of production
@@ -172,6 +178,11 @@ public class CalculateCityProductionResult implements Comparable<CalculateCityPr
 
 		// In particular note that adding a breakdown detailing where e.g. +5 magic power is coming from does not actually call setDoubleProductionAmount () to add
 		// the +5 magic power - it literally only records the breakdown - the calling routine has to update the values as appropriate as well
+		if (isStoreBreakdown ())
+			getBreakdowns ().add (new CalculateCityProductionResultBreakdown (populationTaskID, buildingID, pickTypeID, planeNumber, mapFeatureID,
+				currentPopulation, numberDoingTask, doubleAmountPerPerson, doubleAmountPerPick, doubleUnmodifiedProductionAmount,
+				raceMineralBonusMultipler, doubleAmountAfterRacialBonus, aPercentageBonus, aDoubleProductionAmount,
+				aConsumptionAmount, percentage, cap, roundingDirection));
 	}
 
 	/**
@@ -276,5 +287,35 @@ public class CalculateCityProductionResult implements Comparable<CalculateCityPr
 	{
 		// Compare the two codes, e.g. RE03 vs RE05
 		return getProductionTypeID ().compareTo (other.getProductionTypeID ());
+	}
+	
+	/*
+	 * Getters and setters
+	 */
+
+	/**
+	 * @return Whether to store breakdown objects or throw the details away and just keep the results
+	 */
+	public final boolean isStoreBreakdown ()
+	{
+		return storeBreakdown;
+	}
+
+	/**
+	 * @param value Whether to store breakdown objects or throw the details away and just keep the results
+	 */
+	public final void setStoreBreakdown (final boolean value)
+	{
+		storeBreakdown = value;
+		if (storeBreakdown)
+			breakdowns = new ArrayList<CalculateCityProductionResultBreakdown> ();
+	}
+
+	/**
+	 * @return Detailed calculation breakdowns
+	 */
+	public final List<CalculateCityProductionResultBreakdown> getBreakdowns ()
+	{
+		return breakdowns;
 	}
 }

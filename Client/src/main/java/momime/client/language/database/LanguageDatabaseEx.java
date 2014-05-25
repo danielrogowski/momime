@@ -3,10 +3,12 @@ package momime.client.language.database;
 import java.util.List;
 
 import momime.client.language.database.v0_9_5.Building;
-import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.KnownServer;
+import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.Pick;
 import momime.client.language.database.v0_9_5.Plane;
+import momime.client.language.database.v0_9_5.PopulationTask;
+import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 
@@ -22,6 +24,24 @@ public interface LanguageDatabaseEx
 	public Plane findPlane (final int planeNumber);
 
 	/**
+	 * @param productionTypeID Production type ID to search for
+	 * @return Production type descriptions object; or null if not found
+	 */
+	public ProductionType findProductionType (final String productionTypeID);
+
+	/**
+	 * @param mapFeatureID Map feature ID to search for
+	 * @return Map feature descriptions object; or null if not found
+	 */
+	public MapFeature findMapFeature (final String mapFeatureID);
+
+	/**
+	 * @param pickTypeID Pick type ID to search for
+	 * @return Pick type description; or replays back the ID if no description exists
+	 */
+	public String findPickTypeDescription (final String pickTypeID);
+	
+	/**
 	 * @param pickID Pick ID to search for
 	 * @return Pick descriptions object; or null if not found
 	 */
@@ -33,6 +53,12 @@ public interface LanguageDatabaseEx
 	 */
 	public String findWizardName (final String wizardID);
 
+	/**
+	 * @param populationTaskID Population task ID to search for
+	 * @return Population task descriptions object; or null if not found
+	 */
+	public PopulationTask findPopulationTask (final String populationTaskID);
+	
 	/**
 	 * @param raceID Race ID to search for
 	 * @return Race descriptions object; or null if not found
@@ -47,9 +73,9 @@ public interface LanguageDatabaseEx
 	
 	/**
 	 * @param citySizeID City size ID to search for
-	 * @return City size descriptions object; or null if not found
+	 * @return City size name; or replays back the ID if no description exists
 	 */
-	public CitySize findCitySize (final String citySizeID);
+	public String findCitySizeName (final String citySizeID);
 	
 	/**
 	 * @param spellRankID Spell rank ID to search for

@@ -7,6 +7,9 @@ import java.text.DecimalFormat;
  */
 public final class TextUtilsImpl implements TextUtils
 {
+	/** Unicode for a 1/2 symbol */
+	final static char HALF = '\u00BD';
+	
 	/** Format used by the intToStrCommas method */
 	private final static DecimalFormat commas = new DecimalFormat ("#,###");
 
@@ -29,5 +32,19 @@ public final class TextUtilsImpl implements TextUtils
 	{
 		final String s = new Integer (n).toString ();
 		return (n > 0) ? "+" + s : s;
+	}
+
+	/**
+	 * @param n Double the number to convert
+	 * @return String representation of number
+	 */
+	@Override
+	public final String halfIntToStr (final int n)
+	{
+		String s = new Integer (n / 2).toString ();
+		if (n % 2 != 0)
+			s = s + HALF;
+		
+		return s;
 	}
 }

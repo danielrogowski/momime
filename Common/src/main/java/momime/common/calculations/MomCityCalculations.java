@@ -127,6 +127,7 @@ public interface MomCityCalculations
 	 * @param sd Session description
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
 	 * @param db Lookup lists built over the XML database
+	 * @param storeBreakdown Whether to store breakdown objects or throw the details away and just keep the results
 	 * @return List of all productions and consumptions from this city
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
@@ -135,7 +136,7 @@ public interface MomCityCalculations
 	public CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final CommonDatabase db)
+		final CommonDatabase db, final boolean storeBreakdown)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**

@@ -41,6 +41,9 @@ public final class CalculateCityProductionResultsImplementation implements Calcu
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
+	/** Whether to store breakdown objects or throw the details away and just keep the results */
+	private boolean storeBreakdown;
+	
 	/**
 	 * Creates underlying list
 	 */
@@ -88,6 +91,7 @@ public final class CalculateCityProductionResultsImplementation implements Calcu
 		if (value == null)
 		{
 			value = new CalculateCityProductionResult (productionTypeID);
+			value.setStoreBreakdown (isStoreBreakdown ());
 			results.add (value);
 		}
 		return value;
@@ -374,5 +378,21 @@ public final class CalculateCityProductionResultsImplementation implements Calcu
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Whether to store breakdown objects or throw the details away and just keep the results
+	 */
+	public final boolean isStoreBreakdown ()
+	{
+		return storeBreakdown;
+	}
+
+	/**
+	 * @param value Whether to store breakdown objects or throw the details away and just keep the results
+	 */
+	public final void setStoreBreakdown (final boolean value)
+	{
+		storeBreakdown = value;
 	}
 }

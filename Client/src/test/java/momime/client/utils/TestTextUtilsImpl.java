@@ -42,4 +42,24 @@ public final class TestTextUtilsImpl
 		assertEquals ("-123", utils.intToStrPlusMinus (-123));
 		assertEquals ("-1234", utils.intToStrPlusMinus (-1234));
 	}
+	
+	/**
+	 * Tests the halfIntToStr method
+	 */
+	@Test
+	public final void testHalfIntToStr ()
+	{
+		final TextUtilsImpl utils = new TextUtilsImpl ();
+
+		assertEquals ("0", utils.halfIntToStr (0));
+		assertEquals ("2", utils.halfIntToStr (4));
+		assertEquals ("2123", utils.halfIntToStr (4246));
+		assertEquals ("2" + TextUtilsImpl.HALF, utils.halfIntToStr (5));
+		assertEquals ("2123" + TextUtilsImpl.HALF, utils.halfIntToStr (4247));
+
+		assertEquals ("-2", utils.halfIntToStr (-4));
+		assertEquals ("-2" + TextUtilsImpl.HALF, utils.halfIntToStr (-5));
+		assertEquals ("-2123", utils.halfIntToStr (-4246));
+		assertEquals ("-2123" + TextUtilsImpl.HALF, utils.halfIntToStr (-4247));
+	}
 }

@@ -16,4 +16,10 @@ public interface TextUtils
 	 * @return Number which always includes a plus sign (unless 0), e.g. -15 or 0 or +12
 	 */
 	public String intToStrPlusMinus (final int n);
+
+	/**
+	 * @param n Double the number to convert
+	 * @return String representation of number
+	 */
+	public String halfIntToStr (final int n);
 }

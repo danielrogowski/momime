@@ -10,10 +10,14 @@ import momime.client.language.database.v0_9_5.FogOfWarSetting;
 import momime.client.language.database.v0_9_5.LandProportion;
 import momime.client.language.database.v0_9_5.LanguageCategory;
 import momime.client.language.database.v0_9_5.LanguageDatabase;
+import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.PickType;
 import momime.client.language.database.v0_9_5.Plane;
+import momime.client.language.database.v0_9_5.PopulationTask;
+import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
@@ -29,12 +33,24 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	/** Map of plane IDs to plane objects */
 	private Map<Integer, Plane> planesMap;
 
+	/** Map of production type IDs to production type objects */
+	private Map<String, ProductionType> productionTypesMap;
+
+	/** Map of map feature IDs to map feature objects */
+	private Map<String, MapFeature> mapFeaturesMap;
+
+	/** Map of pick type IDs to pick type objects */
+	private Map<String, PickType> pickTypesMap;
+	
 	/** Map of pick IDs to pick objects */
 	private Map<String, Pick> picksMap;
 
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
 
+	/** Map of population task IDs to population task objects */
+	private Map<String, PopulationTask> populationTasksMap;
+	
 	/** Map of race IDs to race objects */
 	private Map<String, Race> racesMap;
 	
@@ -84,6 +100,21 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		for (final Plane thisPlane : getPlane ())
 			planesMap.put (thisPlane.getPlaneNumber (), thisPlane);
 
+		// Create production types map
+		productionTypesMap = new HashMap<String, ProductionType> ();
+		for (final ProductionType thisProductionType : getProductionType ())
+			productionTypesMap.put (thisProductionType.getProductionTypeID (), thisProductionType);
+
+		// Create map features map
+		mapFeaturesMap = new HashMap<String, MapFeature> ();
+		for (final MapFeature thisMapFeature : getMapFeature ())
+			mapFeaturesMap.put (thisMapFeature.getMapFeatureID (), thisMapFeature);
+		
+		// Create pick types map
+		pickTypesMap = new HashMap<String, PickType> ();
+		for (final PickType thisPickType : getPickType ())
+			pickTypesMap.put (thisPickType.getPickTypeID (), thisPickType);
+		
 		// Create picks map
 		picksMap = new HashMap<String, Pick> ();
 		for (final Pick thisPick : getPick ())
@@ -94,6 +125,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		for (final Wizard thisWizard : getWizard ())
 			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
 
+		// Create population tasks map
+		populationTasksMap = new HashMap<String, PopulationTask> ();
+		for (final PopulationTask thisPopulationTask : getPopulationTask ())
+			populationTasksMap.put (thisPopulationTask.getPopulationTaskID (), thisPopulationTask);
+		
 		// Create races map
 		racesMap = new HashMap<String, Race> ();
 		for (final Race thisRace : getRace ())
@@ -173,6 +209,37 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	{
 		return planesMap.get (planeNumber);
 	}
+
+	/**
+	 * @param productionTypeID Production type ID to search for
+	 * @return Production type descriptions object; or null if not found
+	 */
+	@Override
+	public final ProductionType findProductionType (final String productionTypeID)
+	{
+		return productionTypesMap.get (productionTypeID);
+	}
+
+	/**
+	 * @param mapFeatureID Map feature ID to search for
+	 * @return Map feature descriptions object; or null if not found
+	 */
+	@Override
+	public final MapFeature findMapFeature (final String mapFeatureID)
+	{
+		return mapFeaturesMap.get (mapFeatureID);
+	}
+
+	/**
+	 * @param pickTypeID Pick type ID to search for
+	 * @return Pick type description; or replays back the ID if no description exists
+	 */
+	@Override
+	public final String findPickTypeDescription (final String pickTypeID)
+	{
+		final PickType thisPickType = pickTypesMap.get (pickTypeID);
+		return (thisPickType == null) ? pickTypeID : thisPickType.getPickTypeDescription ();
+	}
 	
 	/**
 	 * @param pickID Pick ID to search for
@@ -196,6 +263,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	}
 
 	/**
+	 * @param populationTaskID Population task ID to search for
+	 * @return Population task descriptions object; or null if not found
+	 */
+	@Override
+	public final PopulationTask findPopulationTask (final String populationTaskID)
+	{
+		return populationTasksMap.get (populationTaskID);
+	}
+	
+	/**
 	 * @param raceID Race ID to search for
 	 * @return Race descriptions object; or null if not found
 	 */
@@ -217,12 +294,13 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	
 	/**
 	 * @param citySizeID City size ID to search for
-	 * @return City size descriptions object; or null if not found
+	 * @return City size name; or replays back the ID if no description exists
 	 */
 	@Override
-	public final CitySize findCitySize (final String citySizeID)
+	public final String findCitySizeName (final String citySizeID)
 	{
-		return citySizesMap.get (citySizeID);
+		final CitySize thisCitySize = citySizesMap.get (citySizeID);
+		return (thisCitySize == null) ? citySizeID : thisCitySize.getCitySizeName ();
 	}
 	
 	/**

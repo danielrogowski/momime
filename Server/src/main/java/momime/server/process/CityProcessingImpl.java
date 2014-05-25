@@ -288,7 +288,7 @@ public final class CityProcessingImpl implements CityProcessing
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 						final CalculateCityProductionResults cityProductions = getCityCalculations ().calculateAllCityProductions
-							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db);
+							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db, false);
 
 						// Use calculated values to determine construction rate
 						if (cityData.getCurrentlyConstructingBuildingOrUnitID () != null)

@@ -8,10 +8,14 @@ import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
 import momime.client.language.database.v0_9_5.LandProportion;
 import momime.client.language.database.v0_9_5.LanguageEntry;
+import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.MapSize;
 import momime.client.language.database.v0_9_5.NodeStrength;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.PickType;
 import momime.client.language.database.v0_9_5.Plane;
+import momime.client.language.database.v0_9_5.PopulationTask;
+import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
@@ -48,6 +52,69 @@ public final class TestLanguageDatabaseExImpl
 	}
 
 	/**
+	 * Tests the findProductionType method
+	 */
+	@Test
+	public final void findProductionType ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final ProductionType newProductionType = new ProductionType ();
+			newProductionType.setProductionTypeID ("RE0" + n);
+			newProductionType.setProductionTypeDescription ("REDesc0" + n);
+			lang.getProductionType ().add (newProductionType);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("REDesc02", lang.findProductionType ("RE02").getProductionTypeDescription ());
+		assertNull ("RE04", lang.findProductionType ("RE04"));
+	}
+
+	/**
+	 * Tests the findMapFeature method
+	 */
+	@Test
+	public final void findMapFeature ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final MapFeature newMapFeature = new MapFeature ();
+			newMapFeature.setMapFeatureID ("MF0" + n);
+			newMapFeature.setMapFeatureDescription ("MFDesc0" + n);
+			lang.getMapFeature ().add (newMapFeature);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("MFDesc02", lang.findMapFeature ("MF02").getMapFeatureDescription ());
+		assertNull ("MF04", lang.findMapFeature ("MF04"));
+	}
+
+	/**
+	 * Tests the findPickTypeDescription method
+	 */
+	@Test
+	public final void findPickTypeDescription ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final PickType newPickType = new PickType ();
+			newPickType.setPickTypeID ("PT0" + n);
+			newPickType.setPickTypeDescription ("PTDesc0" + n);
+			lang.getPickType ().add (newPickType);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("PTDesc02", lang.findPickTypeDescription ("PT02"));
+		assertEquals ("PT04", lang.findPickTypeDescription ("PT04"));
+	}
+	
+	/**
 	 * Tests the findPick method
 	 */
 	@Test
@@ -57,15 +124,15 @@ public final class TestLanguageDatabaseExImpl
 		for (int n = 1; n <= 3; n++)
 		{
 			final Pick newPick = new Pick ();
-			newPick.setPickID ("WZ0" + n);
-			newPick.setPickDescription ("WZDesc0" + n);
+			newPick.setPickID ("MB0" + n);
+			newPick.setPickDescription ("MBDesc0" + n);
 			lang.getPick ().add (newPick);
 		}
 
 		lang.buildMaps ();
 
-		assertEquals ("WZDesc02", lang.findPick ("WZ02").getPickDescription ());
-		assertNull ("WZ04", lang.findPick ("WZ04"));
+		assertEquals ("MBDesc02", lang.findPick ("MB02").getPickDescription ());
+		assertNull ("MB04", lang.findPick ("MB04"));
 	}
 
 	/**
@@ -89,6 +156,27 @@ public final class TestLanguageDatabaseExImpl
 		assertEquals ("WZ04", lang.findWizardName ("WZ04"));
 	}
 
+	/**
+	 * Tests the findPopulationTask method
+	 */
+	@Test
+	public final void findPopulationTask ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final PopulationTask newPopulationTask = new PopulationTask ();
+			newPopulationTask.setPopulationTaskID ("PT0" + n);
+			newPopulationTask.setPopulationTaskSingular ("PTSingle0" + n);
+			lang.getPopulationTask ().add (newPopulationTask);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("PTSingle02", lang.findPopulationTask ("PT02").getPopulationTaskSingular ());
+		assertNull ("PT04", lang.findPopulationTask ("PT04"));
+	}
+	
 	/**
 	 * Tests the findRace method
 	 */
@@ -132,10 +220,10 @@ public final class TestLanguageDatabaseExImpl
 	}
 	
 	/**
-	 * Tests the findCitySize method
+	 * Tests the findCitySizeName method
 	 */
 	@Test
-	public final void findCitySize ()
+	public final void findCitySizeName ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -148,8 +236,8 @@ public final class TestLanguageDatabaseExImpl
 
 		lang.buildMaps ();
 
-		assertEquals ("CSDesc02", lang.findCitySize ("CS02").getCitySizeName ());
-		assertNull ("CS04", lang.findCitySize ("CS04"));
+		assertEquals ("CSDesc02", lang.findCitySizeName ("CS02"));
+		assertEquals ("CS04", lang.findCitySizeName ("CS04"));
 	}
 	
 	/**

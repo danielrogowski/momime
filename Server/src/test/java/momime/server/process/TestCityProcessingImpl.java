@@ -541,7 +541,7 @@ public final class TestCityProcessingImpl
 		final CalculateCityProductionResultsImplementation humanCityProductions = new CalculateCityProductionResultsImplementation ();
 		humanCityProductions.getResults ().add (humanCityMaxSizeContainer);
 		humanCityProductions.getResults ().add (humanProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), humanLocation, "TR01", sd, true, db)).thenReturn (humanCityProductions);
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), humanLocation, "TR01", sd, true, db, false)).thenReturn (humanCityProductions);
 
 		final CalculateCityProductionResult aiCityMaxSizeContainer = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
 		aiCityMaxSizeContainer.setBaseProductionAmount (aiCityMaxSize);
@@ -550,7 +550,7 @@ public final class TestCityProcessingImpl
 		final CalculateCityProductionResultsImplementation aiCityProductions = new CalculateCityProductionResultsImplementation ();
 		aiCityProductions.getResults ().add (aiCityMaxSizeContainer);
 		aiCityProductions.getResults ().add (aiProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), aiLocation, "TR02", sd, true, db)).thenReturn (aiCityProductions);
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), aiLocation, "TR02", sd, true, db, false)).thenReturn (aiCityProductions);
 		
 		final CalculateCityProductionResult raidersCityMaxSizeContainer = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
 		raidersCityMaxSizeContainer.setBaseProductionAmount (raidersCityMaxSize);
@@ -559,7 +559,7 @@ public final class TestCityProcessingImpl
 		final CalculateCityProductionResultsImplementation raidersCityProductions = new CalculateCityProductionResultsImplementation ();
 		raidersCityProductions.getResults ().add (raidersCityMaxSizeContainer);
 		raidersCityProductions.getResults ().add (raidersProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), raidersLocation, "TR03", sd, true, db)).thenReturn (raidersCityProductions);
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), raidersLocation, "TR03", sd, true, db, false)).thenReturn (raidersCityProductions);
 		
 		// City growth rate
 		final CalculateCityGrowthRateBreakdown humanGrowthRate = new CalculateCityGrowthRateBreakdown (0, 0, null, 0, 0, null, 0, 0, 0, 0, 650);

@@ -654,6 +654,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @param sd Session description
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
 	 * @param db Lookup lists built over the XML database
+	 * @param storeBreakdown Whether to store breakdown objects or throw the details away and just keep the results
 	 * @return List of all productions and consumptions from this city
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
@@ -663,7 +664,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	public final CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final CommonDatabase db)
+		final CommonDatabase db, final boolean storeBreakdown)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.entering (MomCityCalculationsImpl.class.getName (), "calculateAllCityProductions", cityLocation);
@@ -677,6 +678,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 
 		// Set up results object, and inject necessary values across into it
 		final CalculateCityProductionResultsImplementation productionValues = new CalculateCityProductionResultsImplementation ();
+		productionValues.setStoreBreakdown (storeBreakdown);
 		productionValues.setMemoryBuildingUtils (getMemoryBuildingUtils ());
 		productionValues.setPlayerPickUtils (getPlayerPickUtils ());
 
@@ -869,7 +871,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
 		// So just do this the long way and then throw away all the other results
 		final CalculateCityProductionResults productionValues = calculateAllCityProductions (players, map, buildings, cityLocation, taxRateID, sd,
-			includeProductionAndConsumptionFromPopulation, db);
+			includeProductionAndConsumptionFromPopulation, db, false);		// Not interested in breakdown
 
 		final CalculateCityProductionResult singleProductionValue = productionValues.findProductionType (productionTypeID);
 		final int netGain;

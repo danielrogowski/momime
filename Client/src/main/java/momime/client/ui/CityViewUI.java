@@ -28,7 +28,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceEx;
 import momime.client.graphics.database.TileSetEx;
-import momime.client.language.database.v0_9_5.CitySize;
+import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.TextUtils;
@@ -101,7 +101,7 @@ public final class CityViewUI extends MomClientAbstractUI
 	private Action currentPopulationAction;
 	
 	/** Maximum population label */
-	private JLabel maximumPopulationLabel;
+	private Action maximumPopulationAction;
 	
 	/** Resources label */
 	private JLabel resourcesLabel;
@@ -175,6 +175,39 @@ public final class CityViewUI extends MomClientAbstractUI
 				getFrame ().dispose ();
 			}
 		};
+		
+		// Explain the max size calculation
+		maximumPopulationAction = new AbstractAction ()
+		{
+			private static final long serialVersionUID = -6963167374686168788L;
+
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				try
+				{
+					final CalculateCityProductionResult breakdown = getCityCalculations ().calculateAllCityProductions
+						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (), true).findProductionType
+							(CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+					
+					final ProductionType productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
+					final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
+					
+					final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+					calc.setTitle (getLanguage ().findCategoryEntry ("CityProduction", "Title").replaceAll
+						("CITY_SIZE_AND_NAME", getFrame ().getTitle ()).replaceAll
+						("PRODUCTION_TYPE", productionTypeDescription));
+					calc.setText (getClientCityCalculations ().describeCityProductionCalculation (breakdown));
+					calc.setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace ();
+				}
+			}
+		}; 
 
 		// Explain the city growth calculation
 		currentPopulationAction = new AbstractAction ()
@@ -292,8 +325,8 @@ public final class CityViewUI extends MomClientAbstractUI
 		labelsPanel.add (getUtils ().createTextOnlyButton (currentPopulationAction, MomUIUtils.GOLD, getMediumFont ()),
 			getUtils ().createConstraints (1, 0, 1, new Insets (0, 0, 0, 8), GridBagConstraints.EAST));
 		
-		maximumPopulationLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		labelsPanel.add (maximumPopulationLabel, getUtils ().createConstraints (2, 0, 1, new Insets (0, 0, 0, 8), GridBagConstraints.EAST));
+		labelsPanel.add (getUtils ().createTextOnlyButton (maximumPopulationAction, MomUIUtils.GOLD, getMediumFont ()),
+			getUtils ().createConstraints (2, 0, 1, new Insets (0, 0, 0, 8), GridBagConstraints.EAST));
 		
 		// Buttons - put a gap of 10 underneath them to push the buttons slightly above the Units label, and 6 above to push the view panel up
 		contentPane.add (getUtils ().createImageButton (rushBuyAction, Color.BLACK, MomUIUtils.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
@@ -424,8 +457,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		// Dynamic labels
 		if (cityData != null)
 		{
-			final CitySize citySize = getLanguage ().findCitySize (cityData.getCitySizeID ());
-			final String cityName = (citySize == null) ? cityData.getCityName () : citySize.getCitySizeName ().replaceAll ("CITY_NAME", cityData.getCityName ()); 
+			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID ()).replaceAll ("CITY_NAME", cityData.getCityName ()); 
 			cityNameLabel.setText (cityName);
 			getFrame ().setTitle (cityName);
 			
@@ -438,12 +470,12 @@ public final class CityViewUI extends MomClientAbstractUI
 				final CalculateCityProductionResults productions = getCityCalculations ().calculateAllCityProductions
 					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB ());
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (), false);
 			
 				final CalculateCityProductionResult maxCitySizeProd = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
 				final int maxCitySize = (maxCitySizeProd == null) ? 0 : maxCitySizeProd.getModifiedProductionAmount ();
 			
-				maximumPopulationLabel.setText (getLanguage ().findCategoryEntry ("frmCity", "MaxCitySize").replaceAll ("MAX_CITY_SIZE",
+				maximumPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "MaxCitySize").replaceAll ("MAX_CITY_SIZE",
 					getTextUtils ().intToStrCommas (maxCitySize * 1000)));
 			
 				// Growth rate

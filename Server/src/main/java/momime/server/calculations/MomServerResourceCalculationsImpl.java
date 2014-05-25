@@ -165,7 +165,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 						for (final CalculateCityProductionResult cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
-							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db))
+							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db, false))
 
 							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (),
 								cityProduction.getModifiedProductionAmount () - cityProduction.getConsumptionAmount ());

@@ -2,9 +2,11 @@ package momime.common.utils;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.messages.v0_9_5.PendingMovement;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Helper methods for dealing with pending movement paths
@@ -12,7 +14,7 @@ import momime.common.messages.v0_9_5.PendingMovement;
 public final class PendingMovementUtilsImpl implements PendingMovementUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (PendingMovementUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (PendingMovementUtilsImpl.class.getName ());
 	
 	/**
 	 * Cancels any pending moves for this unit
@@ -24,7 +26,7 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 	@Override
 	public final void removeUnitFromAnyPendingMoves (final List<PendingMovement> moves, final int unitURN)
 	{
-		log.entering (PendingMovementUtilsImpl.class.getName (), "removeUnitFromAnyPendingMoves", unitURN);
+		log.trace ("Entering " + PendingMovementUtilsImpl.class.getName () + ".removeUnitFromAnyPendingMoves: Unit URN + " + unitURN);
 		
 		final Iterator<PendingMovement> movesIter = moves.iterator ();
 		while (movesIter.hasNext ())
@@ -48,7 +50,7 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 				movesIter.remove ();
 		}
 		
-		log.exiting (PendingMovementUtilsImpl.class.getName (), "removeUnitFromAnyPendingMoves");
+		log.trace ("Exiting " + PendingMovementUtilsImpl.class.getName () + ".removeUnitFromAnyPendingMoves");
 	}
 	
 	/**
@@ -60,7 +62,7 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 	@Override
 	public final void removeAnyPendingMovesThatIncludeUnit (final List<PendingMovement> moves, final int unitURN)
 	{
-		log.entering (PendingMovementUtilsImpl.class.getName (), "removeUnitFromAnyPendingMoves", unitURN);
+		log.trace ("Entering " + PendingMovementUtilsImpl.class.getName () + ".removeAnyPendingMovesThatIncludeUnit: Unit URN " + unitURN);
 		
 		final Iterator<PendingMovement> movesIter = moves.iterator ();
 		while (movesIter.hasNext ())
@@ -70,6 +72,6 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 				movesIter.remove ();
 		}
 		
-		log.exiting (PendingMovementUtilsImpl.class.getName (), "removeUnitFromAnyPendingMoves");
+		log.trace ("Exiting " + PendingMovementUtilsImpl.class.getName () + ".removeAnyPendingMovesThatIncludeUnit");
 	}
 }

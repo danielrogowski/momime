@@ -2,10 +2,12 @@ package momime.common.utils;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MomScheduledCombat;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -17,7 +19,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 {
 	/** Class logger */
-	final Logger log = Logger.getLogger (ScheduledCombatUtilsImpl.class.getName ());
+	final Log log = LogFactory.getLog (ScheduledCombatUtilsImpl.class.getName ());
 
 	/**
 	 * @param combats List of scheduled combats to search
@@ -27,7 +29,7 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 	@Override
 	public final MomScheduledCombat findScheduledCombatURN (final List<MomScheduledCombat> combats, final Integer scheduledCombatURN)
 	{
-		log.entering (ScheduledCombatUtilsImpl.class.getName (), "findScheduledCombatURN", scheduledCombatURN);
+		log.trace ("Entering " + ScheduledCombatUtilsImpl.class.getName () + ".findScheduledCombatURN: " + scheduledCombatURN);
 
 		MomScheduledCombat found = null;
 		final Iterator<MomScheduledCombat> iter = combats.iterator ();
@@ -38,7 +40,7 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 				found = thisCombat;
 		}
 		
-		log.exiting (ScheduledCombatUtilsImpl.class.getName (), "findScheduledCombatURN", found);
+		log.trace ("Exiting " + ScheduledCombatUtilsImpl.class.getName () + ".findScheduledCombatURN = " + found);
 		return found;
 	}
 
@@ -53,14 +55,14 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 	public final MomScheduledCombat findScheduledCombatURN (final List<MomScheduledCombat> combats, final Integer scheduledCombatURN, final String caller)
 		throws RecordNotFoundException
 	{
-		log.entering (ScheduledCombatUtilsImpl.class.getName (), "findScheduledCombatURN", new String [] {new Integer (scheduledCombatURN).toString (), caller});
+		log.trace ("Entering " + ScheduledCombatUtilsImpl.class.getName () + ".findScheduledCombatURN: " + scheduledCombatURN);
 
 		final MomScheduledCombat found = findScheduledCombatURN (combats, scheduledCombatURN);
 		
 		if (found == null)
 			throw new RecordNotFoundException ("ScheduledCombats", scheduledCombatURN, caller);
 		
-		log.exiting (ScheduledCombatUtilsImpl.class.getName (), "findScheduledCombatURN", found);
+		log.trace ("Exiting " + ScheduledCombatUtilsImpl.class.getName () + ".findScheduledCombatURN = " + found);
 		return found;
 	}
 	
@@ -75,8 +77,8 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 	public final PlayerPublicDetails determineOtherHumanPlayer (final MomScheduledCombat combat, final PlayerPublicDetails besidesWho, final List<? extends PlayerPublicDetails> players)
 		throws PlayerNotFoundException
 	{
-		log.entering (ScheduledCombatUtilsImpl.class.getName (), "determineOtherHumanPlayer",
-			new Integer [] {combat.getScheduledCombatURN (), besidesWho.getPlayerDescription ().getPlayerID ()});
+		log.trace ("Entering " + ScheduledCombatUtilsImpl.class.getName () + ".determineOtherHumanPlayer: " + 
+			combat.getScheduledCombatURN () + ", Player ID " + besidesWho.getPlayerDescription ().getPlayerID ());
 		
 		final PlayerPublicDetails ohp;
 		if (combat.isWalkInWithoutAFight ())
@@ -102,8 +104,8 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 			}			
 		}
 		
-		log.exiting (ScheduledCombatUtilsImpl.class.getName (), "determineOtherHumanPlayer",
-			(ohp == null) ? "null" : ohp.getPlayerDescription ().getPlayerID ().toString ());
+		log.trace ("Exiting " + ScheduledCombatUtilsImpl.class.getName () + ".determineOtherHumanPlayer = " +
+			((ohp == null) ? "null" : ohp.getPlayerDescription ().getPlayerID ().toString ()));
 		return ohp;
 	}
 }

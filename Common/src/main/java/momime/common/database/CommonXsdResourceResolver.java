@@ -1,8 +1,9 @@
 package momime.common.database;
 
 import java.io.InputStream;
-import java.util.logging.Logger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
@@ -18,7 +19,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionBaseConstants;
 public class CommonXsdResourceResolver implements LSResourceResolver
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CommonXsdResourceResolver.class.getName ());
+	private final Log log = LogFactory.getLog (CommonXsdResourceResolver.class.getName ());
 	
 	/** Full URI of the xsd: namespace */
 	protected static final String XSD_URI = "http://www.w3.org/2001/XMLSchema";
@@ -49,49 +50,49 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 	@SuppressWarnings ("resource")
 	protected InputStream resolveResourceToStream (final String type, final String namespaceURI, final String publicId, final String systemId, final String baseURI)
 	{
-		log.entering (CommonXsdResourceResolver.class.getName (), "resolveResourceToStream",
-			new String [] {type, namespaceURI, publicId, systemId, baseURI});
+		log.trace ("Entering " + CommonXsdResourceResolver.class.getName () + ".resolveResourceToStream: " +
+			type + ", " + namespaceURI + ", " + publicId + ", " + systemId + ", " + baseURI);
 
 		final InputStream result;
 
 		// Multiplayer XSD
 		if ((type.equals (XSD_URI)) && (namespaceURI.equals (MultiplayerBaseConstants.MULTIPLAYER_BASE_XSD_NAMESPACE_URI)))
 		{
-			log.finest ("Namespace matches multiplayer XSD");
+			log.debug ("Namespace matches multiplayer XSD");
 			result = getClass ().getResourceAsStream (MultiplayerBaseConstants.MULTIPLAYER_BASE_XSD_LOCATION);
 		}
 
 		// Multiplayer session XSD
 		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (MultiplayerSessionBaseConstants.MULTIPLAYER_SESSION_BASE_XSD_NAMESPACE_URI)))
 		{
-			log.finest ("Namespace matches multiplayer session XSD");
+			log.debug ("Namespace matches multiplayer session XSD");
 			result = getClass ().getResourceAsStream (MultiplayerSessionBaseConstants.MULTIPLAYER_SESSION_BASE_XSD_LOCATION);
 		}
 
 		// Map XSD
 		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (MapConstants.MAP_XSD_NAMESPACE_URI)))
 		{
-			log.finest ("Namespace matches map XSD");
+			log.debug ("Namespace matches map XSD");
 			result = getClass ().getResourceAsStream (MapConstants.MAP_XSD_LOCATION);
 		}
 
 		// New game XSD
 		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (CommonDatabaseConstants.NEW_GAME_XSD_NAMESPACE_URI)))
 		{
-			log.finest ("Namespace matches new game XSD");
+			log.debug ("Namespace matches new game XSD");
 			result = getClass ().getResourceAsStream (CommonDatabaseConstants.NEW_GAME_XSD_LOCATION);
 		}
 
 		// Common XSD
 		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (CommonDatabaseConstants.COMMON_XSD_NAMESPACE_URI)))
 		{
-			log.finest ("Namespace matches common XSD");
+			log.debug ("Namespace matches common XSD");
 			result = getClass ().getResourceAsStream (CommonDatabaseConstants.COMMON_XSD_LOCATION);
 		}
 		else
 			result = null;
 
-		log.exiting (CommonXsdResourceResolver.class.getName (), "resolveResourceToStream", result);
+		log.trace ("Exiting " + CommonXsdResourceResolver.class.getName () + ".resolveResourceToStream: " + result);
 		return result;
 	}
 
@@ -108,8 +109,8 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 	@SuppressWarnings ("resource")
 	public final LSInput resolveResource (final String type, final String namespaceURI, final String publicId, final String systemId, final String baseURI)
 	{
-		log.entering (CommonXsdResourceResolver.class.getName (), "resolveResource",
-			new String [] {type, namespaceURI, publicId, systemId, baseURI});
+		log.trace ("Entering " + CommonXsdResourceResolver.class.getName () + ".resolveResource: " +
+			type + ", " + namespaceURI + ", " + publicId + ", " + systemId + ", " + baseURI);
 
 		final InputStream stream = resolveResourceToStream (type, namespaceURI, publicId, systemId, baseURI);
 
@@ -128,7 +129,7 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 			result.setByteStream (stream);
 		}
 
-		log.exiting (CommonXsdResourceResolver.class.getName (), "resolveResource", result);
+		log.trace ("Exiting " + CommonXsdResourceResolver.class.getName () + ".resolveResource: " + result);
 		return result;
 	}
 }

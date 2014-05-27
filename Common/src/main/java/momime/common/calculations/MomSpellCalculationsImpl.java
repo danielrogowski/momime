@@ -2,7 +2,6 @@ package momime.common.calculations;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -19,6 +18,9 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -30,7 +32,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class MomSpellCalculationsImpl implements MomSpellCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomSpellCalculationsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomSpellCalculationsImpl.class.getName ());
 	
 	/** Format used for doubles in debug messages */
 	private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat ("0.000");
@@ -62,11 +64,10 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (MomSpellCalculationsImpl.class.getName (), "calculateCastingCostReduction", new String [] {new Integer (bookCount).toString (),
-			new Integer (spellSettings.getSpellBooksToObtainFirstReduction ()).toString (),
-			new Integer (spellSettings.getSpellBooksCastingReduction ()).toString (),
-			spellSettings.getSpellBooksCastingReductionCombination ().toString (), new Integer (spellSettings.getSpellBooksCastingReductionCap ()).toString (),
-			(spell == null) ? null : spell.getSpellID (), (picks == null) ? null : picks.toString ()});
+		log.trace ("Entering " + MomSpellCalculationsImpl.class.getName () + ".calculateCastingCostReduction: " + bookCount + ", " +
+			spellSettings.getSpellBooksToObtainFirstReduction () + ", " + spellSettings.getSpellBooksCastingReduction () + ", " +
+			spellSettings.getSpellBooksCastingReductionCombination () + ", " + spellSettings.getSpellBooksCastingReductionCap () + ", " +
+			((spell == null) ? null : spell.getSpellID ()) + ", " + ((picks == null) ? null : picks.toString ()));
 
 		// How many books do we have that will give a bonus?
 		final int booksThatGiveReduction = Math.max (bookCount - spellSettings.getSpellBooksToObtainFirstReduction () + 1, 0);
@@ -91,7 +92,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 					throw new MomException ("calculateCastingCostReduction: Unknown combination type (books)");
 			}
 
-		log.finest (booksThatGiveReduction + " books give a base casting cost reduction of " + DECIMAL_FORMATTER.format (castingCostMultiplier) + "...");
+		log.debug (booksThatGiveReduction + " books give a base casting cost reduction of " + DECIMAL_FORMATTER.format (castingCostMultiplier) + "...");
 
 		// Get the values we need from the spell
 		final String spellMagicRealmID;
@@ -138,7 +139,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 									throw new MomException ("calculateCastingCostReduction: Unknown combination type (retorts)");
 							}
 
-							log.finest (pickProductionBonus.getPercentageBonus () + "% further reduction from " + p.getQuantity () + "x " + p.getPickID () +
+							log.debug (pickProductionBonus.getPercentageBonus () + "% further reduction from " + p.getQuantity () + "x " + p.getPickID () +
 								" improves casting cost reduction to " + DECIMAL_FORMATTER.format (castingCostMultiplier) + "...");
 						}
 					}
@@ -149,15 +150,15 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 
 		if (castingCostPercentageReduction > spellSettings.getSpellBooksCastingReductionCap ())
 		{
-			log.finest ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) +
+			log.debug ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) +
 				"% but this is capped at " + DECIMAL_FORMATTER.format (spellSettings.getSpellBooksCastingReductionCap ()));
 
 			castingCostPercentageReduction = spellSettings.getSpellBooksCastingReductionCap ();
 		}
 		else
-			log.finest ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) + "%");
+			log.debug ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) + "%");
 
-		log.exiting (MomSpellCalculationsImpl.class.getName (), "calculateCastingCostReduction", castingCostPercentageReduction);
+		log.trace ("Exiting " + MomSpellCalculationsImpl.class.getName () + ".calculateCastingCostReduction = " + castingCostPercentageReduction);
 		return castingCostPercentageReduction;
 	}
 
@@ -176,11 +177,10 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (MomSpellCalculationsImpl.class.getName (), "calculateResearchBonus", new String [] {new Integer (bookCount).toString (),
-			new Integer (spellSettings.getSpellBooksToObtainFirstReduction ()).toString (),
-			new Integer (spellSettings.getSpellBooksResearchBonus ()).toString (),
-			spellSettings.getSpellBooksResearchBonusCombination ().toString (), new Integer (spellSettings.getSpellBooksResearchBonusCap ()).toString (),
-			(spell == null) ? null : spell.getSpellID (), (picks == null) ? null : picks.toString ()});
+		log.trace ("Entering " + MomSpellCalculationsImpl.class.getName () + ".calculateResearchBonus: " + bookCount + ", " +
+			spellSettings.getSpellBooksToObtainFirstReduction () + ", " + spellSettings.getSpellBooksResearchBonus () + ", " +
+			spellSettings.getSpellBooksResearchBonusCombination () + ", " + spellSettings.getSpellBooksResearchBonusCap () + ", " +
+			((spell == null) ? null : spell.getSpellID ()) + ", " + ((picks == null) ? null : picks.toString ()));
 
 		// How many books do we have that will give a bonus?
 		final int booksThatGiveBonus = Math.max (bookCount - spellSettings.getSpellBooksToObtainFirstReduction () + 1, 0);
@@ -205,7 +205,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 					throw new MomException ("calculateResearchBonus: Unknown combination type (books)");
 			}
 
-		log.finest (booksThatGiveBonus + " books give a base research bonus of " + DECIMAL_FORMATTER.format (researchBonus) + "...");
+		log.debug (booksThatGiveBonus + " books give a base research bonus of " + DECIMAL_FORMATTER.format (researchBonus) + "...");
 
 		// Get the values we need from the spell
 		final String spellMagicRealmID;
@@ -252,7 +252,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 									throw new MomException ("calculateCastingCostReduction: Unknown combination type (retorts)");
 							}
 
-							log.finest (pickProductionBonus.getPercentageBonus () + "% further bonus from " + p.getQuantity () + "x " + p.getPickID () +
+							log.debug (pickProductionBonus.getPercentageBonus () + "% further bonus from " + p.getQuantity () + "x " + p.getPickID () +
 								" improves research bonus reduction to " + DECIMAL_FORMATTER.format (researchBonus) + "...");
 						}
 					}
@@ -263,15 +263,15 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 
 		if (researchPercentageBonus > spellSettings.getSpellBooksResearchBonusCap ())
 		{
-			log.finest ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) +
+			log.debug ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) +
 				"% but this is capped at " + DECIMAL_FORMATTER.format (spellSettings.getSpellBooksResearchBonusCap ()));
 
 			researchPercentageBonus = spellSettings.getSpellBooksResearchBonusCap ();
 		}
 		else
-			log.finest ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) + "%");
+			log.debug ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) + "%");
 
-		log.exiting (MomSpellCalculationsImpl.class.getName (), "calculateResearchBonus", researchPercentageBonus);
+		log.trace ("Exiting " + MomSpellCalculationsImpl.class.getName () + ".calculateResearchBonus = " + researchPercentageBonus);
 		return researchPercentageBonus;
 	}
 
@@ -291,8 +291,8 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 	public final Integer calculateDoubleCombatCastingRangePenalty (final PlayerPublicDetails player, final MapCoordinates3DEx combatLocation,
 		final boolean allowEitherPlane, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CoordinateSystem overlandMapCoordinateSystem)
 	{
-		log.entering (MomSpellCalculationsImpl.class.getName (), "calculateDoubleCombatCastingRangePenalty",
-			new String [] {player.getPlayerDescription ().getPlayerID ().toString (), combatLocation.toString ()});
+		log.trace ("Entering " + MomSpellCalculationsImpl.class.getName () + ".calculateDoubleCombatCastingRangePenalty: Player ID " +
+			player.getPlayerDescription ().getPlayerID () + ", " + combatLocation);
 			
 		// First need to find where the wizard's fortress is
 		Integer penalty;
@@ -323,7 +323,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 				penalty = 2;
 		}
 
-		log.exiting (MomSpellCalculationsImpl.class.getName (), "calculateDoubleCombatCastingRangePenalty", penalty);
+		log.trace ("Exiting " + MomSpellCalculationsImpl.class.getName () + ".calculateDoubleCombatCastingRangePenalty = " + penalty);
 		return penalty;
 	}
 	

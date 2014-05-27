@@ -3,7 +3,6 @@ package momime.common.calculations;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -33,6 +32,9 @@ import momime.common.utils.MomUnitAttributePositiveNegative;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
 import com.ndg.map.CoordinateSystemUtils;
@@ -48,7 +50,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class MomUnitCalculationsImpl implements MomUnitCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomUnitCalculationsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomUnitCalculationsImpl.class.getName ());
 	
 	/** Initial state where each combat map tile hasn't been checked yet */ 
 	private final static int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
@@ -83,7 +85,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
 		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.entering (MomUnitCalculationsImpl.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", cityLocation);
+		log.trace ("Entering " + MomUnitCalculationsImpl.class.getName () + ".calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort: " + cityLocation);
 
 		// First look for a building that grants magical weapons, i.e. an Alchemists' Guild
 		int bestWeaponGrade = 0;
@@ -120,7 +122,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		if (weaponGradeFromPicks > bestWeaponGrade)
 			bestWeaponGrade = weaponGradeFromPicks;
 
-		log.exiting (MomUnitCalculationsImpl.class.getName (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort", bestWeaponGrade);
+		log.trace ("Exiting " + MomUnitCalculationsImpl.class.getName () + ".calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort = " + bestWeaponGrade);
 		return bestWeaponGrade;
 	}
 
@@ -525,7 +527,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (MomUnitCalculationsImpl.class.getName (), "calculateCombatMovementDistances", unitBeingMoved.getUnitURN ());
+		log.trace ("Entering " + MomUnitCalculationsImpl.class.getName () + ".calculateCombatMovementDistances: Unit URN " + unitBeingMoved.getUnitURN ());
 
 		// Create other areas
 		final boolean [] [] ourUnits = new boolean [combatMapCoordinateSystem.getHeight ()] [combatMapCoordinateSystem.getWidth ()];
@@ -586,7 +588,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 						doubleMovementDistances [y] [x] = 999;
 					}
 		
-		log.exiting (MomUnitCalculationsImpl.class.getName (), "calculateCombatMovementDistances");
+		log.trace ("Exiting " + MomUnitCalculationsImpl.class.getName () + ".calculateCombatMovementDistances");
 	}
 	
 	/**

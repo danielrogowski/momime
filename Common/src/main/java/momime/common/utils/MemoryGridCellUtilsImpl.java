@@ -1,13 +1,14 @@
 package momime.common.utils;
 
-import java.util.logging.Logger;
-
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Helper methods for dealing with MemoryGridCell objects
@@ -20,7 +21,7 @@ import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MemoryGridCellUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MemoryGridCellUtilsImpl.class.getName ());
 	
 	/**
 	 * This is used because the data structures hold blank for an unknown tile type that we can't see, but the XML files
@@ -73,13 +74,13 @@ public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 	@Override
 	public final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map)
 	{
-		log.entering (MemoryGridCellUtilsImpl.class.getName (), "blankBuildingsSoldThisTurn");
+		log.trace ("Entering " + MemoryGridCellUtilsImpl.class.getName () + ".blankBuildingsSoldThisTurn");
 
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 					cell.setBuildingIdSoldThisTurn (null);
 
-		log.exiting (MemoryGridCellUtilsImpl.class.getName (), "blankBuildingsSoldThisTurn");
+		log.trace ("Exiting " + MemoryGridCellUtilsImpl.class.getName () + ".blankBuildingsSoldThisTurn");
 	}
 }

@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.calculations.MomSpellCalculations;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_4.SpellSettingData;
 import momime.common.database.v0_9_4.Spell;
@@ -19,13 +18,16 @@ import momime.common.messages.v0_9_5.PlayerPick;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.SpellResearchStatusID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Simple spell lookups and calculations
  */
 public final class SpellUtilsImpl implements SpellUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SpellUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (SpellUtilsImpl.class.getName ());
 
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -45,7 +47,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final SpellResearchStatus findSpellResearchStatus (final List<SpellResearchStatus> spells, final String spellID)
 		throws RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "findSpellResearchStatus", spellID);
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".findSpellResearchStatus: " + spellID);
 
 		SpellResearchStatus chosenSpellStatus = null;
 		final Iterator<SpellResearchStatus> iter = spells.iterator ();
@@ -59,7 +61,7 @@ public final class SpellUtilsImpl implements SpellUtils
 		if (chosenSpellStatus == null)
 			throw new RecordNotFoundException ("SpellResearchStatus", spellID, "findSpellResearchStatus");
 
-		log.exiting (SpellUtilsImpl.class.getName (), "findSpellResearchStatus");
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".findSpellResearchStatus = " + chosenSpellStatus);
 		return chosenSpellStatus;
 	}
 
@@ -74,7 +76,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final String spellSummonsUnitTypeID (final Spell spell, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "calculateCastingCostReduction", spell.getSpellID ());
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".calculateCastingCostReduction: " + spell.getSpellID ());
 
 		// for War Bears, Sky Drakes, etc. we want "S", and for Summon Hero, Champion & Incarnation we want "H"
 		String result = null;
@@ -94,7 +96,7 @@ public final class SpellUtilsImpl implements SpellUtils
 					throw new MomException ("Summoning spell " + spell.getSpellID () + " can summon units of more than one Unit Type");
 			}
 
-		log.exiting (SpellUtilsImpl.class.getName (), "calculateCastingCostReduction", result);
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".calculateCastingCostReduction = " + result);
 		return result;
 	}
 
@@ -114,7 +116,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final boolean spellCanBeCastIn (final Spell spell, final MomSpellCastType castType)
 		throws MomException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "spellCanBeCastIn", new String [] {spell.getSpellID (), castType.toString ()});
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".spellCanBeCastIn: " + spell.getSpellID () + ", " + castType);
 
 		boolean result;
 
@@ -130,7 +132,7 @@ public final class SpellUtilsImpl implements SpellUtils
 				throw new MomException ("spellCanBeCastIn: Invalid CastType");
 		}
 
-		log.exiting (SpellUtilsImpl.class.getName (), "spellCanBeCastIn", result);
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".spellCanBeCastIn = " + result);
 		return result;
 	}
 
@@ -180,7 +182,7 @@ public final class SpellUtilsImpl implements SpellUtils
 		final SpellSettingData spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getReducedCastingCostForCastingType", new String [] {spell.getSpellID (), castType.toString ()});
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getReducedCastingCostForCastingType: " + spell.getSpellID () + ", " + castType);
 
 		// Get the base cost, which is different depending on casting type
 		int baseCastingCost;
@@ -212,7 +214,7 @@ public final class SpellUtilsImpl implements SpellUtils
 		final int reductionAmount = (int) (reduction * baseCastingCost);
 		final int castingCostForCastingType = baseCastingCost - reductionAmount;
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getReducedCastingCostForCastingType", castingCostForCastingType);
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getReducedCastingCostForCastingType = " + castingCostForCastingType);
 		return castingCostForCastingType;
 	}
 
@@ -229,7 +231,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final String getModifiedSectionID (final Spell spell, final SpellResearchStatus researchStatus, final boolean considerWhetherResearched)
 		throws MomException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getModifiedSectionID", new Boolean (considerWhetherResearched).toString ());
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getModifiedSectionID: " + researchStatus + ", " + considerWhetherResearched);
 
 		final String result;
 		if (!considerWhetherResearched)
@@ -257,7 +259,7 @@ public final class SpellUtilsImpl implements SpellUtils
 					throw new MomException ("getSectionID: Unknown spell status " + researchStatus.getStatus ());
 			}
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getModifiedSectionID", result);
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getModifiedSectionID = " + result);
 		return result;
 	}
 
@@ -274,8 +276,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	@Override
 	public final boolean spellCanTargetMagicRealmLifeformType (final Spell spell, final String targetMagicRealmLifeformTypeID)
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "spellCanTargetMagicRealmLifeform",
-			new String [] {spell.getSpellID (), targetMagicRealmLifeformTypeID});
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".spellCanTargetMagicRealmLifeform: " + spell.getSpellID () + ", " + targetMagicRealmLifeformTypeID);
 
 		boolean targetIsValidForThisSpell = false;
 		boolean anyTargetEntryFound = false;
@@ -297,7 +298,7 @@ public final class SpellUtilsImpl implements SpellUtils
 		if (!anyTargetEntryFound)
 			targetIsValidForThisSpell = true;
 
-		log.exiting (SpellUtilsImpl.class.getName (), "spellCanTargetMagicRealmLifeform", targetIsValidForThisSpell);
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".spellCanTargetMagicRealmLifeform = " + targetIsValidForThisSpell);
 		return targetIsValidForThisSpell;
 	}
 
@@ -318,8 +319,8 @@ public final class SpellUtilsImpl implements SpellUtils
 		final String desiredMagicRealmID, final String spellRankID, final List<SpellResearchStatusID> statuses, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForRealmRankStatusInternal",
-			new String [] {desiredMagicRealmID, spellRankID, (statuses == null) ? null : new Integer (statuses.size ()).toString ()});
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getSpellsForRealmRankStatusInternal: " +
+			desiredMagicRealmID + ", " + spellRankID + ", " + ((statuses == null) ? null : new Integer (statuses.size ()).toString ()));
 
 		final List<Spell> resultList = new ArrayList<Spell> ();
 
@@ -342,7 +343,7 @@ public final class SpellUtilsImpl implements SpellUtils
 				resultList.add (thisSpell);
 		}
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getSpellsForRealmRankStatusInternal", resultList.size ());
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getSpellsForRealmRankStatusInternal = " + resultList.size ());
 		return resultList;
 	}
 
@@ -360,8 +361,7 @@ public final class SpellUtilsImpl implements SpellUtils
 		final String spellRankID, final SpellResearchStatusID status, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForRealmRankStatus",
-			new String [] {(magicRealmID == null) ? "Arcane" : magicRealmID, spellRankID, status.toString ()});
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getSpellsForRealmRankStatus: " + magicRealmID + ", " + spellRankID + ", " + status);
 
 		// Convert null to empty string if searching for arcane spells
 		final String useMagicRealmID = (magicRealmID == null) ? "" : magicRealmID;
@@ -372,7 +372,7 @@ public final class SpellUtilsImpl implements SpellUtils
 
 		final List<Spell> result = getSpellsForRealmRankStatusInternal (spells, useMagicRealmID, spellRankID, tempStatusList, db);
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getSpellsForRealmRankStatus", result.size ());
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getSpellsForRealmRankStatus = " + result.size ());
 		return result;
 	}
 
@@ -388,7 +388,7 @@ public final class SpellUtilsImpl implements SpellUtils
 		final SpellResearchStatusID status, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForStatus", status);
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getSpellsForStatus: " + status);
 
 		// Put status into a single item list
 		final List<SpellResearchStatusID> tempStatusList = new ArrayList<SpellResearchStatusID> ();
@@ -396,7 +396,7 @@ public final class SpellUtilsImpl implements SpellUtils
 
 		final List<Spell> result = getSpellsForRealmRankStatusInternal (spells, null, null, tempStatusList, db);
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getSpellsForStatus", result.size ());
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getSpellsForStatus = " + result.size ());
 		return result;
 	}
 
@@ -415,14 +415,14 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final List<Spell> getSpellsForRealmAndRank (final List<SpellResearchStatus> spells, final String magicRealmID,
 		final String spellRankID, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForRealmAndRank", new String [] {magicRealmID, spellRankID});
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getSpellsForRealmAndRank: " + magicRealmID + ", " + spellRankID);
 
 		// Convert null to empty string if searching for arcane spells
 		final String useMagicRealmID = (magicRealmID == null) ? "" : magicRealmID;
 
 		final List<Spell> result = getSpellsForRealmRankStatusInternal (spells, useMagicRealmID, spellRankID, null, db);
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getSpellsForRealmAndRank", result.size ());
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getSpellsForRealmAndRank = " + result.size ());
 		return result;
 	}
 
@@ -438,7 +438,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final List<Spell> getSpellsForRankAndStatus (final List<SpellResearchStatus> spells,
 		final String spellRankID, final SpellResearchStatusID status, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getSpellsForRankAndStatus", new String [] {spellRankID, status.toString ()});
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getSpellsForRankAndStatus: " + spellRankID + ", " + status);
 
 		// Put status into a single item list
 		final List<SpellResearchStatusID> tempStatusList = new ArrayList<SpellResearchStatusID> ();
@@ -446,7 +446,7 @@ public final class SpellUtilsImpl implements SpellUtils
 
 		final List<Spell> result = getSpellsForRealmRankStatusInternal (spells, null, spellRankID, tempStatusList, db);
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getSpellsForRankAndStatus", result.size ());
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getSpellsForRankAndStatus = " + result.size ());
 		return result;
 	}
 
@@ -462,7 +462,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final List<Spell> getSpellsNotInBookForRealmAndRank (final List<SpellResearchStatus> spells,
 		final String magicRealmID, final String spellRankID, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getSpellsNotInBookForRealmAndRank", new String [] {magicRealmID, spellRankID});
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getSpellsNotInBookForRealmAndRank: " + magicRealmID + ", " + spellRankID);
 
 		// Convert null to empty string if searching for arcane spells
 		final String useMagicRealmID = (magicRealmID == null) ? "" : magicRealmID;
@@ -475,7 +475,7 @@ public final class SpellUtilsImpl implements SpellUtils
 
 		final List<Spell> result = getSpellsForRealmRankStatusInternal (spells, useMagicRealmID, spellRankID, tempStatusList, db);
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getSpellsNotInBookForRealmAndRank", result);
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getSpellsNotInBookForRealmAndRank = " + result);
 		return result;
 	}
 
@@ -490,7 +490,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final List<String> getSpellRanksForStatus (final List<SpellResearchStatus> spells,
 		final SpellResearchStatusID status, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getSpellRanksForStatus", status.toString ());
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getSpellRanksForStatus: " + status);
 
 		final List<String> spellRanksFound = new ArrayList<String> ();
 
@@ -502,7 +502,7 @@ public final class SpellUtilsImpl implements SpellUtils
 				spellRanksFound.add (thisSpell.getSpellRank ());
 		}
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getSpellRanksForStatus", spellRanksFound);
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getSpellRanksForStatus = " + spellRanksFound);
 		return spellRanksFound;
 	}
 
@@ -514,7 +514,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	@Override
 	public final List<String> getSpellRanksForMagicRealm (final List<? extends Spell> spells, final String magicRealmID)
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getSpellRanksForMagicRealm", magicRealmID);
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getSpellRanksForMagicRealm: " + magicRealmID);
 
 		final List<String> spellRanksFound = new ArrayList<String> ();
 
@@ -526,7 +526,7 @@ public final class SpellUtilsImpl implements SpellUtils
 				if (!spellRanksFound.contains (thisSpell.getSpellRank ()))
 					spellRanksFound.add (thisSpell.getSpellRank ());
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getSpellRanksForMagicRealm", spellRanksFound.size ());
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getSpellRanksForMagicRealm = " + spellRanksFound.size ());
 		return spellRanksFound;
 	}
 
@@ -550,7 +550,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final String desiredSectionID,
 		final MomSpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException
 	{
-		log.entering (SpellUtilsImpl.class.getName (), "getSortedSpellsInSection", new String [] {desiredSectionID, castType.toString ()});
+		log.trace ("Entering " + SpellUtilsImpl.class.getName () + ".getSortedSpellsInSection: " + desiredSectionID + ", " + castType);
 
 		// Different selection and sorting logic if we are after spells that we've not yet researched, so just check this once up front
 		final boolean desiredSectionIsResearch =
@@ -608,7 +608,7 @@ public final class SpellUtilsImpl implements SpellUtils
 		for (final SpellWithSortValue thisSpell : spellsFound)
 			result.add (thisSpell.spell);
 
-		log.exiting (SpellUtilsImpl.class.getName (), "getSortedSpellsInSection", result.size ());
+		log.trace ("Exiting " + SpellUtilsImpl.class.getName () + ".getSortedSpellsInSection = " + result.size ());
 		return result;
 	}
 

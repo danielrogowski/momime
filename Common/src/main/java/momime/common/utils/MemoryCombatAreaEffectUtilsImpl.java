@@ -2,10 +2,12 @@ package momime.common.utils;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
@@ -15,7 +17,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEffectUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MemoryCombatAreaEffectUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MemoryCombatAreaEffectUtilsImpl.class.getName ());
 	
 	/**
 	 * Checks to see if the specified CAE exists
@@ -29,8 +31,8 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 	public final boolean findCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
 		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID)
 	{
-		log.entering (MemoryCombatAreaEffectUtilsImpl.class.getName (), "findCombatAreaEffect",
-			new String [] {(mapLocation == null) ? "Global" : mapLocation.toString (), combatAreaEffectID});
+		log.trace ("Entering " + MemoryCombatAreaEffectUtilsImpl.class.getName () + ".findCombatAreaEffect: " +
+			mapLocation + ", " + combatAreaEffectID + ", " + castingPlayerID); 
 
 		boolean found = false;
 		final Iterator<MemoryCombatAreaEffect> iter = CAEs.iterator ();
@@ -45,7 +47,7 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 				found = true;
 		}
 
-		log.exiting (MemoryCombatAreaEffectUtilsImpl.class.getName (), "findCombatAreaEffect", found);
+		log.trace ("Exiting " + MemoryCombatAreaEffectUtilsImpl.class.getName () + ".findCombatAreaEffect = " + found);
 		return found;
 	}
 
@@ -61,8 +63,8 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 	public final void cancelCombatAreaEffect (final List<MemoryCombatAreaEffect> CAEs,
 		final MapCoordinates3DEx mapLocation, final String combatAreaEffectID, final Integer castingPlayerID) throws RecordNotFoundException
 	{
-		log.entering (MemoryCombatAreaEffectUtilsImpl.class.getName (), "cancelCombatAreaEffect",
-			new String [] {(mapLocation == null) ? "Global" : mapLocation.toString (), combatAreaEffectID});
+		log.trace ("Entering " + MemoryCombatAreaEffectUtilsImpl.class.getName () + ".cancelCombatAreaEffect: " +
+			mapLocation + ", " + combatAreaEffectID + ", " + castingPlayerID); 
 
 		boolean found = false;
 		final Iterator<MemoryCombatAreaEffect> iter = CAEs.iterator ();
@@ -81,6 +83,6 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
 		if (!found)
 			throw new RecordNotFoundException (MemoryCombatAreaEffect.class.getName (), combatAreaEffectID + " - " + castingPlayerID, "cancelCombatAreaEffect");
 
-		log.exiting (MemoryCombatAreaEffectUtilsImpl.class.getName (), "cancelCombatAreaEffect");
+		log.trace ("Exiting " + MemoryCombatAreaEffectUtilsImpl.class.getName () + ".cancelCombatAreaEffect");
 	}
 }

@@ -48,7 +48,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class UnitUtilsImpl implements UnitUtils
 {
 	/** Class logger */
-	final Log log = LogFactory.getLog (UnitUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (UnitUtilsImpl.class);
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -64,7 +64,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final MemoryUnit findUnitURN (final int unitURN, final List<MemoryUnit> units)
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".findUnitURN: Unit URN " + unitURN);
+		log.trace ("Entering findUnitURN: Unit URN " + unitURN);
 
 		MemoryUnit result = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
@@ -75,7 +75,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				result = thisUnit;
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".findUnitURN = " + result);
+		log.trace ("Exiting findUnitURN = " + result);
 		return result;
 	}
 
@@ -90,14 +90,14 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final MemoryUnit findUnitURN (final int unitURN, final List<MemoryUnit> units, final String caller)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".findUnitURN: Unit URN " + unitURN + ", " + caller);
+		log.trace ("Entering findUnitURN: Unit URN " + unitURN + ", " + caller);
 
 		final MemoryUnit result = findUnitURN (unitURN, units);
 
 		if (result == null)
-			throw new RecordNotFoundException (MemoryUnit.class.getName (), unitURN, caller);
+			throw new RecordNotFoundException (MemoryUnit.class, unitURN, caller);
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".findUnitURN = " + result);
+		log.trace ("Exiting findUnitURN = " + result);
 		return result;
 	}
 
@@ -110,7 +110,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void removeUnitURN (final int unitURN, final List<MemoryUnit> units)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + "removeUnitURN: Unit URN " + unitURN);
+		log.trace ("Entering removeUnitURN: Unit URN " + unitURN);
 
 		boolean found = false;
 		final Iterator<MemoryUnit> iter = units.iterator ();
@@ -125,9 +125,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		}
 
 		if (!found)
-			throw new RecordNotFoundException (MemoryUnit.class.getName (), unitURN, "removeUnitURN");
+			throw new RecordNotFoundException (MemoryUnit.class, unitURN, "removeUnitURN");
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".removeUnitURN");
+		log.trace ("Exiting removeUnitURN");
 	}
 
 	/**
@@ -143,7 +143,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
 		final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".initializeUnitSkills: " + unit.getUnitID ());
+		log.trace ("Entering initializeUnitSkills: " + unit.getUnitID ());
 
 		final Unit unitDefinition = db.findUnit (unit.getUnitID (), "initializeUnitSkills");
 
@@ -173,7 +173,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				unit.getUnitHasSkill ().add (destSkill);
 			}
 
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".initializeUnitSkills");
+		log.trace ("Entering initializeUnitSkills");
 		return unitDefinition;
 	}
 
@@ -192,7 +192,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final int startingExperience,
 		final boolean loadDefaultSkillsFromXML, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".createMemoryUnit: " + unitID + ", Unit URN " + unitURN);
+		log.trace ("Entering createMemoryUnit: " + unitID + ", Unit URN " + unitURN);
 
 		final MemoryUnit newUnit = new MemoryUnit ();
 		newUnit.setUnitURN (unitURN);
@@ -204,7 +204,7 @@ public final class UnitUtilsImpl implements UnitUtils
 
 		newUnit.setDoubleOverlandMovesLeft (unitDefinition.getDoubleMovement ());
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".createMemoryUnit");
+		log.trace ("Exiting createMemoryUnit");
 		return newUnit;
 	}
 
@@ -263,7 +263,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void setBasicSkillValue (final AvailableUnit unit, final String unitSkillID, final int skillValue)
 		throws MomException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".setBasicSkillValue: " + unit.getUnitID () + ", " + unitSkillID + ", " + skillValue);
+		log.trace ("Entering setBasicSkillValue: " + unit.getUnitID () + ", " + unitSkillID + ", " + skillValue);
 
 		boolean found = false;
 		final Iterator<UnitHasSkill> iter = unit.getUnitHasSkill ().iterator ();
@@ -281,7 +281,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		if (!found)
 			throw new MomException ("setBasicSkillValue: Unit " + unit.getUnitID () + " does not have skill " + unitSkillID + " and so cannot set its value to " + skillValue);
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".setBasicSkillValue");
+		log.trace ("Exiting setBasicSkillValue");
 	}
 
 	/**
@@ -314,7 +314,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final UnitHasSkillMergedList mergeSpellEffectsIntoSkillList (final List<MemoryMaintainedSpell> spells, final MemoryUnit unit)
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".mergeSpellEffectsIntoSkillList: " + unit.getUnitID () + ", " + spells.size () + ", " + unit.getUnitHasSkill ().size ());
+		log.trace ("Entering mergeSpellEffectsIntoSkillList: " + unit.getUnitID () + ", " + spells.size () + ", " + unit.getUnitHasSkill ().size ());
 
 		// To avoid getModifiedSkillValue () getting stuck in a loop, we HAVE to return a MomUnitSkillValueMergedList object with the
 		// different implementation of getModifiedSkillValue (), even if there's no spells cast on this unit that grant extra skills
@@ -330,7 +330,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				mergedSkills.add (spellSkill);
 			}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".mergeSpellEffectsIntoSkillList = " + mergedSkills.size ());
+		log.trace ("Exiting mergeSpellEffectsIntoSkillList = " + mergedSkills.size ());
 
 		return mergedSkills;
 	}
@@ -351,7 +351,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".getExperienceLevel: " + unit.getUnitID () + ", " + includeBonuses);
+		log.trace ("Entering getExperienceLevel: " + unit.getUnitID () + ", " + includeBonuses);
 
 		// Experience can never be increased by spells, combat area effects, weapon grades, etc. etc. therefore safe to do this from the basic skill value on the unmerged list
 		final int experienceSkillValue = getBasicSkillValue (unit.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
@@ -407,7 +407,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			result = levelFromExperience;
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".getExperienceLevel = " + result);
+		log.trace ("Exiting getExperienceLevel = " + result);
 		return result;
 	}
 
@@ -431,7 +431,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".doesCombatAreaEffectApplyToUnit: " + unit.getUnitID () + ", " + effect.getCombatAreaEffectID ());
+		log.trace ("Entering doesCombatAreaEffectApplyToUnit: " + unit.getUnitID () + ", " + effect.getCombatAreaEffectID ());
 
 		// Check if unit is in combat (available units can never be in combat)
 		final MapCoordinates3DEx combatLocation;
@@ -498,7 +498,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				applies = false;
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".doesCombatAreaEffectApplyToUnit = " + applies);
+		log.trace ("Exiting doesCombatAreaEffectApplyToUnit = " + applies);
 		return applies;
 	}
 
@@ -515,7 +515,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".getModifiedUnitMagicRealmLifeformTypeID: " + unit.getUnitID ());
+		log.trace ("Entering getModifiedUnitMagicRealmLifeformTypeID: " + unit.getUnitID ());
 
 		// Get basic value
 		String magicRealmLifeformTypeID = db.findUnit (unit.getUnitID (), "getModifiedUnitMagicRealmLifeformTypeID").getUnitMagicRealm ();
@@ -535,7 +535,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				magicRealmLifeformTypeID = changedMagicRealmLifeformTypeID;
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".getModifiedUnitMagicRealmLifeformTypeID = " + magicRealmLifeformTypeID);
+		log.trace ("Exiting getModifiedUnitMagicRealmLifeformTypeID = " + magicRealmLifeformTypeID);
 		return magicRealmLifeformTypeID;
 	}
 
@@ -557,7 +557,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".getModifiedSkillValue: " + unit.getUnitID () + ", " + unitSkillID);
+		log.trace ("Entering getModifiedSkillValue: " + unit.getUnitID () + ", " + unitSkillID);
 
 		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
 		final List<UnitHasSkill> mergedSkills;
@@ -609,7 +609,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				}
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".getModifiedSkillValue = " + modifiedValue);
+		log.trace ("Exiting getModifiedSkillValue = " + modifiedValue);
 		return modifiedValue;
 	}
 	
@@ -663,7 +663,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".getModifiedAttributeValue: " + unit.getUnitID () + ", " + unitAttributeID);
+		log.trace ("Entering getModifiedAttributeValue: " + unit.getUnitID () + ", " + unitAttributeID);
 
 		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
 		final List<UnitHasSkill> mergedSkills;
@@ -776,7 +776,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				}
 		}
 		
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".getModifiedAttributeValue = " + total);
+		log.trace ("Exiting getModifiedAttributeValue = " + total);
 		return total;
 	}
 
@@ -791,7 +791,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".getBasicUpkeepValue: " + unit.getUnitID () + ", " + productionTypeID);
+		log.trace ("Entering getBasicUpkeepValue: " + unit.getUnitID () + ", " + productionTypeID);
 
 		int result = 0;
 		final Iterator<UnitUpkeep> iter = db.findUnit (unit.getUnitID (), "getBasicUpkeepValue").getUnitUpkeep ().iterator ();
@@ -802,7 +802,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				result = thisUpkeep.getUpkeepValue ();
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".getBasicUpkeepValue = " + result);
+		log.trace ("Exiting getBasicUpkeepValue = " + result);
 		return result;
 	}
 
@@ -820,7 +820,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".getModifiedUpkeepValue: " + unit.getUnitID () + ", " + productionTypeID);
+		log.trace ("Entering getModifiedUpkeepValue: " + unit.getUnitID () + ", " + productionTypeID);
 
 		// Get base value
 		final int baseUpkeepValue = getBasicUpkeepValue (unit, productionTypeID, db);
@@ -847,7 +847,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			upkeepValue = baseUpkeepValue - amountReduction;
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".getModifiedUpkeepValue = " + upkeepValue);
+		log.trace ("Exiting getModifiedUpkeepValue = " + upkeepValue);
 		return upkeepValue;
 	}
 
@@ -863,13 +863,13 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void resetUnitOverlandMovement (final List<MemoryUnit> units, final int onlyOnePlayerID, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".resetUnitOverlandMovement: Player ID " + onlyOnePlayerID);
+		log.trace ("Entering resetUnitOverlandMovement: Player ID " + onlyOnePlayerID);
 
 		for (final MemoryUnit thisUnit : units)
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 				thisUnit.setDoubleOverlandMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitOverlandMovement").getDoubleMovement ());
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".resetUnitOverlandMovement");
+		log.trace ("Exiting resetUnitOverlandMovement");
 	}
 
 	/**
@@ -885,13 +885,13 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void resetUnitCombatMovement (final List<MemoryUnit> units, final int playerID, final MapCoordinates3DEx combatLocation, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".resetUnitCombatMovement: Player ID " + playerID + ", " + combatLocation);
+		log.trace ("Entering resetUnitCombatMovement: Player ID " + playerID + ", " + combatLocation);
 
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null))
 				thisUnit.setDoubleCombatMovesLeft (db.findUnit (thisUnit.getUnitID (), "resetUnitCombatMovement").getDoubleMovement ());
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".resetUnitCombatMovement");
+		log.trace ("Exiting resetUnitCombatMovement");
 	}
 	
 	/**
@@ -925,7 +925,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final MemoryUnit findFirstAliveEnemyAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID)
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".findFirstAliveEnemyAtLocation: (" + x + ", " + y + ", " + plane + "), Player ID " + exceptPlayerID);
+		log.trace ("Entering findFirstAliveEnemyAtLocation: (" + x + ", " + y + ", " + plane + "), Player ID " + exceptPlayerID);
 
 		// The reason this is done separately from countAliveEnemiesAtLocation is because this routine can exit as
 		// soon as it finds the first matching unit, whereas countAliveEnemiesAtLocation always has to run over the entire list
@@ -942,7 +942,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				found = thisUnit;
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".findFirstAliveEnemyAtLocation = " +
+		log.trace ("Exiting findFirstAliveEnemyAtLocation = " +
 			((found == null) ? "Not Found" : "Unit URN" + found.getUnitURN ()));
 		return found;
 	}
@@ -958,7 +958,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final int countAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID)
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".countAliveEnemiesAtLocation: (" + x + ", " + y + ", " + plane + "), Player ID " + exceptPlayerID);
+		log.trace ("Entering countAliveEnemiesAtLocation: (" + x + ", " + y + ", " + plane + "), Player ID " + exceptPlayerID);
 
 		int count = 0;
 		for (final MemoryUnit thisUnit : units)
@@ -969,7 +969,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				count++;
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".countAliveEnemiesAtLocation = " + count);
+		log.trace ("Exiting countAliveEnemiesAtLocation = " + count);
 		return count;
 	}
 
@@ -983,7 +983,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final void beforeKillingUnit (final FogOfWarMemory mem, final int unitURN)
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".beforeKillingUnit: " + unitURN);
+		log.trace ("Entering beforeKillingUnit: " + unitURN);
 		
 		final Iterator<MemoryMaintainedSpell> iter = mem.getMaintainedSpell ().iterator ();
 		while (iter.hasNext ())
@@ -993,7 +993,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				iter.remove ();
 		}
 		
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".beforeKillingUnit");
+		log.trace ("Exiting beforeKillingUnit");
 	}
 
 	/**
@@ -1005,7 +1005,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition)
 	{
-		log.trace ("Entering " + UnitUtilsImpl.class.getName () + ".findAliveUnitInCombatAt: " + combatLocation + ", " + combatPosition);
+		log.trace ("Entering findAliveUnitInCombatAt: " + combatLocation + ", " + combatPosition);
 
 		MemoryUnit found = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
@@ -1019,7 +1019,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				found = thisUnit;
 		}
 
-		log.trace ("Exiting " + UnitUtilsImpl.class.getName () + ".findAliveUnitInCombatAt = " + found);
+		log.trace ("Exiting findAliveUnitInCombatAt = " + found);
 		return found;
 	}
 	

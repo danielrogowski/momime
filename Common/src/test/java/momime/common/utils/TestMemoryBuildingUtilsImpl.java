@@ -626,12 +626,12 @@ public final class TestMemoryBuildingUtilsImpl
 		when (db.findUnit (eq ("UN002"), anyString ())).thenReturn (dbUnitTwo);
 		
 		// Since the DB lookups throw RecordNotFoundException for not founds rather than outputting a null, we have to mock those too
-		when (db.findBuilding (eq ("UN001"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
-		when (db.findBuilding (eq ("UN002"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
-		when (db.findBuilding (eq ("Y"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
-		when (db.findUnit (eq ("BL01"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
-		when (db.findUnit (eq ("BL02"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
-		when (db.findUnit (eq ("Y"), anyString ())).thenThrow (new RecordNotFoundException (null, null, null));
+		when (db.findBuilding (eq ("UN001"), anyString ())).thenThrow (new RecordNotFoundException (Building.class, null, null));
+		when (db.findBuilding (eq ("UN002"), anyString ())).thenThrow (new RecordNotFoundException (Building.class, null, null));
+		when (db.findBuilding (eq ("Y"), anyString ())).thenThrow (new RecordNotFoundException (Building.class, null, null));
+		when (db.findUnit (eq ("BL01"), anyString ())).thenThrow (new RecordNotFoundException (Unit.class, null, null));
+		when (db.findUnit (eq ("BL02"), anyString ())).thenThrow (new RecordNotFoundException (Unit.class, null, null));
+		when (db.findUnit (eq ("Y"), anyString ())).thenThrow (new RecordNotFoundException (Unit.class, null, null));
 
 		// Building tests
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();

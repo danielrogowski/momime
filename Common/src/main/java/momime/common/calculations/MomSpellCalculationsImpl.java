@@ -32,7 +32,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class MomSpellCalculationsImpl implements MomSpellCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomSpellCalculationsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomSpellCalculationsImpl.class);
 	
 	/** Format used for doubles in debug messages */
 	private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat ("0.000");
@@ -64,7 +64,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering " + MomSpellCalculationsImpl.class.getName () + ".calculateCastingCostReduction: " + bookCount + ", " +
+		log.trace ("Entering calculateCastingCostReduction: " + bookCount + ", " +
 			spellSettings.getSpellBooksToObtainFirstReduction () + ", " + spellSettings.getSpellBooksCastingReduction () + ", " +
 			spellSettings.getSpellBooksCastingReductionCombination () + ", " + spellSettings.getSpellBooksCastingReductionCap () + ", " +
 			((spell == null) ? null : spell.getSpellID ()) + ", " + ((picks == null) ? null : picks.toString ()));
@@ -158,7 +158,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 		else
 			log.debug ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) + "%");
 
-		log.trace ("Exiting " + MomSpellCalculationsImpl.class.getName () + ".calculateCastingCostReduction = " + castingCostPercentageReduction);
+		log.trace ("Exiting calculateCastingCostReduction = " + castingCostPercentageReduction);
 		return castingCostPercentageReduction;
 	}
 
@@ -177,7 +177,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering " + MomSpellCalculationsImpl.class.getName () + ".calculateResearchBonus: " + bookCount + ", " +
+		log.trace ("Entering calculateResearchBonus: " + bookCount + ", " +
 			spellSettings.getSpellBooksToObtainFirstReduction () + ", " + spellSettings.getSpellBooksResearchBonus () + ", " +
 			spellSettings.getSpellBooksResearchBonusCombination () + ", " + spellSettings.getSpellBooksResearchBonusCap () + ", " +
 			((spell == null) ? null : spell.getSpellID ()) + ", " + ((picks == null) ? null : picks.toString ()));
@@ -271,7 +271,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 		else
 			log.debug ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) + "%");
 
-		log.trace ("Exiting " + MomSpellCalculationsImpl.class.getName () + ".calculateResearchBonus = " + researchPercentageBonus);
+		log.trace ("Exiting calculateResearchBonus = " + researchPercentageBonus);
 		return researchPercentageBonus;
 	}
 
@@ -291,7 +291,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 	public final Integer calculateDoubleCombatCastingRangePenalty (final PlayerPublicDetails player, final MapCoordinates3DEx combatLocation,
 		final boolean allowEitherPlane, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CoordinateSystem overlandMapCoordinateSystem)
 	{
-		log.trace ("Entering " + MomSpellCalculationsImpl.class.getName () + ".calculateDoubleCombatCastingRangePenalty: Player ID " +
+		log.trace ("Entering calculateDoubleCombatCastingRangePenalty: Player ID " +
 			player.getPlayerDescription ().getPlayerID () + ", " + combatLocation);
 			
 		// First need to find where the wizard's fortress is
@@ -323,7 +323,7 @@ public final class MomSpellCalculationsImpl implements MomSpellCalculations
 				penalty = 2;
 		}
 
-		log.trace ("Exiting " + MomSpellCalculationsImpl.class.getName () + ".calculateDoubleCombatCastingRangePenalty = " + penalty);
+		log.trace ("Exiting calculateDoubleCombatCastingRangePenalty = " + penalty);
 		return penalty;
 	}
 	

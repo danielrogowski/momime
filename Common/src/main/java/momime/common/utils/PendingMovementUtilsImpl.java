@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 public final class PendingMovementUtilsImpl implements PendingMovementUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (PendingMovementUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (PendingMovementUtilsImpl.class);
 	
 	/**
 	 * Cancels any pending moves for this unit
@@ -26,7 +26,7 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 	@Override
 	public final void removeUnitFromAnyPendingMoves (final List<PendingMovement> moves, final int unitURN)
 	{
-		log.trace ("Entering " + PendingMovementUtilsImpl.class.getName () + ".removeUnitFromAnyPendingMoves: Unit URN + " + unitURN);
+		log.trace ("Entering removeUnitFromAnyPendingMoves: Unit URN + " + unitURN);
 		
 		final Iterator<PendingMovement> movesIter = moves.iterator ();
 		while (movesIter.hasNext ())
@@ -50,7 +50,7 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 				movesIter.remove ();
 		}
 		
-		log.trace ("Exiting " + PendingMovementUtilsImpl.class.getName () + ".removeUnitFromAnyPendingMoves");
+		log.trace ("Exiting removeUnitFromAnyPendingMoves");
 	}
 	
 	/**
@@ -62,7 +62,7 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 	@Override
 	public final void removeAnyPendingMovesThatIncludeUnit (final List<PendingMovement> moves, final int unitURN)
 	{
-		log.trace ("Entering " + PendingMovementUtilsImpl.class.getName () + ".removeAnyPendingMovesThatIncludeUnit: Unit URN " + unitURN);
+		log.trace ("Entering removeAnyPendingMovesThatIncludeUnit: Unit URN " + unitURN);
 		
 		final Iterator<PendingMovement> movesIter = moves.iterator ();
 		while (movesIter.hasNext ())
@@ -72,6 +72,6 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 				movesIter.remove ();
 		}
 		
-		log.trace ("Exiting " + PendingMovementUtilsImpl.class.getName () + ".removeAnyPendingMovesThatIncludeUnit");
+		log.trace ("Exiting removeAnyPendingMovesThatIncludeUnit");
 	}
 }

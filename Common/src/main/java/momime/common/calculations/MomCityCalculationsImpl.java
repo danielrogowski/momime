@@ -55,7 +55,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class MomCityCalculationsImpl implements MomCityCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomCityCalculationsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomCityCalculationsImpl.class);
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -96,7 +96,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".calculateProductionBonus: " + cityLocation);
+		log.trace ("Entering calculateProductionBonus: " + cityLocation);
 
 		int productionBonus = 0;
 		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
@@ -115,7 +115,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			}
 		}
 
-		log.trace ("Exiting " + MomCityCalculationsImpl.class.getName () + ".calculateProductionBonus = " + productionBonus);
+		log.trace ("Exiting calculateProductionBonus = " + productionBonus);
 		return productionBonus;
 	}
 
@@ -132,7 +132,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".calculateGoldBonus: " + cityLocation);
+		log.trace ("Entering calculateGoldBonus: " + cityLocation);
 
 		// Deal with centre square
 		int goldBonus = 0;
@@ -164,7 +164,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			d++;
 		}
 
-		log.trace ("Exiting " + MomCityCalculationsImpl.class.getName () + ".calculateGoldBonus = " + goldBonus);
+		log.trace ("Exiting calculateGoldBonus = " + goldBonus);
 		return goldBonus;
 	}
 
@@ -179,7 +179,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	public final boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation, final Building building,
 		final CoordinateSystem overlandMapCoordinateSystem)
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".buildingPassesTileTypeRequirements: " + cityLocation + ", " + building.getBuildingID ());
+		log.trace ("Entering buildingPassesTileTypeRequirements: " + cityLocation + ", " + building.getBuildingID ());
 
 		// If there are no requirements then we're automatically fine
 		final boolean passes;
@@ -249,7 +249,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			passes = anyRequirementPassed;
 		}
 
-		log.trace ("Exiting " + MomCityCalculationsImpl.class.getName () + ".buildingPassesTileTypeRequirements = " + passes);
+		log.trace ("Exiting buildingPassesTileTypeRequirements = " + passes);
 		return passes;
 	}
 
@@ -270,7 +270,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".calculateMaxCitySize: " + cityLocation + ", " +
+		log.trace ("Entering calculateMaxCitySize: " + cityLocation + ", " +
 			sessionDescription.getDifficultyLevel ().getCityMaxSize () + ", " + includeBonusesFromMapFeatures + ", " + halveAndCapResult);
 
 		int maxCitySize = 0;
@@ -307,7 +307,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 				maxCitySize = sessionDescription.getDifficultyLevel ().getCityMaxSize ();
 		}
 
-		log.trace ("Exiting " + MomCityCalculationsImpl.class.getName () + ".calculateMaxCitySize = " + maxCitySize);
+		log.trace ("Exiting calculateMaxCitySize = " + maxCitySize);
 		return maxCitySize;
 	}
 
@@ -328,7 +328,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".calculateCityGrowthRate: " + cityLocation);
+		log.trace ("Entering calculateCityGrowthRate: " + cityLocation);
 
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -427,7 +427,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			baseGrowthRate, racialGrowthModifier, buildingsModifyingGrowthRateArray, totalGrowthRate, cappedGrowthRate,
 			baseDeathRate, cityDeathRate, finalTotal);
 
-		log.trace ("Exiting " + MomCityCalculationsImpl.class.getName () + ".calculateCityGrowthRate = " + finalTotal);
+		log.trace ("Exiting calculateCityGrowthRate = " + finalTotal);
 		return breakdown;
 	}
 
@@ -461,7 +461,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".calculateCityRebels: " + cityLocation);
+		log.trace ("Entering calculateCityRebels: " + cityLocation);
 
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
@@ -643,7 +643,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			racialLiteral, religiousBuildingRetortPercentage, religiousBuildingReduction, religiousBuildingRetortValue, unitCount, unitReduction, baseTotal,
 			forcePositive, forceAll, minimumFarmers, totalAfterFarmers, finalTotal, buildingsReducingUnrestArray, pickIdsContributingToReligiousBuildingBonus);
 
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".calculateCityRebels: " + finalTotal);
+		log.trace ("Entering calculateCityRebels: " + finalTotal);
 		return breakdown;
 	}
 
@@ -669,7 +669,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final CommonDatabase db, final boolean storeBreakdown)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".calculateAllCityProductions: " + cityLocation);
+		log.trace ("Entering calculateAllCityProductions: " + cityLocation);
 
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
@@ -841,7 +841,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		// Sort the list
 		Collections.sort (productionValues.getResults ());
 
-		log.trace ("Exiting " + MomCityCalculationsImpl.class.getName () + ".calculateAllCityProductions = " + productionValues);
+		log.trace ("Exiting calculateAllCityProductions = " + productionValues);
 		return productionValues;
 	}
 
@@ -867,7 +867,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".calculateSingleCityProduction: " + cityLocation);
+		log.trace ("Entering calculateSingleCityProduction: " + cityLocation);
 
 		// This is a right pain - ideally we want a cut down routine that scans only for this production type - however the Miners' Guild really
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
@@ -882,7 +882,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		else
 			netGain = singleProductionValue.getModifiedProductionAmount () - singleProductionValue.getConsumptionAmount ();
 
-		log.trace ("Exiting " + MomCityCalculationsImpl.class.getName () + ".calculateSingleCityProduction = " + netGain);
+		log.trace ("Exiting calculateSingleCityProduction = " + netGain);
 		return netGain;
 	}
 
@@ -894,7 +894,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	@Override
 	public final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map, final int onlyOnePlayerID)
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".blankBuildingsSoldThisTurn: Player ID " + onlyOnePlayerID);
+		log.trace ("Entering blankBuildingsSoldThisTurn: Player ID " + onlyOnePlayerID);
 
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
@@ -906,7 +906,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 						mc.setBuildingIdSoldThisTurn (null);
 				}
 
-		log.trace ("Exiting " + MomCityCalculationsImpl.class.getName () + ".blankBuildingsSoldThisTurn");
+		log.trace ("Exiting blankBuildingsSoldThisTurn");
 	}
 
 	/**
@@ -925,7 +925,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	public final MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
 		final int plane, final MapSizeData mapSize)
 	{
-		log.trace ("Entering " + MomCityCalculationsImpl.class.getName () + ".markWithinExistingCityRadius: " + plane);
+		log.trace ("Entering markWithinExistingCityRadius: " + plane);
 
 		final MapArea2D<Boolean> result = new MapArea2DArrayListImpl<Boolean> ();
 		result.setCoordinateSystem (mapSize);
@@ -941,7 +941,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 					op.selectRadius (result, x, y, mapSize.getCitySeparation ());
 			}
 
-		log.trace ("Exiting " + MomCityCalculationsImpl.class.getName () + ".markWithinExistingCityRadius");
+		log.trace ("Exiting markWithinExistingCityRadius");
 		return result;
 	}
 

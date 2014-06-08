@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 public final class ResourceValueUtilsImpl implements ResourceValueUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ResourceValueUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ResourceValueUtilsImpl.class);
 	
 	/** Skill calculations */
 	private MomSkillCalculations skillCalculations;
@@ -68,7 +68,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	@Override
 	public final int findAmountPerTurnForProductionType (final List<MomResourceValue> resourceList, final String productionTypeID)
 	{
-		log.trace ("Entering " + ResourceValueUtilsImpl.class.getName () + ".findAmountPerTurnForProductionType: " + productionTypeID);
+		log.trace ("Entering findAmountPerTurnForProductionType: " + productionTypeID);
 
 		final MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 
@@ -78,7 +78,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		else
 			result = playerResourceValue.getAmountPerTurn ();
 
-		log.trace ("Exiting " + ResourceValueUtilsImpl.class.getName () + ".findAmountPerTurnForProductionType = " + result);
+		log.trace ("Exiting findAmountPerTurnForProductionType = " + result);
 		return result;
 	}
 
@@ -90,7 +90,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	@Override
 	public final int findAmountStoredForProductionType (final List<MomResourceValue> resourceList, final String productionTypeID)
 	{
-		log.trace ("Entering " + ResourceValueUtilsImpl.class.getName () + ".findAmountStoredForProductionType: " + productionTypeID);
+		log.trace ("Entering findAmountStoredForProductionType: " + productionTypeID);
 
 		final MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 
@@ -100,7 +100,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		else
 			result = playerResourceValue.getAmountStored ();
 
-		log.trace ("Exiting " + ResourceValueUtilsImpl.class.getName () + ".findAmountStoredForProductionType = " + result);
+		log.trace ("Exiting findAmountStoredForProductionType = " + result);
 		return result;
 	}
 
@@ -112,7 +112,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	@Override
 	public final void addToAmountPerTurn (final List<MomResourceValue> resourceList, final String productionTypeID, final int amountToAdd)
 	{
-		log.trace ("Entering " + ResourceValueUtilsImpl.class.getName () + ".addToAmountPerTurn: " + productionTypeID + ", adding " + amountToAdd);
+		log.trace ("Entering addToAmountPerTurn: " + productionTypeID + ", adding " + amountToAdd);
 
 		MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 		if (playerResourceValue == null)
@@ -124,7 +124,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 
 		playerResourceValue.setAmountPerTurn (playerResourceValue.getAmountPerTurn () + amountToAdd);
 
-		log.trace ("Exiting " + ResourceValueUtilsImpl.class.getName () + ".addToAmountPerTurn");
+		log.trace ("Exiting addToAmountPerTurn");
 	}
 
 	/**
@@ -135,7 +135,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	@Override
 	public final void addToAmountStored (final List<MomResourceValue> resourceList, final String productionTypeID, final int amountToAdd)
 	{
-		log.trace ("Entering " + ResourceValueUtilsImpl.class.getName () + ".addToAmountStored: " + productionTypeID + ", adding " + amountToAdd);
+		log.trace ("Entering addToAmountStored: " + productionTypeID + ", adding " + amountToAdd);
 
 		MomResourceValue playerResourceValue = findResourceValue (resourceList, productionTypeID);
 		if (playerResourceValue == null)
@@ -147,7 +147,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 
 		playerResourceValue.setAmountStored (playerResourceValue.getAmountStored () + amountToAdd);
 
-		log.trace ("Exiting " + ResourceValueUtilsImpl.class.getName () + ".addToAmountStored");
+		log.trace ("Exiting addToAmountStored");
 	}
 
 	/**
@@ -159,12 +159,12 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	@Override
 	public final void zeroAmountsPerTurn (final List<MomResourceValue> resourceList)
 	{
-		log.trace ("Entering " + ResourceValueUtilsImpl.class.getName () + ".zeroAmountsPerTurn");
+		log.trace ("Entering zeroAmountsPerTurn");
 
 		for (final MomResourceValue playerResourceValue : resourceList)
 			playerResourceValue.setAmountPerTurn (0);
 
-		log.trace ("Exiting " + ResourceValueUtilsImpl.class.getName () + ".zeroAmountsPerTurn");
+		log.trace ("Exiting zeroAmountsPerTurn");
 	}
 
 	/**
@@ -176,12 +176,12 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	@Override
 	public final void zeroAmountsStored (final List<MomResourceValue> resourceList)
 	{
-		log.trace ("Entering " + ResourceValueUtilsImpl.class.getName () + ".zeroAmountsStored");
+		log.trace ("Entering zeroAmountsStored");
 
 		for (final MomResourceValue playerResourceValue : resourceList)
 			playerResourceValue.setAmountStored (0);
 
-		log.trace ("Exiting " + ResourceValueUtilsImpl.class.getName () + ".zeroAmountsStored");
+		log.trace ("Exiting zeroAmountsStored");
 	}
 
     /**
@@ -191,12 +191,12 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	@Override
 	public final int calculateCastingSkillOfPlayer (final List<MomResourceValue> resourceList)
 	{
-		log.trace ("Entering " + ResourceValueUtilsImpl.class.getName () + ".calculateCastingSkillOfPlayer");
+		log.trace ("Entering calculateCastingSkillOfPlayer");
 
 		final int playerSkillPoints = findAmountStoredForProductionType (resourceList, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 		final int result = getSkillCalculations ().getCastingSkillForSkillPoints (playerSkillPoints);
 
-		log.trace ("Exiting " + ResourceValueUtilsImpl.class.getName () + ".calculateCastingSkillOfPlayer = " + result);
+		log.trace ("Exiting calculateCastingSkillOfPlayer = " + result);
 		return result;
 	}
 
@@ -218,7 +218,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		final String productionTypeID, final SpellSettingData spellSettings, final CommonDatabase db)
     	throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering " + ResourceValueUtilsImpl.class.getName () + ".calculateAmountPerTurnForProductionType = " + productionTypeID);
+		log.trace ("Entering calculateAmountPerTurnForProductionType = " + productionTypeID);
 
 		// Find directly produced values - for research, this will give the amounts produced by libraries, universities, etc.
 		final MomResourceValue playerResourceValue = findResourceValue (privateInfo.getResourceValue (), productionTypeID);
@@ -307,7 +307,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 
 		final int result = rawAmountPerTurn + amountPerTurnFromMagicPower + amountPerTurnFromPercentageBonuses;
 
-		log.trace ("Exiting " + ResourceValueUtilsImpl.class.getName () + ".calculateAmountPerTurnForProductionType = " + result);
+		log.trace ("Exiting calculateAmountPerTurnForProductionType = " + result);
 		return result;
 	}
 

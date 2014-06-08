@@ -26,7 +26,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MemoryBuildingUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MemoryBuildingUtilsImpl.class);
 	
 	/**
 	 * Checks to see if the specified building exists
@@ -39,7 +39,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	public final boolean findBuilding (final List<MemoryBuilding> buildingsList,
 		final MapCoordinates3DEx cityLocation, final String buildingID)
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".findBuilding: " + cityLocation + ", " + buildingID);
+		log.trace ("Entering findBuilding: " + cityLocation + ", " + buildingID);
 
 		boolean found = false;
 		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
@@ -50,7 +50,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 				found = true;
 		}
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".findBuilding = " + found);
+		log.trace ("Exiting findBuilding = " + found);
 		return found;
 	}
 
@@ -66,7 +66,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 		final MapCoordinates3DEx cityLocation, final String buildingID)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".destroyBuilding: " + cityLocation + ", " + buildingID);
+		log.trace ("Entering destroyBuilding: " + cityLocation + ", " + buildingID);
 
 		boolean found = false;
 		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
@@ -81,9 +81,9 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 		}
 
 		if (!found)
-			throw new RecordNotFoundException (MemoryBuilding.class.getName (), cityLocation + " - " + buildingID, "destroyBuilding");
+			throw new RecordNotFoundException (MemoryBuilding.class, cityLocation + " - " + buildingID, "destroyBuilding");
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".destroyBuilding");
+		log.trace ("Exiting destroyBuilding");
 	}
 
 	/**
@@ -97,7 +97,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	public final MapCoordinates3DEx findCityWithBuilding (final int playerID, final String buildingID, final MapVolumeOfMemoryGridCells map,
 		final List<MemoryBuilding> buildings)
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".findCityWithBuilding: Player ID " + playerID + ", " + buildingID);
+		log.trace ("Entering findCityWithBuilding: Player ID " + playerID + ", " + buildingID);
 
 		MapCoordinates3DEx found = null;
 		final Iterator<MemoryBuilding> iter = buildings.iterator ();
@@ -113,7 +113,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 				found = coords;
 		}
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".findCityWithBuilding = " + found);
+		log.trace ("Exiting findCityWithBuilding = " + found);
 		return found;
 	}
 
@@ -128,7 +128,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	public final boolean meetsBuildingRequirements (final List<MemoryBuilding> buildingsList,
 		final MapCoordinates3DEx cityLocation, final Building building)
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".meetsBuildingRequirements: " + cityLocation + ", " + building.getBuildingID ());
+		log.trace ("Entering meetsBuildingRequirements: " + cityLocation + ", " + building.getBuildingID ());
 
 		boolean result = true;
 		final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
@@ -136,7 +136,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 			if (!findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()))
 				result = false;
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".meetsBuildingRequirements = " + result);
+		log.trace ("Exiting meetsBuildingRequirements = " + result);
 		return result;
 	}
 
@@ -150,7 +150,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	@Override
 	public final boolean meetsUnitRequirements (final List<MemoryBuilding> buildingsList, final MapCoordinates3DEx cityLocation, final Unit unit)
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".meetsUnitRequirements: " + cityLocation + ", " + unit.getUnitID ());
+		log.trace ("Entering meetsUnitRequirements: " + cityLocation + ", " + unit.getUnitID ());
 
 		boolean result = true;
 		final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
@@ -158,7 +158,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 			if (!findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()))
 				result = false;
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".meetsUnitRequirements = " + result);
+		log.trace ("Exiting meetsUnitRequirements = " + result);
 		return result;
 	}
 
@@ -175,7 +175,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	public final String doAnyBuildingsDependOn (final List<MemoryBuilding> buildingsList, final MapCoordinates3DEx cityLocation,
 		final String buildingID, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".doAnyBuildingsDependOn: " + cityLocation + ", " + buildingID);
+		log.trace ("Entering doAnyBuildingsDependOn: " + cityLocation + ", " + buildingID);
 
 		String result = null;
 		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
@@ -195,7 +195,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 			}
 		}
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".doAnyBuildingsDependOn = " + result);
+		log.trace ("Exiting doAnyBuildingsDependOn = " + result);
 		return result;
 	}
 
@@ -209,7 +209,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	public final boolean isBuildingAPrerequisiteFor (final String buildingID, final String buildingOrUnitID,
 		final CommonDatabase db)
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".isBuildingAPrerequisiteFor: " + buildingID + ", " + buildingOrUnitID);
+		log.trace ("Entering isBuildingAPrerequisiteFor: " + buildingID + ", " + buildingOrUnitID);
 
 		boolean result = false;
 
@@ -240,7 +240,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 			// Ignore, it could be a unit
 		}
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".isBuildingAPrerequisiteFor = " + result);
+		log.trace ("Exiting isBuildingAPrerequisiteFor = " + result);
 		return result;
 	}
 
@@ -256,7 +256,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	public final int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
 		final MapCoordinates3DEx cityLocation, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".experienceFromBuildings: " + cityLocation);
+		log.trace ("Entering experienceFromBuildings: " + cityLocation);
 
 		// Check all buildings at this location
 		int result = 0;
@@ -268,7 +268,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 					result = Math.max (result, exp);
 			}
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".experienceFromBuildings = " + result);
+		log.trace ("Exiting experienceFromBuildings = " + result);
 		return result;
 	}
 
@@ -288,7 +288,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 		final MapCoordinates3DEx cityLocation, final String populationTaskID, final String productionTypeID,
 		final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".totalBonusProductionPerPersonFromBuildings: " + cityLocation);
+		log.trace ("Entering totalBonusProductionPerPersonFromBuildings: " + cityLocation);
 
 		// Check all buildings at this location
 		int doubleAmount = 0;
@@ -301,7 +301,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 					if ((populationTaskID.equals (modifier.getPopulationTaskID ())) && (productionTypeID.equals (modifier.getProductionTypeID ())))
 						doubleAmount = doubleAmount + modifier.getDoubleAmount ();
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".totalBonusProductionPerPersonFromBuildings = " + doubleAmount);
+		log.trace ("Exiting totalBonusProductionPerPersonFromBuildings = " + doubleAmount);
 		return doubleAmount;
 	}
 
@@ -315,7 +315,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	public final int findBuildingConsumption (final Building building, final String productionTypeID)
 		throws MomException
 	{
-		log.trace ("Entering " + MemoryBuildingUtilsImpl.class.getName () + ".findBuildingConsumption: " +building.getBuildingID () + ", " + productionTypeID);
+		log.trace ("Entering findBuildingConsumption: " +building.getBuildingID () + ", " + productionTypeID);
 
 		// Find the right type of production
 		int consumptionAmount = 0;
@@ -338,7 +338,7 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 				}
 		}
 
-		log.trace ("Exiting " + MemoryBuildingUtilsImpl.class.getName () + ".findBuildingConsumption = " + consumptionAmount);
+		log.trace ("Exiting findBuildingConsumption = " + consumptionAmount);
 		return consumptionAmount;
 	}
 

@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MemoryGridCellUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MemoryGridCellUtilsImpl.class);
 	
 	/**
 	 * This is used because the data structures hold blank for an unknown tile type that we can't see, but the XML files
@@ -74,13 +74,13 @@ public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 	@Override
 	public final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map)
 	{
-		log.trace ("Entering " + MemoryGridCellUtilsImpl.class.getName () + ".blankBuildingsSoldThisTurn");
+		log.trace ("Entering blankBuildingsSoldThisTurn");
 
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 					cell.setBuildingIdSoldThisTurn (null);
 
-		log.trace ("Exiting " + MemoryGridCellUtilsImpl.class.getName () + ".blankBuildingsSoldThisTurn");
+		log.trace ("Exiting blankBuildingsSoldThisTurn");
 	}
 }

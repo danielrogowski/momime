@@ -31,4 +31,26 @@ public final class RecordNotFoundException extends IOException
 	{
 		this (table, new Integer (keyValue).toString (), caller);
 	}
+
+	/**
+	 * Creates an exception for failing to find a record in a table with a single String primary key
+	 * @param table The table (or XML record type) where we're searching for a particular record
+	 * @param keyValue The value of the primary key we were expecting to find
+	 * @param caller The routine that was looking for the value
+	 */
+	public RecordNotFoundException (final Class<?> table, final String keyValue, final String caller)
+	{
+		this (table.getName (), keyValue, caller);
+	}
+
+	/**
+	 * Creates an exception for failing to find a record in a table with a single integer primary key
+	 * @param table The table (or XML record type) where we're searching for a particular record
+	 * @param keyValue The value of the primary key we were expecting to find
+	 * @param caller The routine that was looking for the value
+	 */
+	public RecordNotFoundException (final Class<?> table, final int keyValue, final String caller)
+	{
+		this (table.getName (), keyValue, caller);
+	}
 }

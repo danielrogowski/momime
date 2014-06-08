@@ -19,7 +19,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 {
 	/** Class logger */
-	final Log log = LogFactory.getLog (ScheduledCombatUtilsImpl.class.getName ());
+	final Log log = LogFactory.getLog (ScheduledCombatUtilsImpl.class);
 
 	/**
 	 * @param combats List of scheduled combats to search
@@ -29,7 +29,7 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 	@Override
 	public final MomScheduledCombat findScheduledCombatURN (final List<MomScheduledCombat> combats, final Integer scheduledCombatURN)
 	{
-		log.trace ("Entering " + ScheduledCombatUtilsImpl.class.getName () + ".findScheduledCombatURN: " + scheduledCombatURN);
+		log.trace ("Entering findScheduledCombatURN: " + scheduledCombatURN);
 
 		MomScheduledCombat found = null;
 		final Iterator<MomScheduledCombat> iter = combats.iterator ();
@@ -40,7 +40,7 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 				found = thisCombat;
 		}
 		
-		log.trace ("Exiting " + ScheduledCombatUtilsImpl.class.getName () + ".findScheduledCombatURN = " + found);
+		log.trace ("Exiting findScheduledCombatURN = " + found);
 		return found;
 	}
 
@@ -55,14 +55,14 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 	public final MomScheduledCombat findScheduledCombatURN (final List<MomScheduledCombat> combats, final Integer scheduledCombatURN, final String caller)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + ScheduledCombatUtilsImpl.class.getName () + ".findScheduledCombatURN: " + scheduledCombatURN);
+		log.trace ("Entering findScheduledCombatURN: " + scheduledCombatURN);
 
 		final MomScheduledCombat found = findScheduledCombatURN (combats, scheduledCombatURN);
 		
 		if (found == null)
 			throw new RecordNotFoundException ("ScheduledCombats", scheduledCombatURN, caller);
 		
-		log.trace ("Exiting " + ScheduledCombatUtilsImpl.class.getName () + ".findScheduledCombatURN = " + found);
+		log.trace ("Exiting findScheduledCombatURN = " + found);
 		return found;
 	}
 	
@@ -77,8 +77,7 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 	public final PlayerPublicDetails determineOtherHumanPlayer (final MomScheduledCombat combat, final PlayerPublicDetails besidesWho, final List<? extends PlayerPublicDetails> players)
 		throws PlayerNotFoundException
 	{
-		log.trace ("Entering " + ScheduledCombatUtilsImpl.class.getName () + ".determineOtherHumanPlayer: " + 
-			combat.getScheduledCombatURN () + ", Player ID " + besidesWho.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering determineOtherHumanPlayer: " + combat.getScheduledCombatURN () + ", Player ID " + besidesWho.getPlayerDescription ().getPlayerID ());
 		
 		final PlayerPublicDetails ohp;
 		if (combat.isWalkInWithoutAFight ())
@@ -104,8 +103,7 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 			}			
 		}
 		
-		log.trace ("Exiting " + ScheduledCombatUtilsImpl.class.getName () + ".determineOtherHumanPlayer = " +
-			((ohp == null) ? "null" : ohp.getPlayerDescription ().getPlayerID ().toString ()));
+		log.trace ("Exiting determineOtherHumanPlayer = " + ((ohp == null) ? "null" : ohp.getPlayerDescription ().getPlayerID ().toString ()));
 		return ohp;
 	}
 }

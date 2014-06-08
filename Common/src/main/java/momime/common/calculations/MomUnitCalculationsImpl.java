@@ -50,7 +50,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class MomUnitCalculationsImpl implements MomUnitCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomUnitCalculationsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomUnitCalculationsImpl.class);
 	
 	/** Initial state where each combat map tile hasn't been checked yet */ 
 	private final static int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
@@ -85,7 +85,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
 		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MomUnitCalculationsImpl.class.getName () + ".calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort: " + cityLocation);
+		log.trace ("Entering calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort: " + cityLocation);
 
 		// First look for a building that grants magical weapons, i.e. an Alchemists' Guild
 		int bestWeaponGrade = 0;
@@ -122,7 +122,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		if (weaponGradeFromPicks > bestWeaponGrade)
 			bestWeaponGrade = weaponGradeFromPicks;
 
-		log.trace ("Exiting " + MomUnitCalculationsImpl.class.getName () + ".calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort = " + bestWeaponGrade);
+		log.trace ("Exiting calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort = " + bestWeaponGrade);
 		return bestWeaponGrade;
 	}
 
@@ -527,7 +527,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering " + MomUnitCalculationsImpl.class.getName () + ".calculateCombatMovementDistances: Unit URN " + unitBeingMoved.getUnitURN ());
+		log.trace ("Entering calculateCombatMovementDistances: Unit URN " + unitBeingMoved.getUnitURN ());
 
 		// Create other areas
 		final boolean [] [] ourUnits = new boolean [combatMapCoordinateSystem.getHeight ()] [combatMapCoordinateSystem.getWidth ()];
@@ -588,7 +588,7 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 						doubleMovementDistances [y] [x] = 999;
 					}
 		
-		log.trace ("Exiting " + MomUnitCalculationsImpl.class.getName () + ".calculateCombatMovementDistances");
+		log.trace ("Exiting calculateCombatMovementDistances");
 	}
 	
 	/**

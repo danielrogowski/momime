@@ -24,7 +24,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpellUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MemoryMaintainedSpellUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MemoryMaintainedSpellUtilsImpl.class);
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -52,8 +52,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		final Integer castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
 	{
-		log.trace ("Entering " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".findMaintainedSpell: Player ID " +
-			castingPlayerID + ", " + spellID + ", Unit URN " + unitURN + ", " + unitSkillID + ", " + cityLocation + ", " + citySpellEffectID);
+		log.trace ("Entering findMaintainedSpell: Player ID " + castingPlayerID + ", " + spellID + ", Unit URN " + unitURN + ", " + unitSkillID + ", " + cityLocation + ", " + citySpellEffectID);
 
 		MemoryMaintainedSpell match = null;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
@@ -72,7 +71,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 				match = thisSpell;
 		}
 
-		log.trace ("Exiting " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".findMaintainedSpell = " + match);
+		log.trace ("Exiting findMaintainedSpell = " + match);
 		return match;
 	}
 
@@ -94,8 +93,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".switchOffMaintainedSpell: Player ID " +
-			castingPlayerID + ", " + spellID + ", Unit URN " + unitURN + ", " + unitSkillID + ", " + cityLocation + ", " + citySpellEffectID);
+		log.trace ("Entering switchOffMaintainedSpell: Player ID " + castingPlayerID + ", " + spellID + ", Unit URN " + unitURN + ", " + unitSkillID + ", " + cityLocation + ", " + citySpellEffectID);
 
 		boolean found = false;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
@@ -116,9 +114,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		}
 
 		if (!found)
-			throw new RecordNotFoundException (MemoryMaintainedSpell.class.getName (), spellID + " - " + castingPlayerID, "switchOffMaintainedSpell");
+			throw new RecordNotFoundException (MemoryMaintainedSpell.class, spellID + " - " + castingPlayerID, "switchOffMaintainedSpell");
 
-		log.trace ("Exiting " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".switchOffMaintainedSpell");
+		log.trace ("Exiting switchOffMaintainedSpell");
 	}
 
 	/**
@@ -130,7 +128,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	@Override
 	public final void removeSpellsCastOnUnitStack (final List<MemoryMaintainedSpell> spells, final List<Integer> unitURNs)
 	{
-    	log.trace ("Entering " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".removeSpellsCastOnUnitStack: " + unitURNs);
+    	log.trace ("Entering removeSpellsCastOnUnitStack: " + unitURNs);
 
     	int numberRemoved = 0;
 
@@ -146,7 +144,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		}
     	}
 
-    	log.trace ("Exiting " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".removeSpellsCastOnUnitStack = " + numberRemoved);
+    	log.trace ("Exiting removeSpellsCastOnUnitStack = " + numberRemoved);
 	}
 
 	/**
@@ -163,7 +161,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final List<String> listUnitSpellEffectsNotYetCastOnUnit (final List<MemoryMaintainedSpell> spells, final Spell spell,
 		final int castingPlayerID, final int unitURN)
 	{
-    	log.trace ("Entering " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".listUnitSpellEffectsNotYetCastOnUnit: " + spell.getSpellID () + ", Unit URN " + unitURN);
+    	log.trace ("Entering listUnitSpellEffectsNotYetCastOnUnit: " + spell.getSpellID () + ", Unit URN " + unitURN);
     	
     	final List<String> unitSpellEffectIDs;
     	
@@ -177,7 +175,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     				unitSpellEffectIDs.add (effect.getUnitSkillID ());
     	}
 
-    	log.trace ("Exiting " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".listUnitSpellEffectsNotYetCastOnUnit = " + unitSpellEffectIDs);
+    	log.trace ("Exiting listUnitSpellEffectsNotYetCastOnUnit = " + unitSpellEffectIDs);
     	return unitSpellEffectIDs;
 	}
 	
@@ -196,7 +194,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final List<String> listCitySpellEffectsNotYetCastAtLocation (final List<MemoryMaintainedSpell> spells, final Spell spell,
 		final int castingPlayerID, final MapCoordinates3DEx cityLocation)
 	{
-    	log.trace ("Entering " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".listCitySpellEffectsNotYetCastAtLocation: " + spell.getSpellID () + ", " + cityLocation);
+    	log.trace ("Entering listCitySpellEffectsNotYetCastAtLocation: " + spell.getSpellID () + ", " + cityLocation);
     	
     	final List<String> citySpellEffectIDs;
     	
@@ -210,7 +208,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
    					citySpellEffectIDs.add (effect.getCitySpellEffectID ());
     	}
 
-    	log.trace ("Exiting " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".listCitySpellEffectsNotYetCastAtLocation = " + citySpellEffectIDs);
+    	log.trace ("Exiting listCitySpellEffectsNotYetCastAtLocation = " + citySpellEffectIDs);
     	return citySpellEffectIDs;
 	}
 
@@ -232,7 +230,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final TargetUnitSpellResult isUnitValidTargetForSpell (final List<MemoryMaintainedSpell> spells,
 		final Spell spell, final int castingPlayerID, final MemoryUnit unit, final CommonDatabase db) throws RecordNotFoundException
 	{
-    	log.trace ("Entering " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID);
+    	log.trace ("Entering isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID);
     	
     	final TargetUnitSpellResult result;
     	
@@ -261,7 +259,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			result = TargetUnitSpellResult.INVALID_MAGIC_REALM_LIFEFORM_TYPE;
     	}
 
-    	log.trace ("Exiting " + MemoryMaintainedSpellUtilsImpl.class.getName () + ".isUnitValidTargetForSpell = " + result);
+    	log.trace ("Exiting isUnitValidTargetForSpell = " + result);
     	return result;
 	}
 

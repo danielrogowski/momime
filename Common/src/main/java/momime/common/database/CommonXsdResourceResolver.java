@@ -19,7 +19,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionBaseConstants;
 public class CommonXsdResourceResolver implements LSResourceResolver
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CommonXsdResourceResolver.class.getName ());
+	private final Log log = LogFactory.getLog (CommonXsdResourceResolver.class);
 	
 	/** Full URI of the xsd: namespace */
 	protected static final String XSD_URI = "http://www.w3.org/2001/XMLSchema";
@@ -50,7 +50,7 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 	@SuppressWarnings ("resource")
 	protected InputStream resolveResourceToStream (final String type, final String namespaceURI, final String publicId, final String systemId, final String baseURI)
 	{
-		log.trace ("Entering " + CommonXsdResourceResolver.class.getName () + ".resolveResourceToStream: " +
+		log.trace ("Entering resolveResourceToStream: " +
 			type + ", " + namespaceURI + ", " + publicId + ", " + systemId + ", " + baseURI);
 
 		final InputStream result;
@@ -92,7 +92,7 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 		else
 			result = null;
 
-		log.trace ("Exiting " + CommonXsdResourceResolver.class.getName () + ".resolveResourceToStream: " + result);
+		log.trace ("Exiting resolveResourceToStream: " + result);
 		return result;
 	}
 
@@ -109,7 +109,7 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 	@SuppressWarnings ("resource")
 	public final LSInput resolveResource (final String type, final String namespaceURI, final String publicId, final String systemId, final String baseURI)
 	{
-		log.trace ("Entering " + CommonXsdResourceResolver.class.getName () + ".resolveResource: " +
+		log.trace ("Entering resolveResource: " +
 			type + ", " + namespaceURI + ", " + publicId + ", " + systemId + ", " + baseURI);
 
 		final InputStream stream = resolveResourceToStream (type, namespaceURI, publicId, systemId, baseURI);
@@ -129,7 +129,7 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 			result.setByteStream (stream);
 		}
 
-		log.trace ("Exiting " + CommonXsdResourceResolver.class.getName () + ".resolveResource: " + result);
+		log.trace ("Exiting resolveResource: " + result);
 		return result;
 	}
 }

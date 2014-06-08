@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 public final class PlayerPickUtilsImpl implements PlayerPickUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (PlayerPickUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (PlayerPickUtilsImpl.class);
 	
 	/**
 	 * @param srcPicks List of picks to copy
@@ -54,13 +54,13 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	public final int getTotalPickCost (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".getTotalPickCost");
+		log.trace ("Entering getTotalPickCost");
 
 		int result = 0;
 		for (final PlayerPick thisPick : picks)
 			result = result + (db.findPick (thisPick.getPickID (), "getTotalPickCost").getPickCost () * thisPick.getQuantity ());
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".getTotalPickCost = " + result);
+		log.trace ("Exiting getTotalPickCost = " + result);
 		return result;
 	}
 
@@ -73,7 +73,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	@Override
 	public final int getQuantityOfPick (final List<PlayerPick> picks, final String pickID)
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".getQuantityOfPick: " + pickID);
+		log.trace ("Entering getQuantityOfPick: " + pickID);
 
 		int result = 0;
 		final Iterator<PlayerPick> iter = picks.iterator ();
@@ -84,7 +84,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 				result = thisPick.getQuantity ();
 		}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".getQuantityOfPick = " + result);
+		log.trace ("Exiting getQuantityOfPick = " + result);
 		return result;
 	}
 
@@ -100,7 +100,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	@Override
 	public final void updatePickQuantity (final List<PlayerPick> picks, final String pickID, final int changeInQuantity)
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".updatePickQuantity: " + pickID + ", " + changeInQuantity);
+		log.trace ("Entering updatePickQuantity: " + pickID + ", " + changeInQuantity);
 
 		String result = null;
 
@@ -137,7 +137,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 				result = "No existing entry, but changeInQuantity <= 0, so done nothing";
 		}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".updatePickQuantity = " + result);
+		log.trace ("Exiting updatePickQuantity = " + result);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	public final int countPicksOfType (final List<PlayerPick> picks, final String pickTypeID, final boolean original, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".countPicksOfType: " + pickTypeID);
+		log.trace ("Entering countPicksOfType: " + pickTypeID);
 
 		int result = 0;
 		for (final PlayerPick thisPick : picks)
@@ -164,7 +164,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 					result = result + thisPick.getQuantity ();
 			}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".countPicksOfType = " + result);
+		log.trace ("Exiting countPicksOfType = " + result);
 		return result;
 	}
 
@@ -181,7 +181,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	private final String findMostAppropriatePickToSatisfy (final List<PlayerPick> picks, final String desiredPickTypeID, final int desiredCount, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".findMostAppropriatePickToSatisfy: " + desiredPickTypeID + ", " + desiredCount);
+		log.trace ("Entering findMostAppropriatePickToSatisfy: " + desiredPickTypeID + ", " + desiredCount);
 
 		String bestPick = null;
 		int bestPickCount = Integer.MAX_VALUE;
@@ -199,7 +199,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 					bestPickCount = thisPick.getQuantity ();
 				}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".findMostAppropriatePickToSatisfy = " + bestPick);
+		log.trace ("Exiting findMostAppropriatePickToSatisfy = " + bestPick);
 		return bestPick;
 	}
 
@@ -217,7 +217,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	public final boolean meetsPickRequirements (final Pick pick, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".meetsPickRequirements: " + pick.getPickID ());
+		log.trace ("Entering meetsPickRequirements: " + pick.getPickID ());
 
 		boolean result = true;
 
@@ -265,7 +265,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 			}
 		}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".meetsPickRequirements = " + result);
+		log.trace ("Exiting meetsPickRequirements = " + result);
 		return result;
 	}
 
@@ -278,7 +278,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	private final boolean allRequirementsMet (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".allRequirementsMet");
+		log.trace ("Entering allRequirementsMet");
 
 		boolean result = true;
 		final Iterator<PlayerPick> iter = picks.iterator ();
@@ -287,7 +287,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 			if (!meetsPickRequirements (db.findPick (iter.next ().getPickID (), "allRequirementsMet"), picks, db))
 				result = false;
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".allRequirementsMet = " + result);
+		log.trace ("Exiting allRequirementsMet = " + result);
 		return result;
 	}
 
@@ -305,7 +305,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	public final boolean canSafelyRemove (final String pickID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".canSafelyRemove: " + pickID);
+		log.trace ("Entering canSafelyRemove: " + pickID);
 
 		// First check we actually have one of the pick to remove
 		final boolean result;
@@ -324,7 +324,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 			result = allRequirementsMet (testList, db);
 		}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".canSafelyRemove = " + result);
+		log.trace ("Exiting canSafelyRemove = " + result);
 		return result;
 	}
 
@@ -339,7 +339,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	@Override
 	public final boolean canSafelyAdd (final Pick pick, final List<PlayerPick> picks)
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".canSafelyAdd: " + pick.getPickID ());
+		log.trace ("Entering canSafelyAdd: " + pick.getPickID ());
 
 		boolean result = true;
 		for (final PickExclusiveFrom thisExclusive : pick.getPickExclusiveFrom ())
@@ -351,7 +351,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 				result = false;
 		}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".canSafelyAdd = " + result);
+		log.trace ("Exiting canSafelyAdd = " + result);
 		return result;
 	}
 
@@ -368,7 +368,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	public final int getHighestWeaponGradeGrantedByPicks (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".getHighestWeaponGradeGrantedByPicks");
+		log.trace ("Entering getHighestWeaponGradeGrantedByPicks");
 
 		int result = 0;
 		for (final PlayerPick thisPick : picks)
@@ -378,7 +378,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 				result = Math.max (result, thisValue);
 		}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".getHighestWeaponGradeGrantedByPicks = " + result);
+		log.trace ("Exiting getHighestWeaponGradeGrantedByPicks = " + result);
 		return result;
 	}
 
@@ -394,7 +394,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	public final int totalReligiousBuildingBonus (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".totalReligiousBuildingBonus");
+		log.trace ("Entering totalReligiousBuildingBonus");
 
 		int result = 0;
 		for (final PlayerPick thisPick : picks)
@@ -404,7 +404,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 				result = result + (thisValue * thisPick.getQuantity ());
 		}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".totalReligiousBuildingBonus = " + result);
+		log.trace ("Exiting totalReligiousBuildingBonus = " + result);
 		return result;
 	}
 
@@ -420,7 +420,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	public final List<String> pickIdsContributingToReligiousBuildingBonus (final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".pickIdsContributingToReligiousBuildingBonus");
+		log.trace ("Entering pickIdsContributingToReligiousBuildingBonus");
 
 		final List<String> result = new ArrayList<String> ();
 		for (final PlayerPick thisPick : picks)
@@ -430,7 +430,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 				result.add (thisPick.getPickID ());
 		}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".pickIdsContributingToReligiousBuildingBonus = " + result);
+		log.trace ("Exiting pickIdsContributingToReligiousBuildingBonus = " + result);
 		return result;
 	}
 
@@ -450,12 +450,12 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	public final int totalProductionBonus (final String productionTypeID, final String unitTypeID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering " + PlayerPickUtilsImpl.class.getName () + ".totalProductionBonus: " + productionTypeID + ", " + unitTypeID);
+		log.trace ("Entering totalProductionBonus: " + productionTypeID + ", " + unitTypeID);
 
 		if ((productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH)) ||
 			(productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SPELL_COST_REDUCTION)))
 
-			throw new InvalidParameterException (PlayerPickUtilsImpl.class.getName () + ".totalProductionBonus should never be used to calculate spell cost reductions or research bonuses since these have special rules for how the bonuses are combined together");
+			throw new InvalidParameterException (PlayerPickUtilsImpl.class + ".totalProductionBonus should never be used to calculate spell cost reductions or research bonuses since these have special rules for how the bonuses are combined together");
 
 		int result = 0;
 		for (final PlayerPick thisPick : picks)
@@ -469,7 +469,7 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 						result = result + (bonus.getPercentageBonus () * thisPick.getQuantity ());
 				}
 
-		log.trace ("Exiting " + PlayerPickUtilsImpl.class.getName () + ".totalProductionBonus = " + result);
+		log.trace ("Exiting totalProductionBonus = " + result);
 		return result;
 	}
 }

@@ -13,12 +13,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import com.ndg.graphics.lbx.LbxImageReaderSpi;
 import com.ndg.graphics.ndgbmp.NdgBmpReaderSpi;
 import com.ndg.graphics.ndgbmp.NdgBmpWriterSpi;
+import com.ndg.swing.NdgUIManagerImpl;
 
 /**
  * Tests the image cache, and that it will load in specialised image formats like .ndgbmp files contained in .ndgarc files
@@ -31,15 +31,7 @@ public class ImageCacheAndFormatsDemo
 	 */
 	public static void main (final String [] args)
 	{
-		// Switch to Windows look and feel if available, otherwise the open/save dialogs look gross
-		try
-		{
-			UIManager.setLookAndFeel ("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		}
-		catch (final Exception e)
-		{
-			// Don't worry if can't switch look and feel
-		}
+		new NdgUIManagerImpl ().useNimbusLookAndFeel ();
 
 		// Force registration of .ndgbmp and .lbx formats (externally, this would happen via the META-INF/services method in the JAR file)
 		IIORegistry.getDefaultInstance ().registerServiceProvider (new LbxImageReaderSpi ());

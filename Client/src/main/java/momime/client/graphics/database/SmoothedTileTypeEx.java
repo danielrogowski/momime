@@ -5,13 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
-
-import com.ndg.random.RandomUtils;
 
 import momime.client.graphics.database.v0_9_5.SmoothedTile;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.common.database.RecordNotFoundException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.random.RandomUtils;
 
 /**
  * Provides a map so we can go directly from an unsmoothed bitmask to a random tile image,
@@ -20,7 +22,7 @@ import momime.common.database.RecordNotFoundException;
 public final class SmoothedTileTypeEx extends SmoothedTileType
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SmoothedTileTypeEx.class.getName ());
+	private final Log log = LogFactory.getLog (SmoothedTileTypeEx.class);
 
 	/** Map of unsmoothed bitmasks to sets of possible images */
 	private final Map<String, List<SmoothedTile>> bitmasksMap = new HashMap<String, List<SmoothedTile>> ();
@@ -36,9 +38,8 @@ public final class SmoothedTileTypeEx extends SmoothedTileType
 	 */
 	final void buildMap (final Map<String, List<String>> smoothingSystemBitmasksMap) throws RecordNotFoundException
 	{
-		log.entering (SmoothingSystemEx.class.getName (), "buildMap", new String []
-			{getTileTypeID (), getSecondaryTileTypeID (), getTertiaryTileTypeID (), getCombatTileTypeID (), getSmoothingSystemID (),
-			(getPlaneNumber () == null) ? "null" : getPlaneNumber ().toString ()});
+		log.trace ("Entering buildMap: " + getTileTypeID () + ", "+ getSecondaryTileTypeID () + ", " + getTertiaryTileTypeID () + ", " +
+			getCombatTileTypeID () + ", " + getSmoothingSystemID () + ", " + getPlaneNumber ());
 		
 		// For many tiles there are multiple possible images, e.g. there's multiple forest images so all large areas of forest don't look repetitive.
 		// So, step 1 is to put these in a map so we can go from a *smoothed* bitmask to all of its possible images.
@@ -57,7 +58,7 @@ public final class SmoothedTileTypeEx extends SmoothedTileType
 			// Add bitmask to the list
 			images.add (tile);
 		}
-		log.finest ("Graphics XML contains " + smoothedMap.size () + " unique smoothed bitmasks for this tile set"); 
+		log.debug ("Graphics XML contains " + smoothedMap.size () + " unique smoothed bitmasks for this tile set"); 
 		
 		// Now step 2 we can use the smoothing system map to convert this into a map so we can go from an *unsmoothed* bitmask to all of its possible images.
 		// And doing it like this means we reuse the image lists, rather than repeating it each time a smoothed bitmask is repeated.
@@ -66,20 +67,20 @@ public final class SmoothedTileTypeEx extends SmoothedTileType
 			// There had better be at least one image defined for it
 			final List<SmoothedTile> images = smoothedMap.get (smoothedBitmask.getKey ());
 			if (images == null)
-				throw new RecordNotFoundException (SmoothedTile.class.getName (), smoothedBitmask.getKey (), "SmoothedTileTypeEx.buildMaps");
+				throw new RecordNotFoundException (SmoothedTile.class, smoothedBitmask.getKey (), "SmoothedTileTypeEx.buildMaps");
 			
 			// Add this image list against every unsmoothed bitmask
 			for (final String unsmoothedBitmask : smoothedBitmask.getValue ())
 				bitmasksMap.put (unsmoothedBitmask, images);
 		}
-		log.finest ("Built map of " + bitmasksMap.size () + " unsmoothed bitmasks for this tile set");
+		log.debug ("Built map of " + bitmasksMap.size () + " unsmoothed bitmasks for this tile set");
 		
 		// If there's a listing for "NoSmooth" then just copy it directly, but don't complain if it isn't there, since its missing from some special tiles like the FOW boundaries
 		final List<SmoothedTile> noSmoothImages = smoothedMap.get (GraphicsDatabaseConstants.VALUE_TILE_BITMASK_NO_SMOOTHING);
 		if (noSmoothImages != null)
 			bitmasksMap.put (GraphicsDatabaseConstants.VALUE_TILE_BITMASK_NO_SMOOTHING, noSmoothImages);
 		
-		log.exiting (SmoothingSystemEx.class.getName (), "buildMap", bitmasksMap.size ());
+		log.trace ("Exiting buildMap = " + bitmasksMap.size ());
 	}
 	
 	/**

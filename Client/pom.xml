@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.0.6</version>
+		<version>0.0.9</version>
 	</parent>
 
 	<build>
@@ -251,22 +251,22 @@
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-base</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
+			<version>0.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-sessionbase</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
+			<version>0.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-sessionclient</artifactId>
-			<version>0.0.6-SNAPSHOT</version>
+			<version>0.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.map</groupId>
 			<artifactId>ndgmap</artifactId>
-			<version>0.0.6</version>
+			<version>0.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
@@ -279,8 +279,17 @@
 			<version>0.9.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>com.ndg.common</groupId>
+			<artifactId>ndgutils</artifactId>
+			<version>0.0.9</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

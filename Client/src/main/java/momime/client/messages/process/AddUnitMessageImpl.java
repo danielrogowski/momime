@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -10,6 +9,9 @@ import momime.client.MomClient;
 import momime.common.messages.servertoclient.v0_9_5.AddUnitMessage;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.utils.UnitUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
@@ -27,7 +29,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class AddUnitMessageImpl extends AddUnitMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (AddUnitMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (AddUnitMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -45,7 +47,7 @@ public final class AddUnitMessageImpl extends AddUnitMessage implements SessionS
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (AddUnitMessageImpl.class.getName (), "process", getData ().getUnitURN ());
+		log.trace ("Entering process: Unit URN " + getData ().getUnitURN ());
 		
 		// Since Java server now supports units set to 'remember as last seen', its possible to get an 'add unit' message just to
 		// update a unit that we remember in a different state - easiest way to handle this is to see if the UnitURN already
@@ -65,7 +67,7 @@ public final class AddUnitMessageImpl extends AddUnitMessage implements SessionS
 		
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().add (newUnit);
 		
-		log.exiting (AddUnitMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

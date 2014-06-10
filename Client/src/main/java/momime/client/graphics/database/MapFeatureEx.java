@@ -2,11 +2,13 @@ package momime.client.graphics.database;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.ui.MomUIUtils;
 import momime.common.MomException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Extends graphics XML map feature object with consistency checks 
@@ -14,7 +16,7 @@ import momime.common.MomException;
 public final class MapFeatureEx extends MapFeature
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MapFeatureEx.class.getName ());
+	private final Log log = LogFactory.getLog (MapFeatureEx.class);
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private MomUIUtils utils;
@@ -26,15 +28,16 @@ public final class MapFeatureEx extends MapFeature
 	 */
 	public final void checkWidthAndHeight (final TileSetEx overlandMapTileSet) throws IOException
 	{
-		log.entering (MapFeatureEx.class.getName (), "checkWidthAndHeight", getMapFeatureID ());
+		log.trace ("Entering checkWidthAndHeight: " + getMapFeatureID ());
 		
 		final BufferedImage image = getUtils ().loadImage (getOverlandMapImageFile ());
 		if ((image.getWidth () != overlandMapTileSet.getTileWidth ()) || (image.getHeight () != overlandMapTileSet.getTileHeight ()))
+			
 			throw new MomException ("Overland map image for map feature " + getMapFeatureID () + " is the wrong size - " +
 				image.getWidth () + "x" + image.getHeight () + " when it should match the terrain tiles which are all " +
 				overlandMapTileSet.getTileWidth () + "x" + overlandMapTileSet.getTileHeight ());
 		
-		log.exiting (MapFeatureEx.class.getName (), "checkWidthAndHeight");
+		log.trace ("Exiting checkWidthAndHeight");
 	}
 
 	/**

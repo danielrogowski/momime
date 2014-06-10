@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -11,6 +10,9 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.servertoclient.v0_9_5.UpdateDamageTakenAndExperienceMessage;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.utils.UnitUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
@@ -22,7 +24,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class UpdateDamageTakenAndExperienceMessageImpl extends UpdateDamageTakenAndExperienceMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (UpdateDamageTakenAndExperienceMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (UpdateDamageTakenAndExperienceMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -40,7 +42,7 @@ public final class UpdateDamageTakenAndExperienceMessageImpl extends UpdateDamag
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (UpdateDamageTakenAndExperienceMessageImpl.class.getName (), "process", new int [] {getUnitURN (), getDamageTaken (), getExperience ()});
+		log.trace ("Entering process: Unit URN " + getUnitURN () + ", " + getDamageTaken () + ", " + getExperience ());
 
 		final MemoryUnit mu = getUnitUtils ().findUnitURN (getUnitURN (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "UpdateDamageTakenAndExperienceMessageImpl");
@@ -50,7 +52,7 @@ public final class UpdateDamageTakenAndExperienceMessageImpl extends UpdateDamag
 		if (getExperience () >= 0)
 			getUnitUtils ().setBasicSkillValue (mu, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, getExperience ());
 		
-		log.exiting (UpdateDamageTakenAndExperienceMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

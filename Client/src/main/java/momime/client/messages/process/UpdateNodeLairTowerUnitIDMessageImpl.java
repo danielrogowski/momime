@@ -1,15 +1,17 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
-
-import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessage;
 
 /**
  * Server sends this as part of the main FOW message if we need to update our knowledge of what monsters are in
@@ -18,7 +20,7 @@ import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMes
 public final class UpdateNodeLairTowerUnitIDMessageImpl extends UpdateNodeLairTowerUnitIDMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (UpdateNodeLairTowerUnitIDMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (UpdateNodeLairTowerUnitIDMessageImpl.class);
 
 	/**
 	 * @param sender Connection to the server
@@ -30,9 +32,9 @@ public final class UpdateNodeLairTowerUnitIDMessageImpl extends UpdateNodeLairTo
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (UpdateNodeLairTowerUnitIDMessageImpl.class.getName (), "process", getData ().getNodeLairTowerLocation ());
+		log.trace ("Entering process: " + getData ().getNodeLairTowerLocation ());
 		
-		log.exiting (UpdateNodeLairTowerUnitIDMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 
 		throw new UnsupportedOperationException ("UpdateNodeLairTowerUnitIDMessageImpl");
 	}

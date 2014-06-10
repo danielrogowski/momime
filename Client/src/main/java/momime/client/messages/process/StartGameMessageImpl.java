@@ -1,18 +1,20 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
 import momime.client.ui.MainMenuUI;
 import momime.client.ui.NewGameUI;
 import momime.client.ui.OverlandMapUI;
 import momime.common.messages.servertoclient.v0_9_5.StartGameMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.client.MultiplayerServerConnection;
+import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
 /**
  * Message server broadcasts when all game setup is complete and its time for clients to actually switch to the map screen
@@ -20,7 +22,7 @@ import momime.common.messages.servertoclient.v0_9_5.StartGameMessage;
 public final class StartGameMessageImpl extends StartGameMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (StartGameMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (StartGameMessageImpl.class);
 
 	/** New Game UI */
 	private NewGameUI newGameUI;
@@ -41,13 +43,13 @@ public final class StartGameMessageImpl extends StartGameMessage implements Sess
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (StartGameMessageImpl.class.getName (), "process");
+		log.trace ("Entering process");
 
 		getNewGameUI ().setVisible (false);
 		getMainMenuUI ().setVisible (false);
 		getOverlandMapUI ().setVisible (true);
 		
-		log.exiting (StartGameMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 	
 	/**

@@ -1,15 +1,17 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
-
-import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessage;
 
 /**
  * Server sends this to notify clients of cancelled maintained spells, or those that have gone out of view
@@ -17,7 +19,7 @@ import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMess
 public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintainedSpellMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SwitchOffMaintainedSpellMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (SwitchOffMaintainedSpellMessageImpl.class);
 
 	/**
 	 * @param sender Connection to the server
@@ -29,9 +31,9 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (SwitchOffMaintainedSpellMessageImpl.class.getName (), "process", getData ().getSpellID ());
+		log.trace ("Entering process: " + getData ().getSpellID ());
 		
-		log.exiting (SwitchOffMaintainedSpellMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");		
 
 		throw new UnsupportedOperationException ("SwitchOffMaintainedSpellMessageImpl");
 	}

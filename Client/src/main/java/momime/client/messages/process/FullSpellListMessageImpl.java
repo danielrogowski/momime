@@ -2,7 +2,6 @@ package momime.client.messages.process;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -13,6 +12,9 @@ import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
@@ -22,7 +24,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class FullSpellListMessageImpl extends FullSpellListMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (FullSpellListMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (FullSpellListMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -40,7 +42,7 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (FullSpellListMessageImpl.class.getName (), "process", getSpellResearchStatus ().size ());
+		log.trace ("Entering process: " + getSpellResearchStatus ().size ());
 
 		// Check got the right number
 		final List<SpellResearchStatus> ourSpells = getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus ();
@@ -71,7 +73,7 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 			}
 		}
 		
-		log.exiting (FullSpellListMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

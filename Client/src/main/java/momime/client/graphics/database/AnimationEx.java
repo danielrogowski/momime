@@ -2,12 +2,14 @@ package momime.client.graphics.database;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.ui.MomUIUtils;
 import momime.common.MomException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Provides a consistency check on animations, to ensure all the images are the same size
@@ -15,7 +17,7 @@ import momime.common.MomException;
 public final class AnimationEx extends Animation
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (AnimationEx.class.getName ());
+	private final Log log = LogFactory.getLog (AnimationEx.class);
 	
 	/** All frames of an animation must share the same width (these aren't private because a unit test sets them) */
 	int animationWidth;
@@ -32,7 +34,7 @@ public final class AnimationEx extends Animation
 	 */
 	final void deriveAnimationWidthAndHeight () throws IOException
 	{
-		log.entering (AnimationEx.class.getName (), "deriveAnimationWidthAndHeight", getAnimationID ());
+		log.trace ("Entering deriveAnimationWidthAndHeight: " + getAnimationID ());
 		
 		// Animations must be non-empty
 		if (getFrame ().size () == 0)
@@ -54,7 +56,7 @@ public final class AnimationEx extends Animation
 					animationWidth + "x" + animationHeight + " and some are " + image.getWidth () + "x" + image.getHeight () + ")");
 		}
 		
-		log.exiting (AnimationEx.class.getName (), "deriveAnimationWidthAndHeight", animationWidth + "x" + animationHeight);
+		log.trace ("Exiting deriveAnimationWidthAndHeight = " + animationWidth + "x" + animationHeight);
 	}
 	
 	/**

@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -10,6 +9,9 @@ import momime.client.MomClient;
 import momime.client.ui.OverlandMapUI;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessage;
 import momime.common.messages.v0_9_5.MemoryBuilding;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
@@ -21,7 +23,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class AddBuildingMessageImpl extends AddBuildingMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (AddBuildingMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (AddBuildingMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -41,15 +43,14 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (AddBuildingMessageImpl.class.getName (), "process", new String []
-			{getData ().getCityLocation ().toString (), getData ().getFirstBuildingID ()});
+		log.trace ("Entering process: " + getData ().getCityLocation () + ", " + getData ().getFirstBuildingID ());
 		
 		processOneUpdate ();
 		
 		// Building may have been city walls and so affect the overland map view
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		
-		log.exiting (AddBuildingMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**
@@ -57,8 +58,7 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	 */
 	public final void processOneUpdate ()
 	{
-		log.entering (AddBuildingMessageImpl.class.getName (), "processOneUpdate", new String []
-			{getData ().getCityLocation ().toString (), getData ().getFirstBuildingID ()});
+		log.trace ("Entering processOneUpdate: " + getData ().getCityLocation () + ", " + getData ().getFirstBuildingID ());
 		
 		// Add building(s)
 		final MemoryBuilding firstBuilding = new MemoryBuilding ();
@@ -76,7 +76,7 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (secondBuilding);
 		}		
 		
-		log.exiting (AddBuildingMessageImpl.class.getName (), "processOneUpdate");
+		log.trace ("Exiting processOneUpdate");
 	}
 	
 	/**

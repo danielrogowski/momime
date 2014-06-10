@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -12,6 +11,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessage;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.utils.CompareUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.areas.operations.BooleanMapAreaOperations3D;
 import com.ndg.map.areas.storage.MapArea3D;
@@ -26,7 +28,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (UpdateTerrainMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (UpdateTerrainMessageImpl.class);
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -49,7 +51,7 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (UpdateTerrainMessageImpl.class.getName (), "process", getData ().getMapLocation ());
+		log.trace ("Entering process: " + getData ().getMapLocation ());
 
 		final MapArea3D<Boolean> areaToSmooth = new MapArea3DArrayListImpl<Boolean> ();
 		areaToSmooth.setCoordinateSystem (getClient ().getSessionDescription ().getMapSize ());
@@ -61,7 +63,7 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 		// about... so that's already almost everything (although we could avoid regenerating the units...)
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		
-		log.exiting (UpdateTerrainMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 	
 	/**
@@ -70,7 +72,7 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	 */
 	public final void processOneUpdate (final MapArea3D<Boolean> areaToSmooth)
 	{
-		log.entering (UpdateTerrainMessageImpl.class.getName (), "processOneUpdate", getData ().getMapLocation ());
+		log.trace ("Entering processOneUpdate: " + getData ().getMapLocation ());
 		
 		final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getData ().getMapLocation ().getZ ()).getRow ().get (getData ().getMapLocation ().getY ()).getCell ().get (getData ().getMapLocation ().getX ());
@@ -88,7 +90,7 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 		// Actually update it
 		gc.setTerrainData (getData ().getTerrainData ());
 		
-		log.exiting (UpdateTerrainMessageImpl.class.getName (), "processOneUpdate");
+		log.trace ("Exiting processOneUpdate");
 	}
 	
 	/**
@@ -98,12 +100,12 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	 */
 	public final void endUpdates (final MapArea3D<Boolean> areaToSmooth) throws RecordNotFoundException
 	{
-		log.entering (UpdateTerrainMessageImpl.class.getName (), "endUpdates");
+		log.trace ("Entering endUpdates");
 		
 		getBooleanMapAreaOperations3D ().enlarge (areaToSmooth, null);
 		getOverlandMapUI ().smoothMapTerrain (areaToSmooth);
 		
-		log.exiting (UpdateTerrainMessageImpl.class.getName (), "endUpdates");
+		log.trace ("Exiting endUpdates");
 	}
 
 	/**

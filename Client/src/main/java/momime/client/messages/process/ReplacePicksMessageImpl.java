@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -9,6 +8,9 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.common.messages.servertoclient.v0_9_5.ReplacePicksMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
@@ -24,7 +26,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class ReplacePicksMessageImpl extends ReplacePicksMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ReplacePicksMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ReplacePicksMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -39,14 +41,14 @@ public final class ReplacePicksMessageImpl extends ReplacePicksMessage implement
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (ReplacePicksMessageImpl.class.getName (), "process", getPlayerID ());
+		log.trace ("Entering process: Player ID " + getPlayerID ());
 
 		final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ReplacePicksMessageImpl");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		pub.getPick ().clear ();
 		pub.getPick ().addAll (getPick ());
 		
-		log.exiting (ReplacePicksMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 	
 	/**

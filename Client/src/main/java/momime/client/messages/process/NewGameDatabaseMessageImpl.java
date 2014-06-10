@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -9,6 +8,9 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.ui.ConnectToServerUI;
 import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
@@ -19,7 +21,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class NewGameDatabaseMessageImpl extends NewGameDatabaseMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (NewGameDatabaseMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (NewGameDatabaseMessageImpl.class);
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -37,7 +39,7 @@ public final class NewGameDatabaseMessageImpl extends NewGameDatabaseMessage imp
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (NewGameDatabaseMessageImpl.class.getName (), "process");
+		log.trace ("Entering process");
 
 		// Record it
 		getClient ().setNewGameDatabase (getNewGameDatabase ());
@@ -45,7 +47,7 @@ public final class NewGameDatabaseMessageImpl extends NewGameDatabaseMessage imp
 		// Now we're connected, log in, or create account then log in
 		getConnectToServerUI ().afterConnected ();
 		
-		log.exiting (NewGameDatabaseMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

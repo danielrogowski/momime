@@ -208,7 +208,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final Plane found = planesMap.get (planeNumber);
 		if (found == null)
-			throw new RecordNotFoundException (Plane.class.getName (), planeNumber, caller);
+			throw new RecordNotFoundException (Plane.class, planeNumber, caller);
 
 		return found;
 	}
@@ -224,7 +224,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final MapFeature found = mapFeaturesMap.get (mapFeatureID);
 		if (found == null)
-			throw new RecordNotFoundException (MapFeature.class.getName (), mapFeatureID, caller);
+			throw new RecordNotFoundException (MapFeature.class, mapFeatureID, caller);
 
 		return found;
 	}
@@ -240,7 +240,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final TileType found = tileTypesMap.get (tileTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (TileType.class.getName (), tileTypeID, caller);
+			throw new RecordNotFoundException (TileType.class, tileTypeID, caller);
 
 		return found;
 	}
@@ -256,7 +256,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final ProductionType found = productionTypesMap.get (productionTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (ProductionType.class.getName (), productionTypeID, caller);
+			throw new RecordNotFoundException (ProductionType.class, productionTypeID, caller);
 
 		return found;
 	}
@@ -272,7 +272,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final PickType found = pickTypesMap.get (pickTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (PickType.class.getName (), pickTypeID, caller);
+			throw new RecordNotFoundException (PickType.class, pickTypeID, caller);
 
 		return found;
 	}
@@ -288,7 +288,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final Pick found = picksMap.get (pickID);
 		if (found == null)
-			throw new RecordNotFoundException (Pick.class.getName (), pickID, caller);
+			throw new RecordNotFoundException (Pick.class, pickID, caller);
 
 		return found;
 	}
@@ -304,7 +304,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final Wizard found = wizardsMap.get (wizardID);
 		if (found == null)
-			throw new RecordNotFoundException (Wizard.class.getName (), wizardID, caller);
+			throw new RecordNotFoundException (Wizard.class, wizardID, caller);
 
 		return found;
 	}
@@ -320,7 +320,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final UnitType found = unitTypesMap.get (unitTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (UnitType.class.getName (), unitTypeID, caller);
+			throw new RecordNotFoundException (UnitType.class, unitTypeID, caller);
 
 		return found;
 	}
@@ -336,7 +336,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final UnitMagicRealm found = unitMagicRealmsMap.get (unitMagicRealmID);
 		if (found == null)
-			throw new RecordNotFoundException (UnitMagicRealm.class.getName (), unitMagicRealmID, caller);
+			throw new RecordNotFoundException (UnitMagicRealm.class, unitMagicRealmID, caller);
 
 		return found;
 	}
@@ -352,7 +352,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final Unit found = unitsMap.get (unitID);
 		if (found == null)
-			throw new RecordNotFoundException (Unit.class.getName (), unitID, caller);
+			throw new RecordNotFoundException (Unit.class, unitID, caller);
 
 		return found;
 	}
@@ -368,7 +368,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final UnitSkill found = unitSkillsMap.get (unitSkillID);
 		if (found == null)
-			throw new RecordNotFoundException (UnitSkill.class.getName (), unitSkillID, caller);
+			throw new RecordNotFoundException (UnitSkill.class, unitSkillID, caller);
 
 		return found;
 	}
@@ -384,7 +384,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final WeaponGrade found = weaponGradesMap.get (weaponGradeNumber);
 		if (found == null)
-			throw new RecordNotFoundException (WeaponGrade.class.getName (), weaponGradeNumber, caller);
+			throw new RecordNotFoundException (WeaponGrade.class, weaponGradeNumber, caller);
 
 		return found;
 	}
@@ -400,7 +400,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final RangedAttackType found = rangedAttackTypesMap.get (rangedAttackTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (RangedAttackType.class.getName (), rangedAttackTypeID, caller);
+			throw new RecordNotFoundException (RangedAttackType.class, rangedAttackTypeID, caller);
 
 		return found;
 	}
@@ -416,7 +416,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final Race found = racesMap.get (raceID);
 		if (found == null)
-			throw new RecordNotFoundException (Race.class.getName (), raceID, caller);
+			throw new RecordNotFoundException (Race.class, raceID, caller);
 
 		return found;
 	}
@@ -432,7 +432,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final TaxRate found = taxRatesMap.get (taxRateID);
 		if (found == null)
-			throw new RecordNotFoundException (TaxRate.class.getName (), taxRateID, caller);
+			throw new RecordNotFoundException (TaxRate.class, taxRateID, caller);
 
 		return found;
 	}
@@ -448,7 +448,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final Building found = buildingsMap.get (buildingID);
 		if (found == null)
-			throw new RecordNotFoundException (Building.class.getName (), buildingID, caller);
+			throw new RecordNotFoundException (Building.class, buildingID, caller);
 
 		return found;
 	}
@@ -464,7 +464,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final Spell found = spellsMap.get (spellID);
 		if (found == null)
-			throw new RecordNotFoundException (Spell.class.getName (), spellID, caller);
+			throw new RecordNotFoundException (Spell.class, spellID, caller);
 
 		return found;
 	}
@@ -480,7 +480,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final CombatAreaEffect found = combatAreaEffectsMap.get (combatAreaEffectID);
 		if (found == null)
-			throw new RecordNotFoundException (CombatAreaEffect.class.getName (), combatAreaEffectID, caller);
+			throw new RecordNotFoundException (CombatAreaEffect.class, combatAreaEffectID, caller);
 
 		return found;
 	}
@@ -496,7 +496,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final CombatTileType found = combatTileTypesMap.get (combatTileTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (CombatTileType.class.getName (), combatTileTypeID, caller);
+			throw new RecordNotFoundException (CombatTileType.class, combatTileTypeID, caller);
 
 		return found;
 	}
@@ -512,7 +512,7 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	{
 		final CombatTileBorder found = combatTileBordersMap.get (combatTileBorderID);
 		if (found == null)
-			throw new RecordNotFoundException (CombatTileBorder.class.getName (), combatTileBorderID, caller);
+			throw new RecordNotFoundException (CombatTileBorder.class, combatTileBorderID, caller);
 
 		return found;
 	}

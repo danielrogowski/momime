@@ -11,7 +11,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -24,6 +23,9 @@ import javax.swing.WindowConstants;
 import momime.client.MomClient;
 import momime.common.messages.clienttoserver.v0_9_5.ChooseCityNameMessage;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
@@ -32,7 +34,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public final class EditStringUI extends MomClientAbstractUI
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (EditStringUI.class.getName ());
+	private final Log log = LogFactory.getLog (EditStringUI.class);
 	
 	/** Large font */
 	private Font largeFont;
@@ -108,7 +110,7 @@ public final class EditStringUI extends MomClientAbstractUI
 						getClient ().getServerConnection ().sendMessageToServer (msg);					
 					}
 					else
-						log.warning ("EditStringUI had string entered for prompt \"" + promptLabel.getText () + " but took no action from clicking the OK button");
+						log.warn ("EditStringUI had string entered for prompt \"" + promptLabel.getText () + " but took no action from clicking the OK button");
 				}
 				catch (final Exception e)
 				{

@@ -1,17 +1,12 @@
 package momime.client;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -31,6 +26,8 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
@@ -43,6 +40,7 @@ import com.ndg.multiplayer.sessionbase.LoginFailedReason;
 import com.ndg.multiplayer.sessionbase.LogoutFailedReason;
 import com.ndg.multiplayer.sessionbase.RequestSessionListFailedReason;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
+import com.ndg.swing.NdgUIManager;
 
 /**
  * Main class to kickstart client
@@ -50,7 +48,7 @@ import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 public final class MomClient extends MultiplayerSessionClient
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomClient.class.getName ());
+	private final Log log = LogFactory.getLog (MomClient.class);
 	
 	/** Name that we logged in using */
 	private String ourPlayerName;
@@ -72,6 +70,9 @@ public final class MomClient extends MultiplayerSessionClient
 	
 	/** Info we need in order to create games; sent from server */
 	private NewGameDatabase newGameDatabase;
+
+	/** UI manager helper */
+	private NdgUIManager ndgUIManager;
 	
 	/** List of all city views currently open, keyed by coordinates.toString () */
 	private Map<String, CityViewUI> cityViews = new HashMap<String, CityViewUI> (); 
@@ -81,23 +82,9 @@ public final class MomClient extends MultiplayerSessionClient
 	 */
 	public final void start ()
 	{
-		log.entering (MomClient.class.getName (), "start");
+		log.trace ("Entering start");
 		
-		// Use Nimbus look and feel
-		try
-		{
-		    for (final LookAndFeelInfo info : UIManager.getInstalledLookAndFeels ())
-		    {
-		        if ("Nimbus".equals (info.getName ()))
-		        {
-		            UIManager.setLookAndFeel (info.getClassName ());
-		            break;
-		        }
-		    }
-		}
-		catch (final Exception e)
-		{
-		}
+		getNdgUIManager ().useNimbusLookAndFeel ();
 		
 		// Multiplayer client event handlers
 		getEventListeners ().add (new MultiplayerSessionClientEvent ()
@@ -361,7 +348,7 @@ public final class MomClient extends MultiplayerSessionClient
 			}
 		});
 		
-		log.exiting (MomClient.class.getName (), "start");
+		log.trace ("Exiting start");
 	}
 	
 	/**
@@ -521,6 +508,22 @@ public final class MomClient extends MultiplayerSessionClient
 	}
 
 	/**
+	 * @return UI manager helper
+	 */
+	public final NdgUIManager getNdgUIManager ()
+	{
+		return ndgUIManager;
+	}
+
+	/**
+	 * @param mgr UI manager helper
+	 */
+	public final void setNdgUIManager (final NdgUIManager mgr)
+	{
+		ndgUIManager = mgr;
+	}
+	
+	/**
 	 * @return List of all city views currently open, keyed by coordinates.toString ()
 	 */
 	public final Map<String, CityViewUI> getCityViews ()
@@ -549,11 +552,11 @@ public final class MomClient extends MultiplayerSessionClient
 					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
 			
 			// Initialize logging first, in case debug logging for spring itself is enabled
-			try (final FileInputStream in = new FileInputStream ("MoMIMEClientLogging.properties"))
+			/* try (final FileInputStream in = new FileInputStream ("MoMIMEClientLogging.properties"))
 			{
 				LogManager.getLogManager ().readConfiguration (in);
 				in.close ();
-			}
+			} */
 
 			// Everything is now set to start with spring
 			new ClassPathXmlApplicationContext ("/momime.client.spring/momime-client-beans.xml");			

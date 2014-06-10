@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -22,6 +21,9 @@ import momime.client.utils.OverlandMapClientUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
@@ -33,7 +35,7 @@ public final class CityViewPanel extends JPanel
 	private static final long serialVersionUID = 1797763921049648147L;
 
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CityViewPanel.class.getName ());
+	private final Log log = LogFactory.getLog (CityViewPanel.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -65,6 +67,8 @@ public final class CityViewPanel extends JPanel
 	 */
 	public final void init () throws IOException
 	{
+		log.trace ("Entering init");
+
 		// Fix the size of the panel to be the same as a typical background
 		final BufferedImage exampleBackground = getUtils ().loadImage ("/momime.client.graphics/cityView/landscape/arcanus.png");
 		
@@ -136,7 +140,7 @@ public final class CityViewPanel extends JPanel
 
 					}
 					else
-						log.warning ("Wanted to prepare a city view element that has no image nor animation (" +
+						log.warn ("Wanted to prepare a city view element that has no image nor animation (" +
 							element.getPlaneNumber () + ", " + element.getTileTypeID () + ", " + element.getBuildingID () + ", " + element.getCitySpellEffectID () + ")");
 				}
 				catch (final IOException e)
@@ -148,6 +152,8 @@ public final class CityViewPanel extends JPanel
 				if (element.getCityViewElementSetID () != null)
 					elementSetsDone = elementSetsDone + element.getCityViewElementSetID ();
 			}
+		
+		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -156,7 +162,7 @@ public final class CityViewPanel extends JPanel
 	@Override
 	protected final void paintComponent (final Graphics g)
 	{
-		log.entering (CityViewPanel.class.getName (), "paintComponent");
+		log.trace ("Entering paintComponent");
 		
 		String elementSetsDone = "";
 		
@@ -207,7 +213,7 @@ public final class CityViewPanel extends JPanel
 							null);
 					}
 					else
-						log.warning ("Wanted to draw a city view element that has no image nor animation (" +
+						log.warn ("Wanted to draw a city view element that has no image nor animation (" +
 							element.getPlaneNumber () + ", " + element.getTileTypeID () + ", " + element.getBuildingID () + ", " + element.getCitySpellEffectID () + ")");	
 				}
 				catch (final IOException e)
@@ -220,7 +226,7 @@ public final class CityViewPanel extends JPanel
 					elementSetsDone = elementSetsDone + element.getCityViewElementSetID ();
 			}
 		
-		log.exiting (CityViewPanel.class.getName (), "paintComponent");
+		log.trace ("Exiting paintComponent");
 	}
 	
 	/**

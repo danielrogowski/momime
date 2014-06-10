@@ -13,7 +13,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -41,6 +40,9 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
@@ -50,7 +52,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public final class CityViewUI extends MomClientAbstractUI
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CityViewUI.class.getName ());
+	private final Log log = LogFactory.getLog (CityViewUI.class);
 	
 	/** Large font */
 	private Font largeFont;
@@ -140,7 +142,7 @@ public final class CityViewUI extends MomClientAbstractUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.entering (CityViewUI.class.getName (), "init", getCityLocation ());
+		log.trace ("Entering init: " + getCityLocation ());
 		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/background.png");
@@ -431,7 +433,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
 		getFrame ().pack ();
 
-		log.exiting (CityViewUI.class.getName (), "init");
+		log.trace ("Exiting init");
 	}
 
 	/**
@@ -440,7 +442,7 @@ public final class CityViewUI extends MomClientAbstractUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.entering (CityViewUI.class.getName (), "languageChanged", getCityLocation ());
+		log.trace ("Entering languageChanged: " + getCityLocation ());
 		
 		// Get details about the city
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
@@ -503,7 +505,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		changeConstructionAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "ChangeConstruction"));
 		okAction.putValue							(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "OK"));
 
-		log.exiting (CityViewUI.class.getName (), "languageChanged");
+		log.trace ("Exiting languageChanged");
 	}
 
 	/**
@@ -512,7 +514,7 @@ public final class CityViewUI extends MomClientAbstractUI
 	 */
 	public final void cityDataUpdated () throws IOException
 	{
-		log.entering (CityViewUI.class.getName (), "cityDataUpdated", getCityLocation ());
+		log.trace ("Entering cityDataUpdated: " + getCityLocation ());
 		civilianPanel.removeAll ();
 
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
@@ -583,7 +585,7 @@ public final class CityViewUI extends MomClientAbstractUI
 						if (optionalFarmers == cityData.getOptionalFarmers ())
 							optionalFarmers--;
 						
-						log.finest ("Requesting optional farmers in city " + getCityLocation () + " to be set to " + optionalFarmers);
+						log.debug ("Requesting optional farmers in city " + getCityLocation () + " to be set to " + optionalFarmers);
 						
 						try
 						{
@@ -618,7 +620,7 @@ public final class CityViewUI extends MomClientAbstractUI
 
 		civilianPanel.revalidate ();
 		civilianPanel.repaint ();
-		log.exiting (CityViewUI.class.getName (), "cityDataUpdated");
+		log.trace ("Exiting cityDataUpdated");
 	}
 	
 	/**

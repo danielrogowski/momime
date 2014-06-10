@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.CityImage;
@@ -21,6 +20,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
@@ -29,7 +31,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements GraphicsDatabaseEx
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (GraphicsDatabaseExImpl.class.getName ());
+	private final Log log = LogFactory.getLog (GraphicsDatabaseExImpl.class);
 	
 	/** Map of pick IDs to pick objects */
 	private Map<String, Pick> picksMap;
@@ -60,7 +62,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 */
 	public final void buildMaps ()
 	{
-		log.entering (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
+		log.trace ("Entering buildMaps");
 		
 		// Create picks map
 		picksMap = new HashMap<String, Pick> ();
@@ -101,7 +103,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		for (final MapFeature mf : getMapFeature ())
 			mapFeaturesMap.put (mf.getMapFeatureID (), (MapFeatureEx) mf);
 		
-		log.exiting (GraphicsDatabaseExImpl.class.getName (), "buildMaps");
+		log.trace ("Exiting buildMaps");
 	}
 
 	/**
@@ -110,7 +112,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 */
 	public final void consistencyChecks () throws IOException
 	{
-		log.entering (GraphicsDatabaseExImpl.class.getName (), "consistencyChecks");
+		log.trace ("Entering consistencyChecks");
 		log.info ("Processing graphics XML file");
 		
 		// Check all animations have frames with consistent sizes
@@ -139,7 +141,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		}
 		log.info ("All " + getMapFeature ().size () + " map features passed consistency checks");		
 		
-		log.exiting (GraphicsDatabaseExImpl.class.getName (), "consistencyChecks");
+		log.trace ("Exiting consistencyChecks");
 	}
 
 	/**
@@ -148,12 +150,12 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 */
 	public final void buildMapsAndRunConsistencyChecks () throws IOException
 	{
-		log.entering (GraphicsDatabaseExImpl.class.getName (), "buildMapsAndRunConsistencyChecks");
+		log.trace ("Entering buildMapsAndRunConsistencyChecks");
 
 		buildMaps ();
 		consistencyChecks ();
 
-		log.exiting (GraphicsDatabaseExImpl.class.getName (), "buildMapsAndRunConsistencyChecks");
+		log.trace ("Exiting buildMapsAndRunConsistencyChecks");
 	}
 	
 	/**
@@ -167,7 +169,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	{
 		final Pick found = picksMap.get (pickID);
 		if (found == null)
-			throw new RecordNotFoundException (Pick.class.getName (), pickID, caller);
+			throw new RecordNotFoundException (Pick.class, pickID, caller);
 
 		return found;
 	}
@@ -183,7 +185,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	{
 		final Wizard found = wizardsMap.get (wizardID);
 		if (found == null)
-			throw new RecordNotFoundException (Wizard.class.getName (), wizardID, caller);
+			throw new RecordNotFoundException (Wizard.class, wizardID, caller);
 
 		return found;
 	}
@@ -199,7 +201,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	{
 		final RaceEx found = racesMap.get (raceID);
 		if (found == null)
-			throw new RecordNotFoundException (Race.class.getName (), raceID, caller);
+			throw new RecordNotFoundException (Race.class, raceID, caller);
 
 		return found;
 	}
@@ -215,7 +217,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	{
 		final Unit found = unitsMap.get (unitID);
 		if (found == null)
-			throw new RecordNotFoundException (Unit.class.getName (), unitID, caller);
+			throw new RecordNotFoundException (Unit.class, unitID, caller);
 
 		return found;
 	}
@@ -231,7 +233,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	{
 		final TileSetEx found = tileSetsMap.get (tileSetID);
 		if (found == null)
-			throw new RecordNotFoundException (TileSet.class.getName (), tileSetID, caller);
+			throw new RecordNotFoundException (TileSet.class, tileSetID, caller);
 
 		return found;
 	}
@@ -247,7 +249,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	{
 		final MapFeatureEx found = mapFeaturesMap.get (mapFeatureID);
 		if (found == null)
-			throw new RecordNotFoundException (MapFeature.class.getName (), mapFeatureID, caller);
+			throw new RecordNotFoundException (MapFeature.class, mapFeatureID, caller);
 
 		return found;
 	}
@@ -295,7 +297,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			}
 		
 		if (bestMatch == null)
-			throw new RecordNotFoundException (CityImage.class.getName (), citySizeID, caller);
+			throw new RecordNotFoundException (CityImage.class, citySizeID, caller);
 			
 		return bestMatch;
 	}
@@ -311,7 +313,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	{
 		final AnimationEx found = animationsMap.get (animationID);
 		if (found == null)
-			throw new RecordNotFoundException (Animation.class.getName (), animationID, caller);
+			throw new RecordNotFoundException (Animation.class, animationID, caller);
 
 		return found;
 	}

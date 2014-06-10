@@ -17,8 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -49,6 +47,9 @@ import momime.common.messages.v0_9_5.UnitSpecialOrder;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -61,7 +62,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class OverlandMapUI extends MomClientAbstractUI
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (OverlandMapUI.class.getName ());
+	private final Log log = LogFactory.getLog (OverlandMapUI.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -185,7 +186,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.entering (OverlandMapUI.class.getName (), "init");
+		log.trace ("Entering init");
 
 		// Load images
 		topBarBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/background.png");
@@ -343,7 +344,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
-				log.entering (OverlandMapUI.class.getName (), "sceneryPanel.paintComponent");
+				log.trace ("Entering sceneryPanel.paintComponent");
 
 				super.paintComponent (g);
 				
@@ -411,12 +412,12 @@ public final class OverlandMapUI extends MomClientAbstractUI
 							}
 							catch (final IOException e)
 							{
-								log.log (Level.SEVERE, "Error trying to load graphics to draw Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
+								log.error ("Error trying to load graphics to draw Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
 							}
 						}
 					}
 
-				log.exiting (OverlandMapUI.class.getName (), "sceneryPanel.paintComponent");
+				log.trace ("Exiting sceneryPanel.paintComponent");
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);
@@ -666,7 +667,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 			}
 		}).start ();
 
-		log.exiting (OverlandMapUI.class.getName (), "init");
+		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -722,7 +723,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	 */
 	public final void smoothMapTerrain (final MapArea3D<Boolean> areaToSmooth) throws RecordNotFoundException
 	{
-		log.entering (OverlandMapUI.class.getName (), "smoothMapTerrain", areaToSmooth);
+		log.trace ("Entering smoothMapTerrain: " + areaToSmooth);
 
 		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
 		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
@@ -823,7 +824,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 						}
 					}
 		
-		log.exiting (OverlandMapUI.class.getName (), "smoothMapTerrain");
+		log.trace ("Exiting smoothMapTerrain");
 	}
 	
 	/**
@@ -834,7 +835,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	 */
 	public final void regenerateOverlandMapBitmaps () throws IOException
 	{
-		log.entering (OverlandMapUI.class.getName (), "regenerateOverlandMapBitmaps", mapViewPlane);
+		log.trace ("Entering regenerateOverlandMapBitmaps: " + mapViewPlane);
 
 		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
 		
@@ -926,7 +927,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 			g [frameNo].dispose ();
 		
-		log.exiting (OverlandMapUI.class.getName (), "regenerateOverlandMapBitmaps"); 
+		log.trace ("Exiting regenerateOverlandMapBitmaps"); 
 	}
 	
 	/**
@@ -937,7 +938,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	 */
 	public final void regenerateFogOfWarBitmap () throws IOException
 	{
-		log.entering (OverlandMapUI.class.getName (), "regenerateFogOfWarBitmap");
+		log.trace ("Entering regenerateFogOfWarBitmap");
 		
 		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
 		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
@@ -1027,7 +1028,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		
 		g.dispose ();
 		
-		log.exiting (OverlandMapUI.class.getName (), "regenerateFogOfWarBitmap"); 
+		log.trace ("Exiting regenerateFogOfWarBitmap"); 
 	}
 	
 	/**
@@ -1082,7 +1083,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	 */
 	final MemoryUnit [] [] chooseUnitToDrawAtEachLocation ()
 	{
-		log.entering (OverlandMapUI.class.getName (), "chooseUnitToDrawAtEachLocation");
+		log.trace ("Entering chooseUnitToDrawAtEachLocation");
 		
 		final MemoryUnit [] [] bestUnits = new MemoryUnit
 			[getClient ().getSessionDescription ().getMapSize ().getHeight ()] [getClient ().getSessionDescription ().getMapSize ().getWidth ()];
@@ -1104,7 +1105,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 					bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()] = unit;
 			}
 
-		log.exiting (OverlandMapUI.class.getName (), "chooseUnitToDrawAtEachLocation");
+		log.trace ("Exiting chooseUnitToDrawAtEachLocation");
 		return bestUnits;
 	}
 	

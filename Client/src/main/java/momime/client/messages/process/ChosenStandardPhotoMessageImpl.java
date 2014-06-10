@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -11,6 +10,9 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.messages.servertoclient.v0_9_5.ChosenStandardPhotoMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
@@ -24,7 +26,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChosenStandardPhotoMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChosenStandardPhotoMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -42,8 +44,7 @@ public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMes
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (ChosenStandardPhotoMessageImpl.class.getName (), "process", new String []
-			{new Integer (getPlayerID ()).toString (), getPhotoID ()});
+		log.trace ("Entering process: Player ID " + getPlayerID () + ", " + getPhotoID ());
 
 		final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ChosenStandardPhotoMessageImpl");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
@@ -55,7 +56,7 @@ public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMes
 		// Store flag colour
 		trans.setFlagColour (getGraphicsDB ().findWizard (getPhotoID (), "ChosenStandardPhotoMessageImpl").getFlagColour ());
 		
-		log.exiting (ChosenStandardPhotoMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

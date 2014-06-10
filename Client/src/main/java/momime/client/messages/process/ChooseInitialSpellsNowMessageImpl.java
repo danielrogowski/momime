@@ -1,13 +1,15 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.ui.NewGameUI;
 import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
@@ -18,7 +20,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class ChooseInitialSpellsNowMessageImpl extends ChooseInitialSpellsNowMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChooseInitialSpellsNowMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChooseInitialSpellsNowMessageImpl.class);
 
 	/** New Game UI */
 	private NewGameUI newGameUI;
@@ -33,12 +35,11 @@ public final class ChooseInitialSpellsNowMessageImpl extends ChooseInitialSpells
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (ChooseInitialSpellsNowMessageImpl.class.getName (), "process", new String []
-			{getMagicRealmID (), new Integer (getSpellRank ().size ()).toString ()});
+		log.trace ("Entering process: " + getMagicRealmID () + ", " + getSpellRank ().size ());
 
 		getNewGameUI ().showInitialSpellsPanel (getMagicRealmID(), getSpellRank());
 		
-		log.exiting (ChooseInitialSpellsNowMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 	
 	/**

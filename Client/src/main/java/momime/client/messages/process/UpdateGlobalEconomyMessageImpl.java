@@ -1,13 +1,15 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
@@ -29,7 +31,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (UpdateGlobalEconomyMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (UpdateGlobalEconomyMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -44,7 +46,7 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (UpdateGlobalEconomyMessageImpl.class.getName (), "process");
+		log.trace ("Entering process");
 
 		// Accept new values
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ().clear ();
@@ -52,7 +54,7 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 		
 		getClient ().getOurTransientPlayerPrivateKnowledge ().setOverlandCastingSkillRemainingThisTurn (getOverlandCastingSkillRemainingThisTurn ());
 		
-		log.exiting (UpdateGlobalEconomyMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

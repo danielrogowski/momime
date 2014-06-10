@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -22,6 +21,9 @@ import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessageData;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
@@ -34,7 +36,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisibleAreaChangedMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (FogOfWarVisibleAreaChangedMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (FogOfWarVisibleAreaChangedMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -55,13 +57,11 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (FogOfWarVisibleAreaChangedMessageImpl.class.getName (), "process", new String []
-			{getTriggeredFrom (), new Integer (getTerrainUpdate ().size ()).toString (), new Integer (getCityUpdate ().size ()).toString (),
-			new Integer (getAddBuilding ().size ()).toString (), new Integer (getDestroyBuilding ().size ()).toString (),
-			new Integer (getAddUnit ().size ()).toString (), new Integer (getKillUnit ().size ()).toString (),
-			new Integer (getUpdateNodeLairTowerUnitID ().size ()).toString (), new Integer (getAddMaintainedSpell ().size ()).toString (),
-			new Integer (getSwitchOffMaintainedSpell ().size ()).toString (), new Integer (getAddCombatAreaEffect ().size ()).toString (),
-			new Integer (getCancelCombaAreaEffect ().size ()).toString (), new Integer (getFogOfWarUpdate ().size ()).toString ()});
+		if (log.isTraceEnabled ())
+			log.trace ("Entering process: " + getTriggeredFrom () + ", " + getTerrainUpdate ().size () + ", " + getCityUpdate ().size () + ", " +
+				getAddBuilding ().size () + ", " + getDestroyBuilding ().size () + ", " + getAddUnit ().size () + ", " + getKillUnit ().size () + ", " +
+				getUpdateNodeLairTowerUnitID ().size () + ", " + getAddMaintainedSpell ().size () + ", " + getSwitchOffMaintainedSpell ().size () + ", " +
+				getAddCombatAreaEffect ().size () + ", " + getCancelCombaAreaEffect ().size () + ", " + getFogOfWarUpdate ().size ());
 		
 		// Changes in Terrain
 		if (getTerrainUpdate ().size () > 0)
@@ -176,7 +176,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		getOverlandMapUI ().regenerateFogOfWarBitmap ();
 
-		log.exiting (FogOfWarVisibleAreaChangedMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

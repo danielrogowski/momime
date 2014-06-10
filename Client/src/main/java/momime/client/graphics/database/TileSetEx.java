@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import momime.client.graphics.database.v0_9_5.SmoothedTile;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
@@ -16,13 +15,16 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.utils.CompareUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Links together the cached smoothing reduction rules against the actual images for each tile type
  */
 public final class TileSetEx extends TileSet
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (TileSetEx.class.getName ());
+	private final Log log = LogFactory.getLog (TileSetEx.class);
 	
 	/** All animations used by tiles in the same tile set must share the same number of frames, which gets set here; if tile set is all static images, will be set to 1 */
 	private int animationFrameCount;
@@ -49,7 +51,7 @@ public final class TileSetEx extends TileSet
 	 */
 	final void buildMaps () throws MomException, RecordNotFoundException
 	{
-		log.entering (TileSetEx.class.getName (), "buildMaps", getTileSetID ());
+		log.trace ("Entering buildMaps: " + getTileSetID ());
 		
 		// Have to do this in two passes, since we need all smoothing systems loaded before we can start loading smoothed tile types.
 		// i.e. one smoothing system may be shared by multiple tile types.
@@ -67,14 +69,14 @@ public final class TileSetEx extends TileSet
 		{
 			final SmoothingSystemEx ss = smoothingSystemsMap.get (tt.getSmoothingSystemID ());
 			if (ss == null)
-				throw new RecordNotFoundException (SmoothingSystem.class.getName (), tt.getSmoothingSystemID (), "TileSetEx.buildMaps");
+				throw new RecordNotFoundException (SmoothingSystem.class, tt.getSmoothingSystemID (), "TileSetEx.buildMaps");
 					
 			final SmoothedTileTypeEx ttex = (SmoothedTileTypeEx) tt;
 			ttex.buildMap (ss.getBitmasksMap ());
 		}
 		
 		log.info ("Processed all smoothing system rules for the " + getTileSetName () + " tile set");		
-		log.exiting (TileSetEx.class.getName (), "buildMaps");
+		log.trace ("Exiting buildMaps");
 	}
 	
 	/**
@@ -87,7 +89,7 @@ public final class TileSetEx extends TileSet
 	 */
 	final void deriveAnimationFrameCountAndSpeed (final GraphicsDatabaseEx db) throws RecordNotFoundException, MomException
 	{
-		log.entering (TileSetEx.class.getName (), "deriveAnimationFrameCountAndSpeed", getTileSetID ());
+		log.trace ("Entering deriveAnimationFrameCountAndSpeed: " + getTileSetID ());
 		
 		for (final SmoothedTileType tt : getSmoothedTileType ())
 			for (final SmoothedTile tile : tt.getSmoothedTile ())
@@ -119,7 +121,7 @@ public final class TileSetEx extends TileSet
 			animationFrameCount = 1;
 		
 		log.info (getTileSetName () + " tile set consistently has " + animationFrameCount + " frames at " + animationSpeed + " FPS");		
-		log.exiting (TileSetEx.class.getName (), "deriveAnimationFrameCountAndSpeed");
+		log.trace ("Exiting deriveAnimationFrameCountAndSpeed");
 	}
 	
 	/**
@@ -133,7 +135,7 @@ public final class TileSetEx extends TileSet
 	 */
 	final void deriveTileWidthAndHeight (final GraphicsDatabaseEx db) throws IOException
 	{
-		log.entering (TileSetEx.class.getName (), "deriveTileWidthAndHeight", getTileSetID ());
+		log.trace ("Entering deriveTileWidthAndHeight: " + getTileSetID ());
 
 		boolean first = true;
 		
@@ -178,7 +180,7 @@ public final class TileSetEx extends TileSet
 						throw new MomException ("Tile set " + getTileSetID () + " includes a tile that neither includes an image filename or an animation ID");
 		
 		log.info (getTileSetName () + " tile set consistently has all tiles of size " + tileWidth + "x" + tileHeight);		
-		log.exiting (TileSetEx.class.getName (), "deriveTileWidthAndHeight");
+		log.trace ("Exiting deriveTileWidthAndHeight");
 	}
 	
 	/**
@@ -191,7 +193,7 @@ public final class TileSetEx extends TileSet
 	{
 		final SmoothingSystemEx found = smoothingSystemsMap.get (smoothingSystemID);
 		if (found == null)
-			throw new RecordNotFoundException (SmoothingSystemEx.class.getName (), smoothingSystemID, caller);
+			throw new RecordNotFoundException (SmoothingSystemEx.class, smoothingSystemID, caller);
 
 		return found;
 	}
@@ -221,7 +223,7 @@ public final class TileSetEx extends TileSet
 		}
 		
 		if (match == null)
-			throw new RecordNotFoundException (SmoothedTileTypeEx.class.getName (), overlandMapTileTypeID + "/" + planeNumber + "/" + combatTileTypeID, "findSmoothedTileType");
+			throw new RecordNotFoundException (SmoothedTileTypeEx.class, overlandMapTileTypeID + "/" + planeNumber + "/" + combatTileTypeID, "findSmoothedTileType");
 		
 		return match;
 	}

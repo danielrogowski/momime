@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -10,6 +9,9 @@ import momime.client.MomClient;
 import momime.client.ui.NewGameUI;
 import momime.common.messages.servertoclient.v0_9_5.ChosenWizardMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
@@ -22,7 +24,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class ChosenWizardMessageImpl extends ChosenWizardMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChosenWizardMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChosenWizardMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -40,8 +42,7 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (ChosenWizardMessageImpl.class.getName (), "process", new String []
-			{new Integer (getPlayerID ()).toString (), getWizardID ()});
+		log.trace ("Entering process: Player ID " + getPlayerID () + ", " + getWizardID ());
 
 		// Set the Wizard ID
 		final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ChosenWizardMessageImpl");
@@ -56,7 +57,7 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 			
 		// Some screens need updating when we learn what wizard a player is using
 		
-		log.exiting (ChosenWizardMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 	
 	/**

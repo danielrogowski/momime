@@ -1,13 +1,15 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.common.messages.servertoclient.v0_9_5.ErasePendingMovementsMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
@@ -18,7 +20,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 public final class ErasePendingMovementsMessageImpl extends ErasePendingMovementsMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ErasePendingMovementsMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ErasePendingMovementsMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -33,11 +35,11 @@ public final class ErasePendingMovementsMessageImpl extends ErasePendingMovement
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (ErasePendingMovementsMessageImpl.class.getName (), "process");
+		log.trace ("Entering process");
 		
 		getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement ().clear ();
 		
-		log.exiting (ErasePendingMovementsMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

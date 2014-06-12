@@ -23,54 +23,37 @@ import com.ndg.swing.SwingLayoutConstants;
 import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
-import com.ndg.xmleditor.editor.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.editor.XmlEditorMain;
 import com.ndg.xmleditor.editor.XmlEditorUtils;
 
 /**
  * Grid for displaying and editing hero names names
  * Allows importing unit names from the original MoM WIZARDS.EXE
  */
-public class UnitGrid extends MoMLanguageEditorGridWithImport
+public final class UnitGrid extends MoMLanguageEditorGridWithImport
 {
-	/**
-	 * Offset into WIZARDS.EXE of the names table
-	 */
-	private final JComboBox<String> dataOffsetCombo;
+	/** Offset into WIZARDS.EXE of the names table */
+	private JComboBox<String> dataOffsetCombo;
 
-	/**
-	 * Offset to add to the values read from the names table in order to find the address of the actual name
-	 */
-	private final JComboBox<String> namesOffsetCombo;
+	/** Offset to add to the values read from the names table in order to find the address of the actual name */
+	private JComboBox<String> namesOffsetCombo;
 
-	/**
-	 * Number of unit names to read
-	 */
+	/** Number of unit names to read */
 	private static final int UNIT_COUNT = 198;
 
-	/**
-	 * Size of each block of unit data (2 bytes of name offset followed by 36 bytes of data)
-	 */
+	/** Size of each block of unit data (2 bytes of name offset followed by 36 bytes of data) */
 	private static final int UNIT_DATA_BLOCK_SIZE = 36;
 
 	/**
 	 * Creates a grid for displaying and editing hero names names
-	 * @param anEntityElement The xsd:element node of the entity being edited from the XSD, i.e. for a top level entity, this will be a the entry under the xsd:sequence under the database complex type
-	 * @param aTypeDefinition The xsd:complexType node of the entity being edited from the XSD
-	 * @param aParentRecord If this is a child entity, this value holds the parent record; if this is a top level entity, this value will be null
-	 * @param aParentEntityElements Array of xsd:element entries that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @param aParentTypeDefinitions Array of type definitions that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @param aMdiEditor The main MDI window
 	 * @throws XmlEditorException If there a syntax problem parsing the XSD
 	 * @throws IOException If there is a problem loading the button images
 	 */
-	public UnitGrid (final Element anEntityElement, final ComplexTypeReference aTypeDefinition,
-		final Element aParentRecord, final Element [] aParentEntityElements, final ComplexTypeReference [] aParentTypeDefinitions, final XmlEditorMain aMdiEditor)
-		throws XmlEditorException, IOException
+	@Override
+	public final void init () throws XmlEditorException, IOException
 	{
-		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor);
-
+		super.init ();
+		
 		final Dimension size = new Dimension (BUTTON_WIDTH, SwingLayoutConstants.TEXT_FIELD_HEIGHT);
 
 		// Overall heading

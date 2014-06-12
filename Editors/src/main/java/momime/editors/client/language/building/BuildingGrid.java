@@ -17,41 +17,21 @@ import com.ndg.archive.LbxArchiveReader;
 import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
-import com.ndg.xmleditor.editor.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.editor.XmlEditorMain;
 import com.ndg.xmleditor.editor.XmlEditorUtils;
 
 /**
  * Grid for displaying and editing building names and descriptions
  * Allows importing building help text from the original MoM LBXes
  */
-public class BuildingGrid extends MoMLanguageEditorGridWithImport
+public final class BuildingGrid extends MoMLanguageEditorGridWithImport
 {
-	/**
-	 * Creates a grid for displaying and editing building names and descriptions
-	 * @param anEntityElement The xsd:element node of the entity being edited from the XSD, i.e. for a top level entity, this will be a the entry under the xsd:sequence under the database complex type
-	 * @param aTypeDefinition The xsd:complexType node of the entity being edited from the XSD
-	 * @param aParentRecord If this is a child entity, this value holds the parent record; if this is a top level entity, this value will be null
-	 * @param aParentEntityElements Array of xsd:element entries that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @param aParentTypeDefinitions Array of type definitions that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @param aMdiEditor The main MDI window
-	 * @throws XmlEditorException If there a syntax problem parsing the XSD
-	 * @throws IOException If there is a problem loading the button images
-	 */
-	public BuildingGrid (final Element anEntityElement, final ComplexTypeReference aTypeDefinition,
-		final Element aParentRecord, final Element [] aParentEntityElements, final ComplexTypeReference [] aParentTypeDefinitions, final XmlEditorMain aMdiEditor)
-		throws XmlEditorException, IOException
-	{
-		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor);
-	}
-
 	/**
 	 * Specify the filename we're looking for
 	 * @param lbxChooser The file open dialog
 	 */
 	@Override
-	protected void addOtherFilters (final JFileChooser lbxChooser)
+	protected final void addOtherFilters (final JFileChooser lbxChooser)
 	{
 		lbxChooser.addChoosableFileFilter (new SpecificFilenameFilter ("BUILDESC.LBX", "Original Master of Magic building descriptions (BUILDESC.LBX)"));
 	};
@@ -63,7 +43,7 @@ public class BuildingGrid extends MoMLanguageEditorGridWithImport
 	 * @throws XmlEditorException If there is a problem with one of the XML editor helper methods
 	 */
 	@Override
-	protected void importFromLbx (final File lbxFilename)
+	protected final void importFromLbx (final File lbxFilename)
 		throws IOException, XmlEditorException
 	{
 		// BUILDESC.LBX only has a single subfile in it
@@ -97,5 +77,4 @@ public class BuildingGrid extends MoMLanguageEditorGridWithImport
 			lbxStream.close ();
 		}
 	}
-
 }

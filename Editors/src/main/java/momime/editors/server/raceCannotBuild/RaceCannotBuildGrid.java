@@ -17,33 +17,24 @@ import org.jdom.Element;
 
 import com.ndg.swing.SwingLayoutConstants;
 import com.ndg.xml.JdomUtils;
-import com.ndg.xmleditor.editor.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.editor.XmlEditorMain;
 import com.ndg.xmleditor.grid.XmlEditorGrid;
 
 /**
  * Adds a second grid that shows buildings we implicitly cannot build as well as those explicitly listed in the XML file
  * e.g. if we explicitly cannot build a Sages' Guild, then this implies we cannot build a University, Alchemists' Guild, War College, etc. etc.
  */
-public class RaceCannotBuildGrid extends XmlEditorGrid
+public final class RaceCannotBuildGrid extends XmlEditorGrid
 {
 	/**
 	 * Adds a second grid that shows buildings we implicitly cannot build as well as those explicitly listed in the XML file
-	 * @param anEntityElement The xsd:element node of the entity being edited from the XSD, i.e. for a top level entity, this will be a the entry under the xsd:sequence under the database complex type
-	 * @param aTypeDefinition The xsd:complexType node of the entity being edited from the XSD
-	 * @param aParentRecord If this is a child entity, this value holds the parent record; if this is a top level entity, this value will be null
-	 * @param aParentEntityElements Array of xsd:element entries that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @param aParentTypeDefinitions Array of type definitions that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @param aMdiEditor The main MDI window
 	 * @throws XmlEditorException If there a syntax problem parsing the XSD
 	 * @throws IOException If there is a problem loading the button images
 	 */
-	public RaceCannotBuildGrid (final Element anEntityElement, final ComplexTypeReference aTypeDefinition,
-		final Element aParentRecord, final Element [] aParentEntityElements, final ComplexTypeReference [] aParentTypeDefinitions, final XmlEditorMain aMdiEditor)
-		throws XmlEditorException, IOException
+	@Override
+	public final void init () throws XmlEditorException, IOException
 	{
-		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor, null);
+		super.init ();
 
 		// Create the table model
 		final RaceCannotBuildTableModel tableModel = new RaceCannotBuildTableModel (buildListOfBuildingsThatRaceCannotBuild ());

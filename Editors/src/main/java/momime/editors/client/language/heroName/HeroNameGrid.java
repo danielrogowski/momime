@@ -24,49 +24,34 @@ import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
 import com.ndg.xml.JdomUtils;
-import com.ndg.xmleditor.editor.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.editor.XmlEditorMain;
 import com.ndg.xmleditor.editor.XmlEditorUtils;
 
 /**
  * Grid for displaying and editing hero names names
  * Allows importing hero names from the original MoM LBXes
  */
-public class HeroNameGrid extends MoMLanguageEditorGridWithImport
+public final class HeroNameGrid extends MoMLanguageEditorGridWithImport
 {
-	/**
-	 * Conjunction to use if hero class starts with a vowel, e.g. l' for Tumu l'Assassin
-	 */
-	private final JTextField vowelConjunction;
+	/** Conjunction to use if hero class starts with a vowel, e.g. l' for Tumu l'Assassin */
+	private JTextField vowelConjunction;
 
-	/**
-	 * Conjunction to use if hero is male, e.g. le for Gunther le Barbare
-	 */
-	private final JTextField maleConjunction;
+	/** Conjunction to use if hero is male, e.g. le for Gunther le Barbare */
+	private JTextField maleConjunction;
 
-	/**
-	 * Conjunction to use if hero is female, e.g. la for Valana la Barde
-	 */
-	private final JTextField femaleConjunction;
+	/** Conjunction to use if hero is female, e.g. la for Valana la Barde */
+	private JTextField femaleConjunction;
 
 	/**
 	 * Creates a grid for displaying and editing hero names names
-	 * @param anEntityElement The xsd:element node of the entity being edited from the XSD, i.e. for a top level entity, this will be a the entry under the xsd:sequence under the database complex type
-	 * @param aTypeDefinition The xsd:complexType node of the entity being edited from the XSD
-	 * @param aParentRecord If this is a child entity, this value holds the parent record; if this is a top level entity, this value will be null
-	 * @param aParentEntityElements Array of xsd:element entries that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @param aParentTypeDefinitions Array of type definitions that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @param aMdiEditor The main MDI window
 	 * @throws XmlEditorException If there a syntax problem parsing the XSD
 	 * @throws IOException If there is a problem loading the button images
 	 */
-	public HeroNameGrid (final Element anEntityElement, final ComplexTypeReference aTypeDefinition,
-		final Element aParentRecord, final Element [] aParentEntityElements, final ComplexTypeReference [] aParentTypeDefinitions, final XmlEditorMain aMdiEditor)
-		throws XmlEditorException, IOException
+	@Override
+	public final void init () throws XmlEditorException, IOException
 	{
-		super (anEntityElement, aTypeDefinition, aParentRecord, aParentEntityElements, aParentTypeDefinitions, aMdiEditor);
-
+		super.init ();
+		
 		final Dimension size = new Dimension (BUTTON_WIDTH, SwingLayoutConstants.TEXT_FIELD_HEIGHT);
 
 		// Overall heading
@@ -136,7 +121,7 @@ public class HeroNameGrid extends MoMLanguageEditorGridWithImport
 	 * @param lbxChooser The file open dialog
 	 */
 	@Override
-	protected void addOtherFilters (final JFileChooser lbxChooser)
+	protected final void addOtherFilters (final JFileChooser lbxChooser)
 	{
 		lbxChooser.addChoosableFileFilter (new SpecificFilenameFilter ("NAMES.LBX", "Original Master of Magic hero names (NAMES.LBX)"));
 	};
@@ -148,7 +133,7 @@ public class HeroNameGrid extends MoMLanguageEditorGridWithImport
 	 * @throws XmlEditorException If there is a problem with one of the XML editor helper methods
 	 */
 	@Override
-	protected void importFromLbx (final File lbxFilename)
+	protected final void importFromLbx (final File lbxFilename)
 		throws IOException, XmlEditorException
 	{
 		// NAMES.LBX only has a single subfile in it
@@ -197,5 +182,4 @@ public class HeroNameGrid extends MoMLanguageEditorGridWithImport
 			lbxStream.close ();
 		}
 	}
-
 }

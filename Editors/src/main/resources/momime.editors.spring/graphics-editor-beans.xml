@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd" >
+
+	<!-- Itention is individual applications can copy this file to use as a starter -->
+
+	<bean id="ndgUIManager" class="com.ndg.swing.NdgUIManagerImpl" />
+	
+	<bean id="utils" class="com.ndg.xmleditor.editor.XmlEditorUIUtilsImpl" />
+
+	<!-- XML -->
+
+	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
+	
+	<bean id="resourceResolver" class="momime.server.database.ServerXsdResourceResolver">
+		<constructor-arg ref="domImplementationRegistry" />
+	</bean>
+
+	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
+		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
+		<property name="resourceResolver" ref="resourceResolver" />
+	</bean>	
+
+	<!-- JDOM -->
+
+	<bean id="parser" class="org.jdom.input.SAXBuilder" />
+
+	<!-- MoM IME Graphics specific -->
+
+	<bean id="wizardGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="110" />
+		<property name="filenameElements">
+			<list>
+				<value>portraitFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="productionTypeImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>productionImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="racePopulationTaskGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>civilianImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="bookImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="30" />
+		<property name="filenameElements">
+			<list>
+				<value>bookImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="spellGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="120" />
+		<property name="filenameElements">
+			<list>
+				<value>overlandEnchantmentImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="combatAreaEffectGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>combatAreaEffectImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="unitAttributeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>attributeImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="rangedAttackTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>unitDisplayRangedImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="rangedAttackTypeCombatImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="30" />
+		<property name="filenameElements">
+			<list>
+				<value>rangedAttackTypeCombatImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="unitGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="84" />
+		<property name="filenameElements">
+			<list>
+				<value>unitSummonImageFile</value>
+				<value>unitOverlandImageFile</value>
+				<value>heroPortraitImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="unitCombatImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="40" />
+		<property name="filenameElements">
+			<list>
+				<value>unitCombatImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="unitSkillGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="20" />
+		<property name="filenameElements">
+			<list>
+				<value>unitSkillImageFile</value>
+				<value>movementIconImageFile</value>
+				<value>sampleTileImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="smoothedTileGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="24" />
+		<property name="filenameElements">
+			<list>
+				<value>tileFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="tileTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="70" />
+		<property name="filenameElements">
+			<list>
+				<value>monsterFoundImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="mapFeatureGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="70" />
+		<property name="filenameElements">
+			<list>
+				<value>monsterFoundImageFile</value>
+				<value>overlandMapImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cityImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="36" />
+		<property name="filenameElements">
+			<list>
+				<value>cityImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="combatTileBorderImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="40" />
+		<property name="filenameElements">
+			<list>
+				<value>standardFile</value>
+				<value>wreckedFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cityViewElementGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="40" />
+		<property name="filenameElements">
+			<list>
+				<value>cityViewImageFile</value>
+				<value>cityViewAlternativeImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="frameGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="rowHeight" value="40" />
+		<property name="filenameElements">
+			<list>
+				<value>frameImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dispatcher" class="com.ndg.xmleditor.editor.XmlEditorDispatcher">
+		<property name="creator" ref="creator" />
+		<property name="gridBeansMap">
+			<map>
+				<entry key="wizard" value="wizardGrid" />
+				<entry key="productionTypeImage" value="productionTypeImageGrid" />
+				<entry key="racePopulationTask" value="racePopulationTaskGrid" />
+				<entry key="bookImage" value="bookImageGrid" />
+				<entry key="spell" value="spellGrid" />
+				<entry key="combatAreaEffect" value="combatAreaEffectGrid" />
+				<entry key="unitAttribute" value="unitAttributeGrid" />
+				<entry key="rangedAttackType" value="rangedAttackTypeGrid" />
+				<entry key="rangedAttackTypeCombatImage" value="rangedAttackTypeCombatImageGrid" />
+				<entry key="unit" value="unitGrid" />
+				<entry key="unitCombatImage" value="unitCombatImageGrid" />
+				<entry key="unitSkill" value="unitSkillGrid" />
+				<entry key="smoothedTile" value="smoothedTileGrid" />
+				<entry key="tileType" value="tileTypeGrid" />
+				<entry key="mapFeature" value="mapFeatureGrid" />
+				<entry key="cityImage" value="cityImageGrid" />
+				<entry key="combatTileBorderImage" value="combatTileBorderImageGrid" />
+				<entry key="cityViewElement" value="cityViewElementGrid" />
+				<entry key="frame" value="frameGrid" />
+				<entry key="default" value="grid" />
+			</map>
+		</property>
+		<property name="recordPanelBeansMap">
+			<map>
+				<entry key="default" value="panel" />
+			</map>
+		</property>
+		<property name="editRecordBeansMap">
+			<map>
+				<entry key="default" value="edit" />
+			</map>
+		</property>
+		<property name="dataTypesMap">
+			<map>
+				<entry key="xsd:boolean" value="booleanField" />
+				<entry key="xsd:string" value="textArea" />		<!-- xsd:string assumed to be multi-line; xsd:normalizedString assumed to be single-line -->
+				<entry key="default" value="textField" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- General editor -->
+	
+	<bean id="ask" class="com.ndg.xmleditor.editor.AskForXsdAndXmlFileLocations" init-method="init">
+		<property name="ndgUIManager" ref="ndgUIManager" />
+		<property name="utils" ref="utils" />
+		<property name="dispatcher" ref="dispatcher" />
+		<property name="parser" ref="parser" />
+		<property name="schemaFactory" ref="schemaFactory" />
+		<property name="mdiEditor" ref="mdiEditor" />
+		
+		<property name="resourceResolver" ref="resourceResolver" />
+		<property name="loadXsdFromClasspath" value="true" />
+		<property name="xsdFilename" value="/momime.client.graphics/MoMIMEGraphicsDatabase.xsd" />
+	</bean>
+	
+	<bean id="mdiEditor" class="com.ndg.xmleditor.editor.XmlEditorMain">
+		<property name="dispatcher" ref="dispatcher" />
+	</bean>
+	
+	<bean id="grid" class="com.ndg.xmleditor.grid.XmlEditorGrid" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+	</bean>
+
+	<bean id="panel" class="com.ndg.xmleditor.single.XmlRecordPanel" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+	</bean>
+
+	<bean id="edit" class="com.ndg.xmleditor.single.EditXmlRecord" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+	</bean>
+
+	<bean id="textField" class="com.ndg.xmleditor.single.field.XmlRecordTextField" scope="prototype" />
+
+	<bean id="textArea" class="com.ndg.xmleditor.single.field.XmlRecordTextArea" scope="prototype" />
+
+	<bean id="booleanField" class="com.ndg.xmleditor.single.field.XmlRecordBoolean" scope="prototype" />
+
+	<bean id="creator" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="com.ndg.xmleditor.editor.XmlEditorPrototypeFrameCreator" />
+	</bean>			
+
+</beans>

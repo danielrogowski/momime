@@ -2,7 +2,6 @@ package momime.editors.client.language;
 
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -16,7 +15,6 @@ import org.jdom.Element;
 import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.constants.XsdConstants;
 import com.ndg.xmleditor.editor.XmlDocument;
-import com.ndg.xmleditor.editor.XmlEditorDispatcher;
 import com.ndg.xmleditor.editor.XmlEditorException;
 import com.ndg.xmleditor.editor.XmlEditorMain;
 import com.ndg.xmleditor.editor.XmlEditorUtils;
@@ -24,18 +22,16 @@ import com.ndg.xmleditor.editor.XmlEditorUtils;
 /**
  * Specialised main window for the language XML editor which adds an option to the File menu
  */
-public class LanguageEditorMain extends XmlEditorMain
+public final class LanguageEditorMain extends XmlEditorMain
 {
 	/**
 	 * Adds a special menu option
-	 * @param aXmlDocuments A list of the main XML document being edited, plus any referenced documents
-	 * @param aDispatcher Dispatcher to use to open grid and single record displays with
 	 * @throws XmlEditorException If there are syntax problems with the XSD
 	 */
-	public LanguageEditorMain (final List <XmlDocument> aXmlDocuments, final XmlEditorDispatcher aDispatcher)
-		throws XmlEditorException
+	@Override
+	public final void init () throws XmlEditorException
 	{
-		super (aXmlDocuments, aDispatcher);
+		super.init ();
 
 		// Add separator
 		getFileMenu ().add (new JSeparator (), 0);

@@ -2,7 +2,6 @@ package momime.editors.server.unit;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,41 +16,18 @@ import org.jdom.Element;
 import com.ndg.swing.SwingLayoutConstants;
 import com.ndg.swing.UneditableArrayTableModel;
 import com.ndg.xml.JdomUtils;
-import com.ndg.xmleditor.editor.ComplexTypeReference;
-import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.editor.XmlEditorMain;
 import com.ndg.xmleditor.single.EditXmlRecord;
 
 /**
  * Adds a grid underneath the record details showing the calculated movement rates for this unit over every type of terrain
  */
-public class EditUnit extends EditXmlRecord
+public final class EditUnit extends EditXmlRecord
 {
-	/**
-	 * Does nothing other than call the super constructor
-	 * @param entityElement The xsd:element node of the entity being edited from the XSD, i.e. for a top level entity, this will be a the entry under the xsd:sequence under the database complex type
-	 * @param aTypeDefinition The xsd:complexType node of the entity being edited from the XSD
-	 * @param aMdiEditor The main MDI window
-	 * @param aRecordBeingEdited The record being edited, or null if we're adding a new record
-	 * @param recordBeingCopied True if we're copying the specified record rather than editing it
-	 * @param aParentRecord The parent record which contains this child record, or null if this is a top level record (it most cases you can get this from recordBeingEdited.getParent (), except when creating a new record)
-	 * @param parentEntityElements Array of xsd:element entries that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @param aParentTypeDefinitions Array of type definitions that have been drilled down to to reach here - earliest parent first in the list, immediate parent to entity last in the list - or null if this is a top level entity
-	 * @throws XmlEditorException If there a syntax problem parsing the XSD
-	 * @throws IOException If there is a problem loading the button images
-	 */
-	public EditUnit (final Element entityElement, final ComplexTypeReference aTypeDefinition, final XmlEditorMain aMdiEditor,
-		final Element aRecordBeingEdited, final boolean recordBeingCopied, final Element aParentRecord, final Element [] parentEntityElements, final ComplexTypeReference [] aParentTypeDefinitions)
-		throws XmlEditorException, IOException
-	{
-		super (entityElement, aTypeDefinition, aMdiEditor, aRecordBeingEdited, recordBeingCopied, aParentRecord, parentEntityElements, aParentTypeDefinitions);
-	}
-
 	/**
 	 * Adds a grid underneath the record details showing the calculated movement rates for this unit over every type of terrain
 	 */
 	@Override
-	protected void initialize ()
+	protected final void initialize ()
 	{
 		if ((getRecordBeingEdited () != null) && (!isRecordBeingCopied ()))
 		{
@@ -80,7 +56,7 @@ public class EditUnit extends EditXmlRecord
 	 * @return The height to lock the form at
 	 */
 	@Override
-	public int getFormHeight ()
+	public final int getFormHeight ()
 	{
 		int value = super.getFormHeight ();
 
@@ -94,7 +70,7 @@ public class EditUnit extends EditXmlRecord
 	 * @return Array containing details of this unit's movement over each type of terrain
 	 */
 	@SuppressWarnings ("rawtypes")
-	private String [] [] calculateMovementRates ()
+	private final String [] [] calculateMovementRates ()
 	{
 		// Find how many tile types there are so we can size the array
 		final List tileTypes = getMdiEditor ().getXmlDocuments ().get (0).getXml ().getChildren (ServerEditorDatabaseConstants.TAG_ENTITY_TILE_TYPE);

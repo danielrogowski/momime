@@ -103,6 +103,7 @@
 
 	<bean id="edit" class="com.ndg.xmleditor.single.EditXmlRecord" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="textField" class="com.ndg.xmleditor.single.field.XmlRecordTextField" scope="prototype" />

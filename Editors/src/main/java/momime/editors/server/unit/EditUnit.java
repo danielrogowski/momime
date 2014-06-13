@@ -1,11 +1,10 @@
 package momime.editors.server.unit;
 
 import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.Box;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -13,7 +12,6 @@ import momime.editors.server.ServerEditorDatabaseConstants;
 
 import org.jdom.Element;
 
-import com.ndg.swing.SwingLayoutConstants;
 import com.ndg.swing.UneditableArrayTableModel;
 import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.single.EditXmlRecord;
@@ -31,9 +29,6 @@ public final class EditUnit extends EditXmlRecord
 	{
 		if ((getRecordBeingEdited () != null) && (!isRecordBeingCopied ()))
 		{
-			// Leave a gap between the unit details and the movement grid
-			getLeftPanel ().add (Box.createRigidArea (new Dimension (0, SwingLayoutConstants.SPACE_BETWEEN_CONTROLS)));
-
 			// Now create the table
 			final String [] columnHeadings = {"Tile Type ID", "Description", "2x Movement Rate", "Rate from which Skill"};
 
@@ -47,7 +42,7 @@ public final class EditUnit extends EditXmlRecord
 			// Put the grid into a scrolling area
 			final JScrollPane scrollPane = new JScrollPane (table);
 			scrollPane.setAlignmentY (Component.TOP_ALIGNMENT);
-			getLeftPanel ().add (scrollPane);
+			getContentPane ().add (scrollPane, getUtils ().createConstraints (0, 2, 1, 1, INSET, GridBagConstraints.CENTER, GridBagConstraints.BOTH));
 		}
 	}
 

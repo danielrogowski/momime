@@ -1,8 +1,7 @@
 package momime.editors.client.language.unit;
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +18,6 @@ import momime.editors.server.ServerEditorDatabaseConstants;
 
 import org.jdom.Element;
 
-import com.ndg.swing.SwingLayoutConstants;
 import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
@@ -27,7 +25,7 @@ import com.ndg.xmleditor.editor.XmlEditorException;
 import com.ndg.xmleditor.editor.XmlEditorUtils;
 
 /**
- * Grid for displaying and editing hero names names
+ * Grid for displaying and editing unit names
  * Allows importing unit names from the original MoM WIZARDS.EXE
  */
 public final class UnitGrid extends MoMLanguageEditorGridWithImport
@@ -54,59 +52,37 @@ public final class UnitGrid extends MoMLanguageEditorGridWithImport
 	{
 		super.init ();
 		
-		final Dimension size = new Dimension (BUTTON_WIDTH, SwingLayoutConstants.TEXT_FIELD_HEIGHT);
-
 		// Overall heading
 		final JLabel headingLabel = new JLabel ("For use with Import button:");
 		headingLabel.setFont (headingLabel.getFont ().deriveFont (Font.BOLD));
-		headingLabel.setPreferredSize (size);
-		headingLabel.setMinimumSize (size);
-		headingLabel.setMaximumSize (size);
-		headingLabel.setAlignmentX (Component.LEFT_ALIGNMENT);
-		headingLabel.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (headingLabel);
+		getButtonPanel ().add (headingLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Offset into WIZARDS.EXE of the names table
 		final JLabel dataOffsetLabel = new JLabel ("Offset of names table:");
-		dataOffsetLabel.setPreferredSize (size);
-		dataOffsetLabel.setMinimumSize (size);
-		dataOffsetLabel.setMaximumSize (size);
-		dataOffsetLabel.setAlignmentX (Component.LEFT_ALIGNMENT);
-		dataOffsetLabel.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (dataOffsetLabel);
+		getButtonPanel ().add (dataOffsetLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		dataOffsetCombo = new JComboBox<String> ();
-		dataOffsetCombo.setPreferredSize (size);
-		dataOffsetCombo.setMinimumSize (size);
-		dataOffsetCombo.setMaximumSize (size);
-		dataOffsetCombo.setAlignmentX (Component.LEFT_ALIGNMENT);
-		dataOffsetCombo.setAlignmentY (Component.TOP_ALIGNMENT);
 		dataOffsetCombo.addItem ("2963C (English)");
 		dataOffsetCombo.addItem ("2906C (French)");
 		dataOffsetCombo.addItem ("2966C (German)");
 		dataOffsetCombo.setEditable (true);
-		getButtonPanel ().add (dataOffsetCombo);
+		getButtonPanel ().add (dataOffsetCombo, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Offset to add to the values read from the names table in order to find the address of the actual name
 		final JLabel namesOffsetLabel = new JLabel ("Offset to add to names table values:");
-		namesOffsetLabel.setPreferredSize (size);
-		namesOffsetLabel.setMinimumSize (size);
-		namesOffsetLabel.setMaximumSize (size);
-		namesOffsetLabel.setAlignmentX (Component.LEFT_ALIGNMENT);
-		namesOffsetLabel.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (namesOffsetLabel);
+		getButtonPanel ().add (namesOffsetLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		namesOffsetCombo = new JComboBox<String> ();
-		namesOffsetCombo.setPreferredSize (size);
-		namesOffsetCombo.setMinimumSize (size);
-		namesOffsetCombo.setMaximumSize (size);
-		namesOffsetCombo.setAlignmentX (Component.LEFT_ALIGNMENT);
-		namesOffsetCombo.setAlignmentY (Component.TOP_ALIGNMENT);
 		namesOffsetCombo.addItem ("294A0 (English)");
 		namesOffsetCombo.addItem ("28ED0 (French)");
 		namesOffsetCombo.addItem ("294D0 (German)");
 		namesOffsetCombo.setEditable (true);
-		getButtonPanel ().add (namesOffsetCombo);
+		getButtonPanel ().add (namesOffsetCombo, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		setButtonPanelY (getButtonPanelY () + 1);
 	}
 
 	/**
@@ -114,7 +90,7 @@ public final class UnitGrid extends MoMLanguageEditorGridWithImport
 	 * @param lbxChooser The file open dialog
 	 */
 	@Override
-	protected void addOtherFilters (final JFileChooser lbxChooser)
+	protected final void addOtherFilters (final JFileChooser lbxChooser)
 	{
 		for (final FileFilter filter : lbxChooser.getChoosableFileFilters ())
 			lbxChooser.removeChoosableFileFilter (filter);
@@ -127,7 +103,7 @@ public final class UnitGrid extends MoMLanguageEditorGridWithImport
 	 * @param value Text read from combo box
 	 * @return Integer offset value
 	 */
-	private int readValueFromComboBox (final Object value)
+	private final int readValueFromComboBox (final Object value)
 	{
 		String useValue = value.toString ();
 		final int spacePos = useValue.indexOf (" ");
@@ -144,7 +120,7 @@ public final class UnitGrid extends MoMLanguageEditorGridWithImport
 	 * @throws XmlEditorException If there is a problem using helper methods from the XML editor
 	 */
 	@Override
-	protected void importFromLbx (final File exeFilename)
+	protected final void importFromLbx (final File exeFilename)
 		throws IOException, XmlEditorException
 	{
 		// Read the two offsets from the form

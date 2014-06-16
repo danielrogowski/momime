@@ -29,6 +29,7 @@
 
 	<bean id="wizardGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="110" />
 		<property name="filenameElements">
 			<list>
@@ -39,6 +40,7 @@
 
 	<bean id="productionTypeImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="20" />
 		<property name="filenameElements">
 			<list>
@@ -49,6 +51,7 @@
 
 	<bean id="racePopulationTaskGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="20" />
 		<property name="filenameElements">
 			<list>
@@ -59,6 +62,7 @@
 
 	<bean id="bookImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
 		<property name="filenameElements">
 			<list>
@@ -69,6 +73,7 @@
 
 	<bean id="spellGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="120" />
 		<property name="filenameElements">
 			<list>
@@ -79,6 +84,7 @@
 
 	<bean id="combatAreaEffectGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="20" />
 		<property name="filenameElements">
 			<list>
@@ -89,6 +95,7 @@
 
 	<bean id="unitAttributeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="20" />
 		<property name="filenameElements">
 			<list>
@@ -99,6 +106,7 @@
 
 	<bean id="rangedAttackTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="20" />
 		<property name="filenameElements">
 			<list>
@@ -109,6 +117,7 @@
 
 	<bean id="rangedAttackTypeCombatImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
 		<property name="filenameElements">
 			<list>
@@ -119,6 +128,7 @@
 
 	<bean id="unitGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="84" />
 		<property name="filenameElements">
 			<list>
@@ -131,6 +141,7 @@
 
 	<bean id="unitCombatImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="40" />
 		<property name="filenameElements">
 			<list>
@@ -141,6 +152,7 @@
 
 	<bean id="unitSkillGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="20" />
 		<property name="filenameElements">
 			<list>
@@ -153,6 +165,7 @@
 
 	<bean id="smoothedTileGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="24" />
 		<property name="filenameElements">
 			<list>
@@ -163,6 +176,7 @@
 
 	<bean id="tileTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="70" />
 		<property name="filenameElements">
 			<list>
@@ -173,6 +187,7 @@
 
 	<bean id="mapFeatureGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="70" />
 		<property name="filenameElements">
 			<list>
@@ -184,6 +199,7 @@
 
 	<bean id="cityImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="36" />
 		<property name="filenameElements">
 			<list>
@@ -194,6 +210,7 @@
 
 	<bean id="combatTileBorderImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="40" />
 		<property name="filenameElements">
 			<list>
@@ -205,6 +222,7 @@
 
 	<bean id="cityViewElementGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="40" />
 		<property name="filenameElements">
 			<list>
@@ -216,6 +234,7 @@
 
 	<bean id="frameGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="40" />
 		<property name="filenameElements">
 			<list>
@@ -290,6 +309,7 @@
 	
 	<bean id="grid" class="com.ndg.xmleditor.grid.XmlEditorGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="panel" class="com.ndg.xmleditor.single.XmlRecordPanel" scope="prototype">

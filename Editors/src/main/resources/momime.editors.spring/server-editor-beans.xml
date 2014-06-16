@@ -29,18 +29,22 @@
 
 	<bean id="pickTypeCountGrid" class="momime.editors.server.pickTypeCount.PickTypeCountGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="raceCannotBuildGrid" class="momime.editors.server.raceCannotBuild.RaceCannotBuildGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="spellGrid" class="momime.editors.server.spell.SpellGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="wizardPickCountGrid" class="momime.editors.server.wizardPickCount.WizardPickCountGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="editUnit" class="momime.editors.server.unit.EditUnit" scope="prototype">
@@ -100,6 +104,7 @@
 	
 	<bean id="grid" class="com.ndg.xmleditor.grid.XmlEditorGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="panel" class="com.ndg.xmleditor.single.XmlRecordPanel" scope="prototype">

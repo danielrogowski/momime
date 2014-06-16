@@ -1,13 +1,11 @@
 package momime.editors.server.raceCannotBuild;
 
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.Box;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -15,7 +13,6 @@ import momime.editors.server.ServerEditorDatabaseConstants;
 
 import org.jdom.Element;
 
-import com.ndg.swing.SwingLayoutConstants;
 import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.editor.XmlEditorException;
 import com.ndg.xmleditor.grid.XmlEditorGrid;
@@ -46,13 +43,26 @@ public final class RaceCannotBuildGrid extends XmlEditorGrid
 		cannotBuildTable.getColumnModel ().getColumn (1).setPreferredWidth (200);
 
 		// Put the grid into a scrolling area
-		final JScrollPane scrollPane = new JScrollPane (cannotBuildTable);
-		scrollPane.setAlignmentY (Component.TOP_ALIGNMENT);
+		final GridBagConstraints gridConstraints = getUtils ().createConstraints (0, getParentsAndGridPanelY (), 1, 1, INSET, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+		gridConstraints.weightx = 1;
+		gridConstraints.weighty = getGridWeightY ();
 
-		getParentsAndGridPanel ().add (Box.createRigidArea (new Dimension (0, SwingLayoutConstants.SPACE_BETWEEN_CONTROLS)));
-		getParentsAndGridPanel ().add (scrollPane);
+		final JScrollPane scrollPane = new JScrollPane (cannotBuildTable);
+		getParentsAndGridPanel ().add (scrollPane, gridConstraints);
+		
+		setParentsAndGridPanelY (getParentsAndGridPanelY () + 1);
 	}
 
+	/**
+	 * @return GridBagLayout weighty value to assign to the main grid on the form - if adding more grid, may need to reassign this down to make the grids resize nicely
+	 */
+	@Override
+	public final double getGridWeightY ()
+	{
+		// Size the two grids equally
+		return 0.5;
+	}
+	
 	/**
 	 * Does the actual work resolving out the implicit building restrictions
 	 * @return Complete list of all the buildings this race cannot build, including both restrictions explicitly listed in the XML file, and implicit restrictions
@@ -144,7 +154,5 @@ public final class RaceCannotBuildGrid extends XmlEditorGrid
 
 		// Return the list
 		return cannotBuildList;
-
 	}
-
 }

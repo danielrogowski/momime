@@ -29,18 +29,22 @@
 
 	<bean id="buildingGrid" class="momime.editors.client.language.building.BuildingGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="heroNameGrid" class="momime.editors.client.language.heroName.HeroNameGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="spellGrid" class="momime.editors.client.language.spell.SpellGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="unitGrid" class="momime.editors.client.language.unit.UnitGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="dispatcher" class="com.ndg.xmleditor.editor.XmlEditorDispatcher">
@@ -94,6 +98,7 @@
 	
 	<bean id="grid" class="com.ndg.xmleditor.grid.XmlEditorGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="panel" class="com.ndg.xmleditor.single.XmlRecordPanel" scope="prototype">

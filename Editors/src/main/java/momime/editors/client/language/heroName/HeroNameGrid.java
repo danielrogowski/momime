@@ -1,8 +1,7 @@
 package momime.editors.client.language.heroName;
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,7 +18,6 @@ import momime.editors.server.ServerEditorDatabaseConstants;
 import org.jdom.Element;
 
 import com.ndg.archive.LbxArchiveReader;
-import com.ndg.swing.SwingLayoutConstants;
 import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
@@ -28,7 +26,7 @@ import com.ndg.xmleditor.editor.XmlEditorException;
 import com.ndg.xmleditor.editor.XmlEditorUtils;
 
 /**
- * Grid for displaying and editing hero names names
+ * Grid for displaying and editing hero names
  * Allows importing hero names from the original MoM LBXes
  */
 public final class HeroNameGrid extends MoMLanguageEditorGridWithImport
@@ -52,68 +50,38 @@ public final class HeroNameGrid extends MoMLanguageEditorGridWithImport
 	{
 		super.init ();
 		
-		final Dimension size = new Dimension (BUTTON_WIDTH, SwingLayoutConstants.TEXT_FIELD_HEIGHT);
-
 		// Overall heading
 		final JLabel headingLabel = new JLabel ("For use with Import button:");
 		headingLabel.setFont (headingLabel.getFont ().deriveFont (Font.BOLD));
-		headingLabel.setPreferredSize (size);
-		headingLabel.setMinimumSize (size);
-		headingLabel.setMaximumSize (size);
-		headingLabel.setAlignmentX (Component.LEFT_ALIGNMENT);
-		headingLabel.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (headingLabel);
+		getButtonPanel ().add (headingLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Conjunction if starts with vowel
 		final JLabel vowelLabel = new JLabel ("Conjunction if starts with vowel:");
-		vowelLabel.setPreferredSize (size);
-		vowelLabel.setMinimumSize (size);
-		vowelLabel.setMaximumSize (size);
-		vowelLabel.setAlignmentX (Component.LEFT_ALIGNMENT);
-		vowelLabel.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (vowelLabel);
+		getButtonPanel ().add (vowelLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		vowelConjunction = new JTextField (" the ");
-		vowelConjunction.setPreferredSize (size);
-		vowelConjunction.setMinimumSize (size);
-		vowelConjunction.setMaximumSize (size);
-		vowelConjunction.setAlignmentX (Component.LEFT_ALIGNMENT);
-		vowelConjunction.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (vowelConjunction);
+		getButtonPanel ().add (vowelConjunction, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Conjunction if male
 		final JLabel maleLabel = new JLabel ("Conjunction if male:");
-		maleLabel.setPreferredSize (size);
-		maleLabel.setMinimumSize (size);
-		maleLabel.setMaximumSize (size);
-		maleLabel.setAlignmentX (Component.LEFT_ALIGNMENT);
-		maleLabel.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (maleLabel);
+		getButtonPanel ().add (maleLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		maleConjunction = new JTextField (" the ");
-		maleConjunction.setPreferredSize (size);
-		maleConjunction.setMinimumSize (size);
-		maleConjunction.setMaximumSize (size);
-		maleConjunction.setAlignmentX (Component.LEFT_ALIGNMENT);
-		maleConjunction.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (maleConjunction);
+		getButtonPanel ().add (maleConjunction, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Conjunction if female
 		final JLabel femaleLabel = new JLabel ("Conjunction if female:");
-		femaleLabel.setPreferredSize (size);
-		femaleLabel.setMinimumSize (size);
-		femaleLabel.setMaximumSize (size);
-		femaleLabel.setAlignmentX (Component.LEFT_ALIGNMENT);
-		femaleLabel.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (femaleLabel);
+		getButtonPanel ().add (femaleLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		setButtonPanelY (getButtonPanelY () + 1);
 
 		femaleConjunction = new JTextField (" the ");
-		femaleConjunction.setPreferredSize (size);
-		femaleConjunction.setMinimumSize (size);
-		femaleConjunction.setMaximumSize (size);
-		femaleConjunction.setAlignmentX (Component.LEFT_ALIGNMENT);
-		femaleConjunction.setAlignmentY (Component.TOP_ALIGNMENT);
-		getButtonPanel ().add (femaleConjunction);
+		getButtonPanel ().add (femaleConjunction, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		setButtonPanelY (getButtonPanelY () + 1);
 	}
 
 	/**

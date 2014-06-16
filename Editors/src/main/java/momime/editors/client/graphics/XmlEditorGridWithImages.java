@@ -27,7 +27,7 @@ public final class XmlEditorGridWithImages extends XmlEditorGrid
 	public final void init () throws XmlEditorException, IOException
 	{
 		super.init ();
-		table.setRowHeight (rowHeight);
+		getTable ().setRowHeight (rowHeight);
 	}
 
 	/**

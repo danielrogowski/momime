@@ -2,16 +2,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd" >
 
-	<!-- Itention is individual applications can copy this file to use as a starter -->
-
-	<bean id="ndgUIManager" class="com.ndg.swing.NdgUIManagerImpl" />
-	
-	<bean id="utils" class="com.ndg.xmleditor.editor.XmlEditorUIUtilsImpl" />
+	<import resource="../com.ndg.xmleditor.spring/common-editor-beans.xml"/>
 
 	<!-- XML -->
 
-	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
-	
 	<bean id="resourceResolver" class="momime.server.database.ServerXsdResourceResolver">
 		<constructor-arg ref="domImplementationRegistry" />
 	</bean>
@@ -20,10 +14,6 @@
 		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
 		<property name="resourceResolver" ref="resourceResolver" />
 	</bean>	
-
-	<!-- JDOM -->
-
-	<bean id="parser" class="org.jdom.input.SAXBuilder" />
 
 	<!-- MoM IME Language specific -->
 
@@ -95,30 +85,5 @@
 		<property name="loadXsdFromClasspath" value="true" />
 		<property name="xsdFilename" value="/momime.client.language/MoMIMELanguageDatabase.xsd" />
 	</bean>
-	
-	<bean id="grid" class="com.ndg.xmleditor.grid.XmlEditorGrid" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
-	<bean id="panel" class="com.ndg.xmleditor.single.XmlRecordPanel" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
-	<bean id="edit" class="com.ndg.xmleditor.single.EditXmlRecord" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
-	<bean id="textField" class="com.ndg.xmleditor.single.field.XmlRecordTextField" scope="prototype" />
-
-	<bean id="textArea" class="com.ndg.xmleditor.single.field.XmlRecordTextArea" scope="prototype" />
-
-	<bean id="booleanField" class="com.ndg.xmleditor.single.field.XmlRecordBoolean" scope="prototype" />
-
-	<bean id="creator" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
-		<property name="serviceLocatorInterface" value="com.ndg.xmleditor.editor.XmlEditorPrototypeFrameCreator" />
-	</bean>			
 
 </beans>

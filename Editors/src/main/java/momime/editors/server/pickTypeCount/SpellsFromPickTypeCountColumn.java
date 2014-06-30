@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.table.TableRowSorter;
+import javax.xml.namespace.QName;
 
 import momime.editors.server.ServerEditorDatabaseConstants;
 
@@ -14,12 +15,13 @@ import com.ndg.xmleditor.constants.XsdConstants;
 import com.ndg.xmleditor.editor.XmlDocument;
 import com.ndg.xmleditor.grid.XmlTableModel;
 import com.ndg.xmleditor.grid.column.XmlGridColumn;
+import com.ndg.xmleditor.schema.TopLevelComplexTypeEx;
 
 /**
  * Special column which shows how many spells we get available or for free in our spell book by choosing a certain number of spell books at the start of the game
  * Whether this displays available or free spells depends on the values passed into the constructor (saved having two separate and very similar classes)
  */
-public class SpellsFromPickTypeCountColumn extends XmlGridColumn
+public final class SpellsFromPickTypeCountColumn extends XmlGridColumn
 {
 	/**
 	 * The title to display in the header above this column
@@ -38,7 +40,7 @@ public class SpellsFromPickTypeCountColumn extends XmlGridColumn
 	 * @param aColumnHeading The title to display in the header above this column
 	 * @param aFieldTag The XML tag for the field containing the quantity we want to display
 	 */
-	public SpellsFromPickTypeCountColumn (final Element aTypeDefinition, final List <XmlDocument> aXmlDocuments, final String aColumnHeading, final String aFieldTag)
+	public SpellsFromPickTypeCountColumn (final TopLevelComplexTypeEx aTypeDefinition, final List <XmlDocument> aXmlDocuments, final String aColumnHeading, final String aFieldTag)
 	{
 		super (aTypeDefinition, aXmlDocuments);
 
@@ -50,7 +52,7 @@ public class SpellsFromPickTypeCountColumn extends XmlGridColumn
 	 * @return The width to display this column
 	 */
 	@Override
-	public int getColumnWidth ()
+	public final int getColumnWidth ()
 	{
 		return 300;
 	}
@@ -59,7 +61,7 @@ public class SpellsFromPickTypeCountColumn extends XmlGridColumn
 	 * @return The title to display in the header above this column
 	 */
 	@Override
-	public String getColumnHeading ()
+	public final String getColumnHeading ()
 	{
 		return columnHeading;
 	}
@@ -68,9 +70,9 @@ public class SpellsFromPickTypeCountColumn extends XmlGridColumn
 	 * @return Simple data type of this column - not necessarily resolved its ultimate simple type - so this may be e.g. momimesvr:description, rather than xsd:string
 	 */
 	@Override
-	public String getColumnType ()
+	public final QName getColumnType ()
 	{
-		return XsdConstants.VALUE_DATA_TYPE_SINGLE_LINE_STRING;
+		return new QName (XsdConstants.NAMESPACE_URI, XsdConstants.VALUE_DATA_TYPE_SINGLE_LINE_STRING);
 	}
 
 	/**
@@ -81,7 +83,7 @@ public class SpellsFromPickTypeCountColumn extends XmlGridColumn
 	 * @return The column value to display for this record
 	 */
 	@Override
-	public String getColumnValue (final Element record, final int rowIndex, final int columnIndex, final TableRowSorter<XmlTableModel> tableSorter)
+	public final String getColumnValue (final Element record, final int rowIndex, final int columnIndex, final TableRowSorter<XmlTableModel> tableSorter)
 	{
 		String list = "";
 

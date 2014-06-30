@@ -143,7 +143,7 @@ public final class HeroNameGrid extends MoMLanguageEditorGridWithImport
 
 					// Be careful about where we add it
 					final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
-							(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_HERO);
+							(getMdiEditor ().getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_HERO);
 					getContainer ().addContent (insertionPoint, heroElement);
 				}
 			

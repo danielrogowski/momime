@@ -9,15 +9,18 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 
+import momime.server.database.ServerDatabaseConstants;
+
 import org.jdom.Attribute;
 import org.jdom.Element;
 
 import com.ndg.xml.JdomUtils;
-import com.ndg.xmleditor.constants.XsdConstants;
 import com.ndg.xmleditor.editor.XmlDocument;
 import com.ndg.xmleditor.editor.XmlEditorException;
 import com.ndg.xmleditor.editor.XmlEditorMain;
 import com.ndg.xmleditor.editor.XmlEditorUtils;
+import com.ndg.xmleditor.schema.ComplexTypeEx;
+import com.ndg.xmleditor.schema.TopLevelComplexTypeEx;
 
 /**
  * Specialised main window for the language XML editor which adds an option to the File menu
@@ -47,10 +50,10 @@ public final class LanguageEditorMain extends XmlEditorMain
 			{
 				try
 				{
-					final XmlDocument serverXml = XmlEditorUtils.findDocumentWithNamespacePrefix (getXmlDocuments (), "momimesvr");
+					final XmlDocument serverXml = XmlEditorUtils.findDocumentWithNamespaceURI (getXmlDocuments (), ServerDatabaseConstants.SERVER_XSD_NAMESPACE_URI);
 
 					String valuesAdded = form.checkNode (serverXml.getXml (),
-						getXmlDocuments ().get (0).getXml (), getXmlDocuments ().get (0).getTopLevelTypeDefinition ());
+						getXmlDocuments ().get (0).getXml (), getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition ());
 
 					if (valuesAdded.equals (""))
 						valuesAdded = "Language XML file checks out OK against Server XML file - all necessary entries were already present.";
@@ -79,7 +82,7 @@ public final class LanguageEditorMain extends XmlEditorMain
 	 * @return List of nodes added or empty string if none
 	 * @throws XmlEditorException If there is an error parsing the XSD
 	 */
-	private String checkNode (final Element serverContainer, final Element languageContainer, final Element containerTypeDefinition)
+	private final String checkNode (final Element serverContainer, final Element languageContainer, final ComplexTypeEx containerTypeDefinition)
 		throws XmlEditorException
 	{
 		String result = "";
@@ -97,8 +100,7 @@ public final class LanguageEditorMain extends XmlEditorMain
 			// Firstly we need to prove that this is an entry which should be in the language XML file
 			// Secondly we need this below if we need to check for child nodes
 			// Also FKs are only supported with a single attribute
-			final Element entityDefinition = JdomUtils.findDomChildNodeWithTextAttribute (getXmlDocuments ().get (0).getXsd (),
-				XsdConstants.TAG_ENTITY_COMPLEX_TYPE, XsdConstants.NAMESPACE, XsdConstants.TAG_ATTRIBUTE_COMPLEX_TYPE_NAME, entityName);
+			final TopLevelComplexTypeEx entityDefinition = getXmlDocuments ().get (0).getXsd ().findTopLevelComplexType (entityName);
 			if ((entityDefinition != null) && (serverNode.getAttributes ().size () == 1))
 			{
 				final Attribute serverAttribute = (Attribute) serverNode.getAttributes ().get (0);

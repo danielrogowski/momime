@@ -287,6 +287,7 @@
 		<property name="parser" ref="parser" />
 		<property name="schemaFactory" ref="schemaFactory" />
 		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="xsdUnmarshaller" ref="xsdUnmarshaller" />
 		
 		<property name="resourceResolver" ref="resourceResolver" />
 		<property name="loadXsdFromClasspath" value="true" />

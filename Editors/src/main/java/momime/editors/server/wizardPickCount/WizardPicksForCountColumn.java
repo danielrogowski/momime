@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.table.TableRowSorter;
+import javax.xml.namespace.QName;
 
 import momime.editors.server.ServerEditorDatabaseConstants;
 
@@ -14,18 +15,19 @@ import com.ndg.xmleditor.constants.XsdConstants;
 import com.ndg.xmleditor.editor.XmlDocument;
 import com.ndg.xmleditor.grid.XmlTableModel;
 import com.ndg.xmleditor.grid.column.XmlGridColumn;
+import com.ndg.xmleditor.schema.TopLevelComplexTypeEx;
 
 /**
  * Special column showing all the picks for a particular pick count, rather than having to drill down to view them
  */
-public class WizardPicksForCountColumn extends XmlGridColumn
+public final class WizardPicksForCountColumn extends XmlGridColumn
 {
 	/**
 	 * Creates a special column showing all the picks for a particular pick count, rather than having to drill down to view them
 	 * @param aTypeDefinition The xsd:complexType node of the entity being edited from the XSD
 	 * @param aXmlDocuments A list of the main XML document being edited, plus any referenced documents
 	 */
-	public WizardPicksForCountColumn (final Element aTypeDefinition, final List <XmlDocument> aXmlDocuments)
+	public WizardPicksForCountColumn (final TopLevelComplexTypeEx aTypeDefinition, final List <XmlDocument> aXmlDocuments)
 	{
 		super (aTypeDefinition, aXmlDocuments);
 	}
@@ -34,7 +36,7 @@ public class WizardPicksForCountColumn extends XmlGridColumn
 	 * @return The width to display this column
 	 */
 	@Override
-	public int getColumnWidth ()
+	public final int getColumnWidth ()
 	{
 		return 500;
 	}
@@ -43,7 +45,7 @@ public class WizardPicksForCountColumn extends XmlGridColumn
 	 * @return The title to display in the header above this column
 	 */
 	@Override
-	public String getColumnHeading ()
+	public final String getColumnHeading ()
 	{
 		return "Picks";
 	}
@@ -52,9 +54,9 @@ public class WizardPicksForCountColumn extends XmlGridColumn
 	 * @return Simple data type of this column - not necessarily resolved its ultimate simple type - so this may be e.g. momimesvr:description, rather than xsd:string
 	 */
 	@Override
-	public String getColumnType ()
+	public final QName getColumnType ()
 	{
-		return XsdConstants.VALUE_DATA_TYPE_SINGLE_LINE_STRING;
+		return new QName (XsdConstants.NAMESPACE_URI, XsdConstants.VALUE_DATA_TYPE_SINGLE_LINE_STRING);
 	}
 
 	/**
@@ -65,7 +67,7 @@ public class WizardPicksForCountColumn extends XmlGridColumn
 	 * @return The column value to display for this record
 	 */
 	@Override
-	public String getColumnValue (final Element record, final int rowIndex, final int columnIndex, final TableRowSorter<XmlTableModel> tableSorter)
+	public final String getColumnValue (final Element record, final int rowIndex, final int columnIndex, final TableRowSorter<XmlTableModel> tableSorter)
 	{
 		String list = "";
 
@@ -101,5 +103,4 @@ public class WizardPicksForCountColumn extends XmlGridColumn
 
 		return list;
 	}
-
 }

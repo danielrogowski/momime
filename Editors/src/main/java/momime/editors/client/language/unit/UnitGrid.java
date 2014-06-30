@@ -164,7 +164,7 @@ public final class UnitGrid extends MoMLanguageEditorGridWithImport
 
 				// Be careful about where we add it
 				final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint
-					(getMdiEditor ().getXmlDocuments ().get (0).getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_UNIT);
+					(getMdiEditor ().getXmlDocuments ().get (0).getXsd ().getTopLevelTypeDefinition (), getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_UNIT);
 				getContainer ().addContent (insertionPoint, unitElement);
 
 				// Position back to name offset location

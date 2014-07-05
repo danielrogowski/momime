@@ -1,7 +1,6 @@
 package momime.editors.client.language.heroName;
 
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,6 +17,8 @@ import momime.editors.server.ServerEditorDatabaseConstants;
 import org.jdom.Element;
 
 import com.ndg.archive.LbxArchiveReader;
+import com.ndg.swing.GridBagConstraintsHorizontalFill;
+import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
@@ -53,34 +54,34 @@ public final class HeroNameGrid extends MoMLanguageEditorGridWithImport
 		// Overall heading
 		final JLabel headingLabel = new JLabel ("For use with Import button:");
 		headingLabel.setFont (headingLabel.getFont ().deriveFont (Font.BOLD));
-		getButtonPanel ().add (headingLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		getButtonPanel ().add (headingLabel, getUtils ().createConstraintsNoFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsNoFill.WEST));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Conjunction if starts with vowel
 		final JLabel vowelLabel = new JLabel ("Conjunction if starts with vowel:");
-		getButtonPanel ().add (vowelLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		getButtonPanel ().add (vowelLabel, getUtils ().createConstraintsNoFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsNoFill.WEST));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		vowelConjunction = new JTextField (" the ");
-		getButtonPanel ().add (vowelConjunction, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		getButtonPanel ().add (vowelConjunction, getUtils ().createConstraintsHorizontalFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Conjunction if male
 		final JLabel maleLabel = new JLabel ("Conjunction if male:");
-		getButtonPanel ().add (maleLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		getButtonPanel ().add (maleLabel, getUtils ().createConstraintsNoFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsNoFill.WEST));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		maleConjunction = new JTextField (" the ");
-		getButtonPanel ().add (maleConjunction, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		getButtonPanel ().add (maleConjunction, getUtils ().createConstraintsHorizontalFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Conjunction if female
 		final JLabel femaleLabel = new JLabel ("Conjunction if female:");
-		getButtonPanel ().add (femaleLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		getButtonPanel ().add (femaleLabel, getUtils ().createConstraintsNoFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsNoFill.WEST));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		femaleConjunction = new JTextField (" the ");
-		getButtonPanel ().add (femaleConjunction, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		getButtonPanel ().add (femaleConjunction, getUtils ().createConstraintsHorizontalFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE));
 		setButtonPanelY (getButtonPanelY () + 1);
 	}
 

@@ -43,7 +43,7 @@ public final class RaceCannotBuildGrid extends XmlEditorGrid
 		cannotBuildTable.getColumnModel ().getColumn (1).setPreferredWidth (200);
 
 		// Put the grid into a scrolling area
-		final GridBagConstraints gridConstraints = getUtils ().createConstraints (0, getParentsAndGridPanelY (), 1, 1, INSET, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
+		final GridBagConstraints gridConstraints = getUtils ().createConstraintsBothFill (0, getParentsAndGridPanelY (), 1, 1, INSET);
 		gridConstraints.weightx = 1;
 		gridConstraints.weighty = getGridWeightY ();
 

@@ -1,7 +1,6 @@
 package momime.editors.server.unit;
 
 import java.awt.Component;
-import java.awt.GridBagConstraints;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public final class EditUnit extends EditXmlRecord
 			// Put the grid into a scrolling area
 			final JScrollPane scrollPane = new JScrollPane (table);
 			scrollPane.setAlignmentY (Component.TOP_ALIGNMENT);
-			getContentPane ().add (scrollPane, getUtils ().createConstraints (0, 2, 1, 1, INSET, GridBagConstraints.CENTER, GridBagConstraints.BOTH));
+			getContentPane ().add (scrollPane, getUtils ().createConstraintsBothFill (0, 2, 1, 1, INSET));
 		}
 	}
 

@@ -1,7 +1,6 @@
 package momime.editors.client.language.unit;
 
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +17,8 @@ import momime.editors.server.ServerEditorDatabaseConstants;
 
 import org.jdom.Element;
 
+import com.ndg.swing.GridBagConstraintsHorizontalFill;
+import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.filefilters.SpecificFilenameFilter;
 import com.ndg.utils.StreamUtils;
 import com.ndg.utils.StringUtils;
@@ -55,12 +56,12 @@ public final class UnitGrid extends MoMLanguageEditorGridWithImport
 		// Overall heading
 		final JLabel headingLabel = new JLabel ("For use with Import button:");
 		headingLabel.setFont (headingLabel.getFont ().deriveFont (Font.BOLD));
-		getButtonPanel ().add (headingLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		getButtonPanel ().add (headingLabel, getUtils ().createConstraintsNoFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsNoFill.WEST));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Offset into WIZARDS.EXE of the names table
 		final JLabel dataOffsetLabel = new JLabel ("Offset of names table:");
-		getButtonPanel ().add (dataOffsetLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		getButtonPanel ().add (dataOffsetLabel, getUtils ().createConstraintsNoFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsNoFill.WEST));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		dataOffsetCombo = new JComboBox<String> ();
@@ -68,12 +69,12 @@ public final class UnitGrid extends MoMLanguageEditorGridWithImport
 		dataOffsetCombo.addItem ("2906C (French)");
 		dataOffsetCombo.addItem ("2966C (German)");
 		dataOffsetCombo.setEditable (true);
-		getButtonPanel ().add (dataOffsetCombo, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		getButtonPanel ().add (dataOffsetCombo, getUtils ().createConstraintsHorizontalFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		// Offset to add to the values read from the names table in order to find the address of the actual name
 		final JLabel namesOffsetLabel = new JLabel ("Offset to add to names table values:");
-		getButtonPanel ().add (namesOffsetLabel, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.NONE));
+		getButtonPanel ().add (namesOffsetLabel, getUtils ().createConstraintsNoFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsNoFill.WEST));
 		setButtonPanelY (getButtonPanelY () + 1);
 
 		namesOffsetCombo = new JComboBox<String> ();
@@ -81,7 +82,7 @@ public final class UnitGrid extends MoMLanguageEditorGridWithImport
 		namesOffsetCombo.addItem ("28ED0 (French)");
 		namesOffsetCombo.addItem ("294D0 (German)");
 		namesOffsetCombo.setEditable (true);
-		getButtonPanel ().add (namesOffsetCombo, getUtils ().createConstraints (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL));
+		getButtonPanel ().add (namesOffsetCombo, getUtils ().createConstraintsHorizontalFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE));
 		setButtonPanelY (getButtonPanelY () + 1);
 	}
 

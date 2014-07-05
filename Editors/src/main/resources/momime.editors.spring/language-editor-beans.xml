@@ -74,7 +74,6 @@
 	<!-- General editor -->
 	
 	<bean id="ask" class="com.ndg.xmleditor.editor.AskForXsdAndXmlFileLocations" init-method="init">
-		<property name="ndgUIManager" ref="ndgUIManager" />
 		<property name="utils" ref="utils" />
 		<property name="dispatcher" ref="dispatcher" />
 		<property name="parser" ref="parser" />

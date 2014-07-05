@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
-	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
-	xmlns:momimeclient="http://momime/client/database/v0_9_4" xmlns:momimemsgs="http://momime/common/messages/v0_9_5"
+	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_5" xmlns:momimecommon="http://momime/common/database/v0_9_5"
+	xmlns:momimeclient="http://momime/client/database/v0_9_5" xmlns:momimemsgs="http://momime/common/messages/v0_9_5"
 	xmlns:momimestoc="http://momime/common/messages/servertoclient/v0_9_5" targetNamespace="http://momime/common/messages/servertoclient/v0_9_5"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://www.ndg.com/map"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/base"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
-	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4"/>
-	<xsd:import namespace="http://momime/common/database/v0_9_4"/>
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/database/v0_9_5"/>
 	<xsd:import namespace="http://momime/common/messages/v0_9_5"/>
-	<xsd:import namespace="http://momime/client/database/v0_9_4"/>
+	<xsd:import namespace="http://momime/client/database/v0_9_5"/>
     
     <xsd:annotation>
     	<xsd:documentation>Defines all the messages sent from the MoM IME server to the client.</xsd:documentation>

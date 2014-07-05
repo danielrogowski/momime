@@ -4,7 +4,7 @@ import java.util.List;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.Spell;
+import momime.common.database.v0_9_5.Spell;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 

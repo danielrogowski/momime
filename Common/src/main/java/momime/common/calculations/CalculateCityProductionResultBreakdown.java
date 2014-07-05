@@ -1,6 +1,6 @@
 package momime.common.calculations;
 
-import momime.common.database.v0_9_4.RoundingDirectionID;
+import momime.common.database.v0_9_5.RoundingDirectionID;
 
 /**
  * Stores one component of the detailed breakdown of the calculation that produced a city production value.

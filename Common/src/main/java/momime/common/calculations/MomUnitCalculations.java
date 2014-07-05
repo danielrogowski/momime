@@ -5,7 +5,7 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.UnitHasSkill;
+import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;

@@ -12,9 +12,9 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.Spell;
-import momime.common.database.v0_9_4.SpellHasCityEffect;
-import momime.common.database.v0_9_4.UnitSpellEffect;
+import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellHasCityEffect;
+import momime.common.database.v0_9_5.UnitSpellEffect;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 

@@ -1,6 +1,6 @@
 package momime.common.utils;
 
-import momime.common.database.v0_9_4.Spell;
+import momime.common.database.v0_9_5.Spell;
 
 /**
  * SpellUtils.getSortedSpellsInSection needs to sort spells by either their combat, overland or research cost

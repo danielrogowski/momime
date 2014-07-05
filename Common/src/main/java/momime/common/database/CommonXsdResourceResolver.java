@@ -89,6 +89,34 @@ public class CommonXsdResourceResolver implements LSResourceResolver
 			log.debug ("Namespace matches common XSD");
 			result = getClass ().getResourceAsStream (CommonDatabaseConstants.COMMON_XSD_LOCATION);
 		}
+
+		// Client XSD
+		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (CommonDatabaseConstants.CLIENT_XSD_NAMESPACE_URI)))
+		{
+			log.debug ("Namespace matches client XSD");
+			result = getClass ().getResourceAsStream (CommonDatabaseConstants.CLIENT_XSD_LOCATION);
+		}
+
+		// Messages XSD
+		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (CommonDatabaseConstants.MESSAGES_XSD_NAMESPACE_URI)))
+		{
+			log.debug ("Namespace matches messages XSD");
+			result = getClass ().getResourceAsStream (CommonDatabaseConstants.MESSAGES_XSD_LOCATION);
+		}
+
+		// Client-to-server messages XSD
+		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (CommonDatabaseConstants.CTOS_MESSAGES_XSD_NAMESPACE_URI)))
+		{
+			log.debug ("Namespace matches client-to-server-messages XSD");
+			result = getClass ().getResourceAsStream (CommonDatabaseConstants.CTOS_MESSAGES_XSD_LOCATION);
+		}
+
+		// Server-to-client messages XSD
+		else if ((type.equals (XSD_URI)) && (namespaceURI.equals (CommonDatabaseConstants.STOC_MESSAGES_XSD_NAMESPACE_URI)))
+		{
+			log.debug ("Namespace matches server-to-client-messages XSD");
+			result = getClass ().getResourceAsStream (CommonDatabaseConstants.STOC_MESSAGES_XSD_LOCATION);
+		}
 		else
 			result = null;
 

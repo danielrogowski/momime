@@ -1,2 +1,2 @@
-PUBLIC "http://momime/common/database/newgame/v0_9_4" "MoMIMENewGameDatabase.xsd"
-PUBLIC "http://momime/common/database/v0_9_4" "MoMIMECommonDatabase.xsd"
+PUBLIC "http://momime/common/database/newgame/v0_9_5" "MoMIMENewGameDatabase.xsd"
+PUBLIC "http://momime/common/database/v0_9_5" "MoMIMECommonDatabase.xsd"

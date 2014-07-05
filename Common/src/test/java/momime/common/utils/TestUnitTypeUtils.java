@@ -3,8 +3,8 @@ package momime.common.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import momime.common.database.v0_9_4.ExperienceLevel;
-import momime.common.database.v0_9_4.UnitType;
+import momime.common.database.v0_9_5.ExperienceLevel;
+import momime.common.database.v0_9_5.UnitType;
 
 import org.junit.Test;
 

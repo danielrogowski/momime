@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.database.v0_9_4.CombatMapLayerID;
+import momime.common.database.v0_9_5.CombatMapLayerID;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomCombatTile;
 import momime.common.messages.v0_9_5.MomCombatTileLayer;

@@ -2,8 +2,8 @@ package momime.common.utils;
 
 import java.util.Iterator;
 
-import momime.common.database.v0_9_4.ExperienceLevel;
-import momime.common.database.v0_9_4.UnitType;
+import momime.common.database.v0_9_5.ExperienceLevel;
+import momime.common.database.v0_9_5.UnitType;
 
 /**
  * Helper methods for dealing with unit types

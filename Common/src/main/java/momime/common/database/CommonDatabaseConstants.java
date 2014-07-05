@@ -6,7 +6,7 @@ package momime.common.database;
 public final class CommonDatabaseConstants
 {
 	/** Version string - used to build the namespaces of the XSD/XML files */
-	public static final String MOM_IME_VERSION = "v0_9_4";
+	public static final String MOM_IME_VERSION = "v0_9_5";
 
 	/** Path and name to locate the common XSD file on the classpath */
 	public static final String NEW_GAME_XSD_LOCATION = "/momime.common.database/MoMIMENewGameDatabase.xsd";
@@ -20,6 +20,30 @@ public final class CommonDatabaseConstants
 	/** Namespace of the common XSD */
 	public static final String COMMON_XSD_NAMESPACE_URI = "http://momime/common/database/" + MOM_IME_VERSION;
 
+	/** Path and name to locate the client XSD file on the classpath */
+	public static final String CLIENT_XSD_LOCATION = "/momime.client.database/MoMIMEClientDatabase.xsd";
+
+	/** Namespace of the client XSD */
+	public static final String CLIENT_XSD_NAMESPACE_URI = "http://momime/client/database/" + MOM_IME_VERSION;
+
+	/** Path and name to locate the messages XSD file on the classpath */
+	public static final String MESSAGES_XSD_LOCATION = "/momime.common.messages/MoMIMEMessages.xsd";
+
+	/** Namespace of the messages XSD */
+	public static final String MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages/" + MOM_IME_VERSION;
+
+	/** Path and name to locate the client-to-server messages XSD file on the classpath */
+	public static final String CTOS_MESSAGES_XSD_LOCATION = "/momime.common.messages/MoMIMEClientToServerMessages.xsd";
+
+	/** Namespace of the client-to-server messages XSD */
+	public static final String CTOS_MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages/clienttoserver/" + MOM_IME_VERSION;
+	
+	/** Path and name to locate the server-to-client messages XSD file on the classpath */
+	public static final String STOC_MESSAGES_XSD_LOCATION = "/momime.common.messages/MoMIMEServerToClientMessages.xsd";
+
+	/** Namespace of the server-to-client messages XSD */
+	public static final String STOC_MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages/servertoclient/" + MOM_IME_VERSION;
+	
 	/*------------------------------------------------------
 	 * Special values the various XML fields can take
 	 *-------------------------------------------------- */

@@ -16,7 +16,6 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
-import momime.client.ui.MomUIUtils;
 import momime.client.utils.OverlandMapClientUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -25,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Panel that draws all city view elemenets (backgrounds, buildings, spell effects and so on) for a particular city 
@@ -47,7 +47,7 @@ public final class CityViewPanel extends JPanel
 	private MapCoordinates3DEx cityLocation;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
-	private MomUIUtils utils;
+	private NdgUIUtils utils;
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -280,7 +280,7 @@ public final class CityViewPanel extends JPanel
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */
-	public final MomUIUtils getUtils ()
+	public final NdgUIUtils getUtils ()
 	{
 		return utils;
 	}
@@ -288,7 +288,7 @@ public final class CityViewPanel extends JPanel
 	/**
 	 * @param util Helper methods and constants for creating and laying out Swing components
 	 */
-	public final void setUtils (final MomUIUtils util)
+	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
 	}

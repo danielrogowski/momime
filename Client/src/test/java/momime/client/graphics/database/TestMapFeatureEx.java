@@ -6,10 +6,11 @@ import static org.mockito.Mockito.when;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import momime.client.ui.MomUIUtils;
 import momime.common.MomException;
 
 import org.junit.Test;
+
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Tests the MapFeatureEx class
@@ -24,7 +25,7 @@ public final class TestMapFeatureEx
 	public final void testCheckWidthAndHeight_Consistent () throws IOException
 	{
 		// Mock an images
-		final MomUIUtils utils = mock (MomUIUtils.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		
 		final BufferedImage image = new BufferedImage (10, 5, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("FeatureImage")).thenReturn (image);
@@ -51,7 +52,7 @@ public final class TestMapFeatureEx
 	public final void testCheckWidthAndHeight_Inconsistent () throws IOException
 	{
 		// Mock an images
-		final MomUIUtils utils = mock (MomUIUtils.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		
 		final BufferedImage image = new BufferedImage (10, 6, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("FeatureImage")).thenReturn (image);

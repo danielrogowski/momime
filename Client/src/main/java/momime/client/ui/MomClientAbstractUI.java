@@ -7,6 +7,8 @@ import javax.swing.JFrame;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 
+import com.ndg.swing.NdgUIUtils;
+
 /**
  * Partial implementation of some of the methods from the MomClientUI interface.  Ancestor used by all of the UI screens.
  * 
@@ -30,7 +32,7 @@ public abstract class MomClientAbstractUI implements MomClientUI
 	private LanguageChangeMaster languageChangeMaster;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
-	private MomUIUtils utils;
+	private NdgUIUtils utils;
 	
 	/**
 	 * This is package-private so it can be accessed for setLocationRelativeTo () methods
@@ -123,7 +125,7 @@ public abstract class MomClientAbstractUI implements MomClientUI
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */
-	public final MomUIUtils getUtils ()
+	public final NdgUIUtils getUtils ()
 	{
 		return utils;
 	}
@@ -131,7 +133,7 @@ public abstract class MomClientAbstractUI implements MomClientUI
 	/**
 	 * @param util Helper methods and constants for creating and laying out Swing components
 	 */
-	public final void setUtils (final MomUIUtils util)
+	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
 	}

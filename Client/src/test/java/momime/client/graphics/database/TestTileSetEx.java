@@ -11,11 +11,12 @@ import java.io.IOException;
 
 import momime.client.graphics.database.v0_9_5.SmoothedTile;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
-import momime.client.ui.MomUIUtils;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 
 import org.junit.Test;
+
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Tests the TileSetEx class
@@ -300,7 +301,7 @@ public final class TestTileSetEx
 	public final void testDeriveTileWidthAndHeight_Consistent () throws IOException
 	{
 		// Mock some images
-		final MomUIUtils utils = mock (MomUIUtils.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		
 		final BufferedImage image1 = new BufferedImage (10, 5, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("TileImage1")).thenReturn (image1);
@@ -361,7 +362,7 @@ public final class TestTileSetEx
 	public final void testDeriveTileWidthAndHeight_InconsistentImage () throws IOException
 	{
 		// Mock some images
-		final MomUIUtils utils = mock (MomUIUtils.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		
 		final BufferedImage image1 = new BufferedImage (10, 5, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("TileImage1")).thenReturn (image1);
@@ -422,7 +423,7 @@ public final class TestTileSetEx
 	public final void testDeriveTileWidthAndHeight_InconsistentAnimation () throws IOException
 	{
 		// Mock some images
-		final MomUIUtils utils = mock (MomUIUtils.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		
 		final BufferedImage image1 = new BufferedImage (10, 5, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("TileImage1")).thenReturn (image1);

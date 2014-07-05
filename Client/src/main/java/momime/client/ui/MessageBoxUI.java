@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
+import com.ndg.swing.GridBagConstraintsNoFill;
+
 /**
  * Frame which displays a message with an OK button
  */
@@ -110,16 +112,15 @@ public final class MessageBoxUI extends MomClientAbstractUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 		
-		final GridBagConstraints constraints = getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER);
+		final GridBagConstraints constraints = getUtils ().createConstraintsBothFill (0, 0, 1, 1, INSET);
 		constraints.weightx = 1;
 		constraints.weighty = 1;
-		constraints.fill = GridBagConstraints.BOTH;
 		
-		messageText = getUtils ().createWrappingLabel (MomUIUtils.SILVER, getSmallFont ());
+		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (messageText, constraints);
 
-		contentPane.add (getUtils ().createImageButton (okAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
-			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (0, 1, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
+			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

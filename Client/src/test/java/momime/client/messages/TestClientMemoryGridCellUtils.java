@@ -5,9 +5,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import momime.client.database.ClientDatabaseEx;
-import momime.client.database.v0_9_4.MapFeature;
+import momime.client.database.v0_9_5.MapFeature;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.TileType;
+import momime.common.database.v0_9_5.TileType;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 
 import org.junit.Test;

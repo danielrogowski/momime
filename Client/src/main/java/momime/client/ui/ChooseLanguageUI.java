@@ -28,6 +28,8 @@ import javax.xml.bind.Unmarshaller;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.language.database.LanguageDatabaseExImpl;
 
+import com.ndg.swing.GridBagConstraintsNoFill;
+
 /**
  * Screen for changing the selected language
  */
@@ -140,12 +142,12 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 		contentPane.setLayout (new GridBagLayout ());
 		
 		// Cut off left half of the window
-		contentPane.add (Box.createRigidArea (new Dimension (335, 0)), getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (Box.createRigidArea (new Dimension (335, 0)), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Header
-		title = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont (), null);
-		contentPane.add (title, getUtils ().createConstraints (1, 0, 1, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, 1, 1, INSET, GridBagConstraints.CENTER));
+		title = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont (), null);
+		contentPane.add (title, getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (1, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Actual language choice buttons
 		int gridy = 2;
@@ -185,24 +187,24 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 				}
 			};
 			
-			contentPane.add (getUtils ().createImageButton (languageAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
-				buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.CENTER));
+			contentPane.add (getUtils ().createImageButton (languageAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
+				buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraintsNoFill (1, gridy, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			gridy++;
 		}
 		
 		// Space in between
-		final GridBagConstraints constraints = getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.CENTER);
+		final GridBagConstraints constraints = getUtils ().createConstraintsNoFill (1, gridy, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE);
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 		contentPane.add (Box.createGlue (), constraints);
 		gridy++;
 		
 		// Footer
-		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (1, gridy, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		gridy++;
 		
-		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
-			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
+			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraintsNoFill (1, gridy, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

@@ -44,6 +44,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.GridBagConstraintsHorizontalFill;
+import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
  * City screen, so you can view current buildings, production and civilians, examine
@@ -92,6 +94,9 @@ public final class CityViewUI extends MomClientAbstractUI
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
+	
+	/** Tiny 1 pixel inset */
+	private final static int TINY_INSET = 1;
 	
 	/** City size+name label */
 	private JLabel cityNameLabel;
@@ -279,72 +284,71 @@ public final class CityViewUI extends MomClientAbstractUI
 		contentPane.setLayout (new GridBagLayout ());
 		
 		// Labels - put any spare space in the title bar, so everything else is pushed down
-		final GridBagConstraints cityNameConstraints = getUtils ().createConstraints (0, 0, 4, INSET, GridBagConstraints.CENTER);
+		final GridBagConstraints cityNameConstraints = getUtils ().createConstraintsNoFill (0, 0, 4, 1, INSET, GridBagConstraintsNoFill.CENTRE);
 		cityNameConstraints.weighty = 1;
 		
-		cityNameLabel = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
+		cityNameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
 		contentPane.add (cityNameLabel, cityNameConstraints);
 		
-		resourcesLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		contentPane.add (resourcesLabel, getUtils ().createConstraints (0, 3, 1, new Insets (0, 8, 0, 0), GridBagConstraints.WEST));
+		resourcesLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (resourcesLabel, getUtils ().createConstraintsNoFill (0, 3, 1, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.WEST));
 		
-		enchantmentsLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		contentPane.add (enchantmentsLabel, getUtils ().createConstraints (1, 3, 1, INSET, GridBagConstraints.WEST));
+		enchantmentsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (enchantmentsLabel, getUtils ().createConstraintsNoFill (1, 3, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
 		
-		terrainLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		contentPane.add (terrainLabel, getUtils ().createConstraints (2, 3, 2, new Insets (0, 4, 0, 0), GridBagConstraints.WEST));
+		terrainLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (terrainLabel, getUtils ().createConstraintsNoFill (2, 3, 2, 1, new Insets (0, 4, 0, 0), GridBagConstraintsNoFill.WEST));
 		
-		buildings = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		contentPane.add (buildings, getUtils ().createConstraints (0, 5, 1, new Insets (0, 8, 0, 0), GridBagConstraints.WEST));
+		buildings = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (buildings, getUtils ().createConstraintsNoFill (0, 5, 1, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.WEST));
 		
-		production = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		contentPane.add (production, getUtils ().createConstraints (2, 7, 2, new Insets (0, 4, 0, 0), GridBagConstraints.WEST));
+		production = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (production, getUtils ().createConstraintsNoFill (2, 7, 2, 1, new Insets (0, 4, 0, 0), GridBagConstraintsNoFill.WEST));
 
 		// Make column 1 as wide as possible, so the 3 buttons don't get extra space
-		final GridBagConstraints unitsLabelConstraints = getUtils ().createConstraints (0, 10, 1, new Insets (0, 8, 0, 0), GridBagConstraints.SOUTHWEST);
+		final GridBagConstraints unitsLabelConstraints = getUtils ().createConstraintsNoFill (0, 10, 1, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.SOUTHWEST);
 		unitsLabelConstraints.weightx = 1;
 		
-		units = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
+		units = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (units, unitsLabelConstraints);
 		
 		// For some reason I couldn't figure out, trying to put the maximum population label into the main grid kept making
 		// the right hand column (including the OK button) too wide and I couldn't make it work right, so instead put
 		// the 3 labels into a subpanel so their columns are independant of the rest of the panel
-		final GridBagConstraints labelPanelConstraints = getUtils ().createConstraints (0, 1, 4, INSET, GridBagConstraints.WEST);
-		labelPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		final GridBagConstraints labelPanelConstraints = getUtils ().createConstraintsHorizontalFill (0, 1, 4, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE);
 		
 		final JPanel labelsPanel = new JPanel ();
 		labelsPanel.setOpaque (false);
 		labelsPanel.setLayout (new GridBagLayout ());
 		contentPane.add (labelsPanel, labelPanelConstraints);
 		
-		final GridBagConstraints raceLabelConstraints = getUtils ().createConstraints (0, 0, 1, new Insets (0, 8, 0, 0), GridBagConstraints.WEST);
+		final GridBagConstraints raceLabelConstraints = getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.WEST);
 		raceLabelConstraints.weightx = 1;
 		
-		raceLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
+		raceLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		labelsPanel.add (raceLabel, raceLabelConstraints);
 
-		labelsPanel.add (getUtils ().createTextOnlyButton (currentPopulationAction, MomUIUtils.GOLD, getMediumFont ()),
-			getUtils ().createConstraints (1, 0, 1, new Insets (0, 0, 0, 8), GridBagConstraints.EAST));
+		labelsPanel.add (getUtils ().createTextOnlyButton (currentPopulationAction, MomUIConstants.GOLD, getMediumFont ()),
+			getUtils ().createConstraintsNoFill (1, 0, 1, 1, new Insets (0, 0, 0, 8), GridBagConstraintsNoFill.EAST));
 		
-		labelsPanel.add (getUtils ().createTextOnlyButton (maximumPopulationAction, MomUIUtils.GOLD, getMediumFont ()),
-			getUtils ().createConstraints (2, 0, 1, new Insets (0, 0, 0, 8), GridBagConstraints.EAST));
+		labelsPanel.add (getUtils ().createTextOnlyButton (maximumPopulationAction, MomUIConstants.GOLD, getMediumFont ()),
+			getUtils ().createConstraintsNoFill (2, 0, 1, 1, new Insets (0, 0, 0, 8), GridBagConstraintsNoFill.EAST));
 		
 		// Buttons - put a gap of 10 underneath them to push the buttons slightly above the Units label, and 6 above to push the view panel up
-		contentPane.add (getUtils ().createImageButton (rushBuyAction, Color.BLACK, MomUIUtils.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
-			getUtils ().createConstraints (1, 10, 1, new Insets (6, 0, 10, 6), GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createImageButton (rushBuyAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
+			getUtils ().createConstraintsNoFill (1, 10, 1, 1, new Insets (6, 0, 10, 6), GridBagConstraintsNoFill.EAST));
 
-		contentPane.add (getUtils ().createImageButton (changeConstructionAction, Color.BLACK, MomUIUtils.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
-			getUtils ().createConstraints (2, 10, 1, new Insets (6, 0, 10, 6), GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createImageButton (changeConstructionAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
+			getUtils ().createConstraintsNoFill (2, 10, 1, 1, new Insets (6, 0, 10, 6), GridBagConstraintsNoFill.EAST));
 
-		contentPane.add (getUtils ().createImageButton (okAction, Color.BLACK, MomUIUtils.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
-			getUtils ().createConstraints (3, 10, 1, new Insets (6, 0, 10, 8), GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createImageButton (okAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
+			getUtils ().createConstraintsNoFill (3, 10, 1, 1, new Insets (6, 0, 10, 8), GridBagConstraintsNoFill.EAST));
 		
 		// Set up the city view panel
 		getCityViewPanel ().setCityLocation (getCityLocation ());
 		getCityViewPanel ().init ();
 		
-		final GridBagConstraints cityViewPanelConstraints = getUtils ().createConstraints (0, 6, 2, new Insets (0, 8, 0, 0), GridBagConstraints.CENTER);
+		final GridBagConstraints cityViewPanelConstraints = getUtils ().createConstraintsNoFill (0, 6, 2, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.CENTRE);
 		cityViewPanelConstraints.gridheight = 4;
 		
 		contentPane.add (getCityViewPanel (), cityViewPanelConstraints);
@@ -358,7 +362,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		miniTerrainPanel.setMaximumSize (miniTerrainPanelSize);
 		miniTerrainPanel.setPreferredSize (miniTerrainPanelSize);
 
-		final GridBagConstraints miniTerrainPanelConstraints = getUtils ().createConstraints (2, 4, 2, new Insets (2, 0, 0, 10), GridBagConstraints.EAST);
+		final GridBagConstraints miniTerrainPanelConstraints = getUtils ().createConstraintsNoFill (2, 4, 2, 1, new Insets (2, 0, 0, 10), GridBagConstraintsNoFill.EAST);
 		miniTerrainPanelConstraints.gridheight = 3;
 		
 		contentPane.add (miniTerrainPanel, miniTerrainPanelConstraints);
@@ -373,7 +377,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		civilianPanel.setMaximumSize (civilianPanelSize);
 		civilianPanel.setPreferredSize (civilianPanelSize);
 		
-		contentPane.add (civilianPanel, getUtils ().createConstraints (0, 2, 4, new Insets (2, 0, 0, 0), GridBagConstraints.CENTER));
+		contentPane.add (civilianPanel, getUtils ().createConstraintsNoFill (0, 2, 4, 1, new Insets (2, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
 
 		// Set up the mini panel to hold all the productions
 		// Note on this and other panels in the same row (enchantments+terrain) we put a 2 pixel filler above the panel, to push the labels above up a fraction higher
@@ -384,7 +388,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		productionPanel.setMaximumSize (productionPanelSize);
 		productionPanel.setPreferredSize (productionPanelSize);
 		
-		contentPane.add (productionPanel, getUtils ().createConstraints (0, 4, 1, new Insets (2, 0, 0, 12), GridBagConstraints.SOUTHEAST));
+		contentPane.add (productionPanel, getUtils ().createConstraintsNoFill (0, 4, 1, 1, new Insets (2, 0, 0, 12), GridBagConstraintsNoFill.SOUTHEAST));
 		
 		// Set up the mini panel to hold all the enchantments
 		final Dimension enchantmentPanelSize = new Dimension (138, 84);
@@ -394,7 +398,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		enchantmentPanel.setMaximumSize (enchantmentPanelSize);
 		enchantmentPanel.setPreferredSize (enchantmentPanelSize);
 		
-		contentPane.add (enchantmentPanel, getUtils ().createConstraints (1, 4, 1, new Insets (2, 0, 0, 6), GridBagConstraints.CENTER));
+		contentPane.add (enchantmentPanel, getUtils ().createConstraintsNoFill (1, 4, 1, 1, new Insets (2, 0, 0, 6), GridBagConstraintsNoFill.CENTRE));
 		
 		// Set up the mini panel to hold all the units
 		final Dimension unitPanelSize = new Dimension (background.getWidth () * 2, 40);
@@ -404,7 +408,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		unitPanel.setMaximumSize (unitPanelSize);
 		unitPanel.setPreferredSize (unitPanelSize);
 		
-		contentPane.add (unitPanel, getUtils ().createConstraints (0, 11, 4, INSET, GridBagConstraints.CENTER));
+		contentPane.add (unitPanel, getUtils ().createConstraintsNoFill (0, 11, 4, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Set up the mini panel to show progress towards current construction
 		final Dimension constructionProgressPanelSize = new Dimension (132, 62);
@@ -414,7 +418,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		constructionProgressPanel.setMaximumSize (constructionProgressPanelSize);
 		constructionProgressPanel.setPreferredSize (constructionProgressPanelSize);
 		
-		contentPane.add (constructionProgressPanel, getUtils ().createConstraints (2, 8, 2, new Insets (8, 0, 0, 14), GridBagConstraints.SOUTHEAST));
+		contentPane.add (constructionProgressPanel, getUtils ().createConstraintsNoFill (2, 8, 2, 1, new Insets (8, 0, 0, 14), GridBagConstraintsNoFill.SOUTHEAST));
 		
 		// Set up the mini panel to what's being currently constructed
 		final Dimension constructionPanelSize = new Dimension (140, 74);
@@ -424,7 +428,7 @@ public final class CityViewUI extends MomClientAbstractUI
 		constructionPanel.setMaximumSize (constructionPanelSize);
 		constructionPanel.setPreferredSize (constructionPanelSize);
 		
-		contentPane.add (constructionPanel, getUtils ().createConstraints (2, 9, 2, new Insets (0, 0, 2, 10), GridBagConstraints.SOUTHEAST));
+		contentPane.add (constructionPanel, getUtils ().createConstraintsNoFill (2, 9, 2, 1, new Insets (0, 0, 2, 10), GridBagConstraintsNoFill.SOUTHEAST));
 		
 		// Lock frame size
 		cityDataUpdated ();
@@ -603,7 +607,7 @@ public final class CityViewUI extends MomClientAbstractUI
 			}
 			
 			// Left justify all the civilians
-			final GridBagConstraints imageConstraints = getUtils ().createConstraints (x, 0, 1, 1, GridBagConstraints.SOUTHWEST);
+			final GridBagConstraints imageConstraints = getUtils ().createConstraintsNoFill (x, 0, 1, 1, TINY_INSET, GridBagConstraintsNoFill.SOUTHWEST);
 			if (civvyNo == civvyCount)
 				imageConstraints.weightx = 1;
 			
@@ -613,7 +617,7 @@ public final class CityViewUI extends MomClientAbstractUI
 			// If this is the last farmer who's necessary to feed the population (& so we cannot convert them to a worker) then leave a gap to show this
 			if (civvyNo == cityData.getMinimumFarmers ())
 			{
-				civilianPanel.add (Box.createRigidArea (new Dimension (10, 0)), getUtils ().createConstraints (x, 0, 1, 0, GridBagConstraints.SOUTHWEST));
+				civilianPanel.add (Box.createRigidArea (new Dimension (10, 0)), getUtils ().createConstraintsNoFill (x, 0, 1, 1, INSET, GridBagConstraintsNoFill.SOUTHWEST));
 				x++;
 			}
 		}

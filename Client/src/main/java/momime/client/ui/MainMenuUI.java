@@ -30,6 +30,8 @@ import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
 
+import com.ndg.swing.GridBagConstraintsNoFill;
+
 /**
  * Main menu with options to connect to a server and create or join games
  */
@@ -233,37 +235,37 @@ public final class MainMenuUI extends MomClientAbstractUI
 		// Static text
 		final Dimension labelsSpace = new Dimension (630, (480 * 41) / 200);
 		labelsGap = new Box.Filler (labelsSpace, labelsSpace, labelsSpace);
-		contentPane.add (labelsGap, getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (labelsGap, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		contentPane.add (getUtils ().createLabel (MomUIUtils.SILVER, getLargeFont (), "Implode's Multiplayer Edition - Client"),	getUtils ().createConstraints (0, 1, 1, INSET, GridBagConstraints.EAST));
-		contentPane.add (getUtils ().createLabel (MomUIUtils.SILVER, getMediumFont (), "version " + getVersion ()),					getUtils ().createConstraints (0, 2, 1, INSET, GridBagConstraints.EAST));
-		contentPane.add (getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont (), "Original Master of Magic is Copyright"),	getUtils ().createConstraints (0, 3, 1, INSET, GridBagConstraints.EAST));
-		contentPane.add (getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont (), "Simtex Software and Microprose"),		getUtils ().createConstraints (0, 4, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIConstants.SILVER, getLargeFont (), "Implode's Multiplayer Edition - Client"),	getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIConstants.SILVER, getMediumFont (), "version " + getVersion ()),					getUtils ().createConstraintsNoFill (0, 2, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont (), "Original Master of Magic is Copyright"),	getUtils ().createConstraintsNoFill (0, 3, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+		contentPane.add (getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont (), "Simtex Software and Microprose"),		getUtils ().createConstraintsNoFill (0, 4, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
 		
-		authorLabel = getUtils ().createLabel (MomUIUtils.SILVER, getMediumFont ());
-		contentPane.add (authorLabel, getUtils ().createConstraints (0, 5, 1, INSET, GridBagConstraints.EAST));
+		authorLabel = getUtils ().createLabel (MomUIConstants.SILVER, getMediumFont ());
+		contentPane.add (authorLabel, getUtils ().createConstraintsNoFill (0, 5, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
 		
 		// Space in between
-		final GridBagConstraints constraints = getUtils ().createConstraints (0, 6, 1, INSET, GridBagConstraints.CENTER);
+		final GridBagConstraints constraints = getUtils ().createConstraintsNoFill (0, 6, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE);
 		constraints.weighty = 1;
 		contentPane.add (Box.createGlue (), constraints);
 		
 		// Main menu options
-		contentPane.add (getUtils ().createTextOnlyButton (changeLanguageAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 7, 1, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createTextOnlyButton (connectToServerAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 8, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (changeLanguageAction,	MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 7, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (getUtils ().createTextOnlyButton (connectToServerAction,	MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 8, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		newGameButton = getUtils ().createTextOnlyButton (newGameAction, MomUIUtils.GOLD, getLargeFont ());
-		contentPane.add (newGameButton, getUtils ().createConstraints (0, 9, 1, INSET, GridBagConstraints.CENTER));
+		newGameButton = getUtils ().createTextOnlyButton (newGameAction, MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (newGameButton, getUtils ().createConstraintsNoFill (0, 9, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		joinGameButton = getUtils ().createTextOnlyButton (joinGameAction, MomUIUtils.GOLD, getLargeFont ());
-		contentPane.add (joinGameButton, getUtils ().createConstraints (0, 10, 1, INSET, GridBagConstraints.CENTER));
+		joinGameButton = getUtils ().createTextOnlyButton (joinGameAction, MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (joinGameButton, getUtils ().createConstraintsNoFill (0, 10, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		contentPane.add (getUtils ().createTextOnlyButton (optionsAction,				MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 11, 1, INSET, GridBagConstraints.CENTER));
-		contentPane.add (getUtils ().createTextOnlyButton (exitToWindowsAction,	MomUIUtils.GOLD, getLargeFont ()), getUtils ().createConstraints (0, 12, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createTextOnlyButton (optionsAction,				MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 11, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (getUtils ().createTextOnlyButton (exitToWindowsAction,	MomUIConstants.GOLD, getLargeFont ()), getUtils ().createConstraintsNoFill (0, 12, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
 		final Dimension buttonsSpace = new Dimension (630, 0);
 		buttonsGap = new Box.Filler (buttonsSpace, buttonsSpace, buttonsSpace);
-		contentPane.add (buttonsGap, getUtils ().createConstraints (0, 13, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (buttonsGap, getUtils ().createConstraintsNoFill (0, 13, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Animate the title
 		new Timer (1000 / 8, new ActionListener ()
@@ -337,10 +339,10 @@ public final class MainMenuUI extends MomClientAbstractUI
 	public final void enableActions ()
 	{
 		newGameAction.setEnabled (getClient ().getOurPlayerID () != null);
-		newGameButton.setForeground (newGameAction.isEnabled () ? MomUIUtils.GOLD : MomUIUtils.GRAY);
+		newGameButton.setForeground (newGameAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY);
 		
 		joinGameAction.setEnabled (getClient ().getOurPlayerID () != null);
-		joinGameButton.setForeground (joinGameAction.isEnabled () ? MomUIUtils.GOLD : MomUIUtils.GRAY);
+		joinGameButton.setForeground (joinGameAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY);
 	}
 	
 	/**

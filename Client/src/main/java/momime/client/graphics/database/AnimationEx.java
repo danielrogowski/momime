@@ -5,11 +5,12 @@ import java.io.IOException;
 
 import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.AnimationFrame;
-import momime.client.ui.MomUIUtils;
 import momime.common.MomException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Provides a consistency check on animations, to ensure all the images are the same size
@@ -26,7 +27,7 @@ public final class AnimationEx extends Animation
 	int animationHeight;
 
 	/** Helper methods and constants for creating and laying out Swing components */
-	private MomUIUtils utils;
+	private NdgUIUtils utils;
 	
 	/**
 	 * Finds the width and height of all the frames in this animation
@@ -78,7 +79,7 @@ public final class AnimationEx extends Animation
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */
-	public final MomUIUtils getUtils ()
+	public final NdgUIUtils getUtils ()
 	{
 		return utils;
 	}
@@ -86,7 +87,7 @@ public final class AnimationEx extends Animation
 	/**
 	 * @param util Helper methods and constants for creating and laying out Swing components
 	 */
-	public final void setUtils (final MomUIUtils util)
+	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
 	}

@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
  * Frame which a prompt, text box, and takes some action when OK is clicked
@@ -155,17 +156,17 @@ public final class EditStringUI extends MomClientAbstractUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 		
-		promptLabel = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
-		final GridBagConstraints promptConstraints = getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.WEST);
+		promptLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
+		final GridBagConstraints promptConstraints = getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.WEST);
 		promptConstraints.weightx = 1;		// Push the OK button over to the right
 		contentPane.add (promptLabel, promptConstraints);
 
-		contentPane.add (getUtils ().createImageButton (okAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getLargeFont (),
-			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraints (1, 0, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getLargeFont (),
+			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
 		
-		textField = getUtils ().createTransparentTextField (MomUIUtils.SILVER, getLargeFont (), new Dimension (244, 20));
+		textField = getUtils ().createTransparentTextField (MomUIConstants.SILVER, getLargeFont (), new Dimension (244, 20));
 		textField.setText (text);
-		contentPane.add (textField, getUtils ().createConstraints (0, 2, 3, INSET, GridBagConstraints.CENTER));
+		contentPane.add (textField, getUtils ().createConstraintsNoFill (0, 1, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

@@ -1,7 +1,6 @@
 package momime.client;
 
 import java.io.IOException;
-import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.ClientDatabaseExImpl;
-import momime.client.database.v0_9_4.NewGameDatabase;
+import momime.client.database.v0_9_5.NewGameDatabase;
 import momime.client.ui.CityViewUI;
 import momime.client.ui.ConnectToServerUI;
 import momime.client.ui.MainMenuUI;
@@ -20,7 +19,6 @@ import momime.client.ui.MessageBoxUI;
 import momime.client.ui.NewGameUI;
 import momime.client.ui.OverlandMapUI;
 import momime.client.ui.PrototypeFrameCreator;
-import momime.common.MomCommonConstants;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
@@ -28,7 +26,6 @@ import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.MultiplayerSessionClient;
@@ -40,7 +37,7 @@ import com.ndg.multiplayer.sessionbase.LoginFailedReason;
 import com.ndg.multiplayer.sessionbase.LogoutFailedReason;
 import com.ndg.multiplayer.sessionbase.RequestSessionListFailedReason;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
-import com.ndg.swing.NdgUIManager;
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Main class to kickstart client
@@ -72,7 +69,7 @@ public final class MomClient extends MultiplayerSessionClient
 	private NewGameDatabase newGameDatabase;
 
 	/** UI manager helper */
-	private NdgUIManager ndgUIManager;
+	private NdgUIUtils utils;
 	
 	/** List of all city views currently open, keyed by coordinates.toString () */
 	private Map<String, CityViewUI> cityViews = new HashMap<String, CityViewUI> (); 
@@ -84,7 +81,7 @@ public final class MomClient extends MultiplayerSessionClient
 	{
 		log.trace ("Entering start");
 		
-		getNdgUIManager ().useNimbusLookAndFeel ();
+		getUtils ().useNimbusLookAndFeel ();
 		
 		// Multiplayer client event handlers
 		getEventListeners ().add (new MultiplayerSessionClientEvent ()
@@ -510,17 +507,17 @@ public final class MomClient extends MultiplayerSessionClient
 	/**
 	 * @return UI manager helper
 	 */
-	public final NdgUIManager getNdgUIManager ()
+	public final NdgUIUtils getUtils ()
 	{
-		return ndgUIManager;
+		return utils;
 	}
 
 	/**
 	 * @param mgr UI manager helper
 	 */
-	public final void setNdgUIManager (final NdgUIManager mgr)
+	public final void setUtils (final NdgUIUtils mgr)
 	{
-		ndgUIManager = mgr;
+		utils = mgr;
 	}
 	
 	/**
@@ -529,42 +526,5 @@ public final class MomClient extends MultiplayerSessionClient
 	public final Map<String, CityViewUI> getCityViews ()
 	{
 		return cityViews;
-	}
-	
-	/**
-	 * @param args Command line arguments, ignored
-	 */
-	@SuppressWarnings ("resource")
-	public final static void main (final String [] args)
-	{
-		try
-		{
-			// Ensure v1.7 JVM
-			final String [] javaVersion = System.getProperty ("java.version").split ("\\.");
-			final int majorVersion = Integer.parseInt (javaVersion [0]);
-			final int minorVersion = Integer.parseInt (javaVersion [1]);
-
-			if ((majorVersion < MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION) ||
-				((majorVersion == MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION) && (minorVersion < MomCommonConstants.JAVA_REQUIRED_MINOR_VERSION)))
-				
-				throw new InvalidParameterException ("MoM IME requires a Java Virtual Machine version " +
-					MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION + "." + MomCommonConstants.JAVA_REQUIRED_MINOR_VERSION +
-					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
-			
-			// Initialize logging first, in case debug logging for spring itself is enabled
-			/* try (final FileInputStream in = new FileInputStream ("MoMIMEClientLogging.properties"))
-			{
-				LogManager.getLogManager ().readConfiguration (in);
-				in.close ();
-			} */
-
-			// Everything is now set to start with spring
-			new ClassPathXmlApplicationContext ("/momime.client.spring/momime-client-beans.xml");			
-		}
-		catch (final Exception e)
-		{
-			System.out.println ("Exception in main method:");
-			e.printStackTrace ();
-		}
 	}
 }

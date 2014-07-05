@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
-	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_4" xmlns:momimecommon="http://momime/common/database/v0_9_4"
-	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_4" xmlns:map="http://www.ndg.com/map" 
+	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_5" xmlns:momimecommon="http://momime/common/database/v0_9_5"
+	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_5" xmlns:map="http://www.ndg.com/map" 
 	xmlns:momimegfx="http://momime/client/graphics/database/v0_9_5" targetNamespace="http://momime/client/graphics/database/v0_9_5"
 	jaxb:version="2.0">
 	
 	<xsd:import namespace="http://www.ndg.com/map"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
-	<xsd:import namespace="http://momime/common/database/newgame/v0_9_4"/>
-	<xsd:import namespace="http://momime/common/database/v0_9_4"/>
-	<xsd:import namespace="http://momime/server/database/v0_9_4"/>
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/database/v0_9_5"/>
+	<xsd:import namespace="http://momime/server/database/v0_9_5"/>
 
     <xsd:annotation>
 		<xsd:appinfo>
@@ -18,7 +18,7 @@
 				<nxe:title>Master of Magic Graphics File</nxe:title>
 				<nxe:xmlfilename>%MY_DOCUMENTS%\Master of Magic - Implode's Multiplayer Edition\Client\Graphics\Default.Master of Magic Graphics.xml</nxe:xmlfilename>
 			</nxe:database>
-			<nxe:database namespaceURI="http://momime/server/database/v0_9_4">
+			<nxe:database namespaceURI="http://momime/server/database/v0_9_5">
 				<nxe:title>Master of Magic Server Database</nxe:title>
 				<nxe:xmlfilename>%MY_DOCUMENTS%\Master of Magic - Implode's Multiplayer Edition\Server\DB\Original Master of Magic 1.31 rules.Master of Magic Server.xml</nxe:xmlfilename>
 			</nxe:database>

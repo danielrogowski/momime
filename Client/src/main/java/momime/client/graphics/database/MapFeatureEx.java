@@ -4,11 +4,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import momime.client.graphics.database.v0_9_5.MapFeature;
-import momime.client.ui.MomUIUtils;
 import momime.common.MomException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Extends graphics XML map feature object with consistency checks 
@@ -19,7 +20,7 @@ public final class MapFeatureEx extends MapFeature
 	private final Log log = LogFactory.getLog (MapFeatureEx.class);
 	
 	/** Helper methods and constants for creating and laying out Swing components */
-	private MomUIUtils utils;
+	private NdgUIUtils utils;
 	
 	/**
 	 * Map features must have the same width and height as all the terrain tiles
@@ -43,7 +44,7 @@ public final class MapFeatureEx extends MapFeature
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */
-	public final MomUIUtils getUtils ()
+	public final NdgUIUtils getUtils ()
 	{
 		return utils;
 	}
@@ -51,7 +52,7 @@ public final class MapFeatureEx extends MapFeature
 	/**
 	 * @param util Helper methods and constants for creating and laying out Swing components
 	 */
-	public final void setUtils (final MomUIUtils util)
+	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
 	}

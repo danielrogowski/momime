@@ -32,6 +32,7 @@ import momime.client.language.database.v0_9_5.KnownServer;
 
 import com.ndg.multiplayer.sessionbase.CreateAccount;
 import com.ndg.multiplayer.sessionbase.Login;
+import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
  * Screen for choosing a server to connect to
@@ -216,16 +217,16 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 		contentPane.setLayout (new GridBagLayout ());
 		
 		// Cut off left half of the window
-		contentPane.add (Box.createRigidArea (new Dimension (335, 0)), getUtils ().createConstraints (0, 0, 1, INSET, GridBagConstraints.CENTER));
+		contentPane.add (Box.createRigidArea (new Dimension (335, 0)), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Header
-		title = getUtils ().createLabel (MomUIUtils.GOLD, getLargeFont ());
-		contentPane.add (title, getUtils ().createConstraints (1, 0, 3, INSET, GridBagConstraints.CENTER));
+		title = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (title, getUtils ().createConstraintsNoFill (1, 0, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, 1, 3, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (1, 1, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
-		selectServer = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		contentPane.add (selectServer, getUtils ().createConstraints (1, 2, 3, INSET, GridBagConstraints.CENTER));
+		selectServer = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (selectServer, getUtils ().createConstraintsNoFill (1, 2, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Server list
 		int gridy = 3;
@@ -243,65 +244,65 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 			};
 			
 			// There's no "disabled" image for the wide button
-			contentPane.add (getUtils ().createImageButton (serverAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
-				wideButtonNormal, wideButtonPressed, wideButtonNormal), getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.CENTER));
+			contentPane.add (getUtils ().createImageButton (serverAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
+				wideButtonNormal, wideButtonPressed, wideButtonNormal), getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			gridy++;
 		}
 		
 		// IP address
-		ipAddressLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		contentPane.add (ipAddressLabel, getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.CENTER));
+		ipAddressLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (ipAddressLabel, getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		gridy++;
 
-		ipAddress = getUtils ().createTextFieldWithBackgroundImage (MomUIUtils.SILVER, getMediumFont (), editbox);
-		contentPane.add (ipAddress, getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.CENTER));
+		ipAddress = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getMediumFont (), editbox);
+		contentPane.add (ipAddress, getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		gridy++;
 
 		// Space in between
-		final GridBagConstraints constraints = getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.CENTER);
+		final GridBagConstraints constraints = getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE);
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 		contentPane.add (Box.createGlue (), constraints);
 		gridy++;
 		
-		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		gridy++;
 
 		// Player name and password
-		playerNameLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		contentPane.add (playerNameLabel, getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.WEST));
+		playerNameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (playerNameLabel, getUtils ().createConstraintsNoFill (1, gridy, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
 
-		playerName = getUtils ().createTextFieldWithBackgroundImage (MomUIUtils.SILVER, getMediumFont (), editbox);
-		contentPane.add (playerName, getUtils ().createConstraints (2, gridy, 2, INSET, GridBagConstraints.EAST));
+		playerName = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getMediumFont (), editbox);
+		contentPane.add (playerName, getUtils ().createConstraintsNoFill (2, gridy, 2, 1, INSET, GridBagConstraintsNoFill.EAST));
 		gridy++;
 		
-		passwordLabel = getUtils ().createLabel (MomUIUtils.GOLD, getMediumFont ());
-		contentPane.add (passwordLabel, getUtils ().createConstraints (1, gridy, 1, INSET, GridBagConstraints.WEST));
+		passwordLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (passwordLabel, getUtils ().createConstraintsNoFill (1, gridy, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
 
-		password = getUtils ().createPasswordFieldWithBackgroundImage (MomUIUtils.SILVER, getMediumFont (), editbox);
-		contentPane.add (password, getUtils ().createConstraints (2, gridy, 2, INSET, GridBagConstraints.EAST));
+		password = getUtils ().createPasswordFieldWithBackgroundImage (MomUIConstants.SILVER, getMediumFont (), editbox);
+		contentPane.add (password, getUtils ().createConstraintsNoFill (2, gridy, 2, 1, INSET, GridBagConstraintsNoFill.EAST));
 		gridy++;
 		
 		// Checkboxes
-		newAccount = getUtils ().createImageCheckBox (MomUIUtils.GOLD, getMediumFont (), checkboxUnticked, checkboxTicked);
-		contentPane.add (newAccount, getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.WEST));
+		newAccount = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getMediumFont (), checkboxUnticked, checkboxTicked);
+		contentPane.add (newAccount, getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.WEST));
 		gridy++;
 
-		kickAccount = getUtils ().createImageCheckBox (MomUIUtils.GOLD, getMediumFont (), checkboxUnticked, checkboxTicked);
-		contentPane.add (kickAccount, getUtils ().createConstraints (1, gridy, 3, INSET, GridBagConstraints.WEST));
+		kickAccount = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getMediumFont (), checkboxUnticked, checkboxTicked);
+		contentPane.add (kickAccount, getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.WEST));
 		gridy++;
 		
 		// Footer
-		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraints (1, gridy, 2, INSET, GridBagConstraints.CENTER));
+		contentPane.add (getUtils ().createImage (divider), getUtils ().createConstraintsNoFill (1, gridy, 2, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		gridy++;
 
-		final GridBagConstraints constraints2 = getUtils ().createConstraints (2, gridy, 1, INSET, GridBagConstraints.EAST);
+		final GridBagConstraints constraints2 = getUtils ().createConstraintsNoFill (2, gridy, 1, 1, INSET, GridBagConstraintsNoFill.EAST);
 		constraints2.weightx = 1;		// Move the OK button as far to the right as possible
-		contentPane.add (getUtils ().createImageButton (okAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			buttonNormal, buttonPressed, buttonDisabled), constraints2);
 		
-		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIUtils.LIGHT_BROWN, MomUIUtils.DARK_BROWN, getSmallFont (),
-			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraints (3, gridy, 1, INSET, GridBagConstraints.EAST));
+		contentPane.add (getUtils ().createImageButton (cancelAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
+			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraintsNoFill (3, gridy, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
 		
 		// Ok button should only be enabled once we have enough info
 		final DocumentListener documentListener = new DocumentListener ()

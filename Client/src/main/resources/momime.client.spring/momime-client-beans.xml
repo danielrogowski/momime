@@ -328,7 +328,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
-		<property name="ndgUIManager" ref="ndgUIManager" />
+		<property name="utils" ref="uiUtils" />
 	</bean>
 	
 	<bean id="overlandMapClientUtils" class="momime.client.utils.OverlandMapClientUtilsImpl">
@@ -370,9 +370,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- UI components -->
 
-	<bean id="ndgUIManager" class="com.ndg.swing.NdgUIManagerImpl" />
-
-	<bean id="uiUtils" class="momime.client.ui.MomUIUtilsImpl" />
+	<bean id="uiUtils" class="com.ndg.swing.NdgUIUtilsImpl" />
 
 	<bean id="mainMenuUI" class="momime.client.ui.MainMenuUI">
 		<property name="version" value="${momime.client.version}" />

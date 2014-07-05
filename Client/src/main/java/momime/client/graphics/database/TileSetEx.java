@@ -10,13 +10,14 @@ import momime.client.graphics.database.v0_9_5.SmoothedTile;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.client.graphics.database.v0_9_5.SmoothingSystem;
 import momime.client.graphics.database.v0_9_5.TileSet;
-import momime.client.ui.MomUIUtils;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.utils.CompareUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Links together the cached smoothing reduction rules against the actual images for each tile type
@@ -42,7 +43,7 @@ public final class TileSetEx extends TileSet
 	private Map<String, SmoothingSystemEx> smoothingSystemsMap;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
-	private MomUIUtils utils;
+	private NdgUIUtils utils;
 	
 	/**
 	 * Builds all of the maps on all child objects.
@@ -263,7 +264,7 @@ public final class TileSetEx extends TileSet
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */
-	public final MomUIUtils getUtils ()
+	public final NdgUIUtils getUtils ()
 	{
 		return utils;
 	}
@@ -271,7 +272,7 @@ public final class TileSetEx extends TileSet
 	/**
 	 * @param util Helper methods and constants for creating and laying out Swing components
 	 */
-	public final void setUtils (final MomUIUtils util)
+	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
 	}

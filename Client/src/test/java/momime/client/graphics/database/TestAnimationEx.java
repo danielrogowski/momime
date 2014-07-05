@@ -8,10 +8,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import momime.client.graphics.database.v0_9_5.AnimationFrame;
-import momime.client.ui.MomUIUtils;
 import momime.common.MomException;
 
 import org.junit.Test;
+
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Tests the AnimationEx class
@@ -47,7 +48,7 @@ public final class TestAnimationEx
 		anim.getFrame ().add (frame);
 		
 		// Mock some images
-		final MomUIUtils utils = mock (MomUIUtils.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		anim.setUtils (utils);
 		
 		final BufferedImage image1 = new BufferedImage (10, 5, BufferedImage.TYPE_INT_ARGB);
@@ -78,7 +79,7 @@ public final class TestAnimationEx
 		}
 		
 		// Mock some images
-		final MomUIUtils utils = mock (MomUIUtils.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		anim.setUtils (utils);
 		
 		final BufferedImage image1 = new BufferedImage (10, 5, BufferedImage.TYPE_INT_ARGB);
@@ -115,7 +116,7 @@ public final class TestAnimationEx
 		}
 		
 		// Mock some images
-		final MomUIUtils utils = mock (MomUIUtils.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		anim.setUtils (utils);
 		
 		final BufferedImage image1 = new BufferedImage (10, 5, BufferedImage.TYPE_INT_ARGB);

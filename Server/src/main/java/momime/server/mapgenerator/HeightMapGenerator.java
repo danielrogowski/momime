@@ -2,7 +2,9 @@ package momime.server.mapgenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.random.RandomUtils;
@@ -13,7 +15,7 @@ import com.ndg.random.RandomUtils;
 final class HeightMapGenerator
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (HeightMapGenerator.class.getName ());
+	private final Log log = LogFactory.getLog (HeightMapGenerator.class);
 	
 	/** Coordinate system we are generating a height map for */
 	private final CoordinateSystem coordinateSystem;
@@ -68,15 +70,14 @@ final class HeightMapGenerator
 	 */
 	final void generateHeightMap ()
 	{
-		log.entering (HeightMapGenerator.class.getName (), "generateHeightMap",
-			coordinateSystem.getWidth () + " x " + coordinateSystem.getHeight () + ", " + numberOfRowsFromMapEdgeWhereTundraCanAppear);
+		log.trace ("Entering generateHeightMap: " + coordinateSystem.getWidth () + " x " + coordinateSystem.getHeight () + ", " + numberOfRowsFromMapEdgeWhereTundraCanAppear);
 
 		// Generate height-based scenery
 		generateFractalLandscape ();
 		generateZeroBasedHeightMap ();
 		countTilesAtEachHeight ();
 
-		log.exiting (HeightMapGenerator.class.getName (), "generateHeightMap");
+		log.trace ("Exiting generateHeightMap");
 	}
 
 	/**
@@ -182,7 +183,7 @@ final class HeightMapGenerator
 	 */
 	private final void generateFractalLandscape ()
 	{
-		log.entering (HeightMapGenerator.class.getName (), "generateFractalLandscape");
+		log.trace ("Entering generateFractalLandscape");
 
 		// Session description contains zone width/height - we need the number of zones
 		final int xBlocks = (int) Math.round (coordinateSystem.getWidth () / (double) zoneWidth);		// a.k.a. zonesHorizontally
@@ -251,7 +252,7 @@ final class HeightMapGenerator
 			for (int yn = 0; yn < yBlocks; yn++)
 				fractalLandscapeIteration (step, (xn * xMax) / xBlocks, (yn * yMax) / yBlocks, ((xn + 1) * xMax) / xBlocks, ((yn + 1) * yMax) / yBlocks);
 
-		log.exiting (HeightMapGenerator.class.getName (), "generateFractalLandscape");
+		log.trace ("Exiting generateFractalLandscape");
 	}
 
 	/**
@@ -259,7 +260,7 @@ final class HeightMapGenerator
 	 */
 	final void generateZeroBasedHeightMap ()
 	{
-		log.entering (HeightMapGenerator.class.getName (), "generateZeroBasedHeightMap");
+		log.trace ("Entering generateZeroBasedHeightMap");
 
 		// Find the minimum height
 		int minimumHeight = heightMap [0] [0];
@@ -276,7 +277,7 @@ final class HeightMapGenerator
 			for (int y = 0; y < coordinateSystem.getHeight (); y++)
 				zeroBasedHeightMap [y] [x] = heightMap [y] [x] - minimumHeight;
 
-		log.exiting (HeightMapGenerator.class.getName (), "generateZeroBasedHeightMap");
+		log.trace ("Exiting generateZeroBasedHeightMap");
 	}
 
 	/**
@@ -284,7 +285,7 @@ final class HeightMapGenerator
 	 */
 	final void countTilesAtEachHeight ()
 	{
-		log.entering (HeightMapGenerator.class.getName (), "countTilesAtEachHeight");
+		log.trace ("Entering countTilesAtEachHeight");
 
 		// This relies on the fact that there are no entries in the height map with negative values
 		// so by starting at zero and working up, we've guaranteed to evenually hit every tile on the map
@@ -303,7 +304,7 @@ final class HeightMapGenerator
 			tilesDone = tilesDone + count;
 		}
 
-		log.exiting (HeightMapGenerator.class.getName (), "countTilesAtEachHeight");
+		log.trace ("Exiting countTilesAtEachHeight");
 	}
 
 	/**
@@ -341,7 +342,7 @@ final class HeightMapGenerator
 	 */
 	final void setHighestTiles (final int desiredTileCount, final ProcessTileCallback callback)
 	{
-		log.entering (HeightMapGenerator.class.getName (), "setHighestTiles", desiredTileCount);
+		log.trace ("Entering setHighestTiles: " + desiredTileCount);
 
 		// Check zero first
 		int bestThreshold = 0;
@@ -364,7 +365,7 @@ final class HeightMapGenerator
 				if (getZeroBasedHeightMap () [y] [x] >= bestThreshold)
 					callback.process (x, y);
 
-		log.exiting (HeightMapGenerator.class.getName (), "setHighestTiles");
+		log.trace ("Exiting setHighestTiles");
 	}
 
 	/**
@@ -376,7 +377,7 @@ final class HeightMapGenerator
 	 */
 	final void setLowestTiles (final int desiredTileCount, final ProcessTileCallback callback)
 	{
-		log.entering (HeightMapGenerator.class.getName (), "setLowestTiles", desiredTileCount);
+		log.trace ("Entering setLowestTiles: " + desiredTileCount);
 
 		// Check zero first
 		int bestThreshold = 0;
@@ -399,7 +400,7 @@ final class HeightMapGenerator
 				if (getZeroBasedHeightMap () [y] [x] <= bestThreshold)
 					callback.process (x, y);
 
-		log.exiting (HeightMapGenerator.class.getName (), "setLowestTiles");
+		log.trace ("Exiting setLowestTiles");
 	}
 	
 	/**

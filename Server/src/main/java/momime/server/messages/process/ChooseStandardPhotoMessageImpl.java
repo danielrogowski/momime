@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -11,6 +9,9 @@ import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
 import momime.common.messages.servertoclient.v0_9_5.YourPhotoIsOkMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.server.MomSessionVariables;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -22,7 +23,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChooseStandardPhotoMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChooseStandardPhotoMessageImpl.class);
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -34,7 +35,7 @@ public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMes
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (ChooseStandardPhotoMessageImpl.class.getName (), "process", new String [] {new Integer (sender.getPlayerDescription ().getPlayerID ()).toString (), getPhotoID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getPhotoID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -53,13 +54,13 @@ public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMes
 		catch (final RecordNotFoundException e)
 		{
 			// Send error back to client
-			log.warning (sender.getPlayerDescription ().getPlayerName () + " tried to choose invalid photo ID \"" + getPhotoID () + "\"");
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " tried to choose invalid photo ID \"" + getPhotoID () + "\"");
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText ("Photo choice invalid, please try again");
 			sender.getConnection ().sendMessageToClient (reply);
 		}
 
-		log.exiting (ChooseStandardPhotoMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 }

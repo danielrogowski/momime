@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -15,6 +13,9 @@ import momime.server.MomSessionVariables;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.PlayerPickServerUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -26,7 +27,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChooseRaceMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChooseRaceMessageImpl.class);
 	
 	/** Server-only pick utils */
 	private PlayerPickServerUtils playerPickServerUtils;
@@ -47,7 +48,7 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		log.entering (ChooseRaceMessageImpl.class.getName (), "process", new String [] {new Integer (sender.getPlayerDescription ().getPlayerID ()).toString (), getRaceID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getRaceID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -55,7 +56,7 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 		if (error != null)
 		{
 			// Return error
-			log.warning (ChooseRaceMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -74,7 +75,7 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 			getPlayerMessageProcessing ().checkIfCanStartGame (mom);
 		}
 
-		log.exiting (ChooseRaceMessageImpl.class.getName (), "process", error);
+		log.trace ("Exiting process");
 	}
 	
 	/**

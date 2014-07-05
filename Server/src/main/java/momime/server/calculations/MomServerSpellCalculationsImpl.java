@@ -4,19 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.Spell;
+import momime.common.database.v0_9_5.Spell;
 import momime.common.messages.v0_9_5.PlayerPick;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Pick;
-import momime.server.database.v0_9_4.PickType;
-import momime.server.database.v0_9_4.PickTypeCountContainer;
-import momime.server.database.v0_9_4.PickTypeGrantsSpells;
+import momime.server.database.v0_9_5.Pick;
+import momime.server.database.v0_9_5.PickType;
+import momime.server.database.v0_9_5.PickTypeCountContainer;
+import momime.server.database.v0_9_5.PickTypeGrantsSpells;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.random.RandomUtils;
 
@@ -26,7 +28,7 @@ import com.ndg.random.RandomUtils;
 public final class MomServerSpellCalculationsImpl implements MomServerSpellCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomServerSpellCalculationsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomServerSpellCalculationsImpl.class);
 	
 	/** The number of choices we're offered from which to pick a spell to research */
 	private static final int SPELL_COUNT_TO_PICK_RESEARCH_FROM = 8;
@@ -53,7 +55,7 @@ public final class MomServerSpellCalculationsImpl implements MomServerSpellCalcu
 		final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (MomServerSpellCalculationsImpl.class.getName (), "randomizeResearchableSpells");
+		log.trace ("Entering randomizeResearchableSpells");
 
 		final List<String> spellIdsToMakeResearchable = new ArrayList<String> ();
 		final List<String> spellIdsToMakeNotInBook = new ArrayList<String> ();
@@ -117,7 +119,7 @@ public final class MomServerSpellCalculationsImpl implements MomServerSpellCalcu
 					researchStatus.setStatus (SpellResearchStatusID.NOT_IN_SPELL_BOOK);
 			}
 
-		log.exiting (MomServerSpellCalculationsImpl.class.getName (), "randomizeResearchableSpells");
+		log.trace ("Exiting randomizeResearchableSpells");
 	}
 
 	/**
@@ -131,7 +133,7 @@ public final class MomServerSpellCalculationsImpl implements MomServerSpellCalcu
 	public final void randomizeSpellsResearchableNow (final List<SpellResearchStatus> spells, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (MomServerSpellCalculationsImpl.class.getName (), "randomizeSpellsResearchableNow");
+		log.trace ("Entering randomizeSpellsResearchableNow");
 
 		// First find how many 'researchable now' spells we already have - maybe we already have 8 and have nothing to do
 		int researchableNow = getSpellUtils ().getSpellsForStatus (spells, SpellResearchStatusID.RESEARCHABLE_NOW, db).size ();
@@ -170,7 +172,7 @@ public final class MomServerSpellCalculationsImpl implements MomServerSpellCalcu
 						researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
 		}
 
-		log.exiting (MomServerSpellCalculationsImpl.class.getName (), "randomizeSpellsResearchableNow");
+		log.trace ("Exiting randomizeSpellsResearchableNow");
 	}
 
 	/**

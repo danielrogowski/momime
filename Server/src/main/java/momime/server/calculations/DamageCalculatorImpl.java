@@ -1,7 +1,6 @@
 package momime.server.calculations;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -20,6 +19,9 @@ import momime.common.utils.MomUnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -30,7 +32,7 @@ import com.ndg.random.RandomUtils;
 public final class DamageCalculatorImpl implements DamageCalculator
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (DamageCalculatorImpl.class.getName ());
+	private final Log log = LogFactory.getLog (DamageCalculatorImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -87,8 +89,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (DamageCalculatorImpl.class.getName (), "resolveAttack", new String []
-			{new Integer (attacker.getUnitURN ()).toString (), new Integer (defender.getUnitURN ()).toString (), attackAttributeID});
+		log.trace ("Entering resolveAttack: Unit URN " + attacker.getUnitURN () + ", Unit URN " + defender.getUnitURN () + ", " + attackAttributeID);
 		
 		// Store values straight into the message
 		// The attacker and defender may be switched, so redo the message from scratch
@@ -172,7 +173,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setActualBlockedHits (actualBlockedHits.toString ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.exiting (DamageCalculatorImpl.class.getName (), "resolveAttack", totalHits);
+		log.trace ("Exiting resolveAttack = " + totalHits);
 		return totalHits;
 	}
 	

@@ -5,13 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.messages.servertoclient.v0_9_5.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.v0_9_5.SetCurrentPlayerMessage;
@@ -29,6 +28,7 @@ import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -356,7 +356,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getSessionLogger ()).thenReturn (Logger.getLogger (TestPlayerMessageProcessingImpl.class.getName ()));
+		when (mom.getSessionLogger ()).thenReturn (LogFactory.getLog (TestPlayerMessageProcessingImpl.class));
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
@@ -438,7 +438,7 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getSessionLogger ()).thenReturn (Logger.getLogger (TestPlayerMessageProcessingImpl.class.getName ()));
+		when (mom.getSessionLogger ()).thenReturn (LogFactory.getLog (TestPlayerMessageProcessingImpl.class));
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		

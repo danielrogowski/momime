@@ -10,47 +10,49 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import momime.client.database.v0_9_4.AvailableDatabase;
-import momime.client.database.v0_9_4.ClientDatabase;
-import momime.client.database.v0_9_4.NewGameDatabase;
+import momime.client.database.v0_9_5.AvailableDatabase;
+import momime.client.database.v0_9_5.ClientDatabase;
+import momime.client.database.v0_9_5.NewGameDatabase;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.MapFeatureProduction;
-import momime.common.database.v0_9_4.TaxRate;
-import momime.common.database.v0_9_4.WizardPick;
+import momime.common.database.v0_9_5.MapFeatureProduction;
+import momime.common.database.v0_9_5.TaxRate;
+import momime.common.database.v0_9_5.WizardPick;
 import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.CombatAreaEffect;
-import momime.server.database.v0_9_4.CombatTileBorder;
-import momime.server.database.v0_9_4.CombatTileType;
-import momime.server.database.v0_9_4.DifficultyLevel;
-import momime.server.database.v0_9_4.FogOfWarSetting;
-import momime.server.database.v0_9_4.LandProportion;
-import momime.server.database.v0_9_4.MapSize;
-import momime.server.database.v0_9_4.NodeStrength;
-import momime.server.database.v0_9_4.Pick;
-import momime.server.database.v0_9_4.PickType;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.ProductionType;
-import momime.server.database.v0_9_4.Race;
-import momime.server.database.v0_9_4.RangedAttackType;
-import momime.server.database.v0_9_4.Spell;
-import momime.server.database.v0_9_4.SpellSetting;
-import momime.server.database.v0_9_4.TileType;
-import momime.server.database.v0_9_4.Unit;
-import momime.server.database.v0_9_4.UnitAttribute;
-import momime.server.database.v0_9_4.UnitMagicRealm;
-import momime.server.database.v0_9_4.UnitSetting;
-import momime.server.database.v0_9_4.UnitSkill;
-import momime.server.database.v0_9_4.UnitType;
-import momime.server.database.v0_9_4.WeaponGrade;
-import momime.server.database.v0_9_4.WizardPickCount;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.CombatAreaEffect;
+import momime.server.database.v0_9_5.CombatTileBorder;
+import momime.server.database.v0_9_5.CombatTileType;
+import momime.server.database.v0_9_5.DifficultyLevel;
+import momime.server.database.v0_9_5.FogOfWarSetting;
+import momime.server.database.v0_9_5.LandProportion;
+import momime.server.database.v0_9_5.MapSize;
+import momime.server.database.v0_9_5.NodeStrength;
+import momime.server.database.v0_9_5.Pick;
+import momime.server.database.v0_9_5.PickType;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.ProductionType;
+import momime.server.database.v0_9_5.Race;
+import momime.server.database.v0_9_5.RangedAttackType;
+import momime.server.database.v0_9_5.Spell;
+import momime.server.database.v0_9_5.SpellSetting;
+import momime.server.database.v0_9_5.TileType;
+import momime.server.database.v0_9_5.Unit;
+import momime.server.database.v0_9_5.UnitAttribute;
+import momime.server.database.v0_9_5.UnitMagicRealm;
+import momime.server.database.v0_9_5.UnitSetting;
+import momime.server.database.v0_9_5.UnitSkill;
+import momime.server.database.v0_9_5.UnitType;
+import momime.server.database.v0_9_5.WeaponGrade;
+import momime.server.database.v0_9_5.WizardPickCount;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Converters for building derivative XML files from the server XML file
@@ -59,7 +61,7 @@ import momime.server.database.v0_9_4.WizardPickCount;
 public final class ServerDatabaseConvertersImpl implements ServerDatabaseConverters
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ServerDatabaseConvertersImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ServerDatabaseConvertersImpl.class);
 	
 	/** Extension that XML files for the server must have */
 	public static final String SERVER_XML_FILE_EXTENSION = ".Master of Magic Server.xml";
@@ -111,7 +113,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	public final NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Unmarshaller serverDatabaseUnmarshaller)
 		throws JAXBException, MomException, IOException
 	{
-		log.entering (ServerDatabaseConvertersImpl.class.getName (), "buildNewGameDatabase");
+		log.trace ("Entering buildNewGameDatabase");
 
 		// First put the list of all compatibly named XML databases in a string list, so we can sort it before we start trying to load them in and check them
 		// Strip the suffix off each one as we add it
@@ -126,7 +128,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 			String thisFilename = thisFile.getName ();
 			thisFilename = thisFilename.substring (0, thisFilename.length () - SERVER_XML_FILE_EXTENSION.length ());
 
-			log.finest ("buildNewGameDatabase found suitably named XML file \"" + thisFilename + "\"");
+			log.debug ("buildNewGameDatabase found suitably named XML file \"" + thisFilename + "\"");
 
 			xmlFilenames.add (thisFilename);
 		}
@@ -143,7 +145,10 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		}
 		
 		// Call other method to do the guts of the work
-		return buildNewGameDatabase (map, serverDatabaseUnmarshaller);
+		final NewGameDatabaseMessage msg = buildNewGameDatabase (map, serverDatabaseUnmarshaller);
+		
+		log.trace ("Exiting buildNewGameDatabase");
+		return msg;
 	}
 	
 	/**
@@ -161,7 +166,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	final NewGameDatabaseMessage buildNewGameDatabase (final Map<String, URL> xmlFiles, final Unmarshaller serverDatabaseUnmarshaller)
 		throws JAXBException, MomException
 	{
-		log.entering (ServerDatabaseConvertersImpl.class.getName (), "buildNewGameDatabase");
+		log.trace ("Entering buildNewGameDatabase");
 
 		// Now open up each one to check if it is compatible
 		final NewGameDatabase newGameDatabase = new NewGameDatabase ();
@@ -178,7 +183,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 			}
 			catch (final JAXBException e)
 			{
-				log.warning ("Server XML database \"" + thisXmlFile.getKey () + "\" can't be used because of: " + e.getMessage ());
+				log.warn ("Server XML database \"" + thisXmlFile.getKey () + "\" can't be used because of: " + e.getMessage ());
 			}
 
 		if (newGameDatabase.getMomimeXmlDatabase ().size () == 0)
@@ -188,8 +193,8 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		final NewGameDatabaseMessage msg = new NewGameDatabaseMessage ();
 		msg.setNewGameDatabase (newGameDatabase);
 
-		log.info ("Found " + newGameDatabase.getMomimeXmlDatabase ().size () + " compatible server XML files");
-		log.exiting (ServerDatabaseConvertersImpl.class.getName (), "buildNewGameDatabase", newGameDatabase.getMomimeXmlDatabase ().size ());
+		log.info ("Found " + newGameDatabase.getMomimeXmlDatabase ().size () + " compatible server XML file(s)");
+		log.trace ("Exiting buildNewGameDatabase = " + newGameDatabase.getMomimeXmlDatabase ().size ());
 		return msg;
 	}
 
@@ -202,7 +207,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	@Override
 	public final ClientDatabase buildClientDatabase (final ServerDatabaseEx src, final int humanSpellPicks) throws RecordNotFoundException
 	{
-		log.exiting (ServerDatabaseConvertersImpl.class.getName (), "buildClientDatabase", src);
+		log.trace ("Exiting buildClientDatabase");
 
 		final ClientDatabase dest = new ClientDatabase ();
 
@@ -264,9 +269,9 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 			dest.getCombatTileBorder ().add (combatTileBorder);
 
 	    // Derive client-side only flag for map features
-		for (final momime.server.database.v0_9_4.MapFeature srcMapFeature : src.getMapFeature ())
+		for (final momime.server.database.v0_9_5.MapFeature srcMapFeature : src.getMapFeature ())
 		{
-			final momime.client.database.v0_9_4.MapFeature destMapFeature = new momime.client.database.v0_9_4.MapFeature ();
+			final momime.client.database.v0_9_5.MapFeature destMapFeature = new momime.client.database.v0_9_5.MapFeature ();
 
 			destMapFeature.setMapFeatureID (srcMapFeature.getMapFeatureID ());
 			destMapFeature.setCanBuildCity (srcMapFeature.isCanBuildCity ());
@@ -283,9 +288,9 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		}
 
 	    // Select correct number of picks for wizards
-		for (final momime.server.database.v0_9_4.Wizard srcWizard : src.getWizard ())
+		for (final momime.server.database.v0_9_5.Wizard srcWizard : src.getWizard ())
 		{
-			final momime.client.database.v0_9_4.Wizard destWizard = new momime.client.database.v0_9_4.Wizard ();
+			final momime.client.database.v0_9_5.Wizard destWizard = new momime.client.database.v0_9_5.Wizard ();
 
 			destWizard.setWizardID (srcWizard.getWizardID ());
 
@@ -306,13 +311,13 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 				}
 
 				if (!found)
-					throw new RecordNotFoundException (WizardPickCount.class.getName (), srcWizard.getWizardID () + "-" + humanSpellPicks, "buildClientDatabase");
+					throw new RecordNotFoundException (WizardPickCount.class, srcWizard.getWizardID () + "-" + humanSpellPicks, "buildClientDatabase");
 			}
 
 			dest.getWizard ().add (destWizard);
 		}
 
-		log.exiting (ServerDatabaseConvertersImpl.class.getName (), "buildClientDatabase", dest);
+		log.trace ("Exiting buildClientDatabase");
 		return dest;
 	}
 }

@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -14,6 +12,9 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.calculations.MomServerResourceCalculations;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -24,7 +25,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class AlchemyMessageImpl extends AlchemyMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (AlchemyMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (AlchemyMessageImpl.class);
 
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -45,8 +46,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (AlchemyMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getFromProductionTypeID (), new Integer (getFromValue ()).toString ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getFromProductionTypeID () + ", " + getFromValue ());
 
 		String error = null;
 		String toProductionTypeID = null;
@@ -73,7 +73,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 		if (error != null)
 		{
 			// Return error
-			log.warning (ChooseInitialSpellsMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -98,7 +98,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 			getServerResourceCalculations ().sendGlobalProductionValues (sender, 0);
 		}
 
-		log.exiting (AlchemyMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

@@ -2,7 +2,6 @@ package momime.server.utils;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -11,7 +10,7 @@ import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.RaceCannotBuild;
+import momime.common.database.v0_9_5.RaceCannotBuild;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
@@ -25,12 +24,15 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.Race;
-import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.Race;
+import momime.server.database.v0_9_5.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -43,7 +45,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class CityServerUtilsImpl implements CityServerUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CityServerUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CityServerUtilsImpl.class);
 	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -80,7 +82,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final String buildingOrUnitID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (CityServerUtilsImpl.class.getName (), "validateCityConstruction", new String [] {new Integer (player.getPlayerDescription ().getPlayerID ()).toString (), buildingOrUnitID});
+		log.trace ("Entering validateCityConstruction: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + buildingOrUnitID);
 
 		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -156,7 +158,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 				msg = "The building/unit that you tried to build doesn't exist";
 		}
 
-		log.exiting (CityServerUtilsImpl.class.getName (), "validateCityConstruction", msg);
+		log.trace ("Exiting validateCityConstruction = " + msg);
 		return msg;
 	}
 
@@ -173,7 +175,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final String validateOptionalFarmers (final PlayerServerDetails player, final MapVolumeOfMemoryGridCells trueTerrain, final MapCoordinates3DEx cityLocation,
 		final int optionalFarmers)
 	{
-		log.entering (CityServerUtilsImpl.class.getName (), "validateOptionalFarmers", new Integer [] {player.getPlayerDescription ().getPlayerID (), optionalFarmers});
+		log.trace ("Entering validateOptionalFarmers: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + optionalFarmers);
 
 		final OverlandMapCityData cityData = trueTerrain.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -183,13 +185,13 @@ public final class CityServerUtilsImpl implements CityServerUtils
 
 		else if ((optionalFarmers < 0) || (optionalFarmers + cityData.getMinimumFarmers () + cityData.getNumberOfRebels () > cityData.getCityPopulation () / 1000))
 		{
-			log.warning ("Player " + player.getPlayerDescription ().getPlayerID () + " tried to set an invalid number of optional farmers, O" +
+			log.warn ("Player " + player.getPlayerDescription ().getPlayerID () + " tried to set an invalid number of optional farmers, O" +
 				optionalFarmers + " + M" + cityData.getMinimumFarmers () + " +R" + cityData.getNumberOfRebels () + " > " + cityData.getCityPopulation () + "/1000");
 
 			msg = "You tried to change the number of farmers & workers to an invalid amount - change ignored.";
 		}
 
-		log.exiting (CityServerUtilsImpl.class.getName (), "validateOptionalFarmers", msg);
+		log.trace ("Exiting validateOptionalFarmers = " + msg);
 		return msg;
 	}
 
@@ -211,7 +213,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CityServerUtilsImpl.class.getName (), "buildCityFromSettler", settler.getUnitURN ());
+		log.trace ("Entering buildCityFromSettler: " + settler.getUnitURN ());
 		
 		// Add the city on the server
 		final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) settler.getUnitLocation ();
@@ -244,7 +246,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		// Update our own FOW (the city can see further than the settler could)
 		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), player, players, false, "buildCityFromSettler", sd, db);
 		
-		log.exiting (CityServerUtilsImpl.class.getName (), "buildCityFromSettler");
+		log.trace ("Exiting buildCityFromSettler");
 	}
 	
 	/**
@@ -258,7 +260,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final int totalCostOfBuildingsAtLocation (final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (CityServerUtilsImpl.class.getName (), "totalCostOfBuildingsAtLocation", cityLocation);
+		log.trace ("Entering totalCostOfBuildingsAtLocation: " + cityLocation);
 		
 		int total = 0;
 		for (final MemoryBuilding thisBuilding : buildings)
@@ -269,7 +271,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 					total = total + building.getProductionCost ();
 			}
 		
-		log.exiting (CityServerUtilsImpl.class.getName (), "totalCostOfBuildingsAtLocation", total);
+		log.trace ("Exiting totalCostOfBuildingsAtLocation = " + total);
 		return total;
 	}
 	

@@ -7,8 +7,8 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
-import momime.common.database.newgame.v0_9_4.FogOfWarValue;
+import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
+import momime.common.database.newgame.v0_9_5.FogOfWarValue;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;

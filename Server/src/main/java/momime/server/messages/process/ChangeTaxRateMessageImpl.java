@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -10,6 +8,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeTaxRateMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CityProcessing;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -22,7 +23,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class ChangeTaxRateMessageImpl extends ChangeTaxRateMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChangeTaxRateMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChangeTaxRateMessageImpl.class);
 
 	/** City processing methods */
 	private CityProcessing cityProcessing;
@@ -40,14 +41,13 @@ public final class ChangeTaxRateMessageImpl extends ChangeTaxRateMessage impleme
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (ChangeTaxRateMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerName (), getTaxRateID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getTaxRateID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		getCityProcessing ().changeTaxRate (sender, getTaxRateID (), mom);
 
-		log.exiting (ChangeTaxRateMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

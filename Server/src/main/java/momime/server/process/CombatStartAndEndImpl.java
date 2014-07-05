@@ -2,7 +2,6 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -30,7 +29,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerResourceCalculations;
-import momime.server.database.v0_9_4.Plane;
+import momime.server.database.v0_9_5.Plane;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.mapgenerator.CombatMapGenerator;
@@ -38,6 +37,9 @@ import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -76,7 +78,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	static final int COMBAT_SETUP_ATTACKER_ROWS = 4;
 	
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CombatStartAndEndImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CombatStartAndEndImpl.class);
 
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
@@ -143,9 +145,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		final Integer scheduledCombatURN, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CombatStartAndEndImpl.class.getName (), "startCombat",
-			new String [] {defendingLocation.toString (), attackingFrom.toString (), (scheduledCombatURN == null) ? "NotSched" : scheduledCombatURN.toString (),
-			attackingPlayer.getPlayerDescription ().getPlayerID ().toString ()});
+		log.trace ("Entering startCombat: " + defendingLocation + ", " + attackingFrom + ", " + scheduledCombatURN +
+			", Player ID " + attackingPlayer.getPlayerDescription ().getPlayerID ());
 		
 		// If attacking a tower in Myrror, then Defending-AttackingFrom will be 0-1
 		// If attacking from a tower onto Myrror, then Defending-AttackingFrom will be 1-0 - both of these should be shown on Myrror only
@@ -193,12 +194,12 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		// Need the map generation done first, so we know where there is impassable terrain to avoid placing units on it.
 		// Final 'True' parameter is because only some of the units in the attacking cell may actually be attacking, whereas everyone in the defending cell will always help defend.
 		// We need to do this (at least on the server) even if we immediately end the combat below, since we need to mark the attackers into the combat so that they will advance 1 square.
-		log.finest ("Positioning defenders at " + defendingLocation);
+		log.debug ("Positioning defenders at " + defendingLocation);
 		getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage, attackingPlayer, defendingPlayer, mom.getCombatMapCoordinateSystem (), defendingLocation,
 			COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y, COMBAT_SETUP_DEFENDER_ROWS, COMBAT_SETUP_DEFENDER_FACING,
 			UnitCombatSideID.DEFENDER, null, tc.getCombatMap (), mom);
 				
-		log.finest ("Positioning attackers at " + defendingLocation);
+		log.debug ("Positioning attackers at " + defendingLocation);
 		getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage, attackingPlayer, defendingPlayer, mom.getCombatMapCoordinateSystem (), attackingFrom,
 			COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y, COMBAT_SETUP_ATTACKER_ROWS, COMBAT_SETUP_ATTACKER_FACING,
 			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
@@ -206,7 +207,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		// Are there any defenders (some lairs are empty) - if not then bypass the combat entirely
 		if ((walkInWithoutAFight) || (defendingPlayer == null))
 		{
-			log.finest ("Combat ending before it starts");
+			log.debug ("Combat ending before it starts");
 			
 			// There's a few situations to deal with here:
 			// If "walk in without a fight" is on, then we have other units already at that location, so there definitely no defender.
@@ -228,7 +229,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		}
 		else
 		{
-			log.finest ("Continuing combat setup");
+			log.debug ("Continuing combat setup");
 			
 			// Set casting skill allocation for this combat 
 			final MomPersistentPlayerPrivateKnowledge attackingPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -251,7 +252,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			getCombatProcessing ().progressCombat (combatLocation, true, false, mom);
 		}
 
-		log.exiting (CombatStartAndEndImpl.class.getName (), "startCombat");
+		log.trace ("Exiting startCombat");
 	}
 	
 	/**
@@ -278,7 +279,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CombatStartAndEndImpl.class.getName (), "combatEnded", combatLocation);
+		log.trace ("Entering combatEnded: " + combatLocation);
 		
 		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
@@ -289,7 +290,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			(tc.getCityData ().getCityPopulation () != null) && (tc.getCityData ().getCityPopulation () > 0) &&
 			(!attackingPlayer.getPlayerDescription ().getPlayerID ().equals (tc.getCityData ().getCityOwnerID ())))
 		{
-			log.finest ("Undecided city capture, bulk of method will not run");
+			log.debug ("Undecided city capture, bulk of method will not run");
 			
 			final AskForCaptureCityDecisionMessage msg = new AskForCaptureCityDecisionMessage ();
 			msg.setCityLocation (combatLocation);
@@ -360,14 +361,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Client knows to do this themselves because they won
 			if ((winningPlayer == attackingPlayer) && (ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), mom.getServerDB ())))
 			{
-				log.finest ("Attacking player " + attackingPlayer.getPlayerDescription ().getPlayerName () + " now knows the node/lair/tower to be empty");
+				log.debug ("Attacking player " + attackingPlayer.getPlayerDescription ().getPlayerName () + " now knows the node/lair/tower to be empty");
 				atkPriv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().set (combatLocation.getX (), "");
 			}
 			
 			// If the attacker won then advance their units to the target square
 			if (winningPlayer == attackingPlayer)
 			{
-				log.finest ("Attacker won");
+				log.debug ("Attacker won");
 				
 				// Work out moveToPlane - If attackers are capturing a tower from Myrror, in which case they jump to Arcanus as part of the move
 				final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (combatLocation);
@@ -393,7 +394,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					(mom.getServerDB ().findMapFeature (tc.getTerrainData ().getMapFeatureID (), "combatEnded").getMapFeatureMagicRealm ().size () > 0) &&
 					(!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ())))
 				{
-					log.finest ("Removing lair");
+					log.debug ("Removing lair");
 					tc.getTerrainData ().setMapFeatureID (null);
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getPlayers (), combatLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
@@ -402,7 +403,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// If we captured a tower of wizardry, then turn the light on
 				else if (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY.equals (tc.getTerrainData ().getMapFeatureID ()))
 				{
-					log.finest ("Turning light on in tower");
+					log.debug ("Turning light on in tower");
 					for (final Plane plane : mom.getServerDB ().getPlane ())
 					{
 						final MapCoordinates3DEx towerCoords = new MapCoordinates3DEx (combatLocation.getX (), combatLocation.getY (), plane.getPlaneNumber ());
@@ -472,7 +473,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			}
 			else
 			{
-				log.finest ("Defender won");
+				log.debug ("Defender won");
 			}
 			
 			// Set all units CombatX, CombatY back to -1, -1 so we don't think they're in combat anymore.
@@ -480,7 +481,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// be -1, -1 and we'll no longer be able to tell who was part of the attacking force and who wasn't.
 			// Have to do this before we recalc FOW, since if one side was wiped out, the FOW update may delete their memory of the opponent... which
 			// then crashes the client if we then try to send msgs to take those opposing units out of combat.
-			log.finest ("Removing units out of combat");
+			log.debug ("Removing units out of combat");
 			getCombatProcessing ().removeUnitsFromCombat (attackingPlayer, defendingPlayer, mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getServerDB ());
 			
 			// Even if one side won the combat, they might have lost their unit with the longest scouting range
@@ -495,14 +496,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				attackingPlayer, mom.getPlayers (), false, "combatEnded-A", mom.getSessionDescription (), mom.getServerDB ());
 			
 			// Remove all combat area effects from spells like Prayer, Mass Invisibility, etc.
-			log.finest ("Removing all spell CAEs");
+			log.debug ("Removing all spell CAEs");
 			getFogOfWarMidTurnChanges ().removeCombatAreaEffectsFromLocalisedSpells
 				(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			
 			// Handle clearing up and removing the scheduled combat
 			if (tc.getScheduledCombatURN () != null)
 			{
-				log.finest ("Tidying up scheduled combat");
+				log.debug ("Tidying up scheduled combat");
 				getCombatScheduler ().processEndOfScheduledCombat (tc.getScheduledCombatURN (), winningPlayer, mom);
 				tc.setScheduledCombatURN (null);
 			}
@@ -535,7 +536,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			}
 		}
 		
-		log.exiting (CombatStartAndEndImpl.class.getName (), "combatEnded");
+		log.trace ("Exiting combatEnded");
 	}
 	
 	/**

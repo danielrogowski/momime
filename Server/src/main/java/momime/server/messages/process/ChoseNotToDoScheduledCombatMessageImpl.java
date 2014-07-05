@@ -1,20 +1,21 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.ChoseNotToDoScheduledCombatMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatScheduler;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Client sends this if they've initiated a scheduled combat in the movement phase, but now decided they don't want to play it after all.
@@ -24,7 +25,7 @@ import momime.server.process.CombatScheduler;
 public final class ChoseNotToDoScheduledCombatMessageImpl extends ChoseNotToDoScheduledCombatMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChoseNotToDoScheduledCombatMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChoseNotToDoScheduledCombatMessageImpl.class);
 
 	/** Simultaneous turns combat scheduler */
 	private CombatScheduler combatScheduler;
@@ -42,7 +43,7 @@ public final class ChoseNotToDoScheduledCombatMessageImpl extends ChoseNotToDoSc
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (ChoseNotToDoScheduledCombatMessageImpl.class.getName (), "process", getScheduledCombatURN ());
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", Combat URN " + getScheduledCombatURN ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -52,7 +53,7 @@ public final class ChoseNotToDoScheduledCombatMessageImpl extends ChoseNotToDoSc
 		// Tidy up combat
 		getCombatScheduler ().processEndOfScheduledCombat (getScheduledCombatURN (), null, mom);
 
-		log.exiting (ChoseNotToDoScheduledCombatMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

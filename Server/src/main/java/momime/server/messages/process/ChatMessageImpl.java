@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -10,6 +8,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.ChatMessage;
 import momime.common.messages.servertoclient.v0_9_5.BroadcastChatMessage;
 import momime.server.MomSessionVariables;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -23,7 +24,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class ChatMessageImpl extends ChatMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChatMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChatMessageImpl.class);
 
 	/** Server-side multiplayer utils */
 	private MultiplayerServerUtils multiplayerServerUtils;
@@ -41,7 +42,7 @@ public final class ChatMessageImpl extends ChatMessage implements PostSessionCli
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (ChatMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerName ());
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -51,7 +52,7 @@ public final class ChatMessageImpl extends ChatMessage implements PostSessionCli
 		
 		getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 
-		log.exiting (ChatMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

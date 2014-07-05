@@ -2,7 +2,6 @@ package momime.server.messages.process;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -22,8 +21,11 @@ import momime.common.utils.TargetUnitSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
-import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_5.Spell;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -38,7 +40,7 @@ import com.ndg.random.RandomUtils;
 public final class TargetSpellMessageImpl extends TargetSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (TargetSpellMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (TargetSpellMessageImpl.class);
 
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -72,8 +74,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (TargetSpellMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getSpellID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getSpellID ());
 		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
@@ -199,7 +200,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		if (error != null)
 		{
 			// Return error
-			log.warning (TargetSpellMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -271,7 +272,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
-		log.exiting (TargetSpellMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}		
 
 	/**

@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -10,6 +8,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.AttackNodeLairTowerMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatStartAndEnd;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -24,7 +25,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class AttackNodeLairTowerMessageImpl extends AttackNodeLairTowerMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (AttackNodeLairTowerMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (AttackNodeLairTowerMessageImpl.class);
 
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
@@ -42,16 +43,15 @@ public final class AttackNodeLairTowerMessageImpl extends AttackNodeLairTowerMes
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, MomException, RecordNotFoundException
 	{
-		log.entering (AttackNodeLairTowerMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getAttackingFrom ().toString (), getDefendingLocation ().toString (),
-			(scheduledCombatURN == null) ? "NotSched" : scheduledCombatURN.toString ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getAttackingFrom () + ", " + getDefendingLocation () +
+			", Combat URN " + scheduledCombatURN);
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		getCombatStartAndEnd ().startCombat ((MapCoordinates3DEx) getDefendingLocation (), (MapCoordinates3DEx) getAttackingFrom (),
 			getScheduledCombatURN (), sender, getUnitURN (), mom);
 
-		log.exiting (AttackNodeLairTowerMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

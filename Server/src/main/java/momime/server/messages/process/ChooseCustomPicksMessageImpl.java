@@ -1,13 +1,11 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.WizardPick;
+import momime.common.database.v0_9_5.WizardPick;
 import momime.common.messages.clienttoserver.v0_9_5.ChooseCustomPicksMessage;
 import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.v0_9_5.ChooseYourRaceNowMessage;
@@ -19,6 +17,9 @@ import momime.common.messages.v0_9_5.PlayerPick;
 import momime.server.MomSessionVariables;
 import momime.server.utils.PlayerPickServerUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -29,7 +30,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChooseCustomPicksMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChooseCustomPicksMessageImpl.class);
 	
 	/** Server-only pick utils */
 	private PlayerPickServerUtils playerPickServerUtils;
@@ -46,7 +47,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException
 	{
-		log.entering (ChooseCustomPicksMessageImpl.class.getName (), "process", new Integer [] {sender.getPlayerDescription ().getPlayerID (), getPick ().size ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getPick ().size ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -55,7 +56,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 		if (error != null)
 		{
 			// Return error
-			log.warning (ChooseCustomPicksMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -89,7 +90,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 
 			// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 			// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
-			log.finest (ChooseCustomPicksMessageImpl.class.getName () + ".process: About to search for first realm (if any) where human player " + sender.getPlayerDescription ().getPlayerName () + " gets free spells");
+			log.debug ("process: About to search for first realm (if any) where human player " + sender.getPlayerDescription ().getPlayerName () + " gets free spells");
 			final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB ());
 			if (chooseSpellsMsg != null)
 				sender.getConnection ().sendMessageToClient (chooseSpellsMsg);
@@ -97,7 +98,7 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 				sender.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
 		}
 
-		log.exiting (ChooseCustomPicksMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

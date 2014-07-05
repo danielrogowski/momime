@@ -12,7 +12,7 @@ import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_5.Spell;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;

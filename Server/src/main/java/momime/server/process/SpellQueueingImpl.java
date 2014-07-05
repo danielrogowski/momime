@@ -1,7 +1,6 @@
 package momime.server.process;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -34,9 +33,12 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_5.Spell;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -51,7 +53,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class SpellQueueingImpl implements SpellQueueing
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SpellQueueingImpl.class.getName ());
+	private final Log log = LogFactory.getLog (SpellQueueingImpl.class);
 
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -109,7 +111,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.entering (SpellProcessingImpl.class.getName (), "requestCastSpell", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), spellID});
+		log.trace ("Entering requestCastSpell: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spellID);
 		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -257,7 +259,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		// Ok to go ahead and cast (or queue) it?
 		if (msg != null)
 		{
-			log.warning (player.getPlayerDescription ().getPlayerName () + " disallowed from casting spell " + spellID + ": " + msg);
+			log.warn (player.getPlayerDescription ().getPlayerName () + " disallowed from casting spell " + spellID + ": " + msg);
 			
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (msg);
@@ -307,7 +309,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			}
 		}
 		
-		log.exiting (SpellProcessingImpl.class.getName (), "requestCastSpell");
+		log.trace ("Exiting requestCastSpell");
 	}
 
 	/**
@@ -330,7 +332,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.entering (SpellProcessingImpl.class.getName (), "progressOverlandCasting", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering progressOverlandCasting: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -380,7 +382,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// No need to tell client how much skill they've got left or mana stored since this is the end of the turn and both will be sent next start phase
 		}
 
-		log.exiting (SpellProcessingImpl.class.getName (), "progressOverlandCasting", anySpellsCast);
+		log.trace ("Exiting progressOverlandCasting = " + anySpellsCast);
 		return anySpellsCast;
 	}
 

@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -14,8 +12,11 @@ import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
-import momime.server.database.v0_9_4.Building;
+import momime.server.database.v0_9_5.Building;
 import momime.server.process.CityProcessing;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -29,7 +30,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class SellBuildingMessageImpl extends SellBuildingMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SellBuildingMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (SellBuildingMessageImpl.class);
 
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -53,9 +54,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (SellBuildingMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (),
-			(getCityLocation () == null) ? "null" : getCityLocation ().toString (), getBuildingID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getCityLocation () + ", " + getBuildingID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -116,7 +115,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 		if (msg != null)
 		{
 			// Return error
-			log.warning (SellBuildingMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + msg);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + msg);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (msg);
@@ -131,7 +130,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
-		log.exiting (SellBuildingMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

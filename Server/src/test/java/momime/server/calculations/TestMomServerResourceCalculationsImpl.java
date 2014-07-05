@@ -17,9 +17,9 @@ import momime.common.MomException;
 import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.calculations.MomSkillCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.v0_9_4.SpellSettingData;
-import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
-import momime.common.database.v0_9_4.RoundingDirectionID;
+import momime.common.database.newgame.v0_9_5.SpellSettingData;
+import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
+import momime.common.database.v0_9_5.RoundingDirectionID;
 import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateRemainingResearchCostMessage;
@@ -795,7 +795,8 @@ public final class TestMomServerResourceCalculationsImpl
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, trans);
+		final PlayerDescription pd = new PlayerDescription ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
 		
 		// Set amount of casting skill
 		final MomResourceValue skillImprovement = new MomResourceValue ();

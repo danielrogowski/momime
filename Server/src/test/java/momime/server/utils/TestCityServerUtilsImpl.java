@@ -11,7 +11,7 @@ import java.util.List;
 
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_4.RaceCannotBuild;
+import momime.common.database.v0_9_5.RaceCannotBuild;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -19,9 +19,9 @@ import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.Race;
-import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.Race;
+import momime.server.database.v0_9_5.Unit;
 
 import org.junit.Test;
 

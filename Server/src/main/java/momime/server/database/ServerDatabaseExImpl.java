@@ -2,31 +2,33 @@ package momime.server.database;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.TaxRate;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.CitySize;
-import momime.server.database.v0_9_4.CombatAreaEffect;
-import momime.server.database.v0_9_4.CombatTileBorder;
-import momime.server.database.v0_9_4.CombatTileType;
-import momime.server.database.v0_9_4.MapFeature;
-import momime.server.database.v0_9_4.Pick;
-import momime.server.database.v0_9_4.PickType;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.ProductionType;
-import momime.server.database.v0_9_4.Race;
-import momime.server.database.v0_9_4.RangedAttackType;
-import momime.server.database.v0_9_4.ServerDatabase;
-import momime.server.database.v0_9_4.Spell;
-import momime.server.database.v0_9_4.TileType;
-import momime.server.database.v0_9_4.Unit;
-import momime.server.database.v0_9_4.UnitMagicRealm;
-import momime.server.database.v0_9_4.UnitSkill;
-import momime.server.database.v0_9_4.UnitType;
-import momime.server.database.v0_9_4.WeaponGrade;
-import momime.server.database.v0_9_4.Wizard;
+import momime.common.database.v0_9_5.TaxRate;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.CitySize;
+import momime.server.database.v0_9_5.CombatAreaEffect;
+import momime.server.database.v0_9_5.CombatTileBorder;
+import momime.server.database.v0_9_5.CombatTileType;
+import momime.server.database.v0_9_5.MapFeature;
+import momime.server.database.v0_9_5.Pick;
+import momime.server.database.v0_9_5.PickType;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.ProductionType;
+import momime.server.database.v0_9_5.Race;
+import momime.server.database.v0_9_5.RangedAttackType;
+import momime.server.database.v0_9_5.ServerDatabase;
+import momime.server.database.v0_9_5.Spell;
+import momime.server.database.v0_9_5.TileType;
+import momime.server.database.v0_9_5.Unit;
+import momime.server.database.v0_9_5.UnitMagicRealm;
+import momime.server.database.v0_9_5.UnitSkill;
+import momime.server.database.v0_9_5.UnitType;
+import momime.server.database.v0_9_5.WeaponGrade;
+import momime.server.database.v0_9_5.Wizard;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Adds maps for faster key lookups over the server-side database read in via JAXB
@@ -34,7 +36,7 @@ import momime.server.database.v0_9_4.Wizard;
 public final class ServerDatabaseExImpl extends ServerDatabase implements ServerDatabaseEx
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ServerDatabaseExImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ServerDatabaseExImpl.class);
 	
 	/** Map of city size IDs to city size XML objects */
 	private Map<String, CitySize> citySizesMap;
@@ -104,7 +106,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	 */
 	public final void buildMaps ()
 	{
-		log.entering (ServerDatabaseExImpl.class.getName (), "buildMaps");
+		log.trace ("Entering buildMaps");
 		
 		// Create city sizes map
 		citySizesMap = new HashMap<String, CitySize> ();
@@ -211,7 +213,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		for (final CombatTileBorder thisCombatTileBorder : getCombatTileBorder ())
 			combatTileBordersMap.put (thisCombatTileBorder.getCombatTileBorderID (), thisCombatTileBorder);
 		
-		log.exiting (ServerDatabaseExImpl.class.getName (), "buildMaps");
+		log.trace ("Exiting buildMaps");
 	}
 
 	/**
@@ -224,7 +226,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final CitySize found = citySizesMap.get (citySizeID);
 		if (found == null)
-			throw new RecordNotFoundException (CitySize.class.getName (), citySizeID, caller);
+			throw new RecordNotFoundException (CitySize.class, citySizeID, caller);
 
 		return found;
 	}
@@ -240,7 +242,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final Plane found = planesMap.get (planeNumber);
 		if (found == null)
-			throw new RecordNotFoundException (Plane.class.getName (), planeNumber, caller);
+			throw new RecordNotFoundException (Plane.class, planeNumber, caller);
 
 		return found;
 	}
@@ -256,7 +258,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final MapFeature found = mapFeaturesMap.get (mapFeatureID);
 		if (found == null)
-			throw new RecordNotFoundException (MapFeature.class.getName (), mapFeatureID, caller);
+			throw new RecordNotFoundException (MapFeature.class, mapFeatureID, caller);
 
 		return found;
 	}
@@ -272,7 +274,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final TileType found = tileTypesMap.get (tileTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (TileType.class.getName (), tileTypeID, caller);
+			throw new RecordNotFoundException (TileType.class, tileTypeID, caller);
 
 		return found;
 	}
@@ -288,7 +290,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final ProductionType found = productionTypesMap.get (productionTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (ProductionType.class.getName (), productionTypeID, caller);
+			throw new RecordNotFoundException (ProductionType.class, productionTypeID, caller);
 
 		return found;
 	}
@@ -304,7 +306,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final PickType found = pickTypesMap.get (pickTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (PickType.class.getName (), pickTypeID, caller);
+			throw new RecordNotFoundException (PickType.class, pickTypeID, caller);
 
 		return found;
 	}
@@ -320,7 +322,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final Pick found = picksMap.get (pickID);
 		if (found == null)
-			throw new RecordNotFoundException (Pick.class.getName (), pickID, caller);
+			throw new RecordNotFoundException (Pick.class, pickID, caller);
 
 		return found;
 	}
@@ -336,7 +338,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final Wizard found = wizardsMap.get (wizardID);
 		if (found == null)
-			throw new RecordNotFoundException (Wizard.class.getName (), wizardID, caller);
+			throw new RecordNotFoundException (Wizard.class, wizardID, caller);
 
 		return found;
 	}
@@ -352,7 +354,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final UnitType found = unitTypesMap.get (unitTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (UnitType.class.getName (), unitTypeID, caller);
+			throw new RecordNotFoundException (UnitType.class, unitTypeID, caller);
 
 		return found;
 	}
@@ -368,7 +370,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final UnitMagicRealm found = unitMagicRealmsMap.get (unitMagicRealmID);
 		if (found == null)
-			throw new RecordNotFoundException (UnitMagicRealm.class.getName (), unitMagicRealmID, caller);
+			throw new RecordNotFoundException (UnitMagicRealm.class, unitMagicRealmID, caller);
 
 		return found;
 	}
@@ -384,7 +386,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final Unit found = unitsMap.get (unitID);
 		if (found == null)
-			throw new RecordNotFoundException (Unit.class.getName (), unitID, caller);
+			throw new RecordNotFoundException (Unit.class, unitID, caller);
 
 		return found;
 	}
@@ -400,7 +402,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final UnitSkill found = unitSkillsMap.get (unitSkillID);
 		if (found == null)
-			throw new RecordNotFoundException (UnitSkill.class.getName (), unitSkillID, caller);
+			throw new RecordNotFoundException (UnitSkill.class, unitSkillID, caller);
 
 		return found;
 	}
@@ -416,7 +418,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final WeaponGrade found = weaponGradesMap.get (weaponGradeNumber);
 		if (found == null)
-			throw new RecordNotFoundException (WeaponGrade.class.getName (), weaponGradeNumber, caller);
+			throw new RecordNotFoundException (WeaponGrade.class, weaponGradeNumber, caller);
 
 		return found;
 	}
@@ -432,7 +434,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final RangedAttackType found = rangedAttackTypesMap.get (rangedAttackTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (RangedAttackType.class.getName (), rangedAttackTypeID, caller);
+			throw new RecordNotFoundException (RangedAttackType.class, rangedAttackTypeID, caller);
 
 		return found;
 	}
@@ -448,7 +450,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final Race found = racesMap.get (raceID);
 		if (found == null)
-			throw new RecordNotFoundException (Race.class.getName (), raceID, caller);
+			throw new RecordNotFoundException (Race.class, raceID, caller);
 
 		return found;
 	}
@@ -464,7 +466,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final TaxRate found = taxRatesMap.get (taxRateID);
 		if (found == null)
-			throw new RecordNotFoundException (TaxRate.class.getName (), taxRateID, caller);
+			throw new RecordNotFoundException (TaxRate.class, taxRateID, caller);
 
 		return found;
 	}
@@ -480,7 +482,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final Building found = buildingsMap.get (buildingID);
 		if (found == null)
-			throw new RecordNotFoundException (Building.class.getName (), buildingID, caller);
+			throw new RecordNotFoundException (Building.class, buildingID, caller);
 
 		return found;
 	}
@@ -496,7 +498,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final Spell found = spellsMap.get (spellID);
 		if (found == null)
-			throw new RecordNotFoundException (Spell.class.getName (), spellID, caller);
+			throw new RecordNotFoundException (Spell.class, spellID, caller);
 
 		return found;
 	}
@@ -512,7 +514,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final CombatAreaEffect found = combatAreaEffectsMap.get (combatAreaEffectID);
 		if (found == null)
-			throw new RecordNotFoundException (CombatAreaEffect.class.getName (), combatAreaEffectID, caller);
+			throw new RecordNotFoundException (CombatAreaEffect.class, combatAreaEffectID, caller);
 
 		return found;
 	}
@@ -528,7 +530,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final CombatTileType found = combatTileTypesMap.get (combatTileTypeID);
 		if (found == null)
-			throw new RecordNotFoundException (CombatTileType.class.getName (), combatTileTypeID, caller);
+			throw new RecordNotFoundException (CombatTileType.class, combatTileTypeID, caller);
 
 		return found;
 	}
@@ -544,7 +546,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		final CombatTileBorder found = combatTileBordersMap.get (combatTileBorderID);
 		if (found == null)
-			throw new RecordNotFoundException (CombatTileBorder.class.getName (), combatTileBorderID, caller);
+			throw new RecordNotFoundException (CombatTileBorder.class, combatTileBorderID, caller);
 
 		return found;
 	}

@@ -3,7 +3,6 @@ package momime.server.fogofwar;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -13,8 +12,8 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
-import momime.common.database.newgame.v0_9_4.FogOfWarValue;
+import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
+import momime.common.database.newgame.v0_9_5.FogOfWarValue;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessageData;
 import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessage;
@@ -81,6 +80,9 @@ import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.process.CombatProcessing;
 import momime.server.process.CombatScheduler;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -95,7 +97,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (FogOfWarMidTurnChangesImpl.class.getName ());
+	private final Log log = LogFactory.getLog (FogOfWarMidTurnChangesImpl.class);
 	
 	/** Single cell FOW calculations */
 	private MomFogOfWarCalculations fogOfWarCalculations;
@@ -162,7 +164,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final FogOfWarValue terrainAndNodeAurasSetting)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfTerrain", coords);
+		log.trace ("Entering updatePlayerMemoryOfTerrain: " + coords);
 
 		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
@@ -192,7 +194,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfTerrain");
+		log.trace ("Exiting updatePlayerMemoryOfTerrain");
 	}
 
 	/**
@@ -212,7 +214,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final MapCoordinates3DEx coords, final FogOfWarSettingData fogOfWarSettings, final boolean newlyAddedCity)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfCity", coords);
+		log.trace ("Entering updatePlayerMemoryOfCity: " + coords);
 
 		final MemoryGridCell tc = trueTerrain.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 
@@ -255,7 +257,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfCity");
+		log.trace ("Exiting updatePlayerMemoryOfCity");
 	}
 
 	/**
@@ -431,8 +433,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "addUnitOnServerAndClients",
-			new String [] {unitOwner.getPlayerDescription ().getPlayerID ().toString (), unitID});
+		log.trace ("Entering addUnitOnServerAndClients: Player ID " + unitOwner.getPlayerDescription ().getPlayerID () + ", " + unitID);
 
 		// There's a bunch of other unit statuses that don't make sense to use here - so worth checking this
 		if ((initialStatus != UnitStatusID.NOT_GENERATED) && (initialStatus != UnitStatusID.ALIVE))
@@ -469,7 +470,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		if (initialStatus == UnitStatusID.ALIVE)
 			updateUnitStatusToAliveOnServerAndClients (newUnit, locationToAddUnit, unitOwner, players, gsk.getTrueMap (), sd, db);
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "addUnitOnServerAndClients", newUnit.getUnitURN ());
+		log.trace ("Exiting addUnitOnServerAndClients = Unit URN " + newUnit.getUnitURN ());
 		return newUnit;
 	}
 
@@ -498,7 +499,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "updateUnitStatusToAliveOnServerAndClients", trueUnit.getUnitURN ());
+		log.trace ("Entering updateUnitStatusToAliveOnServerAndClients: Unit URN " + trueUnit.getUnitURN ());
 
 		// Update on server
 		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (locationToAddUnit);
@@ -545,7 +546,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "updateUnitStatusToAliveOnServerAndClients");
+		log.trace ("Exiting updateUnitStatusToAliveOnServerAndClients");
 	}
 
 	/**
@@ -571,7 +572,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final FogOfWarSettingData fogOfWarSettings, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "killUnitOnServerAndClients", trueUnit.getUnitURN ());
+		log.trace ("Entering killUnitOnServerAndClients: Unit URN " + trueUnit.getUnitURN ());
 
 		// Build the message ready to send it to whoever could see the unit
 		// Action has to be set per player depending on who can see it
@@ -628,14 +629,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				// Heroes dismissed by lack of production go back to Generated
 				case HERO_DIMISSED_VOLUNTARILY:
 				case HERO_LACK_OF_PRODUCTION:
-					log.finest ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated");
+					log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated");
 					trueUnit.setStatus (UnitStatusID.GENERATED);
 					break;
 
 					// Units killed by lack of production are simply killed off
 				case FREE:
 				case UNIT_LACK_OF_PRODUCTION:
-					log.finest ("Permanently removing unit URN " + trueUnit.getUnitURN ());
+					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN ());
 					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
 					break;
 
@@ -652,7 +653,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				// All units killed by combat damage are kept around for the moment, since one of the players in the combat may Raise Dead them.
 				// Heroes are kept at musDead even after the combat ends, in case the player resurrects them.
 				case COMBAT_DAMAGE:
-					log.finest ("Setting unit with unit URN " + trueUnit.getUnitURN () + " to dead");
+					log.debug ("Setting unit with unit URN " + trueUnit.getUnitURN () + " to dead");
 					trueUnit.setStatus (UnitStatusID.DEAD);
 					break;
 				
@@ -660,7 +661,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when untransmittedAction = " + untransmittedAction);
 			}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "killUnitOnServerAndClients");
+		log.trace ("Exiting killUnitOnServerAndClients");
 	}
 
 
@@ -693,8 +694,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "addExistingTrueMaintainedSpellToClients",
-			new String [] {new Integer (trueSpell.getCastingPlayerID ()).toString (), trueSpell.getSpellID ()});
+		log.trace ("Entering addExistingTrueMaintainedSpellToClients: Player ID " + trueSpell.getCastingPlayerID () + ", " + trueSpell.getSpellID ());
 
 		// Build the message ready to send it to whoever can see the spell
 		final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
@@ -721,7 +721,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final PlayerServerDetails castingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (players, trueSpell.getCastingPlayerID (), "addExistingTrueMaintainedSpellToClients");
 		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, castingPlayer, players, false, "addExistingTrueMaintainedSpellToClients", sd, db);
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "addExistingTrueMaintainedSpellToClients");
+		log.trace ("Exiting addExistingTrueMaintainedSpellToClients");
 	}
 
 	/**
@@ -753,8 +753,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "addMaintainedSpellOnServerAndClients",
-			new String [] {new Integer (castingPlayerID).toString (), spellID});
+		log.trace ("Entering addMaintainedSpellOnServerAndClients: Player ID " + castingPlayerID + ", " + spellID);
 
 		// First add on server
 		final MapCoordinates3DEx spellLocation;
@@ -777,7 +776,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// Then let the other routine deal with updating player memory and the clients
 		addExistingTrueMaintainedSpellToClients (trueSpell, players, gsk.getTrueMap (), combatLocation, combatAttackingPlayer, combatDefendingPlayer, db, sd);
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "addMaintainedSpellOnServerAndClients");
+		log.trace ("Exiting addMaintainedSpellOnServerAndClients");
 	}
 
 	/**
@@ -809,8 +808,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "switchOffMaintainedSpellOnServerAndClients",
-			new String [] {new Integer (castingPlayerID).toString (), spellID});
+		log.trace ("Entering switchOffMaintainedSpellOnServerAndClients: Player ID " + castingPlayerID + ", " + spellID);
 
 		// First switch off on server
 		getMemoryMaintainedSpellUtils ().switchOffMaintainedSpell (trueMap.getMaintainedSpell (), castingPlayerID, spellID, unitURN, unitSkillID, cityLocation, citySpellEffectID);
@@ -848,7 +846,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final PlayerServerDetails castingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (players, castingPlayerID, "switchOffMaintainedSpellOnServerAndClients");
 		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, castingPlayer, players, false, "switchOffMaintainedSpellOnServerAndClients", sd, db);
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "switchOffMaintainedSpellOnServerAndClients");
+		log.trace ("Exiting switchOffMaintainedSpellOnServerAndClients");
 	}
 
 	/**
@@ -871,7 +869,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients", combatLocation);
+		log.trace ("Entering switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients: " + combatLocation);
 		
 		// Copy the list, since we'll be removing spells from it as we go
 		final List<MemoryMaintainedSpell> copyOfTrueSpells = new ArrayList<MemoryMaintainedSpell> ();
@@ -890,7 +888,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 						players, combatLocation, combatAttackingPlayer, combatDefendingPlayer, db, sd);
 			}
 		
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients");
+		log.trace ("Exiting switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients");
 	}
 	
 	/**
@@ -916,7 +914,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "switchOffMaintainedSpellsInLocationOnServerAndClients", cityLocation);
+		log.trace ("Entering switchOffMaintainedSpellsInLocationOnServerAndClients: " + cityLocation);
 
 		// Copy the list, since we'll be removing spells from it as we go
 		final List<MemoryMaintainedSpell> copyOfTrueSpells = new ArrayList<MemoryMaintainedSpell> ();
@@ -931,7 +929,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					trueSpell.isCastInCombat (), (MapCoordinates3DEx) trueSpell.getCityLocation (), trueSpell.getCitySpellEffectID (),
 					players, combatLocation, combatAttackingPlayer, combatDefendingPlayer, db, sd);
 		
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "switchOffMaintainedSpellsInLocationOnServerAndClients", cityLocation);
+		log.trace ("Exiting switchOffMaintainedSpellsInLocationOnServerAndClients");
 	}
 	
 	/**
@@ -954,7 +952,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "addCombatAreaEffectOnServerAndClients", combatAreaEffectID);
+		log.trace ("Entering addCombatAreaEffectOnServerAndClients: " + combatAreaEffectID);
 
 		// First add on server
 		final MapCoordinates3DEx caeLocation;
@@ -989,7 +987,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "addCombatAreaEffectOnServerAndClients");
+		log.trace ("Exiting addCombatAreaEffectOnServerAndClients");
 	}
 
 	/**
@@ -1012,7 +1010,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "removeCombatAreaEffectFromServerAndClients", combatAreaEffectID);
+		log.trace ("Entering removeCombatAreaEffectFromServerAndClients: " + combatAreaEffectID);
 
 		// First remove on server
 		getMemoryCombatAreaEffectUtils ().cancelCombatAreaEffect (trueMap.getCombatAreaEffect (), mapLocation, combatAreaEffectID, castingPlayerID);
@@ -1041,7 +1039,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "removeCombatAreaEffectFromServerAndClients");
+		log.trace ("Exiting removeCombatAreaEffectFromServerAndClients");
 	}
 	
 	/**
@@ -1061,7 +1059,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "removeCombatAreaEffectsFromLocalisedSpells", mapLocation);
+		log.trace ("Entering removeCombatAreaEffectsFromLocalisedSpells: " + mapLocation);
 		
 		// Better copy the list of CAEs, since we'll be removing them as we go along
 		final List<MemoryCombatAreaEffect> copyOftrueCAEs = new ArrayList<MemoryCombatAreaEffect> ();
@@ -1072,7 +1070,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if ((mapLocation.equals (trueCAE.getMapLocation ())) && (trueCAE.getCastingPlayerID () != null))
 				removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectID (), trueCAE.getCastingPlayerID (), mapLocation, players, db, sd);
 		
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "removeCombatAreaEffectsFromLocalisedSpells");
+		log.trace ("Exiting removeCombatAreaEffectsFromLocalisedSpells");
 	}
 
 	/**
@@ -1098,8 +1096,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "addBuildingOnServerAndClients",
-			new String [] {cityLocation.toString (), firstBuildingID, secondBuildingID, buildingCreatedFromSpellID});
+		log.trace ("Entering addBuildingOnServerAndClients: " + cityLocation + ", " + firstBuildingID + ", " + secondBuildingID + ", " + buildingCreatedFromSpellID);
 
 		// First add on server
 		final MemoryBuilding firstTrueBuilding;
@@ -1163,7 +1160,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "addBuildingOnServerAndClients");
 		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), cityOwner, players, false, "addBuildingOnServerAndClients", sd, db);
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "addBuildingOnServerAndClients");
+		log.trace ("Exiting addBuildingOnServerAndClients");
 	}
 
 	/**
@@ -1186,7 +1183,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "destroyBuildingOnServerAndClients", new String [] {cityLocation.toString (), buildingID});
+		log.trace ("Entering destroyBuildingOnServerAndClients: " + cityLocation + ", " + buildingID);
 
 		// First destroy on server
 		getMemoryBuildingUtils ().destroyBuilding (trueMap.getBuilding (), cityLocation, buildingID);
@@ -1221,7 +1218,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "destroyBuildingOnServerAndClients");
 		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, cityOwner, players, false, "destroyBuildingOnServerAndClients", sd, db);
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "destroyBuildingOnServerAndClients");
+		log.trace ("Exiting destroyBuildingOnServerAndClients");
 	}
 
 	/**
@@ -1242,7 +1239,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "destroyBuildingOnServerAndClients", cityLocation);
+		log.trace ("Entering destroyBuildingOnServerAndClients: " + cityLocation);
 		
 		// Better copy the list of buildings, since we'll be removing them as we go along
 		final List<MemoryBuilding> copyOfBuildingsList = new ArrayList<MemoryBuilding> ();
@@ -1251,7 +1248,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if (cityLocation.equals (trueBuilding.getCityLocation ()))
 				destroyBuildingOnServerAndClients (trueMap, players, cityLocation, trueBuilding.getBuildingID (), false, sd, db);
 		
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "destroyBuildingOnServerAndClients");
+		log.trace ("Exiting destroyBuildingOnServerAndClients");
 	}
 	
 	/**
@@ -1272,7 +1269,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience", tu.getUnitURN ());
+		log.trace ("Entering updatePlayerMemoryOfUnit_DamageTakenAndExperience: Unit URN " + tu.getUnitURN ());
 
 		// First build the message
 		final UpdateDamageTakenAndExperienceMessage msg = new UpdateDamageTakenAndExperienceMessage ();
@@ -1299,7 +1296,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience");
+		log.trace ("Exiting updatePlayerMemoryOfUnit_DamageTakenAndExperience");
 	}
 
 	/**
@@ -1321,7 +1318,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfUnit_UnitName", tu.getUnitURN ());
+		log.trace ("Entering updatePlayerMemoryOfUnit_UnitName: Unit URN " + tu.getUnitURN ());
 
 		// First build the message
 		final UpdateUnitNameMessage msg = new UpdateUnitNameMessage ();
@@ -1346,7 +1343,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "updatePlayerMemoryOfUnit_UnitName");
+		log.trace ("Exiting updatePlayerMemoryOfUnit_UnitName");
 	}
 	
 	/**
@@ -1367,7 +1364,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "healUnitsAndGainExperience", onlyOnePlayerID);
+		log.trace ("Entering healUnitsAndGainExperience: Player ID " + onlyOnePlayerID);
 
 		for (final MemoryUnit thisUnit : trueUnits)
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
@@ -1394,7 +1391,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					updatePlayerMemoryOfUnit_DamageTakenAndExperience (thisUnit, trueTerrain, players, db, fogOfWarSettings);
 			}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "healUnitsAndGainExperience");
+		log.trace ("Exiting healUnitsAndGainExperience");
 	}
 	
 	/**
@@ -1423,9 +1420,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "sendCombatDamageToClients",
-			new Integer [] {tuAttacker.getUnitURN (), tuDefender.getUnitURN (),
-			attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID ()});
+		log.trace ("Entering sendCombatDamageToClients: Unit URN " + tuAttacker.getUnitURN () +
+			", Unit URN " + tuDefender.getUnitURN () + ", Player ID " + attackingPlayer.getPlayerDescription ().getPlayerID () + ", Player ID " +
+			defendingPlayer.getPlayerDescription ().getPlayerID ());
 
 		for (final PlayerServerDetails thisPlayer : players)
 		{
@@ -1485,7 +1482,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				}
 		}		
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "sendCombatDamageToClients");
+		log.trace ("Exiting sendCombatDamageToClients");
 	}
 
 	/**
@@ -1510,8 +1507,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "grantExperienceToUnitsInCombat",
-			new String [] {combatLocation.toString (), combatSide.name ()});
+		log.trace ("Entering grantExperienceToUnitsInCombat: " + combatLocation + ", " + combatSide);
 		
 		for (final MemoryUnit trueUnit : trueUnits)
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
@@ -1527,7 +1523,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				}				
 			}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "grantExperienceToUnitsInCombat");
+		log.trace ("Exiting grantExperienceToUnitsInCombat");
 	}
 	
 	/**
@@ -1546,8 +1542,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<MemoryMaintainedSpell> trueSpells, final PlayerServerDetails player, final ServerDatabaseEx db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient",
-			new String [] {unitStack.toString (), player.getPlayerDescription ().getPlayerID ().toString ()});
+		log.trace ("Entering addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient: " +
+			unitStack + ", Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -1578,7 +1574,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 							player.getConnection ().sendMessageToClient (msg);
 						}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient");
+		log.trace ("Exiting addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient");
 	}
 
 	/**
@@ -1590,8 +1586,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	private final void freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (final List<Integer> unitStack, final PlayerServerDetails player)
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly",
-			new String [] {unitStack.toString (), player.getPlayerDescription ().getPlayerID ().toString ()});
+		log.trace ("Entering freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly: " +
+			unitStack + ", Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -1614,7 +1610,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					spells.remove ();
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly");
+		log.trace ("Exiting freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly");
 	}
 
 	/**
@@ -1652,8 +1648,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "moveUnitStackOneCellOnServerAndClients", new String [] {unitStack.toString (),
-			unitStackOwner.getPlayerDescription ().getPlayerID ().toString (), moveFrom.toString (), moveTo.toString ()});
+		log.trace ("Entering moveUnitStackOneCellOnServerAndClients: " + unitStack.size () + ", Player ID " +
+			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + moveFrom + ", " + moveTo);
 
 		// Fill out bulk of the messages
 		final MoveUnitStackOverlandMessage movementUnitMessage = new MoveUnitStackOverlandMessage ();
@@ -1764,7 +1760,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "moveUnitStackOneCellOnServerAndClients");
+		log.trace ("Exiting moveUnitStackOneCellOnServerAndClients");
 	}
 
 	/**
@@ -1782,7 +1778,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	final int determineMovementDirection (final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo,
 		final int [] [] [] movementDirections, final CoordinateSystem sys) throws MomException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "determineMovementDirection", new String [] {moveFrom.toString (), moveTo.toString ()});
+		log.trace ("Entering determineMovementDirection: " + moveFrom + ", " + moveTo);
 
 		// The value at each cell of the directions grid is the direction we need to have come FROM to get there
 		// So we need to start at the destinationand follow backwards down the movement path until we
@@ -1800,7 +1796,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		if (direction < 0)
 			throw new MomException ("determineMovementDirection: Failed to trace a route from the movement target back to the movement origin");
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "determineMovementDirection", direction);
+		log.trace ("Exiting determineMovementDirection = " + direction);
 		return direction;
 	}
 
@@ -1816,7 +1812,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	final void reduceMovementRemaining (final List<MemoryUnit> unitStack, final List<String> unitStackSkills, final String tileTypeID,
 		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "reduceMovementRemaining", new String [] {unitStack.toString (), tileTypeID});
+		log.trace ("Entering reduceMovementRemaining: " + unitStack.size () + ", " + tileTypeID);
 
 		for (final MemoryUnit thisUnit : unitStack)
 		{
@@ -1831,7 +1827,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				thisUnit.setDoubleOverlandMovesLeft (thisUnit.getDoubleOverlandMovesLeft () - doubleMovementCost);
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "reduceMovementRemaining");
+		log.trace ("Exiting reduceMovementRemaining");
 	}
 
 	/**
@@ -1862,8 +1858,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarMidTurnChangesImpl.class.getName (), "moveUnitStack", new String [] {unitStack.toString (),
-			unitStackOwner.getPlayerDescription ().getPlayerID ().toString (), originalMoveFrom.toString (), moveTo.toString ()});
+		log.trace ("Entering moveUnitStack: " + unitStack.size () + ", Player ID " +
+			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + originalMoveFrom.toString () + ", " + moveTo.toString ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 		final List<String> unitStackSkills = getServerUnitCalculations ().listAllSkillsInUnitStack (unitStack, priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
@@ -2094,7 +2090,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 		}
 
-		log.exiting (FogOfWarMidTurnChangesImpl.class.getName (), "moveUnitStack");
+		log.trace ("Exiting moveUnitStack");
 	}
 
 	/**

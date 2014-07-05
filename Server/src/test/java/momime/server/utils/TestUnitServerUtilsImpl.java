@@ -18,7 +18,7 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.UnitSettingData;
+import momime.common.database.newgame.v0_9_5.UnitSettingData;
 import momime.common.messages.servertoclient.v0_9_5.SetSpecialOrderMessage;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
@@ -38,10 +38,10 @@ import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.HeroName;
-import momime.server.database.v0_9_4.TileType;
-import momime.server.database.v0_9_4.Unit;
-import momime.server.database.v0_9_4.UnitSkill;
+import momime.server.database.v0_9_5.HeroName;
+import momime.server.database.v0_9_5.TileType;
+import momime.server.database.v0_9_5.Unit;
+import momime.server.database.v0_9_5.UnitSkill;
 
 import org.junit.Test;
 

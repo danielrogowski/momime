@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -14,6 +12,9 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.process.SpellProcessing;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -28,7 +29,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwitchOffMaintainedSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (RequestSwitchOffMaintainedSpellMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (RequestSwitchOffMaintainedSpellMessageImpl.class);
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -52,7 +53,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, MomException, PlayerNotFoundException, RecordNotFoundException
 	{
-		log.entering (RequestSwitchOffMaintainedSpellMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -74,7 +75,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		if (error != null)
 		{
 			// Return error
-			log.warning (RequestSwitchOffMaintainedSpellMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -91,7 +92,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 
-		log.exiting (RequestSwitchOffMaintainedSpellMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

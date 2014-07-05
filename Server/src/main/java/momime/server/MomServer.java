@@ -1,19 +1,15 @@
 package momime.server;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.InvalidParameterException;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomCommonConstants;
 import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.database.ServerDatabaseConverters;
@@ -23,7 +19,8 @@ import momime.server.mapgenerator.OverlandMapGeneratorImpl;
 import momime.server.ui.MomServerUI;
 import momime.server.ui.SessionWindow;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.server.MultiplayerBaseServerThread;
 import com.ndg.multiplayer.server.MultiplayerClientConnection;
@@ -37,7 +34,7 @@ import com.ndg.multiplayer.sessionbase.SessionDescription;
 public final class MomServer extends MultiplayerSessionServer
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomServer.class.getName ());
+	private final Log log = LogFactory.getLog (MomServer.class);
 	
 	/** Message to send new game database to clients as they connect */
 	private NewGameDatabaseMessage newGameDatabaseMessage;
@@ -79,7 +76,7 @@ public final class MomServer extends MultiplayerSessionServer
 	@Override
 	protected final MultiplayerBaseServerThread createAndStartClientThread (final Socket socket) throws InterruptedException, JAXBException, XMLStreamException
 	{
-		log.entering (MomServer.class.getName (), "createAndStartClientThread");
+		log.trace ("Entering createAndStartClientThread");
 		
 		final Object readyForMessagesMonitor = new Object ();
 		final MultiplayerClientConnection conn = new MultiplayerClientConnection (this, socket,
@@ -94,7 +91,7 @@ public final class MomServer extends MultiplayerSessionServer
 
 		conn.sendMessageToClient (newGameDatabaseMessage);
 		
-		log.exiting (MomServer.class.getName (), "createAndStartClientThread");
+		log.trace ("Exiting createAndStartClientThread");
 		return conn;
 	}
 
@@ -108,7 +105,7 @@ public final class MomServer extends MultiplayerSessionServer
 	@Override
 	public final MultiplayerSessionThread createSessionThread (final SessionDescription sessionDescription) throws JAXBException, IOException
 	{
-		log.entering (MomServer.class.getName (), "createSessionThread", sessionDescription.getSessionID ());
+		log.trace ("Entering createSessionThread: Session ID " + sessionDescription.getSessionID ());
 
 		final MomSessionThread thread = getSessionThreadFactory ().createThread ();
 		thread.setSessionDescription (sessionDescription);
@@ -144,7 +141,7 @@ public final class MomServer extends MultiplayerSessionServer
 		mapGen.generateOverlandTerrain ();
 
 		thread.getSessionLogger ().info ("Session startup completed");
-		log.exiting (MomServer.class.getName (), "createSessionThread", thread);
+		log.trace ("Exiting createSessionThread = " + thread);
 		return thread;
 	}
 
@@ -289,42 +286,5 @@ public final class MomServer extends MultiplayerSessionServer
 	public final void setVersion (final String ver)
 	{
 		version = ver;
-	}
-	
-	/**
-	 * @param args Command line arguments, ignored
-	 */
-	@SuppressWarnings ("resource")
-	public final static void main (final String [] args)
-	{
-		try
-		{
-			// Ensure v1.6 JVM
-			final String [] javaVersion = System.getProperty ("java.version").split ("\\.");
-			final int majorVersion = Integer.parseInt (javaVersion [0]);
-			final int minorVersion = Integer.parseInt (javaVersion [1]);
-
-			if ((majorVersion < MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION) ||
-				((majorVersion == MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION) && (minorVersion < MomCommonConstants.JAVA_REQUIRED_MINOR_VERSION)))
-				
-				throw new InvalidParameterException ("MoM IME requires a Java Virtual Machine version " +
-					MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION + "." + MomCommonConstants.JAVA_REQUIRED_MINOR_VERSION +
-					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
-			
-			// Initialize logging first, in case debug logging for spring itself is enabled
-			try (final FileInputStream in = new FileInputStream ("MoMIMEServerLogging.properties"))
-			{
-				LogManager.getLogManager ().readConfiguration (in);
-				in.close ();
-			}
-
-			// Everything is now set to start with spring
-			new ClassPathXmlApplicationContext ("/momime.server.spring/momime-server-beans.xml");			
-		}
-		catch (final Exception e)
-		{
-			System.out.println ("Exception in main method:");
-			e.printStackTrace ();
-		}
 	}
 }

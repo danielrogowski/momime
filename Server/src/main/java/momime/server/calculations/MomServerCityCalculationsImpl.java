@@ -2,17 +2,16 @@ package momime.server.calculations;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
-import momime.common.database.v0_9_4.BuildingPrerequisite;
-import momime.common.database.v0_9_4.RaceCannotBuild;
-import momime.common.database.v0_9_4.RacePopulationTask;
-import momime.common.database.v0_9_4.RacePopulationTaskProduction;
+import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
+import momime.common.database.v0_9_5.BuildingPrerequisite;
+import momime.common.database.v0_9_5.RaceCannotBuild;
+import momime.common.database.v0_9_5.RacePopulationTask;
+import momime.common.database.v0_9_5.RacePopulationTaskProduction;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
@@ -20,9 +19,12 @@ import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.CitySize;
-import momime.server.database.v0_9_4.Race;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.CitySize;
+import momime.server.database.v0_9_5.Race;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -36,7 +38,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class MomServerCityCalculationsImpl implements MomServerCityCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomServerCityCalculationsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomServerCityCalculationsImpl.class);
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -59,7 +61,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	public final int calculateTotalFoodBonusFromBuildings (final ServerDatabaseEx db)
 		throws MomException
 	{
-		log.entering (MomServerCityCalculationsImpl.class.getName (), "calculateTotalFoodBonusFromBuildings");
+		log.trace ("Entering calculateTotalFoodBonusFromBuildings");
 		int doubleTotalFood = 0;
 
 		for (final Building thisBuilding : db.getBuilding ())
@@ -74,7 +76,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 
 		final int totalFood = doubleTotalFood / 2;
 
-		log.exiting (MomServerCityCalculationsImpl.class.getName (), "calculateTotalFoodBonusFromBuildings", totalFood);
+		log.trace ("Exiting calculateTotalFoodBonusFromBuildings = " + totalFood);
 		return totalFood;
 	}
 
@@ -92,7 +94,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (MomServerCityCalculationsImpl.class.getName (), "calculateDoubleFarmingRate", cityLocation);
+		log.trace ("Entering calculateDoubleFarmingRate: " + cityLocation);
 
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -129,7 +131,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 			getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings (buildings, cityLocation,
 				CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, db);
 
-		log.exiting (MomServerCityCalculationsImpl.class.getName (), "calculateDoubleFarmingRate", doubleFarmingRate);
+		log.trace ("Exiting calculateDoubleFarmingRate = " + doubleFarmingRate);
 		return doubleFarmingRate;
 	}
 
@@ -162,7 +164,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (MomServerCityCalculationsImpl.class.getName (), "calculateCitySizeIDAndMinimumFarmers", cityLocation);
+		log.trace ("Entering calculateCitySizeIDAndMinimumFarmers: " + cityLocation);
 
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -206,8 +208,8 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 			cityData.setMinimumFarmers (((rationsNeeded * 2) + doubleFarmingRate - 1) / doubleFarmingRate);
 		}
 
-		log.exiting (MomServerCityCalculationsImpl.class.getName (), "calculateCitySizeIDAndMinimumFarmers",
-			new String [] {cityData.getCitySizeID (), new Integer (cityData.getMinimumFarmers ()).toString ()});
+		log.trace ("Exiting calculateCitySizeIDAndMinimumFarmers = " +
+			cityData.getCitySizeID () + ", " + cityData.getMinimumFarmers ());
 	}
 
 	/**
@@ -230,7 +232,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	public final void ensureNotTooManyOptionalFarmers (final OverlandMapCityData city)
 		throws MomException
 	{
-		log.entering (MomServerCityCalculationsImpl.class.getName (), "ensureNotTooManyOptionalFarmers");
+		log.trace ("Entering ensureNotTooManyOptionalFarmers");
 
 		final boolean tooMany = (city.getMinimumFarmers () + city.getOptionalFarmers () + city.getNumberOfRebels () > city.getCityPopulation () / 1000);
 		if (tooMany)
@@ -242,7 +244,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 					city.getCityPopulation () + " population, " + city.getMinimumFarmers () + " minimum farmers, " + city.getNumberOfRebels () + " rebels");
 		}
 
-		log.exiting (MomServerCityCalculationsImpl.class.getName (), "ensureNotTooManyOptionalFarmers", tooMany);
+		log.trace ("Exiting ensureNotTooManyOptionalFarmers = " + tooMany);
 	}
 
 	/**
@@ -256,7 +258,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	public final int calculateCityScoutingRange (final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (MomServerCityCalculationsImpl.class.getName (), "calculateCityScoutingRange", cityLocation);
+		log.trace ("Entering calculateCityScoutingRange: " + cityLocation);
 
 		// Check all buildings at this location
 		int result = -1;
@@ -269,7 +271,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 					result = Math.max (result, scoutingRange);
 			}
 
-		log.exiting (MomServerCityCalculationsImpl.class.getName (), "calculateCityScoutingRange", result);
+		log.trace ("Exiting calculateCityScoutingRange = " + result);
 		return result;
 	}
 
@@ -294,8 +296,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (MomServerCityCalculationsImpl.class.getName (), "canEventuallyConstructBuilding",
-			new String [] {cityLocation.toString (), building.getBuildingID ()});
+		log.trace ("Entering canEventuallyConstructBuilding: " + cityLocation + ", " + building.getBuildingID ());
 
 		// Need to get the city race
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
@@ -321,7 +322,7 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 					passes = false;
 		}
 
-		log.exiting (MomServerCityCalculationsImpl.class.getName (), "canEventuallyConstructBuilding", passes);
+		log.trace ("Exiting canEventuallyConstructBuilding = " + passes);
 		return passes;
 	}
 

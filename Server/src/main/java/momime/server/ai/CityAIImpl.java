@@ -3,7 +3,6 @@ package momime.server.ai;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -13,8 +12,8 @@ import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.BuildingPrerequisite;
-import momime.common.database.v0_9_4.RaceCannotBuild;
+import momime.common.database.v0_9_5.BuildingPrerequisite;
+import momime.common.database.v0_9_5.RaceCannotBuild;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -28,11 +27,14 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.AiBuildingTypeID;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.Race;
+import momime.server.database.v0_9_5.AiBuildingTypeID;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.Race;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
@@ -48,7 +50,7 @@ import com.ndg.random.RandomUtils;
 public final class CityAIImpl implements CityAI
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CityAIImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CityAIImpl.class);
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -88,7 +90,7 @@ public final class CityAIImpl implements CityAI
 		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (CityAIImpl.class.getName (), "chooseCityLocation", plane);
+		log.trace ("Entering chooseCityLocation: " + plane);
 
 		// Mark off all places within 3 squares of an existing city, i.e. those spaces we can't put a new city
 		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (map, plane, sd.getMapSize ());
@@ -151,7 +153,7 @@ public final class CityAIImpl implements CityAI
 				}
 			}
 
-		log.exiting (CityAIImpl.class.getName (), "chooseCityLocation", bestLocation);
+		log.trace ("Exiting chooseCityLocation = " + bestLocation);
 		return bestLocation;
 	}
 
@@ -172,7 +174,7 @@ public final class CityAIImpl implements CityAI
 		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, MomException
 	{
-		log.entering (CityAIImpl.class.getName (), "findWorkersToConvertToFarmers", tradeGoods);
+		log.trace ("Entering findWorkersToConvertToFarmers: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + tradeGoods);
 
 		// Build a list of all the workers, by finding all the cities and adding the coordinates of the city to the list the number
 		// of times for how many workers there are in the city that we could convert to farmers
@@ -197,7 +199,7 @@ public final class CityAIImpl implements CityAI
 						}
 				}
 
-		log.finest ("findWorkersToConvertToFarmers: Found " + workerCoordinates.size () + " workers available to convert");
+		log.debug ("findWorkersToConvertToFarmers: Found " + workerCoordinates.size () + " workers available to convert");
 
 		// Now pick workers at random from the list to convert to farmers
 		// In this way, we tend to favour putting farmers in larger cities that can spare the population more
@@ -215,7 +217,7 @@ public final class CityAIImpl implements CityAI
 			modifiedDoubleRationsNeeded = modifiedDoubleRationsNeeded - getServerCityCalculations ().calculateDoubleFarmingRate (trueMap.getMap (), trueMap.getBuilding (), cityLocation, db);
 		}
 
-		log.exiting (CityAIImpl.class.getName (), "findWorkersToConvertToFarmers", modifiedDoubleRationsNeeded);
+		log.trace ("Exiting findWorkersToConvertToFarmers = " + modifiedDoubleRationsNeeded);
 		return modifiedDoubleRationsNeeded;
 	}
 
@@ -238,7 +240,7 @@ public final class CityAIImpl implements CityAI
 		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.entering (CityAIImpl.class.getName (), "setOptionalFarmersInAllCities", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering setOptionalFarmersInAllCities: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -248,7 +250,7 @@ public final class CityAIImpl implements CityAI
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 				rationsNeeded = rationsNeeded + getUnitUtils ().getModifiedUpkeepValue (thisUnit, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, db);
 
-		log.finest ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations");
+		log.debug ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations");
 
 		// Then take off how many rations cities are producing even if they have zero optional farmers set
 		// e.g. a size 1 city with a granary next to a wild game resource will produce +3 rations even with no farmers,
@@ -271,22 +273,22 @@ public final class CityAIImpl implements CityAI
 					}
 				}
 
-		log.finest ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations after taking off what is provided by setting 0 optional farmers in all cities");
+		log.debug ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations after taking off what is provided by setting 0 optional farmers in all cities");
 
 		// Farming rate for each farmer is doubled
 		int doubleRationsNeeded = rationsNeeded * 2;
-		log.finest ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after doubling");
+		log.debug ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after doubling");
 
 		// Use farmers from cities producing trade goods first
 		if (doubleRationsNeeded > 0)
 			doubleRationsNeeded = findWorkersToConvertToFarmers (doubleRationsNeeded, true, trueMap, player, db, sd);
 
-		log.finest ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after using up trade goods cities");
+		log.debug ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after using up trade goods cities");
 
 		if (doubleRationsNeeded > 0)
 			doubleRationsNeeded = findWorkersToConvertToFarmers (doubleRationsNeeded, false, trueMap, player, db, sd);
 
-		log.finest ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after using up other production cities");
+		log.debug ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after using up other production cities");
 
 		// Update each player's memorised view of this city with the new number of optional farmers, if they can see it
 		for (final Plane plane : db.getPlane ())
@@ -303,7 +305,7 @@ public final class CityAIImpl implements CityAI
 					}
 				}
 
-		log.exiting (CityAIImpl.class.getName (), "setOptionalFarmersInAllCities");
+		log.trace ("Exiting setOptionalFarmersInAllCities");
 	}
 
 	/**
@@ -323,7 +325,7 @@ public final class CityAIImpl implements CityAI
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (CityAIImpl.class.getName (), "decideWhatToBuild", cityLocation);
+		log.trace ("Entering decideWhatToBuild: " + cityLocation);
 
 		// Convert list of buildings that our race can't build into a string list, so its easier to search
 		final Race race = db.findRace (cityData.getCityRaceID (), "decideWhatToBuild");
@@ -406,7 +408,7 @@ public final class CityAIImpl implements CityAI
 		// Put this into the calling method, just to make this easier to test
 		// FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd);
 
-		log.exiting (CityAIImpl.class.getName (), "decideWhatToBuild", cityData.getCurrentlyConstructingBuildingOrUnitID ());
+		log.trace ("Exiting decideWhatToBuild = " + cityData.getCurrentlyConstructingBuildingOrUnitID ());
 	}
 
 	/**

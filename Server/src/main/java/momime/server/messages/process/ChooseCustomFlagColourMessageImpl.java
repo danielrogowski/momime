@@ -1,9 +1,10 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import momime.common.messages.clienttoserver.v0_9_5.ChooseCustomFlagColourMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -15,7 +16,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChooseCustomFlagColourMessageImpl extends ChooseCustomFlagColourMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChooseCustomFlagColourMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChooseCustomFlagColourMessageImpl.class);
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -24,12 +25,12 @@ public final class ChooseCustomFlagColourMessageImpl extends ChooseCustomFlagCol
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 	{
-		log.entering (ChooseCustomFlagColourMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
 
 		// No validation here or return message to send here, we just store it
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
 		ppk.setCustomFlagColour (getFlagColour ());
 
-		log.entering (ChooseCustomFlagColourMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 }

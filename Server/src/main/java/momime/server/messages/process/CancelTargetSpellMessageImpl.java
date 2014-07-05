@@ -1,7 +1,6 @@
 package momime.server.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -13,6 +12,9 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -23,7 +25,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CancelTargetSpellMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CancelTargetSpellMessageImpl.class);
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -42,8 +44,7 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (CancelTargetSpellMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getSpellID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getSpellID ());
 		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
@@ -63,7 +64,7 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 		if (error != null)
 		{
 			// Return error
-			log.warning (CancelTargetSpellMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -78,7 +79,7 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
-		log.exiting (CancelTargetSpellMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

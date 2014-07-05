@@ -3,7 +3,6 @@ package momime.server.utils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -26,12 +25,15 @@ import momime.common.messages.v0_9_5.UnitCombatSideID;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.CityNameContainer;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.Race;
+import momime.server.database.v0_9_5.CityNameContainer;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.Race;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
@@ -49,7 +51,7 @@ import com.ndg.random.RandomUtils;
 public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (OverlandMapServerUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (OverlandMapServerUtilsImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -80,8 +82,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	final void setContinentalRace (final MapVolumeOfMemoryGridCells map, final MapArea3D<String> continentalRace,
 		final int x, final int y, final int plane, final String raceID, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (OverlandMapServerUtilsImpl.class.getName (), "setContinentalRace",
-			new String [] {new Integer (x).toString (), new Integer (y).toString (), new Integer (plane).toString (), raceID});
+		log.trace ("Entering setContinentalRace: (" + x + ", " + y + ", " + plane + "), " + raceID);
 
 		final CoordinateSystem sys = continentalRace.getCoordinateSystem ();
 
@@ -103,7 +104,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			}
 		}
 
-		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "setContinentalRace");
+		log.trace ("Exiting setContinentalRace");
 	}
 
 	/**
@@ -120,7 +121,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	public final MapArea3D<String> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
-		log.entering (OverlandMapServerUtilsImpl.class.getName (), "decideAllContinentalRaces");
+		log.trace ("Entering decideAllContinentalRaces");
 
 		// Allocate a race to each continent of land for raider cities
 		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();
@@ -141,7 +142,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 							getPlayerPickServerUtils ().chooseRandomRaceForPlane (plane.getPlaneNumber (), db), db);
 				}
 
-		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "decideAllContinentalRaces", continentalRace);
+		log.trace ("Exiting decideAllContinentalRaces");
 		return continentalRace;
 	}
 
@@ -208,8 +209,8 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.entering (OverlandMapServerUtilsImpl.class.getName (), "attemptToMeldWithNode", new String []
-			{attackingSpirit.getUnitID (), new Integer (attackingSpirit.getOwningPlayerID ()).toString (), new Integer (attackingSpirit.getUnitURN ()).toString ()});
+		log.trace ("Entering attemptToMeldWithNode: " +
+			attackingSpirit.getUnitID () + ", Player ID " + attackingSpirit.getOwningPlayerID () + ", Unit URN " + attackingSpirit.getUnitURN ());
 
 		final ServerGridCell tc = (ServerGridCell) trueMap.getMap ().getPlane ().get
 			(attackingSpirit.getUnitLocation ().getZ ()).getRow ().get (attackingSpirit.getUnitLocation ().getY ()).getCell ().get (attackingSpirit.getUnitLocation ().getX ());
@@ -296,7 +297,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		// Kill off the spirit
 		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, null, trueMap, players, sd.getFogOfWarSetting (), db);
 
-		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "attemptToMeldWithNode", successful);
+		log.trace ("Exiting attemptToMeldWithNode = " + successful);
 	}
 
 	/**
@@ -309,7 +310,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	@Override
 	public final int totalPlayerPopulation (final MapVolumeOfMemoryGridCells map, final int playerID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 	{
-		log.entering (OverlandMapServerUtilsImpl.class.getName (), "totalPlayerPopulation", playerID);
+		log.trace ("Entering totalPlayerPopulation: Player ID " + playerID);
 		
 		int total = 0;
 		for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
@@ -323,7 +324,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 						total = total + cityData.getCityPopulation ();
 				}
 		
-		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "totalPlayerPopulation", total);
+		log.trace ("Exiting totalPlayerPopulation = " + total);
 		return total;
 	}
 	
@@ -338,8 +339,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	public final MapCoordinates3DEx findMapLocationOfUnitsInCombat (final MapCoordinates3DEx combatLocation,
 		final UnitCombatSideID combatSide, final List<MemoryUnit> units) throws MomException
 	{
-		log.entering (OverlandMapServerUtilsImpl.class.getName (), "findMapLocationOfUnitsInCombat",
-			new String [] {combatLocation.toString (), combatSide.value ()});
+		log.trace ("Entering findMapLocationOfUnitsInCombat: " + combatLocation.toString () + ", " + combatSide);
 		
 		MapCoordinates3DEx location = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
@@ -355,7 +355,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		if (location == null)
 			throw new MomException ("No units on the specified side are left alive");
 		
-		log.exiting (OverlandMapServerUtilsImpl.class.getName (), "findMapLocationOfUnitsInCombat", location);
+		log.trace ("Exiting findMapLocationOfUnitsInCombat = " + location);
 		return location;
 	}
 	

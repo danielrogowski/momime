@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.database.v0_9_4.UnitHasSkill;
+import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_5.MemoryGridCell;

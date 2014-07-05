@@ -10,7 +10,7 @@ import java.util.List;
 
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_4.UnitHasSkill;
+import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;

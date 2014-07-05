@@ -2,10 +2,9 @@ package momime.server.mapgenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.CombatMapLayerID;
+import momime.common.database.v0_9_5.CombatMapLayerID;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MapRowOfCombatTiles;
@@ -17,16 +16,18 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.CombatMapElement;
-import momime.server.database.v0_9_4.CombatTileType;
-import momime.server.database.v0_9_4.TileType;
+import momime.server.database.v0_9_5.CombatMapElement;
+import momime.server.database.v0_9_5.CombatTileType;
+import momime.server.database.v0_9_5.TileType;
 import momime.server.messages.v0_9_5.ServerGridCell;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
-
 
 /**
  * Server only class which contains all the code for generating a random combat map
@@ -37,7 +38,7 @@ import com.ndg.random.RandomUtils;
 public final class CombatMapGeneratorImpl implements CombatMapGenerator
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CombatMapGeneratorImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CombatMapGeneratorImpl.class);
 
 	/** Combat map size - hard coded for now */
 	public final static int COMBAT_MAP_WIDTH = 12;
@@ -76,7 +77,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
-		log.entering (CombatMapGeneratorImpl.class.getName (), "generateCombatMap");
+		log.trace ("Entering generateCombatMap: " + combatMapLocation);
 		
 		// What tileType is the map cell we're generating a combat map for?
 		final ServerGridCell mc = (ServerGridCell) trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
@@ -104,7 +105,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		// Store the map against the grid cell on the server
 		mc.setCombatMap (map);
 		
-		log.exiting (CombatMapGeneratorImpl.class.getName (), "generateCombatMap");
+		log.trace ("Exiting generateCombatMap");
 		return map;
 	}
 	
@@ -113,7 +114,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 */
 	final MapAreaOfCombatTiles setAllToGrass ()
 	{
-		log.entering (CombatMapGeneratorImpl.class.getName (), "setAllToGrass");
+		log.trace ("Entering setAllToGrass");
 
 		// Create empty map
 		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
@@ -148,7 +149,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 			map.getRow ().add (row);
 		}
 
-		log.exiting (CombatMapGeneratorImpl.class.getName (), "setAllToGrass");
+		log.trace ("Exiting setAllToGrass");
 		return map;
 	}
 	
@@ -163,7 +164,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 */
 	private final void setHighestTiles (final HeightMapGenerator heightMap, final MapAreaOfCombatTiles map, final String combatTileTypeID, final int desiredTileCount)
 	{
-		log.entering (CombatMapGeneratorImpl.class.getName (), "setHighestTiles", new String [] {combatTileTypeID, new Integer (desiredTileCount).toString ()});
+		log.trace ("Entering setHighestTiles: " + combatTileTypeID + ", " + desiredTileCount);
 
 		heightMap.setHighestTiles (desiredTileCount, new ProcessTileCallback ()
 		{
@@ -175,7 +176,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 			}
 		});
 
-		log.exiting (CombatMapGeneratorImpl.class.getName (), "setHighestTiles");
+		log.trace ("Exiting setHighestTiles");
 	}
 
 	/**
@@ -189,7 +190,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 */
 	private final void setLowestTiles (final HeightMapGenerator heightMap, final MapAreaOfCombatTiles map, final String combatTileTypeID, final int desiredTileCount)
 	{
-		log.entering (CombatMapGeneratorImpl.class.getName (), "setLowestTiles", new String [] {combatTileTypeID, new Integer (desiredTileCount).toString ()});
+		log.trace ("Entering setLowestTiles: " + combatTileTypeID + ", " + desiredTileCount);
 
 		heightMap.setLowestTiles (desiredTileCount, new ProcessTileCallback ()
 		{
@@ -201,7 +202,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 			}
 		});
 
-		log.exiting (CombatMapGeneratorImpl.class.getName (), "setLowestTiles");
+		log.trace ("Exiting setLowestTiles");
 	}
 	
 	/**
@@ -212,7 +213,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 */
 	final void setTerrainFeaturesRandomly (final MapAreaOfCombatTiles map, final String combatTileTypeID, final int featureTileCount)
 	{
-		log.exiting (CombatMapGeneratorImpl.class.getName (), "setTerrainFeaturesRandomly");
+		log.trace ("Exiting setTerrainFeaturesRandomly: " + combatTileTypeID + ", " + featureTileCount);
 
 		// Make a list of all the possible locations
 		// Since there's nothing in the building layer at this point - that means everywhere
@@ -243,7 +244,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 			map.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTileLayer ().add (layer);
 		}
 
-		log.exiting (CombatMapGeneratorImpl.class.getName (), "setTerrainFeaturesRandomly");
+		log.trace ("Exiting setTerrainFeaturesRandomly");
 	}
 	
 	/**
@@ -257,7 +258,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	final void placeCombatMapElements (final MapAreaOfCombatTiles map, final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
-		log.entering (CombatMapGeneratorImpl.class.getName (), "placeCombatMapElements");
+		log.trace ("Entering placeCombatMapElements");
 		
 		// Find the map cell
 		final MemoryGridCell mc = trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
@@ -314,7 +315,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 			}			
 		}
 		
-		log.exiting (CombatMapGeneratorImpl.class.getName (), "placeCombatMapElements");
+		log.trace ("Exiting placeCombatMapElements");
 	}
 
 	/**

@@ -7,11 +7,6 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.ErrorManager;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -23,7 +18,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
@@ -33,11 +27,14 @@ import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.TurnSystem;
 import momime.server.MomServer;
 import momime.server.logging.LoggingConstants;
-import momime.server.logging.SingleLineFormatter;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
+import com.ndg.swing.NdgUIUtilsImpl;
 
 /**
  * Single window so all msgs from all games appear in the same window
@@ -48,10 +45,10 @@ public class SingleWindowUI implements MomServerUI
 	private JTextArea textArea;
 
 	/** Number of lines of text currently in the window */
-	private int linesOfText;
+//	private int linesOfText;
 
 	/** Number of lines of text we put in the window before we start wrapping lines off the top */
-	private static final int MAX_LINE_COUNT = 400;
+//	private static final int MAX_LINE_COUNT = 400;
 
 	/** The table model for displaying the list of sessions */
 	private SingleWindowTableModel tableModel;
@@ -64,15 +61,7 @@ public class SingleWindowUI implements MomServerUI
 	@Override
 	public final void createMainWindow (final String version)
 	{
-		// Switch to Windows look and feel if available
-		try
-		{
-			UIManager.setLookAndFeel ("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		}
-		catch (final Exception e)
-		{
-			// Don't worry if can't switch look and feel
-		}
+		new NdgUIUtilsImpl ().useNimbusLookAndFeel ();
 
 		// Initialize the frame
 		final JFrame frame = new JFrame ();
@@ -106,7 +95,7 @@ public class SingleWindowUI implements MomServerUI
 		// Create the list of log messages
 		textArea = new JTextArea ();
 		textArea.setFont (new JTextField ().getFont ());	// Otherwise defaults to a courier type font?
-		linesOfText = 0;
+		// linesOfText = 0;
 
 		// Put the list of log messages in a scroll pane
 		final JScrollPane scrollPane = new JScrollPane (textArea);
@@ -135,7 +124,7 @@ public class SingleWindowUI implements MomServerUI
 		contentPane.add (tableScroll);
 
 		// Route the default logger to the UI as well as the console
-		final SingleLineFormatter defaultFormatter = new SingleLineFormatter (true, false);
+/*		final SingleLineFormatter defaultFormatter = new SingleLineFormatter (true, false);
 		
 		final Handler defaultHandler = new SingleWindowHandler ();
 		defaultHandler.setFormatter (defaultFormatter);
@@ -152,7 +141,7 @@ public class SingleWindowUI implements MomServerUI
 		final Logger sessionLoggerParent = Logger.getLogger (ConsoleUI.MOM_SESSION_LOGGER_PREFIX);
 		sessionLoggerParent.setLevel (Level.INFO);
 		sessionLoggerParent.setUseParentHandlers (false);
-		sessionLoggerParent.addHandler (sessionHandler);
+		sessionLoggerParent.addHandler (sessionHandler); */
 		
 		// Show frame
 		frame.setContentPane (contentPane);
@@ -175,10 +164,10 @@ public class SingleWindowUI implements MomServerUI
 	 * @return Logger created and configured for this session
 	 */
 	@Override
-	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
+	public Log createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
 	{
 		// The name chains the session logger up to sessionLoggerParent, so nothing else to do here
-		return Logger.getLogger (ConsoleUI.MOM_SESSION_LOGGER_PREFIX + "." + session.getSessionID ());
+		return LogFactory.getLog (ConsoleUI.MOM_SESSION_LOGGER_PREFIX + "." + session.getSessionID ());
 	}
 	
 	/**
@@ -245,14 +234,14 @@ public class SingleWindowUI implements MomServerUI
 	/**
 	 * Log handler which outputs to the text area on the form
 	 */
-	private final class SingleWindowHandler extends Handler
-	{
+//	private final class SingleWindowHandler extends Handler
+//	{
 		/**
 		 * Outputs a log record to the window
 		 * Has to be synchronized so two methods can't be trying to update the window at the same time
 		 * @param record The log record to write to the text area
 		 */
-		@Override
+/*		@Override
 		public synchronized void publish (final LogRecord record)
 		{
 			// This is pretty much copied from StreamHandler
@@ -291,24 +280,24 @@ public class SingleWindowUI implements MomServerUI
 					reportError (null, ex, ErrorManager.WRITE_FAILURE);
 				}
 			}
-		}
+		} */
 
 		/**
 		 * Can put code here to close off the stream, but its not appopriate for logging to the text area
 		 */
-		@Override
+/*		@Override
 		public final void close ()
 		{
-		}
+		} */
 
 		/**
 		 * Can put code here to flush the stream, but its not appopriate for logging to the text area
 		 */
-		@Override
+/*		@Override
 		public final void flush ()
 		{
 		}
-	}
+	} */
 
 	/**
 	 * Table model which displays all the sessions currently running on the server

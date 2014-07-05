@@ -3,7 +3,6 @@ package momime.server.messages.process;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -22,12 +21,15 @@ import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
-import momime.server.database.v0_9_4.MapFeature;
-import momime.server.database.v0_9_4.TileType;
+import momime.server.database.v0_9_5.MapFeature;
+import momime.server.database.v0_9_5.TileType;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -40,7 +42,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SpecialOrderButtonMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (SpecialOrderButtonMessageImpl.class);
 
 	/** Server-only overland map utils */
 	private OverlandMapServerUtils overlandMapServerUtils;
@@ -76,8 +78,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (SpecialOrderButtonMessageImpl.class.getName (), "process",
-			new String [] {getMapLocation ().toString (), getSpecialOrder ().name (), new Integer (getUnitURN ().size ()).toString ()});
+		log.trace ("Entering process: " + getMapLocation () + ", " + getSpecialOrder () + ", " + getUnitURN ().size ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
@@ -172,7 +173,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		if (error != null)
 		{
 			// Return error
-			log.warning (SpecialOrderButtonMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn (SpecialOrderButtonMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -213,7 +214,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
-		log.exiting (SpecialOrderButtonMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

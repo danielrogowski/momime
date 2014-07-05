@@ -1,7 +1,6 @@
 package momime.server;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -11,6 +10,8 @@ import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+
+import org.apache.commons.logging.Log;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -54,7 +55,7 @@ public interface MomSessionVariables
 	/**
 	 * @return Logger for logging key messages relating to this session
 	 */
-	public Logger getSessionLogger ();
+	public Log getSessionLogger ();
 	
 	/**
 	 * @return Overland map generator for this session

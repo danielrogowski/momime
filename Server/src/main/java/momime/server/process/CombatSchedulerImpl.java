@@ -1,7 +1,6 @@
 package momime.server.process;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -20,6 +19,9 @@ import momime.common.utils.ScheduledCombatUtils;
 import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -34,7 +36,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class CombatSchedulerImpl implements CombatScheduler
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CombatSchedulerImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CombatSchedulerImpl.class);
 	
 	/** Server-side multiplayer utils */
 	private MultiplayerServerUtils multiplayerServerUtils;
@@ -63,7 +65,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 		final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs,
 		final MoveResultsInAttackTypeID typeOfCombat, final String monsterUnitID)
 	{
-		log.entering (CombatSchedulerImpl.class.getName (), "addScheduledCombatGeneratedURN");
+		log.trace ("Entering addScheduledCombatGeneratedURN");
 		
 		// Populate combat details
 		final MomScheduledCombat combat = new MomScheduledCombat ();
@@ -86,7 +88,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 		// Record next URN to use
 		gsk.setNextFreeScheduledCombatURN (gsk.getNextFreeScheduledCombatURN () + 1);
 		
-		log.exiting (CombatSchedulerImpl.class.getName (), "addScheduledCombatGeneratedURN", combat.getScheduledCombatURN ());
+		log.trace ("Exiting addScheduledCombatGeneratedURN = " + combat.getScheduledCombatURN ());
 	}
 	
 	/**
@@ -101,8 +103,8 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	public final void informClientsOfPlayerBusyInCombat (final PlayerServerDetails player, final List<PlayerServerDetails> players, final boolean currentlyPlayingCombat)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (CombatSchedulerImpl.class.getName (), "informClientsOfPlayerBusyInCombat",
-			new String [] {player.getPlayerDescription ().getPlayerID ().toString (), new Boolean (currentlyPlayingCombat).toString ()});
+		log.trace ("Entering informClientsOfPlayerBusyInCombat: Player ID " +
+			player.getPlayerDescription ().getPlayerID () + ", " + currentlyPlayingCombat);
 		
 		// Update on server
 		// Note if we're entering combat, then we no longer have a pending request and so clear out any requested combat ID
@@ -117,7 +119,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 		msg.setCurrentlyPlayingCombat (currentlyPlayingCombat);
 		getMultiplayerServerUtils ().sendMessageToAllClients (players, msg);
 
-		log.exiting (CombatSchedulerImpl.class.getName (), "informClientsOfPlayerBusyInCombat");
+		log.trace ("Exiting informClientsOfPlayerBusyInCombat");
 	}
 	
 	/**
@@ -134,7 +136,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 		final List<MomScheduledCombat> combats, final boolean updateOthersCountOnly)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (CombatSchedulerImpl.class.getName (), "sendScheduledCombats");
+		log.trace ("Entering sendScheduledCombats");
 		
 		// For each human player, look through all scheduled combats to see which ones do and don't apply to them
 		for (final PlayerServerDetails thisPlayer : players)
@@ -172,7 +174,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 				}
 			}
 		
-		log.exiting (CombatSchedulerImpl.class.getName (), "sendScheduledCombats");
+		log.trace ("Exiting sendScheduledCombats");
 	}
 
 	/**
@@ -191,7 +193,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	public final void processEndOfScheduledCombat (final int scheduledCombatURN, final PlayerServerDetails winningPlayer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (CombatSchedulerImpl.class.getName (), "processEndOfScheduledCombat", scheduledCombatURN);
+		log.trace ("Entering processEndOfScheduledCombat: " + scheduledCombatURN);
 		
 		final MomScheduledCombat combat = getScheduledCombatUtils ().findScheduledCombatURN 
 			(mom.getGeneralServerKnowledge ().getScheduledCombat (), scheduledCombatURN, "processEndOfScheduledCombat");
@@ -229,7 +231,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 			// Update counts on other clients so they know how many combats other players are involved in and they're still waiting for
 			sendScheduledCombats (mom.getPlayers (), mom.getGeneralServerKnowledge ().getScheduledCombat (), true);
 		
-		log.exiting (CombatSchedulerImpl.class.getName (), "processEndOfScheduledCombat");
+		log.trace ("Exiting processEndOfScheduledCombat");
 	}
 
 	/**

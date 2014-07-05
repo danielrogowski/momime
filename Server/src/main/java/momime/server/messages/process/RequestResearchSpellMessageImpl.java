@@ -1,12 +1,10 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.SwitchResearch;
+import momime.common.database.newgame.v0_9_5.SwitchResearch;
 import momime.common.messages.clienttoserver.v0_9_5.RequestResearchSpellMessage;
 import momime.common.messages.servertoclient.v0_9_5.SpellResearchChangedMessage;
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
@@ -15,8 +13,11 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_5.Spell;
 import momime.server.utils.SpellServerUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -28,7 +29,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class RequestResearchSpellMessageImpl extends RequestResearchSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (RequestResearchSpellMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (RequestResearchSpellMessageImpl.class);
 
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -47,8 +48,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.entering (RequestResearchSpellMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getSpellID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getSpellID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
@@ -58,7 +58,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 		if (error != null)
 		{
 			// Return error
-			log.warning (ChooseCustomPicksMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -91,7 +91,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 			sender.getConnection ().sendMessageToClient (msg);
 		}
 
-		log.exiting (RequestResearchSpellMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

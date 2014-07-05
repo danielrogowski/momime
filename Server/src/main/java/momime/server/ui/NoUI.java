@@ -1,10 +1,12 @@
 package momime.server.ui;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.MomServer;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 
@@ -39,11 +41,11 @@ public final class NoUI implements MomServerUI
 	 * @return Logger created and configured for this session
 	 */
 	@Override
-	public final Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
+	public final Log createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
 	{
 		// Since there's no parent logger, and we force these not to log to the generic logger defined in the log XML, they just go nowhere
-		final Logger sessionLogger = Logger.getLogger (ConsoleUI.MOM_SESSION_LOGGER_PREFIX + "." + session.getSessionID ());
-		sessionLogger.setUseParentHandlers (false);
+		final Log sessionLogger = LogFactory.getLog (ConsoleUI.MOM_SESSION_LOGGER_PREFIX + "." + session.getSessionID ());
+		// sessionLogger.setUseParentHandlers (false);
 		return sessionLogger;
 	}
 

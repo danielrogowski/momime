@@ -1,7 +1,6 @@
 package momime.server.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -17,6 +16,9 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.utils.UnitServerUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -27,7 +29,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends CancelPendingMovementAndSpecialOrdersMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CancelPendingMovementAndSpecialOrdersMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CancelPendingMovementAndSpecialOrdersMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -52,8 +54,7 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (CancelPendingMovementAndSpecialOrdersMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), new Integer (getUnitURN ()).toString ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", Unit URN " + getUnitURN ());
 		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -73,7 +74,7 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 		if (error != null)
 		{
 			// Return error
-			log.warning (CancelPendingMovementAndSpecialOrdersMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -91,7 +92,7 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 				getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
-		log.exiting (CancelPendingMovementAndSpecialOrdersMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

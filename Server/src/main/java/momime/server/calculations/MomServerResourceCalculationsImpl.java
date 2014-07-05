@@ -3,7 +3,6 @@ package momime.server.calculations;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -13,10 +12,10 @@ import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.SpellSettingData;
-import momime.common.database.v0_9_4.EnforceProductionID;
-import momime.common.database.v0_9_4.SpellUpkeep;
-import momime.common.database.v0_9_4.UnitUpkeep;
+import momime.common.database.newgame.v0_9_5.SpellSettingData;
+import momime.common.database.v0_9_5.EnforceProductionID;
+import momime.common.database.v0_9_5.SpellUpkeep;
+import momime.common.database.v0_9_5.UnitUpkeep;
 import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateRemainingResearchCostMessage;
@@ -42,11 +41,11 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.ProductionType;
-import momime.server.database.v0_9_4.Spell;
-import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.ProductionType;
+import momime.server.database.v0_9_5.Spell;
+import momime.server.database.v0_9_5.Unit;
 import momime.server.process.SpellQueueing;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
@@ -54,6 +53,9 @@ import momime.server.process.resourceconsumer.MomResourceConsumerFactory;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
 import momime.server.utils.UnitServerUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -66,7 +68,7 @@ import com.ndg.random.RandomUtils;
 public final class MomServerResourceCalculationsImpl implements MomServerResourceCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomServerResourceCalculationsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomServerResourceCalculationsImpl.class);
 
 	/** Spell queueing methods */
 	private SpellQueueing spellQueueing;
@@ -115,7 +117,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	 */
 	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "recalculateAmountsPerTurn", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering recalculateAmountsPerTurn: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -190,7 +192,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 
 		// We never explicitly add Mana from Magic Power, this is calculated on the fly by getResourceValueUtils ().calculateAmountPerTurnForProductionType
 
-		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "recalculateAmountsPerTurn");
+		log.trace ("Exiting recalculateAmountsPerTurn");
 	}
 
 	/**
@@ -204,7 +206,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	@Override
 	public final void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat) throws JAXBException, XMLStreamException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "sendGlobalProductionValues", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering sendGlobalProductionValues: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -218,7 +220,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 
 		player.getConnection ().sendMessageToClient (msg);
 
-		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "sendGlobalProductionValues", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Exiting sendGlobalProductionValues");
 	}
 
 	/**
@@ -237,7 +239,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	final List<MomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseEx db) throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "listConsumersOfProductionType", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), productionTypeID});
+		log.trace ("Entering listConsumersOfProductionType: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + productionTypeID);
 
 		final List<MomResourceConsumer> consumers = new ArrayList<MomResourceConsumer> ();
 
@@ -305,7 +307,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 				}
 			}
 
-		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "listConsumersOfProductionType");
+		log.trace ("Exiting listConsumersOfProductionType");
 		return consumers;
 	}
 
@@ -325,7 +327,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	 */
 	private final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final EnforceProductionID enforceType, final boolean addOnStoredAmount, final MomSessionVariables mom) throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "findInsufficientProductionAndSellSomething", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), enforceType.toString ()});
+		log.trace ("Entering findInsufficientProductionAndSellSomething: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + enforceType);
 
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -341,20 +343,20 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 				// Check how much of this type of production the player has
 				int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionType.getProductionTypeID (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 
-				log.finest ("findInsufficientProductionAndSellSomething: PlayerID " + player.getPlayerDescription ().getPlayerID () + " is generating " + valueToCheck + " per turn of productionType " + productionType.getProductionTypeID () + " which has enforceType " + enforceType);
+				log.debug ("findInsufficientProductionAndSellSomething: PlayerID " + player.getPlayerDescription ().getPlayerID () + " is generating " + valueToCheck + " per turn of productionType " + productionType.getProductionTypeID () + " which has enforceType " + enforceType);
 
 				if (addOnStoredAmount)
 				{
 					final int amountStored = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), productionType.getProductionTypeID ());
 					valueToCheck = valueToCheck + amountStored;
-					log.finest ("findInsufficientProductionAndSellSomething: +amountStored " + amountStored + " = " + valueToCheck);
+					log.debug ("findInsufficientProductionAndSellSomething: +amountStored " + amountStored + " = " + valueToCheck);
 				}
 
 				if (valueToCheck < 0)
 				{
 					final List<MomResourceConsumer> consumers = listConsumersOfProductionType (player, mom.getPlayers (), productionType.getProductionTypeID (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-					log.finest ("findInsufficientProductionAndSellSomething: Found " + consumers.size () + " consumers of productionType " + productionType.getProductionTypeID ());
+					log.debug ("findInsufficientProductionAndSellSomething: Found " + consumers.size () + " consumers of productionType " + productionType.getProductionTypeID ());
 
 					// Want random choice to be weighted, e.g. if something consumes 4 gold then it should be 4x more likely to be chosen than something that only consumes 1 gold
 					int totalConsumption = 0;
@@ -383,7 +385,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 			}
 		}
 
-		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "findInsufficientProductionAndSellSomething", found);
+		log.trace ("Exiting findInsufficientProductionAndSellSomething = " + found);
 		return found;
 	}
 
@@ -398,7 +400,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	 */
 	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "accumulateGlobalProductionValues", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering accumulateGlobalProductionValues: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		// Note that we can't simply go down the list of production types in the resource list because of the way Magic Power splits into
 		// Mana/Research/Skill Improvement - so its entirely possible that we're supposed to accumulate some Mana even though there is
@@ -441,7 +443,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 				}
 			}
 
-		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "accumulateGlobalProductionValues");
+		log.trace ("Exiting accumulateGlobalProductionValues");
 	}
 
 	/**
@@ -457,7 +459,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	 */
 	final void progressResearch (final PlayerServerDetails player, final SpellSettingData spellSettings, final ServerDatabaseEx db) throws RecordNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "progressResearch");
+		log.trace ("Entering progressResearch");
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
@@ -467,7 +469,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 		{
 			final int researchAmount = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db);
 
-			log.finest ("Player generated " + researchAmount + " RPs this turn in spell research");
+			log.debug ("Player generated " + researchAmount + " RPs this turn in spell research");
 
 			// Put research points towards current spell
 			if (researchAmount > 0)
@@ -481,7 +483,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 					spellBeingResarched.setRemainingResearchCost (spellBeingResarched.getRemainingResearchCost () - researchAmount);
 
 				// If finished, then grant spell and blank out research
-				log.finest ("Player has " + spellBeingResarched.getRemainingResearchCost () + " RPs left before completing researching spell " + priv.getSpellIDBeingResearched ());
+				log.debug ("Player has " + spellBeingResarched.getRemainingResearchCost () + " RPs left before completing researching spell " + priv.getSpellIDBeingResearched ());
 				if (spellBeingResarched.getRemainingResearchCost () == 0)
 				{
 					// Show on New Turn Messages on the client
@@ -518,7 +520,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 			}
 		}
 
-		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "progressResearch");
+		log.trace ("Exiting progressResearch");
 	}
 
 	/**
@@ -528,14 +530,14 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	 */
 	final void resetCastingSkillRemainingThisTurnToFull (final PlayerServerDetails player)
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "resetCastingSkillRemainingThisTurnToFull");
+		log.trace ("Entering resetCastingSkillRemainingThisTurnToFull: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 
 		trans.setOverlandCastingSkillRemainingThisTurn (getResourceValueUtils ().calculateCastingSkillOfPlayer (priv.getResourceValue ()));
 
-		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "resetCastingSkillRemainingThisTurnToFull");
+		log.trace ("Exiting resetCastingSkillRemainingThisTurnToFull");
 	}
 
 	/**
@@ -554,7 +556,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 	public final void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.entering (MomServerResourceCalculationsImpl.class.getName (), "recalculateGlobalProductionValues", new String [] {new Integer (onlyOnePlayerID).toString (), new Boolean (duringStartPhase).toString ()});
+		log.trace ("Entering recalculateGlobalProductionValues: Player ID " + onlyOnePlayerID + ", " + duringStartPhase);
 
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ( (onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
@@ -564,7 +566,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				if (!pub.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
 				{
-					log.finest ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () + " (" + player.getPlayerDescription ().getPlayerName () + ")");
+					log.debug ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () + " (" + player.getPlayerDescription ().getPlayerName () + ")");
 
 					// Calculate base amounts
 					recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
@@ -601,7 +603,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 				}
 			}
 
-		log.exiting (MomServerResourceCalculationsImpl.class.getName (), "recalculateGlobalProductionValues");
+		log.trace ("Exiting recalculateGlobalProductionValues");
 	}
 
 	/**

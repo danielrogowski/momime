@@ -1,7 +1,6 @@
 package momime.server.process;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -16,13 +15,16 @@ import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.UnitSpecialOrder;
 import momime.server.MomSessionVariables;
-import momime.server.database.v0_9_4.MapFeature;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.TileType;
+import momime.server.database.v0_9_5.MapFeature;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.TileType;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -36,7 +38,7 @@ import com.ndg.random.RandomUtils;
 public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsProcessing
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SimultaneousTurnsProcessingImpl.class.getName ());
+	private final Log log = LogFactory.getLog (SimultaneousTurnsProcessingImpl.class);
 
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -73,7 +75,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	public final void processSpecialOrders (final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.entering (SimultaneousTurnsProcessingImpl.class.getName (), "processSpecialOrders");
+		log.trace ("Entering processSpecialOrders");
 		
 		// Dismiss units with pending dismiss orders.
 		// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server.
@@ -147,7 +149,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			if (error != null)
 			{
 				// Show error
-				log.warning (SimultaneousTurnsProcessingImpl.class.getName () + ".process: " + settlerOwner.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+				log.warn ("process: " + settlerOwner.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 				if (settlerOwner.getPlayerDescription ().isHuman ())
 				{
@@ -189,7 +191,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			if (error != null)
 			{
 				// Show error
-				log.warning (SimultaneousTurnsProcessingImpl.class.getName () + ".process: " + spiritOwner.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+				log.warn ("process: " + spiritOwner.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 				if (spiritOwner.getPlayerDescription ().isHuman ())
 				{
@@ -205,7 +207,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			}			
 		}
 		
-		log.exiting (SimultaneousTurnsProcessingImpl.class.getName (), "processSpecialOrders");
+		log.trace ("Exiting processSpecialOrders");
 	}
 
 	/**

@@ -1,14 +1,12 @@
 package momime.server.ui;
 
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.MomServer;
-import momime.server.logging.SingleLineFormatter;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 
@@ -28,7 +26,7 @@ public final class ConsoleUI implements MomServerUI
 	@Override
 	public final void createMainWindow (final String version)
 	{
-		final SingleLineFormatter formatter = new SingleLineFormatter (false, true);
+/*		final SingleLineFormatter formatter = new SingleLineFormatter (false, true);
 		
 		final Handler consoleHandler = new ConsoleHandler ();
 		consoleHandler.setFormatter (formatter);
@@ -36,7 +34,7 @@ public final class ConsoleUI implements MomServerUI
 		final Logger sessionLoggerParent = Logger.getLogger (MOM_SESSION_LOGGER_PREFIX);
 		sessionLoggerParent.setLevel (Level.INFO);
 		sessionLoggerParent.setUseParentHandlers (false);
-		sessionLoggerParent.addHandler (consoleHandler);
+		sessionLoggerParent.addHandler (consoleHandler); */
 	}
 
 	/**
@@ -55,10 +53,10 @@ public final class ConsoleUI implements MomServerUI
 	 * @return Logger created and configured for this session
 	 */
 	@Override
-	public final Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
+	public final Log createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
 	{
 		// The name chains the session logger up to sessionLoggerParent, so nothing else to do here
-		return Logger.getLogger (MOM_SESSION_LOGGER_PREFIX + "." + session.getSessionID ());
+		return LogFactory.getLog (MOM_SESSION_LOGGER_PREFIX + "." + session.getSessionID ());
 	}
 
 	/**

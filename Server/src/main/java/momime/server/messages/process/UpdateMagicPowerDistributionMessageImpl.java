@@ -1,13 +1,14 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.messages.clienttoserver.v0_9_5.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -19,7 +20,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPowerDistributionMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (UpdateMagicPowerDistributionMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (UpdateMagicPowerDistributionMessageImpl.class);
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -31,7 +32,7 @@ public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPo
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (UpdateMagicPowerDistributionMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
 
 		final String error;
 
@@ -55,7 +56,7 @@ public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPo
 		if (error != null)
 		{
 			// Return error
-			log.warning (UpdateMagicPowerDistributionMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -70,6 +71,6 @@ public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPo
 			// No confirmation - client assumes change will be OK
 		}
 
-		log.exiting (UpdateMagicPowerDistributionMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 }

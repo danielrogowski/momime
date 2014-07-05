@@ -1,15 +1,16 @@
 package momime.server.utils;
 
-import java.util.logging.Logger;
-
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.SwitchResearch;
+import momime.common.database.newgame.v0_9_5.SwitchResearch;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_5.Spell;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
@@ -19,7 +20,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 public final class SpellServerUtilsImpl implements SpellServerUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SpellServerUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (SpellServerUtilsImpl.class);
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -36,7 +37,7 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 	public final String validateResearch (final PlayerServerDetails player, final String spellID,
 		final SwitchResearch switchResearch, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (SpellServerUtilsImpl.class.getName (), "validateResearch", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), spellID});
+		log.trace ("Entering validateResearch: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spellID);
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -77,7 +78,7 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 		else
 			msg = null;
 
-		log.exiting (SpellServerUtilsImpl.class.getName (), "validateResearch", msg);
+		log.trace ("Exiting validateResearch = " + msg);
 		return msg;
 	}
 

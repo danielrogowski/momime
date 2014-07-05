@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -16,6 +14,9 @@ import momime.common.utils.ScheduledCombatUtils;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatProcessing;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -29,7 +30,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class RequestStartScheduledCombatMessageImpl extends RequestStartScheduledCombatMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (RequestStartScheduledCombatMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (RequestStartScheduledCombatMessageImpl.class);
 
 	/** Scheduled combat utils */
 	private ScheduledCombatUtils scheduledCombatUtils; 
@@ -53,8 +54,7 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 			throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (RequestStartScheduledCombatMessageImpl.class.getName (), "process",
-			new Integer [] {getScheduledCombatURN (), sender.getPlayerDescription ().getPlayerID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", Combat URN " + getScheduledCombatURN ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
@@ -91,7 +91,7 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 		if (error != null)
 		{
 			// Return error
-			log.warning (RequestStartScheduledCombatMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -120,7 +120,7 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 				getScheduledCombatURN (), sender, combat.getAttackingUnitURN (), combat.getTypeOfCombat (), combat.getMonsterUnitID (), mom);
 		}
 	
-		log.exiting (RequestStartScheduledCombatMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

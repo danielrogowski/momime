@@ -1,7 +1,6 @@
 package momime.server.process;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -12,7 +11,7 @@ import momime.common.calculations.CalculateCityProductionResults;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.TaxRate;
+import momime.common.database.v0_9_5.TaxRate;
 import momime.common.messages.servertoclient.v0_9_5.PendingSaleMessage;
 import momime.common.messages.servertoclient.v0_9_5.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
@@ -37,9 +36,9 @@ import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -47,6 +46,9 @@ import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -61,7 +63,7 @@ import com.ndg.random.RandomUtils;
 public final class CityProcessingImpl implements CityProcessing
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CityProcessingImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CityProcessingImpl.class);
 
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
@@ -117,7 +119,7 @@ public final class CityProcessingImpl implements CityProcessing
 		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (CityProcessingImpl.class.getName (), "createStartingCities");
+		log.trace ("Entering createStartingCities");
 
 		final int totalFoodBonusFromBuildings = getServerCityCalculations ().calculateTotalFoodBonusFromBuildings (db);
 
@@ -247,7 +249,7 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 		}
 
-		log.exiting (CityProcessingImpl.class.getName (), "createStartingCities");
+		log.trace ("Exiting createStartingCities");
 	}
 
 	/**
@@ -270,7 +272,7 @@ public final class CityProcessingImpl implements CityProcessing
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CityProcessingImpl.class.getName (), "growCitiesAndProgressConstructionProjects", onlyOnePlayerID);
+		log.trace ("Entering growCitiesAndProgressConstructionProjects: Player ID " + onlyOnePlayerID);
 
 		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
@@ -415,7 +417,7 @@ public final class CityProcessingImpl implements CityProcessing
 								(newPopulation > mc.getRaiderCityAdditionalPopulationCap ()))
 							{
 								newPopulation = mc.getRaiderCityAdditionalPopulationCap ();
-								log.finest ("Special raider population cap enforced: " + oldPopulation + " + " + cityGrowthRate + " = " + newPopulation);
+								log.debug ("Special raider population cap enforced: " + oldPopulation + " + " + cityGrowthRate + " = " + newPopulation);
 							}
 
 							cityData.setCityPopulation (newPopulation);
@@ -445,7 +447,7 @@ public final class CityProcessingImpl implements CityProcessing
 					}
 				}
 
-		log.exiting (CityProcessingImpl.class.getName (), "growCitiesAndProgressConstructionProjects");
+		log.trace ("Exiting growCitiesAndProgressConstructionProjects");
 	}
 
 	/**
@@ -479,7 +481,7 @@ public final class CityProcessingImpl implements CityProcessing
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CityProcessingImpl.class.getName (), "sellBuilding", new String [] {cityLocation.toString (), buildingID});
+		log.trace ("Entering sellBuilding: " + cityLocation + ", " + buildingID);
 
 		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final PlayerServerDetails cityOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, tc.getCityData ().getCityOwnerID (), "sellBuilding");
@@ -534,7 +536,7 @@ public final class CityProcessingImpl implements CityProcessing
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 		}
 
-		log.exiting (CityProcessingImpl.class.getName (), "sellBuilding");
+		log.trace ("Exiting sellBuilding");
 	}
 
 	/**
@@ -554,7 +556,7 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.entering (CityProcessingImpl.class.getName (), "changeTaxRate", new String [] {player.getPlayerDescription ().getPlayerName (), taxRateID});
+		log.trace ("Entering changeTaxRate: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + taxRateID);
 		
 		TaxRate newTaxRate = null;
 		try
@@ -569,7 +571,7 @@ public final class CityProcessingImpl implements CityProcessing
 		if (newTaxRate == null)
 		{
 			// Return error
-			log.warning (CityProcessingImpl.class.getName () + ": " + player.getPlayerDescription ().getPlayerName () + " tried to set invalid tax rate of \"" + taxRateID + "\"");
+			log.warn ("changeTaxRate: " + player.getPlayerDescription ().getPlayerName () + " tried to set invalid tax rate of \"" + taxRateID + "\"");
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText ("You tried to set an invalid tax rate!");
@@ -617,7 +619,7 @@ public final class CityProcessingImpl implements CityProcessing
 			getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
-		log.exiting (CityProcessingImpl.class.getName (), "changeTaxRate");
+		log.trace ("Exiting changeTaxRate");
 	}
 	
 	/**

@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -17,6 +15,9 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.process.CombatProcessing;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -35,7 +36,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUnitMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (RequestMoveCombatUnitMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (RequestMoveCombatUnitMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -59,8 +60,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (RequestMoveCombatUnitMessageImpl.class.getName (), "process", new String []
-			{new Integer (getUnitURN ()).toString (), getMoveTo ().toString ()});
+		log.trace ("Entering process: Unit URN " + getUnitURN () + ", " + getMoveTo ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -102,7 +102,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		if (error != null)
 		{
 			// Return error
-			log.warning (RequestMoveCombatUnitMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -114,7 +114,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 			getCombatProcessing ().okToMoveUnitInCombat (tu, (MapCoordinates2DEx) getMoveTo (), movementDirections, movementTypes, mom);
 		}
 		
-		log.exiting (RequestMoveCombatUnitMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

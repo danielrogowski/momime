@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -10,6 +8,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.NextTurnButtonMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.PlayerMessageProcessing;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -23,7 +24,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (NextTurnButtonMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (NextTurnButtonMessageImpl.class);
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
@@ -41,13 +42,13 @@ public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage imple
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (NextTurnButtonMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		getPlayerMessageProcessing ().nextTurnButton (mom, sender);
 
-		log.exiting (NextTurnButtonMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

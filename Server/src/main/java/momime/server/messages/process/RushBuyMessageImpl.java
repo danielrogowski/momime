@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -17,8 +15,11 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.Unit;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -30,7 +31,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class RushBuyMessageImpl extends RushBuyMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (RushBuyMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (RushBuyMessageImpl.class);
 
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
@@ -53,9 +54,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
-		log.entering (RushBuyMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (),
-			(getCityLocation () == null) ? "null" : getCityLocation ().toString ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getCityLocation ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
@@ -124,7 +123,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 		if (msg != null)
 		{
 			// Return error
-			log.warning (RushBuyMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + msg);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + msg);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (msg);
@@ -146,7 +145,7 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 			sender.getConnection ().sendMessageToClient (reply);
 		}
 		
-		log.exiting (RushBuyMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

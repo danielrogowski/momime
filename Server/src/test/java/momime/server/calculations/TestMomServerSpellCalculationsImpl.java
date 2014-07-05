@@ -13,7 +13,7 @@ import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_5.Spell;
 
 import org.junit.Test;
 

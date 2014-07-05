@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
+import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.messages.servertoclient.v0_9_5.StartCombatMessage;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;

@@ -1,10 +1,11 @@
 package momime.server.ui;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.server.MomServer;
+
+import org.apache.commons.logging.Log;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 
@@ -34,7 +35,7 @@ public interface MomServerUI
 	 * @param sessionWindow The session window created by createWindowForNewSession
 	 * @return Logger created and configured for this session
 	 */
-	public Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow);
+	public Log createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow);
 
 	/**
 	 * Allows the UI to update its list of sessions when a session is either added or closed

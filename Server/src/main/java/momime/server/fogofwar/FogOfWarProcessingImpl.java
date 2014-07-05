@@ -3,7 +3,6 @@ package momime.server.fogofwar;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -12,7 +11,7 @@ import momime.common.MomException;
 import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.FogOfWarValue;
+import momime.common.database.newgame.v0_9_5.FogOfWarValue;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessageData;
 import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_5.CancelCombatAreaEffectMessageData;
@@ -49,8 +48,11 @@ import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.Plane;
+import momime.server.database.v0_9_5.Plane;
 import momime.server.messages.ServerMemoryGridCellUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
@@ -72,7 +74,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public class FogOfWarProcessingImpl implements FogOfWarProcessing
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (FogOfWarProcessingImpl.class.getName ());
+	private final Log log = LogFactory.getLog (FogOfWarProcessingImpl.class);
 	
 	/** FOW duplication utils */
 	private FogOfWarDuplication fogOfWarDuplication;
@@ -186,7 +188,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarProcessingImpl.class.getName (), "markVisibleArea", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering markVisibleArea: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -273,7 +275,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				}
 		}
 
-		log.exiting (FogOfWarProcessingImpl.class.getName (), "markVisibleArea");
+		log.trace ("Exiting markVisibleArea");
 	}
 
 	/**
@@ -376,7 +378,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (FogOfWarProcessingImpl.class.getName (), "updateAndSendFogOfWar", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering updateAndSendFogOfWar: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		markVisibleArea (trueMap, player, players, sd, db);
 
@@ -611,7 +613,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 						final boolean unitChanged = getFogOfWarDuplication ().copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit ());
 						updatedUnitURNs.add (thisUnit.getUnitURN ());
 
-						log.finest ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
+						log.debug ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
 						if ((unitChanged) && (msg != null))
 							msg.getAddUnit ().add (getFogOfWarDuplication ().createAddUnitMessage (thisUnit, db));
 
@@ -713,7 +715,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 					if (needToRemoveUnit)
 					{
-						log.finest ("UnitURN " + thisUnit.getUnitURN () + " has gone out of view for player " + player.getPlayerDescription ().getPlayerID () + ", sending kill as part of VAC");
+						log.debug ("UnitURN " + thisUnit.getUnitURN () + " has gone out of view for player " + player.getPlayerDescription ().getPlayerID () + ", sending kill as part of VAC");
 						removedUnitURNs.add (thisUnit.getUnitURN ());
 
 						if (msg != null)
@@ -929,7 +931,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		if (msg != null)
 			player.getConnection ().sendMessageToClient (msg);
 
-		log.exiting (FogOfWarProcessingImpl.class.getName (), "updateAndSendFogOfWar");
+		log.trace ("Exiting updateAndSendFogOfWar");
 	}
 
 	/**

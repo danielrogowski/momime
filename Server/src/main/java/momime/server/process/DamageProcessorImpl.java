@@ -1,7 +1,6 @@
 package momime.server.process;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -20,6 +19,9 @@ import momime.server.calculations.DamageCalculator;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.UntransmittedKillUnitActionID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -31,7 +33,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class DamageProcessorImpl implements DamageProcessor
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (DamageProcessorImpl.class.getName ());
+	private final Log log = LogFactory.getLog (DamageProcessorImpl.class);
 
 	/** Unit calculations */
 	private MomUnitCalculations unitCalculations;
@@ -73,7 +75,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (DamageProcessorImpl.class.getName (), "resolveAttack");
+		log.trace ("Entering resolveAttack: Unit URN " + attacker.getUnitURN () + ", Unit URN " + defender.getUnitURN ());
 
 		// We send this a couple of times for different parts of the calculation, so initialize it here
 		final DamageCalculationMessage damageCalculationMsg = new DamageCalculationMessage ();
@@ -187,7 +189,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		if (combatEnded)
 			getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 		
-		log.exiting (DamageProcessorImpl.class.getName (), "resolveAttack");	
+		log.trace ("Exiting resolveAttack");	
 	}
 
 	/**
@@ -199,8 +201,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	final int countUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
 		final List<MemoryUnit> trueUnits)
 	{
-		log.entering (DamageProcessorImpl.class.getName (), "countUnitsInCombat",
-			new String [] {combatLocation.toString (), combatSide.name ()});
+		log.trace ("Entering countUnitsInCombat: " + combatLocation + ", " + combatSide);
 			
 		int count = 0;
 		for (final MemoryUnit trueUnit : trueUnits)
@@ -209,7 +210,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					
 				count++;
 
-		log.exiting (DamageProcessorImpl.class.getName (), "countUnitsInCombat", count);
+		log.trace ("Exiting countUnitsInCombat = " + count);
 		return count;
 	}
 	

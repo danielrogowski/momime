@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -20,6 +18,9 @@ import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.UnitServerUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -31,7 +32,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class DismissUnitMessageImpl extends DismissUnitMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (DismissUnitMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (DismissUnitMessageImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -58,8 +59,7 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (DismissUnitMessageImpl.class.getName (), "process",
-			new Integer [] {sender.getPlayerDescription ().getPlayerID (), getUnitURN ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", Unit URN " + getUnitURN ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -80,7 +80,7 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 		if (error != null)
 		{
 			// Return error
-			log.warning (DismissUnitMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -108,7 +108,7 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 
-		log.exiting (DismissUnitMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

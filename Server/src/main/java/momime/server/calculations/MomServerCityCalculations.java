@@ -9,7 +9,7 @@ import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Building;
+import momime.server.database.v0_9_5.Building;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;

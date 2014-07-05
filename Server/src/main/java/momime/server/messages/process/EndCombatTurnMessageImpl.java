@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -11,6 +9,9 @@ import momime.common.messages.clienttoserver.v0_9_5.EndCombatTurnMessage;
 import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.process.CombatProcessing;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -24,7 +25,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (EndCombatTurnMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (EndCombatTurnMessageImpl.class);
 
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
@@ -42,7 +43,7 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (EndCombatTurnMessageImpl.class.getName (), "process", getCombatLocation ());
+		log.trace ("Entering process: " + getCombatLocation ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
@@ -50,11 +51,11 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 			(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
 		
 		if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayer ()))
-			log.warning ("Received EndCombatTurnMessage from wrong player - ignored");
+			log.warn ("Received EndCombatTurnMessage from wrong player - ignored");
 		else
 			getCombatProcessing ().progressCombat ((MapCoordinates3DEx) getCombatLocation (), false, false, mom);
 
-		log.exiting (EndCombatTurnMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

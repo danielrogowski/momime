@@ -2,7 +2,6 @@ package momime.server.ai;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
@@ -11,7 +10,10 @@ import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_5.Spell;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
@@ -22,7 +24,7 @@ import com.ndg.random.RandomUtils;
 public final class SpellAIImpl implements SpellAI
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SpellAIImpl.class.getName ());
+	private final Log log = LogFactory.getLog (SpellAIImpl.class);
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -33,14 +35,14 @@ public final class SpellAIImpl implements SpellAI
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
 	 * @param spells List of possible spells to choose from
-	 * @param aiPlayerName Player name, for debug message
+	 * @param aiPlayerID Player ID, for debug message
 	 * @return ID of chosen spell to research
 	 * @throws MomException If the list was empty
 	 */
-	final Spell chooseSpellToResearchAI (final List<Spell> spells, final String aiPlayerName)
+	final Spell chooseSpellToResearchAI (final List<Spell> spells, final int aiPlayerID)
 		throws MomException
 	{
-		log.entering (SpellAIImpl.class.getName (), "chooseSpellToResearchAI", aiPlayerName);
+		log.trace ("Entering chooseSpellToResearchAI: Player ID " + aiPlayerID);
 
 		String debugLogMessage = null;
 
@@ -76,7 +78,7 @@ public final class SpellAIImpl implements SpellAI
 		// Pick one at random
 		final Spell chosenSpell = spellsWithBestResearchOrder.get (getRandomUtils ().nextInt (spellsWithBestResearchOrder.size ()));
 
-		log.exiting (SpellAIImpl.class.getName (), "chooseSpellToResearchAI", chosenSpell.getSpellID ());
+		log.trace ("Exiting chooseSpellToResearchAI = " + chosenSpell.getSpellID ());
 		return chosenSpell;
 	}
 
@@ -90,24 +92,24 @@ public final class SpellAIImpl implements SpellAI
 	public final void decideWhatToResearch (final PlayerServerDetails player, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException
 	{
-		log.entering (SpellAIImpl.class.getName (), "decideWhatToResearch", player.getPlayerDescription ().getPlayerName ());
+		log.trace ("Entering decideWhatToResearch: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
-		final List<momime.common.database.v0_9_4.Spell> researchableSpells = getSpellUtils ().getSpellsForStatus
+		final List<momime.common.database.v0_9_5.Spell> researchableSpells = getSpellUtils ().getSpellsForStatus
 			(priv.getSpellResearchStatus (), SpellResearchStatusID.RESEARCHABLE_NOW, db);
 
 		if (researchableSpells.size () >= 0)
 		{
 			final List<Spell> researchableServerSpells = new ArrayList<Spell> ();
-			for (final momime.common.database.v0_9_4.Spell spell : researchableSpells)
+			for (final momime.common.database.v0_9_5.Spell spell : researchableSpells)
 				researchableServerSpells.add ((Spell) spell);
 
-			final Spell chosenSpell = chooseSpellToResearchAI (researchableServerSpells, player.getPlayerDescription ().getPlayerName ());
+			final Spell chosenSpell = chooseSpellToResearchAI (researchableServerSpells, player.getPlayerDescription ().getPlayerID ());
 			priv.setSpellIDBeingResearched (chosenSpell.getSpellID ());
 		}
 
-		log.exiting (SpellAIImpl.class.getName (), "decideWhatToResearch", priv.getSpellIDBeingResearched ());
+		log.trace ("Exiting decideWhatToResearch = " + priv.getSpellIDBeingResearched ());
 	}
 
 	/**
@@ -115,7 +117,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @param spells Pre-locked list of the player's spell
 	 * @param magicRealmID Magic Realm (e.g. chaos) to pick a spell from
 	 * @param spellRankID Spell rank (e.g. uncommon) to pick a spell of
-	 * @param aiPlayerName Player name, for debug message
+	 * @param aiPlayerID Player ID, for debug message
 	 * @param db Lookup lists built over the XML database
 	 * @return Spell AI chose to learn for free
 	 * @throws MomException If no eligible spells are available (e.g. player has them all researched already)
@@ -123,24 +125,24 @@ public final class SpellAIImpl implements SpellAI
 	 */
 	@Override
 	public final SpellResearchStatus chooseFreeSpellAI (final List<SpellResearchStatus> spells, final String magicRealmID, final String spellRankID,
-		final String aiPlayerName, final ServerDatabaseEx db)
+		final int aiPlayerID, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (SpellAIImpl.class.getName (), "chooseFreeSpellAI", new String [] {aiPlayerName, magicRealmID, spellRankID});
+		log.trace ("Entering chooseFreeSpellAI: Player ID " + aiPlayerID + ", " + magicRealmID + ", " + spellRankID);
 
 		// Get candidate spells
-		final List<momime.common.database.v0_9_4.Spell> commonSpellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
+		final List<momime.common.database.v0_9_5.Spell> commonSpellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
 		final List<Spell> spellList = new ArrayList<Spell> ();
-		for (final momime.common.database.v0_9_4.Spell thisSpell : commonSpellList)
+		for (final momime.common.database.v0_9_5.Spell thisSpell : commonSpellList)
 			spellList.add ((Spell) thisSpell);
 
 		// Choose a spell
-		final Spell chosenSpell = chooseSpellToResearchAI (spellList, aiPlayerName);
+		final Spell chosenSpell = chooseSpellToResearchAI (spellList, aiPlayerID);
 
 		// Return spell research status; calling routine sets it to available
 		final SpellResearchStatus chosenSpellStatus = getSpellUtils ().findSpellResearchStatus (spells, chosenSpell.getSpellID ());
 
-		log.exiting (SpellAIImpl.class.getName (), "chooseFreeSpellAI", chosenSpellStatus.getSpellID ());
+		log.trace ("Exiting chooseFreeSpellAI: " + chosenSpellStatus.getSpellID ());
 		return chosenSpellStatus;
 	}
 

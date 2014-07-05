@@ -1,7 +1,6 @@
 package momime.server.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -10,6 +9,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.RequestCastSpellMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.SpellQueueing;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -31,7 +33,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public class RequestCastSpellMessageImpl extends RequestCastSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (RequestCastSpellMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (RequestCastSpellMessageImpl.class);
 
 	/** Spell queueing methods */
 	private SpellQueueing spellQueueing;
@@ -47,15 +49,14 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (RequestCastSpellMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getSpellID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", "+ getSpellID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		getSpellQueueing ().requestCastSpell (sender, getSpellID (),
 			(MapCoordinates3DEx) getCombatLocation (), (MapCoordinates2DEx) getCombatTargetLocation (), getCombatTargetUnitURN (), mom);
 
-		log.exiting (RequestCastSpellMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

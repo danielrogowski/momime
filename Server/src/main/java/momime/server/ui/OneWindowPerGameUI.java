@@ -1,13 +1,8 @@
 package momime.server.ui;
 
-import java.util.logging.ErrorManager;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
 import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.server.logging.DateTimeAndMessageOnlyFormatter;
+
+import org.apache.commons.logging.Log;
 
 /**
  * Similar to the old Delphi MoM IME server, opens up a new window for each game in progress, and msgs relating to that game appear in that window
@@ -33,18 +28,18 @@ public final class OneWindowPerGameUI extends SingleWindowUI
 	 * @return Logger created and configured for this session
 	 */
 	@Override
-	public final Logger createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
+	public final Log createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
 	{
 		// Every window gets its own logger
 		// Disconnect it from the parent logger, since the parent logger logs messages to the main window
-		final Logger sessionLogger = super.createLoggerForNewSession (session, sessionWindow);
-		sessionLogger.setLevel (Level.INFO);
+		final Log sessionLogger = super.createLoggerForNewSession (session, sessionWindow);
+/*		sessionLogger.setLevel (Level.INFO);
 		sessionLogger.setUseParentHandlers (false);
 
 		final Handler sessionHandler = new SessionWindowHandler (sessionWindow);
 		sessionHandler.setLevel (Level.INFO);
 		sessionHandler.setFormatter (new DateTimeAndMessageOnlyFormatter ());
-		sessionLogger.addHandler (sessionHandler);
+		sessionLogger.addHandler (sessionHandler); */
 
 		return sessionLogger;
 	}
@@ -52,29 +47,27 @@ public final class OneWindowPerGameUI extends SingleWindowUI
 	/**
 	 * Log handler which outputs to one session window
 	 */
-	private final class SessionWindowHandler extends Handler
-	{
-		/**
-		 * The session window this handler is outtputting to
-		 */
-		private final SessionWindow sessionWindow;
+//	private final class SessionWindowHandler extends Handler
+//	{
+		/** The session window this handler is outtputting to */
+//		private final SessionWindow sessionWindow;
 
 		/**
 		 * Creates a log handler which outputs to one session window
 		 * @param aSessionWindow The session window this handler is outtputting to
 		 */
-		private SessionWindowHandler (final SessionWindow aSessionWindow)
+/*		private SessionWindowHandler (final SessionWindow aSessionWindow)
 		{
 			super ();
 			sessionWindow = aSessionWindow;
-		}
+		} */
 
 		/**
 		 * Outputs a log record to the window
 		 * Has to be synchronized so two methods can't be trying to update the window at the same time
 		 * @param record The log record to write to the text area
 		 */
-		@Override
+/*		@Override
 		public synchronized void publish (final LogRecord record)
 		{
 			// This is pretty much copied from StreamHandler
@@ -104,22 +97,22 @@ public final class OneWindowPerGameUI extends SingleWindowUI
 					reportError (null, ex, ErrorManager.WRITE_FAILURE);
 				}
 			}
-		}
+		} */
 
 		/**
 		 * Can put code here to close off the stream, but its not appopriate for logging to the text area
 		 */
-		@Override
+/*		@Override
 		public void close ()
 		{
-		}
+		} */
 
 		/**
 		 * Can put code here to flush the stream, but its not appopriate for logging to the text area
 		 */
-		@Override
+/*		@Override
 		public void flush ()
 		{
 		}
-	}
+	} */
 }

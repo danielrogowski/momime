@@ -2,7 +2,6 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -10,8 +9,8 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.SpellHasCombatEffect;
-import momime.common.database.v0_9_4.SummonedUnit;
+import momime.common.database.v0_9_5.SpellHasCombatEffect;
+import momime.common.database.v0_9_5.SummonedUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
@@ -31,14 +30,17 @@ import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Spell;
-import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_5.Spell;
+import momime.server.database.v0_9_5.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -53,7 +55,7 @@ import com.ndg.random.RandomUtils;
 public final class SpellProcessingImpl implements SpellProcessing
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (SpellProcessingImpl.class.getName ());
+	private final Log log = LogFactory.getLog (SpellProcessingImpl.class);
 
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -108,7 +110,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.entering (SpellProcessingImpl.class.getName (), "castOverlandNow", new String [] {player.getPlayerDescription ().getPlayerID ().toString (), spell.getSpellID ()});
+		log.trace ("Entering castOverlandNow: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spell.getSpellID ());
 
 		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -184,7 +186,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				{
 					final String summonedUnitID = possibleUnitIDs.get (getRandomUtils ().nextInt (possibleUnitIDs.size ()));
 
-					log.finest ("Player " + player.getPlayerDescription ().getPlayerName () + " had " + possibleUnitIDs.size () + " possible units to summon from spell " +
+					log.debug ("Player " + player.getPlayerDescription ().getPlayerName () + " had " + possibleUnitIDs.size () + " possible units to summon from spell " +
 						spell.getSpellID () + ", randomly picked unit ID " + summonedUnitID);
 
 					// Check if the city with the summoning circle has space for the unit
@@ -256,7 +258,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else
 			throw new MomException ("Completed casting an overland spell with a section ID that there is no code to deal with yet: " + sectionID);
 
-		log.exiting (SpellProcessingImpl.class.getName (), "castOverlandNow");
+		log.trace ("Exiting castOverlandNow");
 	}
 	
 	/**
@@ -286,8 +288,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
 	{
-		log.entering (SpellProcessingImpl.class.getName (), "castCombatNow", new String []
-			{player.getPlayerDescription ().getPlayerID ().toString (), spell.getSpellID (), spell.getSpellBookSectionID (), combatLocation.toString ()});
+		log.trace ("Entering castCombatNow: Player ID " +
+			player.getPlayerDescription ().getPlayerID () + ", " + spell.getSpellID () + ", " + spell.getSpellBookSectionID () + ", " + combatLocation);
 
 		// Which side is casting the spell
 		final UnitCombatSideID castingSide;
@@ -305,7 +307,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if (spell.getSpellHasCombatEffect ().size () > 0)
 			{
 				final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
-				log.finest ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
+				log.debug ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
 				
 				getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (),
 					combatAreaEffectID, player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
@@ -339,7 +341,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if (spell.getSummonedUnit ().size () > 0)
 			{
 				final String unitID = spell.getSummonedUnit ().get (getRandomUtils ().nextInt (spell.getSummonedUnit ().size ())).getSummonedUnitID ();
-				log.finest ("castCombatNow chose Unit ID " + unitID + " as unit to summon from spell " + spell.getSpellID ());
+				log.debug ("castCombatNow chose Unit ID " + unitID + " as unit to summon from spell " + spell.getSpellID ());
 				
 				// Even though we're summoning the unit into a combat, the location of the unit might not be
 				// the same location as the combat - if its the attacker summoning a unit, it needs to go in the
@@ -397,7 +399,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Only allow casting one spell each combat turn
 		gc.setSpellCastThisCombatTurn (true);
 
-		log.exiting (SpellProcessingImpl.class.getName (), "castCombatNow");
+		log.trace ("Exiting castCombatNow");
 	}
 	
 	/**
@@ -434,8 +436,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.entering (SpellProcessingImpl.class.getName (), "switchOffSpell",
-			new String [] {new Integer (castingPlayerID).toString (), spellID});
+		log.trace ("Entering switchOffSpell: Player ID " + castingPlayerID + ", " + spellID);
 
 		// Any secondary effects we also need to switch off?
 		final PlayerServerDetails player = MultiplayerSessionServerUtils.findPlayerWithID (players, castingPlayerID, "switchOffSpell");
@@ -457,7 +458,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, castingPlayerID, spellID, unitURN, unitSkillID, castInCombat,
 			cityLocation, citySpellEffectID, players, null, null, null, db, sd);
 
-		log.exiting (SpellProcessingImpl.class.getName (), "switchOffSpell");
+		log.trace ("Exiting switchOffSpell");
 	}
 
 	/**

@@ -3,7 +3,6 @@ package momime.server.messages.process;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -24,6 +23,9 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerUnitCalculations;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -34,7 +36,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class RequestOverlandMovementDistancesMessageImpl extends RequestOverlandMovementDistancesMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (RequestOverlandMovementDistancesMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (RequestOverlandMovementDistancesMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -53,8 +55,8 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.entering (RequestOverlandMovementDistancesMessageImpl.class.getName (), "process", new Integer []
-			{getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getZ (), sender.getPlayerDescription ().getPlayerID ()});
+		log.trace ("Entering process: (" + getMoveFrom ().getX () + ", " + getMoveFrom ().getY () + ", " + getMoveFrom ().getZ () +
+			"), Player ID " + sender.getPlayerDescription ().getPlayerID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
@@ -95,7 +97,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		if (error != null)
 		{
 			// Return error
-			log.warning (RequestOverlandMovementDistancesMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -146,7 +148,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 			sender.getConnection ().sendMessageToClient (msg);
 		}
 
-		log.exiting (RequestOverlandMovementDistancesMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

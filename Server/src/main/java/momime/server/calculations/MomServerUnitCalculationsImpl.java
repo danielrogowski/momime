@@ -5,13 +5,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.UnitHasSkill;
+import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
@@ -28,10 +27,13 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.MovementRateRule;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.TileType;
+import momime.server.database.v0_9_5.MovementRateRule;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.TileType;
 import momime.server.messages.ServerMemoryGridCellUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
@@ -46,7 +48,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class MomServerUnitCalculationsImpl implements MomServerUnitCalculations
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomServerUnitCalculationsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomServerUnitCalculationsImpl.class);
 	
 	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
 	private static final int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
@@ -79,8 +81,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (MomServerUnitCalculationsImpl.class.getName (), "calculateUnitScoutingRange",
-			new String [] {new Integer (unit.getUnitURN ()).toString (), unit.getUnitID ()});
+		log.trace ("Entering calculateUnitScoutingRange: Unit URN " + unit.getUnitURN () + ", " + unit.getUnitID ());
 
 		int scoutingRange = 1;
 
@@ -99,7 +100,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 				scoutingRange = Math.max (scoutingRange, unitSkillScoutingRange);
 		}
 
-		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "calculateUnitScoutingRange", scoutingRange);
+		log.trace ("Exiting calculateUnitScoutingRange = " + scoutingRange);
 		return scoutingRange;
 	}
 
@@ -113,14 +114,14 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	final int [] [] [] countOurAliveUnitsAtEveryLocation (final int playerID, final List<MemoryUnit> units,
 		final CoordinateSystem sys, final ServerDatabaseEx db)
 	{
-		log.entering (MomServerUnitCalculationsImpl.class.getName (), "countOurAliveUnitsAtEveryLocation", playerID);
+		log.trace ("Entering countOurAliveUnitsAtEveryLocation: Player ID " + playerID);
 
 		final int [] [] [] count = new int [db.getPlane ().size ()] [sys.getHeight ()] [sys.getWidth ()];
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) & (thisUnit.getUnitLocation () != null))
 				count [thisUnit.getUnitLocation ().getZ ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
 
-		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "countOurAliveUnitsAtEveryLocation");
+		log.trace ("Exiting countOurAliveUnitsAtEveryLocation");
 		return count;
 	}
 
@@ -141,7 +142,8 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs,
 		final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (MomServerUnitCalculationsImpl.class.getName (), "willMovingHereResultInAnAttack", new Integer [] {x, y, plane, movingPlayerID});
+		log.trace ("Entering willMovingHereResultInAnAttack: Player ID " + movingPlayerID +
+			", (" + x + ", " + y + ", " + plane + ")");
 
 		// Work out what plane to look for units on
 		final MemoryGridCell mc = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
@@ -173,7 +175,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		else
 			resultsInAttack = MoveResultsInAttackTypeID.NO;
 
-		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "willMovingHereResultInAnAttack", resultsInAttack);
+		log.trace ("Exiting willMovingHereResultInAnAttack = " + resultsInAttack);
 		return resultsInAttack;
 	}
 
@@ -187,7 +189,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	public final List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
 		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
 	{
-		log.entering (MomServerUnitCalculationsImpl.class.getName (), "listAllSkillsInUnitStack", getUnitUtils ().listUnitURNs (unitStack));
+		log.trace ("Entering listAllSkillsInUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
 
 		final List<String> list = new ArrayList<String> ();
 		String debugList = "";
@@ -205,7 +207,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 						debugList = debugList + thisSkill.getUnitSkillID ();
 					}
 
-		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "listAllSkillsInUnitStack", debugList);
+		log.trace ("Exiting listAllSkillsInUnitStack = " + debugList);
 		return list;
 	}
 
@@ -221,8 +223,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	public final Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
 		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
 	{
-		log.entering (MomServerUnitCalculationsImpl.class.getName (), "calculateDoubleMovementToEnterTileType",
-			new String [] {unit.getUnitID (), new Integer (unit.getOwningPlayerID ()).toString (), tileTypeID});
+		log.trace ("Entering calculateDoubleMovementToEnterTileType: " + unit.getUnitID () + ", Player ID " + unit.getOwningPlayerID () + ", " + tileTypeID);
 
 		// Only merge the units list of skills once
 		final List<UnitHasSkill> unitHasSkills;
@@ -252,7 +253,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 				doubleMovement = thisRule.getDoubleMovement ();
 		}
 
-		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "calculateDoubleMovementToEnterTileType", doubleMovement);
+		log.trace ("Exiting calculateDoubleMovementToEnterTileType = " + doubleMovement);
 		return doubleMovement;
 	}
 
@@ -265,7 +266,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<MemoryUnit> unitStack,
 		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db)
 	{
-		log.entering (MomServerUnitCalculationsImpl.class.getName (), "calculateDoubleMovementRatesForUnitStack", getUnitUtils ().listUnitURNs (unitStack));
+		log.trace ("Entering calculateDoubleMovementRatesForUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
 
 		// Get list of all the skills that any unit in the stack has, in case any of them have path finding, wind walking, etc.
 		final List<String> unitStackSkills = listAllSkillsInUnitStack (unitStack, spells, db);
@@ -295,7 +296,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 					movementRates.put (tileType.getTileTypeID (), worstMovementRate);
 			}
 
-		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "calculateDoubleMovementRatesForUnitStack");
+		log.trace ("Exiting calculateDoubleMovementRatesForUnitStack");
 		return movementRates;
 	}
 
@@ -326,7 +327,8 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		final boolean [] [] [] canMoveToInOneTurn, final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
 		final List<MapCoordinates2D> cellsLeftToCheck, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (MomServerUnitCalculationsImpl.class.getName (), "calculateOverlandMovementDistances_Cell", new Integer [] {cellX, cellY, cellPlane, movingPlayerID});
+		log.trace ("Entering calculateOverlandMovementDistances_Cell: Player ID " + movingPlayerID +
+			", (" + cellX + ", " + cellY + ", " + cellPlane + ")");
 
 		final int doubleDistanceToHere = doubleMovementDistances [cellPlane] [cellY] [cellX];
 		final int doubleMovementRemainingToHere = doubleMovementRemaining - doubleDistanceToHere;
@@ -375,7 +377,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 			}
 		}
 
-		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "calculateOverlandMovementDistances_Cell");
+		log.trace ("Exiting calculateOverlandMovementDistances_Cell");
 	}
 
 	/**
@@ -404,7 +406,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		final boolean [] [] [] canMoveToInOneTurn, final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (MomServerUnitCalculationsImpl.class.getName (), "calculateOverlandMovementDistances_Plane", new Integer [] {startX, startY, startPlane, movingPlayerID});
+		log.trace ("Entering calculateOverlandMovementDistances_Plane: Player ID " + movingPlayerID + ", (" + startX + ", " + startY + ", " + startPlane + ")");
 
 		// We can move to where we start from for free
 		doubleMovementDistances [startPlane] [startY] [startX] = 0;
@@ -427,7 +429,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 			cellsLeftToCheck.remove (0);
 		}
 
-		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "calculateOverlandMovementDistances_Plane");
+		log.trace ("Exiting calculateOverlandMovementDistances_Plane");
 	}
 
 	/**
@@ -459,7 +461,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (MomServerUnitCalculationsImpl.class.getName (), "calculateOverlandMovementDistances", new Integer [] {startX, startY, startPlane});
+		log.trace ("Entering calculateOverlandMovementDistances: (" + startX + ", " + startY + ", " + startPlane + ")");
 
 		// Work out all the movement rates over all tile types of the unit stack
 		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack (unitStack, map.getMaintainedSpell (), db);
@@ -499,7 +501,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 				doubleMovementToEnterTile, sd.getMapSize (), db);
 
-		log.exiting (MomServerUnitCalculationsImpl.class.getName (), "calculateOverlandMovementDistances");
+		log.trace ("Exiting calculateOverlandMovementDistances");
 	}
 
 	/**

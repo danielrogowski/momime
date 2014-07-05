@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -12,10 +11,10 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.DifficultyLevelPlane;
-import momime.common.database.newgame.v0_9_4.LandProportionPlane;
-import momime.common.database.newgame.v0_9_4.LandProportionTileType;
-import momime.common.database.newgame.v0_9_4.NodeStrengthPlane;
+import momime.common.database.newgame.v0_9_5.DifficultyLevelPlane;
+import momime.common.database.newgame.v0_9_5.LandProportionPlane;
+import momime.common.database.newgame.v0_9_5.LandProportionTileType;
+import momime.common.database.newgame.v0_9_5.NodeStrengthPlane;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
@@ -27,15 +26,18 @@ import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.MapFeature;
-import momime.server.database.v0_9_4.MapFeatureMagicRealm;
-import momime.server.database.v0_9_4.TileType;
-import momime.server.database.v0_9_4.TileTypeAreaEffect;
-import momime.server.database.v0_9_4.TileTypeFeatureChance;
-import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_5.MapFeature;
+import momime.server.database.v0_9_5.MapFeatureMagicRealm;
+import momime.server.database.v0_9_5.TileType;
+import momime.server.database.v0_9_5.TileTypeAreaEffect;
+import momime.server.database.v0_9_5.TileTypeFeatureChance;
+import momime.server.database.v0_9_5.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.MapCoordinates2D;
@@ -56,7 +58,7 @@ import com.ndg.random.RandomUtils;
 public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (OverlandMapGeneratorImpl.class.getName ());
+	private final Log log = LogFactory.getLog (OverlandMapGeneratorImpl.class);
 	
 	/** Where to write the generated map to */
 	private FogOfWarMemory trueTerrain;
@@ -456,7 +458,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	@Override
 	public final void generateOverlandTerrain () throws MomException, RecordNotFoundException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "generateOverlandTerrain", sd.getSessionID ());
+		log.trace ("Entering generateOverlandTerrain: Session ID " + sd.getSessionID ());
 
 		// Quick check that arrays are the same length
 		if (TERRAIN_BORDER8_NEIGHBOURING_TILES.length != RIVER_MOUTH_DIRECTIONS.length)
@@ -509,7 +511,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		placeLairs (sd.getDifficultyLevel ().getNormalLairCount (), false);
 		placeLairs (sd.getDifficultyLevel ().getWeakLairCount (), true);
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "generateOverlandTerrain");
+		log.trace ("Exiting generateOverlandTerrain");
 	}
 
 	/**
@@ -517,7 +519,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 */
 	final void setAllToWater ()
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "setAllToWater");
+		log.trace ("Entering setAllToWater");
 
 		// Delete anything there currently
 		trueTerrain.setMap (new MapVolumeOfMemoryGridCells ());
@@ -545,7 +547,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			trueTerrain.getMap ().getPlane ().add (area);
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "setAllToWater");
+		log.trace ("Exiting setAllToWater");
 	}
 
 	/**
@@ -559,7 +561,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 */
 	private final void setHighestTiles (final HeightMapGenerator heightMap, final int plane, final String tileTypeID, final int desiredTileCount)
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "setHighestTiles", new String [] {new Integer (plane).toString (), tileTypeID, new Integer (desiredTileCount).toString ()});
+		log.trace ("Entering setHighestTiles: " + plane + ", " + tileTypeID + ", " +desiredTileCount);
 
 		heightMap.setHighestTiles (desiredTileCount, new ProcessTileCallback ()
 		{
@@ -570,7 +572,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			}
 		});
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "setHighestTiles");
+		log.trace ("Exiting setHighestTiles");
 	}
 
 	/**
@@ -578,7 +580,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 */
 	private final void makeTundra ()
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "makeTundra", sd.getLandProportion ().getTundraRowCount ());
+		log.trace ("Entering makeTundra: " + sd.getLandProportion ().getTundraRowCount ());
 
 		// If wraps both ways, there'll be no tundra at all
 		if ((!sd.getMapSize ().isWrapsLeftToRight ()) || (!sd.getMapSize ().isWrapsTopToBottom ()))
@@ -605,7 +607,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					}
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "makeTundra");
+		log.trace ("Exiting makeTundra");
 	}
 
 	/**
@@ -618,7 +620,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 */
 	private final int placeSingleBlob (final String changeFromTileTypeID, final String changeToTileTypeID, final int eachAreaTileCount, final int plane)
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "placeSingleBlob", new String [] {changeFromTileTypeID, changeToTileTypeID, new Integer (eachAreaTileCount).toString (), new Integer (plane).toString ()});
+		log.trace ("Entering placeSingleBlob: " + changeFromTileTypeID + ", " + changeToTileTypeID + ", " + eachAreaTileCount + ", " + plane);
 
 		// Make a list of all the possible start locations
 		final List<MapCoordinates2DEx> startingPositions = new ArrayList<MapCoordinates2DEx> ();
@@ -678,7 +680,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			} while (blobSize > 0);
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "placeSingleBlob", tilesPlaced);
+		log.trace ("Exiting placeSingleBlob = " + tilesPlaced);
 		return tilesPlaced;
 	}
 
@@ -692,8 +694,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 */
 	private final void placeBlobs (final String changeFromTileTypeID, final String changeToTileTypeID, final int desiredTileCount, final int eachAreaTileCount, final int plane)
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "placeBlobs",
-			new String [] {changeFromTileTypeID, changeToTileTypeID, new Integer (desiredTileCount).toString (), new Integer (eachAreaTileCount).toString (), new Integer (plane).toString ()});
+		log.trace ("Entering placeBlobs: " + changeFromTileTypeID + ", " + changeToTileTypeID + ", " + desiredTileCount + ", " + eachAreaTileCount + ", " + plane);
 
 		int totalTilesPlaced = 0;
 		while (totalTilesPlaced < desiredTileCount)
@@ -707,7 +708,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				totalTilesPlaced = totalTilesPlaced + thisTilesPlaced;
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "placeBlobs");
+		log.trace ("Exiting placeBlobs");
 	}
 
 	/**
@@ -717,7 +718,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	private final void placeTowersOfWizardry ()
 		throws MomException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "placeTowersOfWizardry");
+		log.trace ("Entering placeTowersOfWizardry");
 
 		// Place each tower in turn
 		int towersOfWizardrySeparation = sd.getMapSize ().getTowersOfWizardrySeparation ();
@@ -773,7 +774,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			}
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "placeTowersOfWizardry");
+		log.trace ("Exiting placeTowersOfWizardry");
 	}
 
 	/**
@@ -812,8 +813,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	private final int [] [] determineShoreTileNumbers (final String tileTypeIdToSmooth, final String tileTypeIdToSetTo, final int plane)
 		throws RecordNotFoundException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "determineShoreTileNumbers",
-			new String [] {tileTypeIdToSmooth, tileTypeIdToSetTo, new Integer (plane).toString ()});
+		log.trace ("Entering determineShoreTileNumbers: " + tileTypeIdToSmooth + ", " + tileTypeIdToSetTo + ", " + plane);
 
 		final int [] [] shoreTileNumbers = new int [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
@@ -872,7 +872,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				}
 			}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "determineShoreTileNumbers");
+		log.trace ("Exiting determineShoreTileNumbers");
 		return shoreTileNumbers;
 	}
 
@@ -907,8 +907,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 */
 	final boolean checkAllDirectionsLeadToGrass (final int x, final int y, final int plane, final String directions, final boolean [] [] riverPending)
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "checkAllDirectionsLeadToGrass",
-			new String [] {new Integer (x).toString (), new Integer (y).toString (), new Integer (plane).toString (), directions});
+		log.trace ("Entering checkAllDirectionsLeadToGrass: (" + x + ", " + y + ", " + plane + "), " + directions);
 
 		boolean result = true;
 		int directionNo = 0;
@@ -938,7 +937,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			directionNo++;
 		}
 
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "checkAllDirectionsLeadToGrass", result);
+		log.trace ("Exiting checkAllDirectionsLeadToGrass = " + result);
 		return result;
 	}
 
@@ -975,8 +974,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		final boolean [] [] riverPending)
 		throws MomException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "processRiverDirections",
-			new String [] {new Integer (x).toString (), new Integer (y).toString (), new Integer (plane).toString (), new Boolean (isRiverMouth).toString (), directions});
+		log.trace ("Entering processRiverDirections: (" + x + ", " + y + ", " + plane + "), " + isRiverMouth + ", " + directions);
 
 		// Before we process the entire river branch under each direction,
 		// set each direction to non-grass so that we can't accidentally loop round onto it
@@ -1066,7 +1064,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			processRiverDirections (coords.getX (), coords.getY (), plane, convertNeighbouringTilesToDirections (riverBitmask, d2), false, riverPending);
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "processRiverDirections");
+		log.trace ("Exiting processRiverDirections");
 	}
 
 	/**
@@ -1085,7 +1083,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	private final void makeRivers (final int [] [] shoreTileNumbers, final int plane)
 		throws MomException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "makeRivers", plane);
+		log.trace ("Entering makeRivers: " + plane);
 
 		final boolean [] [] riverPending = new boolean [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
@@ -1128,7 +1126,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			if (startingPositions.size () == 0)
 			{
 				// No more suitable start locations, so give up trying - force loop to exit
-				log.warning ("Couldn't place desired number of rivers on plane " + plane + " - wanted " + sd.getLandProportion ().getRiverCount () + " rivers but only managed to find space for " + riverNo);
+				log.warn ("Couldn't place desired number of rivers on plane " + plane + " - wanted " + sd.getLandProportion ().getRiverCount () + " rivers but only managed to find space for " + riverNo);
 				riverNo = sd.getLandProportion ().getRiverCount ();
 			}
 			else
@@ -1164,7 +1162,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			}
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "makeRivers");
+		log.trace ("Exiting makeRivers");
 	}
 
 	/**
@@ -1175,7 +1173,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	private final void placeTerrainFeatures ()
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "placeTerrainFeatures");
+		log.trace ("Entering placeTerrainFeatures");
 
 		// Validate the right planes are listed in the session description
 		if (sd.getLandProportion ().getLandProportionPlane ().size () != db.getPlane ().size ())
@@ -1239,7 +1237,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					}
 				}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "placeTerrainFeatures");
+		log.trace ("Exiting placeTerrainFeatures");
 	}
 
 	/**
@@ -1253,9 +1251,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 */
 	private final boolean placeNodeRings (final int nodeAuraSize, final int x, final int y, final int plane, final MapCoordinates3DEx setAuraFromNode)
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "placeNodeRings",
-			new String [] {new Integer (nodeAuraSize).toString (), new Integer (x).toString (), new Integer (y).toString (), new Integer (plane).toString (),
-			(setAuraFromNode == null) ? "null" : setAuraFromNode.getX () + "," + setAuraFromNode.getY () + "," + setAuraFromNode.getZ ()});
+		log.trace ("Entering placeNodeRings: " + nodeAuraSize + ", (" + x + ", " + y + ", " + plane + "), " + setAuraFromNode);
 
 		// Radius zero is the centre square only
 		final MapCoordinates2DEx coords = new MapCoordinates2DEx (x, y);
@@ -1350,7 +1346,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			r++;
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "placeNodeRings", fits);
+		log.trace ("Exiting placeNodeRings = " + fits);
 		return fits;
 	}
 
@@ -1361,7 +1357,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	private final void placeNodes ()
 		throws MomException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "placeNodes");
+		log.trace ("Entering placeNodes");
 
 		// Validate the right planes are listed in the session description
 		if (sd.getNodeStrength ().getNodeStrengthPlane ().size () != db.getPlane ().size ())
@@ -1426,7 +1422,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				}
 			}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "placeNodes");
+		log.trace ("Exiting placeNodes");
 	}
 
 	/**
@@ -1436,7 +1432,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	final String chooseRandomNodeTileTypeID ()
 		throws MomException
 	{
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "chooseRandomNodeTileTypeID");
+		log.trace ("Exiting chooseRandomNodeTileTypeID");
 
 		// List all candidates
 		final List<String> nodeTileTypeIDs = new ArrayList<String> ();
@@ -1449,7 +1445,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 		final String chosenTileTypeID = nodeTileTypeIDs.get (getRandomUtils ().nextInt (nodeTileTypeIDs.size ()));
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "chooseRandomNodeTileTypeID", chosenTileTypeID);
+		log.trace ("Exiting chooseRandomNodeTileTypeID = " + chosenTileTypeID);
 		return chosenTileTypeID;
 	}
 
@@ -1460,7 +1456,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	final String chooseRandomLairFeatureID ()
 		throws MomException
 	{
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "chooseRandomLairFeatureID");
+		log.trace ("Entering chooseRandomLairFeatureID");
 
 		// List all candidates
 		final List<String> lairMapFeatureIDs = new ArrayList<String> ();
@@ -1476,7 +1472,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 		final String chosenMapFeatureID = lairMapFeatureIDs.get (getRandomUtils ().nextInt (lairMapFeatureIDs.size ()));
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "chooseRandomLairFeatureID", chosenMapFeatureID);
+		log.trace ("Exiting chooseRandomLairFeatureID = " + chosenMapFeatureID);
 		return chosenMapFeatureID;
 	}
 
@@ -1492,7 +1488,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	private final void placeLairs (final int numberOfLairs, final boolean isWeak)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "placeLairs", new String [] {new Integer (numberOfLairs).toString (), new Boolean (isWeak).toString ()});
+		log.trace ("Entering placeLairs: " + numberOfLairs + ", " + isWeak);
 
 		// Check if possible to place a lair at every cell
 		final List<MapCoordinates3DEx> possibleLocations = new ArrayList<MapCoordinates3DEx> ();
@@ -1523,7 +1519,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			lairsPlaced++;
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "placeLairs");
+		log.trace ("Exiting placeLairs");
 	}
 
 	/**
@@ -1535,7 +1531,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	public final void generateInitialCombatAreaEffects ()
 		throws RecordNotFoundException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "generateInitialCombatAreaEffects");
+		log.trace ("Entering generateInitialCombatAreaEffects");
 
 		for (int plane = 0; plane < db.getPlane ().size (); plane++)
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
@@ -1574,7 +1570,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					}
 				}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "generateInitialCombatAreaEffects");
+		log.trace ("Exiting generateInitialCombatAreaEffects");
 	}
 
 	/**
@@ -1618,8 +1614,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		final PlayerServerDetails monsterPlayer)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "fillSingleLairOrTowerWithMonsters", new String []
-			{lairLocation.toString (), magicRealmLifeformTypeID, new Integer (monsterStrengthMin).toString (), new Integer (monsterStrengthMax).toString (), new DecimalFormat ("0.000").format (powerProportion)});
+		log.trace ("Entering fillSingleLairOrTowerWithMonsters: " +
+			lairLocation + ", " + magicRealmLifeformTypeID + ", " + monsterStrengthMin + "-" + monsterStrengthMax + ", " + new DecimalFormat ("0.000").format (powerProportion));
 
 		int monstersStrength = monsterStrengthMin + (int) Math.round ((monsterStrengthMax - monsterStrengthMin) * powerProportion);
 
@@ -1655,7 +1651,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, secondaryMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "fillSingleLairOrTowerWithMonsters");
+		log.trace ("Exiting fillSingleLairOrTowerWithMonsters");
 	}
 
 	/**
@@ -1675,7 +1671,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	public final void fillNodesLairsAndTowersWithMonsters (final MomGeneralServerKnowledge gsk, final PlayerServerDetails monsterPlayer)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (OverlandMapGeneratorImpl.class.getName (), "fillNodesLairsAndTowersWithMonsters");
+		log.trace ("Entering fillNodesLairsAndTowersWithMonsters: Player ID " + monsterPlayer.getPlayerDescription ().getPlayerID ());
 
 		// Validate the right planes are listed in the session description
 		if (sd.getDifficultyLevel ().getDifficultyLevelPlane ().size () != db.getPlane ().size ())
@@ -1696,7 +1692,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		for (final DifficultyLevelPlane plane : sd.getDifficultyLevel ().getDifficultyLevelPlane ())
 		{
 			// Add monsters to this plane
-			log.finest ("fillNodesLairsAndTowersWithMonsters for plane " + plane.getPlaneNumber ());
+			log.debug ("fillNodesLairsAndTowersWithMonsters for plane " + plane.getPlaneNumber ());
 
 			for (int x = 0; x < sd.getMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
@@ -1762,7 +1758,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				}
 		}
 
-		log.exiting (OverlandMapGeneratorImpl.class.getName (), "fillNodesLairsAndTowersWithMonsters");
+		log.trace ("Exiting fillNodesLairsAndTowersWithMonsters");
 	}
 
 	/**

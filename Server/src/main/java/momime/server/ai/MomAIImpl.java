@@ -1,7 +1,6 @@
 package momime.server.ai;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -15,8 +14,11 @@ import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Plane;
+import momime.server.database.v0_9_5.Plane;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -28,7 +30,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class MomAIImpl implements MomAI
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomAIImpl.class.getName ());
+	private final Log log = LogFactory.getLog (MomAIImpl.class);
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -57,7 +59,7 @@ public final class MomAIImpl implements MomAI
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.entering (MomAIImpl.class.getName (), "aiPlayerTurn", player.getPlayerDescription ().getPlayerName ());
+		log.trace ("Entering aiPlayerTurn: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		// Decide what to build in all of this players' cities
 		// Note we do this EVERY TURN - we don't wait for the previous building to complete - this allows the AI player to change their mind
@@ -88,7 +90,7 @@ public final class MomAIImpl implements MomAI
 		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (priv.getSpellIDBeingResearched () == null))
 			getSpellAI ().decideWhatToResearch (player, db);
 
-		log.exiting (MomAIImpl.class.getName (), "aiPlayerTurn", player.getPlayerDescription ().getPlayerName ());
+		log.trace ("Exiting aiPlayerTurn");
 	}
 
 	/**

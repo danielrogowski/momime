@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -12,6 +10,9 @@ import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -24,7 +25,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChangeCityConstructionMessageImpl extends ChangeCityConstructionMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChangeCityConstructionMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChangeCityConstructionMessageImpl.class);
 	
 	/** Server-only city utils */
 	private CityServerUtils cityServerUtils;
@@ -43,8 +44,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.entering (ChangeCityConstructionMessageImpl.class.getName (), "process",
-			new String [] {(getCityLocation () == null) ? "null" : getCityLocation ().toString (), getBuildingOrUnitID ()});
+		log.trace ("Entering process: " + getCityLocation () + ", " + getBuildingOrUnitID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -54,7 +54,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 		if (error != null)
 		{
 			// Return error
-			log.warning (ChangeCityConstructionMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -72,7 +72,7 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 				mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting (), false);
 		}
 
-		log.exiting (ChangeCityConstructionMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

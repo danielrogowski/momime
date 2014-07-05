@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
-import momime.common.database.newgame.v0_9_4.FogOfWarValue;
+import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
+import momime.common.database.newgame.v0_9_5.FogOfWarValue;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessage;

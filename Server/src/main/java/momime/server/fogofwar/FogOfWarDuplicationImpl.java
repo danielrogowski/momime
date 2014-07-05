@@ -5,7 +5,7 @@ import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.UnitHasSkill;
+import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.v0_9_5.AddUnitMessageData;

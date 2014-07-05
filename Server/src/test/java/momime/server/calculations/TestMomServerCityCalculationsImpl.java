@@ -10,7 +10,7 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_4.BuildingPopulationProductionModifier;
+import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
@@ -22,7 +22,7 @@ import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.Building;
+import momime.server.database.v0_9_5.Building;
 
 import org.junit.Test;
 

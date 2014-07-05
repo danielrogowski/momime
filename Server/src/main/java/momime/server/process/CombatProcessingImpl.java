@@ -3,7 +3,6 @@ package momime.server.process;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -13,7 +12,7 @@ import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
+import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.messages.servertoclient.v0_9_5.FoundLairNodeTowerMessage;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitMessage;
@@ -49,6 +48,9 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.messages.v0_9_5.ServerGridCell;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -66,7 +68,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	private static final int COMBAT_SETUP_UNITS_PER_ROW = 5;
 	
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CombatProcessingImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CombatProcessingImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -124,9 +126,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final MoveResultsInAttackTypeID typeOfCombat, final String monsterUnitID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "initiateCombat",
-			new String [] {defendingLocation.toString (), attackingFrom.toString (), (scheduledCombatURN == null) ? "NotSched" : scheduledCombatURN.toString (),
-			attackingPlayer.getPlayerDescription ().getPlayerID ().toString (), typeOfCombat.toString ()});
+		log.trace ("Entering initiateCombat: " + defendingLocation + ", " + attackingFrom + ", " + scheduledCombatURN +
+			", Player ID " + attackingPlayer.getPlayerDescription ().getPlayerID () + ", " + typeOfCombat);
 		
 		// We need to inform all players that the attacker is involved in a combat.
 		// We deal with the defender (if its a real human/human combat) within StartCombat - we deal with the attacker here so that the player is
@@ -156,7 +157,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			getCombatStartAndEnd ().startCombat (defendingLocation, attackingFrom, scheduledCombatURN, attackingPlayer, attackingUnitURNs, mom);
 		}
 
-		log.exiting (CombatProcessingImpl.class.getName (), "initiateCombat");
+		log.trace ("Exiting initiateCombat");
 	}
 		
 	/**
@@ -241,7 +242,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "calculateUnitCombatClass", unit.getUnitURN ());
+		log.trace ("Entering calculateUnitCombatClass: Unit URN " + unit.getUnitURN ());
 		final int result;
 		
 		// Does this unit have a ranged attack?
@@ -270,7 +271,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// No attacks at all (settlers)
 			result = 5;
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "calculateUnitCombatClass", result);
+		log.trace ("Exiting calculateUnitCombatClass = " + result);
 		return result;
 	}
 	
@@ -280,7 +281,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	final List<Integer> listNumberOfEachCombatClass (final List<MemoryUnitAndCombatClass> units)
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "listNumberOfEachCombatClass", units.size ());
+		log.trace ("Entering listNumberOfEachCombatClass: " + units.size ());
 				
 		final List<Integer> counts = new ArrayList<Integer> ();
 		
@@ -305,7 +306,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		if (currentCombatClassCount > 0)
 			counts.add (currentCombatClassCount);
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "listNumberOfEachCombatClass", counts.size ());
+		log.trace ("Exiting listNumberOfEachCombatClass = " + counts.size ());
 		return counts;
 	}
 	
@@ -318,7 +319,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	final void mergeRowsIfTooMany (final List<Integer> unitsInRow, final int maxRows)
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "mergeRowsIfTooMany", new Integer [] {unitsInRow.size (), maxRows});
+		log.trace ("Entering mergeRowsIfTooMany: " + unitsInRow.size () + ", " + maxRows);
 		
 		while (unitsInRow.size () > maxRows)
 		{
@@ -341,7 +342,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			unitsInRow.remove (bestRowNo+1);
 		}
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "mergeRowsIfTooMany", unitsInRow.size ());
+		log.trace ("Exiting mergeRowsIfTooMany = " + unitsInRow.size ());
 	}
 	
 	/**
@@ -353,7 +354,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	final void moveUnitsInOverfullRowsBackwards (final List<Integer> unitsInRow, final List<Integer> maxUnitsInRow)
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "moveUnitsInOverfullRowsBackwards", new Integer [] {unitsInRow.size (), maxUnitsInRow.size ()});
+		log.trace ("Entering moveUnitsInOverfullRowsBackwards: " + unitsInRow.size () + ", " + maxUnitsInRow.size ());
 		
 		int overflow = 0;
 		for (int rowNo = 0; rowNo < unitsInRow.size (); rowNo++)
@@ -390,7 +391,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			unitsInRow.set (rowNo, unitsInRow.get (rowNo) + overflow);
 		}
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "moveUnitsInOverfullRowsBackwards", unitsInRow.size ());
+		log.trace ("Exiting moveUnitsInOverfullRowsBackwards = " + unitsInRow.size ());
 	}
 
 	/**
@@ -403,7 +404,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	final void moveUnitsInOverfullRowsForwards (final List<Integer> unitsInRow, final List<Integer> maxUnitsInRow) throws MomException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "moveUnitsInOverfullRowsForwards", new Integer [] {unitsInRow.size (), maxUnitsInRow.size ()});
+		log.trace ("Entering moveUnitsInOverfullRowsForwards: " + unitsInRow + ", " + maxUnitsInRow.size ());
 		
 		int overflow = 0;
 		for (int rowNo = unitsInRow.size () - 1; rowNo >= 0; rowNo--)
@@ -428,7 +429,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		if (overflow > 0)
 			throw new MomException ("moveUnitsInOverfullRowsForwards: Not enough room to position all units in combat - " + overflow);
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "moveUnitsInOverfullRowsForwards", unitsInRow.size ());
+		log.trace ("Exiting moveUnitsInOverfullRowsForwards: " + unitsInRow.size ());
 	}
 	
 	/**
@@ -455,7 +456,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final CoordinateSystem combatMapCoordinateSystem, final MapAreaOfCombatTiles combatMap, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "placeCombatUnits");
+		log.trace ("Entering placeCombatUnits: " + combatLocation + ", (" + startX + ", " + startY + "), " + unitHeading + ", " + combatSide);
 		
 		int unitNo = 0;		// Index into unit list of unit being placed
 		final MapCoordinates2DEx centre = new MapCoordinates2DEx (startX, startY);
@@ -543,7 +544,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), unitHeading + 4));
 		}
 			
-		log.exiting (CombatProcessingImpl.class.getName (), "placeCombatUnits");
+		log.trace ("Exiting placeCombatUnits");
 	}
 
 	/**
@@ -577,9 +578,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final UnitCombatSideID combatSide, final List<Integer> onlyUnitURNs, final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "positionCombatUnits",
-			new String [] {currentLocation.toString (), new Integer (startX).toString (), new Integer (startY).toString (), new Integer (maxRows).toString (),
-			new Integer (unitHeading).toString (), combatSide.toString (), (onlyUnitURNs == null) ? "All" : new Integer (onlyUnitURNs.size ()).toString ()});
+		log.trace ("Entering positionCombatUnits: " + currentLocation + ", (" +
+			startX + ", " + startY + "), " + maxRows + ", " + unitHeading + ", " + combatSide + ", " + ((onlyUnitURNs == null) ? "All" : new Integer (onlyUnitURNs.size ()).toString ()));
 		
 		// First check for obstructions, to work out the maximum number of units we can fit on each row
 		final List<Integer> maxUnitsInRow = determineMaxUnitsInRow (startX, startY, unitHeading, maxRows,
@@ -617,7 +617,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		placeCombatUnits (combatLocation, startX, startY, unitHeading, combatSide, unitsToPosition, unitsInRow, startCombatMessage,
 			attackingPlayer, defendingPlayer, combatMapCoordinateSystem, combatMap, mom.getServerDB ());
 
-		log.exiting (CombatProcessingImpl.class.getName (), "positionCombatUnits");
+		log.trace ("Exiting positionCombatUnits");
 	}
 	
 	/**
@@ -640,8 +640,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final boolean initialAutoControlHumanPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "progressCombat", new String []
-			{combatLocation.toString (), new Boolean (initialFirstTurn).toString (), new Boolean (initialAutoControlHumanPlayer).toString ()});
+		log.trace ("Entering progressCombat: " + combatLocation + ", " + initialFirstTurn + ", " + initialAutoControlHumanPlayer);
 
 		final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
@@ -666,19 +665,19 @@ public final class CombatProcessingImpl implements CombatProcessing
 				{
 					firstTurn = false;
 					tc.setCombatCurrentPlayer (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
-					log.finest ("First turn - Defender");
+					log.debug ("First turn - Defender");
 				}
 				
 				// Otherwise compare against the player from the last turn
 				else if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayer ()))
 				{
 					tc.setCombatCurrentPlayer (combatPlayers.getAttackingPlayer ().getPlayerDescription ().getPlayerID ());
-					log.finest ("Attacker's turn");
+					log.debug ("Attacker's turn");
 				}
 				else
 				{
 					tc.setCombatCurrentPlayer (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
-					log.finest ("Defender's turn");
+					log.debug ("Defender's turn");
 				}
 				
 				// Tell all human players involved in the combat who the new player is
@@ -724,7 +723,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
 		}
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "progressCombat");
+		log.trace ("Exiting progressCombat");
 	}
 	
 	/**
@@ -759,7 +758,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final List<PlayerServerDetails> players, final FogOfWarSettingData fogOfWarSettings, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "purgeDeadUnitsAndCombatSummonsFromCombat", combatLocation);
+		log.trace ("Entering purgeDeadUnitsAndCombatSummonsFromCombat: " + combatLocation);
 		
 		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
@@ -806,9 +805,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 					manuallyTellDefenderClientToKill = (manuallyTellAttackerClientToKill) && (defendingPlayer != null);
 					
 					if (manuallyTellAttackerClientToKill)
-						log.finest ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling attacker to remove dead unit URN " + trueUnit.getUnitURN ());
+						log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling attacker to remove dead unit URN " + trueUnit.getUnitURN ());
 					if (manuallyTellDefenderClientToKill)
-						log.finest ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling defender to remove dead unit URN " + trueUnit.getUnitURN ());
+						log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling defender to remove dead unit URN " + trueUnit.getUnitURN ());
 					
 					// Use regular kill routine
 					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
@@ -823,7 +822,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					manuallyTellDefenderClientToKill = false;
 					if (manuallyTellAttackerClientToKill)
 					{
-						log.finest ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling attacking player to remove NLT monster with unit URN " + trueUnit.getUnitURN ());
+						log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling attacking player to remove NLT monster with unit URN " + trueUnit.getUnitURN ());
 						monstersCount++;
 					}
 				}
@@ -860,9 +859,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 				}
 			}
 		
-		log.finest ("purgeDeadUnitsAndCombatSummonsFromCombat permanently freed " +
+		log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat permanently freed " +
 			deadCount + " dead units and " + summonedCount + " summons, and told attacking client to free " + monstersCount + "monster defenders who''re still alive");
-		log.exiting (CombatProcessingImpl.class.getName (), "purgeDeadUnitsAndCombatSummonsFromCombat");
+		log.trace ("Exiting purgeDeadUnitsAndCombatSummonsFromCombat");
 	}
 
 	/**
@@ -895,8 +894,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "setUnitIntoOrTakeUnitOutOfCombat", new String [] {new Integer (trueUnit.getUnitURN ()).toString (),
-			(combatSide == null) ? "Side null" : combatSide.toString (), (combatLocation == null) ? "Loc null" : combatLocation.toString ()});
+		log.trace ("Entering setUnitIntoOrTakeUnitOutOfCombat: Unit URN " + trueUnit.getUnitURN () + ", " + combatSide + ", " + combatLocation);
 
 		final MemoryGridCell tc = trueTerrain.getPlane ().get (terrainLocation.getZ ()).getRow ().get (terrainLocation.getY ()).getCell ().get (terrainLocation.getX ());
 		
@@ -935,7 +933,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// Update on client
 			if (defendingPlayer.getPlayerDescription ().isHuman ())
 			{
-				log.finest ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to defender's client");
+				log.debug ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to defender's client");
 				defendingPlayer.getConnection ().sendMessageToClient (msg);
 			}
 		}
@@ -960,12 +958,12 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// Update on client
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
 			{
-				log.finest ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to attacker's client");
+				log.debug ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to attacker's client");
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
 			}
 		}
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "setUnitIntoOrTakeUnitOutOfCombat");
+		log.trace ("Exiting setUnitIntoOrTakeUnitOutOfCombat");
 	}
 	
 	/**
@@ -985,13 +983,13 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final MapCoordinates3DEx combatLocation, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "removeUnitsFromCombat", combatLocation);
+		log.trace ("Entering removeUnitsFromCombat: " + combatLocation);
 		
 		for (final MemoryUnit trueUnit : trueMap.getUnit ())
 			if (combatLocation.equals (trueUnit.getCombatLocation ()))
 				setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueMap.getMap (), trueUnit, combatLocation, null, null, null, null, null, db);
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "removeUnitsFromCombat");
+		log.trace ("Exiting removeUnitsFromCombat");
 	}
 	
 	/**
@@ -1025,7 +1023,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes, final MomSessionVariables mom)
 		throws MomException, PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (CombatProcessingImpl.class.getName (), "okToMoveUnitInCombat");
+		log.trace ("Entering okToMoveUnitInCombat: Unit URN " + tu.getUnitURN ());
 		
 		// Find who the two players are
 		final MapCoordinates3DEx combatLocation = (MapCoordinates3DEx) tu.getCombatLocation ();
@@ -1142,7 +1140,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				break;
 		}
 		
-		log.exiting (CombatProcessingImpl.class.getName (), "okToMoveUnitInCombat");
+		log.trace ("Exiting okToMoveUnitInCombat");
 	}
 	
 	/**

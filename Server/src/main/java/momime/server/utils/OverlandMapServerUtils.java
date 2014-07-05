@@ -13,7 +13,7 @@ import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.UnitCombatSideID;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Race;
+import momime.server.database.v0_9_5.Race;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import com.ndg.map.CoordinateSystem;

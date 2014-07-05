@@ -1,7 +1,5 @@
 package momime.server.process.resourceconsumer;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -16,6 +14,9 @@ import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -25,7 +26,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class MomResourceConsumerUnit implements MomResourceConsumer
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomResourceConsumerUnit.class.getName ());
+	private final Log log = LogFactory.getLog (MomResourceConsumerUnit.class);
 	
 	/** True map unit that is consuming resources */
 	private MemoryUnit unit;
@@ -123,7 +124,7 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (MomResourceConsumerUnit.class.getName (), "kill", getUnit ().getUnitURN ());
+		log.trace ("Entering kill: Unit URN " + getUnit ().getUnitURN ());
 
 		// Action needs to depend on the type of unit
 		final KillUnitActionID action;
@@ -145,7 +146,7 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (unitKilled);
 		}
 
-		log.exiting (MomResourceConsumerUnit.class.getName (), "kill");
+		log.trace ("Exiting kill");
 	}
 
 	/**

@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_4.CombatMapLayerID;
+import momime.common.database.v0_9_5.CombatMapLayerID;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MapRowOfCombatTiles;

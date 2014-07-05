@@ -1,7 +1,5 @@
 package momime.server.process.resourceconsumer;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -14,6 +12,9 @@ import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.process.SpellProcessing;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -24,7 +25,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class MomResourceConsumerSpell implements MomResourceConsumer
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomResourceConsumerSpell.class.getName ());
+	private final Log log = LogFactory.getLog (MomResourceConsumerSpell.class);
 	
 	/** True map spell that is consuming resources */
 	private MemoryMaintainedSpell spell;
@@ -122,7 +123,7 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (MomResourceConsumerSpell.class.getName (), "kill", getSpell ().getSpellID ());
+		log.trace ("Entering kill: " + getSpell ().getSpellID ());
 
 		getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (),
 			getSpell ().getCastingPlayerID (), getSpell ().getSpellID (), getSpell ().getUnitURN (), getSpell ().getUnitSkillID (),
@@ -139,7 +140,7 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (spellSwitchedOff);
 		}
 
-		log.exiting (MomResourceConsumerSpell.class.getName (), "kill");
+		log.trace ("Exiting kill");
 	}
 
 	/**

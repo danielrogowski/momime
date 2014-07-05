@@ -3,7 +3,6 @@ package momime.server.ai;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -25,6 +24,9 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.process.CombatProcessing;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -38,7 +40,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class CombatAIImpl implements CombatAI
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CombatAIImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CombatAIImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -61,7 +63,7 @@ public final class CombatAIImpl implements CombatAI
 	final List<MemoryUnit> listUnitsToMove (final MapCoordinates3DEx combatLocation, final int currentPlayerID,
 		final List<MemoryUnit> trueUnits)
 	{
-		log.entering (CombatAIImpl.class.getName (), "listOurUnits", currentPlayerID);
+		log.trace ("Entering listOurUnits: Player ID " + currentPlayerID);
 		
 		final List<MemoryUnit> unitsToMove = new ArrayList<MemoryUnit> ();
 		for (final MemoryUnit tu : trueUnits)
@@ -71,7 +73,7 @@ public final class CombatAIImpl implements CombatAI
 				
 				unitsToMove.add (tu);				
 		
-		log.exiting (CombatAIImpl.class.getName (), "listOurUnits", unitsToMove.size ());
+		log.trace ("Exiting listOurUnits = " + unitsToMove.size ());
 		return unitsToMove;
 	}
 	
@@ -95,7 +97,7 @@ public final class CombatAIImpl implements CombatAI
 		final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CombatAIImpl.class.getName (), "calculateUnitCombatAIOrder", unit.getUnitURN ());
+		log.trace ("Entering calculateUnitCombatAIOrder: Unit URN + " + unit.getUnitURN ());
 		final int result;
 
 		// Caster with MP remaining?
@@ -119,7 +121,7 @@ public final class CombatAIImpl implements CombatAI
 				result = 4;
 		}
 		
-		log.exiting (CombatAIImpl.class.getName (), "calculateUnitCombatAIOrder", result);
+		log.trace ("Exiting calculateUnitCombatAIOrder = " + result);
 		return result;
 	}
 	
@@ -144,7 +146,7 @@ public final class CombatAIImpl implements CombatAI
 		final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CombatAIImpl.class.getName (), "evaluateTarget", new int [] {attacker.getUnitURN (), defender.getUnitURN ()});
+		log.trace ("Entering evaluateTarget: Unit URN " + attacker.getUnitURN () + ", Unit URN " + defender.getUnitURN ());
 		final int result;
 
 		// Go for units with sufficient mana to still cast spells first
@@ -159,7 +161,7 @@ public final class CombatAIImpl implements CombatAI
 		else
 			result = 1;
 		
-		log.exiting (CombatAIImpl.class.getName (), "evaluateTarget", result);
+		log.trace ("Exiting evaluateTarget = " + result);
 		return result;
 	}
 	
@@ -186,7 +188,7 @@ public final class CombatAIImpl implements CombatAI
 		final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CombatAIImpl.class.getName (), "selectBestTarget", attacker.getUnitURN ());
+		log.trace ("Entering selectBestTarget: Unit URN " + attacker.getUnitURN ());
 
 		// Need this in a list for the comparison below
 		final List<CombatMoveType> attacks = new ArrayList<CombatMoveType> ();
@@ -211,8 +213,7 @@ public final class CombatAIImpl implements CombatAI
 					bestUnit = thisUnit;
 			}
 		
-		log.exiting (CombatAIImpl.class.getName (), "selectBestTarget",
-			(bestUnit == null) ? "null" : new Integer (bestUnit.getUnitURN ()).toString ());
+		log.trace ("Exiting selectBestTarget : Unit URN " + ((bestUnit == null) ? "null" : new Integer (bestUnit.getUnitURN ()).toString ()));
 		return bestUnit;
 	}
 	
@@ -233,7 +234,7 @@ public final class CombatAIImpl implements CombatAI
 		final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (CombatAIImpl.class.getName (), "moveOneUnit", tu.getUnitURN ());
+		log.trace ("Entering moveOneUnit: Unit URN + " + tu.getUnitURN ());
 		
 		// Work out where this unit can move
 		final int [] [] doubleMovementDistances = new int [mom.getCombatMapCoordinateSystem ().getHeight ()] [mom.getCombatMapCoordinateSystem ().getWidth ()];
@@ -277,7 +278,7 @@ public final class CombatAIImpl implements CombatAI
 			getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
 		}
 		
-		log.exiting (CombatAIImpl.class.getName (), "moveOneUnit");
+		log.trace ("Exiting moveOneUnit");
 	}
 	
 	/**
@@ -299,7 +300,7 @@ public final class CombatAIImpl implements CombatAI
 	public final void aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (CombatAIImpl.class.getName (), "aiCombatTurn", currentPlayer.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering aiCombatTurn: Player ID + " + currentPlayer.getPlayerDescription ().getPlayerID ());
 		
 		// Get the combat terrain
 		final ServerGridCell serverGridCell = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -328,7 +329,7 @@ public final class CombatAIImpl implements CombatAI
 			if (tu.getUnit ().getCombatPosition () != null)
 				moveOneUnit (tu.getUnit (), combatLocation, combatMap, mom);
 		
-		log.exiting (CombatAIImpl.class.getName (), "aiCombatTurn");
+		log.trace ("Exiting aiCombatTurn");
 	}
 
 	/**

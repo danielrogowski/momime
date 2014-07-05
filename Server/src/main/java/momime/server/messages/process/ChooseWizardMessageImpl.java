@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -10,6 +8,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.ChooseWizardMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.PlayerMessageProcessing;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -21,7 +22,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChooseWizardMessageImpl extends ChooseWizardMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChooseWizardMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChooseWizardMessageImpl.class);
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
@@ -38,15 +39,14 @@ public final class ChooseWizardMessageImpl extends ChooseWizardMessage implement
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
-		log.entering (ChooseWizardMessageImpl.class.getName (), "process",
-			new String [] {sender.getPlayerDescription ().getPlayerID ().toString (), getWizardID ()});
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getWizardID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		getPlayerMessageProcessing ().chooseWizard
 			(getWizardID (), sender, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
-		log.exiting (ChooseWizardMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

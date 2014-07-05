@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -10,6 +8,9 @@ import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -22,7 +23,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChooseCityNameMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChooseCityNameMessageImpl.class);
 
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -37,7 +38,7 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		log.entering (ChooseCityNameMessageImpl.class.getName (), "process", sender.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getCityLocation ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -53,14 +54,14 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 		}
 		else
 		{
-			log.warning ("Received City Name message from " + sender.getPlayerDescription ().getPlayerName () + " who isn't the city owner");
+			log.warn ("Received City Name message from " + sender.getPlayerDescription ().getPlayerName () + " who isn't the city owner");
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText ("You tried to name a city which isn''t yours - change ignored.");
 			sender.getConnection ().sendMessageToClient (reply);
 		}
 
-		log.exiting (ChooseCityNameMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

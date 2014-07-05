@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.v0_9_4.FogOfWarValue;
+import momime.common.database.newgame.v0_9_5.FogOfWarValue;
 import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.FogOfWarStateID;
@@ -32,7 +32,7 @@ import momime.server.calculations.MomServerCityCalculationsImpl;
 import momime.server.calculations.MomServerUnitCalculationsImpl;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.Plane;
+import momime.server.database.v0_9_5.Plane;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;

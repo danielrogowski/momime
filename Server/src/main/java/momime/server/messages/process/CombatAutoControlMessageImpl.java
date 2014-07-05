@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -10,6 +8,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.CombatAutoControlMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatProcessing;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -25,7 +26,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class CombatAutoControlMessageImpl extends CombatAutoControlMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CombatAutoControlMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CombatAutoControlMessageImpl.class);
 
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
@@ -43,13 +44,13 @@ public final class CombatAutoControlMessageImpl extends CombatAutoControlMessage
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.entering (CombatAutoControlMessageImpl.class.getName (), "process", getCombatLocation ());
+		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getCombatLocation ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		getCombatProcessing ().progressCombat ((MapCoordinates3DEx) getCombatLocation (), false, true, mom);
 
-		log.exiting (CombatAutoControlMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

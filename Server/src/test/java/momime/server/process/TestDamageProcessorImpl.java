@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.calculations.MomUnitCalculations;
-import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
+import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessage;
 import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessageTypeID;
 import momime.common.messages.v0_9_5.CaptureCityDecisionID;

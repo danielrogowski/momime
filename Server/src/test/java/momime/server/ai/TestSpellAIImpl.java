@@ -13,7 +13,7 @@ import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_5.Spell;
 
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ public final class TestSpellAIImpl
 		for (int n = 10; n < 20; n++)
 			spells.add (db.getSpell ().get (n));
 
-		assertEquals ("SP020", ai.chooseSpellToResearchAI (spells, "AI Player").getSpellID ());
+		assertEquals ("SP020", ai.chooseSpellToResearchAI (spells, -1).getSpellID ());
 	}
 
 	/**
@@ -57,7 +57,7 @@ public final class TestSpellAIImpl
 	public final void testChooseSpellToResearchAI_EmptyList () throws MomException
 	{
 		final SpellAIImpl ai = new SpellAIImpl ();
-		ai.chooseSpellToResearchAI (new ArrayList<Spell> (), "AI Player");
+		ai.chooseSpellToResearchAI (new ArrayList<Spell> (), -1);
 	}
 
 	/**
@@ -89,10 +89,10 @@ public final class TestSpellAIImpl
 		}
 
 		// Same magic realm/spell rank at the 10 from the previous test
-		assertEquals ("SP020", ai.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db).getSpellID ());
+		assertEquals ("SP020", ai.chooseFreeSpellAI (spells, "MB04", "SR02", -1, db).getSpellID ());
 
 		// If we give the player one of the spells, should always pick the other one
 		spells.get (19).setStatus (SpellResearchStatusID.AVAILABLE);
-		assertEquals ("SP013", ai.chooseFreeSpellAI (spells, "MB04", "SR02", "AI Player", db).getSpellID ());
+		assertEquals ("SP013", ai.chooseFreeSpellAI (spells, "MB04", "SR02", -1, db).getSpellID ());
 	}
 }

@@ -1,7 +1,6 @@
 package momime.server.messages.process;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -9,6 +8,9 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.messages.clienttoserver.v0_9_5.CaptureCityDecisionMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatStartAndEnd;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -22,7 +24,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (CaptureCityDecisionMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (CaptureCityDecisionMessageImpl.class);
 
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
@@ -38,15 +40,14 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.entering (CaptureCityDecisionMessageImpl.class.getName (), "process",
-			new String [] {getCityLocation ().toString (), getCaptureCityDecision ().toString ()});
+		log.trace ("Entering process: " + getCityLocation () + ", " + getCaptureCityDecision ());
 		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		final PlayerServerDetails defendingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
 		getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
 
-		log.exiting (CaptureCityDecisionMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}	
 
 	/**

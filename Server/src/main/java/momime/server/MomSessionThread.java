@@ -1,7 +1,5 @@
 package momime.server;
 
-import java.util.logging.Logger;
-
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.FogOfWarStateID;
 import momime.common.messages.v0_9_5.MagicPowerDistribution;
@@ -25,11 +23,14 @@ import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.Spell;
+import momime.server.database.v0_9_5.Spell;
 import momime.server.mapgenerator.CombatMapGeneratorImpl;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.ui.MomServerUI;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
@@ -45,7 +46,7 @@ import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
 public final class MomSessionThread extends MultiplayerSessionThread implements MomSessionVariables
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (MomSessionThread.class.getName ());
+	private final Log log = LogFactory.getLog (MomSessionThread.class);
 	
 	/** Combat map coordinate system, expect this to be merged into session desc once client is also in Java */
 	private final CoordinateSystem combatMapCoordinateSystem;
@@ -57,7 +58,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	private MomServerUI ui;
 
 	/** Logger for logging key messages relating to this session */
-	private Logger sessionLogger;
+	private Log sessionLogger;
 
 	/** Overland map generator for this session */
 	private OverlandMapGenerator overlandMapGenerator;	
@@ -95,7 +96,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Logger for logging key messages relating to this session
 	 */
 	@Override
-	public final Logger getSessionLogger ()
+	public final Log getSessionLogger ()
 	{
 		return sessionLogger;
 	}
@@ -103,7 +104,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/**
 	 * @param logger Logger for logging key messages relating to this session
 	 */
-	public final void setSessionLogger (final Logger logger)
+	public final void setSessionLogger (final Log logger)
 	{
 		sessionLogger = logger;
 	}
@@ -194,7 +195,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	protected final PersistentPlayerPrivateKnowledge createPersistentPlayerPrivateKnowledge ()
 	{
-		log.entering (MomSessionThread.class.getName (), "createPersistentPlayerPrivateKnowledge");
+		log.trace ("Entering createPersistentPlayerPrivateKnowledge");
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
@@ -297,7 +298,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		fogOfWarMemory.setMap (fogOfWarMap);
 		priv.setFogOfWarMemory (fogOfWarMemory);
 
-		log.exiting (MomSessionThread.class.getName (), "createPersistentPlayerPrivateKnowledge", priv);
+		log.trace ("Exiting createPersistentPlayerPrivateKnowledge = " + priv);
 		return priv;
 	}
 

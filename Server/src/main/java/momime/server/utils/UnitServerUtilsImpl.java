@@ -3,15 +3,14 @@ package momime.server.utils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.UnitSettingData;
-import momime.common.database.v0_9_4.UnitHasSkill;
+import momime.common.database.newgame.v0_9_5.UnitSettingData;
+import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.servertoclient.v0_9_5.SetSpecialOrderMessage;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
@@ -27,9 +26,12 @@ import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Unit;
-import momime.server.database.v0_9_4.UnitSkill;
+import momime.server.database.v0_9_5.Unit;
+import momime.server.database.v0_9_5.UnitSkill;
 import momime.server.messages.ServerMemoryGridCellUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -42,35 +44,35 @@ import com.ndg.random.RandomUtils;
 public final class UnitServerUtilsImpl implements UnitServerUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (UnitServerUtilsImpl.class.getName ());
-	
+	private final Log log = LogFactory.getLog (UnitServerUtilsImpl.class);
+
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
-	
+
 	/** Server-only unit calculations */
 	private MomServerUnitCalculations serverUnitCalculations;
-	
+
 	/** Random number generator */
 	private RandomUtils randomUtils;
-	
+
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
-	
+
 	/**
 	 * Chooses a name for this hero (out of 5 possibilities) and rolls their random skills
+	 * 
 	 * @param unit The hero to generate name and skills for
 	 * @param db Lookup lists built over the XML database
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the definition for the unit
 	 */
 	@Override
-	public final void generateHeroNameAndRandomSkills (final MemoryUnit unit, final ServerDatabaseEx db)
-		throws MomException, RecordNotFoundException
+	public final void generateHeroNameAndRandomSkills (final MemoryUnit unit, final ServerDatabaseEx db) throws MomException, RecordNotFoundException
 	{
-		log.entering (UnitServerUtilsImpl.class.getName (), "generateHeroNameAndRandomSkills", unit.getUnitID ());
+		log.trace ("Entering generateHeroNameAndRandomSkills: " + unit.getUnitID ());
 
 		final Unit unitDefinition = db.findUnit (unit.getUnitID (), "generateHeroNameAndRandomSkills");
 
@@ -81,9 +83,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		unit.setHeroNameID (unitDefinition.getHeroName ().get (getRandomUtils ().nextInt (unitDefinition.getHeroName ().size ())).getHeroNameID ());
 
 		// Any random skills to add?
-		if ((unitDefinition.getHeroRandomPickCount () != null) && (unitDefinition.getHeroRandomPickCount () > 0))
+		if ( (unitDefinition.getHeroRandomPickCount () != null) && (unitDefinition.getHeroRandomPickCount () > 0))
 		{
-			log.finest ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills before rolling extras: " + getUnitUtils ().describeBasicSkillValuesInDebugString (unit));
+			log.debug ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills before rolling extras: " + getUnitUtils ().describeBasicSkillValuesInDebugString (unit));
 
 			// Run once for each random skill we get
 			for (int pickNo = 0; pickNo < unitDefinition.getHeroRandomPickCount (); pickNo++)
@@ -93,9 +95,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				for (final UnitSkill thisSkill : db.getUnitSkill ())
 				{
 					// We can spot hero skills since they'll have at least one of these values filled in
-					if (((thisSkill.getHeroSkillTypeID () != null) && (!thisSkill.getHeroSkillTypeID ().equals (""))) ||
-						((thisSkill.isOnlyIfHaveAlready () != null) && (thisSkill.isOnlyIfHaveAlready ())) ||
-						((thisSkill.getMaxOccurrences () != null) && (thisSkill.getMaxOccurrences () > 0)))
+					if ( ( (thisSkill.getHeroSkillTypeID () != null) && (!thisSkill.getHeroSkillTypeID ().equals (""))) || ( (thisSkill.isOnlyIfHaveAlready () != null) && (thisSkill.isOnlyIfHaveAlready ())) || ( (thisSkill.getMaxOccurrences () != null) && (thisSkill.getMaxOccurrences () > 0)))
 					{
 						// Its a hero skill - do we have it already?
 						final int currentSkillValue = getUnitUtils ().getBasicSkillValue (unit.getUnitHasSkill (), thisSkill.getUnitSkillID ());
@@ -103,11 +103,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 						// Is it applicable?
 						// If the unit has no hero random pick type specified, then it means it can use any hero skills
 						// If the skill has no hero random pick type specified, then it means it can be used by any units
-						if (((unitDefinition.getHeroRandomPickType () == null) || (thisSkill.getHeroSkillTypeID () == null) || (unitDefinition.getHeroRandomPickType ().equals (thisSkill.getHeroSkillTypeID ()))) &&
-							((thisSkill.isOnlyIfHaveAlready () == null) || (!thisSkill.isOnlyIfHaveAlready ()) || (currentSkillValue > 0)) &&
-							((thisSkill.getMaxOccurrences () == null) || (currentSkillValue < thisSkill.getMaxOccurrences ())))
+						if ( ( (unitDefinition.getHeroRandomPickType () == null) || (thisSkill.getHeroSkillTypeID () == null) || (unitDefinition.getHeroRandomPickType ().equals (thisSkill.getHeroSkillTypeID ()))) && ( (thisSkill.isOnlyIfHaveAlready () == null) || (!thisSkill.isOnlyIfHaveAlready ()) || (currentSkillValue > 0)) && ( (thisSkill.getMaxOccurrences () == null) || (currentSkillValue < thisSkill.getMaxOccurrences ())))
 
-								skillChoices.add (thisSkill.getUnitSkillID ());
+							skillChoices.add (thisSkill.getUnitSkillID ());
 					}
 				}
 
@@ -127,14 +125,14 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					unit.getUnitHasSkill ().add (newSkill);
 				}
 
-				log.finest ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills after rolling extras: " + getUnitUtils ().describeBasicSkillValuesInDebugString (unit));
+				log.debug ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills after rolling extras: " + getUnitUtils ().describeBasicSkillValuesInDebugString (unit));
 			}
 		}
 
 		// Update status
 		unit.setStatus (UnitStatusID.GENERATED);
 
-		log.exiting (UnitServerUtilsImpl.class.getName (), "generateHeroNameAndRandomSkills");
+		log.trace ("Exiting generateHeroNameAndRandomSkills");
 	}
 
 	/**
@@ -146,7 +144,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	{
 		return (order == UnitSpecialOrder.BUILD_CITY) || (order == UnitSpecialOrder.MELD_WITH_NODE) || (order == UnitSpecialOrder.DISMISS);
 	}
-	
+
 	/**
 	 * Sets a special order on a unit, and sends the special order to the player owning the unit
 	 * 
@@ -158,30 +156,29 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws XMLStreamException If there is a problem sending the message to the client
 	 */
 	@Override
-	public final void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player)
-		throws RecordNotFoundException, JAXBException, XMLStreamException
+	public final void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player) throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		log.entering (UnitServerUtilsImpl.class.getName (), "findUnitWithPlayerAndID",
-			new String [] {player.getPlayerDescription ().getPlayerName (), new Integer (trueUnit.getUnitURN ()).toString (), specialOrder.toString ()});
-		
+		log.trace ("Entering findUnitWithPlayerAndID: Player ID " + player.getPlayerDescription ().getPlayerID () +
+			", Unit URN " + trueUnit.getUnitURN () + ", " + specialOrder);
+
 		// Setting a special order cancels any other kind of move
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge (); 
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (trans.getPendingMovement (), trueUnit.getUnitURN ());
-		
+
 		// Set in true memory
 		trueUnit.setSpecialOrder (specialOrder);
-		
+
 		// Set in server's copy of player memory
 		getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "setAndSendSpecialOrder").setSpecialOrder (specialOrder);
-		
+
 		// Set in client's copy of player memory
 		final SetSpecialOrderMessage msg = new SetSpecialOrderMessage ();
 		msg.setSpecialOrder (specialOrder);
 		msg.getUnitURN ().add (trueUnit.getUnitURN ());
 		player.getConnection ().sendMessageToClient (msg);
 
-		log.exiting (UnitServerUtilsImpl.class.getName (), "findUnitWithPlayerAndID");
+		log.trace ("Exiting findUnitWithPlayerAndID");
 	}
 
 	/**
@@ -193,23 +190,24 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final MemoryUnit findUnitWithPlayerAndID (final List<MemoryUnit> units, final int playerID, final String unitID)
 	{
-		log.entering (UnitServerUtilsImpl.class.getName (), "findUnitWithPlayerAndID", new String [] {new Integer (playerID).toString (), unitID});
+		log.trace ("Entering findUnitWithPlayerAndID: Player ID " + playerID + ", "  + unitID);
 
 		MemoryUnit result = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
-		while ((result == null) && (iter.hasNext ()))
+		while ( (result == null) && (iter.hasNext ()))
 		{
 			final MemoryUnit thisUnit = iter.next ();
-			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getUnitID ().equals (unitID)))
+			if ( (thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getUnitID ().equals (unitID)))
 				result = thisUnit;
 		}
 
-		log.exiting (UnitServerUtilsImpl.class.getName (), "findUnitWithPlayerAndID", result);
+		log.trace ("Exiting findUnitWithPlayerAndID = " + result);
 		return result;
 	}
 
 	/**
 	 * Internal method used by findNearestLocationWhereUnitCanBeAdded
+	 * 
 	 * @param addLocation Location that we're trying to add a unit
 	 * @param testUnit Type of unit that we're trying to add
 	 * @param testUnitSkills The skills that testUnit has
@@ -219,11 +217,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @return Whether unit can be added here or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
-		final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseEx db)
-		throws RecordNotFoundException
+	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills, final FogOfWarMemory trueMap, final UnitSettingData settings, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (UnitServerUtilsImpl.class.getName (), "canUnitBeAddedHere", addLocation);
+		log.trace ("Entering canUnitBeAddedHere: " + addLocation + ", " + testUnit.getUnitID ());
 
 		// Any other units here?
 		final boolean unitCheckOk;
@@ -252,15 +248,13 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		else
 		{
 			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (addLocation.getZ ()).getRow ().get (addLocation.getY ()).getCell ().get (addLocation.getX ());
-			if ((ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db)) ||
-				(getServerUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
+			if ( (ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db)) || (getServerUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
 
 				okToAdd = false;
 			else
 			{
 				// Lastly check for someone else's empty city (although to have two adjacent cities would be a bit weird)
-				if ((tc.getCityData () != null) && (tc.getCityData ().getCityPopulation () != null) && (tc.getCityData ().getCityOwnerID () != null) &&
-					(tc.getCityData ().getCityPopulation () > 0) && (tc.getCityData ().getCityOwnerID () != testUnit.getOwningPlayerID ()))
+				if ( (tc.getCityData () != null) && (tc.getCityData ().getCityPopulation () != null) && (tc.getCityData ().getCityOwnerID () != null) && (tc.getCityData ().getCityPopulation () > 0) && (tc.getCityData ().getCityOwnerID () != testUnit.getOwningPlayerID ()))
 
 					okToAdd = false;
 				else
@@ -268,14 +262,13 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			}
 		}
 
-		log.exiting (UnitServerUtilsImpl.class.getName (), "canUnitBeAddedHere", okToAdd);
+		log.trace ("Exiting canUnitBeAddedHere = " + okToAdd);
 		return okToAdd;
 	}
 
 	/**
-	 * When a unit is built or summoned, works out where to put it
-	 * If the city is already full, will resort to bumping the new unit into one of the outlying 8 squares
-	 *
+	 * When a unit is built or summoned, works out where to put it If the city is already full, will resort to bumping the new unit into one of the outlying 8 squares
+	 * 
 	 * @param desiredLocation Location that we're trying to add a unit
 	 * @param unitID Type of unit that we're trying to add
 	 * @param playerID Player who is trying to add the unit
@@ -286,12 +279,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	@Override
-	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final MapCoordinates3DEx desiredLocation, final String unitID, final int playerID,
-		final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
-		throws RecordNotFoundException
+	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final MapCoordinates3DEx desiredLocation, final String unitID, final int playerID, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (UnitServerUtilsImpl.class.getName (), "findNearestLocationWhereUnitCanBeAdded", new String []
-			{desiredLocation.toString (), unitID, new Integer (playerID).toString ()});
+		log.trace ("Entering findNearestLocationWhereUnitCanBeAdded: " + desiredLocation + ", " + unitID + ", Player ID + " + playerID);
 
 		// Create test unit
 		final AvailableUnit testUnit = new AvailableUnit ();
@@ -315,7 +305,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		else
 		{
 			int direction = 1;
-			while ((addLocation == null) && (direction <= getCoordinateSystemUtils ().getMaxDirection (sd.getMapSize ().getCoordinateSystemType ())))
+			while ( (addLocation == null) && (direction <= getCoordinateSystemUtils ().getMaxDirection (sd.getMapSize ().getCoordinateSystemType ())))
 			{
 				final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (desiredLocation);
 				if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), adjacentLocation, direction))
@@ -331,7 +321,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 
 		final UnitAddLocation result = new UnitAddLocation (addLocation, bumpType);
 
-		log.exiting (UnitServerUtilsImpl.class.getName (), "findNearestLocationWhereUnitCanBeAdded", result);
+		log.trace ("Exiting findNearestLocationWhereUnitCanBeAdded = " + result);
 		return result;
 	}
 
@@ -343,17 +333,17 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final List<MemoryUnit> listUnitsWithSpecialOrder (final List<MemoryUnit> units, final UnitSpecialOrder order)
 	{
-		log.entering (UnitServerUtilsImpl.class.getName (), "listUnitsWithSpecialOrder", order);
-		
+		log.trace ("Entering listUnitsWithSpecialOrder: " + order);
+
 		final List<MemoryUnit> matches = new ArrayList<MemoryUnit> ();
 		for (final MemoryUnit thisUnit : units)
-			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getSpecialOrder () == order))
+			if ( (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getSpecialOrder () == order))
 				matches.add (thisUnit);
-		
-		log.exiting (UnitServerUtilsImpl.class.getName (), "listUnitsWithSpecialOrder", matches.size ());
+
+		log.trace ("Exiting listUnitsWithSpecialOrder = " + matches.size ());
 		return matches;
 	}
-	
+
 	/**
 	 * @return Unit utils
 	 */
@@ -385,7 +375,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	{
 		pendingMovementUtils = utils;
 	}
-	
+
 	/**
 	 * @return Server-only unit calculations
 	 */

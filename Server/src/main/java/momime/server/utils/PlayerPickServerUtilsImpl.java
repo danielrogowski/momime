@@ -3,12 +3,11 @@ package momime.server.utils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_4.WizardPick;
+import momime.common.database.v0_9_5.WizardPick;
 import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowRank;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
@@ -22,14 +21,17 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.ai.SpellAI;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.database.v0_9_4.Pick;
-import momime.server.database.v0_9_4.PickType;
-import momime.server.database.v0_9_4.PickTypeCountContainer;
-import momime.server.database.v0_9_4.PickTypeGrantsSpells;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.Race;
-import momime.server.database.v0_9_4.Spell;
-import momime.server.database.v0_9_4.Wizard;
+import momime.server.database.v0_9_5.Pick;
+import momime.server.database.v0_9_5.PickType;
+import momime.server.database.v0_9_5.PickTypeCountContainer;
+import momime.server.database.v0_9_5.PickTypeGrantsSpells;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.Race;
+import momime.server.database.v0_9_5.Spell;
+import momime.server.database.v0_9_5.Wizard;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
@@ -40,7 +42,7 @@ import com.ndg.random.RandomUtils;
 public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (PlayerPickServerUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (PlayerPickServerUtilsImpl.class);
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -63,7 +65,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	@Override
 	public final int getTotalInitialSkill (final List<PlayerPick> picks, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "getTotalInitialSkill", picks.size ());
+		log.trace ("Entering getTotalInitialSkill: " + picks.size ());
 
 		int total = 0;
 		for (final PlayerPick thisPick : picks)
@@ -73,7 +75,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 				total = total + (thisPickRecord.getPickInitialSkill () * thisPick.getQuantity ());
 		}
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "getTotalInitialSkill", total);
+		log.trace ("Exiting getTotalInitialSkill = " + total);
 		return total;
 	}
 
@@ -85,7 +87,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	@Override
 	public final PlayerServerDetails findPlayerUsingWizard (final List<PlayerServerDetails> players, final String wizardID)
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "findPlayerUsingWizard", wizardID);
+		log.trace ("Entering findPlayerUsingWizard: " + wizardID);
 
 		PlayerServerDetails result = null;
 		final Iterator<PlayerServerDetails> iter = players.iterator ();
@@ -98,7 +100,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 				result = player;
 		}
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "findPlayerUsingWizard", (result == null) ? "null" : result.getPlayerDescription ().getPlayerID ());
+		log.trace ("Exiting findPlayerUsingWizard = Player ID " + ((result == null) ? "null" : result.getPlayerDescription ().getPlayerID ()));
 		return result;
 	}
 
@@ -110,7 +112,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	@Override
 	public final PlayerServerDetails findPlayerUsingStandardPhoto (final List<PlayerServerDetails> players, final String standardPhotoID)
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "findPlayerUsingStandardPhoto", standardPhotoID);
+		log.trace ("Entering findPlayerUsingStandardPhoto: " + standardPhotoID);
 
 		PlayerServerDetails result = null;
 		final Iterator<PlayerServerDetails> iter = players.iterator ();
@@ -123,7 +125,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 				result = player;
 		}
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "findPlayerUsingStandardPhoto", (result == null) ? "null" : result.getPlayerDescription ().getPlayerID ());
+		log.trace ("Exiting findPlayerUsingStandardPhoto = Player ID " + ((result == null) ? "null" : result.getPlayerDescription ().getPlayerID ()));
 		return result;
 	}
 
@@ -139,7 +141,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	@Override
 	public final String validateCustomPicks (final PlayerServerDetails player, final List<WizardPick> picks, final int humanSpellPicks, final ServerDatabaseEx db)
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "validateCustomPicks", new Integer [] {player.getPlayerDescription ().getPlayerID (), picks.size ()});
+		log.trace ("Entering validateCustomPicks: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + picks.size ());
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -176,7 +178,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			}
 		}
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "validateCustomPicks", msg);
+		log.trace ("Exiting validateCustomPicks = " + msg);
 		return msg;
 	}
 
@@ -193,7 +195,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	final ChooseInitialSpellsNowMessage countFreeSpellsLeftToChoose (final PlayerServerDetails player, final PlayerPick pick, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "countFreeSpellsLeftToChoose", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering countFreeSpellsLeftToChoose: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -233,13 +235,13 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 					msgRank.setFreeSpellCount (thisSpellRank.getSpellsFreeAtStart () - freeSpellsAlreadySelected);
 					msg.getSpellRank ().add (msgRank);
 
-					log.finest (PlayerPickServerUtilsImpl.class.getName () + ".countFreeSpellsLeftToChoose: Human player " + player.getPlayerDescription ().getPlayerName () + " needs to choose " +
+					log.debug ("countFreeSpellsLeftToChoose: Human player " + player.getPlayerDescription ().getPlayerName () + " needs to choose " +
 						msgRank.getFreeSpellCount () + " free spells of realm " + msg.getMagicRealmID () + " rank " + msgRank.getSpellRankID ());
 				}
 			}
 		}
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "countFreeSpellsLeftToChoose", msg);
+		log.trace ("Exiting countFreeSpellsLeftToChoose = " + msg);
 		return msg;
 	}
 
@@ -263,7 +265,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	public final ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "findRealmIDWhereWeNeedToChooseFreeSpells", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering findRealmIDWhereWeNeedToChooseFreeSpells: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -290,15 +292,15 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		if ((msg != null) && (!player.getPlayerDescription ().isHuman ()))
 			for (final ChooseInitialSpellsNowRank thisSpellRank : msg.getSpellRank ())
 			{
-				log.finest (PlayerPickServerUtilsImpl.class.getName () + ".findRealmIDWhereWeNeedToChooseFreeSpells: AI player " + player.getPlayerDescription ().getPlayerName () + " about to choose " +
+				log.debug ("findRealmIDWhereWeNeedToChooseFreeSpells: AI player " + player.getPlayerDescription ().getPlayerName () + " about to choose " +
 					thisSpellRank.getFreeSpellCount () + " free spells of realm " + msg.getMagicRealmID () + " rank " + thisSpellRank.getSpellRankID ());
 
 				for (int aiSpellChoices = 0; aiSpellChoices < thisSpellRank.getFreeSpellCount (); aiSpellChoices++)
-					getSpellAI ().chooseFreeSpellAI (priv.getSpellResearchStatus (), msg.getMagicRealmID (), thisSpellRank.getSpellRankID (), player.getPlayerDescription ().getPlayerName (),
+					getSpellAI ().chooseFreeSpellAI (priv.getSpellResearchStatus (), msg.getMagicRealmID (), thisSpellRank.getSpellRankID (), player.getPlayerDescription ().getPlayerID (),
 						db).setStatus (SpellResearchStatusID.AVAILABLE);
 			}
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "findRealmIDWhereWeNeedToChooseFreeSpells", (msg == null) ? "null" : msg.getMagicRealmID ());
+		log.trace ("Exiting findRealmIDWhereWeNeedToChooseFreeSpells = " + ((msg == null) ? "null" : msg.getMagicRealmID ()));
 		return msg;
 	}
 
@@ -316,8 +318,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	public final String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "validateInitialSpellSelection",
-			new String [] {new Integer (player.getPlayerDescription ().getPlayerID ()).toString (), pickID});
+		log.trace ("Entering validateInitialSpellSelection: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + pickID);
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 
@@ -371,7 +372,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			}
 		}
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "validateInitialSpellSelection", msg);
+		log.trace ("Exiting validateInitialSpellSelection = " + msg);
 		return msg;
 	}
 
@@ -386,8 +387,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	public final String validateRaceChoice (final PlayerServerDetails player, final String raceID, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "validateRaceChoice",
-			new String [] {new Integer (player.getPlayerDescription ().getPlayerID ()).toString (), raceID});
+		log.trace ("Entering validateRaceChoice: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + raceID);
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 
@@ -419,7 +419,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 				msg = "You don''t have the necessary pick to choose this race";
 		}
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "validateRaceChoice", msg);
+		log.trace ("Exiting validateRaceChoice = " + msg);
 		return msg;
 	}
 
@@ -429,7 +429,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 */
 	final boolean hasChosenAllDetails (final PlayerServerDetails player)
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "hasChosenAllDetails", player.getPlayerDescription ().getPlayerID ());
+		log.trace ("Entering hasChosenAllDetails: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -439,7 +439,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		final boolean result = ((PlayerKnowledgeUtils.hasWizardBeenChosen (ppk.getWizardID ())) && (priv.getFirstCityRaceID () != null) &&
 			((!PlayerKnowledgeUtils.isCustomWizard (ppk.getWizardID ())) || (isCustomPicksChosen)));
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "hasChosenAllDetails", result);
+		log.trace ("Exiting hasChosenAllDetails = " + result);
 		return result;
 	}
 
@@ -452,7 +452,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	@Override
 	public final boolean allPlayersHaveChosenAllDetails (final List<PlayerServerDetails> players, final MomSessionDescription sd)
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "allHumanPlayersHaveChosenAllDetails");
+		log.trace ("Entering allHumanPlayersHaveChosenAllDetails");
 
 		// If not all players have joined, then not all have chosen
 		boolean result = (players.size () == sd.getMaxPlayers () - sd.getAiPlayerCount () - 2);	// -2 for raiders & monsters
@@ -463,7 +463,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			if (!hasChosenAllDetails (iter.next ()))
 				result = false;
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "allHumanPlayersHaveChosenAllDetails", result);
+		log.trace ("Exiting allHumanPlayersHaveChosenAllDetails = " + result);
 		return result;
 	}
 
@@ -475,7 +475,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	@Override
 	public final List<Wizard> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db)
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "listWizardsForAIPlayers", players.size ());
+		log.trace ("Entering listWizardsForAIPlayers: " + players.size ());
 
 		// First get a list of all the available wizards
 		final List<Wizard> availableWizards = new ArrayList<Wizard> ();
@@ -486,7 +486,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 
 				availableWizards.add (thisWizard);
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "listWizardsForAIPlayers", availableWizards.size ());
+		log.trace ("Exiting listWizardsForAIPlayers = " + availableWizards.size ());
 		return availableWizards;
 	}
 
@@ -499,7 +499,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	@Override
 	public final int startingPlaneForWizard (final List<PlayerPick> picks, final ServerDatabaseEx db)
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "startingPlaneForWizard");
+		log.trace ("Entering startingPlaneForWizard");
 
 		int bestMatch = 0;		// Default to Arcanus
 		int bestMatchPrerequisiteCount = 0;
@@ -524,7 +524,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			}
 		}
 
-		log.exiting (PlayerPickServerUtilsImpl.class.getName (), "startingPlaneForWizard", bestMatch);
+		log.trace ("Exiting startingPlaneForWizard = " + bestMatch);
 		return bestMatch;
 	}
 
@@ -538,7 +538,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	public final String chooseRandomRaceForPlane (final int planeNumber, final ServerDatabaseEx db)
 		throws MomException
 	{
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "chooseRandomRaceForPlane", planeNumber);
+		log.trace ("Entering chooseRandomRaceForPlane: " + planeNumber);
 
 		final List<String> possibleRaces = new ArrayList<String> ();
 
@@ -551,7 +551,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 
 		final String raceID = possibleRaces.get (getRandomUtils ().nextInt (possibleRaces.size ()));
 
-		log.entering (PlayerPickServerUtilsImpl.class.getName (), "chooseRandomRaceForPlane", raceID);
+		log.trace ("Exiting chooseRandomRaceForPlane = " + raceID);
 		return raceID;
 	}
 

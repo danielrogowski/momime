@@ -20,10 +20,10 @@ import momime.common.calculations.CalculateCityUnrestBreakdown;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_4.DifficultyLevelData;
-import momime.common.database.newgame.v0_9_4.FogOfWarSettingData;
-import momime.common.database.newgame.v0_9_4.MapSizeData;
-import momime.common.database.v0_9_4.TaxRate;
+import momime.common.database.newgame.v0_9_5.DifficultyLevelData;
+import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.database.v0_9_5.TaxRate;
 import momime.common.messages.servertoclient.v0_9_5.PendingSaleMessage;
 import momime.common.messages.servertoclient.v0_9_5.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateProductionSoFarMessage;
@@ -53,10 +53,10 @@ import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.v0_9_4.Building;
-import momime.server.database.v0_9_4.Plane;
-import momime.server.database.v0_9_4.Race;
-import momime.server.database.v0_9_4.Unit;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.Race;
+import momime.server.database.v0_9_5.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.messages.v0_9_5.ServerGridCell;
@@ -425,12 +425,12 @@ public final class TestCityProcessingImpl
 		building.setBuildingID ("BL01");
 		building.setProductionCost (1000);
 		when (db.findBuilding ("BL01", "growCitiesAndProgressConstructionProjects")).thenReturn (building);
-		when (db.findUnit ("BL01", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (null, null, null));
+		when (db.findUnit ("BL01", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (Unit.class, null, null));
 		
 		final Unit unit = new Unit ();
 		unit.setUnitID ("UN001");
 		unit.setProductionCost (100);
-		when (db.findBuilding ("UN001", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (null, null, null));
+		when (db.findBuilding ("UN001", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (Unit.class, null, null));
 		when (db.findUnit ("UN001", "growCitiesAndProgressConstructionProjects")).thenReturn (unit);				
 		
 		// Session description

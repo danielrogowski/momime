@@ -1,7 +1,5 @@
 package momime.server.messages.process;
 
-import java.util.logging.Logger;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -15,6 +13,9 @@ import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -27,7 +28,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmersMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (ChangeOptionalFarmersMessageImpl.class.getName ());
+	private final Log log = LogFactory.getLog (ChangeOptionalFarmersMessageImpl.class);
 
 	/** Server-only city utils */
 	private CityServerUtils cityServerUtils;
@@ -51,8 +52,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.entering (ChangeOptionalFarmersMessageImpl.class.getName (), "process",
-			new String [] {(getCityLocation () == null) ? "null" : getCityLocation ().toString (), new Integer (getOptionalFarmers ()).toString ()});
+		log.trace ("Entering process: " + getCityLocation () + ", " + getOptionalFarmers ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -62,7 +62,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 		if (error != null)
 		{
 			// Return error
-			log.warning (ChangeOptionalFarmersMessageImpl.class.getName () + ".process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
+			log.warn ("process: " + sender.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (error);
@@ -83,7 +83,7 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 
-		log.exiting (ChangeOptionalFarmersMessageImpl.class.getName (), "process");
+		log.trace ("Exiting process");
 	}
 
 	/**

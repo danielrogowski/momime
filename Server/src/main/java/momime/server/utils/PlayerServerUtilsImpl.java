@@ -2,9 +2,11 @@ package momime.server.utils;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
@@ -14,7 +16,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 public final class PlayerServerUtilsImpl implements PlayerServerUtils
 {
 	/** Class logger */
-	private final Logger log = Logger.getLogger (PlayerServerUtilsImpl.class.getName ());
+	private final Log log = LogFactory.getLog (PlayerServerUtilsImpl.class);
 
 	/**
 	 * @param players List of players to check
@@ -24,7 +26,7 @@ public final class PlayerServerUtilsImpl implements PlayerServerUtils
 	@Override
 	public final boolean allPlayersFinishedAllocatingMovement (final List<PlayerServerDetails> players, final int turnNo)
 	{
-		log.entering (PlayerServerUtilsImpl.class.getName (), "allPlayersFinishedAllocatingMovement");
+		log.trace ("Entering allPlayersFinishedAllocatingMovement: Turn " + turnNo);
 		
 		boolean allAllocated = true;
 		final Iterator<PlayerServerDetails> iter = players.iterator ();
@@ -37,7 +39,7 @@ public final class PlayerServerUtilsImpl implements PlayerServerUtils
 				allAllocated = false;
 		}			
 
-		log.exiting (PlayerServerUtilsImpl.class.getName (), "allPlayersFinishedAllocatingMovement", allAllocated);
+		log.trace ("Exiting allPlayersFinishedAllocatingMovement = " + allAllocated);
 		return allAllocated;
 	}
 }

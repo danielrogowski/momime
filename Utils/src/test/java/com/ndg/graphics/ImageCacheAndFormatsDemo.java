@@ -18,7 +18,7 @@ import javax.swing.WindowConstants;
 import com.ndg.graphics.lbx.LbxImageReaderSpi;
 import com.ndg.graphics.ndgbmp.NdgBmpReaderSpi;
 import com.ndg.graphics.ndgbmp.NdgBmpWriterSpi;
-import com.ndg.swing.NdgUIManagerImpl;
+import com.ndg.swing.NdgUIUtilsImpl;
 
 /**
  * Tests the image cache, and that it will load in specialised image formats like .ndgbmp files contained in .ndgarc files
@@ -31,7 +31,7 @@ public class ImageCacheAndFormatsDemo
 	 */
 	public static void main (final String [] args)
 	{
-		new NdgUIManagerImpl ().useNimbusLookAndFeel ();
+		new NdgUIUtilsImpl ().useNimbusLookAndFeel ();
 
 		// Force registration of .ndgbmp and .lbx formats (externally, this would happen via the META-INF/services method in the JAR file)
 		IIORegistry.getDefaultInstance ().registerServiceProvider (new LbxImageReaderSpi ());

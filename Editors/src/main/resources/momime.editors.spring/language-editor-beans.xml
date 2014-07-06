@@ -60,8 +60,8 @@
 		</property>
 		<property name="dataTypesMap">
 			<map>
-				<entry key="xsd:boolean" value="booleanField" />
-				<entry key="xsd:string" value="textArea" />		<!-- xsd:string assumed to be multi-line; xsd:normalizedString assumed to be single-line -->
+				<entry key="boolean" value="booleanField" />
+				<entry key="string" value="textArea" />		<!-- xsd:string assumed to be multi-line; xsd:normalizedString assumed to be single-line -->
 				<entry key="default" value="textField" />
 			</map>
 		</property>

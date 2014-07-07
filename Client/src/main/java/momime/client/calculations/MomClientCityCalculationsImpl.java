@@ -256,8 +256,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 
 						// Would have been enforced by calculation, nothing to output
 						case MUST_BE_EXACT_MULTIPLE:
-							throw new MomException ("processCityProductionCalculationHeading: Encountered breakdown section with rounding of 'must be exact multiple' for production type ID \"" +
-								calc.getProductionTypeID () + "\"");
+							break;
 					}						
 				}
 			}

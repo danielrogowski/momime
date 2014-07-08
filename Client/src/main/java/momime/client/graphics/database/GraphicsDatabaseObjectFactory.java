@@ -6,6 +6,7 @@ import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.ObjectFactory;
+import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.client.graphics.database.v0_9_5.SmoothingSystem;
@@ -81,6 +82,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final Animation createAnimation ()
 	{
 		return getFactory ().createAnimation ();
+	}
+	
+	/**
+	 * @return Custom extended Production type 
+	 */
+	@Override
+	public final ProductionType createProductionType ()
+	{
+		return new ProductionTypeEx ();
 	}
 
 	/**

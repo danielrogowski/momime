@@ -52,11 +52,13 @@ public final class TestTextUtilsImpl
 		final TextUtilsImpl utils = new TextUtilsImpl ();
 
 		assertEquals ("0", utils.halfIntToStr (0));
+		assertEquals ("" + TextUtilsImpl.HALF, utils.halfIntToStr (1));
 		assertEquals ("2", utils.halfIntToStr (4));
 		assertEquals ("2123", utils.halfIntToStr (4246));
 		assertEquals ("2" + TextUtilsImpl.HALF, utils.halfIntToStr (5));
 		assertEquals ("2123" + TextUtilsImpl.HALF, utils.halfIntToStr (4247));
 
+		assertEquals ("-" + TextUtilsImpl.HALF, utils.halfIntToStr (-1));
 		assertEquals ("-2", utils.halfIntToStr (-4));
 		assertEquals ("-2" + TextUtilsImpl.HALF, utils.halfIntToStr (-5));
 		assertEquals ("-2123", utils.halfIntToStr (-4246));

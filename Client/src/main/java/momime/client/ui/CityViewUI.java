@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -13,6 +14,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -25,6 +28,7 @@ import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.ProductionTypeEx;
 import momime.client.graphics.database.RaceEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.language.database.v0_9_5.ProductionType;
@@ -139,6 +143,9 @@ public final class CityViewUI extends MomClientAbstractUI
 	
 	/** Panel where all the civilians are drawn */
 	private JPanel civilianPanel;
+	
+	/** Panel where all the production icons are drawn */
+	private JPanel productionPanel;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -383,7 +390,9 @@ public final class CityViewUI extends MomClientAbstractUI
 		// Note on this and other panels in the same row (enchantments+terrain) we put a 2 pixel filler above the panel, to push the labels above up a fraction higher
 		final Dimension productionPanelSize = new Dimension (256, 84);
 		
-		final JPanel productionPanel = new JPanel ();
+		productionPanel = new JPanel ();
+		productionPanel.setOpaque (false);
+		productionPanel.setLayout (new GridBagLayout ());
 		productionPanel.setMinimumSize (productionPanelSize);
 		productionPanel.setMaximumSize (productionPanelSize);
 		productionPanel.setPreferredSize (productionPanelSize);
@@ -513,13 +522,16 @@ public final class CityViewUI extends MomClientAbstractUI
 	}
 
 	/**
-	 * Performs any updates that need to be redone when the cityData changes
+	 * Performs any updates that need to be redone when the cityData changes - principally this means the population may have changed, so we
+	 * need to redraw all the civilians, but also production may have changed from the number of farmers/workers/etc changing.
+	 * 
 	 * @throws IOException If there is a problem
 	 */
 	public final void cityDataUpdated () throws IOException
 	{
 		log.trace ("Entering cityDataUpdated: " + getCityLocation ());
 		civilianPanel.removeAll ();
+		productionPanel.removeAll ();
 
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
@@ -621,9 +633,133 @@ public final class CityViewUI extends MomClientAbstractUI
 				x++;
 			}
 		}
+		
+		// Display all productions which have graphics, i.e. Rations / Production / Gold / Power / Research
+		int ypos = 0;
+		for (final CalculateCityProductionResult thisProduction : getCityCalculations ().calculateAllCityProductions
+			(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (), false))
+		{
+			final ProductionTypeEx productionTypeImages = getGraphicsDB ().findProductionType (thisProduction.getProductionTypeID ());
+			
+			if (productionTypeImages != null)
+			{
+				// Get a list of all the images we need to draw, so we know how big to create the merged image
+				final List<BufferedImage> consumptionImages = new ArrayList<BufferedImage> ();
+				final List<BufferedImage> productionImages = new ArrayList<BufferedImage> ();
+				
+				// Draw consumption on the left and production on the right
+				if (thisProduction.getConsumptionAmount () > 0)
+					addProductionTypeButtonImages (productionTypeImages, consumptionImages, thisProduction.getConsumptionAmount ());
+
+				addProductionTypeButtonImages (productionTypeImages, productionImages,
+					thisProduction.getModifiedProductionAmount () - thisProduction.getConsumptionAmount ());
+				
+				// Now we can figure out how big to make the button
+				if ((consumptionImages.size () > 0) || (productionImages.size () > 0))
+				{
+					int buttonWidth = 0;
+					int buttonHeight = 0;
+					
+					for (final BufferedImage thisImage : consumptionImages)
+					{
+						if (buttonWidth > 0)
+							buttonWidth++;
+						
+						buttonWidth = buttonWidth + thisImage.getWidth ();
+						buttonHeight = Math.max (buttonHeight, thisImage.getHeight ());
+					}
+
+					for (final BufferedImage thisImage : productionImages)
+					{
+						if (buttonWidth > 0)
+							buttonWidth++;
+						
+						buttonWidth = buttonWidth + thisImage.getWidth ();
+						buttonHeight = Math.max (buttonHeight, thisImage.getHeight ());
+					}
+					
+					if ((consumptionImages.size () > 0) || (productionImages.size () > 0))
+						buttonWidth = buttonWidth + 6;
+
+					// Create the button image
+					final BufferedImage buttonImage = new BufferedImage (buttonWidth, buttonHeight, BufferedImage.TYPE_INT_ARGB);
+					final Graphics2D g = buttonImage.createGraphics ();
+					try
+					{
+						int xpos = 0;
+						for (final BufferedImage thisImage : consumptionImages)
+						{
+							g.drawImage (thisImage, xpos, 0, null);
+							xpos = xpos + thisImage.getWidth () + 1;
+						}
+						
+						if (xpos > 0)
+							xpos = xpos + 6;
+
+						for (final BufferedImage thisImage : productionImages)
+						{
+							g.drawImage (thisImage, xpos, 0, null);
+							xpos = xpos + thisImage.getWidth () + 1;
+						}
+					}
+					finally
+					{
+						g.dispose ();
+					}				
+
+					// Explain the max size calculation
+					final Action productionAction = new AbstractAction ()
+					{
+						private static final long serialVersionUID = 1785342094563388840L;
+
+						@Override
+						public final void actionPerformed (final ActionEvent ev)
+						{
+							try
+							{
+								final CalculateCityProductionResult breakdown = getCityCalculations ().calculateAllCityProductions
+									(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (), true).findProductionType
+										(thisProduction.getProductionTypeID ());
+								
+								final ProductionType productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
+								final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
+								
+								final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+								calc.setTitle (getLanguage ().findCategoryEntry ("CityProduction", "Title").replaceAll
+									("CITY_SIZE_AND_NAME", getFrame ().getTitle ()).replaceAll
+									("PRODUCTION_TYPE", productionTypeDescription));
+								calc.setText (getClientCityCalculations ().describeCityProductionCalculation (breakdown));
+								calc.setVisible (true);
+							}
+							catch (final IOException e)
+							{
+								e.printStackTrace ();
+							}
+						}
+					}; 
+					
+					// Create the button - leave 5 gap underneath before the next button
+					productionPanel.add (getUtils ().createImageButton (productionAction, null, null, null, buttonImage, buttonImage, buttonImage),
+						getUtils ().createConstraintsNoFill (0, ypos, 1, 1, new Insets (0, 0, 5, 0), GridBagConstraintsNoFill.WEST));
+					ypos++;
+				}
+			}
+		}
+		
+		// Push all the production images to the top-level
+		final GridBagConstraints fillerConstraints = getUtils ().createConstraintsBothFill (0, ypos, 1, 1, INSET);
+		fillerConstraints.weightx = 1;
+		fillerConstraints.weighty = 1;
+		productionPanel.add (Box.createRigidArea (new Dimension (0, 0)), fillerConstraints);
 
 		civilianPanel.revalidate ();
 		civilianPanel.repaint ();
+		productionPanel.revalidate ();
+		productionPanel.repaint ();
 		log.trace ("Exiting cityDataUpdated");
 	}
 	
@@ -634,6 +770,56 @@ public final class CityViewUI extends MomClientAbstractUI
 	private final Image doubleSize (final BufferedImage source)
 	{
 		return source.getScaledInstance (source.getWidth () * 2, source.getHeight () * 2, Image.SCALE_FAST);
+	}
+	
+	/**
+	 * Adds production type images to a list, for whatever amount is specified, e.g. if amount = 23 then will output two "ten" images and three "one" images
+	 * 
+	 * @param productionTypeImages Images for this production type from the graphics XML
+	 * @param productionTypeButtonImages The list to add to
+	 * @param amount The amount to represent with images
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	final void addProductionTypeButtonImages (final ProductionTypeEx productionTypeImages,
+		final List<BufferedImage> productionTypeButtonImages, final int amount) throws IOException
+	{
+		if (amount != 0)
+		{
+			final String oneImageFilename;
+			final String tenImageFilename;
+			int displayAmount;
+			
+			if (amount > 0)
+			{
+				// Positive
+				oneImageFilename = productionTypeImages.findProductionValueImageFile ("1");
+				tenImageFilename = productionTypeImages.findProductionValueImageFile ("10");
+				displayAmount = amount;
+			}
+			else
+			{
+				// Negative
+				oneImageFilename = productionTypeImages.findProductionValueImageFile ("-1");
+				tenImageFilename = productionTypeImages.findProductionValueImageFile ("-10");
+				displayAmount = -amount;
+			}
+			
+			final BufferedImage oneImage = (oneImageFilename == null) ? null : getUtils ().loadImage (oneImageFilename);
+			final BufferedImage tenImage = (tenImageFilename == null) ? null : getUtils ().loadImage (tenImageFilename);
+			
+			// Now add the images
+			while ((displayAmount >= 10) && (tenImage != null))
+			{
+				productionTypeButtonImages.add (tenImage);
+				displayAmount = displayAmount - 10;
+			}
+
+			while ((displayAmount >= 1) && (oneImage != null))
+			{
+				productionTypeButtonImages.add (oneImage);
+				displayAmount = displayAmount - 1;
+			}
+		}
 	}
 	
 	/**

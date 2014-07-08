@@ -1,6 +1,7 @@
 package momime.client.graphics.database;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -107,6 +108,26 @@ public final class TestGraphicsDatabaseExImpl
 		db.findWizard ("WZ04", "testFindWizard_NotExists");
 	}
 
+	/**
+	 * Tests the findProductionType method
+	 */
+	@Test
+	public final void findProductionType ()
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final ProductionTypeEx newProductionType = new ProductionTypeEx ();
+			newProductionType.setProductionTypeID ("RE0" + n);
+			db.getProductionType ().add (newProductionType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("RE02", db.findProductionType ("RE02").getProductionTypeID ());
+		assertNull ("RE04", db.findProductionType ("RE04"));
+	}
+	
 	/**
 	 * Tests the findRace method to find a race ID that does exist
 	 * @throws IOException If there is a problem

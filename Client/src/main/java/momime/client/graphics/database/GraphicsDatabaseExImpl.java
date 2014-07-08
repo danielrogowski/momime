@@ -16,6 +16,7 @@ import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.Wizard;
+import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
@@ -39,6 +40,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of wizard IDs to wizard objects */
 	private Map<String, Wizard> wizardsMap;
 
+	/** Map of production type IDs to production type objects */
+	private Map<String, ProductionTypeEx> productionTypesMap;
+	
 	/** Map of race IDs to race objects */
 	private Map<String, RaceEx> racesMap;
 
@@ -74,6 +78,15 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		for (final Wizard thisWizard : getWizard ())
 			wizardsMap.put (thisWizard.getWizardID (), thisWizard);
 
+		// Create production types map
+		productionTypesMap = new HashMap<String, ProductionTypeEx> ();
+		for (final ProductionType thisProductionType : getProductionType ())
+		{
+			final ProductionTypeEx ptex = (ProductionTypeEx) thisProductionType;
+			ptex.buildMap ();
+			productionTypesMap.put (thisProductionType.getProductionTypeID (), ptex);
+		}
+		
 		// Create races map
 		racesMap = new HashMap<String, RaceEx> ();
 		for (final Race thisRace : getRace ())
@@ -190,6 +203,16 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		return found;
 	}
 
+	/**
+	 * @param productionTypeID Production type ID to search for
+	 * @return Production type object; or null if not found
+	 */
+	@Override
+	public final ProductionTypeEx findProductionType (final String productionTypeID)
+	{
+		return productionTypesMap.get (productionTypeID);
+	}
+	
 	/**
 	 * @param raceID Race ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

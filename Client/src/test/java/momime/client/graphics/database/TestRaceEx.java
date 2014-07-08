@@ -12,10 +12,10 @@ import org.junit.Test;
 public final class TestRaceEx
 {
 	/**
-	 * Tests the findEntry method
+	 * Tests the findCivilianImageFile method
 	 */
 	@Test
-	public final void testFindEntry ()
+	public final void testFindCivilianImageFile ()
 	{
 		// Create some dummy entries
 		final RaceEx race = new RaceEx ();

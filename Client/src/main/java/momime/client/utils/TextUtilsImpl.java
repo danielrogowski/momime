@@ -41,7 +41,15 @@ public final class TextUtilsImpl implements TextUtils
 	@Override
 	public final String halfIntToStr (final int n)
 	{
-		String s = new Integer (n / 2).toString ();
+		String s;
+		
+		if (n == 1)
+			s = "";
+		else if (n == -1)
+			s = "-";
+		else
+			s = new Integer (n / 2).toString ();		
+		
 		if (n % 2 != 0)
 			s = s + HALF;
 		

@@ -34,6 +34,12 @@ public interface GraphicsDatabaseEx
 	public Wizard findWizard (final String wizardID, final String caller) throws RecordNotFoundException;
 
 	/**
+	 * @param productionTypeID Production type ID to search for
+	 * @return Production type object; or null if not found
+	 */
+	public ProductionTypeEx findProductionType (final String productionTypeID);
+
+	/**
 	 * @param raceID Race ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Race object

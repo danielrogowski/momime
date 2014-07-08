@@ -485,9 +485,9 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 				
 				// There's no item created in the breakdown for the total percentage bonus or what effect this has, so do it here outside of any headings
 				addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionPercentageBonusTotal").replaceAll
+					("PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS", new Integer (calc.getModifiedProductionAmount () - calc.getBaseProductionAmount ()).toString ()).replaceAll
 					("PERCENTAGE_BONUS", new Integer (calc.getPercentageBonus ()).toString ()).replaceAll
 					("UNMODIFIED_PRODUCTION_AMOUNT", new Integer (calc.getBaseProductionAmount ()).toString ()).replaceAll
-					("PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS", new Integer (calc.getModifiedProductionAmount () - calc.getBaseProductionAmount ()).toString ()).replaceAll
 					("PRODUCTION_AMOUNT", new Integer (calc.getModifiedProductionAmount ()).toString ()));
 				text.append ("\r\n");
 			}

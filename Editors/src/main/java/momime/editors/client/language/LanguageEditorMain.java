@@ -9,8 +9,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 
+import momime.client.ui.OverlandMapUI;
 import momime.server.database.ServerDatabaseConstants;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
@@ -27,6 +30,9 @@ import com.ndg.xmleditor.schema.TopLevelComplexTypeEx;
  */
 public final class LanguageEditorMain extends XmlEditorMain
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (LanguageEditorMain.class);
+
 	/**
 	 * Adds a special menu option
 	 * @throws XmlEditorException If there are syntax problems with the XSD
@@ -64,6 +70,7 @@ public final class LanguageEditorMain extends XmlEditorMain
 				}
 				catch (final XmlEditorException e)
 				{
+					log.error (e, e);
 					JOptionPane.showMessageDialog (null, e.toString (), FORM_TITLE, JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -85,6 +92,8 @@ public final class LanguageEditorMain extends XmlEditorMain
 	private final String checkNode (final Element serverContainer, final Element languageContainer, final ComplexTypeEx containerTypeDefinition)
 		throws XmlEditorException
 	{
+		log.trace ("Entering checkNode: " + containerTypeDefinition + ", " + serverContainer + ", " + languageContainer);
+				
 		String result = "";
 
 		@SuppressWarnings ("rawtypes")
@@ -96,11 +105,20 @@ public final class LanguageEditorMain extends XmlEditorMain
 			// Get the name of the entity, e.g. "unit" or "building"
 			final String entityName = serverNode.getName ();
 
-			// Find the definition for this entity (this does the same as findDefinitionOfComplexType, but we need to tolerate missing values)
+			// Find the definition for this entity
 			// Firstly we need to prove that this is an entry which should be in the language XML file
 			// Secondly we need this below if we need to check for child nodes
 			// Also FKs are only supported with a single attribute
-			final TopLevelComplexTypeEx entityDefinition = getXmlDocuments ().get (0).getXsd ().findTopLevelComplexType (entityName);
+			TopLevelComplexTypeEx entityDefinition = null;
+			try
+			{
+				entityDefinition = getXmlDocuments ().get (0).getXsd ().findTopLevelComplexType (entityName);
+			}
+			catch (final XmlEditorException e)
+			{
+				// That's fine, not all entries in the server XML are supposed to be in the language XML, e.g. taxRate
+			}
+			
 			if ((entityDefinition != null) && (serverNode.getAttributes ().size () == 1))
 			{
 				final Attribute serverAttribute = (Attribute) serverNode.getAttributes ().get (0);
@@ -125,6 +143,7 @@ public final class LanguageEditorMain extends XmlEditorMain
 			}
 		}
 
+		log.trace ("Exiting checkNode: " + result);
 		return result;
 	}
 }

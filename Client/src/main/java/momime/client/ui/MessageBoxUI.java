@@ -117,7 +117,7 @@ public final class MessageBoxUI extends MomClientAbstractUI
 		constraints.weighty = 1;
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
-		contentPane.add (messageText, constraints);
+		contentPane.add (getUtils ().createTransparentScrollPane (messageText), constraints);
 
 		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
 			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));

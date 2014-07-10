@@ -9,7 +9,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 
-import momime.client.ui.OverlandMapUI;
 import momime.server.database.ServerDatabaseConstants;
 
 import org.apache.commons.logging.Log;

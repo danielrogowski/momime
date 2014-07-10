@@ -4457,12 +4457,6 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="EnterServer">
 			<languageEntryText>or enter a server IP address below</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="KnownServersColumn0">
-			<languageEntryText>IP Address</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="KnownServersColumn1">
-			<languageEntryText>Server Name</languageEntryText>
-		</languageEntry>
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>
 		</languageEntry>

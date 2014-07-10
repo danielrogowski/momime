@@ -4453,12 +4453,6 @@ Si la cité a une insuffisante fourniture de nourriture, les citoyens commencero
 		<languageEntry languageEntryID="EnterServer">
 			<languageEntryText>ou saisissez un adresse IP de serveur ci dessous</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="KnownServersColumn0">
-			<languageEntryText>Adresse IP</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="KnownServersColumn1">
-			<languageEntryText>Nom du Serveur</languageEntryText>
-		</languageEntry>
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>
 		</languageEntry>

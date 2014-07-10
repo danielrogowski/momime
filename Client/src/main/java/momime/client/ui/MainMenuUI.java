@@ -85,6 +85,18 @@ public final class MainMenuUI extends MomClientAbstractUI
 	/** Exit to windows action */
 	private Action exitToWindowsAction;
 
+	/** Short title */
+	private JLabel shortTitleLabel;
+	
+	/** Version */
+	private JLabel versionLabel;
+
+	/** Original copyright line 1 */
+	private JLabel originalCopyrightLine1Label;
+	
+	/** Original copyright line 2 */
+	private JLabel originalCopyrightLine2Label;
+	
 	/** Language file author */
 	private JLabel authorLabel;
 	
@@ -194,7 +206,6 @@ public final class MainMenuUI extends MomClientAbstractUI
 		};
 		
 		// Initialize the frame
-		getFrame ().setTitle ("Master of Magic - Implode's Multiplayer Edition - Client v" + getVersion ());
 		getFrame ().setDefaultCloseOperation (WindowConstants.EXIT_ON_CLOSE);
 
 		// Initialize the content pane
@@ -237,10 +248,17 @@ public final class MainMenuUI extends MomClientAbstractUI
 		labelsGap = new Box.Filler (labelsSpace, labelsSpace, labelsSpace);
 		contentPane.add (labelsGap, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		contentPane.add (getUtils ().createLabel (MomUIConstants.SILVER, getLargeFont (), "Implode's Multiplayer Edition - Client"),	getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
-		contentPane.add (getUtils ().createLabel (MomUIConstants.SILVER, getMediumFont (), "version " + getVersion ()),					getUtils ().createConstraintsNoFill (0, 2, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
-		contentPane.add (getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont (), "Original Master of Magic is Copyright"),	getUtils ().createConstraintsNoFill (0, 3, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
-		contentPane.add (getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont (), "Simtex Software and Microprose"),		getUtils ().createConstraintsNoFill (0, 4, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+		shortTitleLabel = getUtils ().createLabel (MomUIConstants.SILVER, getLargeFont ());
+		contentPane.add (shortTitleLabel, getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+		
+		versionLabel = getUtils ().createLabel (MomUIConstants.SILVER, getMediumFont ());
+		contentPane.add (versionLabel, getUtils ().createConstraintsNoFill (0, 2, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+		
+		originalCopyrightLine1Label = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (originalCopyrightLine1Label, getUtils ().createConstraintsNoFill (0, 3, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+		
+		originalCopyrightLine2Label = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (originalCopyrightLine2Label, getUtils ().createConstraintsNoFill (0, 4, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
 		
 		authorLabel = getUtils ().createLabel (MomUIConstants.SILVER, getMediumFont ());
 		contentPane.add (authorLabel, getUtils ().createConstraintsNoFill (0, 5, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
@@ -323,14 +341,19 @@ public final class MainMenuUI extends MomClientAbstractUI
 	@Override
 	public final void languageChanged ()
 	{
+		getFrame ().setTitle						(getLanguage ().findCategoryEntry ("frmMainMenu", "LongTitle").replaceAll ("VERSION", getVersion ()));
+		shortTitleLabel.setText					(getLanguage ().findCategoryEntry ("frmMainMenu", "ShortTitle"));
+		versionLabel.setText						(getLanguage ().findCategoryEntry ("frmMainMenu", "Version").replaceAll ("VERSION", getVersion ()));
+		originalCopyrightLine1Label.setText	(getLanguage ().findCategoryEntry ("frmMainMenu", "OriginalCopyrightLine1"));
+		originalCopyrightLine2Label.setText	(getLanguage ().findCategoryEntry ("frmMainMenu", "OriginalCopyrightLine2"));
+		authorLabel.setText						(getLanguage ().findCategoryEntry ("frmMainMenu", "LanguageFileAuthor"));
+
 		changeLanguageAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "ChangeLanguage"));
 		connectToServerAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "ConnectToServer"));
 		newGameAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "NewGame"));
 		joinGameAction.putValue				(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "JoinGame"));
 		optionsAction.putValue				(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "Options"));
 		exitToWindowsAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "Exit"));
-
-		authorLabel.setText (getLanguage ().findCategoryEntry ("frmMainMenu", "LanguageFileAuthor"));
 	}
 	
 	/**

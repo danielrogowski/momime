@@ -22,6 +22,9 @@ public final class CreateFontsForTests
 	
 	/** Large font */
 	private static Font largeFont;
+
+	/** Medium font */
+	private static Font mediumFont;
 	
 	/** TTF upon which small font is based */
 	private static Font smallFontTTF;
@@ -53,6 +56,19 @@ public final class CreateFontsForTests
 			largeFont = getMediumFontTTF ().deriveFont (20.0f);
 		
 		return largeFont;
+	}
+	
+	/**
+	 * @return Medium font
+	 * @throws IOException If the resource cannot be located
+	 * @throws FontFormatException If the format of the .ttf file is invalid
+	 */
+	public final static Font getMediumFont () throws IOException, FontFormatException
+	{
+		if (mediumFont == null)
+			mediumFont = getMediumFontTTF ().deriveFont (15.0f);
+		
+		return mediumFont;
 	}
 	
 	/**

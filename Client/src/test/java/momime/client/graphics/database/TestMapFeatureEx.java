@@ -32,8 +32,8 @@ public final class TestMapFeatureEx
 		
 		// Set up dummy tile set
 		final TileSetEx ts = new TileSetEx ();
-		ts.tileWidth = 10;
-		ts.tileHeight = 5;
+		ts.setTileWidth (10);
+		ts.setTileHeight (5);
 		
 		// Set up object to test
 		final MapFeatureEx feature = new MapFeatureEx ();
@@ -59,8 +59,8 @@ public final class TestMapFeatureEx
 		
 		// Set up dummy tile set
 		final TileSetEx ts = new TileSetEx ();
-		ts.tileWidth = 10;
-		ts.tileHeight = 5;
+		ts.setTileWidth (10);
+		ts.setTileHeight (5);
 		
 		// Set up object to test
 		final MapFeatureEx feature = new MapFeatureEx ();

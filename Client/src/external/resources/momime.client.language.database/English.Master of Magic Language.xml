@@ -4458,6 +4458,21 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMainMenu">
+		<languageEntry languageEntryID="LongTitle">
+			<languageEntryText>Master of Magic - Implode's Multiplayer Edition - Client vVERSION</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ShortTitle">
+			<languageEntryText>Implode's Multiplayer Edition - Client</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Version">
+			<languageEntryText>version VERSION</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OriginalCopyrightLine1">
+			<languageEntryText>Original Master of Magic is Copyright</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OriginalCopyrightLine2">
+			<languageEntryText>Simtex Software and Microprose</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="ChangeLanguage">
 			<languageEntryText>Change Language</languageEntryText>
 		</languageEntry>
@@ -4477,7 +4492,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Exit to Windows</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="LanguageFileAuthor">
-			<languageEntryText></languageEntryText>
+			<languageEntryText />
 		</languageEntry>
 		<languageEntry languageEntryID="Connected">
 			<languageEntryText>Logged on to server SERVER_NAME as PLAYER_NAME</languageEntryText>
@@ -4520,12 +4535,6 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="KickExistingConnection">
 			<languageEntryText>Kick existing connection using my account</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="KnownServersColumn0">
-			<languageEntryText>IP Address</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="KnownServersColumn1">
-			<languageEntryText>Server Name</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>

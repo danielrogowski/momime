@@ -9,6 +9,7 @@ import java.net.URL;
 
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.database.LanguageDatabaseConstants;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
@@ -86,6 +87,24 @@ public final class ClientTestData
 		return sys;
 	}
 
+	/**
+	 * @return Overland map coordinate system that can be included into session description
+	 */
+	public final static MapSizeData createMapSizeData ()
+	{
+		final MapSizeData sys = new MapSizeData ();
+		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
+		sys.setWidth (60);
+		sys.setHeight (40);
+		sys.setDepth (2);
+		sys.setWrapsLeftToRight (true);
+		
+		sys.setCitySeparation (3);
+		sys.setContinentalRaceChance (75);
+		
+		return sys;
+	}
+	
 	/**
 	 * @param sys Overland map coordinate system
 	 * @return Map area prepopulated with empty cells

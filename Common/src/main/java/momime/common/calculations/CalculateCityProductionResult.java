@@ -126,7 +126,7 @@ public final class CalculateCityProductionResult implements Comparable<Calculate
 	/**
 	 * @param newAmount The amount of production the city is consuming, e.g. gold to maintain buildings
 	 */
-	final void setConsumptionAmount (final int newAmount)
+	public final void setConsumptionAmount (final int newAmount)
 	{
 		consumptionAmount = newAmount;
 	}

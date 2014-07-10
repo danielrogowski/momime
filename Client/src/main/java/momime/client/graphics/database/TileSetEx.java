@@ -34,10 +34,10 @@ public final class TileSetEx extends TileSet
 	private Double animationSpeed;
 
 	/** All images and animation frames used by tiles in the same tile set must share the same width */
-	int tileWidth;
+	private int tileWidth;
 	
 	/** All images and animation frames used by tiles in the same tile set must share the same height */
-	int tileHeight;
+	private int tileHeight;
 	
 	/** Map of smoothing system IDs to smoothing systems */
 	private Map<String, SmoothingSystemEx> smoothingSystemsMap;
@@ -254,11 +254,27 @@ public final class TileSetEx extends TileSet
 	}
 	
 	/**
+	 * @param width All images and animation frames used by tiles in the same tile set must share the same width
+	 */
+	public final void setTileWidth (final int width)
+	{
+		tileWidth = width;
+	}
+	
+	/**
 	 * @return All images and animation frames used by tiles in the same tile set must share the same height
 	 */
 	public final int getTileHeight ()
 	{
 		return tileHeight;
+	}
+
+	/**
+	 * @param height All images and animation frames used by tiles in the same tile set must share the same height
+	 */
+	public final void setTileHeight (final int height)
+	{
+		tileHeight = height;
 	}
 
 	/**

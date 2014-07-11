@@ -16,6 +16,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.DifficultyLevelData;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.v0_9_5.Building;
+import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityGrowthRateBreakdownDying;
+import momime.common.internal.CityGrowthRateBreakdownGrowing;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MemoryGridCell;
@@ -300,75 +303,64 @@ public final class TestMomCityCalculationsImpl
 
 		// At max size
 		cityData.setCityPopulation (10000);
-		final CalculateCityGrowthRateBreakdown maximum = calc.calculateCityGrowthRate (map, buildings, cityLocation, 10, GenerateTestData.createDB ());
-		assertEquals (MomCityGrowthDirection.MAXIMUM, maximum.getDirection ());
+		final CityGrowthRateBreakdown maximum = calc.calculateCityGrowthRate (map, buildings, cityLocation, 10, GenerateTestData.createDB ());
+		assertEquals (CityGrowthRateBreakdown.class.getName (), maximum.getClass ().getName ());
 		assertEquals (10000, maximum.getCurrentPopulation ());
 		assertEquals (10000, maximum.getMaximumPopulation ());
-		assertEquals (0, maximum.getBaseGrowthRate ());
-		assertEquals (0, maximum.getRacialGrowthModifier ());
-		assertNull (maximum.getBuildingsModifyingGrowthRate ());
-		assertEquals (0, maximum.getTotalGrowthRate ());
-		assertEquals (0, maximum.getCappedGrowthRate ());
-		assertEquals (0, maximum.getBaseDeathRate ());
-		assertEquals (0, maximum.getCityDeathRate ());
 		assertEquals (0, maximum.getFinalTotal ());
 
 		// Growing (this is the example quoted in the strategy guide, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1)
 		cityData.setCityPopulation (12000);
-		final CalculateCityGrowthRateBreakdown growingEven = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
-		assertEquals (MomCityGrowthDirection.GROWING, growingEven.getDirection ());
+		final CityGrowthRateBreakdown growingEvenBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), growingEvenBreakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing growingEven = (CityGrowthRateBreakdownGrowing) growingEvenBreakdown;
 		assertEquals (12000, growingEven.getCurrentPopulation ());
 		assertEquals (22000, growingEven.getMaximumPopulation ());
 		assertEquals (50, growingEven.getBaseGrowthRate ());
 		assertEquals (0, growingEven.getRacialGrowthModifier ());
-		assertEquals (0, growingEven.getBuildingsModifyingGrowthRate ().length);
+		assertEquals (0, growingEven.getBuildingModifier ().size ());
 		assertEquals (50, growingEven.getTotalGrowthRate ());
 		assertEquals (50, growingEven.getCappedGrowthRate ());
-		assertEquals (0, growingEven.getBaseDeathRate ());
-		assertEquals (0, growingEven.getCityDeathRate ());
 		assertEquals (50, growingEven.getFinalTotal ());
 
-		final CalculateCityGrowthRateBreakdown growingOdd = calc.calculateCityGrowthRate (map, buildings, cityLocation, 23, GenerateTestData.createDB ());
-		assertEquals (MomCityGrowthDirection.GROWING, growingOdd.getDirection ());
+		final CityGrowthRateBreakdown growingOddBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 23, GenerateTestData.createDB ());
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), growingOddBreakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing growingOdd = (CityGrowthRateBreakdownGrowing) growingOddBreakdown;
 		assertEquals (12000, growingOdd.getCurrentPopulation ());
 		assertEquals (23000, growingOdd.getMaximumPopulation ());
 		assertEquals (50, growingOdd.getBaseGrowthRate ());
 		assertEquals (0, growingOdd.getRacialGrowthModifier ());
-		assertEquals (0, growingOdd.getBuildingsModifyingGrowthRate ().length);
+		assertEquals (0, growingOdd.getBuildingModifier ().size ());
 		assertEquals (50, growingOdd.getTotalGrowthRate ());
 		assertEquals (50, growingOdd.getCappedGrowthRate ());
-		assertEquals (0, growingOdd.getBaseDeathRate ());
-		assertEquals (0, growingOdd.getCityDeathRate ());
 		assertEquals (50, growingOdd.getFinalTotal ());
 
 		// Bonus from race - positive
 		cityData.setCityRaceID (GenerateTestData.BARBARIAN);
-		final CalculateCityGrowthRateBreakdown barbarian = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
-		assertEquals (MomCityGrowthDirection.GROWING, barbarian.getDirection ());
+		final CityGrowthRateBreakdown barbarianBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), barbarianBreakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing barbarian = (CityGrowthRateBreakdownGrowing) barbarianBreakdown;
 		assertEquals (12000, barbarian.getCurrentPopulation ());
 		assertEquals (22000, barbarian.getMaximumPopulation ());
 		assertEquals (50, barbarian.getBaseGrowthRate ());
 		assertEquals (20, barbarian.getRacialGrowthModifier ());
-		assertEquals (0, barbarian.getBuildingsModifyingGrowthRate ().length);
+		assertEquals (0, barbarian.getBuildingModifier ().size ());
 		assertEquals (70, barbarian.getTotalGrowthRate ());
 		assertEquals (70, barbarian.getCappedGrowthRate ());
-		assertEquals (0, barbarian.getBaseDeathRate ());
-		assertEquals (0, barbarian.getCityDeathRate ());
 		assertEquals (70, barbarian.getFinalTotal ());
 
 		// Bonus from race - negative
 		cityData.setCityRaceID (GenerateTestData.HIGH_ELF);
-		final CalculateCityGrowthRateBreakdown highElf = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
-		assertEquals (MomCityGrowthDirection.GROWING, highElf.getDirection ());
+		final CityGrowthRateBreakdown highElfBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), highElfBreakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing highElf = (CityGrowthRateBreakdownGrowing) highElfBreakdown;
 		assertEquals (12000, highElf.getCurrentPopulation ());
 		assertEquals (22000, highElf.getMaximumPopulation ());
 		assertEquals (50, highElf.getBaseGrowthRate ());
 		assertEquals (-20, highElf.getRacialGrowthModifier ());
-		assertEquals (0, highElf.getBuildingsModifyingGrowthRate ().length);
+		assertEquals (0, highElf.getBuildingModifier ().size ());
 		assertEquals (30, highElf.getTotalGrowthRate ());
 		assertEquals (30, highElf.getCappedGrowthRate ());
-		assertEquals (0, highElf.getBaseDeathRate ());
-		assertEquals (0, highElf.getCityDeathRate ());
 		assertEquals (30, highElf.getFinalTotal ());
 
 		// Bonus from buildings
@@ -387,71 +379,64 @@ public final class TestMomCityCalculationsImpl
 		sagesGuild.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (sagesGuild);
 
-		final CalculateCityGrowthRateBreakdown withBuildings = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
-		assertEquals (MomCityGrowthDirection.GROWING, withBuildings.getDirection ());
+		final CityGrowthRateBreakdown withBuildingsBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), withBuildingsBreakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing withBuildings = (CityGrowthRateBreakdownGrowing) withBuildingsBreakdown;
 		assertEquals (12000, withBuildings.getCurrentPopulation ());
 		assertEquals (22000, withBuildings.getMaximumPopulation ());
 		assertEquals (50, withBuildings.getBaseGrowthRate ());
 		assertEquals (-20, withBuildings.getRacialGrowthModifier ());
-		assertEquals (2, withBuildings.getBuildingsModifyingGrowthRate ().length);
-		assertEquals (GenerateTestData.GRANARY, withBuildings.getBuildingsModifyingGrowthRate () [0].getBuildingID ());
-		assertEquals (20, withBuildings.getBuildingsModifyingGrowthRate () [0].getGrowthRateModifier ());
-		assertEquals (GenerateTestData.FARMERS_MARKET, withBuildings.getBuildingsModifyingGrowthRate () [1].getBuildingID ());
-		assertEquals (30, withBuildings.getBuildingsModifyingGrowthRate () [1].getGrowthRateModifier ());
+		assertEquals (2, withBuildings.getBuildingModifier ().size ());
+		assertEquals (GenerateTestData.GRANARY, withBuildings.getBuildingModifier ().get (0).getBuildingID ());
+		assertEquals (20, withBuildings.getBuildingModifier ().get (0).getGrowthRateBonus ());
+		assertEquals (GenerateTestData.FARMERS_MARKET, withBuildings.getBuildingModifier ().get (1).getBuildingID ());
+		assertEquals (30, withBuildings.getBuildingModifier ().get (1).getGrowthRateBonus ());
 		assertEquals (80, withBuildings.getTotalGrowthRate ());
 		assertEquals (80, withBuildings.getCappedGrowthRate ());
-		assertEquals (0, withBuildings.getBaseDeathRate ());
-		assertEquals (0, withBuildings.getCityDeathRate ());
 		assertEquals (80, withBuildings.getFinalTotal ());
 
 		// With all those buildings, at almost max size we still get a reasonable increase
 		cityData.setCityPopulation (21960);
-		final CalculateCityGrowthRateBreakdown almostCapped = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
-		assertEquals (MomCityGrowthDirection.GROWING, almostCapped.getDirection ());
+		final CityGrowthRateBreakdown almostCappedBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), almostCappedBreakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing almostCapped = (CityGrowthRateBreakdownGrowing) almostCappedBreakdown;
 		assertEquals (21960, almostCapped.getCurrentPopulation ());
 		assertEquals (22000, almostCapped.getMaximumPopulation ());
 		assertEquals (0, almostCapped.getBaseGrowthRate ());
 		assertEquals (-20, almostCapped.getRacialGrowthModifier ());
-		assertEquals (2, almostCapped.getBuildingsModifyingGrowthRate ().length);
-		assertEquals (GenerateTestData.GRANARY, almostCapped.getBuildingsModifyingGrowthRate () [0].getBuildingID ());
-		assertEquals (20, almostCapped.getBuildingsModifyingGrowthRate () [0].getGrowthRateModifier ());
-		assertEquals (GenerateTestData.FARMERS_MARKET, almostCapped.getBuildingsModifyingGrowthRate () [1].getBuildingID ());
-		assertEquals (30, almostCapped.getBuildingsModifyingGrowthRate () [1].getGrowthRateModifier ());
+		assertEquals (2, almostCapped.getBuildingModifier ().size ());
+		assertEquals (GenerateTestData.GRANARY, almostCapped.getBuildingModifier ().get (0).getBuildingID ());
+		assertEquals (20, almostCapped.getBuildingModifier ().get (0).getGrowthRateBonus ());
+		assertEquals (GenerateTestData.FARMERS_MARKET, almostCapped.getBuildingModifier ().get (1).getBuildingID ());
+		assertEquals (30, almostCapped.getBuildingModifier ().get (1).getGrowthRateBonus ());
 		assertEquals (30, almostCapped.getTotalGrowthRate ());
 		assertEquals (30, almostCapped.getCappedGrowthRate ());
-		assertEquals (0, almostCapped.getBaseDeathRate ());
-		assertEquals (0, almostCapped.getCityDeathRate ());
 		assertEquals (30, almostCapped.getFinalTotal ());
 
 		// +30 with only 20 to spare would push us over max size
 		cityData.setCityPopulation (21980);
-		final CalculateCityGrowthRateBreakdown overCap = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
-		assertEquals (MomCityGrowthDirection.GROWING, overCap.getDirection ());
+		final CityGrowthRateBreakdown overCapBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 22, GenerateTestData.createDB ());
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), overCapBreakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing overCap = (CityGrowthRateBreakdownGrowing) overCapBreakdown;
 		assertEquals (21980, overCap.getCurrentPopulation ());
 		assertEquals (22000, overCap.getMaximumPopulation ());
 		assertEquals (0, overCap.getBaseGrowthRate ());
 		assertEquals (-20, overCap.getRacialGrowthModifier ());
-		assertEquals (2, overCap.getBuildingsModifyingGrowthRate ().length);
-		assertEquals (GenerateTestData.GRANARY, overCap.getBuildingsModifyingGrowthRate () [0].getBuildingID ());
-		assertEquals (20, overCap.getBuildingsModifyingGrowthRate () [0].getGrowthRateModifier ());
-		assertEquals (GenerateTestData.FARMERS_MARKET, overCap.getBuildingsModifyingGrowthRate () [1].getBuildingID ());
-		assertEquals (30, overCap.getBuildingsModifyingGrowthRate () [1].getGrowthRateModifier ());
+		assertEquals (2, overCap.getBuildingModifier ().size ());
+		assertEquals (GenerateTestData.GRANARY, overCap.getBuildingModifier ().get (0).getBuildingID ());
+		assertEquals (20, overCap.getBuildingModifier ().get (0).getGrowthRateBonus ());
+		assertEquals (GenerateTestData.FARMERS_MARKET, overCap.getBuildingModifier ().get (1).getBuildingID ());
+		assertEquals (30, overCap.getBuildingModifier ().get (1).getGrowthRateBonus ());
 		assertEquals (30, overCap.getTotalGrowthRate ());
 		assertEquals (20, overCap.getCappedGrowthRate ());
-		assertEquals (0, overCap.getBaseDeathRate ());
-		assertEquals (0, overCap.getCityDeathRate ());
 		assertEquals (20, overCap.getFinalTotal ());
 
 		// Dying - note the race and building modifiers don't apply, because we can't by virtue of bonuses force a city to go over max size
-		final CalculateCityGrowthRateBreakdown dying = calc.calculateCityGrowthRate (map, buildings, cityLocation, 18, GenerateTestData.createDB ());
-		assertEquals (MomCityGrowthDirection.DYING, dying.getDirection ());
+		final CityGrowthRateBreakdown dyingBreakdown = calc.calculateCityGrowthRate (map, buildings, cityLocation, 18, GenerateTestData.createDB ());
+		assertEquals (CityGrowthRateBreakdownDying.class.getName (), dyingBreakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownDying dying = (CityGrowthRateBreakdownDying) dyingBreakdown;
 		assertEquals (21980, dying.getCurrentPopulation ());
 		assertEquals (18000, dying.getMaximumPopulation ());
-		assertEquals (0, dying.getBaseGrowthRate ());
-		assertEquals (0, dying.getRacialGrowthModifier ());
-		assertNull (dying.getBuildingsModifyingGrowthRate ());
-		assertEquals (0, dying.getTotalGrowthRate ());
-		assertEquals (0, dying.getCappedGrowthRate ());
 		assertEquals (3, dying.getBaseDeathRate ());
 		assertEquals (150, dying.getCityDeathRate ());
 		assertEquals (-150, dying.getFinalTotal ());
@@ -1520,5 +1505,4 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (60, calc.goldToRushBuy (60, 30));
 		assertEquals (2, calc.goldToRushBuy (60, 59));
 	}
-
 }

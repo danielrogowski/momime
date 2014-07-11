@@ -1,0 +1,79 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:momimecommon="http://momime/common/database/v0_9_5" xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_5"
+	xmlns:momimeinternal="http://momime/common/internal" targetNamespace="http://momime/common/internal">
+	
+	<xsd:import namespace="http://momime/common/database/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_5"/>
+	
+    <xsd:annotation>
+    	<xsd:documentation>Defines data structures used by MoMIMECommon but that aren't stored in any XML files or send in any network messages.
+This is used for defining data structures used for calculation breakdowns.</xsd:documentation>
+	</xsd:annotation>
+
+	<!-- Complex types -->
+
+	<xsd:complexType name="cityGrowthRateBreakdownBuilding">
+		<xsd:annotation>
+			<xsd:documentation>Stores the growth rate modifier granted by a particular building.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="growthRateBonus" type="momimecommon:cityPopulationGrowthRate" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityGrowthRateBreakdown">
+		<xsd:annotation>
+			<xsd:documentation>Stores the breakdown of all the values used in calculating the population growth rate/death rate in a city.
+Use of this structure directly (rather than the Growing and Dying subclasses) implies that the population is stable and neither growing nor dying.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="currentPopulation" type="momimenewgame:cityPopulation" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="maximumPopulation" type="momimenewgame:cityPopulation" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="finalTotal" type="momimecommon:cityPopulationGrowthRate" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityGrowthRateBreakdownGrowing">
+		<xsd:complexContent>
+			<xsd:extension base="momimeinternal:cityGrowthRateBreakdown">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="baseGrowthRate" type="momimecommon:cityPopulationGrowthRate" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="racialGrowthModifier" type="momimecommon:cityPopulationGrowthRate" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingModifier" type="momimeinternal:cityGrowthRateBreakdownBuilding" />
+					
+					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRate" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Total growth = base + racial + buildings</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cappedGrowthRate" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Total growth rate, possibly reduced to prevent city going over maximum size</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityGrowthRateBreakdownDying">
+		<xsd:complexContent>
+			<xsd:extension base="momimeinternal:cityGrowthRateBreakdown">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="baseDeathRate" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Sets of 1,000 people or part thereof that we are in excess of maximum population</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cityDeathRate" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Number of people dying each turn</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+</xsd:schema>

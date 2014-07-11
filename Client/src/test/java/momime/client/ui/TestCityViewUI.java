@@ -22,12 +22,12 @@ import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.TextUtilsImpl;
-import momime.common.calculations.CalculateCityGrowthRateBreakdown;
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResults;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
@@ -179,7 +179,8 @@ public final class TestCityViewUI
 		
 		when (calc.calculateAllCityProductions (client.getPlayers (), terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), "TR01", sd, true, db, false)).thenReturn (productionsContainer);
 		
-		final CalculateCityGrowthRateBreakdown cityGrowthBreakdown = new CalculateCityGrowthRateBreakdown (0, 0, null, 0, 0, null, 0, 0, 0, 0, 70);
+		final CityGrowthRateBreakdown cityGrowthBreakdown = new CityGrowthRateBreakdown ();
+		cityGrowthBreakdown.setFinalTotal (70);
 		when (calc.calculateCityGrowthRate (terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), maxCitySize, db)).thenReturn (cityGrowthBreakdown);
 		
 		// Set up terrain panel

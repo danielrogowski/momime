@@ -20,6 +20,10 @@ import momime.common.database.v0_9_5.RaceUnrest;
 import momime.common.database.v0_9_5.RoundingDirectionID;
 import momime.common.database.v0_9_5.TaxRate;
 import momime.common.database.v0_9_5.TileType;
+import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityGrowthRateBreakdownBuilding;
+import momime.common.internal.CityGrowthRateBreakdownDying;
+import momime.common.internal.CityGrowthRateBreakdownGrowing;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
@@ -324,7 +328,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
 	@Override
-	public final CalculateCityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
+	public final CityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
 		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -338,96 +342,67 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 
 		// Work out the direction the population is changing in
 		final int spaceLeft = maximumPopulation - currentPopulation;
-
-		final MomCityGrowthDirection direction;
-		final int baseGrowthRate;
-		final int racialGrowthModifier;
-		final CalculateCityGrowthRateBreakdown_Building [] buildingsModifyingGrowthRateArray;
-		final int totalGrowthRate;
-		final int cappedGrowthRate;
-		final int baseDeathRate;
-		final int cityDeathRate;
-		final int finalTotal;
+		final CityGrowthRateBreakdown breakdown;
 
 		if (spaceLeft > 0)
 		{
 			// Growing
-			direction = MomCityGrowthDirection.GROWING;
+			final CityGrowthRateBreakdownGrowing growing = new CityGrowthRateBreakdownGrowing ();
 
-			baseGrowthRate = ((maxCitySize - (currentPopulation / 1000)) / 2) * 10;	// +0 = -1 from the formula, +1 to make rounding go up
+			growing.setBaseGrowthRate (((maxCitySize - (currentPopulation / 1000)) / 2) * 10);	// +0 = -1 from the formula, +1 to make rounding go up
 			final Integer racialGrowthModifierInteger = db.findRace (cityData.getCityRaceID (), "calculateCityGrowthRate").getGrowthRateModifier ();
-			racialGrowthModifier = (racialGrowthModifierInteger == null) ? 0 : racialGrowthModifierInteger;
+			growing.setRacialGrowthModifier ((racialGrowthModifierInteger == null) ? 0 : racialGrowthModifierInteger);
 
-			int totalSoFar = baseGrowthRate + racialGrowthModifier;
+			growing.setTotalGrowthRate (growing.getBaseGrowthRate () + growing.getRacialGrowthModifier ());
 
 			// Bonuses from buildings
-			final List<CalculateCityGrowthRateBreakdown_Building> buildingsModifyingGrowthRate = new ArrayList<CalculateCityGrowthRateBreakdown_Building> ();
 			for (final MemoryBuilding thisBuilding : buildings)
 				if (thisBuilding.getCityLocation ().equals (cityLocation))
 				{
 					final Integer buildingGrowthRateBonus = db.findBuilding (thisBuilding.getBuildingID (), "calculateCityGrowthRate").getGrowthRateBonus ();
 					if (buildingGrowthRateBonus != null)
 					{
-						totalSoFar = totalSoFar + buildingGrowthRateBonus;
-						buildingsModifyingGrowthRate.add (new CalculateCityGrowthRateBreakdown_Building (thisBuilding.getBuildingID (), buildingGrowthRateBonus));
+						growing.setTotalGrowthRate (growing.getTotalGrowthRate () + buildingGrowthRateBonus);
+						
+						final CityGrowthRateBreakdownBuilding breakdownBuilding = new CityGrowthRateBreakdownBuilding ();
+						breakdownBuilding.setBuildingID (thisBuilding.getBuildingID ());
+						breakdownBuilding.setGrowthRateBonus (buildingGrowthRateBonus);
+						growing.getBuildingModifier ().add (breakdownBuilding);
 					}
 				}
 
-			// Convert buildings list to an array
-			buildingsModifyingGrowthRateArray = new CalculateCityGrowthRateBreakdown_Building [buildingsModifyingGrowthRate.size ()];
-			for (int buildingNo = 0; buildingNo < buildingsModifyingGrowthRate.size (); buildingNo++)
-				buildingsModifyingGrowthRateArray [buildingNo] = buildingsModifyingGrowthRate.get (buildingNo);
-
-			totalGrowthRate = totalSoFar;
-
 			// Don't allow maximum to go over maximum population
-			if (totalGrowthRate > spaceLeft)
-				cappedGrowthRate = spaceLeft;
+			if (growing.getTotalGrowthRate () > spaceLeft)
+				growing.setCappedGrowthRate (spaceLeft);
 			else
-				cappedGrowthRate = totalGrowthRate;
+				growing.setCappedGrowthRate (growing.getTotalGrowthRate ());
 
-			finalTotal = cappedGrowthRate;
-
-			baseDeathRate = 0;
-			cityDeathRate = 0;
+			growing.setFinalTotal (growing.getCappedGrowthRate ());
+			breakdown = growing;
 		}
 		else if (spaceLeft < 0)
 		{
 			// Dying
-			direction = MomCityGrowthDirection.DYING;
+			final CityGrowthRateBreakdownDying dying = new CityGrowthRateBreakdownDying ();
 
 			// Calculate how many population units we're over
-			baseDeathRate = (currentPopulation / 1000) - maxCitySize;
-			cityDeathRate = baseDeathRate * 50;
-			finalTotal = -cityDeathRate;
+			dying.setBaseDeathRate ((currentPopulation / 1000) - maxCitySize);
+			dying.setCityDeathRate (dying.getBaseDeathRate () * 50);
+			dying.setFinalTotal (-dying.getCityDeathRate ());
 
-			baseGrowthRate = 0;
-			racialGrowthModifier = 0;
-			buildingsModifyingGrowthRateArray = null;
-			totalGrowthRate = 0;
-			cappedGrowthRate = 0;
+			breakdown = dying;
 		}
 		else
 		{
 			// At maximum
-			direction = MomCityGrowthDirection.MAXIMUM;
-			finalTotal = 0;
-
-			baseGrowthRate = 0;
-			racialGrowthModifier = 0;
-			buildingsModifyingGrowthRateArray = null;
-			totalGrowthRate = 0;
-			cappedGrowthRate = 0;
-
-			baseDeathRate = 0;
-			cityDeathRate = 0;
+			breakdown = new CityGrowthRateBreakdown ();
 		}
 
-		final CalculateCityGrowthRateBreakdown breakdown = new CalculateCityGrowthRateBreakdown (currentPopulation, maximumPopulation, direction,
-			baseGrowthRate, racialGrowthModifier, buildingsModifyingGrowthRateArray, totalGrowthRate, cappedGrowthRate,
-			baseDeathRate, cityDeathRate, finalTotal);
+		// Set common values
+		breakdown.setCurrentPopulation (currentPopulation);
+		breakdown.setMaximumPopulation (maximumPopulation);
 
-		log.trace ("Exiting calculateCityGrowthRate = " + finalTotal);
+		log.trace ("Exiting calculateCityGrowthRate = " + breakdown.getFinalTotal ());
 		return breakdown;
 	}
 

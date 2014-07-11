@@ -165,6 +165,31 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>internal-xjc-generate</id>
+						<phase>generate-sources</phase>
+						<goals><goal>generate</goal></goals>
+						<configuration>
+							<schemaDirectory>src/main/resources/momime.common.internal</schemaDirectory>
+							<generateDirectory>target/generated-sources/xjc-momime-internal</generateDirectory>
+							<extension>true</extension>
+							<bindings>
+								<binding>
+									<dependencyResource>
+										<groupId>com.ndg.map</groupId>
+										<artifactId>ndgmap</artifactId>
+										<resource>META-INF/map.episode</resource>
+									</dependencyResource>
+								</binding>
+								<binding>
+									<fileset>
+										<directory>target/generated-sources/xjc-momime-commondb/META-INF</directory>
+										<includes><include>*.episode</include></includes>
+									</fileset>
+								</binding>
+							</bindings>
+						</configuration>
+					</execution>
+					<execution>
 						<id>test-xjc-generate</id>
 						<phase>generate-test-sources</phase>
 						<goals><goal>generate</goal></goals>

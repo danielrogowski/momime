@@ -35,12 +35,12 @@ import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.TextUtils;
-import momime.common.calculations.CalculateCityGrowthRateBreakdown;
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResults;
 import momime.common.calculations.CalculateCityUnrestBreakdown;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 
@@ -239,7 +239,7 @@ public final class CityViewUI extends MomClientAbstractUI
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (),
 						CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
 				
-					final CalculateCityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
+					final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize, getClient ().getClientDB ());
 
@@ -494,7 +494,7 @@ public final class CityViewUI extends MomClientAbstractUI
 					getTextUtils ().intToStrCommas (maxCitySize * 1000)));
 			
 				// Growth rate
-				final CalculateCityGrowthRateBreakdown cityGrowthBreakdown = getCityCalculations ().calculateCityGrowthRate
+				final CityGrowthRateBreakdown cityGrowthBreakdown = getCityCalculations ().calculateCityGrowthRate
 					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize, getClient ().getClientDB ());
 			

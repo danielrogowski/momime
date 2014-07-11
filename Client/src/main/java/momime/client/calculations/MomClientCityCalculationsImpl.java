@@ -10,13 +10,15 @@ import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
-import momime.common.calculations.CalculateCityGrowthRateBreakdown;
-import momime.common.calculations.CalculateCityGrowthRateBreakdown_Building;
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResultBreakdown;
 import momime.common.calculations.CalculateCityUnrestBreakdown;
 import momime.common.calculations.CalculateCityUnrestBreakdown_Building;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityGrowthRateBreakdownBuilding;
+import momime.common.internal.CityGrowthRateBreakdownDying;
+import momime.common.internal.CityGrowthRateBreakdownGrowing;
 
 /**
  * Client side only methods dealing with city calculations
@@ -143,7 +145,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 	 * @return Readable calculation details
 	 */
 	@Override
-	public final String describeCityGrowthRateCalculation (final CalculateCityGrowthRateBreakdown breakdown)
+	public final String describeCityGrowthRateCalculation (final CityGrowthRateBreakdown breakdown)
 	{
 		final StringBuilder text = new StringBuilder ();
 		
@@ -154,53 +156,54 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 		addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "MaximumPopulation").replaceAll
 			("MAXIMUM_POPULATION", new Integer (breakdown.getMaximumPopulation ()).toString ()));
 		
-		switch (breakdown.getDirection ())
+		if (breakdown instanceof CityGrowthRateBreakdownGrowing)
 		{
-			case GROWING:
-				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "BaseGrowthRate").replaceAll
-					("MAXIMUM_POPULATION_DIV_1000", new Integer (breakdown.getMaximumPopulation () / 1000).toString ()).replaceAll
-					("CURRENT_POPULATION_DIV_1000", new Integer (breakdown.getCurrentPopulation () / 1000).toString ()).replaceAll
-					("BASE_GROWTH_RATE", new Integer (breakdown.getBaseGrowthRate ()).toString ()));
+			final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) breakdown;
+			
+			addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "BaseGrowthRate").replaceAll
+				("MAXIMUM_POPULATION_DIV_1000", new Integer (growing.getMaximumPopulation () / 1000).toString ()).replaceAll
+				("CURRENT_POPULATION_DIV_1000", new Integer (growing.getCurrentPopulation () / 1000).toString ()).replaceAll
+				("BASE_GROWTH_RATE", new Integer (growing.getBaseGrowthRate ()).toString ()));
 
-				boolean showTotal = false;
-				if (breakdown.getRacialGrowthModifier () != 0)
-				{
-					showTotal = true;
-					addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "RacialGrowthModifier").replaceAll
-						("RACIAL_GROWTH_MODIFIER", new Integer (breakdown.getRacialGrowthModifier ()).toString ()));
-				}
+			boolean showTotal = false;
+			if (growing.getRacialGrowthModifier () != 0)
+			{
+				showTotal = true;
+				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "RacialGrowthModifier").replaceAll
+					("RACIAL_GROWTH_MODIFIER", new Integer (growing.getRacialGrowthModifier ()).toString ()));
+			}
 				
-				// Bonuses from buildings
-				for (final CalculateCityGrowthRateBreakdown_Building buildingGrowth : breakdown.getBuildingsModifyingGrowthRate ())
-				{
-					showTotal = true;
-					final Building building = getLanguage ().findBuilding (buildingGrowth.getBuildingID ());
-					final String buildingName = (building == null) ? buildingGrowth.getBuildingID () : building.getBuildingName ();					
+			// Bonuses from buildings
+			for (final CityGrowthRateBreakdownBuilding buildingGrowth : growing.getBuildingModifier ())
+			{
+				showTotal = true;
+				final Building building = getLanguage ().findBuilding (buildingGrowth.getBuildingID ());
+				final String buildingName = (building == null) ? buildingGrowth.getBuildingID () : building.getBuildingName ();					
 					
-					addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "GrowthBonusFromBuilding").replaceAll
-						("BUILDING_NAME", buildingName).replaceAll
-						("BUILDING_GROWTH_MODIFIER", new Integer (buildingGrowth.getGrowthRateModifier ()).toString ()));
-				}
+				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "GrowthBonusFromBuilding").replaceAll
+					("BUILDING_NAME", buildingName).replaceAll
+					("BUILDING_GROWTH_MODIFIER", new Integer (buildingGrowth.getGrowthRateBonus ()).toString ()));
+			}
 				
-				if (showTotal)
-					addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateTotal").replaceAll
-						("TOTAL_GROWTH_RATE", new Integer (breakdown.getTotalGrowthRate ()).toString ()));
+			if (showTotal)
+				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateTotal").replaceAll
+					("TOTAL_GROWTH_RATE", new Integer (growing.getTotalGrowthRate ()).toString ()));
 				
-				if (breakdown.getCappedGrowthRate () < breakdown.getTotalGrowthRate ())
-					addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateCapped").replaceAll
-						("CAPPED_GROWTH_RATE", new Integer (breakdown.getCappedGrowthRate ()).toString ()));
-				
-				break;
-				
-			case DYING:
-				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "DeathRate").replaceAll
-					("BASE_DEATH_RATE", new Integer (breakdown.getBaseDeathRate ()).toString ()).replaceAll
-					("CITY_DEATH_RATE", new Integer (breakdown.getCityDeathRate ()).toString ()));
-				break;
-				
-			case MAXIMUM:
-				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "AtMaximumSize"));
-				break;
+			if (growing.getCappedGrowthRate () < growing.getTotalGrowthRate ())
+				addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateCapped").replaceAll
+					("CAPPED_GROWTH_RATE", new Integer (growing.getCappedGrowthRate ()).toString ()));
+		}
+		else if (breakdown instanceof CityGrowthRateBreakdownDying)
+		{
+			final CityGrowthRateBreakdownDying dying = (CityGrowthRateBreakdownDying) breakdown;
+			
+			addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "DeathRate").replaceAll
+				("BASE_DEATH_RATE", new Integer (dying.getBaseDeathRate ()).toString ()).replaceAll
+				("CITY_DEATH_RATE", new Integer (dying.getCityDeathRate ()).toString ()));
+		}
+		else
+		{
+			addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "AtMaximumSize"));
 		}
 		
 		return text.toString ();

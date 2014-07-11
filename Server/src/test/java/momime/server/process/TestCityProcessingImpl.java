@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.CalculateCityGrowthRateBreakdown;
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResultsImplementation;
 import momime.common.calculations.CalculateCityUnrestBreakdown;
@@ -24,6 +23,7 @@ import momime.common.database.newgame.v0_9_5.DifficultyLevelData;
 import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.v0_9_5.TaxRate;
+import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.messages.servertoclient.v0_9_5.PendingSaleMessage;
 import momime.common.messages.servertoclient.v0_9_5.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateProductionSoFarMessage;
@@ -562,13 +562,16 @@ public final class TestCityProcessingImpl
 		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), raidersLocation, "TR03", sd, true, db, false)).thenReturn (raidersCityProductions);
 		
 		// City growth rate
-		final CalculateCityGrowthRateBreakdown humanGrowthRate = new CalculateCityGrowthRateBreakdown (0, 0, null, 0, 0, null, 0, 0, 0, 0, 650);
+		final CityGrowthRateBreakdown humanGrowthRate = new CityGrowthRateBreakdown ();
+		humanGrowthRate.setFinalTotal (650);
 		when (cityCalc.calculateCityGrowthRate (trueTerrain, trueMap.getBuilding (), humanLocation, humanCityMaxSize, db)).thenReturn (humanGrowthRate);
 
-		final CalculateCityGrowthRateBreakdown aiGrowthRate = new CalculateCityGrowthRateBreakdown (0, 0, null, 0, 0, null, 0, 0, 0, 0, 250);
+		final CityGrowthRateBreakdown aiGrowthRate = new CityGrowthRateBreakdown ();
+		aiGrowthRate.setFinalTotal (250);
 		when (cityCalc.calculateCityGrowthRate (trueTerrain, trueMap.getBuilding (), aiLocation, aiCityMaxSize, db)).thenReturn (aiGrowthRate);
 		
-		final CalculateCityGrowthRateBreakdown raidersGrowthRate = new CalculateCityGrowthRateBreakdown (0, 0, null, 0, 0, null, 0, 0, 0, 0, 400);
+		final CityGrowthRateBreakdown raidersGrowthRate = new CityGrowthRateBreakdown ();
+		raidersGrowthRate.setFinalTotal (400);
 		when (cityCalc.calculateCityGrowthRate (trueTerrain, trueMap.getBuilding (), raidersLocation, raidersCityMaxSize, db)).thenReturn (raidersGrowthRate);
 
 		// Rebels in each city

@@ -37,10 +37,10 @@ import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResults;
-import momime.common.calculations.CalculateCityUnrestBreakdown;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 
@@ -567,7 +567,7 @@ public final class CityViewUI extends MomClientAbstractUI
 					{
 						try
 						{
-							final CalculateCityUnrestBreakdown breakdown = getCityCalculations ().calculateCityRebels (getClient ().getPlayers (),
+							final CityUnrestBreakdown breakdown = getCityCalculations ().calculateCityRebels (getClient ().getPlayers (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),

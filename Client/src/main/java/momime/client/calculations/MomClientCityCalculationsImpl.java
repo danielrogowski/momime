@@ -12,13 +12,13 @@ import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResultBreakdown;
-import momime.common.calculations.CalculateCityUnrestBreakdown;
-import momime.common.calculations.CalculateCityUnrestBreakdown_Building;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
+import momime.common.internal.CityUnrestBreakdown;
+import momime.common.internal.CityUnrestBreakdownBuilding;
 
 /**
  * Client side only methods dealing with city calculations
@@ -48,7 +48,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 	 * @return Readable calculation details
 	 */
 	@Override
-	public final String describeCityUnrestCalculation (final CalculateCityUnrestBreakdown breakdown)
+	public final String describeCityUnrestCalculation (final CityUnrestBreakdown breakdown)
 	{
 		final StringBuilder text = new StringBuilder ();
 		
@@ -82,7 +82,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 				("RACE_LITERAL", getTextUtils ().intToStrPlusMinus (breakdown.getRacialLiteral ())));
 		
 		// Buildings
-		for (final CalculateCityUnrestBreakdown_Building buildingUnrest : breakdown.getBuildingsReducingUnrest ())
+		for (final CityUnrestBreakdownBuilding buildingUnrest : breakdown.getBuildingReducingUnrest ())
 		{
 			final Building building = getLanguage ().findBuilding (buildingUnrest.getBuildingID ());
 			final String buildingName = (building == null) ? buildingUnrest.getBuildingID () : building.getBuildingName ();
@@ -96,7 +96,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 		if (breakdown.getReligiousBuildingReduction () != 0)
 		{
 			final StringBuilder retortList = new StringBuilder ();
-			for (final String pickID : breakdown.getPickIdsContributingToReligiousBuildingBonus ())
+			for (final String pickID : breakdown.getPickIdContributingToReligiousBuildingBonus ())
 			{
 				final Pick pick = getLanguage ().findPick (pickID);
 				final String pickDesc = (pick == null) ? pickID : pick.getPickDescription ();
@@ -125,10 +125,10 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 			("BASE_TOTAL", new Integer (breakdown.getBaseTotal ()).toString ()));
 		text.append ("\r\n");
 
-		if (breakdown.getForcePositive ())
+		if (breakdown.isForcePositive ())
 			addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "ForcePositive"));
 
-		if (breakdown.getForceAll ())
+		if (breakdown.isForceAll ())
 			addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "ForceAll").replaceAll
 				("CURRENT_POPULATION_DIV_1000", new Integer (breakdown.getPopulation ()).toString ()));
 		

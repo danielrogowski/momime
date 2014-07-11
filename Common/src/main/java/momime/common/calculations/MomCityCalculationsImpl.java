@@ -1,6 +1,5 @@
 package momime.common.calculations;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +23,8 @@ import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
+import momime.common.internal.CityUnrestBreakdown;
+import momime.common.internal.CityUnrestBreakdownBuilding;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
@@ -431,7 +432,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @throws RecordNotFoundException If any of a number of items cannot be found in the cache
 	 */
 	@Override
-	public final CalculateCityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
+	public final CityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
@@ -441,22 +442,18 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
 
+		// Create breakdown object to write all the values into
+		final CityUnrestBreakdown breakdown = new CityUnrestBreakdown ();
+		
 		// First get the tax rate
-		final int taxPercentage = db.findTaxRate (taxRateID, "calculateCityRebels").getTaxUnrestPercentage ();
+		breakdown.setTaxPercentage (db.findTaxRate (taxRateID, "calculateCityRebels").getTaxUnrestPercentage ());
 
 		// Add on racial unrest percentage
 		// To do this, need to find the player's capital race, i.e. the race inhabiting the city where their fortress is
 		final MapCoordinates3DEx fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
 			(cityData.getCityOwnerID (), CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, map, buildings);
-		final int racialPercentage;
-		final int racialLiteral;
 
-		if (fortressLocation == null)
-		{
-			racialPercentage = 0;
-			racialLiteral = 0;
-		}
-		else
+		if (fortressLocation != null)
 		{
 			// Find the capital race's unrest value listed under this city's race
 			final OverlandMapCityData fortressCityData = map.getPlane ().get (fortressLocation.getZ ()).getRow ().get (fortressLocation.getY ()).getCell ().get (fortressLocation.getX ()).getCityData ();
@@ -471,28 +468,23 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 			}
 
 			// Fine if the capital race is not listed, this just means there's no unrest
-			if (raceUnrest == null)
-			{
-				racialPercentage = 0;
-				racialLiteral = 0;
-			}
-			else
-			{
-				racialPercentage = (raceUnrest.getUnrestPercentage () == null) ? 0 : raceUnrest.getUnrestPercentage ();
-				racialLiteral = (raceUnrest.getUnrestLiteral () == null) ? 0 : raceUnrest.getUnrestLiteral ();
+			if (raceUnrest != null)
+			{				
+				breakdown.setRacialPercentage ((raceUnrest.getUnrestPercentage () == null) ? 0 : raceUnrest.getUnrestPercentage ());
+				breakdown.setRacialLiteral ((raceUnrest.getUnrestLiteral () == null) ? 0 : raceUnrest.getUnrestLiteral ());
 			}
 		}
 
 		// Do calculation, rounding down
-		final int totalPercentage = taxPercentage + racialPercentage;
-		final int population = cityData.getCityPopulation () / 1000;
-		final int baseValue = (population * totalPercentage) / 100;
+		breakdown.setTotalPercentage (breakdown.getTaxPercentage () + breakdown.getRacialPercentage ());
+		breakdown.setPopulation (cityData.getCityPopulation () / 1000);
+		breakdown.setBaseValue ((breakdown.getPopulation () * breakdown.getTotalPercentage ()) / 100);
 
 		// Count up religious buildings and non-religious buildings separately
-		// This is because Divine & Infernal power improve the pacifying effects of religious unrest reduction, but they do not improve the unrest reduction of the Animists' Guild or the Oracle
+		// This is because Divine & Infernal power improve the pacifying effects of religious unrest reduction,
+		// but they do not improve the unrest reduction of the Animists' Guild or the Oracle
 		int religiousUnrestReduction = 0;
 		int nonReligiousUnrestReduction = 0;
-		final List<CalculateCityUnrestBreakdown_Building> buildingsReducingUnrest = new ArrayList<CalculateCityUnrestBreakdown_Building> ();
 		for (final MemoryBuilding thisBuilding : buildings)
 
 			// Make sure its in the right location, and don't count buildings being sold this turn
@@ -508,117 +500,76 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 						nonReligiousUnrestReduction = nonReligiousUnrestReduction + building.getBuildingUnrestReduction ();
 
 					// List building in breakdown
-					buildingsReducingUnrest.add (new CalculateCityUnrestBreakdown_Building (thisBuilding.getBuildingID (), building.getBuildingUnrestReduction ()));
+					final CityUnrestBreakdownBuilding buildingBreakdown = new CityUnrestBreakdownBuilding ();
+					buildingBreakdown.setBuildingID (thisBuilding.getBuildingID ());
+					buildingBreakdown.setUnrestReduction (building.getBuildingUnrestReduction ());
+					breakdown.getBuildingReducingUnrest ().add (buildingBreakdown);
 				}
 			}
 
 		// Bump up effect of religious buildings if we have Divine or Infernal Power, rounding down
-		final int religiousBuildingRetortPercentage;
-		final int religiousBuildingReduction;
-		final int religiousBuildingRetortValue;
-		final String [] pickIdsContributingToReligiousBuildingBonus;
-
-		if (religiousUnrestReduction == 0)
-		{
-			religiousBuildingRetortPercentage = 0;
-			religiousBuildingReduction = 0;
-			religiousBuildingRetortValue = 0;
-			pickIdsContributingToReligiousBuildingBonus = new String [0];
-		}
-		else
+		if (religiousUnrestReduction > 0)
 		{
 			// Find the picks of the player who owns this city
 			final PlayerPublicDetails cityOwner = MultiplayerSessionUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityRebels");
 			final List<PlayerPick> cityOwnerPicks = ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
 
-			religiousBuildingRetortPercentage = getPlayerPickUtils ().totalReligiousBuildingBonus (cityOwnerPicks, db);
-			final List<String> pickIdsContributingToReligiousBuildingBonusList = getPlayerPickUtils ().pickIdsContributingToReligiousBuildingBonus (cityOwnerPicks, db);
+			breakdown.setReligiousBuildingRetortPercentage (getPlayerPickUtils ().totalReligiousBuildingBonus (cityOwnerPicks, db));
+			breakdown.getPickIdContributingToReligiousBuildingBonus ().addAll (getPlayerPickUtils ().pickIdsContributingToReligiousBuildingBonus (cityOwnerPicks, db));
 
-			if (religiousBuildingRetortPercentage == 0)
+			if (breakdown.getReligiousBuildingRetortPercentage () > 0)
 			{
-				religiousBuildingReduction = 0;
-				religiousBuildingRetortValue = 0;
-			}
-			else
-			{
-				religiousBuildingReduction = -religiousUnrestReduction;
-				religiousBuildingRetortValue = -((religiousUnrestReduction * religiousBuildingRetortPercentage) / 100);
+				breakdown.setReligiousBuildingReduction (-religiousUnrestReduction);
+				breakdown.setReligiousBuildingRetortValue (-((religiousUnrestReduction * breakdown.getReligiousBuildingRetortPercentage ()) / 100));
 
 				// Actually apply the bonus
-				religiousUnrestReduction = religiousUnrestReduction - religiousBuildingRetortValue;		// Subtract a -ve, i.e. add to the unrest reduction
+				religiousUnrestReduction = religiousUnrestReduction - breakdown.getReligiousBuildingRetortValue ();		// Subtract a -ve, i.e. add to the unrest reduction
 			}
-
-			// Convert list to an array
-			pickIdsContributingToReligiousBuildingBonus = new String [pickIdsContributingToReligiousBuildingBonusList.size ()];
-			for (int index = 0; index < pickIdsContributingToReligiousBuildingBonusList.size (); index++)
-				pickIdsContributingToReligiousBuildingBonus [index] = pickIdsContributingToReligiousBuildingBonusList.get (index);
 		}
 
 		// Subtract pacifying effects of non-summoned units
-		int unitCount = 0;
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (cityLocation.equals (thisUnit.getUnitLocation ())))
 			{
 				final String unitMagicRealmID = db.findUnit (thisUnit.getUnitID (), "calculateCityRebels").getUnitMagicRealm ();
 				if (!db.findUnitMagicRealm (unitMagicRealmID, "calculateCityRebels").getUnitTypeID ().equals (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED))
-					unitCount++;
+					breakdown.setUnitCount (breakdown.getUnitCount () + 1);
 			}
 
-		final int unitReduction = unitCount / 2;
+		breakdown.setUnitReduction (-(breakdown.getUnitCount () / 2));
 
 		// Total unrest, before applying bounding limits
-		final int baseTotal = baseValue + racialLiteral - religiousUnrestReduction - nonReligiousUnrestReduction - unitReduction;
+		breakdown.setBaseTotal (breakdown.getBaseValue () + breakdown.getRacialLiteral () - religiousUnrestReduction - nonReligiousUnrestReduction + breakdown.getUnitReduction ());
 		final int boundedTotal;
-		final boolean forcePositive;
-		final boolean forceAll;
 
-		if (baseTotal < 0)
+		if (breakdown.getBaseTotal () < 0)
 		{
 			boundedTotal = 0;
-			forcePositive = true;
-			forceAll = false;
+			breakdown.setForcePositive (true);
 		}
-		else if (baseTotal > population)
+		else if (breakdown.getBaseTotal () > breakdown.getPopulation ())
 		{
-			boundedTotal = population;
-			forcePositive = false;
-			forceAll = true;
+			boundedTotal = breakdown.getPopulation ();
+			breakdown.setForceAll (true);
 		}
 		else
 		{
-			boundedTotal = baseTotal;
-			forcePositive = false;
-			forceAll = false;
+			boundedTotal = breakdown.getBaseTotal ();
 		}
 
 		// Rebels can never force the population to starve
-		final int minimumFarmers;
-		final int totalAfterFarmers;
-		final int finalTotal;
-
-		if (cityData.getMinimumFarmers () + boundedTotal > population)
+		if (cityData.getMinimumFarmers () + boundedTotal > breakdown.getPopulation ())
 		{
-			minimumFarmers = cityData.getMinimumFarmers ();
-			totalAfterFarmers = population - minimumFarmers;
-			finalTotal = totalAfterFarmers;
+			breakdown.setMinimumFarmers (cityData.getMinimumFarmers ());
+			breakdown.setTotalAfterFarmers (breakdown.getPopulation () - breakdown.getMinimumFarmers ());
+			breakdown.setFinalTotal (breakdown.getTotalAfterFarmers ());
 		}
 		else
 		{
-			minimumFarmers = 0;
-			totalAfterFarmers = 0;
-			finalTotal = boundedTotal;
+			breakdown.setFinalTotal (boundedTotal);
 		}
 
-		// Create a breakdown object with all the values
-		final CalculateCityUnrestBreakdown_Building [] buildingsReducingUnrestArray = new CalculateCityUnrestBreakdown_Building [buildingsReducingUnrest.size ()];
-		for (int buildingNo = 0; buildingNo < buildingsReducingUnrest.size (); buildingNo++)
-			buildingsReducingUnrestArray [buildingNo] = buildingsReducingUnrest.get (buildingNo);
-
-		final CalculateCityUnrestBreakdown breakdown = new CalculateCityUnrestBreakdown (taxPercentage, racialPercentage, totalPercentage, population, baseValue,
-			racialLiteral, religiousBuildingRetortPercentage, religiousBuildingReduction, religiousBuildingRetortValue, unitCount, unitReduction, baseTotal,
-			forcePositive, forceAll, minimumFarmers, totalAfterFarmers, finalTotal, buildingsReducingUnrestArray, pickIdsContributingToReligiousBuildingBonus);
-
-		log.trace ("Entering calculateCityRebels: " + finalTotal);
+		log.trace ("Entering calculateCityRebels: " + breakdown.getFinalTotal ());
 		return breakdown;
 	}
 

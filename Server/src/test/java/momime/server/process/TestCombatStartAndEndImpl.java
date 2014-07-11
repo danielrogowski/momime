@@ -6,10 +6,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -19,11 +19,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.CalculateCityUnrestBreakdown;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.servertoclient.v0_9_5.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.v0_9_5.CombatEndedMessage;
 import momime.common.messages.servertoclient.v0_9_5.SelectNextUnitToMoveOverlandMessage;
@@ -1398,7 +1398,8 @@ public final class TestCombatStartAndEndImpl
 		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (true);
 		
 		// How many rebels the city will have after the attacker captures it
-		final CalculateCityUnrestBreakdown attackerRebels = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 2, null, null);
+		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();
+		attackerRebels.setFinalTotal (2);
 		
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), combatLocation, "TR01", db)).thenReturn (attackerRebels);
@@ -1599,7 +1600,8 @@ public final class TestCombatStartAndEndImpl
 		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (true);
 		
 		// How many rebels the city will have after the attacker captures it
-		final CalculateCityUnrestBreakdown attackerRebels = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 2, null, null);
+		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();
+		attackerRebels.setFinalTotal (2);
 		
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), combatLocation, "TR01", db)).thenReturn (attackerRebels);

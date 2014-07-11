@@ -19,6 +19,7 @@ import momime.common.database.v0_9_5.Building;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
+import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MemoryGridCell;
@@ -488,7 +489,7 @@ public final class TestMomCityCalculationsImpl
 		players.add (ppd);
 
 		// Tax rate with no rebels!  and no gold...
-		final CalculateCityUnrestBreakdown zeroPercent = calc.calculateCityRebels
+		final CityUnrestBreakdown zeroPercent = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_0_GOLD_0_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, zeroPercent.getPopulation ());
 		assertEquals (0, zeroPercent.getTaxPercentage ());
@@ -496,12 +497,22 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, zeroPercent.getRacialLiteral ());
 		assertEquals (0, zeroPercent.getTotalPercentage ());
 		assertEquals (0, zeroPercent.getBaseValue ());
-		assertEquals (0, zeroPercent.getBuildingsReducingUnrest ().length);
+		assertEquals (0, zeroPercent.getBuildingReducingUnrest ().size ());
+		assertEquals (0, zeroPercent.getReligiousBuildingRetortPercentage ());
+		assertEquals (0, zeroPercent.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (0, zeroPercent.getReligiousBuildingReduction ());
+		assertEquals (0, zeroPercent.getReligiousBuildingRetortValue ());
+		assertEquals (0, zeroPercent.getUnitCount ());
+		assertEquals (0, zeroPercent.getUnitReduction ());
 		assertEquals (0, zeroPercent.getBaseTotal ());
+		assertFalse (zeroPercent.isForcePositive ());
+		assertFalse (zeroPercent.isForceAll ());
+		assertEquals (0, zeroPercent.getMinimumFarmers ());		// We have 6 minimum farmers, but set to 0 since the cap doesn't affect the result
+		assertEquals (0, zeroPercent.getTotalAfterFarmers ());
 		assertEquals (0, zeroPercent.getFinalTotal ());
 
 		// Harsh 45% tax rate = 7.65, prove that it rounds down
-		final CalculateCityUnrestBreakdown highPercent = calc.calculateCityRebels
+		final CityUnrestBreakdown highPercent = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, highPercent.getPopulation ());
 		assertEquals (45, highPercent.getTaxPercentage ());
@@ -509,12 +520,27 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, highPercent.getRacialLiteral ());
 		assertEquals (45, highPercent.getTotalPercentage ());
 		assertEquals (7, highPercent.getBaseValue ());
-		assertEquals (0, highPercent.getBuildingsReducingUnrest ().length);
+		assertEquals (0, highPercent.getBuildingReducingUnrest ().size ());
+		assertEquals (0, highPercent.getReligiousBuildingRetortPercentage ());
+		assertEquals (0, highPercent.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (0, highPercent.getReligiousBuildingReduction ());
+		assertEquals (0, highPercent.getReligiousBuildingRetortValue ());
+		assertEquals (0, highPercent.getUnitCount ());
+		assertEquals (0, highPercent.getUnitReduction ());
 		assertEquals (7, highPercent.getBaseTotal ());
+		assertFalse (highPercent.isForcePositive ());
+		assertFalse (highPercent.isForceAll ());
+		assertEquals (0, highPercent.getMinimumFarmers ());
+		assertEquals (0, highPercent.getTotalAfterFarmers ());
 		assertEquals (7, highPercent.getFinalTotal ());
 
 		// Worst 75% tax rate = 12.75, but we have 6 minimum farmers so would be 18 population in a size 17 city - prove rebels will revert to farmers to avoid starving
-		final CalculateCityUnrestBreakdown maxPercent = calc.calculateCityRebels
+		final PlayerPick divinePower = new PlayerPick ();
+		divinePower.setPickID (GenerateTestData.DIVINE_POWER);
+		divinePower.setQuantity (1);
+		ppk.getPick ().add (divinePower);
+		
+		final CityUnrestBreakdown maxPercent = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_3_GOLD_75_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, maxPercent.getPopulation ());
 		assertEquals (75, maxPercent.getTaxPercentage ());
@@ -522,8 +548,18 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, maxPercent.getRacialLiteral ());
 		assertEquals (75, maxPercent.getTotalPercentage ());
 		assertEquals (12, maxPercent.getBaseValue ());
-		assertEquals (0, maxPercent.getBuildingsReducingUnrest ().length);
+		assertEquals (0, maxPercent.getBuildingReducingUnrest ().size ());
+		assertEquals (0, maxPercent.getReligiousBuildingRetortPercentage ());							// 0 even though we do get 50% from the retort, because we have no religious buildings
+		assertEquals (0, maxPercent.getPickIdContributingToReligiousBuildingBonus ().size ());		// Likewise
+		assertEquals (0, maxPercent.getReligiousBuildingReduction ());
+		assertEquals (0, maxPercent.getReligiousBuildingRetortValue ());
+		assertEquals (0, maxPercent.getUnitCount ());
+		assertEquals (0, maxPercent.getUnitReduction ());
 		assertEquals (12, maxPercent.getBaseTotal ());
+		assertFalse (maxPercent.isForcePositive ());
+		assertFalse (maxPercent.isForceAll ());
+		assertEquals (6, maxPercent.getMinimumFarmers ());		// Now the mininmum farmers makes a difference, the value gets listed
+		assertEquals (11, maxPercent.getTotalAfterFarmers ());
 		assertEquals (11, maxPercent.getFinalTotal ());
 
 		// Add some buildings that reduce unrest - and back to 45% tax rate = 7.65
@@ -532,7 +568,9 @@ public final class TestMomCityCalculationsImpl
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (shrineBuilding);
 
-		final CalculateCityUnrestBreakdown shrine = calc.calculateCityRebels
+		ppk.getPick ().remove (divinePower);
+		
+		final CityUnrestBreakdown shrine = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, shrine.getPopulation ());
 		assertEquals (45, shrine.getTaxPercentage ());
@@ -540,16 +578,23 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, shrine.getRacialLiteral ());
 		assertEquals (45, shrine.getTotalPercentage ());
 		assertEquals (7, shrine.getBaseValue ());
-		assertEquals (1, shrine.getBuildingsReducingUnrest ().length);
-		assertEquals (GenerateTestData.SHRINE, shrine.getBuildingsReducingUnrest () [0].getBuildingID ());
-		assertEquals (1, shrine.getBuildingsReducingUnrest () [0].getUnrestReduction ());
+		assertEquals (1, shrine.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, shrine.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, shrine.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (0, shrine.getReligiousBuildingRetortPercentage ());
+		assertEquals (0, shrine.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (0, shrine.getReligiousBuildingReduction ());		// 0 even though we do have a shrine, because we've got no retort that improves it
+		assertEquals (0, shrine.getReligiousBuildingRetortValue ());
+		assertEquals (0, shrine.getUnitCount ());
+		assertEquals (0, shrine.getUnitReduction ());
 		assertEquals (6, shrine.getBaseTotal ());
+		assertFalse (shrine.isForcePositive ());
+		assertFalse (shrine.isForceAll ());
+		assertEquals (0, shrine.getMinimumFarmers ());
+		assertEquals (0, shrine.getTotalAfterFarmers ());
 		assertEquals (6, shrine.getFinalTotal ());
 
 		// Divine power doesn't work on non-religious building
-		final PlayerPick divinePower = new PlayerPick ();
-		divinePower.setPickID (GenerateTestData.DIVINE_POWER);
-		divinePower.setQuantity (1);
 		ppk.getPick ().add (divinePower);
 
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
@@ -557,7 +602,7 @@ public final class TestMomCityCalculationsImpl
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (secondBuilding);
 
-		final CalculateCityUnrestBreakdown animistsGuild = calc.calculateCityRebels
+		final CityUnrestBreakdown animistsGuild = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, animistsGuild.getPopulation ());
 		assertEquals (45, animistsGuild.getTaxPercentage ());
@@ -565,17 +610,28 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, animistsGuild.getRacialLiteral ());
 		assertEquals (45, animistsGuild.getTotalPercentage ());
 		assertEquals (7, animistsGuild.getBaseValue ());
-		assertEquals (2, animistsGuild.getBuildingsReducingUnrest ().length);
-		assertEquals (GenerateTestData.SHRINE, animistsGuild.getBuildingsReducingUnrest () [0].getBuildingID ());
-		assertEquals (1, animistsGuild.getBuildingsReducingUnrest () [0].getUnrestReduction ());
-		assertEquals (GenerateTestData.ANIMISTS_GUILD, animistsGuild.getBuildingsReducingUnrest () [1].getBuildingID ());
-		assertEquals (1, animistsGuild.getBuildingsReducingUnrest () [1].getUnrestReduction ());
+		assertEquals (2, animistsGuild.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, animistsGuild.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, animistsGuild.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (GenerateTestData.ANIMISTS_GUILD, animistsGuild.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals (1, animistsGuild.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
+		assertEquals (50, animistsGuild.getReligiousBuildingRetortPercentage ());						// Now the 50% comes out, because of the shrine
+		assertEquals (1, animistsGuild.getPickIdContributingToReligiousBuildingBonus ().size ());	// Likewise
+		assertEquals (GenerateTestData.DIVINE_POWER, animistsGuild.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals (-1, animistsGuild.getReligiousBuildingReduction ());									// Now the shrine gets counted
+		assertEquals (0, animistsGuild.getReligiousBuildingRetortValue ());									// 1 religious building isn't enough to get the 50% bonus
+		assertEquals (0, animistsGuild.getUnitCount ());
+		assertEquals (0, animistsGuild.getUnitReduction ());
 		assertEquals (5, animistsGuild.getBaseTotal ());
+		assertFalse (animistsGuild.isForcePositive ());
+		assertFalse (animistsGuild.isForceAll ());
+		assertEquals (0, animistsGuild.getMinimumFarmers ());
+		assertEquals (0, animistsGuild.getTotalAfterFarmers ());
 		assertEquals (5, animistsGuild.getFinalTotal ());
 
 		// Divine power does work on 2nd religious building
 		secondBuilding.setBuildingID (GenerateTestData.TEMPLE);
-		final CalculateCityUnrestBreakdown temple = calc.calculateCityRebels
+		final CityUnrestBreakdown temple = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, temple.getPopulation ());
 		assertEquals (45, temple.getTaxPercentage ());
@@ -583,12 +639,23 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, temple.getRacialLiteral ());
 		assertEquals (45, temple.getTotalPercentage ());
 		assertEquals (7, temple.getBaseValue ());
-		assertEquals (2, temple.getBuildingsReducingUnrest ().length);
-		assertEquals (GenerateTestData.SHRINE, temple.getBuildingsReducingUnrest () [0].getBuildingID ());
-		assertEquals (1, temple.getBuildingsReducingUnrest () [0].getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, temple.getBuildingsReducingUnrest () [1].getBuildingID ());
-		assertEquals (1, temple.getBuildingsReducingUnrest () [1].getUnrestReduction ());
+		assertEquals (2, temple.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, temple.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, temple.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (GenerateTestData.TEMPLE, temple.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals (1, temple.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
+		assertEquals (50, temple.getReligiousBuildingRetortPercentage ());
+		assertEquals (1, temple.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (GenerateTestData.DIVINE_POWER, temple.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals (-2, temple.getReligiousBuildingReduction ());
+		assertEquals (-1, temple.getReligiousBuildingRetortValue ());			// Now with 2 religious buildings we get the bonus
+		assertEquals (0, temple.getUnitCount ());
+		assertEquals (0, temple.getUnitReduction ());
 		assertEquals (4, temple.getBaseTotal ());
+		assertFalse (temple.isForcePositive ());
+		assertFalse (temple.isForceAll ());
+		assertEquals (0, temple.getMinimumFarmers ());
+		assertEquals (0, temple.getTotalAfterFarmers ());
 		assertEquals (4, temple.getFinalTotal ());
 
 		// 1 unit does nothing
@@ -598,7 +665,7 @@ public final class TestMomCityCalculationsImpl
 		normalUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (normalUnit);
 
-		final CalculateCityUnrestBreakdown firstUnit = calc.calculateCityRebels
+		final CityUnrestBreakdown firstUnit = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, firstUnit.getPopulation ());
 		assertEquals (45, firstUnit.getTaxPercentage ());
@@ -606,14 +673,23 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, firstUnit.getRacialLiteral ());
 		assertEquals (45, firstUnit.getTotalPercentage ());
 		assertEquals (7, firstUnit.getBaseValue ());
-		assertEquals (2, firstUnit.getBuildingsReducingUnrest ().length);
-		assertEquals (GenerateTestData.SHRINE, firstUnit.getBuildingsReducingUnrest () [0].getBuildingID ());
-		assertEquals (1, firstUnit.getBuildingsReducingUnrest () [0].getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, firstUnit.getBuildingsReducingUnrest () [1].getBuildingID ());
-		assertEquals (1, firstUnit.getBuildingsReducingUnrest () [1].getUnrestReduction ());
+		assertEquals (2, firstUnit.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, firstUnit.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, firstUnit.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (GenerateTestData.TEMPLE, firstUnit.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals (1, firstUnit.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
+		assertEquals (50, firstUnit.getReligiousBuildingRetortPercentage ());
+		assertEquals (1, firstUnit.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (GenerateTestData.DIVINE_POWER, firstUnit.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals (-2, firstUnit.getReligiousBuildingReduction ());
+		assertEquals (-1, firstUnit.getReligiousBuildingRetortValue ());
 		assertEquals (1, firstUnit.getUnitCount ());
 		assertEquals (0, firstUnit.getUnitReduction ());
 		assertEquals (4, firstUnit.getBaseTotal ());
+		assertFalse (firstUnit.isForcePositive ());
+		assertFalse (firstUnit.isForceAll ());
+		assertEquals (0, firstUnit.getMinimumFarmers ());
+		assertEquals (0, firstUnit.getTotalAfterFarmers ());
 		assertEquals (4, firstUnit.getFinalTotal ());
 
 		// 2nd unit reduces unrest, even if one is normal and one a hero
@@ -623,7 +699,7 @@ public final class TestMomCityCalculationsImpl
 		heroUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (heroUnit);
 
-		final CalculateCityUnrestBreakdown secondUnit = calc.calculateCityRebels
+		final CityUnrestBreakdown secondUnit = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, secondUnit.getPopulation ());
 		assertEquals (45, secondUnit.getTaxPercentage ());
@@ -631,14 +707,23 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, secondUnit.getRacialLiteral ());
 		assertEquals (45, secondUnit.getTotalPercentage ());
 		assertEquals (7, secondUnit.getBaseValue ());
-		assertEquals (2, secondUnit.getBuildingsReducingUnrest ().length);
-		assertEquals (GenerateTestData.SHRINE, secondUnit.getBuildingsReducingUnrest () [0].getBuildingID ());
-		assertEquals (1, secondUnit.getBuildingsReducingUnrest () [0].getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, secondUnit.getBuildingsReducingUnrest () [1].getBuildingID ());
-		assertEquals (1, secondUnit.getBuildingsReducingUnrest () [1].getUnrestReduction ());
+		assertEquals (2, secondUnit.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, secondUnit.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, secondUnit.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (GenerateTestData.TEMPLE, secondUnit.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals (1, secondUnit.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
+		assertEquals (50, secondUnit.getReligiousBuildingRetortPercentage ());
+		assertEquals (1, secondUnit.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (GenerateTestData.DIVINE_POWER, secondUnit.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals (-2, secondUnit.getReligiousBuildingReduction ());
+		assertEquals (-1, secondUnit.getReligiousBuildingRetortValue ());
 		assertEquals (2, secondUnit.getUnitCount ());
-		assertEquals (1, secondUnit.getUnitReduction ());
+		assertEquals (-1, secondUnit.getUnitReduction ());
 		assertEquals (3, secondUnit.getBaseTotal ());
+		assertFalse (secondUnit.isForcePositive ());
+		assertFalse (secondUnit.isForceAll ());
+		assertEquals (0, secondUnit.getMinimumFarmers ());
+		assertEquals (0, secondUnit.getTotalAfterFarmers ());
 		assertEquals (3, secondUnit.getFinalTotal ());
 
 		// summoned units or dead units don't help (unitCount still = 2)
@@ -657,7 +742,7 @@ public final class TestMomCityCalculationsImpl
 			units.add (summonedUnit);
 		}
 
-		final CalculateCityUnrestBreakdown extraUnits = calc.calculateCityRebels
+		final CityUnrestBreakdown extraUnits = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, extraUnits.getPopulation ());
 		assertEquals (45, extraUnits.getTaxPercentage ());
@@ -665,14 +750,23 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, extraUnits.getRacialLiteral ());
 		assertEquals (45, extraUnits.getTotalPercentage ());
 		assertEquals (7, extraUnits.getBaseValue ());
-		assertEquals (2, extraUnits.getBuildingsReducingUnrest ().length);
-		assertEquals (GenerateTestData.SHRINE, extraUnits.getBuildingsReducingUnrest () [0].getBuildingID ());
-		assertEquals (1, extraUnits.getBuildingsReducingUnrest () [0].getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, extraUnits.getBuildingsReducingUnrest () [1].getBuildingID ());
-		assertEquals (1, extraUnits.getBuildingsReducingUnrest () [1].getUnrestReduction ());
+		assertEquals (2, extraUnits.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, extraUnits.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, extraUnits.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (GenerateTestData.TEMPLE, extraUnits.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals (1, extraUnits.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
+		assertEquals (50, extraUnits.getReligiousBuildingRetortPercentage ());
+		assertEquals (1, extraUnits.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (GenerateTestData.DIVINE_POWER, extraUnits.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals (-2, extraUnits.getReligiousBuildingReduction ());
+		assertEquals (-1, extraUnits.getReligiousBuildingRetortValue ());
 		assertEquals (2, extraUnits.getUnitCount ());
-		assertEquals (1, extraUnits.getUnitReduction ());
+		assertEquals (-1, extraUnits.getUnitReduction ());
 		assertEquals (3, extraUnits.getBaseTotal ());
+		assertFalse (extraUnits.isForcePositive ());
+		assertFalse (extraUnits.isForceAll ());
+		assertEquals (0, extraUnits.getMinimumFarmers ());
+		assertEquals (0, extraUnits.getTotalAfterFarmers ());
 		assertEquals (3, extraUnits.getFinalTotal ());
 
 		// Put our captial here, and its klackons so we get -2
@@ -681,7 +775,7 @@ public final class TestMomCityCalculationsImpl
 		fortressBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (fortressBuilding);
 
-		final CalculateCityUnrestBreakdown klackons = calc.calculateCityRebels
+		final CityUnrestBreakdown klackons = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, klackons.getPopulation ());
 		assertEquals (45, klackons.getTaxPercentage ());
@@ -689,20 +783,29 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (-2, klackons.getRacialLiteral ());
 		assertEquals (45, klackons.getTotalPercentage ());
 		assertEquals (7, klackons.getBaseValue ());
-		assertEquals (2, klackons.getBuildingsReducingUnrest ().length);
-		assertEquals (GenerateTestData.SHRINE, klackons.getBuildingsReducingUnrest () [0].getBuildingID ());
-		assertEquals (1, klackons.getBuildingsReducingUnrest () [0].getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, klackons.getBuildingsReducingUnrest () [1].getBuildingID ());
-		assertEquals (1, klackons.getBuildingsReducingUnrest () [1].getUnrestReduction ());
+		assertEquals (2, klackons.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, klackons.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, klackons.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (GenerateTestData.TEMPLE, klackons.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals (1, klackons.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
+		assertEquals (50, klackons.getReligiousBuildingRetortPercentage ());
+		assertEquals (1, klackons.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (GenerateTestData.DIVINE_POWER, klackons.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals (-2, klackons.getReligiousBuildingReduction ());
+		assertEquals (-1, klackons.getReligiousBuildingRetortValue ());
 		assertEquals (2, klackons.getUnitCount ());
-		assertEquals (1, klackons.getUnitReduction ());
+		assertEquals (-1, klackons.getUnitReduction ());
 		assertEquals (1, klackons.getBaseTotal ());
+		assertFalse (klackons.isForcePositive ());
+		assertFalse (klackons.isForceAll ());
+		assertEquals (0, klackons.getMinimumFarmers ());
+		assertEquals (0, klackons.getTotalAfterFarmers ());
 		assertEquals (1, klackons.getFinalTotal ());
-
+		
 		// Other races get no bonus from being same as capital race
 		cityData.setCityRaceID (GenerateTestData.HIGH_ELF);
 
-		final CalculateCityUnrestBreakdown highElves = calc.calculateCityRebels
+		final CityUnrestBreakdown highElves = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, highElves.getPopulation ());
 		assertEquals (45, highElves.getTaxPercentage ());
@@ -710,16 +813,53 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, highElves.getRacialLiteral ());
 		assertEquals (45, highElves.getTotalPercentage ());
 		assertEquals (7, highElves.getBaseValue ());
-		assertEquals (2, highElves.getBuildingsReducingUnrest ().length);
-		assertEquals (GenerateTestData.SHRINE, highElves.getBuildingsReducingUnrest () [0].getBuildingID ());
-		assertEquals (1, highElves.getBuildingsReducingUnrest () [0].getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, highElves.getBuildingsReducingUnrest () [1].getBuildingID ());
-		assertEquals (1, highElves.getBuildingsReducingUnrest () [1].getUnrestReduction ());
+		assertEquals (2, highElves.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, highElves.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, highElves.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (GenerateTestData.TEMPLE, highElves.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals (1, highElves.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
+		assertEquals (50, highElves.getReligiousBuildingRetortPercentage ());
+		assertEquals (1, highElves.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (GenerateTestData.DIVINE_POWER, highElves.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals (-2, highElves.getReligiousBuildingReduction ());
+		assertEquals (-1, highElves.getReligiousBuildingRetortValue ());
 		assertEquals (2, highElves.getUnitCount ());
-		assertEquals (1, highElves.getUnitReduction ());
+		assertEquals (-1, highElves.getUnitReduction ());
 		assertEquals (3, highElves.getBaseTotal ());
+		assertFalse (highElves.isForcePositive ());
+		assertFalse (highElves.isForceAll ());
+		assertEquals (0, highElves.getMinimumFarmers ());
+		assertEquals (0, highElves.getTotalAfterFarmers ());
 		assertEquals (3, highElves.getFinalTotal ());
 
+		// If reduce the tax rate from only having 3 rebels, they're so happy that we get a negative number of rebels
+		final CityUnrestBreakdown forcePositive = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_0_GOLD_0_UNREST, GenerateTestData.createDB ());
+		assertEquals (17, forcePositive.getPopulation ());
+		assertEquals (0, forcePositive.getTaxPercentage ());
+		assertEquals (0, forcePositive.getRacialPercentage ());
+		assertEquals (0, forcePositive.getRacialLiteral ());
+		assertEquals (0, forcePositive.getTotalPercentage ());
+		assertEquals (0, forcePositive.getBaseValue ());
+		assertEquals (2, forcePositive.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, forcePositive.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, forcePositive.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (GenerateTestData.TEMPLE, forcePositive.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals (1, forcePositive.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
+		assertEquals (50, forcePositive.getReligiousBuildingRetortPercentage ());
+		assertEquals (1, forcePositive.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (GenerateTestData.DIVINE_POWER, forcePositive.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals (-2, forcePositive.getReligiousBuildingReduction ());
+		assertEquals (-1, forcePositive.getReligiousBuildingRetortValue ());
+		assertEquals (2, forcePositive.getUnitCount ());
+		assertEquals (-1, forcePositive.getUnitReduction ());
+		assertEquals (-4, forcePositive.getBaseTotal ());			// Negative baseTotal
+		assertTrue (forcePositive.isForcePositive ());
+		assertFalse (forcePositive.isForceAll ());
+		assertEquals (0, forcePositive.getMinimumFarmers ());
+		assertEquals (0, forcePositive.getTotalAfterFarmers ());
+		assertEquals (0, forcePositive.getFinalTotal ());
+		
 		// Move capital to a different city with a different race
 		final OverlandMapCityData capitalCityData = new OverlandMapCityData ();
 		capitalCityData.setCityRaceID (GenerateTestData.DWARVES);
@@ -729,7 +869,7 @@ public final class TestMomCityCalculationsImpl
 
 		fortressBuilding.setCityLocation (new MapCoordinates3DEx (20, 2, 0));
 
-		final CalculateCityUnrestBreakdown racialUnrest = calc.calculateCityRebels
+		final CityUnrestBreakdown racialUnrest = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, GenerateTestData.createDB ());
 		assertEquals (17, racialUnrest.getPopulation ());
 		assertEquals (45, racialUnrest.getTaxPercentage ());
@@ -737,15 +877,53 @@ public final class TestMomCityCalculationsImpl
 		assertEquals (0, racialUnrest.getRacialLiteral ());
 		assertEquals (75, racialUnrest.getTotalPercentage ());
 		assertEquals (12, racialUnrest.getBaseValue ());
-		assertEquals (2, racialUnrest.getBuildingsReducingUnrest ().length);
-		assertEquals (GenerateTestData.SHRINE, racialUnrest.getBuildingsReducingUnrest () [0].getBuildingID ());
-		assertEquals (1, racialUnrest.getBuildingsReducingUnrest () [0].getUnrestReduction ());
-		assertEquals (GenerateTestData.TEMPLE, racialUnrest.getBuildingsReducingUnrest () [1].getBuildingID ());
-		assertEquals (1, racialUnrest.getBuildingsReducingUnrest () [1].getUnrestReduction ());
+		assertEquals (2, racialUnrest.getBuildingReducingUnrest ().size ());
+		assertEquals (GenerateTestData.SHRINE, racialUnrest.getBuildingReducingUnrest ().get (0).getBuildingID ());
+		assertEquals (1, racialUnrest.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
+		assertEquals (GenerateTestData.TEMPLE, racialUnrest.getBuildingReducingUnrest ().get (1).getBuildingID ());
+		assertEquals (1, racialUnrest.getBuildingReducingUnrest ().get (1).getUnrestReduction ());
+		assertEquals (50, racialUnrest.getReligiousBuildingRetortPercentage ());
+		assertEquals (1, racialUnrest.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (GenerateTestData.DIVINE_POWER, racialUnrest.getPickIdContributingToReligiousBuildingBonus ().get (0));
+		assertEquals (-2, racialUnrest.getReligiousBuildingReduction ());
+		assertEquals (-1, racialUnrest.getReligiousBuildingRetortValue ());
 		assertEquals (2, racialUnrest.getUnitCount ());
-		assertEquals (1, racialUnrest.getUnitReduction ());
+		assertEquals (-1, racialUnrest.getUnitReduction ());
 		assertEquals (8, racialUnrest.getBaseTotal ());
+		assertFalse (racialUnrest.isForcePositive ());
+		assertFalse (racialUnrest.isForceAll ());
+		assertEquals (0, racialUnrest.getMinimumFarmers ());
+		assertEquals (0, racialUnrest.getTotalAfterFarmers ());
 		assertEquals (8, racialUnrest.getFinalTotal ());
+		
+		// Make them so mad that there's more rebels than there are people
+		buildings.remove (shrineBuilding);
+		buildings.remove (secondBuilding);
+		units.clear ();
+		
+		cityData.setCityPopulation (24890);		// Has to be over 20 for 105% to round down to >1 person
+		
+		final CityUnrestBreakdown forceAll = calc.calculateCityRebels
+			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_3_GOLD_75_UNREST, GenerateTestData.createDB ());
+		assertEquals (24, forceAll.getPopulation ());
+		assertEquals (75, forceAll.getTaxPercentage ());
+		assertEquals (30, forceAll.getRacialPercentage ());
+		assertEquals (0, forceAll.getRacialLiteral ());
+		assertEquals (105, forceAll.getTotalPercentage ());
+		assertEquals (25, forceAll.getBaseValue ());
+		assertEquals (0, forceAll.getBuildingReducingUnrest ().size ());
+		assertEquals (0, forceAll.getReligiousBuildingRetortPercentage ());
+		assertEquals (0, forceAll.getPickIdContributingToReligiousBuildingBonus ().size ());
+		assertEquals (0, forceAll.getReligiousBuildingReduction ());
+		assertEquals (0, forceAll.getReligiousBuildingRetortValue ());
+		assertEquals (0, forceAll.getUnitCount ());
+		assertEquals (0, forceAll.getUnitReduction ());
+		assertEquals (25, forceAll.getBaseTotal ());				// More than the population of 24
+		assertFalse (forceAll.isForcePositive ());
+		assertTrue (forceAll.isForceAll ());
+		assertEquals (6, forceAll.getMinimumFarmers ());		// Gets reduced from 25>24 because of population size, then from 24>18 because of minimum farmers
+		assertEquals (18, forceAll.getTotalAfterFarmers ());
+		assertEquals (18, forceAll.getFinalTotal ());
 	}
 
 	/**

@@ -49,7 +49,7 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="cappedGrowthRate" type="momimecommon:cityPopulationGrowthRate">
 						<xsd:annotation>
-							<xsd:documentation>Total growth rate, possibly reduced to prevent city going over maximum size</xsd:documentation>
+							<xsd:documentation>Total growth rate, possibly reduced to prevent city going over maximum size.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
@@ -63,7 +63,7 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="baseDeathRate" type="momimecommon:cityPopulationGrowthRate">
 						<xsd:annotation>
-							<xsd:documentation>Sets of 1,000 people or part thereof that we are in excess of maximum population</xsd:documentation>
+							<xsd:documentation>Sets of 1,000 people or part thereof that we are in excess of maximum population.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="cityDeathRate" type="momimecommon:cityPopulationGrowthRate">
@@ -76,4 +76,119 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<xsd:complexType name="cityUnrestBreakdownBuilding">
+		<xsd:annotation>
+			<xsd:documentation>Stores the unrest reduction granted by a particular building.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unrestReduction" type="momimecommon:buildingUnrestReduction">
+				<xsd:annotation>
+					<xsd:documentation>How much unrest the building reduces - stored as a positive value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="cityUnrestBreakdown">
+		<xsd:annotation>
+			<xsd:documentation>Stores the breakdown of all the values used in calculating the number of rebels in a city.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="taxPercentage" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>% unrest from taxation rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="racialPercentage" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>% unrest from how much the race inhabiting this city distrusts our capital race.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="totalPercentage" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Total % unrest, i.e. taxPercentage + racialPercentage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="population" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Population of city in 1000s.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseValue" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Unrest generated from totalPercentage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="racialLiteral" type="momimecommon:unrestLiteral">
+				<xsd:annotation>
+					<xsd:documentation>Literal unrest modifier (i.e. not percentage-based) between race inhabiting this city and our capital race (used for Klackons special -2 modifier).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingReducingUnrest" type="momimeinternal:cityUnrestBreakdownBuilding" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="religiousBuildingRetortPercentage" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>% that our retorts (Divine or Infernal Power) are improving the effectiveness of reglious buildings by.
+						Will only be set if we actually have some religious buildings, e.g. if we have Divine Power retort but no Shrine, this will be 0 not 50.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickIdContributingToReligiousBuildingBonus" type="momimecommon:pickID">
+				<xsd:annotation>
+					<xsd:documentation>List of retorts contributing to religiousBuildingRetortPercentage.  Will only be set if we actually have some religious buildings,
+						e.g. if we have Divine Power retort but no Shrine, this will be an empty list rather than stating that we have Divine Power.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="religiousBuildingReduction" type="momimecommon:unrestLiteral">
+				<xsd:annotation>
+					<xsd:documentation>Unrest reduction from religious buildings, before applying % bonus from retorts; will be a negative value.
+						Will only be set if we actually have a retort, e.g. if we have a Shrine but no Divine Power retort, this will be 0 not -1.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="religiousBuildingRetortValue" type="momimecommon:unrestLiteral">
+				<xsd:annotation>
+					<xsd:documentation>Additional unrest reduction from the retort bonus to our religious buildings; will be a negative value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitCount" type="momimenewgame:unitCount">
+				<xsd:annotation>
+					<xsd:documentation>Number of non-summoned units in the city.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitReduction" type="momimecommon:unrestLiteral">
+				<xsd:annotation>
+					<xsd:documentation>Amount of unrest reduction from non-summoned units in the city; will be a negative value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseTotal" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Total unrest, before applying bounding limits.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="forcePositive" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>True if baseTotal was negative and we forced it up to zero (they're so happy we have a negative number of rebels!)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="forceAll" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>True if baseTotal was more than the population of the city and we forced it back to being exactly the population
+						(they're so mad that there's more rebels than number of civilians in the city!)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="minimumFarmers" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Minimum farmers in the city necessary to feed the population; only included if the
+						number of rebels was decreased to allow the minimum number of farmers.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="totalAfterFarmers" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Number rebels were reduced to in order to allow some rebels to satisfy the minimum number of farmers;
+						only included if the number of rebels was decreased to allow the minimum number of farmers</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="finalTotal" type="momimenewgame:cityPopulationDiv1000" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
 </xsd:schema>

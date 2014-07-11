@@ -8,6 +8,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.v0_9_5.Building;
 import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MemoryUnit;
@@ -114,7 +115,7 @@ public interface MomCityCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If any of a number of items cannot be found in the cache
 	 */
-	public CalculateCityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
+	public CityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;

@@ -15,7 +15,6 @@ import java.util.List;
 
 import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.CalculateCityProductionResultsImplementation;
-import momime.common.calculations.CalculateCityUnrestBreakdown;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -24,6 +23,7 @@ import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.v0_9_5.TaxRate;
 import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.servertoclient.v0_9_5.PendingSaleMessage;
 import momime.common.messages.servertoclient.v0_9_5.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateProductionSoFarMessage;
@@ -271,10 +271,14 @@ public final class TestCityProcessingImpl
 		when (overlandMapServerUtils.decideAllContinentalRaces (trueTerrain, sys, db)).thenReturn (continentalRace);
 		
 		// Rebels in each city
-		final CalculateCityUnrestBreakdown humanRebels = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 1, null, null);
-		final CalculateCityUnrestBreakdown aiRebels = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 2, null, null);
-		final CalculateCityUnrestBreakdown raidersArcanusRebels = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 3, null, null);
-		final CalculateCityUnrestBreakdown raidersMyrrorRebels = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 4, null, null);
+		final CityUnrestBreakdown humanRebels = new CityUnrestBreakdown ();
+		humanRebels.setFinalTotal (1);
+		final CityUnrestBreakdown aiRebels = new CityUnrestBreakdown ();
+		aiRebels.setFinalTotal (2);
+		final CityUnrestBreakdown raidersArcanusRebels = new CityUnrestBreakdown ();
+		raidersArcanusRebels.setFinalTotal (3);
+		final CityUnrestBreakdown raidersMyrrorRebels = new CityUnrestBreakdown ();
+		raidersMyrrorRebels.setFinalTotal (4);
 		
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), humanLocation, "TR01", db)).thenReturn (humanRebels);
@@ -575,9 +579,12 @@ public final class TestCityProcessingImpl
 		when (cityCalc.calculateCityGrowthRate (trueTerrain, trueMap.getBuilding (), raidersLocation, raidersCityMaxSize, db)).thenReturn (raidersGrowthRate);
 
 		// Rebels in each city
-		final CalculateCityUnrestBreakdown humanRebels = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 1, null, null);
-		final CalculateCityUnrestBreakdown aiRebels = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 2, null, null);
-		final CalculateCityUnrestBreakdown raidersRebels = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 3, null, null);
+		final CityUnrestBreakdown humanRebels = new CityUnrestBreakdown ();
+		humanRebels.setFinalTotal (1);
+		final CityUnrestBreakdown aiRebels = new CityUnrestBreakdown ();
+		aiRebels.setFinalTotal (2);
+		final CityUnrestBreakdown raidersRebels = new CityUnrestBreakdown ();
+		raidersRebels.setFinalTotal (3);
 		
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), humanLocation, "TR01", db)).thenReturn (humanRebels);
 		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), aiLocation, "TR02", db)).thenReturn (aiRebels);
@@ -712,7 +719,8 @@ public final class TestCityProcessingImpl
 		proc.setCityCalculations (cityCalculations);
 		
 		// Run test
-		final CalculateCityUnrestBreakdown unrest = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 3, null, null); 
+		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
+		unrest.setFinalTotal (3);
 
 		when (memoryBuildingUtils.isBuildingAPrerequisiteFor (GRANARY, BARRACKS, db)).thenReturn (false);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granary)).thenReturn (12);
@@ -795,7 +803,8 @@ public final class TestCityProcessingImpl
 		proc.setCityCalculations (cityCalculations);
 		
 		// Run test
-		final CalculateCityUnrestBreakdown unrest = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 3, null, null); 
+		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
+		unrest.setFinalTotal (3);
 
 		when (memoryBuildingUtils.isBuildingAPrerequisiteFor (GRANARY, BARRACKS, db)).thenReturn (false);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granary)).thenReturn (12);
@@ -878,7 +887,8 @@ public final class TestCityProcessingImpl
 		proc.setCityCalculations (cityCalculations);
 		
 		// Run test
-		final CalculateCityUnrestBreakdown unrest = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 3, null, null); 
+		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
+		unrest.setFinalTotal (3);
 
 		when (memoryBuildingUtils.isBuildingAPrerequisiteFor (GRANARY, FARMERS_MARKET, db)).thenReturn (true);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granary)).thenReturn (12);
@@ -1018,7 +1028,8 @@ public final class TestCityProcessingImpl
 		cityData1.setCityPopulation (1);
 		trueTerrain.getPlane ().get (0).getRow ().get (15).getCell ().get (23).setCityData (cityData1);
 		
-		final CalculateCityUnrestBreakdown breakdown1 = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 4, null, null);
+		final CityUnrestBreakdown breakdown1 = new CityUnrestBreakdown ();
+		breakdown1.setFinalTotal (4);
 		
 		// Another of our cities
 		final MapCoordinates3DEx cityLocation2 = new MapCoordinates3DEx (24, 15, 0);
@@ -1028,7 +1039,8 @@ public final class TestCityProcessingImpl
 		cityData2.setCityPopulation (1);
 		trueTerrain.getPlane ().get (0).getRow ().get (15).getCell ().get (24).setCityData (cityData2);
 		
-		final CalculateCityUnrestBreakdown breakdown2 = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 5, null, null);
+		final CityUnrestBreakdown breakdown2 = new CityUnrestBreakdown ();
+		breakdown2.setFinalTotal (5);
 		
 		// Someone else's city
 		final MapCoordinates3DEx cityLocation3 = new MapCoordinates3DEx (25, 15, 0);
@@ -1038,7 +1050,8 @@ public final class TestCityProcessingImpl
 		cityData3.setCityPopulation (1);
 		trueTerrain.getPlane ().get (0).getRow ().get (15).getCell ().get (25).setCityData (cityData3);
 		
-		final CalculateCityUnrestBreakdown breakdown3 = new CalculateCityUnrestBreakdown (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, false, 0, 0, 6, null, null);
+		final CityUnrestBreakdown breakdown3 = new CityUnrestBreakdown ();
+		breakdown3.setFinalTotal (6);
 
 		// Connection
 		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();

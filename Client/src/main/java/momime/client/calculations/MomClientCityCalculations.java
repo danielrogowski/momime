@@ -1,8 +1,8 @@
 package momime.client.calculations;
 
 import momime.common.MomException;
-import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 
 /**
@@ -27,5 +27,5 @@ public interface MomClientCityCalculations
 	 * @return Readable calculation details
 	 * @throws MomException If we find a breakdown entry that we don't know how to describe
 	 */
-	public String describeCityProductionCalculation (final CalculateCityProductionResult calc) throws MomException;
+	public String describeCityProductionCalculation (final CityProductionBreakdown calc) throws MomException;
 }

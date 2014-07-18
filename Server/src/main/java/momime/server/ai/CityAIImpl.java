@@ -8,12 +8,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.BuildingPrerequisite;
 import momime.common.database.v0_9_5.RaceCannotBuild;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -80,15 +82,16 @@ public final class CityAIImpl implements CityAI
 	 * @param map Known terrain
 	 * @param plane Plane to place a city on
 	 * @param sd Session description
-	 * @param totalFoodBonusFromBuildings Value calculated by MomServerCityCalculations.calculateTotalFoodBonusFromBuildings ()
 	 * @param db Lookup lists built over the XML database
 	 * @return Best possible location to put a new city, or null if there's no space left for any new cities on this plane
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
 	public final MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
-		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseEx db)
-		throws RecordNotFoundException
+		final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering chooseCityLocation: " + plane);
 
@@ -115,18 +118,20 @@ public final class CityAIImpl implements CityAI
 					{
 						// How good will this city be?
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
-
-						// First find what the max. size will be after we've built all buildings, and re-cap this at the game maximum
-						// This ensures cities with max size 20 are considered just as good as cities with max size 25+
-						final int maxCitySizeAfterBuildings = totalFoodBonusFromBuildings + getCityCalculations ().calculateMaxCitySize
-							(map, cityLocation, sd, true, true, db);
-
-						final int maxCitySizeAfterBuildingsCapped = Math.min (maxCitySizeAfterBuildings, sd.getDifficultyLevel ().getCityMaxSize ());
+						
+						final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions (null, map, null, cityLocation, null, sd, false, true, db);
+						final CityProductionBreakdown productionProduction = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+						final CityProductionBreakdown goldProduction = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+						final CityProductionBreakdown foodProduction = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+						
+						final int productionPercentageBonus = (productionProduction != null) ? productionProduction.getPercentageBonus () : 0;
+						final int goldTradePercentageBonus = (goldProduction != null) ? goldProduction.getTradePercentageBonusCapped () : 0;
+						final int maxCitySize = (foodProduction != null) ? foodProduction.getCappedProductionAmount () : 0;
 
 						// Add on how good production and gold bonuses are
-						int thisCityQuality = (maxCitySizeAfterBuildingsCapped * 10) +											// Typically 5-25 -> 50-250
-							getCityCalculations ().calculateGoldBonus (map, cityLocation, sd.getMapSize (), db) +		// Typically 0-30
-							getCityCalculations ().calculateProductionBonus (map, cityLocation, sd.getMapSize (), db);	// Typically 0-80 usefully
+						int thisCityQuality = (maxCitySize * 10) +		// Typically 5-25 -> 50-250
+							goldTradePercentageBonus +					// Typically 0-30
+							productionPercentageBonus;					// Typically 0-80 usefully
 
 						// Improve the estimate according to nearby map features e.g. always stick cities next to adamantium!
 						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);

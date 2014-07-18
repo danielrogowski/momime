@@ -1,8 +1,10 @@
 package momime.common.calculations;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -10,19 +12,31 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.v0_9_5.Building;
+import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_5.BuildingRequiresTileType;
+import momime.common.database.v0_9_5.FortressPickTypeProduction;
+import momime.common.database.v0_9_5.FortressPlaneProduction;
+import momime.common.database.v0_9_5.MapFeature;
 import momime.common.database.v0_9_5.MapFeatureProduction;
 import momime.common.database.v0_9_5.PickType;
+import momime.common.database.v0_9_5.Plane;
 import momime.common.database.v0_9_5.ProductionType;
 import momime.common.database.v0_9_5.Race;
+import momime.common.database.v0_9_5.RacePopulationTask;
+import momime.common.database.v0_9_5.RacePopulationTaskProduction;
 import momime.common.database.v0_9_5.RaceUnrest;
-import momime.common.database.v0_9_5.RoundingDirectionID;
 import momime.common.database.v0_9_5.TaxRate;
 import momime.common.database.v0_9_5.TileType;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
+import momime.common.internal.CityProductionBreakdown;
+import momime.common.internal.CityProductionBreakdownBuilding;
+import momime.common.internal.CityProductionBreakdownMapFeature;
+import momime.common.internal.CityProductionBreakdownPickType;
+import momime.common.internal.CityProductionBreakdownPopulationTask;
+import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
@@ -89,6 +103,8 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		SquareMapDirection.SOUTH, SquareMapDirection.SOUTH, SquareMapDirection.SOUTHWEST, SquareMapDirection.WEST, SquareMapDirection.WEST, SquareMapDirection.NORTHWEST};
 
 	/**
+	 * This used to be called calculateProductionBonus when it only returned an int.
+	 * 
 	 * @param map Known terrain
 	 * @param cityLocation Location of the city to calculate for
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
@@ -96,81 +112,140 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @return % production bonus for a city located at this grid cell
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
-	@Override
-	public final int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
+	final CityProductionBreakdown listCityProductionPercentageBonusesFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
+		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering calculateProductionBonus: " + cityLocation);
+		log.trace ("Entering listCityProductionPercentageBonusesFromTerrainTiles: " + cityLocation);
 
-		int productionBonus = 0;
+		// First pass - get a list of how many of each tile type are within the city radius
+		final Map<String, CityProductionBreakdownTileType> tileTypes = new HashMap<String, CityProductionBreakdownTileType> ();
+
 		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
-		
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-		{
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
 				{
-					final Integer thisBonus = db.findTileType (terrainData.getTileTypeID (), "calculateProductionBonus").getProductionBonus ();
-					if (thisBonus != null)
-						productionBonus = productionBonus + thisBonus;
+					// Is this tile type already listed in the map?
+					final CityProductionBreakdownTileType thisTileType = tileTypes.get (terrainData.getTileTypeID ());
+					if (thisTileType == null)
+					{
+						// New tile type
+						final CityProductionBreakdownTileType newTileType = new CityProductionBreakdownTileType ();
+						newTileType.setTileTypeID (terrainData.getTileTypeID ());
+						newTileType.setCount (1);
+						tileTypes.put (terrainData.getTileTypeID (), newTileType);
+					}
+					else
+					{
+						// Just add to existing counter
+						thisTileType.setCount (thisTileType.getCount () + 1);
+					}
 				}
+			}
+		
+		// Second pass - now check which of those tile types actually produce any production % bonuses
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		
+		for (final CityProductionBreakdownTileType thisTileType : tileTypes.values ())
+		{
+			final Integer percentageBonus = db.findTileType (thisTileType.getTileTypeID (), "listCityProductionPercentageBonusesFromTerrainTiles").getProductionBonus ();
+			if (percentageBonus != null)
+			{
+				thisTileType.setPercentageBonusEachTile (percentageBonus);
+				thisTileType.setPercentageBonusAllTiles (percentageBonus * thisTileType.getCount ());
+				
+				breakdown.getTileTypeProduction ().add (thisTileType);
+				breakdown.setPercentageBonus (breakdown.getPercentageBonus () + thisTileType.getPercentageBonusAllTiles ());
 			}
 		}
 
-		log.trace ("Exiting calculateProductionBonus = " + productionBonus);
-		return productionBonus;
+		log.trace ("Exiting listCityProductionPercentageBonusesFromTerrainTiles = " + breakdown.getPercentageBonus ());
+		return breakdown;
 	}
 
 	/**
+	 * Strategy guide p210.  Note this must generate % values even if the city produces no gold, or if there is no city at all,
+	 * since the AI uses this to consider the potential value of sites it is considering building cities at. 
+	 * 
+	 * @param gold Gold production breakdown
 	 * @param map Known terrain
 	 * @param cityLocation Location of the city to calculate for
-	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param overridePopulation If null uses the actual city population for the gold trade % bonus cap; if filled in will override and use this value instead, in 1000s
+	 * @param sys Coordinate system for traversing overland map
 	 * @param db Lookup lists built over the XML database
-	 * @return % gold bonus for a city located at this grid cell
-	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
+	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
 	 */
-	@Override
-	public final int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
+	final void calculateGoldTradeBonus (final CityProductionBreakdown gold, final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
+		final Integer overridePopulation, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering calculateGoldBonus: " + cityLocation);
+		log.trace ("Entering calculateGoldTradeBonus: " + cityLocation);
 
 		// Deal with centre square
-		int goldBonus = 0;
-		final OverlandMapTerrainData centreTile = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getTerrainData ();
-		if ((centreTile != null) && (centreTile.getTileTypeID () != null))
+		gold.setTradePercentageBonusFromTileType (0);
+		final MemoryGridCell centreTile = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final OverlandMapTerrainData centreTerrain = centreTile.getTerrainData (); 
+		if ((centreTerrain != null) && (centreTerrain.getTileTypeID () != null))
 		{
-			final Integer centreBonus = db.findTileType (centreTile.getTileTypeID (), "calculateGoldBonus").getGoldBonus ();
+			final Integer centreBonus = db.findTileType (centreTerrain.getTileTypeID (), "calculateGoldTradeBonus").getGoldBonus ();
 			if (centreBonus != null)
-				goldBonus = centreBonus;
+				gold.setTradePercentageBonusFromTileType (centreBonus);
 		}
 
 		// Only check adjacent squares if we didn't find a centre square bonus
 		int d = 1;
-		while ((goldBonus == 0) && (d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ())))
+		while ((gold.getTradePercentageBonusFromTileType () == 0) && (d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ())))
 		{
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
-			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, d))
+			if (getCoordinateSystemUtils ().move3DCoordinates (sys, coords, d))
 			{
 				// Bonus only applies if adjacent flag is set
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
 				{
-					final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "calculateGoldBonus");
+					final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "calculateGoldTradeBonus");
 					if ((tileType.isGoldBonusSurroundingTiles () != null) && (tileType.isGoldBonusSurroundingTiles ()) && (tileType.getGoldBonus () != null))
-						goldBonus = tileType.getGoldBonus ();
+						gold.setTradePercentageBonusFromTileType (tileType.getGoldBonus ());
 				}
 			}
 
 			d++;
 		}
-
-		log.trace ("Exiting calculateGoldBonus = " + goldBonus);
-		return goldBonus;
+		
+		// Not yet implemented
+		gold.setTradePercentageBonusFromRoads (0);
+		
+		// Nomad's bonus
+		final OverlandMapCityData cityData = centreTile.getCityData ();
+		final String raceID = (cityData != null) ? cityData.getCityRaceID () : null;
+		final Race race = (raceID != null) ? db.findRace (raceID, "calculateGoldTradeBonus") : null;
+		final Integer raceBonus = (race != null) ? race.getGoldTradeBonus () : null;
+		gold.setTradePercentageBonusFromRace ((raceBonus != null) ? raceBonus : 0);
+		
+		// All the 3 parts together
+		gold.setTradePercentageBonusUncapped (gold.getTradePercentageBonusFromTileType () +
+			gold.getTradePercentageBonusFromRoads () + gold.getTradePercentageBonusFromRace ());
+		
+		// Deal with cap
+		if (overridePopulation != null)
+			gold.setTotalPopulation (overridePopulation);
+		else
+		{
+			final Integer cityPopulation = (cityData != null) ? cityData.getCityPopulation () : null;
+			gold.setTotalPopulation ((cityPopulation != null) ? cityPopulation / 1000 : 0);
+		}
+		
+		final int maxGoldTradeBonus = gold.getTotalPopulation () * 3;
+		gold.setTradePercentageBonusCapped (Math.min (gold.getTradePercentageBonusUncapped (), maxGoldTradeBonus));
+		
+		// Add to other bonuses
+		gold.setPercentageBonus (gold.getPercentageBonus () + gold.getTradePercentageBonusCapped ());
+		
+		log.trace ("Exiting calculateGoldTradeBonus");
 	}
 
 	/**
@@ -259,61 +334,68 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	}
 
 	/**
-	 * Strategy guide p194
+	 * Strategy guide p194.  This used to be called calculateMaxCitySize when it only returned an int.
+	 * 
 	 * @param map Known terrain
 	 * @param cityLocation Location of the city to calculate for
-	 * @param sessionDescription Session description
-	 * @param includeBonusesFromMapFeatures True to include bonuses from map features (Wild Game), false to just count food harvested from the terrain
-	 * @param halveAndCapResult True to halve the result (i.e. return the actual max city size) and cap at the game max city size, false to leave the production values as they are (i.e. return double the actual max city size) and uncapped
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
-	 * @return Maximum size a city here will grow to, based on knowledge of surrounding terrain, excluding any buildings that will improve it (Granary & Farmers' Market)
+	 * @return Breakdown count of the food production from each of the surrounding tiles
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 */
-	@Override
-	public final int calculateMaxCitySize (final MapVolumeOfMemoryGridCells map,
-		final MapCoordinates3DEx cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
-		final CommonDatabase db)
+	final CityProductionBreakdown listCityFoodProductionFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
+		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering calculateMaxCitySize: " + cityLocation + ", " +
-			sessionDescription.getDifficultyLevel ().getCityMaxSize () + ", " + includeBonusesFromMapFeatures + ", " + halveAndCapResult);
+		log.trace ("Entering listCityFoodProductionFromTerrainTiles: " + cityLocation);
 
-		int maxCitySize = 0;
+		// First pass - get a list of how many of each tile type are within the city radius
+		final Map<String, CityProductionBreakdownTileType> tileTypes = new HashMap<String, CityProductionBreakdownTileType> ();
+
 		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
 		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-		{
-			if (getCoordinateSystemUtils ().move3DCoordinates (sessionDescription.getMapSize (), coords, direction.getDirectionID ()))
+			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-
-				// Food from terrain
 				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
 				{
-					final Integer foodFromTileType = db.findTileType (terrainData.getTileTypeID (), "calculateMaxCitySize").getDoubleFood ();
-					if (foodFromTileType != null)
-						maxCitySize = maxCitySize + foodFromTileType;
+					// Is this tile type already listed in the map?
+					final CityProductionBreakdownTileType thisTileType = tileTypes.get (terrainData.getTileTypeID ());
+					if (thisTileType == null)
+					{
+						// New tile type
+						final CityProductionBreakdownTileType newTileType = new CityProductionBreakdownTileType ();
+						newTileType.setTileTypeID (terrainData.getTileTypeID ());
+						newTileType.setCount (1);
+						tileTypes.put (terrainData.getTileTypeID (), newTileType);
+					}
+					else
+					{
+						// Just add to existing counter
+						thisTileType.setCount (thisTileType.getCount () + 1);
+					}
 				}
-
-				// Food from map feature - have to search through all feature productions looking for the right production type
-				if ((includeBonusesFromMapFeatures) && (terrainData != null) && (terrainData.getMapFeatureID () != null))
-					for (final MapFeatureProduction thisProduction : db.findMapFeature (terrainData.getMapFeatureID (), "calculateMaxCitySize").getMapFeatureProduction ())
-						if (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD))
-							maxCitySize = maxCitySize + thisProduction.getDoubleAmount ();
+			}
+		
+		// Second pass - now check which of those tile types actually produce any food
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		
+		for (final CityProductionBreakdownTileType thisTileType : tileTypes.values ())
+		{
+			final Integer doubleFoodFromTileType = db.findTileType (thisTileType.getTileTypeID (), "listCityFoodProductionFromTerrainTiles").getDoubleFood ();
+			if (doubleFoodFromTileType != null)
+			{
+				thisTileType.setDoubleProductionAmountEachTile (doubleFoodFromTileType);
+				thisTileType.setDoubleProductionAmountAllTiles (doubleFoodFromTileType * thisTileType.getCount ());
+				
+				breakdown.getTileTypeProduction ().add (thisTileType);
+				breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + thisTileType.getDoubleProductionAmountAllTiles ());
 			}
 		}
 
-		// Database values are double the food value but we must round up, not down - Round up confirmed both by testing + its what the strategy guide says
-		// Need to be able to switch the halving off because calculateAllCityProductions () wants the doubled value
-		if (halveAndCapResult)
-		{
-			maxCitySize = (maxCitySize + 1) / 2;
-
-			if (maxCitySize > sessionDescription.getDifficultyLevel ().getCityMaxSize ())
-				maxCitySize = sessionDescription.getDifficultyLevel ().getCityMaxSize ();
-		}
-
-		log.trace ("Exiting calculateMaxCitySize = " + maxCitySize);
-		return maxCitySize;
+		log.trace ("Exiting listCityFoodProductionFromTerrainTiles = " + breakdown.getDoubleProductionAmount ());
+		return breakdown;
 	}
 
 	/**
@@ -323,7 +405,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	 * @param map Known terrain
 	 * @param buildings Known buildings
 	 * @param cityLocation Location of the city to calculate for
-	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () - not the value output from calculateMaxCitySize ()
+	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
 	 * @param db Lookup lists built over the XML database
 	 * @return Breakdown of all the values used in calculating the growth rate of this city; if the caller doesn't care about the breakdown and just wants the value, just call .getFinalTotal () on the breakdown
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
@@ -574,116 +656,404 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	}
 
 	/**
+	 * Adds all the productions from a certain number of a particular type of civilian
+	 * 
+	 * @param productionValues Production values running totals to add the production to
+	 * @param race Race of civilian
+	 * @param populationTaskID Task civilian is performing (farmer, worker or rebel)
+	 * @param numberDoingTask Number of civilians doing this task
+	 * @param cityLocation Location of the city where the civilians are
+	 * @param buildings List of known buildings
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
+	 */
+	final void addProductionFromPopulation (final CityProductionBreakdownsEx productionValues, final Race race, final String populationTaskID,
+		final int numberDoingTask, final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final CommonDatabase db) throws RecordNotFoundException
+	{
+		log.trace ("Entering addProductionFromPopulation: " + race.getRaceID () + ", " + populationTaskID + " x" + numberDoingTask + ", " + cityLocation);
+		
+		if (numberDoingTask > 0)
+
+			// Find definition for this population task (farmer, worker, rebel) for the city's race
+			// It may genuinely not be there - rebels of most races produce nothing so won't even be listed
+			for (final RacePopulationTask populationTask : race.getRacePopulationTask ())
+				if (populationTask.getPopulationTaskID ().equals (populationTaskID))
+					for (final RacePopulationTaskProduction thisProduction : populationTask.getRacePopulationTaskProduction ())
+					{
+						// Are there are building we have which increase this type of production from this type of population
+						// i.e. Animists' guild increasing farmers yield by +1
+						final int doubleAmountPerPerson = thisProduction.getDoubleAmount () +
+							getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings
+								(buildings, cityLocation, populationTaskID, thisProduction.getProductionTypeID (), db);
+
+						// Now add it
+						final CityProductionBreakdownPopulationTask taskBreakdown = new CityProductionBreakdownPopulationTask ();
+						taskBreakdown.setPopulationTaskID (populationTaskID);
+						taskBreakdown.setCount (numberDoingTask);
+						taskBreakdown.setDoubleProductionAmountEachPopulation (doubleAmountPerPerson);
+						taskBreakdown.setDoubleProductionAmountAllPopulation (numberDoingTask * doubleAmountPerPerson);
+						
+						final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getProductionTypeID ());
+						breakdown.getPopulationTaskProduction ().add (taskBreakdown);
+						breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + taskBreakdown.getDoubleProductionAmountAllPopulation ());
+					}
+
+		log.trace ("Exiting addProductionFromPopulation");
+	}
+	
+	/**
+	 * Adds on production generated by our fortress according to the number of picks of a particular type we chose at the start of the game
+	 * 
+	 * @param productionValues Production values running totals to add the production to
+	 * @param pickType Type of picks (spell books or retorts)
+	 * @param pickTypeCount The number of the pick we had at the start of the game
+	 */
+	final void addProductionFromFortressPickType (final CityProductionBreakdownsEx productionValues, final PickType pickType, final int pickTypeCount)
+	{
+		log.trace ("Entering addProductionFromFortressPickType: " + pickType.getPickTypeID () + " x" + pickTypeCount);
+
+		if (pickTypeCount > 0)
+			for (final FortressPickTypeProduction thisProduction : pickType.getFortressPickTypeProduction ())
+			{
+				final CityProductionBreakdownPickType pickTypeBreakdown = new CityProductionBreakdownPickType ();
+				pickTypeBreakdown.setPickTypeID (pickType.getPickTypeID ());
+				pickTypeBreakdown.setCount (pickTypeCount);
+				pickTypeBreakdown.setDoubleProductionAmountEachPick (thisProduction.getDoubleAmount ());
+				pickTypeBreakdown.setDoubleProductionAmountAllPicks (pickTypeCount * thisProduction.getDoubleAmount ());
+
+				final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getFortressProductionTypeID ());
+				breakdown.getPickTypeProduction ().add (pickTypeBreakdown);
+				breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + pickTypeBreakdown.getDoubleProductionAmountAllPicks ());
+			}
+
+		log.trace ("Exiting addProductionFromFortressPickType");
+	}
+
+	/**
+	 * Adds on production generated by our fortress being on a particular plane
+	 * 
+	 * @param productionValues Production values running totals to add the production to
+	 * @param plane Which plane our fortress is on
+	 */
+	final void addProductionFromFortressPlane (final CityProductionBreakdownsEx productionValues, final Plane plane)
+	{
+		log.trace ("Entering addProductionFromFortressPlane: " + plane.getPlaneNumber ());
+
+		for (final FortressPlaneProduction thisProduction : plane.getFortressPlaneProduction ())
+		{
+			final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getFortressProductionTypeID ());
+			breakdown.setFortressPlane (plane.getPlaneNumber ());
+			breakdown.setDoubleProductionAmountFortressPlane (breakdown.getDoubleProductionAmountFortressPlane () + thisProduction.getDoubleAmount ());
+			breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + thisProduction.getDoubleAmount ());
+		}
+
+		log.trace ("Exiting addProductionFromFortressPlane");
+	}
+	
+	/**
+	 * Adds all the productions and/or consumptions generated by a particular building
+	 * 
+	 * @param productionValues Production values running totals to add the production to
+	 * @param building The building to calculate for
+	 * @param picks The list of spell picks belonging to the player who owns the city that this building is in
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2
+	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
+	 */
+	final void addProductionAndConsumptionFromBuilding (final CityProductionBreakdownsEx productionValues,
+		final Building building, final List<PlayerPick> picks, final CommonDatabase db)
+		throws MomException, RecordNotFoundException
+	{
+		log.trace ("Entering addProductionAndConsumptionFromBuilding: " + building.getBuildingID ());
+
+		// Go through each type of production/consumption from this building
+		for (final BuildingPopulationProductionModifier thisProduction : building.getBuildingPopulationProductionModifier ())
+
+			// Only pick out production modifiers which come from the building by itself with no effect from the number of population
+			// - such as the Library giving +2 research - we don't want modifiers such as the Animsts' Guild giving 1 to each farmer
+			if (thisProduction.getPopulationTaskID () == null)
+			{
+				CityProductionBreakdownBuilding buildingBreakdown = null;
+				
+				// Just to stop null pointer exceptions below
+				if (thisProduction.getDoubleAmount () == null)
+				{
+				}
+
+				// Production?
+				else if (thisProduction.getDoubleAmount () > 0)
+				{
+					// Bonus from retorts?
+					final int totalReligiousBuildingBonus;
+					if ((picks != null) && (building.isBuildingUnrestReductionImprovedByRetorts () != null) && (building.isBuildingUnrestReductionImprovedByRetorts ()))
+						totalReligiousBuildingBonus = getPlayerPickUtils ().totalReligiousBuildingBonus (picks, db);
+					else
+						totalReligiousBuildingBonus = 0;
+
+					// Calculate amounts
+					final int amountBeforeReligiousBuildingBonus = thisProduction.getDoubleAmount ();
+					final int amountAfterReligiousBuildingBonus = amountBeforeReligiousBuildingBonus + ((amountBeforeReligiousBuildingBonus * totalReligiousBuildingBonus) / 100);
+
+					// Add it
+					buildingBreakdown = new CityProductionBreakdownBuilding ();
+					buildingBreakdown.setReligiousBuildingPercentageBonus (totalReligiousBuildingBonus);
+					buildingBreakdown.setDoubleUnmodifiedProductionAmount (amountBeforeReligiousBuildingBonus);
+					buildingBreakdown.setDoubleModifiedProductionAmount (amountAfterReligiousBuildingBonus);
+					
+					if (totalReligiousBuildingBonus > 0)
+						buildingBreakdown.getPickIdContributingToReligiousBuildingBonus ().addAll (getPlayerPickUtils ().pickIdsContributingToReligiousBuildingBonus (picks, db));
+				}
+
+				// Consumption?
+				else if (thisProduction.getDoubleAmount () < 0)
+				{
+					// Must be an exact multiple of 2
+					final int consumption = -thisProduction.getDoubleAmount ();
+					if (consumption % 2 != 0)
+						throw new MomException ("Building \"" + building.getBuildingID () + "\" has a consumption value for \"" + thisProduction.getProductionTypeID () + "\" that is not an exact multiple of 2");
+
+					buildingBreakdown = new CityProductionBreakdownBuilding ();
+					buildingBreakdown.setConsumptionAmount (consumption / 2);
+				}
+
+				// Percentage bonus?
+				// Can have both (production or consumption) AND percentage bonus, e.g. Marketplace
+				if ((thisProduction.getPercentageBonus () != null) && (thisProduction.getPercentageBonus () > 0))
+				{
+					if (buildingBreakdown == null)
+						buildingBreakdown = new CityProductionBreakdownBuilding ();
+					
+					buildingBreakdown.setPercentageBonus (thisProduction.getPercentageBonus ());
+				}
+				
+				// Did we create anything?
+				if (buildingBreakdown != null)
+				{
+					buildingBreakdown.setBuildingID (building.getBuildingID ());
+
+					final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getProductionTypeID ());
+					breakdown.getBuildingBreakdown ().add (buildingBreakdown);
+					
+					// Add whatever we generated above to the grand totals
+					breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + buildingBreakdown.getDoubleModifiedProductionAmount ());
+					breakdown.setConsumptionAmount (breakdown.getConsumptionAmount () + buildingBreakdown.getConsumptionAmount ());
+					breakdown.setPercentageBonus (breakdown.getPercentageBonus () + buildingBreakdown.getPercentageBonus ());
+				}
+			}
+
+		log.trace ("Exiting addProductionAndConsumptionFromBuilding");
+	}
+	
+	/**
+	 * Adds on production generated from a particular map feature
+	 * 
+	 * @param productionValues Production values running totals to add the production to
+	 * @param map Known terrain
+	 * @param cityLocation Location of the city to calculate for
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param db Lookup lists built over the XML database
+	 * @param raceMineralBonusMultipler The amount our race multiplies mineral bonuses by (2 for Dwarves, 1 for everyone else)
+	 * @param buildingMineralPercentageBonus The % bonus buildings give to mineral bonuses (50% if we have a Miners' Guild)
+	 * @throws RecordNotFoundException If we encounter a map feature that we cannot find in the cache
+	 */
+	final void addProductionFromMapFeatures (final CityProductionBreakdownsEx productionValues, final MapVolumeOfMemoryGridCells map,
+		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db,
+		final int raceMineralBonusMultipler, final int buildingMineralPercentageBonus) throws RecordNotFoundException
+	{
+		log.trace ("Entering addProductionFromMapFeatures: " + cityLocation + ", " + raceMineralBonusMultipler + ", " + buildingMineralPercentageBonus);
+		
+		// First pass - get a list of how many of each map feature are within the city radius
+		final Map<String, CityProductionBreakdownMapFeature> mapFeatures = new HashMap<String, CityProductionBreakdownMapFeature> ();
+
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
+		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
+			{
+				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+				if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
+				{
+					// Is this map feature already listed in the map?
+					final CityProductionBreakdownMapFeature thisMapFeature = mapFeatures.get (terrainData.getMapFeatureID ());
+					if (thisMapFeature == null)
+					{
+						// New map feature
+						final CityProductionBreakdownMapFeature newMapFeature = new CityProductionBreakdownMapFeature ();
+						newMapFeature.setMapFeatureID (terrainData.getMapFeatureID ());
+						newMapFeature.setCount (1);
+						mapFeatures.put (terrainData.getMapFeatureID (), newMapFeature);
+					}
+					else
+					{
+						// Just add to existing counter
+						thisMapFeature.setCount (thisMapFeature.getCount () + 1);
+					}
+				}
+			}
+
+		// Second pass - add on the production from each map feature
+		for (final CityProductionBreakdownMapFeature thisMapFeature : mapFeatures.values ())
+		{
+			final MapFeature mapFeature = db.findMapFeature (thisMapFeature.getMapFeatureID (), "addProductionFromMapFeatures");
+
+			// Bonuses apply only to mines, not wild game
+			if ((mapFeature.isRaceMineralMultiplerApplies () != null) && (mapFeature.isRaceMineralMultiplerApplies ()))
+			{
+				thisMapFeature.setRaceMineralBonusMultiplier (raceMineralBonusMultipler);
+				thisMapFeature.setBuildingMineralPercentageBonus (buildingMineralPercentageBonus);
+			}
+			else
+			{
+				thisMapFeature.setRaceMineralBonusMultiplier (1);
+				thisMapFeature.setBuildingMineralPercentageBonus (0);
+			}
+
+			// Add on each type of production generated
+			for (final MapFeatureProduction thisProduction : mapFeature.getMapFeatureProduction ())
+			{
+				// Copy the details, in case one map feature generates multiple types of production
+				final CityProductionBreakdownMapFeature copyMapFeature = new CityProductionBreakdownMapFeature ();
+				copyMapFeature.setMapFeatureID (thisMapFeature.getMapFeatureID ());
+				copyMapFeature.setCount (thisMapFeature.getCount ());
+				copyMapFeature.setRaceMineralBonusMultiplier (thisMapFeature.getRaceMineralBonusMultiplier ());
+				copyMapFeature.setBuildingMineralPercentageBonus (thisMapFeature.getBuildingMineralPercentageBonus ());
+				
+				// Deal with multipliers
+				copyMapFeature.setDoubleUnmodifiedProductionAmountEachFeature (thisProduction.getDoubleAmount ());
+				
+				copyMapFeature.setDoubleUnmodifiedProductionAmountAllFeatures
+					(copyMapFeature.getDoubleUnmodifiedProductionAmountEachFeature () * copyMapFeature.getCount ());
+				
+				copyMapFeature.setDoubleProductionAmountAfterRacialMultiplier
+					(copyMapFeature.getDoubleUnmodifiedProductionAmountAllFeatures () * copyMapFeature.getRaceMineralBonusMultiplier ());
+				
+				copyMapFeature.setDoubleModifiedProductionAmountAllFeatures (copyMapFeature.getDoubleProductionAmountAfterRacialMultiplier () +
+					((copyMapFeature.getDoubleProductionAmountAfterRacialMultiplier () * copyMapFeature.getBuildingMineralPercentageBonus ()) / 100));
+
+				// Add it
+				final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getProductionTypeID ());
+				breakdown.getMapFeatureProduction ().add (copyMapFeature);
+				breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + copyMapFeature.getDoubleModifiedProductionAmountAllFeatures ());
+			}
+		}
+
+		log.trace ("Exiting addProductionFromMapFeatures");
+	}
+	
+	/**
 	 * @param players Pre-locked players list
 	 * @param map Known terrain
 	 * @param buildings List of known buildings
-	 * @param cityLocation Location of the city to calculate for
+	 * @param cityLocation Location of the city to calculate for; NB. It must be possible to call this on a map location which is not yet a city, so the AI can consider potential sites
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
+	 * 	(This is needed when calculating minimumFarmers, i.e. how many rations does the city produce from buildings and map features only, without considering farmers)
+	 * @param calculatePotential Normally false; if true, will consider city size and gold trade bonus to be as they will be after the city is built up
+	 * 	(This is typically used in conjunction with includeProductionAndConsumptionFromPopulation=false for the AI to consider the potential value of sites where it may build cities)
 	 * @param db Lookup lists built over the XML database
-	 * @param storeBreakdown Whether to store breakdown objects or throw the details away and just keep the results
 	 * @return List of all productions and consumptions from this city
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
+	public final CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final CommonDatabase db, final boolean storeBreakdown)
+		final boolean calculatePotential, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering calculateAllCityProductions: " + cityLocation);
 
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
-		final Race cityRace = db.findRace (cityData.getCityRaceID (), "calculateAllCityProductions");
+		final String raceID = (cityData != null) ? cityData.getCityRaceID () : null;
+		final Race cityRace = (raceID != null) ? db.findRace (raceID, "calculateAllCityProductions") : null;
 
-		final PlayerPublicDetails cityOwner = MultiplayerSessionUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "calculateAllCityProductions");
-		final List<PlayerPick> cityOwnerPicks = ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
+		final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
+		final PlayerPublicDetails cityOwner = (cityOwnerID != null) ? MultiplayerSessionUtils.findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
+		final List<PlayerPick> cityOwnerPicks = (cityOwner != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick () : null;
 
-		// Set up results object, and inject necessary values across into it
-		final CalculateCityProductionResultsImplementation productionValues = new CalculateCityProductionResultsImplementation ();
-		productionValues.setStoreBreakdown (storeBreakdown);
-		productionValues.setMemoryBuildingUtils (getMemoryBuildingUtils ());
-		productionValues.setPlayerPickUtils (getPlayerPickUtils ());
+		// Set up results object
+		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
 
 		// Food production from surrounding tiles
-		productionValues.addProduction (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, null, null, null, null, null,
-			0, 0, 0, 0, 0, 0, 0, calculateMaxCitySize (map, cityLocation, sd, false, false, db));
+		final CityProductionBreakdown food = listCityFoodProductionFromTerrainTiles (map, cityLocation, sd.getMapSize (), db);
+		productionValues.getProductionType ().add (food);
 
 		// Production % increase from surrounding tiles
-		final int terrainProductionBonus = calculateProductionBonus (map, cityLocation, sd.getMapSize (), db);
-		if (terrainProductionBonus > 0)
-			productionValues.addPercentage (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION, null, terrainProductionBonus);
-
-		// Gold trade % from rivers and oceans
-		final int goldTradeBonus = calculateGoldBonus (map, cityLocation, sd.getMapSize (), db);
-		if (goldTradeBonus > 0)
-		{
-			productionValues.addPercentage (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, null, goldTradeBonus);
-
-			// Check if over maximum
-			final int maxGoldTradeBonus = (cityData.getCityPopulation () / 1000) * 3;
-			if (goldTradeBonus > maxGoldTradeBonus)
-			{
-				// Enforce cap
-				productionValues.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD).setPercentageBonus (maxGoldTradeBonus);
-				productionValues.addCap (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, cityData.getCityPopulation (), maxGoldTradeBonus);
-			}
-		}
+		final CityProductionBreakdown production = listCityProductionPercentageBonusesFromTerrainTiles (map, cityLocation, sd.getMapSize (), db);
+		productionValues.getProductionType ().add (production);
 
 		// Deal with people
 		if (includeProductionAndConsumptionFromPopulation)
 		{
-			// Production from population
-			productionValues.addProductionFromPopulation (cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER,
-				cityData.getMinimumFarmers () + cityData.getOptionalFarmers (), cityLocation, buildings, db);
-
-			productionValues.addProductionFromPopulation (cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER,
-				(cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getOptionalFarmers () - cityData.getNumberOfRebels (), cityLocation, buildings, db);
-
-			// With magical races, even the rebels produce power
-			productionValues.addProductionFromPopulation (cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL,
-				cityData.getNumberOfRebels (), cityLocation, buildings, db);
-
 			// Gold from taxes
 			final TaxRate taxRate = db.findTaxRate (taxRateID, "calculateAllCityProductions");
+			final int taxPayers = (cityData.getCityPopulation () / 1000) - cityData.getNumberOfRebels ();
 
 			// If tax rate set to zero then we're getting no money from taxes, so don't add it
 			// Otherwise we get a production entry in the breakdown of zero which produces an error on the client
-			if (taxRate.getDoubleTaxGold () > 0)
+			if ((taxRate.getDoubleTaxGold () > 0) && (taxPayers > 0))
 			{
-				final int taxPayers = (cityData.getCityPopulation () / 1000) - cityData.getNumberOfRebels ();
+				final CityProductionBreakdown gold = new CityProductionBreakdown ();
+				gold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+				gold.setApplicablePopulation (taxPayers);
+				gold.setDoubleProductionAmountEachPopulation (taxRate.getDoubleTaxGold ());
+				gold.setDoubleProductionAmountAllPopulation (taxPayers * taxRate.getDoubleTaxGold ());
+				gold.setDoubleProductionAmount (gold.getDoubleProductionAmountAllPopulation ());
 
-				productionValues.addProduction (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, null, null, null, null, null,
-					taxPayers, taxRate.getDoubleTaxGold (), 0,
-					0,
-					0, 0,
-					0, taxPayers * taxRate.getDoubleTaxGold ());
+				productionValues.getProductionType ().add (gold);
 			}
+
+			// Rations consumption by population
+			final int eaters = cityData.getCityPopulation () / 1000;
+			if (eaters > 0)
+			{
+				final CityProductionBreakdown rations = new CityProductionBreakdown ();
+				rations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+				rations.setApplicablePopulation (eaters);
+				rations.setConsumptionAmountEachPopulation (1);
+				rations.setConsumptionAmountAllPopulation (eaters);
+				rations.setConsumptionAmount (eaters);
+				
+				productionValues.getProductionType ().add (rations);
+			}
+
+			// Production from population
+			addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER,
+				cityData.getMinimumFarmers () + cityData.getOptionalFarmers (), cityLocation, buildings, db);
+
+			addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER,
+				(cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getOptionalFarmers () - cityData.getNumberOfRebels (), cityLocation, buildings, db);
+
+			// With magical races, even the rebels produce power
+			addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL,
+				cityData.getNumberOfRebels (), cityLocation, buildings, db);
 		}
 
 		// Production from and Maintenance of buildings
-		for (final MemoryBuilding thisBuilding : buildings)
-			if (cityLocation.equals (thisBuilding.getCityLocation ()))
+		for (final Building thisBuilding : db.getBuilding ())
+			
+			// If calculatePotential is true, assume we've built everything
+			// We only really need to count the granary and farmers' market, but easier just to include everything than to specifically discount these
+			if (((calculatePotential) && (!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))) ||
+				((!calculatePotential) && (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, thisBuilding.getBuildingID ()))))
 			{
 				if (thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS))
 				{
 					// Wizard's fortress produces mana according to how many books were chosen at the start of the game...
 					for (final PickType thisPickType : db.getPickType ())
-						productionValues.addProductionFromFortressPickType (thisPickType, getPlayerPickUtils ().countPicksOfType (cityOwnerPicks, thisPickType.getPickTypeID (), true, db));
+						addProductionFromFortressPickType (productionValues, thisPickType, getPlayerPickUtils ().countPicksOfType (cityOwnerPicks, thisPickType.getPickTypeID (), true, db));
 
 					// ...and according to which plane it is on
-					productionValues.addProductionFromFortressPlane (db.findPlane (cityLocation.getZ (), "calculateAllCityProductions"));
+					addProductionFromFortressPlane (productionValues, db.findPlane (cityLocation.getZ (), "calculateAllCityProductions"));
 				}
 
 				// Regular building
 				// Do not count buildings with a pending sale
 				else if (!thisBuilding.getBuildingID ().equals (mc.getBuildingIdSoldThisTurn ()))
-					productionValues.addProductionAndConsumptionFromBuilding (db.findBuilding (thisBuilding.getBuildingID (), "calculateAllCityProductions"), cityOwnerPicks, db);
+					addProductionAndConsumptionFromBuilding (productionValues, thisBuilding, cityOwnerPicks, db);
 			}
 
 		// Maintenance cost of city enchantment spells
@@ -691,84 +1061,94 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		// Temples and such produce magic power, but spell maintenance is charged in Mana
 
 		// See if we've got a miners' guild to boost the income from map features
-		final CalculateCityProductionResult mineralPercentageResult = productionValues.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);
-		final int mineralPercentageBonus;
-		if (mineralPercentageResult == null)
-			mineralPercentageBonus = 0;
-		else
-			mineralPercentageBonus = mineralPercentageResult.getPercentageBonus ();
+		final CityProductionBreakdown mineralPercentageResult = productionValues.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);
+		final int buildingMineralPercentageBonus = (mineralPercentageResult != null) ? mineralPercentageResult.getPercentageBonus () : 0;
+		final int raceMineralBonusMultipler = (cityRace != null) ? cityRace.getMineralBonusMultiplier () : 1;
 
 		// Production from nearby map features
-		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
-		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-			if (getCoordinateSystemUtils ().move3DCoordinates (sd.getMapSize (), coords, direction.getDirectionID ()))
-			{
-				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
-					productionValues.addProductionFromMapFeature (db.findMapFeature (terrainData.getMapFeatureID (), "calculateAllCityProductions"), cityRace.getMineralBonusMultiplier (), mineralPercentageBonus);
-			}
-
-		// Rations consumption by population
-		if (includeProductionAndConsumptionFromPopulation)
-		{
-			final int eaters = cityData.getCityPopulation () / 1000;
-			if (eaters > 0)
-				productionValues.addConsumption (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, null, eaters, eaters);
-		}
+		// Have to do this after buildings, so we can have discovered if we have the miners' guild bonus to map features
+		addProductionFromMapFeatures (productionValues, map, cityLocation, sd.getMapSize (), db, raceMineralBonusMultipler, buildingMineralPercentageBonus);
+		
+		// Halve and cap food (max city size) production first, because if calculatePotential=true then we need to know the potential max city size before
+		// we can calculate the gold trade % cap.
+		// Have to do this after map features are added in, since wild game increase max city size.
+		halveAddPercentageBonusAndCapProduction (food, sd.getDifficultyLevel ().getCityMaxSize (), db);
+		
+		// Gold trade % from rivers and oceans
+		// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
+		// into considering the potential maximum size this city will reach and cap the gold trade % accordingly
+		calculateGoldTradeBonus (productionValues.findOrAddProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD), map, cityLocation,
+			(calculatePotential ? food.getCappedProductionAmount () : null), sd.getMapSize (), db);
 
 		// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
-		for (final CalculateCityProductionResult thisProduction : productionValues.getResults ())
-			if (thisProduction.getDoubleProductionAmount () > 0)
-			{
-				final ProductionType productionType = db.findProductionType (thisProduction.getProductionTypeID (), "calculateAllCityProductions");
-
-				// Perform rounding - if its an exact multiple of 2 then we don't care what type of rounding it is
-				RoundingDirectionID roundingDirectionForBreakdown = productionType.getRoundingDirectionID ();
-				if (thisProduction.getDoubleProductionAmount () % 2 == 0)
-				{
-					thisProduction.setBaseProductionAmount (thisProduction.getDoubleProductionAmount () / 2);
-
-					// This is a bit of a cheat so we can still write a non-blank value to the Breakdown to make the Total appear, but without the rounding up/down messages appearing
-					roundingDirectionForBreakdown = RoundingDirectionID.MUST_BE_EXACT_MULTIPLE;
-				}
-				else switch (productionType.getRoundingDirectionID ())
-				{
-					case ROUND_DOWN:
-						thisProduction.setBaseProductionAmount (thisProduction.getDoubleProductionAmount () / 2);
-						break;
-
-					case ROUND_UP:
-						thisProduction.setBaseProductionAmount ((thisProduction.getDoubleProductionAmount () + 1) / 2);
-						break;
-
-					case MUST_BE_EXACT_MULTIPLE:
-						// We've already dealt with the situation where the value is an exact multiple above, so to have reached here it
-						// must have been supposed to be an exact multiple but wasn't
-						throw new MomException ("calculateAllCityProductions: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
-							"\" which is not a multiple of 2 = " + thisProduction.getDoubleProductionAmount ());
-
-					default:
-						throw new MomException ("calculateAllCityProductions: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
-							"\" which has an unknown rounding direction");
-				}
-
-				// Add total/rounding details to breakdown, note we re-double the rounded value!
-				thisProduction.addRoundingBreakdown (thisProduction.getDoubleProductionAmount (), thisProduction.getBaseProductionAmount () * 2, roundingDirectionForBreakdown);
-
-				// Stop max city size going over the game set maximum
-				if ((thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD)) &&
-					(thisProduction.getBaseProductionAmount () > sd.getDifficultyLevel ().getCityMaxSize ()))
-				{
-					thisProduction.setBaseProductionAmount (sd.getDifficultyLevel ().getCityMaxSize ());
-					thisProduction.addCapBreakdown (0, sd.getDifficultyLevel ().getCityMaxSize ());
-				}
-			}
+		for (final CityProductionBreakdown thisProduction : productionValues.getProductionType ())
+			if (thisProduction != food)
+				halveAddPercentageBonusAndCapProduction (thisProduction, sd.getDifficultyLevel ().getCityMaxSize (), db);
 
 		// Sort the list
-		Collections.sort (productionValues.getResults ());
+		Collections.sort (productionValues.getProductionType (), new CityProductionBreakdownSorter ());
 
 		log.trace ("Exiting calculateAllCityProductions = " + productionValues);
 		return productionValues;
+	}
+	
+	/**
+	 * After doubleProductionAmount has been filled in, this deals with halving the value according to the rounding
+	 * rules for the production type, adding on any % bonus, and dealing with any overall cap.
+	 * 
+	 * @param thisProduction Production value to halve, add % bonus and cap
+	 * @param cityMaxSize Max city size set in the session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If we encounter a production type that can't be found in the DB
+	 * @throws MomException If we encounter a production value that the DB states should always be an exact multiple of 2, but isn't
+	 */
+	final void halveAddPercentageBonusAndCapProduction (final CityProductionBreakdown thisProduction, final int cityMaxSize, final CommonDatabase db)
+		throws RecordNotFoundException, MomException
+	{
+		log.trace ("Entering halveAddPercentageBonusAndCapProduction: " + thisProduction.getProductionTypeID () + ", " + thisProduction.getDoubleProductionAmount ());
+		
+		if (thisProduction.getDoubleProductionAmount () > 0)
+		{
+			final ProductionType productionType = db.findProductionType (thisProduction.getProductionTypeID (), "halveAddPercentageBonusAndCapProduction");
+
+			// Perform rounding - if its an exact multiple of 2 then we don't care what type of rounding it is
+			if (thisProduction.getDoubleProductionAmount () % 2 == 0)
+			{
+				thisProduction.setBaseProductionAmount (thisProduction.getDoubleProductionAmount () / 2);
+			}
+			else switch (productionType.getRoundingDirectionID ())
+			{
+				case ROUND_DOWN:
+					thisProduction.setRoundingDirectionID (productionType.getRoundingDirectionID ());
+					thisProduction.setBaseProductionAmount (thisProduction.getDoubleProductionAmount () / 2);
+					break;
+
+				case ROUND_UP:
+					thisProduction.setRoundingDirectionID (productionType.getRoundingDirectionID ());
+					thisProduction.setBaseProductionAmount ((thisProduction.getDoubleProductionAmount () + 1) / 2);
+					break;
+
+				case MUST_BE_EXACT_MULTIPLE:
+					// We've already dealt with the situation where the value is an exact multiple above, so to have reached here it
+					// must have been supposed to be an exact multiple but wasn't
+					throw new MomException ("calculateAllCityProductions: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
+						"\" which is not a multiple of 2 = " + thisProduction.getDoubleProductionAmount ());
+
+				default:
+					throw new MomException ("calculateAllCityProductions: City calculated a production value for production \"" + thisProduction.getProductionTypeID () +
+						"\" which has an unknown rounding direction");
+			}
+
+			// Add on % bonus
+			thisProduction.setModifiedProductionAmount (thisProduction.getBaseProductionAmount () +
+				((thisProduction.getBaseProductionAmount () * thisProduction.getPercentageBonus ()) / 100));
+
+			// Stop max city size going over the game set maximum
+			final int cap = (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD)) ? cityMaxSize : Integer.MAX_VALUE;
+			thisProduction.setCappedProductionAmount (Math.min (thisProduction.getModifiedProductionAmount (), cap));
+		}
+
+		log.trace ("Exiting halveAddPercentageBonusAndCapProduction = " + thisProduction.getCappedProductionAmount ());
 	}
 
 	/**
@@ -798,15 +1178,15 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		// This is a right pain - ideally we want a cut down routine that scans only for this production type - however the Miners' Guild really
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
 		// So just do this the long way and then throw away all the other results
-		final CalculateCityProductionResults productionValues = calculateAllCityProductions (players, map, buildings, cityLocation, taxRateID, sd,
-			includeProductionAndConsumptionFromPopulation, db, false);		// Not interested in breakdown
+		final CityProductionBreakdownsEx productionValues = calculateAllCityProductions (players, map, buildings, cityLocation, taxRateID, sd,
+			includeProductionAndConsumptionFromPopulation, false, db);		// calculatePotential fixed at false
 
-		final CalculateCityProductionResult singleProductionValue = productionValues.findProductionType (productionTypeID);
+		final CityProductionBreakdown singleProductionValue = productionValues.findProductionType (productionTypeID);
 		final int netGain;
 		if (singleProductionValue == null)
 			netGain = 0;
 		else
-			netGain = singleProductionValue.getModifiedProductionAmount () - singleProductionValue.getConsumptionAmount ();
+			netGain = singleProductionValue.getCappedProductionAmount () - singleProductionValue.getConsumptionAmount ();
 
 		log.trace ("Exiting calculateSingleCityProduction = " + netGain);
 		return netGain;

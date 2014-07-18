@@ -22,6 +22,7 @@ import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
+import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
 
@@ -39,6 +40,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	/** Map of map feature IDs to map feature objects */
 	private Map<String, MapFeature> mapFeaturesMap;
 
+	/** Map of tile type IDs to tile type objects */
+	private Map<String, TileType> tileTypesMap;
+	
 	/** Map of pick type IDs to pick type objects */
 	private Map<String, PickType> pickTypesMap;
 	
@@ -109,6 +113,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		mapFeaturesMap = new HashMap<String, MapFeature> ();
 		for (final MapFeature thisMapFeature : getMapFeature ())
 			mapFeaturesMap.put (thisMapFeature.getMapFeatureID (), thisMapFeature);
+		
+		// Create tile types map
+		tileTypesMap = new HashMap<String, TileType> ();
+		for (final TileType thisTileType : getTileType ())
+			tileTypesMap.put (thisTileType.getTileTypeID (), thisTileType);
 		
 		// Create pick types map
 		pickTypesMap = new HashMap<String, PickType> ();
@@ -228,6 +237,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final MapFeature findMapFeature (final String mapFeatureID)
 	{
 		return mapFeaturesMap.get (mapFeatureID);
+	}
+
+	/**
+	 * @param tileTypeID Tile type ID to search for
+	 * @return Tile type descriptions object; or null if not found
+	 */
+	@Override
+	public final TileType findTileType (final String tileTypeID)
+	{
+		return tileTypesMap.get (tileTypeID);
 	}
 
 	/**

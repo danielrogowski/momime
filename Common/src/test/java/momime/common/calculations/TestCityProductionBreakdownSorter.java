@@ -6,28 +6,32 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import momime.common.internal.CityProductionBreakdown;
+
 import org.junit.Test;
 
 /**
- * Tests the CalculateCityProductionResult class
+ * Tests the CityProductionBreakdownSorter class
  */
-public final class TestCalculateCityProductionResult
+public final class TestCityProductionBreakdownSorter
 {
 	/**
-	 * Tests the compareTo method
+	 * Tests the compare method
 	 */
 	@Test
-	public final void testCompareTo ()
+	public final void testCompare ()
 	{
 		// Build up a test list
-		final List<CalculateCityProductionResult> values = new ArrayList<CalculateCityProductionResult> ();
-		values.add (new CalculateCityProductionResult ("C"));
-		values.add (new CalculateCityProductionResult ("A"));
-		values.add (new CalculateCityProductionResult ("D"));
-		values.add (new CalculateCityProductionResult ("B"));
+		final List<CityProductionBreakdown> values = new ArrayList<CityProductionBreakdown> ();
+		for (final String s : new String [] {"C", "A", "D", "B"})
+		{
+			final CityProductionBreakdown value = new CityProductionBreakdown ();
+			value.setProductionTypeID (s);
+			values.add (value);
+		}
 		
 		// Sort it
-		Collections.sort (values);
+		Collections.sort (values, new CityProductionBreakdownSorter ());
 		
 		// Check values were sorted correctly
 		assertEquals (4, values.size ());

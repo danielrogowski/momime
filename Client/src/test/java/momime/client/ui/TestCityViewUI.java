@@ -2,10 +2,6 @@ package momime.client.ui;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseExImpl;
@@ -22,12 +18,12 @@ import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.TextUtilsImpl;
-import momime.common.calculations.CalculateCityProductionResult;
-import momime.common.calculations.CalculateCityProductionResults;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
@@ -157,27 +153,26 @@ public final class TestCityViewUI
 		
 		final int maxCitySize = 20;
 		
-		final CalculateCityProductionResult maxCitySizeProd = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
-		maxCitySizeProd.setBaseProductionAmount (maxCitySize);
+		final CityProductionBreakdown maxCitySizeProd = new CityProductionBreakdown ();
+		maxCitySizeProd.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		maxCitySizeProd.setCappedProductionAmount (maxCitySize);
 
-		final CalculateCityProductionResult rationsProd = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		final CityProductionBreakdown rationsProd = new CityProductionBreakdown ();
+		rationsProd.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
 		rationsProd.setConsumptionAmount (4);
-		rationsProd.setBaseProductionAmount (18);
+		rationsProd.setCappedProductionAmount (18);
 		
-		final CalculateCityProductionResult goldProd = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		final CityProductionBreakdown goldProd = new CityProductionBreakdown ();
+		goldProd.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
 		goldProd.setConsumptionAmount (18);
-		goldProd.setBaseProductionAmount (4);
+		goldProd.setCappedProductionAmount (4);
 		
-		final List<CalculateCityProductionResult> productions = new ArrayList<CalculateCityProductionResult> ();
-		productions.add (maxCitySizeProd);
-		productions.add (rationsProd);
-		productions.add (goldProd);
+		final CityProductionBreakdownsEx productions = new CityProductionBreakdownsEx ();
+		productions.getProductionType ().add (maxCitySizeProd);
+		productions.getProductionType ().add (rationsProd);
+		productions.getProductionType ().add (goldProd);
 		
-		final CalculateCityProductionResults productionsContainer = mock (CalculateCityProductionResults.class);
-		when (productionsContainer.iterator ()).thenReturn (productions.iterator ());
-		when (productionsContainer.findProductionType (maxCitySizeProd.getProductionTypeID ())).thenReturn (maxCitySizeProd);
-		
-		when (calc.calculateAllCityProductions (client.getPlayers (), terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), "TR01", sd, true, db, false)).thenReturn (productionsContainer);
+		when (calc.calculateAllCityProductions (client.getPlayers (), terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), "TR01", sd, true, false, db)).thenReturn (productions);
 		
 		final CityGrowthRateBreakdown cityGrowthBreakdown = new CityGrowthRateBreakdown ();
 		cityGrowthBreakdown.setFinalTotal (70);

@@ -4068,8 +4068,8 @@ Animated summoned units cost 50% more in maintenance.</spellHelpText>
 	</spell>
 	<spell spellID="SP196">
 		<spellName>Pestilence</spellName>
-		<spellDescription>City population is reduced by 1,000 if its population exceeds a (1-10 roll) * 1000.</spellDescription>
-		<spellHelpText>Spreads a deadly plague throughout the affected city killing 1,000 population each turn if the current population exceeds a (1-10 roll) * 1000.</spellHelpText>
+		<spellDescription>City population is reduced by 1,000 if its population exceeds a (1-10 roll) x1000.</spellDescription>
+		<spellHelpText>Spreads a deadly plague throughout the affected city killing 1,000 population each turn if the current population exceeds a (1-10 roll) x1000.</spellHelpText>
 	</spell>
 	<spell spellID="SP197">
 		<spellName>Eternal Night</spellName>
@@ -4311,7 +4311,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 	</citySpellEffect>
 	<citySpellEffect citySpellEffectID="SE196">
 		<citySpellEffectName>Pestilence</citySpellEffectName>
-		<citySpellEffectHelpText>Spreads a deadly plague throughout the affected city killing 1,000 population each turn if the current population exceeds a (1-10 roll) * 1000.</citySpellEffectHelpText>
+		<citySpellEffectHelpText>Spreads a deadly plague throughout the affected city killing 1,000 population each turn if the current population exceeds a (1-10 roll) x1000.</citySpellEffectHelpText>
 	</citySpellEffect>
 	<mapSize mapSizeID="60x40">
 		<mapSizeDescription>60 x 40</mapSizeDescription>
@@ -5450,12 +5450,12 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 	</languageCategory>
 	<languageCategory languageCategoryID="CombatDamage">
 		<languageEntry languageEntryID="AttackStatistics">
-			<languageEntryText>ATTACKER_NAME making ATTACK_TYPE attack - Attack strength ATTACK_STRENGTH * ATTACKER_FIGURES figures = potential POTENTIAL_DAMAGE damage
-        * CHANCE_TO_HIT% chance to hit = average AVERAGE_DAMAGE damage - Actual damage = ACTUAL_DAMAGE</languageEntryText>
+			<languageEntryText>ATTACKER_NAME making ATTACK_TYPE attack - Attack strength ATTACK_STRENGTH x ATTACKER_FIGURES figures = potential POTENTIAL_DAMAGE damage
+        x CHANCE_TO_HIT% chance to hit = average AVERAGE_DAMAGE damage - Actual damage = ACTUAL_DAMAGE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DefenceStatistics">
 			<languageEntryText>DEFENDER_NAME taking ACTUAL_DAMAGE hits - Each of DEFENDER_FIGURES figures has defence DEFENCE_STRENGTH
-        * CHANCE_TO_DEFEND% chance to block = average AVERAGE_BLOCK hits blocked - Actual hits blocked by each figure = ACTUAL_BLOCK</languageEntryText>
+        x CHANCE_TO_DEFEND% chance to block = average AVERAGE_BLOCK hits blocked - Actual hits blocked by each figure = ACTUAL_BLOCK</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="MeleeAttack">
 			<languageEntryText>ATTACKER_NAME making Melee attack against DEFENDER_NAME with simultaneous counterattack</languageEntryText>
@@ -5475,7 +5475,7 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>Maximum population = MAXIMUM_POPULATION</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="BaseGrowthRate">
-			<languageEntryText>Base growth rate = ((MAXIMUM_POPULATION_DIV_1000 - CURRENT_POPULATION_DIV_1000 + 1) / 2 rounding up) * 10 = BASE_GROWTH_RATE people per turn</languageEntryText>
+			<languageEntryText>Base growth rate = ((MAXIMUM_POPULATION_DIV_1000 - CURRENT_POPULATION_DIV_1000 + 1) / 2 rounding up) x10 = BASE_GROWTH_RATE people per turn</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="RacialGrowthModifier">
 			<languageEntryText>Racial Growth Modifier = RACIAL_GROWTH_MODIFIER people per turn</languageEntryText>
@@ -5490,7 +5490,7 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>But this would go over maximum population, so reduced to CAPPED_GROWTH_RATE people per turn</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="DeathRate">
-			<languageEntryText>Population dying at rate of BASE_DEATH_RATE * 50 = CITY_DEATH_RATE per turn</languageEntryText>
+			<languageEntryText>Population dying at rate of BASE_DEATH_RATE x50 = CITY_DEATH_RATE per turn</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AtMaximumSize">
 			<languageEntryText>City is at maximum size</languageEntryText>
@@ -5500,80 +5500,47 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>PRODUCTION_TYPE production in CITY_SIZE_AND_NAME</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="ProductionMainHeading">
+			<languageEntryText>PRODUCTION</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromSinglePopulation">
 			<languageEntryText>TASK_NAME_SINGULAR producing PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromMultiplePopulation">
 			<languageEntryText>NUMBER_DOING_TASK TASK_NAME_PLURAL each producing PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="ProductionFromBuildingWithoutReligiousRetortBonus">
-			<languageEntryText>BUILDING_NAME produces PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+		<languageEntry languageEntryID="GoldFromTaxes">
+			<languageEntryText>NUMBER_DOING_TASK population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="ProductionFromBuildingWithReligiousRetortBonus">
-			<languageEntryText>BUILDING_NAME produces UNMODIFIED_PRODUCTION_AMOUNT PRODUCTION_TYPE +PERCENTAGE_BONUS% bonus from retorts = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+		<languageEntry languageEntryID="ProductionFromSingleTile">
+			<languageEntryText>TILE_TYPE tile producing PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="ProductionFromFortressPicks">
-			<languageEntryText>BUILDING_NAME produces PRODUCTION_PER_PICK PRODUCTION_TYPE for each PICK_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+		<languageEntry languageEntryID="ProductionFromMultipleTiles">
+			<languageEntryText>TILE_COUNT TILE_TYPE tiles each producing PRODUCTION_PER_TILE PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="ProductionFromFortressPlane">
-			<languageEntryText>BUILDING_NAME being on PLANE_NAME produces PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+		<languageEntry languageEntryID="ProductionFromSingleMapFeature">
+			<languageEntryText>MAP_FEATURE production PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="BuildingConsumption">
-			<languageEntryText>BUILDING_NAME has maintenance of CONSUMPTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="PercentageBonusFromBuilding">
-			<languageEntryText>BUILDING_NAME gives PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="ProductionFromMapFeature">
-			<languageEntryText>UNMODIFIED_PRODUCTION_AMOUNT PRODUCTION_TYPE from MAP_FEATURE</languageEntryText>
+		<languageEntry languageEntryID="ProductionFromMultipleMapFeatures">
+			<languageEntryText>MAP_FEATURE_COUNT MAP_FEATURE each producing PRODUCTION_PER_MAP_FEATURE PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromMapFeatureRaceBonus">
-			<languageEntryText>* MINERAL_BONUS_FROM_RACE due to Race = MAP_FEATURE_PRODUCTION_AMOUNT_AFTER_RACE_BONUS PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>xMINERAL_BONUS_FROM_RACE due to Race = MAP_FEATURE_PRODUCTION_AMOUNT_AFTER_RACE_BONUS PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromMapFeatureBuildingBonus">
 			<languageEntryText>+PERCENTAGE_BONUS% bonus from buildings = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="MaxCitySizeCapped">
-			<languageEntryText>However maximum city size is limited to CAP_VALUE</languageEntryText>
+		<languageEntry languageEntryID="ProductionFromBuildingWithoutReligiousRetortBonus">
+			<languageEntryText>BUILDING_NAME produces PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="TerrainFood">
-			<languageEntryText>PRODUCTION_AMOUNT harvested from surrounding terrain</languageEntryText>
+		<languageEntry languageEntryID="ProductionFromBuildingWithReligiousRetortBonus">
+			<languageEntryText>BUILDING_NAME produces UNMODIFIED_PRODUCTION_AMOUNT PRODUCTION_TYPE +PERCENTAGE_BONUS% bonus from RETORT_LIST = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="TerrainProductionBonus">
-			<languageEntryText>PERCENTAGE_VALUE% bonus from surrounding terrain</languageEntryText>
+		<languageEntry languageEntryID="ProductionFromFortressPicks">
+			<languageEntryText>BUILDING_NAME produces PRODUCTION_PER_PICK PRODUCTION_TYPE for each PICK_TYPE xPICK_COUNT= PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="GoldTradeBonus">
-			<languageEntryText>PERCENTAGE_VALUE% bonus from river/ocean trade routes</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="GoldTradeBonusCapped">
-			<languageEntryText>However trade bonus is capped at CURRENT_POPULATION_DIV_1000 * 3% = CAP_VALUE%</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="GoldFromTaxes">
-			<languageEntryText>NUMBER_DOING_TASK population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="RationsAteByPopulation">
-			<languageEntryText>NUMBER_DOING_TASK population each eating 1 PRODUCTION_TYPE = CONSUMPTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="ProductionMainHeading">
-			<languageEntryText>PRODUCTION</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="ProductionPercentageBonusHeading">
-			<languageEntryText>Percentage Bonuses</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="ProductionPercentageBonusTotal">
-			<languageEntryText>PERCENTAGE_BONUS% of UNMODIFIED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS for a total of PRODUCTION_AMOUNT</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="ConsumptionMainHeading">
-			<languageEntryText>CONSUMPTION</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="NetEffectBreakingEven">
-			<languageEntryText>Breaking even</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="NetEffectGain">
-			<languageEntryText>Net gain of PRODUCTION_AMOUNT - CONSUMPTION_AMOUNT = NET_GAIN</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="NetEffectLoss">
-			<languageEntryText>Net loss of CONSUMPTION_AMOUNT - PRODUCTION_AMOUNT = NET_LOSS</languageEntryText>
+		<languageEntry languageEntryID="ProductionFromFortressPlane">
+			<languageEntryText>BUILDING_NAME being on PLANE_NAME produces PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="RoundingTotalBefore">
 			<languageEntryText>Total PRODUCTION_TYPE = UNMODIFIED_PRODUCTION_AMOUNT</languageEntryText>
@@ -5583,6 +5550,57 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="RoundingDown">
 			<languageEntryText>Rounded down = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ProductionPercentageBonusHeading">
+			<languageEntryText>Percentage Bonuses</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PercentageBonusFromSingleTile">
+			<languageEntryText>TILE_TYPE gives PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PercentageBonusFromMultipleTiles">
+			<languageEntryText>TILE_COUNT TILE_TYPE each gives PERCENTAGE_PER_TILE% PRODUCTION_TYPE bonus = PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PercentageBonusFromBuilding">
+			<languageEntryText>BUILDING_NAME gives PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="GoldTradeBonusFromTileType">
+			<languageEntryText>PERCENTAGE_VALUE% gold trade bonus from river/ocean</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="GoldTradeBonusFromRoads">
+			<languageEntryText>PERCENTAGE_VALUE% gold trade bonus from direct road connections to other cities</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="GoldTradeBonusFromRace">
+			<languageEntryText>PERCENTAGE_VALUE% gold trade bonus from race</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="GoldTradeBonusUncapped">
+			<languageEntryText>Total gold trade bonus = PERCENTAGE_VALUE%</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="GoldTradeBonusCapped">
+			<languageEntryText>However trade bonus is capped at CURRENT_POPULATION_DIV_1000 x 3% = CAP_VALUE%</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ProductionPercentageBonusTotal">
+			<languageEntryText>PERCENTAGE_BONUS% of UNMODIFIED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS for a total of PRODUCTION_AMOUNT</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ProductionCapped">
+			<languageEntryText>However value is capped at CAP_VALUE</languageEntryText>
+		</languageEntry>		
+		<languageEntry languageEntryID="ConsumptionMainHeading">
+			<languageEntryText>CONSUMPTION</languageEntryText>
+		</languageEntry>		
+		<languageEntry languageEntryID="RationsAteByPopulation">
+			<languageEntryText>NUMBER_DOING_TASK population each eating CONSUMPTION_PER_PERSON PRODUCTION_TYPE = CONSUMPTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="BuildingConsumption">
+			<languageEntryText>BUILDING_NAME has maintenance of CONSUMPTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+		</languageEntry>		
+		<languageEntry languageEntryID="NetEffectBreakingEven">
+			<languageEntryText>Breaking even</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NetEffectGain">
+			<languageEntryText>Net gain of PRODUCTION_AMOUNT - CONSUMPTION_AMOUNT = NET_GAIN</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NetEffectLoss">
+			<languageEntryText>Net loss of CONSUMPTION_AMOUNT - PRODUCTION_AMOUNT = NET_LOSS</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="UnrestCalculation">
@@ -5599,7 +5617,7 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>TAX_PERCENTAGE% + RACE_PERCENTAGE% = TOTAL_PERCENTAGE%</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="BaseValue">
-			<languageEntryText>CURRENT_POPULATION_DIV_1000 population * TOTAL_PERCENTAGE% = BASE_UNREST rebels</languageEntryText>
+			<languageEntryText>CURRENT_POPULATION_DIV_1000 population x TOTAL_PERCENTAGE% = BASE_UNREST rebels</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="RacialLiteral">
 			<languageEntryText>RACE_LITERAL from capital and city races</languageEntryText>
@@ -5608,7 +5626,7 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>BUILDING_REDUCTION from BUILDING_NAME</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Retort">
-			<languageEntryText>RELIGIOUS_BUILDING_REDUCTION from religious buildings * RETORT_PERCENTAGE% bonus from RETORT_LIST = RETORT_VALUE</languageEntryText>
+			<languageEntryText>RELIGIOUS_BUILDING_REDUCTION from religious buildings x RETORT_PERCENTAGE% bonus from RETORT_LIST = RETORT_VALUE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="UnitReduction">
 			<languageEntryText>UNIT_REDUCTION from UNIT_COUNT non-summoned units stationed in city</languageEntryText>

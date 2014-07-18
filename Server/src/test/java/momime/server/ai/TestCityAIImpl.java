@@ -20,6 +20,7 @@ import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.utils.MemoryBuildingUtilsImpl;
+import momime.common.utils.PlayerPickUtils;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomServerCityCalculationsImpl;
 import momime.server.database.ServerDatabaseEx;
@@ -49,7 +50,6 @@ public final class TestCityAIImpl
 
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sd.getMapSize ());
-		final int totalFoodBonusFromBuildings = new MomServerCityCalculationsImpl ().calculateTotalFoodBonusFromBuildings (db);
 
 		// Fill map with ocean, then we can't build a city anywhere
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
@@ -61,18 +61,22 @@ public final class TestCityAIImpl
 
 					cell.setTerrainData (terrain);
 				}
+		
+		// Player picks
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 
 		// Set up test object
 		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
 		
 		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (coordinateSystemUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
 		
 		final CityAIImpl ai = new CityAIImpl ();
 		ai.setCityCalculations (calc);
 		ai.setCoordinateSystemUtils (coordinateSystemUtils);
 		
-		final MapCoordinates3DEx ocean = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final MapCoordinates3DEx ocean = ai.chooseCityLocation (map, 0, sd, db);
 		assertNull (ocean);
 
 		// Fill map with tundra, then we can build a city anywhere but none of them are very good
@@ -81,7 +85,7 @@ public final class TestCityAIImpl
 				for (final MemoryGridCell cell : row.getCell ())
 					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
 
-		final MapCoordinates3DEx tundra = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final MapCoordinates3DEx tundra = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (0, tundra.getX ());
 		assertEquals (0, tundra.getY ());
 		assertEquals (0, tundra.getZ ());
@@ -96,7 +100,7 @@ public final class TestCityAIImpl
 			for (final MemoryGridCell cell : row.getCell ())
 				cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
 
-		final MapCoordinates3DEx grass = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final MapCoordinates3DEx grass = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (22, grass.getX ());
 		assertEquals (12, grass.getY ());
 		assertEquals (0, grass.getZ ());
@@ -104,7 +108,7 @@ public final class TestCityAIImpl
 		// Putting some gems there is great
 		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF01");
 
-		final MapCoordinates3DEx gems = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final MapCoordinates3DEx gems = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (22, gems.getX ());
 		assertEquals (12, gems.getY ());
 		assertEquals (0, gems.getZ ());
@@ -113,7 +117,7 @@ public final class TestCityAIImpl
 		// Note there's no longer a spot where can include all 3 grass tiles, so it picks the first coordinates that it encounters that includes two of the grass tiles
 		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF13");
 
-		final MapCoordinates3DEx lair = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final MapCoordinates3DEx lair = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (20, lair.getX ());
 		assertEquals (11, lair.getY ());
 		assertEquals (0, lair.getZ ());
@@ -122,7 +126,7 @@ public final class TestCityAIImpl
 		// But we don't get the 20% gold bonus from it unless we move the city to that location, so this proves that the gold bonus is taken into account
 		map.getPlane ().get (0).getRow ().get (11).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER);
 
-		final MapCoordinates3DEx river = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final MapCoordinates3DEx river = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (21, river.getX ());
 		assertEquals (11, river.getY ());
 		assertEquals (0, river.getZ ());
@@ -136,7 +140,7 @@ public final class TestCityAIImpl
 		map.getPlane ().get (0).getRow ().get (14).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 		map.getPlane ().get (0).getRow ().get (13).getCell ().get (23).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 
-		final MapCoordinates3DEx mountain = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final MapCoordinates3DEx mountain = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (21, mountain.getX ());
 		assertEquals (12, mountain.getY ());
 		assertEquals (0, mountain.getZ ());
@@ -145,7 +149,7 @@ public final class TestCityAIImpl
 		// the 25% bonus from the mountains rather than the 20% + 4 from the river and iron ore
 		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF04");
 
-		final MapCoordinates3DEx ironOre = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final MapCoordinates3DEx ironOre = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (21, ironOre.getX ());
 		assertEquals (12, ironOre.getY ());
 		assertEquals (0, ironOre.getZ ());
@@ -154,7 +158,7 @@ public final class TestCityAIImpl
 		// back to the 20% + 6 from the river and coal rather than the 25% from the mountains
 		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF05");
 
-		final MapCoordinates3DEx coal = ai.chooseCityLocation (map, 0, sd, totalFoodBonusFromBuildings, db);
+		final MapCoordinates3DEx coal = ai.chooseCityLocation (map, 0, sd, db);
 		assertEquals (21, coal.getX ());
 		assertEquals (11, coal.getY ());
 		assertEquals (0, coal.getZ ());

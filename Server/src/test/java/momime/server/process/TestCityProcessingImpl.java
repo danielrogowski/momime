@@ -13,8 +13,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.calculations.CalculateCityProductionResult;
-import momime.common.calculations.CalculateCityProductionResultsImplementation;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -23,6 +22,7 @@ import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.v0_9_5.TaxRate;
 import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.servertoclient.v0_9_5.PendingSaleMessage;
 import momime.common.messages.servertoclient.v0_9_5.TaxRateChangedMessage;
@@ -227,10 +227,6 @@ public final class TestCityProcessingImpl
 		players.add (raidersPlayer);
 		players.add (monstersPlayer);
 		
-		// Total food bonus from buildings = 5 (+2 from granary, +3 from farmers' market)
-		final MomServerCityCalculations serverCityCalc = mock (MomServerCityCalculations.class);
-		when (serverCityCalc.calculateTotalFoodBonusFromBuildings (db)).thenReturn (5);
-		
 		// Human player chose Myrran retort; AI player did not
 		final PlayerPickServerUtils playerPickServerUtils = mock (PlayerPickServerUtils.class);
 		when (playerPickServerUtils.startingPlaneForWizard (humanPpk.getPick (), db)).thenReturn (1);
@@ -256,8 +252,8 @@ public final class TestCityProcessingImpl
 		final MapCoordinates3DEx raidersArcanusLocation = new MapCoordinates3DEx (7, 27, 0);
 		
 		final CityAI cityAI = mock (CityAI.class);
-		when (cityAI.chooseCityLocation (trueTerrain, 1, sd, 5, db)).thenReturn (humanLocation, raidersMyrrorLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, 0, sd, 5, db)).thenReturn (aiLocation, raidersArcanusLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 1, sd, db)).thenReturn (humanLocation, raidersMyrrorLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 0, sd, db)).thenReturn (aiLocation, raidersArcanusLocation);
 		
 		// Race for each starter city - set these ALL to be the same race; then can test the % choice for this
 		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();
@@ -294,6 +290,7 @@ public final class TestCityProcessingImpl
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final MomServerCityCalculations serverCityCalc = mock (MomServerCityCalculations.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setServerCityCalculations (serverCityCalc);
@@ -538,32 +535,38 @@ public final class TestCityProcessingImpl
 		// City production
 		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
 		
-		final CalculateCityProductionResult humanCityMaxSizeContainer = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
-		humanCityMaxSizeContainer.setBaseProductionAmount (humanCityMaxSize);
-		final CalculateCityProductionResult humanProduction = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
-		humanProduction.setBaseProductionAmount (150);
-		final CalculateCityProductionResultsImplementation humanCityProductions = new CalculateCityProductionResultsImplementation ();
-		humanCityProductions.getResults ().add (humanCityMaxSizeContainer);
-		humanCityProductions.getResults ().add (humanProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), humanLocation, "TR01", sd, true, db, false)).thenReturn (humanCityProductions);
+		final CityProductionBreakdown humanCityMaxSizeContainer = new CityProductionBreakdown ();
+		humanCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		humanCityMaxSizeContainer.setCappedProductionAmount (humanCityMaxSize);
+		final CityProductionBreakdown humanProduction = new CityProductionBreakdown ();
+		humanProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		humanProduction.setCappedProductionAmount (150);
+		final CityProductionBreakdownsEx humanCityProductions = new CityProductionBreakdownsEx ();
+		humanCityProductions.getProductionType ().add (humanCityMaxSizeContainer);
+		humanCityProductions.getProductionType ().add (humanProduction);
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), humanLocation, "TR01", sd, true, false, db)).thenReturn (humanCityProductions);
 
-		final CalculateCityProductionResult aiCityMaxSizeContainer = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
-		aiCityMaxSizeContainer.setBaseProductionAmount (aiCityMaxSize);
-		final CalculateCityProductionResult aiProduction = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
-		aiProduction.setBaseProductionAmount (650);
-		final CalculateCityProductionResultsImplementation aiCityProductions = new CalculateCityProductionResultsImplementation ();
-		aiCityProductions.getResults ().add (aiCityMaxSizeContainer);
-		aiCityProductions.getResults ().add (aiProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), aiLocation, "TR02", sd, true, db, false)).thenReturn (aiCityProductions);
+		final CityProductionBreakdown aiCityMaxSizeContainer = new CityProductionBreakdown ();
+		aiCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		aiCityMaxSizeContainer.setCappedProductionAmount (aiCityMaxSize);
+		final CityProductionBreakdown aiProduction = new CityProductionBreakdown ();
+		aiProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		aiProduction.setCappedProductionAmount (650);
+		final CityProductionBreakdownsEx aiCityProductions = new CityProductionBreakdownsEx ();
+		aiCityProductions.getProductionType ().add (aiCityMaxSizeContainer);
+		aiCityProductions.getProductionType ().add (aiProduction);
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), aiLocation, "TR02", sd, true, false, db)).thenReturn (aiCityProductions);
 		
-		final CalculateCityProductionResult raidersCityMaxSizeContainer = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
-		raidersCityMaxSizeContainer.setBaseProductionAmount (raidersCityMaxSize);
-		final CalculateCityProductionResult raidersProduction = new CalculateCityProductionResult (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
-		raidersProduction.setBaseProductionAmount (60);
-		final CalculateCityProductionResultsImplementation raidersCityProductions = new CalculateCityProductionResultsImplementation ();
-		raidersCityProductions.getResults ().add (raidersCityMaxSizeContainer);
-		raidersCityProductions.getResults ().add (raidersProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), raidersLocation, "TR03", sd, true, db, false)).thenReturn (raidersCityProductions);
+		final CityProductionBreakdown raidersCityMaxSizeContainer = new CityProductionBreakdown ();
+		raidersCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		raidersCityMaxSizeContainer.setCappedProductionAmount (raidersCityMaxSize);
+		final CityProductionBreakdown raidersProduction = new CityProductionBreakdown ();
+		raidersProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		raidersProduction.setCappedProductionAmount (60);
+		final CityProductionBreakdownsEx raidersCityProductions = new CityProductionBreakdownsEx ();
+		raidersCityProductions.getProductionType ().add (raidersCityMaxSizeContainer);
+		raidersCityProductions.getProductionType ().add (raidersProduction);
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), raidersLocation, "TR03", sd, true, false, db)).thenReturn (raidersCityProductions);
 		
 		// City growth rate
 		final CityGrowthRateBreakdown humanGrowthRate = new CityGrowthRateBreakdown ();

@@ -359,6 +359,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateModifier" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Modifier" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="mineralBonusMultiplier" type="momimecommon:mineralBonusMultiplier" nxe:label="Mineral Bonus Multipler" nxe:gridwidth="130" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="goldTradeBonus" type="momimenewgame:percentage" nxe:label="Gold Trade Bonus" nxe:gridwidth="130" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="racePopulationTask" type="momimecommon:racePopulationTask">
 				<xsd:key name="racePopulationTaskProductionPK">
 					<xsd:selector xpath="racePopulationTaskProduction" />
@@ -1374,6 +1375,10 @@ However we still need to record negative skill modification values, e.g. True Li
 	
 	<xsd:simpleType name="knownServerID">
 		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="pickTypeCount">
+		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 
 </xsd:schema>

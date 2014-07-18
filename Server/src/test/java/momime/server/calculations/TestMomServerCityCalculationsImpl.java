@@ -3,6 +3,8 @@ package momime.server.calculations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +12,6 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
@@ -18,6 +19,7 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
@@ -37,37 +39,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
  */
 public final class TestMomServerCityCalculationsImpl
 {
-	/**
-	 * Tests the calculateTotalFoodBonusFromBuildings method with the default XML database
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testCalculateTotalFoodBonusFromBuildings_Valid () throws Exception
-	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
-
-		assertEquals (5, calc.calculateTotalFoodBonusFromBuildings (db));
-	}
-
-	/**
-	 * Tests the calculateTotalFoodBonusFromBuildings method with an edited XML database in order to cause an error
-	 * @throws Exception If there is a problem
-	 */
-	@Test(expected=MomException.class)
-	public final void testCalculateTotalFoodBonusFromBuildings_Invalid () throws Exception
-	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
-		// Change production to be an odd value, which is invalid
-		for (final BuildingPopulationProductionModifier mod : db.findBuilding ("BL30", "testCalculateTotalFoodBonusFromBuildings_Invalid").getBuildingPopulationProductionModifier ())
-			if (mod.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD))
-				mod.setDoubleAmount (mod.getDoubleAmount () + 1);
-
-		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
-		calc.calculateTotalFoodBonusFromBuildings (db);
-	}
-
 	/**
 	 * Tests the calculateDoubleFarmingRate method
 	 * @throws Exception If there is a problem
@@ -138,7 +109,10 @@ public final class TestMomServerCityCalculationsImpl
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sd.getMapSize ());
 
+		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -156,43 +130,37 @@ public final class TestMomServerCityCalculationsImpl
 		cityData.setCityRaceID ("RC05");		// High men
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
-
 		// Set up object to test
 		final MomCityCalculationsImpl cityCalc = new MomCityCalculationsImpl ();
 		cityCalc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		cityCalc.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
 		calc.setCityCalculations (cityCalc);
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		// Starter size city - with no wild game and no granary, we need 2 farmers to feed the 4 population
 		cityData.setCityPopulation (4900);
-		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db);
+		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS02", cityData.getCitySizeID ());
 		assertEquals (2, cityData.getMinimumFarmers ().intValue ());
 
 		// If we add a granary, that feeds 2 of the population so we need 1 less farmer
-		final MemoryBuilding granary = new MemoryBuilding ();
-		granary.setBuildingID ("BL29");
-		granary.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (2, 2, 0), "BL29")).thenReturn (true);
 
-		buildings.add (granary);
-
-		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db);
+		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS02", cityData.getCitySizeID ());
 		assertEquals (1, cityData.getMinimumFarmers ().intValue ());
 
 		// Make the city bigger - now need 3 farmers to feed the 7 population (1 is fed by the granary)
 		cityData.setCityPopulation (7500);
-		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db);
+		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS03", cityData.getCitySizeID ());
 		assertEquals (3, cityData.getMinimumFarmers ().intValue ());
 
 		// Halfling farmers produce more rations - so now we only need 5/3 = 2 farmers
 		cityData.setCityRaceID ("RC03");
-		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, cityLocation, sd, db);
+		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS03", cityData.getCitySizeID ());
 		assertEquals (2, cityData.getMinimumFarmers ().intValue ());
 	}

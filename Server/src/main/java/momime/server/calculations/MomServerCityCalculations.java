@@ -22,20 +22,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public interface MomServerCityCalculations
 {
 	/**
-	 * Could do this inside chooseCityLocation, however declaring it separately avoids having to repeat this over
-	 * and over when adding multiple new cities at the start of the game
-	 *
-	 * Currently this doesn't take any race restrictions into account (i.e. if a certain race can't build one of the
-	 * buildings that gives a food bonus, or a pre-requisite of it) or similarly tile type restrictions
-	 *
-	 * @param db Lookup lists built over the XML database
-	 * @return Amount of free food we'll get from building all buildings, with the default server database, this gives 5 = 2 from Granary + 3 from Farmers' Market
-	 * @throws MomException If the food production values from the XML database aren't multiples of 2
-	 */
-	public int calculateTotalFoodBonusFromBuildings (final ServerDatabaseEx db)
-		throws MomException;
-
-	/**
 	 * @param map True terrain
 	 * @param buildings True list of buildings
 	 * @param cityLocation Location of the city to calculate for

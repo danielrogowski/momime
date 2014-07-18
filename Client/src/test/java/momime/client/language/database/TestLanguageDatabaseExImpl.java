@@ -20,6 +20,7 @@ import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
+import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
 
@@ -91,6 +92,27 @@ public final class TestLanguageDatabaseExImpl
 
 		assertEquals ("MFDesc02", lang.findMapFeature ("MF02").getMapFeatureDescription ());
 		assertNull ("MF04", lang.findMapFeature ("MF04"));
+	}
+
+	/**
+	 * Tests the findTileType method
+	 */
+	@Test
+	public final void findTileType ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final TileType newTileType = new TileType ();
+			newTileType.setTileTypeID ("TT0" + n);
+			newTileType.setTileTypeDescription ("TTDesc0" + n);
+			lang.getTileType ().add (newTileType);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("TTDesc02", lang.findTileType ("TT02").getTileTypeDescription ());
+		assertNull ("TT04", lang.findTileType ("TT04"));
 	}
 
 	/**

@@ -6,12 +6,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.CalculateCityProductionResult;
-import momime.common.calculations.CalculateCityProductionResults;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.TaxRate;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.servertoclient.v0_9_5.PendingSaleMessage;
 import momime.common.messages.servertoclient.v0_9_5.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
@@ -121,8 +121,6 @@ public final class CityProcessingImpl implements CityProcessing
 	{
 		log.trace ("Entering createStartingCities");
 
-		final int totalFoodBonusFromBuildings = getServerCityCalculations ().calculateTotalFoodBonusFromBuildings (db);
-
 		// Allocate a race to each continent of land for raider cities
 		final MapArea3D<String> continentalRace = getOverlandMapServerUtils ().decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getMapSize (), db);
 
@@ -152,7 +150,7 @@ public final class CityProcessingImpl implements CityProcessing
 					plane = db.getPlane ().get (getRandomUtils ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
-				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, totalFoodBonusFromBuildings, db);
+				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, db);
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 
@@ -289,8 +287,8 @@ public final class CityProcessingImpl implements CityProcessing
 
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
-						final CalculateCityProductionResults cityProductions = getCityCalculations ().calculateAllCityProductions
-							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db, false);
+						final CityProductionBreakdownsEx cityProductions = getCityCalculations ().calculateAllCityProductions
+							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, false, db);
 
 						// Use calculated values to determine construction rate
 						if (cityData.getCurrentlyConstructingBuildingOrUnitID () != null)
@@ -321,13 +319,13 @@ public final class CityProcessingImpl implements CityProcessing
 
 							if (productionCost != null)
 							{
-								final CalculateCityProductionResult productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+								final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
 								if (productionAmount != null)
 								{
 									if (mc.getProductionSoFar () == null)
-										mc.setProductionSoFar (productionAmount.getModifiedProductionAmount ());
+										mc.setProductionSoFar (productionAmount.getCappedProductionAmount ());
 									else
-										mc.setProductionSoFar (mc.getProductionSoFar () + productionAmount.getModifiedProductionAmount ());
+										mc.setProductionSoFar (mc.getProductionSoFar () + productionAmount.getCappedProductionAmount ());
 
 									// Is it finished?
 									if (mc.getProductionSoFar () > productionCost)
@@ -396,12 +394,12 @@ public final class CityProcessingImpl implements CityProcessing
 						}
 
 						// Use calculated values to determine population growth
-						final CalculateCityProductionResult productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+						final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
 						final int maxCitySize;
 						if (productionAmount == null)
 							maxCitySize = 0;
 						else
-							maxCitySize = productionAmount.getModifiedProductionAmount ();
+							maxCitySize = productionAmount.getCappedProductionAmount ();
 
 						final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate
 							(gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, maxCitySize, db).getFinalTotal ();

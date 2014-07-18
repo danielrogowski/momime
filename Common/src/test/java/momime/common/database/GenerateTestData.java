@@ -4,11 +4,13 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.newgame.v0_9_5.CastingReductionCombination;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.newgame.v0_9_5.SpellSettingData;
 import momime.common.database.newgame.v0_9_5.SwitchResearch;
 import momime.common.database.v0_9_5.Building;
@@ -61,8 +63,6 @@ import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MomCombatTile;
-
-import org.mockito.Mockito;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
@@ -1299,7 +1299,7 @@ public final class GenerateTestData
 		for (final ProductionType productionType : productionTypes)
 			when (db.findProductionType (eq (productionType.getProductionTypeID ()), anyString ())).thenReturn (productionType);
 
-		Mockito.doReturn (pickTypes).when (db).getPickType ();
+		doReturn (pickTypes).when (db).getPickType ();
 		for (final PickType pickType : pickTypes)
 			when (db.findPickType (eq (pickType.getPickTypeID ()), anyString ())).thenReturn (pickType);
 
@@ -1315,7 +1315,7 @@ public final class GenerateTestData
 		for (final Unit unit : units)
 			when (db.findUnit (eq (unit.getUnitID ()), anyString ())).thenReturn (unit);
 
-		Mockito.doReturn (unitSkills).when (db).getUnitSkill ();
+		doReturn (unitSkills).when (db).getUnitSkill ();
 		for (final UnitSkill unitSkill : unitSkills)
 			when (db.findUnitSkill (eq (unitSkill.getUnitSkillID ()), anyString ())).thenReturn (unitSkill);
 
@@ -1331,10 +1331,11 @@ public final class GenerateTestData
 		for (final TaxRate taxRate : taxRates)
 			when (db.findTaxRate (eq (taxRate.getTaxRateID ()), anyString ())).thenReturn (taxRate);
 
+		doReturn (buildings).when (db).getBuilding ();
 		for (final Building building : buildings)
 			when (db.findBuilding (eq (building.getBuildingID ()), anyString ())).thenReturn (building);
 
-		Mockito.doReturn (spells).when (db).getSpell ();
+		doReturn (spells).when (db).getSpell ();
 		for (final Spell spell : spells)
 			when (db.findSpell (eq (spell.getSpellID ()), anyString ())).thenReturn (spell);
 
@@ -1512,6 +1513,24 @@ public final class GenerateTestData
 		return sys;
 	}
 
+	/**
+	 * @return Overland map coordinate system that can be included into session description
+	 */
+	public final static MapSizeData createMapSizeData ()
+	{
+		final MapSizeData sys = new MapSizeData ();
+		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
+		sys.setWidth (60);
+		sys.setHeight (40);
+		sys.setDepth (2);
+		sys.setWrapsLeftToRight (true);
+		
+		sys.setCitySeparation (3);
+		sys.setContinentalRaceChance (75);
+		
+		return sys;
+	}
+	
 	/**
 	 * @param sys Overland map coordinate system
 	 * @return Map area prepopulated with empty cells

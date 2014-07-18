@@ -7,7 +7,6 @@ import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_5.BuildingPrerequisite;
 import momime.common.database.v0_9_5.RaceCannotBuild;
 import momime.common.database.v0_9_5.RacePopulationTask;
@@ -46,40 +45,6 @@ public final class MomServerCityCalculationsImpl implements MomServerCityCalcula
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
 	
-	/**
-	 * Could do this inside chooseCityLocation, however declaring it separately avoids having to repeat this over
-	 * and over when adding multiple new cities at the start of the game
-	 *
-	 * Currently this doesn't take any race restrictions into account (i.e. if a certain race can't build one of the
-	 * buildings that gives a food bonus, or a pre-requisite of it) or similarly tile type restrictions
-	 *
-	 * @param db Lookup lists built over the XML database
-	 * @return Amount of free food we'll get from building all buildings, with the default server database, this gives 5 = 2 from Granary + 3 from Farmers' Market
-	 * @throws MomException If the food production values from the XML database aren't multiples of 2
-	 */
-	@Override
-	public final int calculateTotalFoodBonusFromBuildings (final ServerDatabaseEx db)
-		throws MomException
-	{
-		log.trace ("Entering calculateTotalFoodBonusFromBuildings");
-		int doubleTotalFood = 0;
-
-		for (final Building thisBuilding : db.getBuilding ())
-			for (final BuildingPopulationProductionModifier productionModifier : thisBuilding.getBuildingPopulationProductionModifier ())
-
-				// Only pick out production modifiers which come from the building by itself with no effect from the number of population
-				if ((productionModifier.getPopulationTaskID () == null) && (productionModifier.getProductionTypeID ().equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD)))
-					doubleTotalFood = doubleTotalFood + productionModifier.getDoubleAmount ();
-
-		if (doubleTotalFood % 2 != 0)
-			throw new MomException ("CalculateTotalFoodBonusFromBuildings: Expect answer to be an exact multiple of 2, but got " + doubleTotalFood);
-
-		final int totalFood = doubleTotalFood / 2;
-
-		log.trace ("Exiting calculateTotalFoodBonusFromBuildings = " + totalFood);
-		return totalFood;
-	}
-
 	/**
 	 * @param map True terrain
 	 * @param buildings True list of buildings

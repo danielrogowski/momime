@@ -11,6 +11,7 @@ import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.v0_9_5.TileType;
 
 /**
  * Describes operations that we need to support over the language XML file
@@ -34,6 +35,12 @@ public interface LanguageDatabaseEx
 	 * @return Map feature descriptions object; or null if not found
 	 */
 	public MapFeature findMapFeature (final String mapFeatureID);
+
+	/**
+	 * @param tileTypeID Tile type ID to search for
+	 * @return Tile type descriptions object; or null if not found
+	 */
+	public TileType findTileType (final String tileTypeID);
 
 	/**
 	 * @param pickTypeID Pick type ID to search for

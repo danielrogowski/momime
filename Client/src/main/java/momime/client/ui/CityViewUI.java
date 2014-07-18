@@ -35,11 +35,11 @@ import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.TextUtils;
-import momime.common.calculations.CalculateCityProductionResult;
-import momime.common.calculations.CalculateCityProductionResults;
+import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.internal.CityGrowthRateBreakdown;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
@@ -200,10 +200,10 @@ public final class CityViewUI extends MomClientAbstractUI
 			{
 				try
 				{
-					final CalculateCityProductionResult breakdown = getCityCalculations ().calculateAllCityProductions
+					final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
 						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (), true).findProductionType
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
 							(CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
 					
 					final ProductionType productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
@@ -482,13 +482,13 @@ public final class CityViewUI extends MomClientAbstractUI
 			try
 			{
 				// Max city size
-				final CalculateCityProductionResults productions = getCityCalculations ().calculateAllCityProductions
+				final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions
 					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (), false);
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ());
 			
-				final CalculateCityProductionResult maxCitySizeProd = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
-				final int maxCitySize = (maxCitySizeProd == null) ? 0 : maxCitySizeProd.getModifiedProductionAmount ();
+				final CityProductionBreakdown maxCitySizeProd = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+				final int maxCitySize = (maxCitySizeProd == null) ? 0 : maxCitySizeProd.getCappedProductionAmount ();
 			
 				maximumPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "MaxCitySize").replaceAll ("MAX_CITY_SIZE",
 					getTextUtils ().intToStrCommas (maxCitySize * 1000)));
@@ -636,10 +636,10 @@ public final class CityViewUI extends MomClientAbstractUI
 		
 		// Display all productions which have graphics, i.e. Rations / Production / Gold / Power / Research
 		int ypos = 0;
-		for (final CalculateCityProductionResult thisProduction : getCityCalculations ().calculateAllCityProductions
+		for (final CityProductionBreakdown thisProduction : getCityCalculations ().calculateAllCityProductions
 			(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (), false))
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).getProductionType ())
 		{
 			final ProductionTypeEx productionTypeImages = getGraphicsDB ().findProductionType (thisProduction.getProductionTypeID ());
 			
@@ -654,7 +654,7 @@ public final class CityViewUI extends MomClientAbstractUI
 					addProductionTypeButtonImages (productionTypeImages, consumptionImages, thisProduction.getConsumptionAmount ());
 
 				addProductionTypeButtonImages (productionTypeImages, productionImages,
-					thisProduction.getModifiedProductionAmount () - thisProduction.getConsumptionAmount ());
+					thisProduction.getCappedProductionAmount () - thisProduction.getConsumptionAmount ());
 				
 				// Now we can figure out how big to make the button
 				if ((consumptionImages.size () > 0) || (productionImages.size () > 0))
@@ -719,10 +719,10 @@ public final class CityViewUI extends MomClientAbstractUI
 						{
 							try
 							{
-								final CalculateCityProductionResult breakdown = getCityCalculations ().calculateAllCityProductions
+								final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
 									(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (), true).findProductionType
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
 										(thisProduction.getProductionTypeID ());
 								
 								final ProductionType productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());

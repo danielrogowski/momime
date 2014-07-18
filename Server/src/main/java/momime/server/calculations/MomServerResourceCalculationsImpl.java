@@ -8,7 +8,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.CalculateCityProductionResult;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -16,6 +15,7 @@ import momime.common.database.newgame.v0_9_5.SpellSettingData;
 import momime.common.database.v0_9_5.EnforceProductionID;
 import momime.common.database.v0_9_5.SpellUpkeep;
 import momime.common.database.v0_9_5.UnitUpkeep;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateRemainingResearchCostMessage;
@@ -166,11 +166,11 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 						// Calculate all productions from this city
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
-						for (final CalculateCityProductionResult cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
-							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db, false))
+						for (final CityProductionBreakdown cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
+							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, false, db).getProductionType ())
 
 							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (),
-								cityProduction.getModifiedProductionAmount () - cityProduction.getConsumptionAmount ());
+								cityProduction.getCappedProductionAmount () - cityProduction.getConsumptionAmount ());
 					}
 				}
 

@@ -30,14 +30,15 @@ public interface CityAI
 	 * @param map Known terrain
 	 * @param plane Plane to place a city on
 	 * @param sd Session description
-	 * @param totalFoodBonusFromBuildings Value calculated by MomServerCityCalculations.calculateTotalFoodBonusFromBuildings ()
 	 * @param db Lookup lists built over the XML database
 	 * @return Best possible location to put a new city, or null if there's no space left for any new cities on this plane
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
-		final MomSessionDescription sd, final int totalFoodBonusFromBuildings, final ServerDatabaseEx db)
-		throws RecordNotFoundException;
+		final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**
 	 * Sets the number of optional farmers optimally in every city owned by one player

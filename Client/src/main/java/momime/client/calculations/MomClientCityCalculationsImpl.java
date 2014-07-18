@@ -1,5 +1,8 @@
 package momime.client.calculations;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Building;
@@ -8,15 +11,20 @@ import momime.client.language.database.v0_9_5.Pick;
 import momime.client.language.database.v0_9_5.Plane;
 import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.v0_9_5.TileType;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
-import momime.common.calculations.CalculateCityProductionResult;
-import momime.common.calculations.CalculateCityProductionResultBreakdown;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
+import momime.common.internal.CityProductionBreakdown;
+import momime.common.internal.CityProductionBreakdownBuilding;
+import momime.common.internal.CityProductionBreakdownMapFeature;
+import momime.common.internal.CityProductionBreakdownPickType;
+import momime.common.internal.CityProductionBreakdownPopulationTask;
+import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
 
@@ -25,6 +33,9 @@ import momime.common.internal.CityUnrestBreakdownBuilding;
  */
 public final class MomClientCityCalculationsImpl implements MomClientCityCalculations
 {
+	/** Indentation used on calculation breakdowns that are additions to the previous line */
+	private static final String INDENT = "     ";
+	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 
@@ -40,7 +51,29 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 		if (text.length () > 0)
 			text.append ("\r\n");
 		
-		text.append (line);
+		if (line != null)
+			text.append (line);
+	}
+
+	/**
+	 * @param pickIDs List of pick IDs
+	 * @return List coverted to descriptions
+	 */
+	final String listPickDescriptions (final List<String> pickIDs)
+	{
+		final StringBuilder retortList = new StringBuilder ();
+		for (final String pickID : pickIDs)
+		{
+			final Pick pick = getLanguage ().findPick (pickID);
+			final String pickDesc = (pick == null) ? pickID : pick.getPickDescription ();
+			
+			if (retortList.length () > 0)
+				retortList.append (", ");
+			
+			retortList.append (pickDesc);
+		}
+		
+		return retortList.toString ();
 	}
 	
 	/**
@@ -94,25 +127,11 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 		
 		// Divine Power / Infernal Power retort
 		if (breakdown.getReligiousBuildingReduction () != 0)
-		{
-			final StringBuilder retortList = new StringBuilder ();
-			for (final String pickID : breakdown.getPickIdContributingToReligiousBuildingBonus ())
-			{
-				final Pick pick = getLanguage ().findPick (pickID);
-				final String pickDesc = (pick == null) ? pickID : pick.getPickDescription ();
-				
-				if (retortList.length () > 0)
-					retortList.append (", ");
-				
-				retortList.append (pickDesc);
-			}
-			
 			addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "Retort").replaceAll
 				("RELIGIOUS_BUILDING_REDUCTION", new Integer (breakdown.getReligiousBuildingReduction ()).toString ()).replaceAll
 				("RETORT_PERCENTAGE", new Integer (breakdown.getReligiousBuildingRetortPercentage ()).toString ()).replaceAll
-				("RETORT_LIST", retortList.toString ()).replaceAll
+				("RETORT_LIST", listPickDescriptions (breakdown.getPickIdContributingToReligiousBuildingBonus ())).replaceAll
 				("RETORT_VALUE", new Integer (breakdown.getReligiousBuildingRetortValue ()).toString ()));
-		}
 		
 		// Units stationed in city
 		if (breakdown.getUnitCount () > 0)
@@ -210,315 +229,329 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 	}
 	
 	/**
-	 * Finds and outputs all breakdown text for the specified heading
-	 * 
-	 * @param calc Results of production calculation
-	 * @param heading Which type of heading to generate
-	 * @param headingLanguageEntryID Title to put on the heading, if we output anything - can leave this null for no title
-	 * @param text Text buffer to add to
-	 * @return Whether any text was generated or not
-	 * @throws MomException If we find a breakdown entry that we don't know how to describe
-	 */
-	final boolean processCityProductionCalculationHeading (final CalculateCityProductionResult calc,
-		final CityProductionBreakdownHeading heading, final String headingLanguageEntryID, final StringBuilder text) throws MomException
-	{
-		// Write text to a temporary string here - then can use that to make sure we only output the heading if we actually generated some text
-		final StringBuilder headingText = new StringBuilder ();
-		
-		// This is used in a number of places, so work it out once up front
-		final ProductionType productionType = getLanguage ().findProductionType (calc.getProductionTypeID ());
-		final String productionTypeDescription = (productionType == null) ? calc.getProductionTypeID () : productionType.getProductionTypeDescription ();
-		
-		// Check each breakdown to see if its applicable to this heading
-		for (final CalculateCityProductionResultBreakdown breakdown : calc.getBreakdowns ())
-		{
-			// Final totals (check this first, since for these doubleProductionAmount is also filled in
-			if (breakdown.getRoundingDirection () != null)
-			{
-				if (heading == CityProductionBreakdownHeading.PRODUCTION_ROUNDING)
-				{
-					// If there were multiple lines, i.e. we need to show a total over those lines
-					if (text.toString ().contains ("\r\n"))
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "RoundingTotalBefore").replaceAll
-							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-							("UNMODIFIED_PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleUnmodifiedProductionAmount ())));
-					
-					switch (breakdown.getRoundingDirection ())
-					{
-						case ROUND_UP:
-							addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "RoundingUp").replaceAll
-								("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-								("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())));
-							break;
-							
-						case ROUND_DOWN:
-							addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "RoundingDown").replaceAll
-								("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-								("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())));
-							break;
-
-						// Would have been enforced by calculation, nothing to output
-						case MUST_BE_EXACT_MULTIPLE:
-							break;
-					}						
-				}
-			}
-			
-			// Production
-			else if (breakdown.getDoubleProductionAmount () > 0)
-			{
-				if (heading == CityProductionBreakdownHeading.PRODUCTION)
-				{
-					// Production from population
-					if (breakdown.getPopulationTaskID () != null)
-					{
-						final PopulationTask populationTask = getLanguage ().findPopulationTask (breakdown.getPopulationTaskID ());
-						
-						if (breakdown.getNumberDoingTask () == 1)
-							addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromSinglePopulation").replaceAll
-								("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-								("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())).replaceAll
-								("TASK_NAME_SINGULAR", (populationTask == null) ? breakdown.getPopulationTaskID () : populationTask.getPopulationTaskSingular ()));
-						else
-							addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMultiplePopulation").replaceAll
-								("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-								("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())).replaceAll
-								("TASK_NAME_PLURAL", (populationTask == null) ? breakdown.getPopulationTaskID () : populationTask.getPopulationTaskPlural ()).replaceAll
-								("NUMBER_DOING_TASK", new Integer (breakdown.getNumberDoingTask ()).toString ()).replaceAll
-								("PRODUCTION_PER_PERSON", getTextUtils ().halfIntToStr (breakdown.getDoubleAmountPerPerson ())));
-					}
-					
-					// Production from how many books we have at our wizards' fortress
-					else if (breakdown.getPickTypeID () != null)
-					{
-						final Building building = getLanguage ().findBuilding (breakdown.getBuildingID ());
-						
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromFortressPicks").replaceAll
-							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-							("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())).replaceAll
-							("BUILDING_NAME", (building == null) ? breakdown.getBuildingID () : building.getBuildingName ()).replaceAll
-							("PICK_TYPE", getLanguage ().findPickTypeDescription (breakdown.getPickTypeID ())).replaceAll
-							("PRODUCTION_PER_PICK", getTextUtils ().halfIntToStr (breakdown.getDoubleAmountPerPick ())));
-					}
-					
-					// Production from what plane our wizards' fortress is on
-					else if (breakdown.getPlaneNumber () != null)
-					{
-						final Building building = getLanguage ().findBuilding (breakdown.getBuildingID ());
-						final Plane plane = getLanguage ().findPlane (breakdown.getPlaneNumber ());
-
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromFortressPlane").replaceAll
-							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-							("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())).replaceAll
-							("BUILDING_NAME", (building == null) ? breakdown.getBuildingID () : building.getBuildingName ()).replaceAll
-							("PLANE_NAME", (plane == null) ? breakdown.getPlaneNumber ().toString () : plane.getPlaneDescription ()));
-					}
-					
-					// Production from a building other than the wizards' fortress
-					else if (breakdown.getBuildingID () != null)
-					{
-						final Building building = getLanguage ().findBuilding (breakdown.getBuildingID ());
-
-						if (breakdown.getPercentageBonus () > 0)
-							addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromBuildingWithReligiousRetortBonus").replaceAll
-								("UNMODIFIED_PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleUnmodifiedProductionAmount ())).replaceAll
-								("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-								("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())).replaceAll
-								("BUILDING_NAME", (building == null) ? breakdown.getBuildingID () : building.getBuildingName ()).replaceAll
-								("PERCENTAGE_BONUS", new Integer (breakdown.getPercentageBonus ()).toString ()));
-						else
-							addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromBuildingWithoutReligiousRetortBonus").replaceAll
-								("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-								("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())).replaceAll
-								("BUILDING_NAME", (building == null) ? breakdown.getBuildingID () : building.getBuildingName ()));
-					}
-					
-					// Production from map features, e.g. wild game or mines
-					else if (breakdown.getMapFeatureID () != null)
-					{
-						final MapFeature mapFeature = getLanguage ().findMapFeature (breakdown.getMapFeatureID ());
-						
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMapFeature").replaceAll
-							("UNMODIFIED_PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleUnmodifiedProductionAmount ())).replaceAll
-							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-							("MAP_FEATURE", (mapFeature == null) ? breakdown.getMapFeatureID () : mapFeature.getMapFeatureDescription ()));
-						
-						if (breakdown.getRaceMineralBonusMultipler () > 1)
-							addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMapFeatureRaceBonus").replaceAll
-								("MAP_FEATURE_PRODUCTION_AMOUNT_AFTER_RACE_BONUS", getTextUtils ().halfIntToStr (breakdown.getDoubleAmountAfterRacialBonus ())).replaceAll
-								("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-								("MINERAL_BONUS_FROM_RACE", new Integer (breakdown.getRaceMineralBonusMultipler ()).toString ()));
-					
-						if (breakdown.getPercentageBonus () > 0)
-							addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMapFeatureBuildingBonus").replaceAll
-								("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())).replaceAll
-								("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-								("PERCENTAGE_BONUS", new Integer (breakdown.getPercentageBonus ()).toString ()));
-					}
-					
-					// Food harvested from surrounding terrain
-					else if (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD.equals (calc.getProductionTypeID ()))
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "TerrainFood").replaceAll
-							("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())));
-						
-					// Taxes
-					else if (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD.equals (calc.getProductionTypeID ()))
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "GoldFromTaxes").replaceAll
-							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-							("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (breakdown.getDoubleProductionAmount ())).replaceAll
-							("NUMBER_DOING_TASK", new Integer (breakdown.getNumberDoingTask ()).toString ()).replaceAll
-							("PRODUCTION_PER_PERSON", getTextUtils ().halfIntToStr (breakdown.getDoubleAmountPerPerson ())));
-						
-					else
-						throw new MomException ("processCityProductionCalculationHeading: Production, but all identifying fields are blank for production type ID \"" +
-							calc.getProductionTypeID () + "\"");
-				}
-			}
-			
-			// Consumption
-			else if (breakdown.getConsumptionAmount () > 0)
-			{
-				if (heading == CityProductionBreakdownHeading.CONSUMPTION)
-				{
-					// Building maintenance
-					if (breakdown.getBuildingID () != null)
-					{
-						final Building building = getLanguage ().findBuilding (breakdown.getBuildingID ());
-						
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "BuildingConsumption").replaceAll
-							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-							("CONSUMPTION_AMOUNT", new Integer (breakdown.getConsumptionAmount ()).toString ()).replaceAll
-							("BUILDING_NAME", (building == null) ? breakdown.getBuildingID () : building.getBuildingName ()));
-					}
-					
-					// Population eating rations
-					else if (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS.equals (calc.getProductionTypeID ()))
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "RationsAteByPopulation").replaceAll
-							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-							("CONSUMPTION_AMOUNT", new Integer (breakdown.getConsumptionAmount ()).toString ()).replaceAll
-							("NUMBER_DOING_TASK", new Integer (breakdown.getNumberDoingTask ()).toString ()));
-
-					else
-						throw new MomException ("processCityProductionCalculationHeading: Consumption, but all identifying fields are blank for production type ID \"" +
-							calc.getProductionTypeID () + "\"");
-					
-				}
-			}
-			
-			// Percentage added to production
-			else if (breakdown.getPercentage () > 0)
-			{
-				if (heading == CityProductionBreakdownHeading.PERCENTAGE_BONUS_TO_PRODUCTION)
-				{
-					if (breakdown.getBuildingID () != null)
-					{
-						final Building building = getLanguage ().findBuilding (breakdown.getBuildingID ());
-						
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "PercentageBonusFromBuilding").replaceAll
-							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
-							("PERCENTAGE_VALUE", new Integer (breakdown.getPercentage ()).toString ()).replaceAll
-							("BUILDING_NAME", (building == null) ? breakdown.getBuildingID () : building.getBuildingName ()));
-					}
-
-					else if (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION.equals (calc.getProductionTypeID ()))
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "TerrainProductionBonus").replaceAll
-							("PERCENTAGE_VALUE", new Integer (breakdown.getPercentage ()).toString ()));
-						
-					else if (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD.equals (calc.getProductionTypeID ()))
-						addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonus").replaceAll
-							("PERCENTAGE_VALUE", new Integer (breakdown.getPercentage ()).toString ()));
-
-					else
-						throw new MomException ("processCityProductionCalculationHeading: Percentage, but all identifying fields are blank for production type ID \"" +
-							calc.getProductionTypeID () + "\"");
-				}
-			}
-			
-			// Cap to either production or the percentage
-			else if (breakdown.getCap () > 0)
-			{
-				if ((heading == CityProductionBreakdownHeading.PRODUCTION_CAP) && (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD.equals (calc.getProductionTypeID ())))
-					addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "MaxCitySizeCapped").replaceAll
-						("CAP_VALUE", new Integer (breakdown.getCap ()).toString ()));
-
-				else if ((heading == CityProductionBreakdownHeading.PERCENTAGE_CAP) && (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD.equals (calc.getProductionTypeID ())))
-					addLine (headingText, getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusCapped").replaceAll
-						("CURRENT_POPULATION_DIV_1000", new Integer (breakdown.getCurrentPopulation () / 1000).toString ()).replaceAll
-						("CAP_VALUE", new Integer (breakdown.getCap ()).toString ()));
-			}
-		}
-		
-		// Did we generate anything?
-		final boolean anyText = (headingText.length () > 0);
-		if (anyText)
-		{
-			if (headingLanguageEntryID != null)
-				addLine (text, getLanguage ().findCategoryEntry ("CityProduction", headingLanguageEntryID));
-			
-			addLine (text, headingText.toString ());
-		}
-		
-		return anyText;
-	}
-	
-	/**
 	 * @param calc Results of production calculation
 	 * @return Readable calculation details
 	 * @throws MomException If we find a breakdown entry that we don't know how to describe
 	 */
 	@Override
-	public final String describeCityProductionCalculation (final CalculateCityProductionResult calc) throws MomException
+	public final String describeCityProductionCalculation (final CityProductionBreakdown calc) throws MomException
 	{
-		final StringBuilder text = new StringBuilder ();
-		
-		// There can't be any rounding or cap if there's no production!
-		final boolean anyProductions = processCityProductionCalculationHeading (calc, CityProductionBreakdownHeading.PRODUCTION, "ProductionMainHeading", text);
-		if (anyProductions)
-		{
-			processCityProductionCalculationHeading (calc, CityProductionBreakdownHeading.PRODUCTION_ROUNDING, null, text);
-			processCityProductionCalculationHeading (calc, CityProductionBreakdownHeading.PRODUCTION_CAP, null, text);
-			
-			// Leave a gap either between production/rounding/cap and % bonus, or between production/rouding/cap and consumption
-			text.append ("\r\n");
-			
-			if (processCityProductionCalculationHeading (calc, CityProductionBreakdownHeading.PERCENTAGE_BONUS_TO_PRODUCTION, "ProductionPercentageBonusHeading", text))
-			{
-				processCityProductionCalculationHeading (calc, CityProductionBreakdownHeading.PERCENTAGE_CAP, null, text);
-				text.append ("\r\n");
+		// This is used in a number of places, so work it out once up front
+		final ProductionType productionType = getLanguage ().findProductionType (calc.getProductionTypeID ());
+		final String productionTypeDescription = (productionType == null) ? calc.getProductionTypeID () : productionType.getProductionTypeDescription ();
 				
-				// There's no item created in the breakdown for the total percentage bonus or what effect this has, so do it here outside of any headings
+		// List out into blocks of production, % bonuses and consumption - so we can test whether each block contains 0, 1 or many entries
+		final List<String> productionBreakdowns = new ArrayList<String> ();
+		final List<String> consumptionBreakdowns = new ArrayList<String> ();
+		final List<String> percentageBonuses = new ArrayList<String> ();
+		
+		// Production from farmers/workers/rebels
+		for (final CityProductionBreakdownPopulationTask populationTaskProduction : calc.getPopulationTaskProduction ())
+		{
+			final PopulationTask populationTask = getLanguage ().findPopulationTask (populationTaskProduction.getPopulationTaskID ());
+			
+			if (populationTaskProduction.getCount () == 1)
+				productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromSinglePopulation").replaceAll
+					("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+					("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (populationTaskProduction.getDoubleProductionAmountAllPopulation ())).replaceAll
+					("TASK_NAME_SINGULAR", (populationTask == null) ? populationTaskProduction.getPopulationTaskID () : populationTask.getPopulationTaskSingular ()));
+			else
+				productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMultiplePopulation").replaceAll
+					("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+					("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (populationTaskProduction.getDoubleProductionAmountAllPopulation ())).replaceAll
+					("TASK_NAME_PLURAL", (populationTask == null) ? populationTaskProduction.getPopulationTaskID () : populationTask.getPopulationTaskPlural ()).replaceAll
+					("NUMBER_DOING_TASK", new Integer (populationTaskProduction.getCount ()).toString ()).replaceAll
+					("PRODUCTION_PER_PERSON", getTextUtils ().halfIntToStr (populationTaskProduction.getDoubleProductionAmountEachPopulation ())));
+		}
+		
+		// Production from population irrespective of what task they're performing (taxes)
+		if (calc.getDoubleProductionAmountAllPopulation () > 0)
+			productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "GoldFromTaxes").replaceAll
+				("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+				("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (calc.getDoubleProductionAmountAllPopulation ())).replaceAll
+				("NUMBER_DOING_TASK", new Integer (calc.getApplicablePopulation ()).toString ()).replaceAll
+				("PRODUCTION_PER_PERSON", getTextUtils ().halfIntToStr (calc.getDoubleProductionAmountEachPopulation ())));
+		
+		// Consumption from population irrespective of what task they're performing (eating rations)
+		if (calc.getConsumptionAmountAllPopulation () > 0)
+			consumptionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "RationsAteByPopulation").replaceAll
+				("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+				("CONSUMPTION_AMOUNT", new Integer (calc.getConsumptionAmountAllPopulation ()).toString ()).replaceAll
+				("NUMBER_DOING_TASK", new Integer (calc.getApplicablePopulation ()).toString ()).replaceAll
+				("CONSUMPTION_PER_PERSON", new Integer (calc.getConsumptionAmountEachPopulation ()).toString ()));
+		
+		for (final CityProductionBreakdownTileType tileTypeProduction : calc.getTileTypeProduction ())
+		{
+			final TileType tileType = getLanguage ().findTileType (tileTypeProduction.getTileTypeID ());
+
+			// Production from terrain tiles (food/max city size)
+			if (tileTypeProduction.getDoubleProductionAmountAllTiles () > 0)
+			{
+				if (tileTypeProduction.getCount () == 1)
+					productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromSingleTile").replaceAll
+						("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+						("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (tileTypeProduction.getDoubleProductionAmountAllTiles ())).replaceAll
+						("TILE_TYPE", (tileType == null) ? tileTypeProduction.getTileTypeID () : tileType.getTileTypeDescription ()));
+				else
+					productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMultipleTiles").replaceAll
+						("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+						("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (tileTypeProduction.getDoubleProductionAmountAllTiles ())).replaceAll
+						("TILE_TYPE", (tileType == null) ? tileTypeProduction.getTileTypeID () : tileType.getTileTypeDescription ()).replaceAll
+						("TILE_COUNT", new Integer (tileTypeProduction.getCount ()).toString ()).replaceAll
+						("PRODUCTION_PER_TILE", getTextUtils ().halfIntToStr (tileTypeProduction.getDoubleProductionAmountEachTile ())));
+			}
+			
+			// % bonus from terrain tiles (production)
+			if (tileTypeProduction.getPercentageBonusAllTiles () > 0)
+			{
+				if (tileTypeProduction.getCount () == 1)
+					percentageBonuses.add (getLanguage ().findCategoryEntry ("CityProduction", "PercentageBonusFromSingleTile").replaceAll
+						("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+						("PERCENTAGE_VALUE", new Integer (tileTypeProduction.getPercentageBonusAllTiles ()).toString ()).replaceAll
+						("TILE_TYPE", (tileType == null) ? tileTypeProduction.getTileTypeID () : tileType.getTileTypeDescription ()));
+				else
+					percentageBonuses.add (getLanguage ().findCategoryEntry ("CityProduction", "PercentageBonusFromMultipleTiles").replaceAll
+						("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+						("PERCENTAGE_VALUE", new Integer (tileTypeProduction.getPercentageBonusAllTiles ()).toString ()).replaceAll
+						("TILE_TYPE", (tileType == null) ? tileTypeProduction.getTileTypeID () : tileType.getTileTypeDescription ()).replaceAll
+						("TILE_COUNT", new Integer (tileTypeProduction.getCount ()).toString ()).replaceAll
+						("PERCENTAGE_PER_TILE", new Integer (tileTypeProduction.getPercentageBonusEachTile ()).toString ()));
+			}
+		}
+		
+		// Production from map features
+		for (final CityProductionBreakdownMapFeature mapFeatureProduction : calc.getMapFeatureProduction ())
+		{
+			final MapFeature mapFeature = getLanguage ().findMapFeature (mapFeatureProduction.getMapFeatureID ());
+
+			if (mapFeatureProduction.getCount () == 1)
+				productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromSingleMapFeature").replaceAll
+					("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+					("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (mapFeatureProduction.getDoubleUnmodifiedProductionAmountAllFeatures ())).replaceAll
+					("MAP_FEATURE", (mapFeature == null) ? mapFeatureProduction.getMapFeatureID () : mapFeature.getMapFeatureDescription ()));
+			else
+				productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMultipleMapFeatures").replaceAll
+					("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+					("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (mapFeatureProduction.getDoubleUnmodifiedProductionAmountAllFeatures ())).replaceAll
+					("MAP_FEATURE_COUNT", new Integer (mapFeatureProduction.getCount ()).toString ()).replaceAll
+					("PRODUCTION_PER_MAP_FEATURE", getTextUtils ().halfIntToStr (mapFeatureProduction.getDoubleUnmodifiedProductionAmountEachFeature ())).replaceAll
+					("MAP_FEATURE", (mapFeature == null) ? mapFeatureProduction.getMapFeatureID () : mapFeature.getMapFeatureDescription ()));
+
+			if (mapFeatureProduction.getRaceMineralBonusMultiplier () > 1)
+				productionBreakdowns.add (INDENT + getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMapFeatureRaceBonus").replaceAll
+					("MAP_FEATURE_PRODUCTION_AMOUNT_AFTER_RACE_BONUS", getTextUtils ().halfIntToStr (mapFeatureProduction.getDoubleProductionAmountAfterRacialMultiplier ())).replaceAll
+					("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+					("MINERAL_BONUS_FROM_RACE", new Integer (mapFeatureProduction.getRaceMineralBonusMultiplier ()).toString ()));
+		
+			if (mapFeatureProduction.getBuildingMineralPercentageBonus () > 0)
+				productionBreakdowns.add (INDENT + getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMapFeatureBuildingBonus").replaceAll
+					("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (mapFeatureProduction.getDoubleModifiedProductionAmountAllFeatures ())).replaceAll
+					("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+					("PERCENTAGE_BONUS", new Integer (mapFeatureProduction.getBuildingMineralPercentageBonus ()).toString ()));
+		}
+		
+		for (final CityProductionBreakdownBuilding buildingProduction : calc.getBuildingBreakdown ())
+		{
+			final Building building = getLanguage ().findBuilding (buildingProduction.getBuildingID ());
+			
+			// Production from buildings, e.g. Library generating research, or Granary generating food+rations
+			if (buildingProduction.getDoubleUnmodifiedProductionAmount () > 0)
+			{
+				// Shrines etc. generate +50% more power if wizard has Divine or Infernal Power retort
+				if (buildingProduction.getReligiousBuildingPercentageBonus () == 0)
+					productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromBuildingWithoutReligiousRetortBonus").replaceAll
+						("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+						("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (buildingProduction.getDoubleModifiedProductionAmount ())).replaceAll
+						("BUILDING_NAME", (building == null) ? buildingProduction.getBuildingID () : building.getBuildingName ()));
+				else
+					productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromBuildingWithReligiousRetortBonus").replaceAll
+						("UNMODIFIED_PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (buildingProduction.getDoubleUnmodifiedProductionAmount ())).replaceAll
+						("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+						("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (buildingProduction.getDoubleModifiedProductionAmount ())).replaceAll
+						("BUILDING_NAME", (building == null) ? buildingProduction.getBuildingID () : building.getBuildingName ()).replaceAll
+						("PERCENTAGE_BONUS", new Integer (buildingProduction.getReligiousBuildingPercentageBonus ()).toString ()).replaceAll
+						("RETORT_LIST", listPickDescriptions (buildingProduction.getPickIdContributingToReligiousBuildingBonus ())));
+			}
+			
+			// % bonus from buildings, e.g. Marketplace generating +25% gold
+			if (buildingProduction.getPercentageBonus () > 0)
+				percentageBonuses.add (getLanguage ().findCategoryEntry ("CityProduction", "PercentageBonusFromBuilding").replaceAll
+					("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+					("PERCENTAGE_VALUE", new Integer (buildingProduction.getPercentageBonus ()).toString ()).replaceAll
+					("BUILDING_NAME", (building == null) ? buildingProduction.getBuildingID () : building.getBuildingName ()));
+			
+			// Consumption from buildings, mainly gold maintainence
+			if (buildingProduction.getConsumptionAmount () > 0)
+				consumptionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "BuildingConsumption").replaceAll
+					("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+					("CONSUMPTION_AMOUNT", new Integer (buildingProduction.getConsumptionAmount ()).toString ()).replaceAll
+					("BUILDING_NAME", (building == null) ? buildingProduction.getBuildingID () : building.getBuildingName ()));
+		}
+		
+		// Production from how many books we have at our wizards' fortress
+		for (final CityProductionBreakdownPickType pickTypeProduction : calc.getPickTypeProduction ())
+		{
+			final Building building = getLanguage ().findBuilding (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
+			
+			productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromFortressPicks").replaceAll
+				("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+				("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (pickTypeProduction.getDoubleProductionAmountAllPicks ())).replaceAll
+				("BUILDING_NAME", (building == null) ? CommonDatabaseConstants.VALUE_BUILDING_FORTRESS : building.getBuildingName ()).replaceAll
+				("PICK_TYPE", getLanguage ().findPickTypeDescription (pickTypeProduction.getPickTypeID ())).replaceAll
+				("PRODUCTION_PER_PICK", getTextUtils ().halfIntToStr (pickTypeProduction.getDoubleProductionAmountEachPick ())).replaceAll
+				("PICK_COUNT", new Integer (pickTypeProduction.getCount ()).toString ()));
+		}
+		
+		// Production from what plane our wizards' fortress is on
+		if (calc.getDoubleProductionAmountFortressPlane () > 0)
+		{
+			final Building building = getLanguage ().findBuilding (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
+			final Plane plane = getLanguage ().findPlane (calc.getFortressPlane ());
+
+			productionBreakdowns.add (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromFortressPlane").replaceAll
+				("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+				("PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (calc.getDoubleProductionAmountFortressPlane ())).replaceAll
+				("BUILDING_NAME", (building == null) ? CommonDatabaseConstants.VALUE_BUILDING_FORTRESS : building.getBuildingName ()).replaceAll
+				("PLANE_NAME", (plane == null) ? new Integer (calc.getFortressPlane ()).toString () : plane.getPlaneDescription ()));
+		}
+		
+		// Gold trade bonus
+		if (calc.getDoubleProductionAmount () > 0)
+		{
+			int goldTradeBonusCount = 0;
+			if (calc.getTradePercentageBonusFromTileType () > 0)
+			{
+				goldTradeBonusCount++;
+				percentageBonuses.add (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusFromTileType").replaceAll
+					("PERCENTAGE_VALUE", new Integer (calc.getTradePercentageBonusFromTileType ()).toString ()));
+			}
+			
+			if (calc.getTradePercentageBonusFromRoads () > 0)
+			{
+				goldTradeBonusCount++;
+				percentageBonuses.add (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusFromRoads").replaceAll
+					("PERCENTAGE_VALUE", new Integer (calc.getTradePercentageBonusFromRoads ()).toString ()));
+			}
+			
+			if (calc.getTradePercentageBonusFromRace () > 0)
+			{
+				goldTradeBonusCount++;
+				percentageBonuses.add (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusFromRace").replaceAll
+					("PERCENTAGE_VALUE", new Integer (calc.getTradePercentageBonusFromRace ()).toString ()));
+			}
+			
+			// Show a total only if there were multiple bonuses to combine
+			if (goldTradeBonusCount > 1)
+				percentageBonuses.add (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusUncapped").replaceAll
+					("PERCENTAGE_VALUE", new Integer (calc.getTradePercentageBonusUncapped ()).toString ()));
+			
+			// Show cap only if it has an effect
+			if (calc.getTradePercentageBonusCapped () < calc.getTradePercentageBonusUncapped ())
+				percentageBonuses.add (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusCapped").replaceAll
+					("CURRENT_POPULATION_DIV_1000", new Integer (calc.getTotalPopulation ()).toString ()).replaceAll
+					("CAP_VALUE", new Integer (calc.getTradePercentageBonusCapped ()).toString ()));
+		}
+		
+		// Did we get 0, 1 or many sources of production?
+		int netEffectCount = 0;
+		final StringBuilder text = new StringBuilder ();
+		if ((productionBreakdowns.size () > 0) && (calc.getDoubleProductionAmount () > 0))
+		{
+			netEffectCount++;
+			
+			// Heading
+			addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionMainHeading"));
+			
+			// Detail line(s)
+			for (final String line : productionBreakdowns)
+				addLine (text, line);
+			
+			// Total
+			if (productionBreakdowns.size ()  > 1)
+				addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "RoundingTotalBefore").replaceAll
+					("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+					("UNMODIFIED_PRODUCTION_AMOUNT", getTextUtils ().halfIntToStr (calc.getDoubleProductionAmount ())));
+			
+			// Rounding - roundingDirectionID only gets set if the production wasn't an exact multiple of 2
+			if (calc.getRoundingDirectionID () != null)
+				switch (calc.getRoundingDirectionID ())
+				{
+					case ROUND_UP:
+						addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "RoundingUp").replaceAll
+							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+							("PRODUCTION_AMOUNT", new Integer (calc.getBaseProductionAmount ()).toString ()));
+						break;
+					
+					case ROUND_DOWN:
+						addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "RoundingDown").replaceAll
+							("PRODUCTION_TYPE", productionTypeDescription).replaceAll
+							("PRODUCTION_AMOUNT", new Integer (calc.getBaseProductionAmount ()).toString ()));
+						break;
+						
+					default:
+						throw new MomException ("describeCityProductionCalculation encountered a roundingDirectionID which wasn't up or down = " + calc.getRoundingDirectionID ());
+				}
+			
+			// Percentage bonuses - put in a list first so we can test whether we get 0, 1 or many entries here
+			if ((percentageBonuses.size () > 0) && (calc.getPercentageBonus () > 0))
+			{
+				// Heading
+				addLine (text, null);
+				addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionPercentageBonusHeading"));
+				
+				// Detail line(s)
+				for (final String line : percentageBonuses)
+					addLine (text, line);
+				
+				// Total
 				addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionPercentageBonusTotal").replaceAll
 					("PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS", new Integer (calc.getModifiedProductionAmount () - calc.getBaseProductionAmount ()).toString ()).replaceAll
 					("PERCENTAGE_BONUS", new Integer (calc.getPercentageBonus ()).toString ()).replaceAll
 					("UNMODIFIED_PRODUCTION_AMOUNT", new Integer (calc.getBaseProductionAmount ()).toString ()).replaceAll
 					("PRODUCTION_AMOUNT", new Integer (calc.getModifiedProductionAmount ()).toString ()));
-				text.append ("\r\n");
 			}
+			
+			// Cap
+			if (calc.getCappedProductionAmount () < calc.getModifiedProductionAmount ())
+				addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionCapped").replaceAll
+					("CAP_VALUE", new Integer (calc.getCappedProductionAmount ()).toString ()));
 		}
 		
-		// Consumption
-		if (processCityProductionCalculationHeading (calc, CityProductionBreakdownHeading.CONSUMPTION, "ConsumptionMainHeading", text))
+		// Did we get 0, 1 or many sources of consumption?
+		if ((consumptionBreakdowns.size () > 0) && (calc.getConsumptionAmount () > 0))
 		{
-			// If both production and consumption, then show net gain/loss
-			if (anyProductions)
-			{
-				text.append ("\r\n");
-				
-				if (calc.getModifiedProductionAmount () == calc.getConsumptionAmount ())
-					addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectBreakingEven"));
+			if (netEffectCount > 0)
+				addLine (text, null);
+			
+			netEffectCount++;
+			
+			// Heading
+			addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ConsumptionMainHeading"));
+			
+			// Detail line(s)
+			for (final String line : consumptionBreakdowns)
+				addLine (text, line);
+		}
+		
+		// If we had both production and consumption, then show net effect
+		if (netEffectCount > 1)
+		{				
+			addLine (text, null);
 
-				else if (calc.getModifiedProductionAmount () > calc.getConsumptionAmount ())
-					addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectGain").replaceAll
-						("PRODUCTION_AMOUNT", new Integer (calc.getModifiedProductionAmount ()).toString ()).replaceAll
-						("CONSUMPTION_AMOUNT", new Integer (calc.getConsumptionAmount ()).toString ()).replaceAll
-						("NET_GAIN", new Integer (calc.getModifiedProductionAmount () - calc.getConsumptionAmount ()).toString ()));
+			if (calc.getCappedProductionAmount () == calc.getConsumptionAmount ())
+				addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectBreakingEven"));
 
-				else
-					addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectLoss").replaceAll
-						("PRODUCTION_AMOUNT", new Integer (calc.getModifiedProductionAmount ()).toString ()).replaceAll
-						("CONSUMPTION_AMOUNT", new Integer (calc.getConsumptionAmount ()).toString ()).replaceAll
-						("NET_LOSS", new Integer (calc.getConsumptionAmount () - calc.getModifiedProductionAmount ()).toString ()));
-			}
+			else if (calc.getCappedProductionAmount () > calc.getConsumptionAmount ())
+				addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectGain").replaceAll
+					("PRODUCTION_AMOUNT", new Integer (calc.getCappedProductionAmount ()).toString ()).replaceAll
+					("CONSUMPTION_AMOUNT", new Integer (calc.getConsumptionAmount ()).toString ()).replaceAll
+					("NET_GAIN", new Integer (calc.getCappedProductionAmount () - calc.getConsumptionAmount ()).toString ()));
+
+			else
+				addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectLoss").replaceAll
+					("PRODUCTION_AMOUNT", new Integer (calc.getCappedProductionAmount ()).toString ()).replaceAll
+					("CONSUMPTION_AMOUNT", new Integer (calc.getConsumptionAmount ()).toString ()).replaceAll
+					("NET_LOSS", new Integer (calc.getConsumptionAmount () - calc.getCappedProductionAmount ()).toString ()));
 		}
 
 		return text.toString ();

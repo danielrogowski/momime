@@ -26,30 +26,6 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public interface MomCityCalculations
 {
 	/**
-	 * @param map Known terrain
-	 * @param cityLocation Location of the city to calculate for
-	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
-	 * @param db Lookup lists built over the XML database
-	 * @return % production bonus for a city located at this grid cell
-	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
-	 */
-	public int calculateProductionBonus (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
-		throws RecordNotFoundException;
-
-	/**
-	 * @param map Known terrain
-	 * @param cityLocation Location of the city to calculate for
-	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
-	 * @param db Lookup lists built over the XML database
-	 * @return % gold bonus for a city located at this grid cell
-	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
-	 */
-	public int calculateGoldBonus (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
-		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
-		throws RecordNotFoundException;
-
-	/**
 	 * @param map Known terrain; can use memory map, since we only ever call this for our own cities, and we can always see the terrain surrounding those
 	 * @param cityLocation Location of the city to check
 	 * @param building Cache for the building that we want to construct
@@ -60,29 +36,13 @@ public interface MomCityCalculations
 		final CoordinateSystem overlandMapCoordinateSystem);
 
 	/**
-	 * Strategy guide p194
-	 * @param map Known terrain
-	 * @param cityLocation Location of the city to calculate for
-	 * @param sessionDescription Session description
-	 * @param includeBonusesFromMapFeatures True to include bonuses from map features (Wild Game), false to just count food harvested from the terrain
-	 * @param halveAndCapResult True to halve the result (i.e. return the actual max city size) and cap at the game max city size, false to leave the production values as they are (i.e. return double the actual max city size) and uncapped
-	 * @param db Lookup lists built over the XML database
-	 * @return Maximum size a city here will grow to, based on knowledge of surrounding terrain, excluding any buildings that will improve it (Granary & Farmers' Market)
-	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
-	 */
-	public int calculateMaxCitySize (final MapVolumeOfMemoryGridCells map,
-		final MapCoordinates3DEx cityLocation, final MomSessionDescription sessionDescription, final boolean includeBonusesFromMapFeatures, final boolean halveAndCapResult,
-		final CommonDatabase db)
-		throws RecordNotFoundException;
-
-	/**
 	 * Strategy guide p196, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1
 	 * Death rate is on strategy guide p197
 	 *
 	 * @param map Known terrain
 	 * @param buildings Known buildings
 	 * @param cityLocation Location of the city to calculate for
-	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () - not the value output from calculateMaxCitySize ()
+	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
 	 * @param db Lookup lists built over the XML database
 	 * @return Breakdown of all the values used in calculating the growth rate of this city; if the caller doesn't care about the breakdown and just wants the value, just call .getFinalTotal () on the breakdown
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
@@ -124,21 +84,23 @@ public interface MomCityCalculations
 	 * @param players Pre-locked players list
 	 * @param map Known terrain
 	 * @param buildings List of known buildings
-	 * @param cityLocation Location of the city to calculate for
+	 * @param cityLocation Location of the city to calculate for; NB. It must be possible to call this on a map location which is not yet a city, so the AI can consider potential sites
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
+	 * 	(This is needed when calculating minimumFarmers, i.e. how many rations does the city produce from buildings and map features only, without considering farmers)
+	 * @param calculatePotential Normally false; if true, will consider city size and gold trade bonus to be as they will be after the city is built up
+	 * 	(This is typically used in conjunction with includeProductionAndConsumptionFromPopulation=false for the AI to consider the potential value of sites where it may build cities)
 	 * @param db Lookup lists built over the XML database
-	 * @param storeBreakdown Whether to store breakdown objects or throw the details away and just keep the results
 	 * @return List of all productions and consumptions from this city
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public CalculateCityProductionResults calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
+	public CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final CommonDatabase db, final boolean storeBreakdown)
+		final boolean calculatePotential, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**

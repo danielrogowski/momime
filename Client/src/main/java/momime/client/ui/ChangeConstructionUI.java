@@ -19,6 +19,7 @@ import javax.swing.WindowConstants;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.renderer.BuildingListCellRenderer;
+import momime.client.ui.renderer.CellRendererFactory;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.v0_9_5.Building;
@@ -66,6 +67,9 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
 	
+	/** Factory for creating cell renderers */
+	private CellRendererFactory cellRendererFactory;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -96,13 +100,9 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 		getFrame ().setLocationRelativeTo (getCityViewUI ().getFrame ());
 		
 		// Set up cell renderers
-		final BuildingListCellRenderer buildingListCellRenderer = new BuildingListCellRenderer ();
+		final BuildingListCellRenderer buildingListCellRenderer = getCellRendererFactory ().createBuildingListCellRenderer ();
 		buildingListCellRenderer.setFont (getMediumFont ());
 		buildingListCellRenderer.setForeground (MomUIConstants.SILVER);
-		buildingListCellRenderer.setOpaque (false);
-		buildingListCellRenderer.setLanguageHolder (getLanguageHolder ());
-		buildingListCellRenderer.setGraphicsDB (getGraphicsDB ());
-		buildingListCellRenderer.setUtils (getUtils ());
 		buildingListCellRenderer.init ();
 
 		// Set list boxes
@@ -111,6 +111,7 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 		buildingsList.setOpaque (false);
 		buildingsList.setModel (buildingsItems);
 		buildingsList.setCellRenderer (buildingListCellRenderer);
+		buildingListCellRenderer.setListBox (buildingsList);
 		
 		final DefaultListModel<Unit> unitsItems = new DefaultListModel<Unit> ();
 		final JList<Unit> unitsList = new JList<Unit>  ();		
@@ -330,5 +331,21 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 	public final void setCityCalculations (final MomCityCalculations calc)
 	{
 		cityCalculations = calc;
+	}
+
+	/**
+	 * @return Factory for creating cell renderers
+	 */
+	public final CellRendererFactory getCellRendererFactory ()
+	{
+		return cellRendererFactory;
+	}
+
+	/**
+	 * @param fac Factory for creating cell renderers
+	 */
+	public final void setCellRendererFactory (final CellRendererFactory fac)
+	{
+		cellRendererFactory = fac;
 	}
 }

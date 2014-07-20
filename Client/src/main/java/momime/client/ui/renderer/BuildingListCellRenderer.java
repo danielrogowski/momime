@@ -2,14 +2,20 @@ package momime.client.ui.renderer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+import javax.swing.Timer;
 
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -25,6 +31,9 @@ import com.ndg.swing.NdgUIUtils;
  */
 public final class BuildingListCellRenderer extends JPanel implements ListCellRenderer<Building>
 {
+	/** Unique value for serialization */
+	private static final long serialVersionUID = 8241886377639525388L;
+
 	/** Class logger */
 	private final Log log = LogFactory.getLog (BuildingListCellRenderer.class);
 	
@@ -42,6 +51,12 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 	
 	/** Label containing the image portion */
 	private JLabel imageLabel;
+	
+	/** List box, so we can trigger repaints against it */
+	private JList<Building> listBox;
+	
+	/** Lists the frame number that animations are on, keyed by the animationID */
+	private Map<String, Integer> animationFrames = new HashMap<String, Integer> ();
 	
 	/**
 	 * Set up the panel with a border layout
@@ -61,6 +76,8 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 		
 		imageLabel = new JLabel ();
 		add (imageLabel, BorderLayout.EAST);
+		
+		setOpaque (false);
 	}
 	
 	/**
@@ -87,13 +104,42 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 			else if (buildingImage.getCityViewImageFile () != null)
 				imageName = buildingImage.getCityViewImageFile ();
 			else
-				imageName = getGraphicsDB ().findAnimation (buildingImage.getCityViewAnimation (), "BuildingListCellRenderer").getFrame ().get (0).getFrameImageFile ();
+			{
+				final Animation anim = getGraphicsDB ().findAnimation (buildingImage.getCityViewAnimation (), "BuildingListCellRenderer");
+				
+				// Do we have a frame number for this already
+				Integer animationFrame = animationFrames.get (anim.getAnimationID ());
+				if (animationFrame == null)
+				{
+					animationFrame = 0;
+					animationFrames.put (anim.getAnimationID (), animationFrame);
+
+					// Set off a timer to increment the frame
+					new Timer ((int) (1000 / anim.getAnimationSpeed ()), new ActionListener ()
+					{
+						@Override
+						public final void actionPerformed (final ActionEvent e)
+						{
+							int newFrame = animationFrames.get (anim.getAnimationID ()) + 1;
+							if (newFrame >= anim.getFrame ().size ())
+								newFrame = 0;
+							
+							animationFrames.put (anim.getAnimationID (), newFrame);
+							
+							listBox.repaint ();
+						}
+					}).start ();
+				}
+				
+				// Now display the right frame
+				imageName = anim.getFrame ().get (animationFrame).getFrameImageFile ();
+			}
 
 			imageLabel.setIcon (new ImageIcon (getUtils ().loadImage (imageName)));
 		}
 		catch (final Exception e)
 		{
-			log.warn (e, e);
+			log.error (e, e);
 		}
 		
 		return this;
@@ -154,5 +200,21 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
+	}
+
+	/**
+	 * @return List box, so we can trigger repaints against it
+	 */
+	public final JList<Building> getListBox ()
+	{
+		return listBox;
+	}
+
+	/**
+	 * @param list List box, so we can trigger repaints against it
+	 */
+	public final void setListBox (final JList<Building> list)
+	{
+		listBox = list;
 	}
 }

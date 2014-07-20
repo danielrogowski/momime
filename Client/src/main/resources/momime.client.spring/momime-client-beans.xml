@@ -435,12 +435,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
-	
+
 	<!-- Prototype UI components -->
+
+	<bean id="cellRendererFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.client.ui.renderer.CellRendererFactory" />
+	</bean>
+
+	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="utils" ref="uiUtils" />
+	</bean>
+	
+	<!-- Prototype UI frames -->
 	
 	<bean id="prototypeFrameCreator" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
 		<property name="serviceLocatorInterface" value="momime.client.ui.PrototypeFrameCreator" />
-	</bean>			
+	</bean>
 	
 	<bean id="messageBoxUI" class="momime.client.ui.MessageBoxUI" scope="prototype">
 		<property name="smallFont" ref="smallFont" />
@@ -498,6 +510,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="cellRendererFactory" ref="cellRendererFactory" />
 	</bean>
 	
 </beans>

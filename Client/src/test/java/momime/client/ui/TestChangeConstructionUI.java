@@ -10,11 +10,15 @@ import java.util.List;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
+import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.ui.renderer.BuildingListCellRenderer;
+import momime.client.ui.renderer.CellRendererFactory;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
@@ -74,12 +78,22 @@ public final class TestChangeConstructionUI
 		final CityViewElement granary = new CityViewElement ();
 		granary.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
 		
+		final AnimationEx fightersGuildAnim = new AnimationEx ();
+		fightersGuildAnim.setAnimationSpeed (4);
+		for (int n = 1; n <= 9; n++)
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setFrameImageFile ("/momime.client.graphics/cityView/buildings/BL05-frame" + n + ".png");
+			fightersGuildAnim.getFrame ().add (frame);
+		}
+		
 		final CityViewElement fightersGuild = new CityViewElement ();
-		fightersGuild.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL05-frame1.png");
+		fightersGuild.setCityViewAnimation ("FIGHTERS_GUILD");
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findBuilding ("BL04", "BuildingListCellRenderer")).thenReturn (granary);
 		when (gfx.findBuilding ("BL05", "BuildingListCellRenderer")).thenReturn (fightersGuild);
+		when (gfx.findAnimation ("FIGHTERS_GUILD", "BuildingListCellRenderer")).thenReturn (fightersGuildAnim);
 		
 		// Client DB
 		final List<Building> buildings = new ArrayList<Building> ();
@@ -161,6 +175,15 @@ public final class TestChangeConstructionUI
 		for (int n = 1; n < buildings.size (); n++)
 			when (cityCalc.buildingPassesTileTypeRequirements (fow.getMap (), new MapCoordinates3DEx (20, 10, 0), buildings.get (n), mapSize)).thenReturn (true);
 		
+		// Cell renderer
+		final BuildingListCellRenderer renderer = new BuildingListCellRenderer ();
+		renderer.setUtils (utils);
+		renderer.setGraphicsDB (gfx);
+		renderer.setLanguageHolder (langHolder);
+		
+		final CellRendererFactory cellRendererFactory = mock (CellRendererFactory.class);
+		when (cellRendererFactory.createBuildingListCellRenderer ()).thenReturn (renderer);
+		
 		// Set up form
 		final ChangeConstructionUI changeConstruction = new ChangeConstructionUI ();
 		changeConstruction.setUtils (utils);
@@ -168,6 +191,7 @@ public final class TestChangeConstructionUI
 		changeConstruction.setLanguageChangeMaster (langMaster);
 		changeConstruction.setClient (client);
 		changeConstruction.setGraphicsDB (gfx);
+		changeConstruction.setCellRendererFactory (cellRendererFactory);
 		changeConstruction.setMemoryBuildingUtils (memoryBuildingUtils);
 		changeConstruction.setCityCalculations (cityCalc);
 		changeConstruction.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
@@ -176,6 +200,6 @@ public final class TestChangeConstructionUI
 
 		// Display form		
 		changeConstruction.setVisible (true);
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 	}
 }

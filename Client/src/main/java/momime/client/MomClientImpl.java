@@ -12,6 +12,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.ClientDatabaseExImpl;
 import momime.client.database.v0_9_5.NewGameDatabase;
+import momime.client.ui.ChangeConstructionUI;
 import momime.client.ui.CityViewUI;
 import momime.client.ui.ConnectToServerUI;
 import momime.client.ui.MainMenuUI;
@@ -40,12 +41,12 @@ import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.swing.NdgUIUtils;
 
 /**
- * Main class to kickstart client
+ * Main multiplayer controller class for the client
  */
-public final class MomClient extends MultiplayerSessionClient
+public final class MomClientImpl extends MultiplayerSessionClient implements MomClient
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomClient.class);
+	private final Log log = LogFactory.getLog (MomClientImpl.class);
 	
 	/** Name that we logged in using */
 	private String ourPlayerName;
@@ -73,6 +74,9 @@ public final class MomClient extends MultiplayerSessionClient
 	
 	/** List of all city views currently open, keyed by coordinates.toString () */
 	private Map<String, CityViewUI> cityViews = new HashMap<String, CityViewUI> (); 
+	
+	/** List of all change constructions currently open, keyed by coordinates.toString () */
+	private Map<String, ChangeConstructionUI> changeConstructions = new HashMap<String, ChangeConstructionUI> (); 
 	
 	/**
 	 * Kick off method invoked by spring's init-method
@@ -160,7 +164,7 @@ public final class MomClient extends MultiplayerSessionClient
 				}
 				catch (final Exception e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 				
 				getMainMenuUI ().enableActions ();
@@ -322,7 +326,7 @@ public final class MomClient extends MultiplayerSessionClient
 				}
 				catch (final Exception e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 			}
 		});
@@ -340,7 +344,7 @@ public final class MomClient extends MultiplayerSessionClient
 				}
 				catch (final IOException e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 			}
 		});
@@ -360,6 +364,7 @@ public final class MomClient extends MultiplayerSessionClient
 	/**
 	 * @return Client XML in use for this session
 	 */
+	@Override
 	public final ClientDatabaseEx getClientDB ()
 	{
 		return (ClientDatabaseEx) getGeneralPublicKnowledge ().getClientDatabase ();
@@ -395,6 +400,7 @@ public final class MomClient extends MultiplayerSessionClient
 	/**
 	 * @return Name that we logged in using
 	 */
+	@Override
 	public final String getOurPlayerName ()
 	{
 		return ourPlayerName;
@@ -403,6 +409,7 @@ public final class MomClient extends MultiplayerSessionClient
 	/**
 	 * @param name Name that we logged in using
 	 */
+	@Override
 	public final void setOurPlayerName (final String name)
 	{
 		ourPlayerName = name;
@@ -491,6 +498,7 @@ public final class MomClient extends MultiplayerSessionClient
 	/**
 	 * @return Info we need in order to create games; sent from server
 	 */
+	@Override
 	public final NewGameDatabase getNewGameDatabase ()
 	{
 		return newGameDatabase;
@@ -499,6 +507,7 @@ public final class MomClient extends MultiplayerSessionClient
 	/**
 	 * @param db Info we need in order to create games; sent from server
 	 */
+	@Override
 	public final void setNewGameDatabase (final NewGameDatabase db)
 	{
 		newGameDatabase = db;
@@ -523,8 +532,18 @@ public final class MomClient extends MultiplayerSessionClient
 	/**
 	 * @return List of all city views currently open, keyed by coordinates.toString ()
 	 */
+	@Override
 	public final Map<String, CityViewUI> getCityViews ()
 	{
 		return cityViews;
+	}
+	
+	/**
+	 * @return List of all change constructions currently open, keyed by coordinates.toString ()
+	 */
+	@Override
+	public final Map<String, ChangeConstructionUI> getChangeConstructions () 
+	{
+		return changeConstructions;
 	}
 }

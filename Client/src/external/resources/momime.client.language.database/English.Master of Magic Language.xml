@@ -5202,6 +5202,11 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 			<languageEntryText>Population: POPULATION (GROWTH_RATE)</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmChangeConstruction">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Change construction for CITY_NAME</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="frmOptions">
 		<languageEntry languageEntryID="SoundAndMusicSection">
 			<languageEntryText>Sound and Music</languageEntryText>

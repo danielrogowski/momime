@@ -171,11 +171,32 @@ public final class CityViewUI extends MomClientAbstractUI
 			}
 		};
 
+		final CityViewUI ui = this;
 		changeConstructionAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -3428462848507413383L;
+
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				// Is there a change construction window already open for this city?
+				ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getCityLocation ().toString ());
+				if (changeConstruction == null)
+				{
+					changeConstruction = getPrototypeFrameCreator ().createChangeConstruction ();
+					changeConstruction.setCityLocation (new MapCoordinates3DEx (getCityLocation ()));
+					changeConstruction.setCityViewUI (ui);
+					getClient ().getChangeConstructions ().put (getCityLocation ().toString (), changeConstruction);
+				}
+				
+				try
+				{
+					changeConstruction.setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -218,7 +239,7 @@ public final class CityViewUI extends MomClientAbstractUI
 				}
 				catch (final IOException e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 			}
 		}; 
@@ -250,13 +271,12 @@ public final class CityViewUI extends MomClientAbstractUI
 				}
 				catch (final IOException e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 			}
 		};
 		
 		// Initialize the frame
-		final CityViewUI ui = this;
 		getFrame ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
 		getFrame ().addWindowListener (new WindowAdapter ()
 		{
@@ -509,7 +529,7 @@ public final class CityViewUI extends MomClientAbstractUI
 			}
 			catch (final IOException e)
 			{
-				e.printStackTrace ();
+				log.error (e, e);
 			}
 		}
 		
@@ -580,7 +600,7 @@ public final class CityViewUI extends MomClientAbstractUI
 						}
 						catch (final IOException e)
 						{
-							e.printStackTrace ();
+							log.error (e, e);
 						}
 					}
 				}; 
@@ -612,7 +632,7 @@ public final class CityViewUI extends MomClientAbstractUI
 						}
 						catch (final Exception e)
 						{
-							e.printStackTrace ();
+							log.error (e, e);
 						}
 					}
 				}; 
@@ -737,7 +757,7 @@ public final class CityViewUI extends MomClientAbstractUI
 							}
 							catch (final IOException e)
 							{
-								e.printStackTrace ();
+								log.error (e, e);
 							}
 						}
 					}; 

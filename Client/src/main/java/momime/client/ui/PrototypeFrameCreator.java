@@ -24,4 +24,9 @@ public interface PrototypeFrameCreator
 	 * @return New city view UI
 	 */
 	public CityViewUI createCityView ();
+	
+	/**
+	 * @return New change construction UI
+	 */
+	public ChangeConstructionUI createChangeConstruction ();
 }

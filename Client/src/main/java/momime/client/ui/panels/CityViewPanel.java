@@ -145,7 +145,7 @@ public final class CityViewPanel extends JPanel
 				}
 				catch (final IOException e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 				
 				// List in sets
@@ -218,7 +218,7 @@ public final class CityViewPanel extends JPanel
 				}
 				catch (final IOException e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 				
 				// List in sets

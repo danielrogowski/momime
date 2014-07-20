@@ -51,11 +51,13 @@ public final class TestMainMenuUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Set up form
+		final MomClient client = mock (MomClient.class);
+		
 		final MainMenuUI main = new MainMenuUI ();
 		main.setUtils (utils);
 		main.setLanguageHolder (langHolder);
 		main.setLanguageChangeMaster (langMaster);
-		main.setClient (new MomClient ());
+		main.setClient (client);
 		main.setVersion ("9.9.9");
 		main.setLargeFont (CreateFontsForTests.getLargeFont ());
 		main.setMediumFont (CreateFontsForTests.getMediumFont ());

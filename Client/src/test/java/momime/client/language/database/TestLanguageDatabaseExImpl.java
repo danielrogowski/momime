@@ -21,6 +21,7 @@ import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.TileType;
+import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
 
@@ -239,6 +240,27 @@ public final class TestLanguageDatabaseExImpl
 
 		assertEquals ("BLDesc02", lang.findBuilding ("BL02").getBuildingName ());
 		assertNull ("BL04", lang.findBuilding ("BL04"));
+	}
+	
+	/**
+	 * Tests the findUnit method
+	 */
+	@Test
+	public final void findUnit ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Unit newUnit = new Unit ();
+			newUnit.setUnitID ("UN00" + n);
+			newUnit.setUnitName ("UNDesc0" + n);
+			lang.getUnit ().add (newUnit);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("UNDesc02", lang.findUnit ("UN002").getUnitName ());
+		assertNull ("UN004", lang.findUnit ("UN004"));
 	}
 	
 	/**

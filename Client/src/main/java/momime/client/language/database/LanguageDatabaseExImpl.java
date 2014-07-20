@@ -23,6 +23,7 @@ import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.TileType;
+import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
 
@@ -60,6 +61,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	
 	/** Map of building IDs to building objects */
 	private Map<String, Building> buildingsMap;
+	
+	/** Map of unit IDs to unit objects */
+	private Map<String, Unit> unitsMap;
 	
 	/** Map of city size IDs to city size objects */
 	private Map<String, CitySize> citySizesMap;
@@ -148,6 +152,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		buildingsMap = new HashMap<String, Building> ();
 		for (final Building thisBuilding : getBuilding ())
 			buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
+		
+		// Create units map
+		unitsMap = new HashMap<String, Unit> ();
+		for (final Unit thisUnit : getUnit ())
+			unitsMap.put (thisUnit.getUnitID (), thisUnit);
 		
 		// Create city sizes map
 		citySizesMap = new HashMap<String, CitySize> ();
@@ -309,6 +318,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final Building findBuilding (final String buildingID)
 	{
 		return buildingsMap.get (buildingID);
+	}
+	
+	/**
+	 * @param unitID Unit ID to search for
+	 * @return Unit descriptions object; or null if not found
+	 */
+	@Override
+	public final Unit findUnit (final String unitID)
+	{
+		return unitsMap.get (unitID);
 	}
 	
 	/**

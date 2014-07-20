@@ -28,6 +28,9 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.MomClient;
 
 import com.ndg.swing.GridBagConstraintsNoFill;
@@ -37,6 +40,9 @@ import com.ndg.swing.GridBagConstraintsNoFill;
  */
 public final class MainMenuUI extends MomClientAbstractUI
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (MainMenuUI.class);
+	
 	/** Maven version number, injected from spring */
 	private String version;
 	
@@ -136,7 +142,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 				}
 				catch (final IOException e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 			}
 		};
@@ -154,7 +160,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 				}
 				catch (final IOException e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 			}
 		};
@@ -173,7 +179,7 @@ public final class MainMenuUI extends MomClientAbstractUI
 				}
 				catch (final IOException e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 			}
 		};

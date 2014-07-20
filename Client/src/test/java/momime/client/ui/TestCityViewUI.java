@@ -4,7 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseExImpl;
+import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeEx;
@@ -26,7 +26,6 @@ import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
@@ -113,10 +112,7 @@ public final class TestCityViewUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Client DB
-		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
-		
-		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
-		gpk.setClientDatabase (db);
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		// City data
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
@@ -143,10 +139,10 @@ public final class TestCityViewUI
 		priv.setFogOfWarMemory (fow);
 		priv.setTaxRateID ("TR01");
 		
-		final MomClient client = new MomClient ();
-		client.setOurPersistentPlayerPrivateKnowledge (priv);
-		client.setGeneralPublicKnowledge (gpk);
-		client.setSessionDescription (sd);
+		final MomClient client = mock (MomClient.class);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		when (client.getSessionDescription ()).thenReturn (sd);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// City production
 		final MomCityCalculations calc = mock (MomCityCalculations.class);

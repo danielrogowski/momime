@@ -139,9 +139,9 @@ public final class TestCityViewPanel
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setFogOfWarMemory (fow);
 		
-		final MomClient client = new MomClient ();
-		client.setOurPersistentPlayerPrivateKnowledge (priv);
-		client.setSessionDescription (sd);
+		final MomClient client = mock (MomClient.class);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		final MemoryBuildingUtils buildings = mock (MemoryBuildingUtils.class);
 		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)).thenReturn (false);

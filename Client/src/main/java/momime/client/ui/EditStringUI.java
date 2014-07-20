@@ -115,7 +115,7 @@ public final class EditStringUI extends MomClientAbstractUI
 				}
 				catch (final Exception e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 				
 				// Close out the window

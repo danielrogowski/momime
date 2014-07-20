@@ -12,6 +12,7 @@ import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.TileType;
+import momime.client.language.database.v0_9_5.Unit;
 
 /**
  * Describes operations that we need to support over the language XML file
@@ -77,6 +78,12 @@ public interface LanguageDatabaseEx
 	 * @return Building descriptions object; or null if not found
 	 */
 	public Building findBuilding (final String buildingID);
+	
+	/**
+	 * @param unitID Unit ID to search for
+	 * @return Unit descriptions object; or null if not found
+	 */
+	public Unit findUnit (final String unitID);
 	
 	/**
 	 * @param citySizeID City size ID to search for

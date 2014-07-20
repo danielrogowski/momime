@@ -25,6 +25,9 @@ import javax.swing.WindowConstants;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.language.database.LanguageDatabaseExImpl;
 
@@ -35,6 +38,9 @@ import com.ndg.swing.GridBagConstraintsNoFill;
  */
 public final class ChooseLanguageUI extends MomClientAbstractUI implements LanguageChangeMaster
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (ChooseLanguageUI.class);
+	
 	/** Suffix we expect language files to have */
 	private static final String FILE_SUFFIX = ".master of magic language.xml";
 	
@@ -182,7 +188,7 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 					}
 					catch (final Exception e)
 					{
-						e.printStackTrace ();
+						log.error (e, e);
 					}
 				}
 			};

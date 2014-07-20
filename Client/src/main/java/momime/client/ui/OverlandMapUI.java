@@ -612,7 +612,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 						}
 						catch (final IOException e)
 						{
-							e.printStackTrace ();
+							log.error (e, e);
 						}
 					}
 					else

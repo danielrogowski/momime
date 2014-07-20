@@ -46,6 +46,14 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the raceID doesn't exist
 	 */
 	public RaceEx findRace (final String raceID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @param buildingID Building ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Building object; note buildings in the graphics XML are just a special case of city view elements
+	 * @throws RecordNotFoundException If the buildingID doesn't exist
+	 */
+	public CityViewElement findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param unitID Unit ID to search for

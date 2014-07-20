@@ -27,6 +27,9 @@ import javax.swing.event.DocumentListener;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.KnownServer;
 
@@ -39,6 +42,9 @@ import com.ndg.swing.GridBagConstraintsNoFill;
  */
 public final class ConnectToServerUI extends MomClientAbstractUI
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (ConnectToServerUI.class);
+	
 	/** Large font */
 	private Font largeFont;
 
@@ -160,7 +166,7 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 					else
 					{
 						entryID = "Other";
-						e.printStackTrace ();
+						log.error (e, e);
 					}
 
 					// Display in window
@@ -175,7 +181,7 @@ public final class ConnectToServerUI extends MomClientAbstractUI
 					}
 					catch (final Exception e2)
 					{
-						e2.printStackTrace ();
+						log.error (e2, e2);
 					}
 				}
 			}

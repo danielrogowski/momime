@@ -88,7 +88,7 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 			}
 			catch (final Exception e)
 			{
-				e.printStackTrace ();
+				log.error (e, e);
 			}
 		}
 		

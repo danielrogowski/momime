@@ -9,14 +9,15 @@ import java.util.Map;
 import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
+import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.Wizard;
-import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
@@ -46,6 +47,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of race IDs to race objects */
 	private Map<String, RaceEx> racesMap;
 
+	/** Map of building IDs to city view elements */
+	private Map<String, CityViewElement> buildingsMap;
+	
 	/** Map of unit IDs to unit objects */
 	private Map<String, Unit> unitsMap;
 	
@@ -96,6 +100,14 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			racesMap.put (rex.getRaceID (), rex);
 		}
 
+		// Create buildings map
+		buildingsMap = new HashMap<String, CityViewElement> ();
+		for (final CityViewElement thisBuilding : getCityViewElement ())
+			
+			// Not all CityViewElements represent buildings
+			if (thisBuilding.getBuildingID () != null)
+				buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
+		
 		// Create units map
 		unitsMap = new HashMap<String, Unit> ();
 		for (final Unit thisUnit : getUnit ())
@@ -229,6 +241,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		return found;
 	}
 
+	/**
+	 * @param buildingID Building ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Building object; note buildings in the graphics XML are just a special case of city view elements
+	 * @throws RecordNotFoundException If the buildingID doesn't exist
+	 */
+	@Override
+	public final CityViewElement findBuilding (final String buildingID, final String caller) throws RecordNotFoundException
+	{
+		final CityViewElement found = buildingsMap.get (buildingID);
+		if (found == null)
+			throw new RecordNotFoundException (CityViewElement.class, buildingID, caller);
+
+		return found;
+	}
+	
 	/**
 	 * @param unitID Unit ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

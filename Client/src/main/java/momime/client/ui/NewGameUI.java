@@ -36,6 +36,9 @@ import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.MomClient;
 import momime.client.database.v0_9_5.AvailableDatabase;
 import momime.client.database.v0_9_5.Wizard;
@@ -89,6 +92,9 @@ import com.ndg.swing.GridBagConstraintsNoFill;
  */
 public final class NewGameUI extends MomClientAbstractUI
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (NewGameUI.class);
+	
 	/** Large font */
 	private Font largeFont;
 
@@ -566,7 +572,7 @@ public final class NewGameUI extends MomClientAbstractUI
 				}
 				catch (final Exception e)
 				{
-					e.printStackTrace ();
+					log.error (e, e);
 				}
 			}
 		};
@@ -1064,7 +1070,7 @@ public final class NewGameUI extends MomClientAbstractUI
 							}
 							catch (final Exception e)
 							{
-								e.printStackTrace ();
+								log.error (e, e);
 							}
 						}
 					};
@@ -1110,7 +1116,7 @@ public final class NewGameUI extends MomClientAbstractUI
 							}
 							catch (final Exception e)
 							{
-								e.printStackTrace ();
+								log.error (e, e);
 							}
 						}
 					};
@@ -1491,7 +1497,7 @@ public final class NewGameUI extends MomClientAbstractUI
 		}
 		catch (final RecordNotFoundException e)
 		{
-			e.printStackTrace ();
+			log.error (e, e);
 		}
 		
 		// Choose initial spells title depends on current magic realm

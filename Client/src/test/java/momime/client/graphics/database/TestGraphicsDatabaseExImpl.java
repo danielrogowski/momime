@@ -12,6 +12,7 @@ import java.util.List;
 
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
+import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -166,6 +167,46 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		db.findRace ("RC04", "testFindRace_NotExists");
+	}
+
+	/**
+	 * Tests the findBuilding method to find a building ID that does exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testFindBuilding_Exists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CityViewElement newBuilding = new CityViewElement ();
+			newBuilding.setBuildingID ("BL0" + n);
+			db.getCityViewElement ().add (newBuilding);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("BL02", db.findBuilding ("BL02", "testFindBuilding_Exists").getBuildingID ());
+	}
+
+	/**
+	 * Tests the findBuilding method to find a building ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindBuilding_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CityViewElement newBuilding = new CityViewElement ();
+			newBuilding.setBuildingID ("BL0" + n);
+			db.getCityViewElement ().add (newBuilding);
+		}
+
+		db.buildMaps ();
+
+		db.findBuilding ("BL04", "testFindBuilding_NotExists");
 	}
 
 	/**

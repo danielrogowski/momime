@@ -331,13 +331,22 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	
+	<bean id="uiUtils" class="com.ndg.swing.NdgUIUtilsImpl" />
+	
 	<bean id="overlandMapClientUtils" class="momime.client.utils.OverlandMapClientUtilsImpl">
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="textUtils" class="momime.client.utils.TextUtilsImpl" />
+
+	<bean id="resourceValueClientUtils" class="momime.client.utils.ResourceValueClientUtilsImpl">
+		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+	</bean>
 	
 	<bean id="clientCityCalculations" class="momime.client.calculations.MomClientCityCalculationsImpl">
+		<property name="client" ref="momClient" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
 	</bean>
@@ -369,8 +378,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<!-- UI components -->
-
-	<bean id="uiUtils" class="com.ndg.swing.NdgUIUtilsImpl" />
 
 	<bean id="mainMenuUI" class="momime.client.ui.MainMenuUI">
 		<property name="version" value="${momime.client.version}" />
@@ -498,6 +505,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
+		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="cityViewPanel" ref="cityViewPanel" />		<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
@@ -508,9 +516,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="mediumFont" ref="mediumFont" />
+		<property name="smallFont" ref="smallFont" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="clientCityCalculations" ref="clientCityCalculations" />
+		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="cellRendererFactory" ref="cellRendererFactory" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
 </beans>

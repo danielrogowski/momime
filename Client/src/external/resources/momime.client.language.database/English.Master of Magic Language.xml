@@ -5206,6 +5206,24 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Change construction for CITY_NAME</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Upkeep">
+			<languageEntryText>Upkeep</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Moves">
+			<languageEntryText>Moves</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Cost">
+			<languageEntryText>Cost</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Allows">
+			<languageEntryText>Allows</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Cancel">
+			<languageEntryText>Cancel</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmOptions">
 		<languageEntry languageEntryID="SoundAndMusicSection">

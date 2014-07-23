@@ -9,20 +9,26 @@ import java.util.List;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.calculations.MomClientCityCalculations;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.ProductionTypeEx;
 import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.BuildingListCellRenderer;
 import momime.client.ui.renderer.CellRendererFactory;
+import momime.client.utils.ResourceValueClientUtilsImpl;
+import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.v0_9_5.Building;
+import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_5.Race;
 import momime.common.database.v0_9_5.RaceCannotBuild;
 import momime.common.database.v0_9_5.Unit;
@@ -59,6 +65,11 @@ public final class TestChangeConstructionUI
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCitySizeName ("CS01")).thenReturn ("City of CITY_NAME");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Title")).thenReturn ("Change construction for CITY_NAME");
+		when (lang.findCategoryEntry ("frmChangeConstruction", "Upkeep")).thenReturn ("Upkeep");
+		when (lang.findCategoryEntry ("frmChangeConstruction", "Moves")).thenReturn ("Moves");
+		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
+		when (lang.findCategoryEntry ("frmChangeConstruction", "OK")).thenReturn ("OK");
+		when (lang.findCategoryEntry ("frmChangeConstruction", "Cancel")).thenReturn ("Cancel");
 
 		final momime.client.language.database.v0_9_5.Building granaryName = new momime.client.language.database.v0_9_5.Building ();
 		granaryName.setBuildingName ("Granary");
@@ -70,6 +81,11 @@ public final class TestChangeConstructionUI
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
+		
+		// Client city calculations derive language strings
+		final MomClientCityCalculations clientCityCalc = mock (MomClientCityCalculations.class);
+		when (clientCityCalc.describeWhatBuildingAllows ("BL04", new MapCoordinates3DEx (20, 10, 0))).thenReturn ("This is what the Granary allows");
+		when (clientCityCalc.describeWhatBuildingAllows ("BL05", new MapCoordinates3DEx (20, 10, 0))).thenReturn ("This is what the Fighters' Guild allows");
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -90,10 +106,19 @@ public final class TestChangeConstructionUI
 		final CityViewElement fightersGuild = new CityViewElement ();
 		fightersGuild.setCityViewAnimation ("FIGHTERS_GUILD");
 		
+		final ProductionTypeImage plusOneImageContainer = new ProductionTypeImage ();
+		plusOneImageContainer.setProductionImageFile ("/momime.client.graphics/production/gold/1.png");
+		plusOneImageContainer.setProductionValue ("1");
+		
+		final ProductionTypeEx productionTypeImages = new ProductionTypeEx ();
+		productionTypeImages.getProductionTypeImage ().add (plusOneImageContainer);
+		productionTypeImages.buildMap ();
+		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findBuilding ("BL04", "BuildingListCellRenderer")).thenReturn (granary);
 		when (gfx.findBuilding ("BL05", "BuildingListCellRenderer")).thenReturn (fightersGuild);
 		when (gfx.findAnimation ("FIGHTERS_GUILD", "BuildingListCellRenderer")).thenReturn (fightersGuildAnim);
+		when (gfx.findProductionType ("RE01")).thenReturn (productionTypeImages);
 		
 		// Client DB
 		final List<Building> buildings = new ArrayList<Building> ();
@@ -102,6 +127,13 @@ public final class TestChangeConstructionUI
 		{
 			final Building building = new Building ();
 			building.setBuildingID ("BL0" + n);
+			building.setProductionCost (n * 50);
+			
+			final BuildingPopulationProductionModifier upkeep = new BuildingPopulationProductionModifier ();
+			upkeep.setProductionTypeID ("RE01");
+			upkeep.setDoubleAmount (n * -2);
+			building.getBuildingPopulationProductionModifier ().add (upkeep);
+			
 			buildings.add (building);
 		}
 		
@@ -175,6 +207,15 @@ public final class TestChangeConstructionUI
 		for (int n = 1; n < buildings.size (); n++)
 			when (cityCalc.buildingPassesTileTypeRequirements (fow.getMap (), new MapCoordinates3DEx (20, 10, 0), buildings.get (n), mapSize)).thenReturn (true);
 		
+		// Current construction
+		cityData.setCurrentlyConstructingBuildingOrUnitID ("BL05");
+		when (db.findBuilding ("BL05", "ChangeConstructionUI.init")).thenReturn (buildings.get (4));
+		
+		// Set up production image generator
+		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
+		resourceValueClientUtils.setGraphicsDB (gfx);
+		resourceValueClientUtils.setUtils (utils);
+		
 		// Cell renderer
 		final BuildingListCellRenderer renderer = new BuildingListCellRenderer ();
 		renderer.setUtils (utils);
@@ -194,9 +235,13 @@ public final class TestChangeConstructionUI
 		changeConstruction.setCellRendererFactory (cellRendererFactory);
 		changeConstruction.setMemoryBuildingUtils (memoryBuildingUtils);
 		changeConstruction.setCityCalculations (cityCalc);
+		changeConstruction.setClientCityCalculations (clientCityCalc);
 		changeConstruction.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		changeConstruction.setCityViewUI (new CityViewUI ());
+		changeConstruction.setTextUtils (new TextUtilsImpl ());
+		changeConstruction.setResourceValueClientUtils (resourceValueClientUtils);
 		changeConstruction.setMediumFont (CreateFontsForTests.getMediumFont ());
+		changeConstruction.setSmallFont (CreateFontsForTests.getSmallFont ());
 
 		// Display form		
 		changeConstruction.setVisible (true);

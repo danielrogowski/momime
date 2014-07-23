@@ -19,6 +19,7 @@ import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.ui.MomUIConstants;
 import momime.common.database.v0_9_5.Building;
 
 import org.apache.commons.logging.Log;
@@ -90,7 +91,11 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 		final momime.client.language.database.v0_9_5.Building buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
 		textLabel.setText ((buildingLang != null) ? buildingLang.getBuildingName () : building.getBuildingID ());
 		textLabel.setFont (getFont ());
-		textLabel.setForeground (getForeground ());
+		
+		if (isSelected)
+			textLabel.setForeground (MomUIConstants.SELECTED);
+		else
+			textLabel.setForeground (getForeground ());
 		
 		// Look up the image for the building
 		imageLabel.setIcon (null);

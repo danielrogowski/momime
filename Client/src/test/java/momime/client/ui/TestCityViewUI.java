@@ -17,6 +17,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
+import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
@@ -179,6 +180,11 @@ public final class TestCityViewUI
 		panel.setUtils (utils);
 		panel.setGraphicsDB (gfx);
 		
+		// Set up production image generator
+		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
+		resourceValueClientUtils.setGraphicsDB (gfx);
+		resourceValueClientUtils.setUtils (utils);
+		
 		// Set up form
 		final CityViewUI cityView = new CityViewUI ();
 		cityView.setUtils (utils);
@@ -191,6 +197,7 @@ public final class TestCityViewUI
 		cityView.setClient (client);
 		cityView.setCityCalculations (calc);
 		cityView.setTextUtils (new TextUtilsImpl ());
+		cityView.setResourceValueClientUtils (resourceValueClientUtils);
 		cityView.setSmallFont (CreateFontsForTests.getSmallFont ());
 		cityView.setMediumFont (CreateFontsForTests.getMediumFont ());
 		cityView.setLargeFont (CreateFontsForTests.getLargeFont ());

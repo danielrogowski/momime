@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -14,8 +13,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -28,12 +25,12 @@ import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeEx;
 import momime.client.graphics.database.RaceEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.panels.CityViewPanel;
+import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
@@ -89,6 +86,9 @@ public final class CityViewUI extends MomClientAbstractUI
 	
 	/** Text utils */
 	private TextUtils textUtils;
+	
+	/** Resource value client utils */
+	private ResourceValueClientUtils resourceValueClientUtils;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -661,112 +661,48 @@ public final class CityViewUI extends MomClientAbstractUI
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).getProductionType ())
 		{
-			final ProductionTypeEx productionTypeImages = getGraphicsDB ().findProductionType (thisProduction.getProductionTypeID ());
+			final BufferedImage buttonImage = getResourceValueClientUtils ().generateProductionImage (thisProduction.getProductionTypeID (),
+				thisProduction.getCappedProductionAmount (), thisProduction.getConsumptionAmount ());
 			
-			if (productionTypeImages != null)
+			if (buttonImage != null)
 			{
-				// Get a list of all the images we need to draw, so we know how big to create the merged image
-				final List<BufferedImage> consumptionImages = new ArrayList<BufferedImage> ();
-				final List<BufferedImage> productionImages = new ArrayList<BufferedImage> ();
-				
-				// Draw consumption on the left and production on the right
-				if (thisProduction.getConsumptionAmount () > 0)
-					addProductionTypeButtonImages (productionTypeImages, consumptionImages, thisProduction.getConsumptionAmount ());
-
-				addProductionTypeButtonImages (productionTypeImages, productionImages,
-					thisProduction.getCappedProductionAmount () - thisProduction.getConsumptionAmount ());
-				
-				// Now we can figure out how big to make the button
-				if ((consumptionImages.size () > 0) || (productionImages.size () > 0))
+				// Explain this production calculation
+				final Action productionAction = new AbstractAction ()
 				{
-					int buttonWidth = 0;
-					int buttonHeight = 0;
-					
-					for (final BufferedImage thisImage : consumptionImages)
-					{
-						if (buttonWidth > 0)
-							buttonWidth++;
-						
-						buttonWidth = buttonWidth + thisImage.getWidth ();
-						buttonHeight = Math.max (buttonHeight, thisImage.getHeight ());
-					}
+					private static final long serialVersionUID = 1785342094563388840L;
 
-					for (final BufferedImage thisImage : productionImages)
+					@Override
+					public final void actionPerformed (final ActionEvent ev)
 					{
-						if (buttonWidth > 0)
-							buttonWidth++;
-						
-						buttonWidth = buttonWidth + thisImage.getWidth ();
-						buttonHeight = Math.max (buttonHeight, thisImage.getHeight ());
-					}
-					
-					if ((consumptionImages.size () > 0) || (productionImages.size () > 0))
-						buttonWidth = buttonWidth + 6;
-
-					// Create the button image
-					final BufferedImage buttonImage = new BufferedImage (buttonWidth, buttonHeight, BufferedImage.TYPE_INT_ARGB);
-					final Graphics2D g = buttonImage.createGraphics ();
-					try
-					{
-						int xpos = 0;
-						for (final BufferedImage thisImage : consumptionImages)
+						try
 						{
-							g.drawImage (thisImage, xpos, 0, null);
-							xpos = xpos + thisImage.getWidth () + 1;
-						}
-						
-						if (xpos > 0)
-							xpos = xpos + 6;
-
-						for (final BufferedImage thisImage : productionImages)
-						{
-							g.drawImage (thisImage, xpos, 0, null);
-							xpos = xpos + thisImage.getWidth () + 1;
-						}
-					}
-					finally
-					{
-						g.dispose ();
-					}				
-
-					// Explain the max size calculation
-					final Action productionAction = new AbstractAction ()
-					{
-						private static final long serialVersionUID = 1785342094563388840L;
-
-						@Override
-						public final void actionPerformed (final ActionEvent ev)
-						{
-							try
-							{
-								final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
-									(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
-										(thisProduction.getProductionTypeID ());
+							final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
+								(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+								getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
+									(thisProduction.getProductionTypeID ());
 								
-								final ProductionType productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
-								final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
+							final ProductionType productionType = getLanguage ().findProductionType (breakdown.getProductionTypeID ());
+							final String productionTypeDescription = (productionType == null) ? breakdown.getProductionTypeID () : productionType.getProductionTypeDescription ();
 								
-								final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
-								calc.setTitle (getLanguage ().findCategoryEntry ("CityProduction", "Title").replaceAll
-									("CITY_SIZE_AND_NAME", getFrame ().getTitle ()).replaceAll
-									("PRODUCTION_TYPE", productionTypeDescription));
-								calc.setText (getClientCityCalculations ().describeCityProductionCalculation (breakdown));
-								calc.setVisible (true);
-							}
-							catch (final IOException e)
-							{
-								log.error (e, e);
-							}
+							final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+							calc.setTitle (getLanguage ().findCategoryEntry ("CityProduction", "Title").replaceAll
+								("CITY_SIZE_AND_NAME", getFrame ().getTitle ()).replaceAll
+								("PRODUCTION_TYPE", productionTypeDescription));
+							calc.setText (getClientCityCalculations ().describeCityProductionCalculation (breakdown));
+							calc.setVisible (true);
 						}
-					}; 
+						catch (final IOException e)
+						{
+							log.error (e, e);
+						}
+					}
+				}; 
 					
-					// Create the button - leave 5 gap underneath before the next button
-					productionPanel.add (getUtils ().createImageButton (productionAction, null, null, null, buttonImage, buttonImage, buttonImage),
-						getUtils ().createConstraintsNoFill (0, ypos, 1, 1, new Insets (0, 0, 5, 0), GridBagConstraintsNoFill.WEST));
-					ypos++;
-				}
+				// Create the button - leave 5 gap underneath before the next button
+				productionPanel.add (getUtils ().createImageButton (productionAction, null, null, null, buttonImage, buttonImage, buttonImage),
+					getUtils ().createConstraintsNoFill (0, ypos, 1, 1, new Insets (0, 0, 5, 0), GridBagConstraintsNoFill.WEST));
+				ypos++;
 			}
 		}
 		
@@ -790,56 +726,6 @@ public final class CityViewUI extends MomClientAbstractUI
 	private final Image doubleSize (final BufferedImage source)
 	{
 		return source.getScaledInstance (source.getWidth () * 2, source.getHeight () * 2, Image.SCALE_FAST);
-	}
-	
-	/**
-	 * Adds production type images to a list, for whatever amount is specified, e.g. if amount = 23 then will output two "ten" images and three "one" images
-	 * 
-	 * @param productionTypeImages Images for this production type from the graphics XML
-	 * @param productionTypeButtonImages The list to add to
-	 * @param amount The amount to represent with images
-	 * @throws IOException If there is a problem loading any of the images
-	 */
-	final void addProductionTypeButtonImages (final ProductionTypeEx productionTypeImages,
-		final List<BufferedImage> productionTypeButtonImages, final int amount) throws IOException
-	{
-		if (amount != 0)
-		{
-			final String oneImageFilename;
-			final String tenImageFilename;
-			int displayAmount;
-			
-			if (amount > 0)
-			{
-				// Positive
-				oneImageFilename = productionTypeImages.findProductionValueImageFile ("1");
-				tenImageFilename = productionTypeImages.findProductionValueImageFile ("10");
-				displayAmount = amount;
-			}
-			else
-			{
-				// Negative
-				oneImageFilename = productionTypeImages.findProductionValueImageFile ("-1");
-				tenImageFilename = productionTypeImages.findProductionValueImageFile ("-10");
-				displayAmount = -amount;
-			}
-			
-			final BufferedImage oneImage = (oneImageFilename == null) ? null : getUtils ().loadImage (oneImageFilename);
-			final BufferedImage tenImage = (tenImageFilename == null) ? null : getUtils ().loadImage (tenImageFilename);
-			
-			// Now add the images
-			while ((displayAmount >= 10) && (tenImage != null))
-			{
-				productionTypeButtonImages.add (tenImage);
-				displayAmount = displayAmount - 10;
-			}
-
-			while ((displayAmount >= 1) && (oneImage != null))
-			{
-				productionTypeButtonImages.add (oneImage);
-				displayAmount = displayAmount - 1;
-			}
-		}
 	}
 	
 	/**
@@ -1000,6 +886,22 @@ public final class CityViewUI extends MomClientAbstractUI
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+
+	/**
+	 * @return Resource value client utils
+	 */
+	public final ResourceValueClientUtils getResourceValueClientUtils ()
+	{
+		return resourceValueClientUtils;
+	}
+
+	/**
+	 * @param utils Resource value client utils
+	 */
+	public final void setResourceValueClientUtils (final ResourceValueClientUtils utils)
+	{
+		resourceValueClientUtils = utils;
 	}
 	
 	/**

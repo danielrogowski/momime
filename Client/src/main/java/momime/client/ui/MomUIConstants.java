@@ -25,6 +25,12 @@ public final class MomUIConstants
 	/** Light brown background text on buttons */
 	public static final Color LIGHT_BROWN = new Color (0xA5846B);
 
+	/** Selected item in list boxes and such */
+	public static final Color SELECTED = new Color (0xFF6060);
+	
+	/** Colour of fntMediumBlue font from the Delphi client */
+	public static final Color AQUA = new Color (0xBDEFEF);
+	
 	/**
 	 * Prevent instantiation
 	 */

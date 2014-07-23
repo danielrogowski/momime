@@ -1,8 +1,10 @@
 package momime.client.calculations;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Building;
@@ -12,9 +14,15 @@ import momime.client.language.database.v0_9_5.Plane;
 import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.TileType;
+import momime.client.language.database.v0_9_5.Unit;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_5.BuildingPrerequisite;
+import momime.common.database.v0_9_5.Race;
+import momime.common.database.v0_9_5.RaceCannotBuild;
+import momime.common.database.v0_9_5.UnitPrerequisite;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
@@ -27,14 +35,30 @@ import momime.common.internal.CityProductionBreakdownPopulationTask;
 import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.utils.MemoryBuildingUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Client side only methods dealing with city calculations
  */
 public final class MomClientCityCalculationsImpl implements MomClientCityCalculations
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (MomClientCityCalculationsImpl.class);
+	
 	/** Indentation used on calculation breakdowns that are additions to the previous line */
 	private static final String INDENT = "     ";
+	
+	/** Multiplayer client */
+	private MomClient client;
+	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
@@ -61,6 +85,8 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 	 */
 	final String listPickDescriptions (final List<String> pickIDs)
 	{
+		log.trace ("Entering listPickDescriptions: " + pickIDs.size ());
+		
 		final StringBuilder retortList = new StringBuilder ();
 		for (final String pickID : pickIDs)
 		{
@@ -72,8 +98,10 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 			
 			retortList.append (pickDesc);
 		}
-		
-		return retortList.toString ();
+
+		final String s = retortList.toString ();
+		log.trace ("Entering listPickDescriptions = " + s);
+		return s;
 	}
 	
 	/**
@@ -83,6 +111,8 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 	@Override
 	public final String describeCityUnrestCalculation (final CityUnrestBreakdown breakdown)
 	{
+		log.trace ("Entering describeCityUnrestCalculation");
+
 		final StringBuilder text = new StringBuilder ();
 		
 		// Percentages
@@ -156,6 +186,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 				("MINIMUM_FARMERS", new Integer (breakdown.getMinimumFarmers ()).toString ()).replaceAll
 				("TOTAL_AFTER_FARMERS", new Integer (breakdown.getTotalAfterFarmers ()).toString ()));
 		
+		log.trace ("Exiting describeCityUnrestCalculation");
 		return text.toString ();
 	}
 	
@@ -166,6 +197,8 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 	@Override
 	public final String describeCityGrowthRateCalculation (final CityGrowthRateBreakdown breakdown)
 	{
+		log.trace ("Entering describeCityGrowthRateCalculation");
+		
 		final StringBuilder text = new StringBuilder ();
 		
 		// Start off calculation description
@@ -225,6 +258,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 			addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "AtMaximumSize"));
 		}
 		
+		log.trace ("Exiting describeCityGrowthRateCalculation");
 		return text.toString ();
 	}
 	
@@ -236,6 +270,8 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 	@Override
 	public final String describeCityProductionCalculation (final CityProductionBreakdown calc) throws MomException
 	{
+		log.trace ("Entering describeCityProductionCalculation");
+
 		// This is used in a number of places, so work it out once up front
 		final ProductionType productionType = getLanguage ().findProductionType (calc.getProductionTypeID ());
 		final String productionTypeDescription = (productionType == null) ? calc.getProductionTypeID () : productionType.getProductionTypeDescription ();
@@ -554,9 +590,133 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 					("NET_LOSS", new Integer (calc.getConsumptionAmount () - calc.getCappedProductionAmount ()).toString ()));
 		}
 
+		log.trace ("Exiting describeCityProductionCalculation");
 		return text.toString ();
 	}	
 
+	/**
+	 * @param buildingID Building that we're constructing
+	 * @param cityLocation City location
+	 * @return Readable list of what constructing this building will then allow us to build, both buildings and units
+	 */
+	@Override
+	public final String describeWhatBuildingAllows (final String buildingID, final MapCoordinates3DEx cityLocation)
+	{
+		log.trace ("Entering describeWhatBuildingAllows: " + buildingID + ", " + cityLocation);
+		
+		final StringBuilder allows = new StringBuilder ();
+		
+		// City data
+		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		
+		try
+		{
+			final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "describeWhatBuildingAllows");
+		
+			// Buildings
+			for (final momime.common.database.v0_9_5.Building building : getClient ().getClientDB ().getBuilding ())
+			
+				// Don't list buildings we already have
+				if (!getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), cityLocation, building.getBuildingID ()))
+				{
+					// Check if its actually a prerequsite
+					boolean prereq = false;
+					final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
+					while ((!prereq) && (iter.hasNext ()))
+						if (iter.next ().getPrerequisiteID ().equals (buildingID))
+							prereq = true;
+				
+					if (prereq)
+					{
+						// Check the city's race can build it
+						boolean canBuild = true;
+						final Iterator<RaceCannotBuild> cannot = race.getRaceCannotBuild ().iterator ();
+						while ((canBuild) && (cannot.hasNext ()))
+							if (cannot.next ().getCannotBuildBuildingID ().equals (building.getBuildingID ()))
+								canBuild = false;
+					
+						if (canBuild)
+						{
+							// Got one!
+							if (allows.length () > 0)
+								allows.append (", ");
+						
+							final Building buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
+							allows.append ((buildingLang != null) ? buildingLang.getBuildingName () : building.getBuildingID ());
+						}
+					}
+				}
+		
+			// Units
+			for (final momime.common.database.v0_9_5.Unit unit : getClient ().getClientDB ().getUnit ())
+			
+				// Check that the unit is the right race for this city or is a generic non-race specific unit, like a Trireme
+				if ((CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (unit.getUnitMagicRealm ())) &&
+					((unit.getUnitRaceID () == null) || (unit.getUnitRaceID ().equals (cityData.getCityRaceID ()))))
+				{
+					// Check if its actually a prerequsite
+					boolean prereq = false;
+					final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
+					while ((!prereq) && (iter.hasNext ()))
+						if (iter.next ().getPrerequisiteID ().equals (buildingID))
+							prereq = true;
+				
+					if (prereq)
+					{
+						// Got one!
+						if (allows.length () > 0)
+							allows.append (", ");
+					
+						final Unit unitLang = getLanguage ().findUnit (unit.getUnitID ());
+						allows.append ((unitLang != null) ? unitLang.getUnitName () : unit.getUnitID ());
+					}
+				}
+		}
+		catch (final RecordNotFoundException e)
+		{
+			// Log error and throw it away, its only for a description, and means we handle it once here rather than bothering to let it ripple up through the calling method stack
+			log.error (e, e);
+		}
+		
+		// Did we find anything?
+		final String s = (allows.length () == 0) ? null : getLanguage ().findCategoryEntry ("frmChangeConstruction", "Allows") + " " + allows.toString () + ".";
+		log.trace ("Exiting describeWhatBuildingAllows = " + s);
+		return s;
+	}
+	
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+	
 	/**
 	 * @return Language database holder
 	 */

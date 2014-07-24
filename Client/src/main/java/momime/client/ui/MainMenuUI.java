@@ -9,14 +9,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -25,13 +22,13 @@ import javax.swing.Box.Filler;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import javax.swing.WindowConstants;
+
+import momime.client.MomClient;
+import momime.client.utils.AnimationController;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import momime.client.MomClient;
 
 import com.ndg.swing.GridBagConstraintsNoFill;
 
@@ -42,6 +39,9 @@ public final class MainMenuUI extends MomClientAbstractUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MainMenuUI.class);
+	
+	/** Animation for the big red 'Master of Magic' animated title */
+	final static String ANIM_MAIN_MENU_TITLE = "MAIN_MENU_TITLE";
 	
 	/** Maven version number, injected from spring */
 	private String version;
@@ -64,8 +64,8 @@ public final class MainMenuUI extends MomClientAbstractUI
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Frame number being displayed */
-	private int titleFrame;
+	/** Animation controller */
+	private AnimationController anim;
 	
 	/** Change language action */
 	private Action changeLanguageAction;
@@ -124,9 +124,6 @@ public final class MainMenuUI extends MomClientAbstractUI
 	{
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/mainMenu/background.png");
-		final List<BufferedImage> title = new ArrayList<BufferedImage> (20);
-		for (int n = 1; n <= 20; n++)
-			title.add (getUtils ().loadImage ("/momime.client.graphics/ui/mainMenu/title-frame" + ((n < 10) ? "0" : "") + n + ".png"));
 
 		// Create actions
 		changeLanguageAction = new AbstractAction ()
@@ -239,7 +236,15 @@ public final class MainMenuUI extends MomClientAbstractUI
 				
 				final int titleHeight = (imgHeight * 41) / 200; 
 				
-				g.drawImage (title.get (titleFrame), leftBorder, topBorder, imgWidth, titleHeight, null); 
+				try
+				{
+					g.drawImage (getAnim ().loadImageOrAnimationFrame (null, ANIM_MAIN_MENU_TITLE), leftBorder, topBorder, imgWidth, titleHeight, null);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+				
 				g.drawImage (background, leftBorder, topBorder + titleHeight, imgWidth, imgHeight - titleHeight, null);
 			}
 		};
@@ -292,16 +297,9 @@ public final class MainMenuUI extends MomClientAbstractUI
 		contentPane.add (buttonsGap, getUtils ().createConstraintsNoFill (0, 13, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Animate the title
-		new Timer (1000 / 8, new ActionListener ()
-		{
-			@Override
-			public final void actionPerformed (final ActionEvent e)
-			{
-				final int newFrame = titleFrame + 1;
-				titleFrame = (newFrame >= 20) ? 0 : newFrame;
-				contentPane.repaint ();
-			}
-		}).start ();
+		// This anim never finishes - if we close the window or click exit, it immediately shuts down the JVM and so it doesn't matter
+		// If we proceed to start a game, this main menu frame is merely hidden and not disposed so it can be reused later, so the anim just also becomes hidden
+		getAnim ().registerRepaintTrigger (ANIM_MAIN_MENU_TITLE, contentPane);
 
 		// Resize the areas above+below the image as the size of the window changes
 		final ComponentListener onResize = new ComponentAdapter ()
@@ -484,5 +482,21 @@ public final class MainMenuUI extends MomClientAbstractUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Animation controller
+	 */
+	public final AnimationController getAnim ()
+	{
+		return anim;
+	}
+
+	/**
+	 * @param controller Animation controller
+	 */
+	public final void setAnim (final AnimationController controller)
+	{
+		anim = controller;
 	}
 }

@@ -13,6 +13,7 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.OverlandMapClientUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
@@ -154,6 +155,11 @@ public final class TestCityViewPanel
 		final OverlandMapClientUtils mapUtils = mock (OverlandMapClientUtils.class);
 		when (mapUtils.findAdjacentTileType (terrain, new MapCoordinates3DEx (20, 10, 0), mapSize, "TT02")).thenReturn (true);
 		
+		// Animation controller
+		final AnimationControllerImpl anim = new AnimationControllerImpl ();
+		anim.setGraphicsDB (gfx);
+		anim.setUtils (utils);
+		
 		// Set up panel
 		final CityViewPanel panel = new CityViewPanel ();
 		panel.setUtils (utils);
@@ -163,6 +169,7 @@ public final class TestCityViewPanel
 		panel.setOverlandMapClientUtils (mapUtils);
 		panel.setClient (client);
 		panel.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
+		panel.setAnim (anim);
 		panel.init ();
 		
 		// Set up a dummy frame to display the panel

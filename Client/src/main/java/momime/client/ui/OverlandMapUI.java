@@ -345,8 +345,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
-				log.trace ("Entering sceneryPanel.paintComponent");
-
 				super.paintComponent (g);
 				
 				// Scale the map image up smoothly
@@ -417,8 +415,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 							}
 						}
 					}
-
-				log.trace ("Exiting sceneryPanel.paintComponent");
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);
@@ -1083,8 +1079,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	 */
 	final MemoryUnit [] [] chooseUnitToDrawAtEachLocation ()
 	{
-		log.trace ("Entering chooseUnitToDrawAtEachLocation");
-		
 		final MemoryUnit [] [] bestUnits = new MemoryUnit
 			[getClient ().getSessionDescription ().getMapSize ().getHeight ()] [getClient ().getSessionDescription ().getMapSize ().getWidth ()];
 		
@@ -1104,8 +1098,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 					
 					bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()] = unit;
 			}
-
-		log.trace ("Exiting chooseUnitToDrawAtEachLocation");
+		
 		return bestUnits;
 	}
 	

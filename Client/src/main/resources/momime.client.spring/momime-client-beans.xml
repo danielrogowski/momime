@@ -333,6 +333,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="uiUtils" class="com.ndg.swing.NdgUIUtilsImpl" />
 	
+	<bean id="anim" class="momime.client.utils.AnimationControllerImpl">
+		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+	</bean>
+	
 	<bean id="overlandMapClientUtils" class="momime.client.utils.OverlandMapClientUtilsImpl">
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
@@ -390,6 +395,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="client" ref="momClient" />
+		<property name="anim" ref="anim" />
 	</bean>
 
 	<bean id="chooseLanguageUI" class="momime.client.ui.ChooseLanguageUI">
@@ -452,7 +458,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
-		<property name="utils" ref="uiUtils" />
+		<property name="anim" ref="anim" />
 	</bean>
 	
 	<!-- Prototype UI frames -->
@@ -490,6 +496,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="overlandMapClientUtils" ref="overlandMapClientUtils" />
+		<property name="anim" ref="anim" />
 	</bean>
 	
 	<bean id="cityViewUI" class="momime.client.ui.CityViewUI" scope="prototype">
@@ -512,6 +519,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="changeConstructionUI" class="momime.client.ui.ChangeConstructionUI" scope="prototype">
 		<property name="client" ref="momClient" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
@@ -523,6 +531,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="cellRendererFactory" ref="cellRendererFactory" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="anim" ref="anim" />
 	</bean>
 	
 </beans>

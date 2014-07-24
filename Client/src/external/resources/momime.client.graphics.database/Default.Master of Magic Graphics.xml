@@ -88308,5 +88308,68 @@
 			<frameImageFile>/momime.client.graphics/combat/terrain/sorceryNode/00000000-frame5.png</frameImageFile>
 		</frame>
 	</animation>
+	<animation animationID="MAIN_MENU_TITLE">
+		<animationDescription>Big red 'Master of Magic' animated title on the main menu</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame01.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame02.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame03.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame04.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame05.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame06.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame07.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame08.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame09.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame10.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame11.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame12.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame13.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame14.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame15.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame16.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame17.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame18.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame19.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame20.png</frameImageFile>
+		</frame>
+	</animation>
 </momimegfx:graphicsDatabase>
-

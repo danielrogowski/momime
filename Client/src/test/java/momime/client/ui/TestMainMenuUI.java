@@ -3,9 +3,13 @@ package momime.client.ui;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import momime.client.MomClient;
+import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.AnimationControllerImpl;
 
 import org.junit.Test;
 
@@ -50,6 +54,25 @@ public final class TestMainMenuUI
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
+		// Mock entries from the graphics XML
+		final AnimationEx title = new AnimationEx ();
+		title.setAnimationSpeed (8);
+		for (int n = 1; n <= 20; n++)
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setFrameImageFile ("/momime.client.graphics/ui/mainMenu/title-frame" + ((n < 10) ? "0" : "") + n + ".png");
+			
+			title.getFrame ().add (frame);
+		}
+		
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		when (gfx.findAnimation (MainMenuUI.ANIM_MAIN_MENU_TITLE, "registerRepaintTrigger")).thenReturn (title);
+		
+		// Set up animation controller
+		final AnimationControllerImpl anim = new AnimationControllerImpl ();
+		anim.setGraphicsDB (gfx);
+		anim.setUtils (utils);
+		
 		// Set up form
 		final MomClient client = mock (MomClient.class);
 		
@@ -61,6 +84,7 @@ public final class TestMainMenuUI
 		main.setVersion ("9.9.9");
 		main.setLargeFont (CreateFontsForTests.getLargeFont ());
 		main.setMediumFont (CreateFontsForTests.getMediumFont ());
+		main.setAnim (anim);
 
 		// Display form		
 		main.setVisible (true);

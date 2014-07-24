@@ -283,6 +283,7 @@ public final class CityViewUI extends MomClientAbstractUI
 			@Override
 			public final void windowClosed (final WindowEvent ev)
 			{
+				getCityViewPanel ().cityViewClosing ();
 				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
 				getClient ().getCityViews ().remove (getCityLocation ().toString ());
 			}

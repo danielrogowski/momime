@@ -39,8 +39,6 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	public final boolean findBuilding (final List<MemoryBuilding> buildingsList,
 		final MapCoordinates3DEx cityLocation, final String buildingID)
 	{
-		log.trace ("Entering findBuilding: " + cityLocation + ", " + buildingID);
-
 		boolean found = false;
 		final Iterator<MemoryBuilding> iter = buildingsList.iterator ();
 		while ((!found) && (iter.hasNext ()))
@@ -50,7 +48,6 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 				found = true;
 		}
 
-		log.trace ("Exiting findBuilding = " + found);
 		return found;
 	}
 

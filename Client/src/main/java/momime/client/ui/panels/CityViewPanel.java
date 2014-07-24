@@ -2,20 +2,15 @@ package momime.client.ui.panels;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.utils.AnimationController;
 import momime.client.utils.OverlandMapClientUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -58,8 +53,8 @@ public final class CityViewPanel extends JPanel
 	/** Overland map client utils */
 	private OverlandMapClientUtils overlandMapClientUtils;
 	
-	/** Lists the frame number that animations are on, keyed by the animationID */
-	private Map<String, Integer> animationFrames = new HashMap<String, Integer> ();
+	/** Animation controller */
+	private AnimationController anim;
 	
 	/**
 	 * Sets up the panel once all values have been injected
@@ -108,45 +103,8 @@ public final class CityViewPanel extends JPanel
 					null, null, null, null, getCityLocation (), element.getCitySpellEffectID ()) != null)))
 				
 			{
-				// Is it an animation?
-				try
-				{
-					if (element.getCityViewImageFile () != null)
-					{
-						// Nothing to do for static images
-					}
-					else if (element.getCityViewAnimation () != null)
-					{
-						final Animation anim = getGraphicsDB ().findAnimation (element.getCityViewAnimation (), "CityViewPanel.init");
-						
-						// Start at frame 0
-						animationFrames.put (element.getCityViewAnimation (), 0);
-						
-						// Set off a timer to increment the frame
-						new Timer ((int) (1000 / anim.getAnimationSpeed ()), new ActionListener ()
-						{
-							@Override
-							public final void actionPerformed (final ActionEvent e)
-							{
-								int newFrame = animationFrames.get (element.getCityViewAnimation ()) + 1;
-								if (newFrame >= anim.getFrame ().size ())
-									newFrame = 0;
-								
-								animationFrames.put (element.getCityViewAnimation (), newFrame);
-								
-								repaint ();
-							}
-						}).start ();
-
-					}
-					else
-						log.warn ("Wanted to prepare a city view element that has no image nor animation (" +
-							element.getPlaneNumber () + ", " + element.getTileTypeID () + ", " + element.getBuildingID () + ", " + element.getCitySpellEffectID () + ")");
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
+				// Register it, if its an animation
+				getAnim ().registerRepaintTrigger (element.getCityViewAnimation (), this);
 				
 				// List in sets
 				if (element.getCityViewElementSetID () != null)
@@ -157,13 +115,23 @@ public final class CityViewPanel extends JPanel
 	}
 	
 	/**
+	 * This is called by the windowClosed handler of CityViewUI to close down all animations when the panel closes
+	 */
+	public final void cityViewClosing ()
+	{
+		log.trace ("Entering cityViewClosing");
+		
+		getAnim ().unregisterRepaintTrigger (null, this);
+
+		log.trace ("Exiting cityViewClosing");
+	}
+	
+	/**
 	 * @param g Graphics context on which to paint the city
 	 */
 	@Override
 	protected final void paintComponent (final Graphics g)
 	{
-		log.trace ("Entering paintComponent");
-		
 		String elementSetsDone = "";
 		
 		for (final CityViewElement element : getGraphicsDB ().getCityViewElement ())
@@ -195,26 +163,10 @@ public final class CityViewPanel extends JPanel
 				// Draw it
 				try
 				{
-					if (element.getCityViewImageFile () != null)
-					{
-						final BufferedImage image = getUtils ().loadImage (element.getCityViewImageFile ());
-						g.drawImage (image, element.getLocationX (), element.getLocationY (),
-							image.getWidth () * element.getSizeMultiplier (), image.getHeight () * element.getSizeMultiplier (),
-							null);
-					}
-					else if (element.getCityViewAnimation () != null)
-					{
-						final Animation anim = getGraphicsDB ().findAnimation (element.getCityViewAnimation (), "CityViewPanel.paint");
-						final Integer frame = animationFrames.get (element.getCityViewAnimation ());
-					
-						final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frame).getFrameImageFile ());
-						g.drawImage (image, element.getLocationX (), element.getLocationY (),
-							image.getWidth () * element.getSizeMultiplier (), image.getHeight () * element.getSizeMultiplier (),
-							null);
-					}
-					else
-						log.warn ("Wanted to draw a city view element that has no image nor animation (" +
-							element.getPlaneNumber () + ", " + element.getTileTypeID () + ", " + element.getBuildingID () + ", " + element.getCitySpellEffectID () + ")");	
+					final BufferedImage image = getAnim ().loadImageOrAnimationFrame (element.getCityViewImageFile (), element.getCityViewAnimation ());
+					g.drawImage (image, element.getLocationX (), element.getLocationY (),
+						image.getWidth () * element.getSizeMultiplier (), image.getHeight () * element.getSizeMultiplier (),
+						null);
 				}
 				catch (final IOException e)
 				{
@@ -225,8 +177,6 @@ public final class CityViewPanel extends JPanel
 				if (element.getCityViewElementSetID () != null)
 					elementSetsDone = elementSetsDone + element.getCityViewElementSetID ();
 			}
-		
-		log.trace ("Exiting paintComponent");
 	}
 	
 	/**
@@ -339,5 +289,21 @@ public final class CityViewPanel extends JPanel
 	public final void setOverlandMapClientUtils (final OverlandMapClientUtils mapUtils)
 	{
 		overlandMapClientUtils = mapUtils;
+	}
+
+	/**
+	 * @return Animation controller
+	 */
+	public final AnimationController getAnim ()
+	{
+		return anim;
+	}
+
+	/**
+	 * @param controller Animation controller
+	 */
+	public final void setAnim (final AnimationController controller)
+	{
+		anim = controller;
 	}
 }

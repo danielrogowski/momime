@@ -3,6 +3,8 @@ package momime.client.ui;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.anyString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.BuildingListCellRenderer;
 import momime.client.ui.renderer.CellRendererFactory;
+import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.MomCityCalculations;
@@ -115,9 +118,9 @@ public final class TestChangeConstructionUI
 		productionTypeImages.buildMap ();
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findBuilding ("BL04", "BuildingListCellRenderer")).thenReturn (granary);
-		when (gfx.findBuilding ("BL05", "BuildingListCellRenderer")).thenReturn (fightersGuild);
-		when (gfx.findAnimation ("FIGHTERS_GUILD", "BuildingListCellRenderer")).thenReturn (fightersGuildAnim);
+		when (gfx.findBuilding (eq ("BL04"), anyString ())).thenReturn (granary);
+		when (gfx.findBuilding (eq ("BL05"), anyString ())).thenReturn (fightersGuild);
+		when (gfx.findAnimation ("FIGHTERS_GUILD", "registerRepaintTrigger")).thenReturn (fightersGuildAnim);
 		when (gfx.findProductionType ("RE01")).thenReturn (productionTypeImages);
 		
 		// Client DB
@@ -216,11 +219,16 @@ public final class TestChangeConstructionUI
 		resourceValueClientUtils.setGraphicsDB (gfx);
 		resourceValueClientUtils.setUtils (utils);
 		
+		// Animation controller
+		final AnimationControllerImpl anim = new AnimationControllerImpl ();
+		anim.setGraphicsDB (gfx);
+		anim.setUtils (utils);
+
 		// Cell renderer
 		final BuildingListCellRenderer renderer = new BuildingListCellRenderer ();
-		renderer.setUtils (utils);
 		renderer.setGraphicsDB (gfx);
 		renderer.setLanguageHolder (langHolder);
+		renderer.setAnim (anim);
 		
 		final CellRendererFactory cellRendererFactory = mock (CellRendererFactory.class);
 		when (cellRendererFactory.createBuildingListCellRenderer ()).thenReturn (renderer);
@@ -242,6 +250,7 @@ public final class TestChangeConstructionUI
 		changeConstruction.setResourceValueClientUtils (resourceValueClientUtils);
 		changeConstruction.setMediumFont (CreateFontsForTests.getMediumFont ());
 		changeConstruction.setSmallFont (CreateFontsForTests.getSmallFont ());
+		changeConstruction.setAnim (anim);
 
 		// Display form		
 		changeConstruction.setVisible (true);

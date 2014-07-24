@@ -36,6 +36,7 @@ import momime.client.calculations.MomClientCityCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.renderer.BuildingListCellRenderer;
 import momime.client.ui.renderer.CellRendererFactory;
+import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
@@ -109,11 +110,17 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 	/** Resource value client utils */
 	private ResourceValueClientUtils resourceValueClientUtils;
 	
+	/** Animation controller */
+	private AnimationController anim;
+	
 	/** Cancel action */
 	private Action cancelAction;
 	
 	/** OK action */
 	private Action okAction;
+
+	/** Buildings list box */
+	private JList<Building> buildingsList;
 	
 	/** Upkeep label */
 	private JLabel upkeepLabel;
@@ -124,6 +131,9 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 	/** Cost label */
 	private JLabel costLabel;
 
+	/** Image of what's currently being constructed */
+	private JLabel currentlyConstructingImage;
+	
 	/** Name of what's currently being constructed */
 	private JLabel currentlyConstructingName;
 	
@@ -185,6 +195,7 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 			@Override
 			public final void windowClosed (final WindowEvent ev)
 			{
+				getAnim ().unregisterRepaintTrigger (null, buildingsList);
 				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
 				getClient ().getChangeConstructions ().remove (getCityLocation ().toString ());
 			}
@@ -201,12 +212,11 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 
 		// Set list boxes
 		final DefaultListModel<Building> buildingsItems = new DefaultListModel<Building> ();
-		final JList<Building> buildingsList = new JList<Building> ();
+		buildingsList = new JList<Building> ();
 		buildingsList.setOpaque (false);
 		buildingsList.setModel (buildingsItems);
 		buildingsList.setCellRenderer (buildingListCellRenderer);
 		buildingsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
-		buildingListCellRenderer.setListBox (buildingsList);
 		
 		final DefaultListModel<Unit> unitsItems = new DefaultListModel<Unit> ();
 		final JList<Unit> unitsList = new JList<Unit>  ();		
@@ -240,7 +250,7 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 		
 		final Dimension currentlyConstructingImageSize = new Dimension (62, 60);
 		
-		final JLabel currentlyConstructingImage = new JLabel ();
+		currentlyConstructingImage = new JLabel ();
 		currentlyConstructingImage.setMinimumSize (currentlyConstructingImageSize);
 		currentlyConstructingImage.setMaximumSize (currentlyConstructingImageSize);
 		currentlyConstructingImage.setPreferredSize (currentlyConstructingImageSize);
@@ -334,6 +344,7 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 				if (canBuild)
 				{
 					buildingsItems.addElement (thisBuilding);
+					getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding (thisBuilding.getBuildingID (), "ChangeConstructionUI.init").getCityViewAnimation (), buildingsList);
 					
 					// Pre-select whatever was previously being built when the form first opens up
 					if (thisBuilding.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
@@ -650,5 +661,21 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 	public final void setResourceValueClientUtils (final ResourceValueClientUtils utils)
 	{
 		resourceValueClientUtils = utils;
+	}
+
+	/**
+	 * @return Animation controller
+	 */
+	public final AnimationController getAnim ()
+	{
+		return anim;
+	}
+
+	/**
+	 * @param controller Animation controller
+	 */
+	public final void setAnim (final AnimationController controller)
+	{
+		anim = controller;
 	}
 }

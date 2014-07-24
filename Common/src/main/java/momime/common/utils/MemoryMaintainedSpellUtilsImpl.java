@@ -52,8 +52,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		final Integer castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
 	{
-		log.trace ("Entering findMaintainedSpell: Player ID " + castingPlayerID + ", " + spellID + ", Unit URN " + unitURN + ", " + unitSkillID + ", " + cityLocation + ", " + citySpellEffectID);
-
 		MemoryMaintainedSpell match = null;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
 
@@ -71,7 +69,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 				match = thisSpell;
 		}
 
-		log.trace ("Exiting findMaintainedSpell = " + match);
 		return match;
 	}
 

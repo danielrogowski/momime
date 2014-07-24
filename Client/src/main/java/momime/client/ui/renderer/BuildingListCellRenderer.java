@@ -2,30 +2,24 @@ package momime.client.ui.renderer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
-import javax.swing.Timer;
 
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
+import momime.client.utils.AnimationController;
 import momime.common.database.v0_9_5.Building;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.ndg.swing.NdgUIUtils;
 
 /**
  * Renderer for drawing the name and image of a building in a list cell
@@ -44,20 +38,14 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 
-	/** Helper methods and constants for creating and laying out Swing components */
-	private NdgUIUtils utils;
+	/** Animation controller */
+	private AnimationController anim;
 	
 	/** Label containing the text portion */
 	private JLabel textLabel;
 	
 	/** Label containing the image portion */
 	private JLabel imageLabel;
-	
-	/** List box, so we can trigger repaints against it */
-	private JList<Building> listBox;
-	
-	/** Lists the frame number that animations are on, keyed by the animationID */
-	private Map<String, Integer> animationFrames = new HashMap<String, Integer> ();
 	
 	/**
 	 * Set up the panel with a border layout
@@ -102,45 +90,11 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 		try
 		{
 			final CityViewElement buildingImage = getGraphicsDB ().findBuilding (building.getBuildingID (), "BuildingListCellRenderer");
-		
-			final String imageName;
-			if (buildingImage.getCityViewAlternativeImageFile () != null)
-				imageName = buildingImage.getCityViewAlternativeImageFile ();
-			else if (buildingImage.getCityViewImageFile () != null)
-				imageName = buildingImage.getCityViewImageFile ();
-			else
-			{
-				final Animation anim = getGraphicsDB ().findAnimation (buildingImage.getCityViewAnimation (), "BuildingListCellRenderer");
-				
-				// Do we have a frame number for this already
-				Integer animationFrame = animationFrames.get (anim.getAnimationID ());
-				if (animationFrame == null)
-				{
-					animationFrame = 0;
-					animationFrames.put (anim.getAnimationID (), animationFrame);
+			final BufferedImage image = getAnim ().loadImageOrAnimationFrame
+				((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
+				buildingImage.getCityViewAnimation ());
 
-					// Set off a timer to increment the frame
-					new Timer ((int) (1000 / anim.getAnimationSpeed ()), new ActionListener ()
-					{
-						@Override
-						public final void actionPerformed (final ActionEvent e)
-						{
-							int newFrame = animationFrames.get (anim.getAnimationID ()) + 1;
-							if (newFrame >= anim.getFrame ().size ())
-								newFrame = 0;
-							
-							animationFrames.put (anim.getAnimationID (), newFrame);
-							
-							listBox.repaint ();
-						}
-					}).start ();
-				}
-				
-				// Now display the right frame
-				imageName = anim.getFrame ().get (animationFrame).getFrameImageFile ();
-			}
-
-			imageLabel.setIcon (new ImageIcon (getUtils ().loadImage (imageName)));
+			imageLabel.setIcon (new ImageIcon (image));
 		}
 		catch (final Exception e)
 		{
@@ -192,34 +146,18 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 	}
 
 	/**
-	 * @return Helper methods and constants for creating and laying out Swing components
+	 * @return Animation controller
 	 */
-	public final NdgUIUtils getUtils ()
+	public final AnimationController getAnim ()
 	{
-		return utils;
+		return anim;
 	}
 
 	/**
-	 * @param util Helper methods and constants for creating and laying out Swing components
+	 * @param controller Animation controller
 	 */
-	public final void setUtils (final NdgUIUtils util)
+	public final void setAnim (final AnimationController controller)
 	{
-		utils = util;
-	}
-
-	/**
-	 * @return List box, so we can trigger repaints against it
-	 */
-	public final JList<Building> getListBox ()
-	{
-		return listBox;
-	}
-
-	/**
-	 * @param list List box, so we can trigger repaints against it
-	 */
-	public final void setListBox (final JList<Building> list)
-	{
-		listBox = list;
+		anim = controller;
 	}
 }

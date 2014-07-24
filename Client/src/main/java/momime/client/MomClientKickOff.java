@@ -7,7 +7,7 @@ import momime.common.MomCommonConstants;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * The MomClient class declares a log, so as soon as the classloader touches it, it fires up log4j.
+ * The MomClientImpl class declares a log, so as soon as the classloader touches it, it fires up log4j.
  * Therefore we have to put the 'main' method in a separate class that doesn't declare a log, so that
  * we get a chance to correctly configure log4j before Spring fires up.
  */

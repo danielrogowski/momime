@@ -3,6 +3,7 @@ package momime.client.ui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -34,6 +35,7 @@ import javax.swing.event.ListSelectionListener;
 import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.ui.renderer.BuildingListCellRenderer;
 import momime.client.ui.renderer.CellRendererFactory;
 import momime.client.utils.AnimationController;
@@ -48,6 +50,7 @@ import momime.common.database.v0_9_5.Race;
 import momime.common.database.v0_9_5.RaceCannotBuild;
 import momime.common.database.v0_9_5.Unit;
 import momime.common.database.v0_9_5.UnitUpkeep;
+import momime.common.messages.clienttoserver.v0_9_5.ChangeCityConstructionMessage;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 
@@ -132,7 +135,7 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 	private JLabel costLabel;
 
 	/** Image of what's currently being constructed */
-	private JLabel currentlyConstructingImage;
+	private JPanel currentlyConstructingImage;
 	
 	/** Name of what's currently being constructed */
 	private JLabel currentlyConstructingName;
@@ -181,9 +184,31 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 
 		okAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -7988136722401366834L;
+
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+
+				if (selectedBuilding.getBuildingID () != cityData.getCurrentlyConstructingBuildingOrUnitID ())
+				{
+					// Tell server that we want to change our construction
+					// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
+					final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
+					msg.setBuildingOrUnitID (selectedBuilding.getBuildingID ());
+					msg.setCityLocation (getCityLocation ());
+					try
+					{
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+						getFrame ().dispose ();
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
 			}
 		};
 		
@@ -196,6 +221,7 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 			public final void windowClosed (final WindowEvent ev)
 			{
 				getAnim ().unregisterRepaintTrigger (null, buildingsList);
+				getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
 				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
 				getClient ().getChangeConstructions ().remove (getCityLocation ().toString ());
 			}
@@ -250,7 +276,35 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 		
 		final Dimension currentlyConstructingImageSize = new Dimension (62, 60);
 		
-		currentlyConstructingImage = new JLabel ();
+		currentlyConstructingImage = new JPanel ()
+		{
+			private static final long serialVersionUID = -8785208582910019708L;
+
+			/**
+			 * Draws whatever is currently selected to construct
+			 */
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				super.paintComponent (g);
+				
+				try
+				{
+					final CityViewElement buildingImage = getGraphicsDB ().findBuilding (selectedBuilding.getBuildingID (), "currentlyConstructingImage");
+					final BufferedImage image = getAnim ().loadImageOrAnimationFrame
+						((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
+						buildingImage.getCityViewAnimation ());
+					
+					g.drawImage (image, (getSize ().width - image.getWidth ()) / 2, (getSize ().height - image.getHeight ()) / 2, null);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+			}
+		};
+		
+		currentlyConstructingImage.setOpaque (false);
 		currentlyConstructingImage.setMinimumSize (currentlyConstructingImageSize);
 		currentlyConstructingImage.setMaximumSize (currentlyConstructingImageSize);
 		currentlyConstructingImage.setPreferredSize (currentlyConstructingImageSize);
@@ -373,41 +427,48 @@ public final class ChangeConstructionUI extends MomClientAbstractUI
 			@Override
 			public final void valueChanged (final ListSelectionEvent ev)
 			{
-				try
+				final Building building = buildingsItems.get (buildingsList.getSelectedIndex ());
+				if (building != selectedBuilding)
 				{
-					final Building building = buildingsItems.get (buildingsList.getSelectedIndex ());
-					selectedBuilding = building;
+					try
+					{
+						selectedBuilding = building;
 				
-					// Update language independant labels
-					currentlyConstructingProductionCost.setText ((building.getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (building.getProductionCost ()));
-					costLabel.setVisible (building.getProductionCost () != null);
-					movesLabel.setVisible (false);
+						// Update language independant labels
+						currentlyConstructingProductionCost.setText ((building.getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (building.getProductionCost ()));
+						costLabel.setVisible (building.getProductionCost () != null);
+						movesLabel.setVisible (false);
 				
-					// Search for upkeep values (i.e. no population task specified, and the value is negative)
-					final List<UnitUpkeep> upkeeps = new ArrayList<UnitUpkeep> ();
-					for (final BuildingPopulationProductionModifier upkeepValue : building.getBuildingPopulationProductionModifier ())
-						if ((upkeepValue.getPopulationTaskID () == null) && (upkeepValue.getDoubleAmount () != null) && (upkeepValue.getDoubleAmount () < 0))
-						{
-							if (upkeepValue.getDoubleAmount () % 2 != 0)
-								throw new MomException ("Building " + building.getBuildingID () + " has an upkeep of type " + upkeepValue.getProductionTypeID () + " which is not a multiple of 2");
+						// Search for upkeep values (i.e. no population task specified, and the value is negative)
+						final List<UnitUpkeep> upkeeps = new ArrayList<UnitUpkeep> ();
+						for (final BuildingPopulationProductionModifier upkeepValue : building.getBuildingPopulationProductionModifier ())
+							if ((upkeepValue.getPopulationTaskID () == null) && (upkeepValue.getDoubleAmount () != null) && (upkeepValue.getDoubleAmount () < 0))
+							{
+								if (upkeepValue.getDoubleAmount () % 2 != 0)
+									throw new MomException ("Building " + building.getBuildingID () + " has an upkeep of type " + upkeepValue.getProductionTypeID () + " which is not a multiple of 2");
 							
-							final UnitUpkeep upkeep = new UnitUpkeep ();
-							upkeep.setProductionTypeID (upkeepValue.getProductionTypeID ());
-							upkeep.setUpkeepValue (-upkeepValue.getDoubleAmount () / 2);
-							upkeeps.add (upkeep);
-						}
+								final UnitUpkeep upkeep = new UnitUpkeep ();
+								upkeep.setProductionTypeID (upkeepValue.getProductionTypeID ());
+								upkeep.setUpkeepValue (-upkeepValue.getDoubleAmount () / 2);
+								upkeeps.add (upkeep);
+							}
 					
-					// Generate an image from the upkeeps
-					final BufferedImage upkeepImage = getResourceValueClientUtils ().generateUpkeepImage (upkeeps, false);
-					currentlyConstructingUpkeep.setIcon ((upkeepImage == null) ? null : new ImageIcon (upkeepImage));
-					upkeepLabel.setVisible (upkeepImage != null);
+						// Generate an image from the upkeeps
+						final BufferedImage upkeepImage = getResourceValueClientUtils ().generateUpkeepImage (upkeeps, false);
+						currentlyConstructingUpkeep.setIcon ((upkeepImage == null) ? null : new ImageIcon (upkeepImage));
+						upkeepLabel.setVisible (upkeepImage != null);
 				
-					// Update language dependant labels
-					currentConstructionChanged ();
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
+						// Update language dependant labels
+						currentConstructionChanged ();
+					
+						// Show the image of the selected building
+						getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
+						getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding (building.getBuildingID (), "ChangeConstructionUI.init").getCityViewAnimation (), currentlyConstructingImage);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 				}
 			}
 		};

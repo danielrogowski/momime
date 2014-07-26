@@ -514,6 +514,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="anim" ref="anim" />
 		<property name="cityViewPanel" ref="cityViewPanel" />		<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 

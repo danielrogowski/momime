@@ -27,9 +27,11 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceEx;
 import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.panels.CityViewPanel;
+import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.CityProductionBreakdownsEx;
@@ -95,6 +97,9 @@ public final class CityViewUI extends MomClientAbstractUI
 	
 	/** The city being viewed */
 	private MapCoordinates3DEx cityLocation;
+
+	/** Animation controller */
+	private AnimationController anim;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
@@ -146,6 +151,9 @@ public final class CityViewUI extends MomClientAbstractUI
 	
 	/** Panel where all the production icons are drawn */
 	private JPanel productionPanel;
+	
+	/** Panel where we show the image of what we're currently constructing */
+	private JPanel constructionPanel;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -283,6 +291,7 @@ public final class CityViewUI extends MomClientAbstractUI
 			@Override
 			public final void windowClosed (final WindowEvent ev)
 			{
+				getAnim ().unregisterRepaintTrigger (null, constructionPanel);
 				getCityViewPanel ().cityViewClosing ();
 				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
 				getClient ().getCityViews ().remove (getCityLocation ().toString ());
@@ -453,16 +462,47 @@ public final class CityViewUI extends MomClientAbstractUI
 		// Set up the mini panel to what's being currently constructed
 		final Dimension constructionPanelSize = new Dimension (140, 74);
 		
-		final JPanel constructionPanel = new JPanel ();
+		constructionPanel = new JPanel ()
+		{
+			private static final long serialVersionUID = -7350768464461438141L;
+
+			/**
+			 * Draws whatever is currently selected to construct
+			 */
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				super.paintComponent (g);
+				
+				final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+				try
+				{
+					final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingOrUnitID (), "constructionPanel");
+					final BufferedImage image = getAnim ().loadImageOrAnimationFrame
+						((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
+						buildingImage.getCityViewAnimation ());
+					
+					g.drawImage (image, (getSize ().width - image.getWidth ()) / 2, (getSize ().height - image.getHeight ()) / 2, null);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+			}
+		};
+		
+		constructionPanel.setOpaque (false);
 		constructionPanel.setMinimumSize (constructionPanelSize);
 		constructionPanel.setMaximumSize (constructionPanelSize);
 		constructionPanel.setPreferredSize (constructionPanelSize);
 		
 		contentPane.add (constructionPanel, getUtils ().createConstraintsNoFill (2, 9, 2, 1, new Insets (0, 0, 2, 10), GridBagConstraintsNoFill.SOUTHEAST));
 		
-		// Lock frame size
+		// Set up info that depends on cityData
 		cityDataUpdated ();
 		
+		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
 		getFrame ().pack ();
@@ -712,11 +752,18 @@ public final class CityViewUI extends MomClientAbstractUI
 		fillerConstraints.weightx = 1;
 		fillerConstraints.weighty = 1;
 		productionPanel.add (Box.createRigidArea (new Dimension (0, 0)), fillerConstraints);
+		
+		// Find what we're currently constructing
+		getAnim ().unregisterRepaintTrigger (null, constructionPanel);
+		getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding
+			(cityData.getCurrentlyConstructingBuildingOrUnitID (), "cityDataUpdated").getCityViewAnimation (), constructionPanel);
+		constructionPanel.repaint ();
 
 		civilianPanel.revalidate ();
 		civilianPanel.repaint ();
 		productionPanel.revalidate ();
 		productionPanel.repaint ();
+		
 		log.trace ("Exiting cityDataUpdated");
 	}
 	
@@ -935,5 +982,21 @@ public final class CityViewUI extends MomClientAbstractUI
 	public final void setCityLocation (final MapCoordinates3DEx loc)
 	{
 		cityLocation = loc;
+	}
+
+	/**
+	 * @return Animation controller
+	 */
+	public final AnimationController getAnim ()
+	{
+		return anim;
+	}
+
+	/**
+	 * @param controller Animation controller
+	 */
+	public final void setAnim (final AnimationController controller)
+	{
+		anim = controller;
 	}
 }

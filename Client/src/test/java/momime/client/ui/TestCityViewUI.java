@@ -2,6 +2,9 @@ package momime.client.ui;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.anyString;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
@@ -10,6 +13,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeEx;
 import momime.client.graphics.database.RaceEx;
 import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
 import momime.client.graphics.database.v0_9_5.RacePopulationTask;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -17,6 +21,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
+import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.CityProductionBreakdownsEx;
@@ -85,6 +90,10 @@ public final class TestCityViewUI
 		gold.buildMap ();
 		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (gold);
 		
+		final CityViewElement granary = new CityViewElement ();
+		granary.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
+		when (gfx.findBuilding (eq ("BL01"), anyString ())).thenReturn (granary);
+		
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("frmCity", "Resources")).thenReturn ("Resources");
@@ -124,6 +133,7 @@ public final class TestCityViewUI
 		cityData.setMinimumFarmers (2);
 		cityData.setOptionalFarmers (1);
 		cityData.setNumberOfRebels (2);
+		cityData.setCurrentlyConstructingBuildingOrUnitID ("BL01");
 		
 		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
 		
@@ -185,6 +195,11 @@ public final class TestCityViewUI
 		resourceValueClientUtils.setGraphicsDB (gfx);
 		resourceValueClientUtils.setUtils (utils);
 		
+		// Set up animation controller
+		final AnimationControllerImpl anim = new AnimationControllerImpl ();
+		anim.setGraphicsDB (gfx);
+		anim.setUtils (utils);
+		
 		// Set up form
 		final CityViewUI cityView = new CityViewUI ();
 		cityView.setUtils (utils);
@@ -196,6 +211,7 @@ public final class TestCityViewUI
 		cityView.setCityViewPanel (panel);
 		cityView.setClient (client);
 		cityView.setCityCalculations (calc);
+		cityView.setAnim (anim);
 		cityView.setTextUtils (new TextUtilsImpl ());
 		cityView.setResourceValueClientUtils (resourceValueClientUtils);
 		cityView.setSmallFont (CreateFontsForTests.getSmallFont ());

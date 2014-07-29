@@ -1,6 +1,8 @@
 package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,5 +84,34 @@ public final class TestPendingMovementUtilsImpl
 		
 		assertEquals (1, moves.get (1).getUnitURN ().get (0).intValue ());
 		assertEquals (2, moves.get (1).getUnitURN ().get (1).intValue ());
+	}
+	
+	/**
+	 * Tests the findPendingMoveForUnit method
+	 */
+	@Test
+	public final void testFindPendingMoveForUnit ()
+	{
+		// Set up test data
+		final PendingMovement moveOne = new PendingMovement ();
+		moveOne.getUnitURN ().add (2);
+		moveOne.getUnitURN ().add (5);
+		moveOne.getUnitURN ().add (8);
+		
+		final PendingMovement moveTwo = new PendingMovement ();
+		moveTwo.getUnitURN ().add (4);
+		moveTwo.getUnitURN ().add (1);
+		moveTwo.getUnitURN ().add (7);
+
+		final List<PendingMovement> moves = new ArrayList<PendingMovement> ();
+		moves.add (moveOne);
+		moves.add (moveTwo);
+		
+		// Set up object to test
+		final PendingMovementUtilsImpl obj = new PendingMovementUtilsImpl ();
+		
+		// Run method
+		assertNull (obj.findPendingMoveForUnit (moves, 3));
+		assertSame (moveTwo, obj.findPendingMoveForUnit (moves, 1));
 	}
 }

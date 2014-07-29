@@ -1,26 +1,18 @@
-package momime.client.ui;
-
-import java.io.IOException;
+package momime.client.language;
 
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 
 /**
- * Interface describing general contract all UI screens must conform to
+ * Interface describing general contract that all UI components that display any language-variable text must conform to.
+ * The key part to this is the languageChanged () method.  Everything else is just in support of this:
+ * 
+ * 1) Any descendant will need the getLanguage () method to access the language XML to be able to implement its languageChanged () method.
+ * 2) The getLanguage () method will always access the XML via getLanguageHolder ().
+ * 3) We need getLanguageChangeMaster () so that we can tell it to call our languageChanged () method when the language changes.
  */
-public interface MomClientUI
+public interface LanguageVariableUI
 {
-	/**
-	 * @return Whether this screen is currently displayed or not
-	 */
-	public boolean isVisible ();
-	
-	/**
-	 * @param v Whether to display or hide this screen
-	 * @throws IOException If a resource cannot be found
-	 */
-	public void setVisible (final boolean v) throws IOException;
-
 	/**
 	 * @return Language database holder
 	 */

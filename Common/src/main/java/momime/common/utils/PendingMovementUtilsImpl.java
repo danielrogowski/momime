@@ -74,4 +74,28 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 		
 		log.trace ("Exiting removeAnyPendingMovesThatIncludeUnit");
 	}
+
+	/**
+	 * Searches for a pending movement that includes this unit
+	 * 
+	 * @param unitURN Unit to search for
+	 * @return Pending movement that includes this unit if there is one; null if none was found
+	 */
+	@Override
+	public final PendingMovement findPendingMoveForUnit (final List<PendingMovement> moves, final int unitURN)
+	{
+		log.trace ("Entering findPendingMoveForUnit: Unit URN " + unitURN);
+
+		PendingMovement found = null;
+		final Iterator<PendingMovement> movesIter = moves.iterator ();
+		while ((found == null) && (movesIter.hasNext ()))
+		{
+			final PendingMovement thisMove = movesIter.next ();
+			if (thisMove.getUnitURN ().contains (unitURN))
+				found = thisMove;
+		}
+
+		log.trace ("Exiting findPendingMoveForUnit = " + found);
+		return found;
+	}
 }

@@ -1,4 +1,4 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,18 +25,21 @@ import javax.swing.WindowConstants;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.LanguageVariableUI;
+import momime.client.language.database.LanguageDatabaseExImpl;
+import momime.client.ui.MomUIConstants;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import momime.client.config.v0_9_5.MomImeClientConfig;
-import momime.client.language.database.LanguageDatabaseExImpl;
 
 import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
  * Screen for changing the selected language
  */
-public final class ChooseLanguageUI extends MomClientAbstractUI implements LanguageChangeMaster
+public final class ChooseLanguageUI extends MomClientFrameUI implements LanguageChangeMaster
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (ChooseLanguageUI.class);
@@ -75,7 +78,7 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 	private final static int INSET = 3;
 	
 	/** List of screens that need to be notified when the selected language changes */
-	private final List<MomClientUI> languageChangeListeners = new ArrayList<MomClientUI> ();
+	private final List<LanguageVariableUI> languageChangeListeners = new ArrayList<LanguageVariableUI> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -176,7 +179,7 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 						getLanguageHolder ().setLanguage (lang);
 						
 						// Notify all the forms
-						for (final MomClientUI ui : languageChangeListeners)
+						for (final LanguageVariableUI ui : languageChangeListeners)
 							ui.languageChanged ();
 						
 						// Update selected language in the config XML
@@ -237,7 +240,7 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 	 * @param listener Screen on which to call the .languageChanged () method
 	 */
 	@Override
-	public final void addLanuageChangeListener (final MomClientUI listener)
+	public final void addLanuageChangeListener (final LanguageVariableUI listener)
 	{
 		languageChangeListeners.add (listener);
 	}
@@ -247,7 +250,7 @@ public final class ChooseLanguageUI extends MomClientAbstractUI implements Langu
 	 * @param listener Screen on which to cancel calling the .languageChanged () method
 	 */
 	@Override
-	public final void removeLanuageChangeListener (final MomClientUI listener)
+	public final void removeLanuageChangeListener (final LanguageVariableUI listener)
 	{
 		languageChangeListeners.remove (listener);
 	}

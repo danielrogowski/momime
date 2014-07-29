@@ -1,4 +1,4 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -36,15 +36,13 @@ import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.client.MomClient;
 import momime.client.database.v0_9_5.AvailableDatabase;
 import momime.client.database.v0_9_5.Wizard;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.BookImage;
 import momime.client.language.database.v0_9_5.Pick;
+import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
 import momime.common.database.CommonDatabaseConstants;
@@ -78,6 +76,9 @@ import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.utils.PlayerPickUtils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -90,7 +91,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
  * Screens for setting up new and joining existing games
  * This is pretty complex because the right hand side is a CardLayout with all the different dialog pages, especially for custom options
  */
-public final class NewGameUI extends MomClientAbstractUI
+public final class NewGameUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (NewGameUI.class);

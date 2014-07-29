@@ -1,0 +1,489 @@
+package momime.client.calculations;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import momime.client.MomClient;
+import momime.client.graphics.database.AnimationEx;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.MapFeatureEx;
+import momime.client.graphics.database.SmoothedTileTypeEx;
+import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.v0_9_5.CityImage;
+import momime.client.graphics.database.v0_9_5.SmoothedTile;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.messages.v0_9_5.FogOfWarStateID;
+import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.NdgUIUtils;
+
+/**
+ * Generates large bitmap images showing the current state of the entire overland map and fog of war.  This includes terrain (tiles + map features)
+ * and cities, but not elements that are dynamically drawn over the top of the map (units).
+ * 
+ * This is moved out from OverlandMapUI to allow the bitmap generation and the screen layout to be more independantly unit testable.
+ */
+public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGenerator
+{
+	/** Class logger */
+	private final Log log = LogFactory.getLog (OverlandMapBitmapGeneratorImpl.class);
+
+	/** Colour multiplied flags for each player's cities */
+	final Map<Integer, BufferedImage> cityFlagImages = new HashMap<Integer, BufferedImage> ();
+	
+	/** Multiplayer client */
+	private MomClient client;
+	
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Helper methods and constants for creating and laying out Swing components */
+	private NdgUIUtils utils;
+	
+	/** Smoothed tiles to display at every map cell */
+	private SmoothedTile [] [] [] smoothedTiles;
+
+	/**
+	 * Creates the smoothedTiles array as the correct size
+	 * Can't just do this at the start of init (), because the server sends the first FogOfWarVisibleAreaChanged prior to the overland map being displayed,
+	 * so we can prepare the map image before displaying it - so we have to create the area for it to prepare it into
+	 */
+	@Override
+	public final void afterJoinedSession ()
+	{
+		log.trace ("Entering afterJoinedSession");
+
+		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+		smoothedTiles = new SmoothedTile [mapSize.getDepth ()] [mapSize.getHeight ()] [mapSize.getWidth ()];
+
+		log.trace ("Exiting afterJoinedSession");
+	}	
+	
+	/**
+	 * Converts the tile types sent by the server into actual tile numbers, smoothing the edges of various terrain types in the process
+	 * @param areaToSmooth Keeps track of which tiles have been updated, so we know which need graphics updating for; or can supply null to resmooth everything
+	 * @throws RecordNotFoundException If required entries in the graphics XML cannot be found
+	 */
+	@Override
+	public final void smoothMapTerrain (final MapArea3D<Boolean> areaToSmooth) throws RecordNotFoundException
+	{
+		log.trace ("Entering smoothMapTerrain: " + areaToSmooth);
+
+		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
+		
+		// Choose the appropriate tile set
+		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "smoothMapTerrain");
+		
+		// Now check each map cell
+		for (int planeNo = 0; planeNo < mapSize.getDepth (); planeNo++) 
+			for (int y = 0; y < mapSize.getHeight (); y++) 
+				for (int x = 0; x < mapSize.getWidth (); x++)
+					if ((areaToSmooth == null) || ((areaToSmooth.get (x, y, planeNo) != null) && (areaToSmooth.get (x, y, planeNo))))
+					{
+						final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+							(planeNo).getRow ().get (y).getCell ().get (x);
+						
+						// Have we ever seen this tile?
+						final String tileTypeID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getTileTypeID ();
+						if (tileTypeID == null)
+							smoothedTiles [planeNo] [y] [x] = null;
+						else
+						{
+							final SmoothedTileTypeEx smoothedTileType = overlandMapTileSet.findSmoothedTileType (tileTypeID, planeNo, null);
+							
+							// If this is ticked then fix the bitmask
+							// If a land based tile, want to assume grass in every direction (e.g. for mountains, draw a single mountain), so want 11111111
+							
+							// But for a sea tile, this looks really daft - you get a 'sea' of lakes surrounded by grass!  So we have to force these to 00000000 instead
+							// to make it look remotely sensible
+							
+							// Rather than hard coding which tile types need 00000000 and which need 11111111, the graphics XML file has a special
+							// entry under every tile for the image to use for 'NoSmooth' = No Smoothing
+							final StringBuffer bitmask = new StringBuffer ();
+							
+							// --- Leaving this 'if' out for now since there's no options screen yet via which to turn smoothing off, but I did prove that it works ---
+							// bitmask.append (GraphicsDatabaseConstants.VALUE_TILE_BITMASK_NO_SMOOTHING);
+							
+							{
+								// 3 possibilities for how we create the bitmask
+								// 0 = force 00000000
+								// 1 = use 0 for this type of tile, 1 for anything else (assume grass)
+								// 2 = use 0 for this type of tile, 1 for anything else (assume grass), 2 for rivers (in a joining direction)
+								final int maxValueInEachDirection = overlandMapTileSet.findSmoothingSystem
+									(smoothedTileType.getSmoothingSystemID (), "smoothMapTerrain").getMaxValueEachDirection ();
+								
+								if (maxValueInEachDirection == 0)
+								{
+									for (int d = 1; d <= maxDirection; d++)
+										bitmask.append ("0");
+								}
+								
+								// If a river tile, decide whether to treat this direction as a river based on the RiverDirections FROM this tile, not by looking at adjoining tiles
+								// NB. This is only inland rivers - oceanside river mouths are just special shore/ocean tiles
+								else if ((maxValueInEachDirection == 1) && (gc.getTerrainData ().getRiverDirections () != null))
+								{
+									for (int d = 1; d <= maxDirection; d++)
+										if (gc.getTerrainData ().getRiverDirections ().contains (new Integer (d).toString ()))
+											bitmask.append ("0");
+										else
+											bitmask.append ("1");
+								}
+								
+								// Normal type of smoothing
+								else
+								{
+									for (int d = 1; d <= maxDirection; d++)
+										
+										// Want rivers? i.e. is this an ocean tile
+										if ((maxValueInEachDirection == 2) && (gc.getTerrainData ().getRiverDirections () != null) &&
+											(gc.getTerrainData ().getRiverDirections ().contains (new Integer (d).toString ())))
+											
+											bitmask.append ("2");
+										else
+										{
+											final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, planeNo);
+											if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
+											{
+												final MemoryGridCell otherGc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+													(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+												final String otherTileTypeID = (otherGc.getTerrainData () == null) ? null : otherGc.getTerrainData ().getTileTypeID ();
+												
+												if ((otherTileTypeID == null) || (otherTileTypeID.equals (tileTypeID)) ||
+													(otherTileTypeID.equals (smoothedTileType.getSecondaryTileTypeID ())) ||
+													(otherTileTypeID.equals (smoothedTileType.getTertiaryTileTypeID ())))
+													
+													bitmask.append ("0");
+												else
+													bitmask.append ("1");
+											}
+											else
+												bitmask.append ("0");
+										}
+								}
+							}
+
+							// The cache works directly on unsmoothed bitmasks so no reduction to do
+							smoothedTiles [planeNo] [y] [x] = smoothedTileType.getRandomImage (bitmask.toString ());
+						}
+					}
+		
+		log.trace ("Exiting smoothMapTerrain");
+	}
+	
+	/**
+	 * Generates big bitmaps of the entire overland map in each frame of animation
+	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView
+	 * 
+	 * @param mapViewPlane Which plane to generate bitmaps for
+	 * @return Array of overland map bitmaps
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	@Override
+	public final BufferedImage [] generateOverlandMapBitmaps (final int mapViewPlane) throws IOException
+	{
+		log.trace ("Entering generateOverlandMapBitmaps: " + mapViewPlane);
+
+		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+		
+		// We need the tile set so we know how many animation frames there are
+		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "generateOverlandMapBitmaps");
+		
+		// Create the set of empty bitmaps
+		final BufferedImage [] overlandMapBitmaps = new BufferedImage [overlandMapTileSet.getAnimationFrameCount ()];
+		final Graphics2D [] g = new Graphics2D [overlandMapTileSet.getAnimationFrameCount ()];
+		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+		{
+			overlandMapBitmaps [frameNo] = new BufferedImage
+				(mapSize.getWidth () * overlandMapTileSet.getTileWidth (), mapSize.getHeight () * overlandMapTileSet.getTileHeight (), BufferedImage.TYPE_INT_ARGB);
+			
+			g [frameNo] = overlandMapBitmaps [frameNo].createGraphics ();
+		}
+		
+		// Run through each tile
+		for (int y = 0; y < mapSize.getHeight (); y++) 
+			for (int x = 0; x < mapSize.getWidth (); x++)
+			{
+				// Terrain
+				final SmoothedTile tile = smoothedTiles [mapViewPlane] [y] [x];
+				if (tile != null)
+				{
+					if (tile.getTileFile () != null)
+					{
+						// Use same image for all frames
+						final BufferedImage image = getUtils ().loadImage (tile.getTileFile ());
+						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+							g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+					}
+					else if (tile.getTileAnimation () != null)
+					{
+						// Copy each animation frame over to each bitmap
+						final AnimationEx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "generateOverlandMapBitmaps");
+						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+						{
+							final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getFrameImageFile ());
+							g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+						}
+					}
+				}
+				
+				// Map feature
+				final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(mapViewPlane).getRow ().get (y).getCell ().get (x);
+				final String mapFeatureID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getMapFeatureID ();
+				if (mapFeatureID != null)
+				{
+					final MapFeatureEx mapFeature = getGraphicsDB ().findMapFeature (mapFeatureID, "generateOverlandMapBitmaps");
+					final BufferedImage image = getUtils ().loadImage (mapFeature.getOverlandMapImageFile ());
+
+					// Use same image for all frames
+					for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+						g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+				}
+			}
+		
+		// Cities have to be done in a 2nd pass, since they're larger than the terrain tiles
+		for (int y = 0; y < mapSize.getHeight (); y++) 
+			for (int x = 0; x < mapSize.getWidth (); x++)
+			{
+				final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(mapViewPlane).getRow ().get (y).getCell ().get (x);
+				final String citySizeID = (gc.getCityData () == null) ? null : gc.getCityData ().getCitySizeID ();
+				if (citySizeID != null)
+				{
+					final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, mapViewPlane);
+					
+					final CityImage cityImage = getGraphicsDB ().findBestCityImage (citySizeID, cityLocation,
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "generateOverlandMapBitmaps");
+					final BufferedImage image = getUtils ().loadImage (cityImage.getCityImageFile ());
+					
+					final int xpos = (x * overlandMapTileSet.getTileWidth ()) - ((image.getWidth () - overlandMapTileSet.getTileWidth ()) / 2);
+					final int ypos = (y * overlandMapTileSet.getTileHeight ()) - ((image.getHeight () - overlandMapTileSet.getTileHeight ()) / 2);
+
+					// Use same image for all frames
+					final BufferedImage cityFlagImage = getCityFlagImage (gc.getCityData ().getCityOwnerID ());
+					for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+					{
+						g [frameNo].drawImage (image, xpos, ypos, null);
+						g [frameNo].drawImage (cityFlagImage, xpos + cityImage.getFlagOffsetX (), ypos + cityImage.getFlagOffsetY (), null);
+					}
+				}
+			}
+		
+		// Clean up the drawing contexts 
+		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+			g [frameNo].dispose ();
+		
+		log.trace ("Exiting generateOverlandMapBitmaps");
+		return overlandMapBitmaps;
+	}
+	
+	/**
+	 * Generates big bitmap of the smoothed edges of blackness that obscure the edges
+	 * of the outermost tiles we can see, so that the edges aren't just a solid black line
+	 * 
+	 * @param mapViewPlane Which plane to generate FOW bitmap for
+	 * @return Fog of war bitmap
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	@Override
+	public final BufferedImage generateFogOfWarBitmap (final int mapViewPlane) throws IOException
+	{
+		log.trace ("Entering generateFogOfWarBitmap");
+		
+		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
+		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
+		
+		// Choose the appropriate tile sets
+		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "generateFogOfWarBitmap");
+		final SmoothedTileTypeEx fullFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, null, null);
+		final SmoothedTileTypeEx partialFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR_HAVE_SEEN, null, null);
+
+		// Create the empty bitmap
+		final BufferedImage fogOfWarBitmap = new BufferedImage
+			(mapSize.getWidth () * overlandMapTileSet.getTileWidth (), mapSize.getHeight () * overlandMapTileSet.getTileHeight (), BufferedImage.TYPE_INT_ARGB);
+			
+		final Graphics2D g = fogOfWarBitmap.createGraphics ();
+		
+		// Run through each tile
+		for (int y = 0; y < mapSize.getHeight (); y++) 
+			for (int x = 0; x < mapSize.getWidth (); x++)
+			{
+				final FogOfWarStateID state = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+					(mapViewPlane).getRow ().get (y).getCell ().get (x);
+				
+				// First deal with the "full" fog of war, i.e. the border between areas we either
+				// can or have seen, & haven't seen, which is a totally black smoothing border
+				if (state != FogOfWarStateID.NEVER_SEEN)
+				{
+					// Generate the bitmask for this map cell
+					final StringBuffer bitmask = new StringBuffer ();
+					for (int d = 1; d <= maxDirection; d++)
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, mapViewPlane);
+						if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
+						{
+							final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+							
+							if (otherState == FogOfWarStateID.NEVER_SEEN)
+								bitmask.append ("0");
+							else
+								bitmask.append ("1");
+						}
+						else
+							bitmask.append ("1");
+					}
+
+					// If this tile has no Fog of War anywhere around it, then we don't need to obscure its edges in any way
+					final String bitmaskString = bitmask.toString ();
+					if (!bitmaskString.equals ("11111111"))
+					{
+						final BufferedImage image = getUtils ().loadImage (fullFogOfWar.getRandomImage (bitmaskString).getTileFile ());
+						g.drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+					}							 
+				}
+				
+				// Now deal with the "partial" fog of war, i.e. the border between areas we can see now, and areas we've seen
+				// before and are remembering, which is greyed out slightly on the map display
+				if (state == FogOfWarStateID.CAN_SEE)
+				{
+					// Generate the bitmask for this map cell
+					final StringBuffer bitmask = new StringBuffer ();
+					for (int d = 1; d <= maxDirection; d++)
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, mapViewPlane);
+						if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
+						{
+							final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+							
+							if (otherState == FogOfWarStateID.HAVE_SEEN)
+								bitmask.append ("0");
+							else
+								bitmask.append ("1");
+						}
+						else
+							bitmask.append ("1");
+					}
+
+					// If this tile has no Fog of War anywhere around it, then we don't need to obscure its edges in any way
+					final String bitmaskString = bitmask.toString ();
+					if (!bitmaskString.equals ("11111111"))
+					{
+						final BufferedImage image = getUtils ().loadImage (partialFogOfWar.getRandomImage (bitmaskString).getTileFile ());
+						g.drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+					}							 
+				}
+			}
+		
+		g.dispose ();
+		
+		log.trace ("Exiting generateFogOfWarBitmap");
+		return fogOfWarBitmap;
+	}
+	
+	/**
+	 * @param playerID City owner player ID
+	 * @return City flag image in their correct colour 
+	 * @throws IOException If there is a problem loading the flag image
+	 */
+	private final BufferedImage getCityFlagImage (final int playerID) throws IOException
+	{
+		BufferedImage image = cityFlagImages.get (playerID);
+		if (image == null)
+		{
+			// Generate a new one
+			final BufferedImage whiteImage = getUtils ().loadImage (GraphicsDatabaseConstants.IMAGE_CITY_FLAG);
+			
+			final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), playerID, "getCityFlagImage");
+			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+			
+			image = getUtils ().multiplyImageByColour (whiteImage, Integer.parseInt (trans.getFlagColour (), 16));
+			cityFlagImages.put (playerID, image);
+		}
+		return image;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+
+	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param csu Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils csu)
+	{
+		coordinateSystemUtils = csu;
+	}
+
+	/**
+	 * @return Helper methods and constants for creating and laying out Swing components
+	 */
+	public final NdgUIUtils getUtils ()
+	{
+		return utils;
+	}
+
+	/**
+	 * @param util Helper methods and constants for creating and laying out Swing components
+	 */
+	public final void setUtils (final NdgUIUtils util)
+	{
+		utils = util;
+	}
+}

@@ -5,9 +5,9 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.ui.MainMenuUI;
-import momime.client.ui.NewGameUI;
-import momime.client.ui.OverlandMapUI;
+import momime.client.ui.frames.MainMenuUI;
+import momime.client.ui.frames.NewGameUI;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.common.messages.servertoclient.v0_9_5.StartGameMessage;
 
 import org.apache.commons.logging.Log;

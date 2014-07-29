@@ -5155,7 +5155,45 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="Chat">
 			<languageEntryText>Chat</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Turn">
+			<languageEntryText>MONTH YEAR (Turn TURN)</languageEntryText>
+		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmMapRightHandBar">
+		<languageEntry languageEntryID="Cancel">
+			<languageEntryText>Cancel</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Done">
+			<languageEntryText>Done</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Patrol">
+			<languageEntryText>Patrol</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Wait">
+			<languageEntryText>Wait</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OnePlayerAtATimeCurrentPlayer">
+			<languageEntryText>Current player:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SimultaneousTurnsLine1">
+			<languageEntryText>Waiting for</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SimultaneousTurnsLine2">
+			<languageEntryText>other players</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ProductionPerTurn">
+			<languageEntryText>AMOUNT_PER_TURN PRODUCTION_TYPE per turn</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ProductionPerTurnMagicPower">
+			<languageEntryText>Power Base AMOUNT_PER_TURN</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="GoldStored">
+			<languageEntryText>AMOUNT_STORED GP</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ManaStored">
+			<languageEntryText>AMOUNT_STORED MP</languageEntryText>
+		</languageEntry>
+	</languageCategory>	
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Name City</languageEntryText>

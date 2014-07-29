@@ -1,4 +1,4 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
 /**
  * Allows spring to create instances of frames that we allow multiple copies of, like message boxes and the city screen, and perform all necessary injections

@@ -25,4 +25,13 @@ public interface PendingMovementUtils
 	 * @param unitURN Unit to remove from pending movements
 	 */
 	public void removeAnyPendingMovesThatIncludeUnit (final List<PendingMovement> moves, final int unitURN);
+	
+	/**
+	 * Searches for a pending movement that includes this unit
+	 * 
+	 * @param moves List of pending movements to work with
+	 * @param unitURN Unit to search for
+	 * @return Pending movement that includes this unit if there is one; null if none was found
+	 */
+	public PendingMovement findPendingMoveForUnit (final List<PendingMovement> moves, final int unitURN);
 }

@@ -213,6 +213,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="updateGlobalEconomyMessage" class="momime.client.messages.process.UpdateGlobalEconomyMessageImpl" scope="prototype">
 		<property name="client" ref="momClient" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype">
@@ -222,6 +223,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype">
 		<property name="client" ref="momClient" />
+	</bean>
+
+	<bean id="setCurrentPlayerMessage" class="momime.client.messages.process.SetCurrentPlayerMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+	</bean>
+
+	<bean id="endOfContinuedMovementMessage" class="momime.client.messages.process.EndOfContinuedMovementMessageImpl" scope="prototype">
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
@@ -254,7 +267,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype" />
 	<bean id="overlandCastQueuedMessage" class="momime.client.messages.process.OverlandCastQueuedMessageImpl" scope="prototype" />
 	<bean id="destroyBuildingMessage" class="momime.client.messages.process.DestroyBuildingMessageImpl" scope="prototype" />
-	<bean id="endOfContinuedMovementMessage" class="momime.client.messages.process.EndOfContinuedMovementMessageImpl" scope="prototype" />
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype" />
 	<bean id="spellResearchChangedMessage" class="momime.client.messages.process.SpellResearchChangedMessageImpl" scope="prototype" />
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype" />
@@ -266,7 +278,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype" />
 	<bean id="updateManaSpentOnCastingCurrentSpellMessage" class="momime.client.messages.process.UpdateManaSpentOnCastingCurrentSpellMessageImpl" scope="prototype" />
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
-	<bean id="setCurrentPlayerMessage" class="momime.client.messages.process.SetCurrentPlayerMessageImpl" scope="prototype" />
 	<bean id="overlandMovementTypesMessage" class="momime.client.messages.process.OverlandMovementTypesMessageImpl" scope="prototype" />
 	<bean id="cancelCombatAreaEffectMessage" class="momime.client.messages.process.CancelCombatAreaEffectMessageImpl" scope="prototype" />
 	<bean id="askForCaptureCityDecisionMessage" class="momime.client.messages.process.AskForCaptureCityDecisionMessageImpl" scope="prototype" />
@@ -275,6 +286,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateTerrainMessage" class="momime.client.messages.process.UpdateTerrainMessageImpl" scope="prototype">
 		<property name="client" ref="momClient" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 	</bean>
 
@@ -326,7 +338,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
-		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
@@ -354,6 +366,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
+	</bean>
+
+	<bean id="overlandMapBitmapGenerator" class="momime.client.calculations.OverlandMapBitmapGeneratorImpl">
+		<property name="client" ref="momClient" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="utils" ref="uiUtils" />
+	</bean>
+	
+	<bean id="overlandMapProcessing" class="momime.client.process.OverlandMapProcessingImpl">
+		<property name="client" ref="momClient" />
+		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 	</bean>
 	
 	<!-- Fonts
@@ -384,7 +408,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- UI components -->
 
-	<bean id="mainMenuUI" class="momime.client.ui.MainMenuUI">
+	<bean id="mainMenuUI" class="momime.client.ui.frames.MainMenuUI">
 		<property name="version" value="${momime.client.version}" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
@@ -398,7 +422,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 	</bean>
 
-	<bean id="chooseLanguageUI" class="momime.client.ui.ChooseLanguageUI">
+	<bean id="chooseLanguageUI" class="momime.client.ui.frames.ChooseLanguageUI">
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="mainMenuUI" ref="mainMenuUI" />
@@ -411,7 +435,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
 	</bean>
 	
-	<bean id="connectToServerUI" class="momime.client.ui.ConnectToServerUI">
+	<bean id="connectToServerUI" class="momime.client.ui.frames.ConnectToServerUI">
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
@@ -423,7 +447,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	
-	<bean id="newGameUI" class="momime.client.ui.NewGameUI">
+	<bean id="newGameUI" class="momime.client.ui.frames.NewGameUI">
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
@@ -436,17 +460,30 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
+	
+	<bean id="overlandMapRightHandPanel" class="momime.client.ui.panels.OverlandMapRightHandPanel">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="momClient" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+	</bean>
 
-	<bean id="overlandMapUI" class="momime.client.ui.OverlandMapUI">
+	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="client" ref="momClient" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
-		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="utils" ref="uiUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<!-- Prototype UI components -->
@@ -464,24 +501,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- Prototype UI frames -->
 	
 	<bean id="prototypeFrameCreator" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
-		<property name="serviceLocatorInterface" value="momime.client.ui.PrototypeFrameCreator" />
+		<property name="serviceLocatorInterface" value="momime.client.ui.frames.PrototypeFrameCreator" />
 	</bean>
 	
-	<bean id="messageBoxUI" class="momime.client.ui.MessageBoxUI" scope="prototype">
+	<bean id="messageBoxUI" class="momime.client.ui.frames.MessageBoxUI" scope="prototype">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	
-	<bean id="calculationBoxUI" class="momime.client.ui.CalculationBoxUI" scope="prototype">
+	<bean id="calculationBoxUI" class="momime.client.ui.frames.CalculationBoxUI" scope="prototype">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	
-	<bean id="editStringUI" class="momime.client.ui.EditStringUI" scope="prototype">
+	<bean id="editStringUI" class="momime.client.ui.frames.EditStringUI" scope="prototype">
 		<property name="largeFont" ref="largeFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
@@ -499,7 +536,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 	</bean>
 	
-	<bean id="cityViewUI" class="momime.client.ui.CityViewUI" scope="prototype">
+	<bean id="cityViewUI" class="momime.client.ui.frames.CityViewUI" scope="prototype">
 		<property name="client" ref="momClient" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />
@@ -518,7 +555,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityViewPanel" ref="cityViewPanel" />		<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 
-	<bean id="changeConstructionUI" class="momime.client.ui.ChangeConstructionUI" scope="prototype">
+	<bean id="changeConstructionUI" class="momime.client.ui.frames.ChangeConstructionUI" scope="prototype">
 		<property name="client" ref="momClient" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="languageHolder" ref="languageHolder" />

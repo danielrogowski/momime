@@ -1,4 +1,4 @@
-package momime.client.ui;
+package momime.client.language;
 
 /**
  * All screens (unless maybe some trivial screen made only of images and no text) register themselves by calling the
@@ -10,11 +10,11 @@ public interface LanguageChangeMaster
 	 * Asks that the master implementing this interface call the listener's .languageChanged () method whenever the selected language changes
 	 * @param listener Screen on which to call the .languageChanged () method
 	 */
-	public void addLanuageChangeListener (final MomClientUI listener);
+	public void addLanuageChangeListener (final LanguageVariableUI listener);
 
 	/**
 	 * Since singleton screens have their containers kept around, this is typically only used by prototype screens disposing themselves
 	 * @param listener Screen on which to cancel calling the .languageChanged () method
 	 */
-	public void removeLanuageChangeListener (final MomClientUI listener);
+	public void removeLanuageChangeListener (final LanguageVariableUI listener);
 }

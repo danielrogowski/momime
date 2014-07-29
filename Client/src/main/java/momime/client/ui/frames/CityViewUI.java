@@ -1,4 +1,4 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -30,6 +30,7 @@ import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
+import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
@@ -54,7 +55,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
  * City screen, so you can view current buildings, production and civilians, examine
  * calculation breakdowns and change production and civilian task assignments
  */
-public final class CityViewUI extends MomClientAbstractUI
+public final class CityViewUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (CityViewUI.class);

@@ -1,9 +1,7 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -21,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
+import momime.client.ui.MomUIConstants;
 import momime.common.messages.clienttoserver.v0_9_5.ChooseCityNameMessage;
 
 import org.apache.commons.logging.Log;
@@ -32,7 +31,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 /**
  * Frame which a prompt, text box, and takes some action when OK is clicked
  */
-public final class EditStringUI extends MomClientAbstractUI
+public final class EditStringUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (EditStringUI.class);
@@ -136,22 +135,8 @@ public final class EditStringUI extends MomClientAbstractUI
 		});
 		
 		// Initialize the content pane
-		final JPanel contentPane = new JPanel ()
-		{
-			private static final long serialVersionUID = 2146795759115714418L;
-
-			@Override
-			protected final void paintComponent (final Graphics g)
-			{
-				super.paintComponent (g);
-				g.drawImage (background, 0, 0, null);
-			}
-		};
-		contentPane.setBackground (Color.BLACK);
+		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		contentPane.setBorder (BorderFactory.createEmptyBorder (2, 19, 8, 19));
-		
-		final Dimension fixedSize = new Dimension (background.getWidth (), background.getHeight ());
- 		contentPane.setPreferredSize (fixedSize);
 		
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());

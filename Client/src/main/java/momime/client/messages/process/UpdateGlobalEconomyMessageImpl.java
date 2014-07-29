@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +36,9 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 
 	/**
 	 * @param sender Connection to the server
@@ -54,6 +58,9 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 		
 		getClient ().getOurTransientPlayerPrivateKnowledge ().setOverlandCastingSkillRemainingThisTurn (getOverlandCastingSkillRemainingThisTurn ());
 		
+		// Update new values in UI
+		getOverlandMapRightHandPanel ().updateGlobalEconomyValues ();
+		
 		log.trace ("Exiting process");
 	}
 
@@ -71,5 +78,21 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

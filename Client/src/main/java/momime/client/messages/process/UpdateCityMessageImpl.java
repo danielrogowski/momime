@@ -6,10 +6,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
-import momime.client.ui.CityViewUI;
-import momime.client.ui.EditStringUI;
-import momime.client.ui.OverlandMapUI;
-import momime.client.ui.PrototypeFrameCreator;
+import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.EditStringUI;
+import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessage;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 

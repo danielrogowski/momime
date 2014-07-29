@@ -9,17 +9,17 @@ import javax.swing.SwingUtilities;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.ClientDatabaseExImpl;
 import momime.client.database.v0_9_5.NewGameDatabase;
-import momime.client.ui.ChangeConstructionUI;
-import momime.client.ui.CityViewUI;
-import momime.client.ui.ConnectToServerUI;
-import momime.client.ui.MainMenuUI;
-import momime.client.ui.MessageBoxUI;
-import momime.client.ui.NewGameUI;
-import momime.client.ui.OverlandMapUI;
-import momime.client.ui.PrototypeFrameCreator;
+import momime.client.ui.frames.ChangeConstructionUI;
+import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.ConnectToServerUI;
+import momime.client.ui.frames.MainMenuUI;
+import momime.client.ui.frames.MessageBoxUI;
+import momime.client.ui.frames.NewGameUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
@@ -60,8 +60,8 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	/** New Game UI */
 	private NewGameUI newGameUI;
 	
-	/** Overland map UI */
-	private OverlandMapUI overlandMapUI;
+	/** Overland map bitmap generator */
+	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -199,7 +199,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			{
 				((ClientDatabaseExImpl) getClientDB ()).buildMaps ();
 				getNewGameUI ().afterJoinedSession ();
-				getOverlandMapUI ().afterJoinedSession ();
+				getOverlandMapBitmapGenerator ().afterJoinedSession ();
 			}
 
 			/**
@@ -464,19 +464,19 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	}
 	
 	/**
-	 * @return Overland map UI
+	 * @return Overland map bitmap generator
 	 */
-	public final OverlandMapUI getOverlandMapUI ()
+	public final OverlandMapBitmapGenerator getOverlandMapBitmapGenerator ()
 	{
-		return overlandMapUI;
+		return overlandMapBitmapGenerator;
 	}
-
+	
 	/**
-	 * @param ui Overland map UI
+	 * @param gen Overland map bitmap generator
 	 */
-	public final void setOverlandMapUI (final OverlandMapUI ui)
+	public final void setOverlandMapBitmapGenerator (final OverlandMapBitmapGenerator gen)
 	{
-		overlandMapUI = ui;
+		overlandMapBitmapGenerator = gen;
 	}
 	
 	/**

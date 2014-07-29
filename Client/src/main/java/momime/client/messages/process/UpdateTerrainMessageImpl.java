@@ -6,7 +6,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
-import momime.client.ui.OverlandMapUI;
+import momime.client.calculations.OverlandMapBitmapGenerator;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessage;
 import momime.common.messages.v0_9_5.MemoryGridCell;
@@ -36,6 +37,9 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
 	
+	/** Overland map bitmap generator */
+	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
+
 	/** Operations for 3D boolean map areas */
 	private BooleanMapAreaOperations3D booleanMapAreaOperations3D;
 
@@ -103,7 +107,7 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 		log.trace ("Entering endUpdates");
 		
 		getBooleanMapAreaOperations3D ().enlarge (areaToSmooth, null);
-		getOverlandMapUI ().smoothMapTerrain (areaToSmooth);
+		getOverlandMapBitmapGenerator ().smoothMapTerrain (areaToSmooth);
 		
 		log.trace ("Exiting endUpdates");
 	}
@@ -154,5 +158,21 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	public final void setBooleanMapAreaOperations3D (final BooleanMapAreaOperations3D op)
 	{
 		booleanMapAreaOperations3D = op;
+	}
+
+	/**
+	 * @return Overland map bitmap generator
+	 */
+	public final OverlandMapBitmapGenerator getOverlandMapBitmapGenerator ()
+	{
+		return overlandMapBitmapGenerator;
+	}
+	
+	/**
+	 * @param gen Overland map bitmap generator
+	 */
+	public final void setOverlandMapBitmapGenerator (final OverlandMapBitmapGenerator gen)
+	{
+		overlandMapBitmapGenerator = gen;
 	}
 }

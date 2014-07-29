@@ -1,7 +1,8 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
@@ -12,16 +13,16 @@ import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
 /**
- * Tests the CalculationBoxUI class
+ * Tests the MessageBoxUI class
  */
-public final class TestCalculationBoxUI
+public final class TestMessageBoxUI
 {
 	/**
-	 * Tests the CalculationBoxUI form, with fixed text
+	 * Tests the MessageBoxUI form, with fixed text
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculationBoxUI_FixedText () throws Exception
+	public final void testMessageBoxUI_FixedText () throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -38,7 +39,7 @@ public final class TestCalculationBoxUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Set up form
-		final CalculationBoxUI box = new CalculationBoxUI ();
+		final MessageBoxUI box = new MessageBoxUI ();
 		box.setUtils (utils);
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
@@ -52,11 +53,11 @@ public final class TestCalculationBoxUI
 	}
 
 	/**
-	 * Tests the CalculationBoxUI form, with text read from the language XML
+	 * Tests the MessageBoxUI form, with text read from the language XML
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculationBoxUI_VariableText () throws Exception
+	public final void testMessageBoxUI_VariableText () throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -75,7 +76,7 @@ public final class TestCalculationBoxUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Set up form
-		final CalculationBoxUI box = new CalculationBoxUI ();
+		final MessageBoxUI box = new MessageBoxUI ();
 		box.setUtils (utils);
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
@@ -91,11 +92,11 @@ public final class TestCalculationBoxUI
 	}
 
 	/**
-	 * Tests the CalculationBoxUI form, with long enough text that it needs a scroll bar
+	 * Tests the MessageBoxUI form, with long enough text that it needs a scroll bar
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculationBoxUI_ScrollBar () throws Exception
+	public final void testMessageBoxUI_ScrollBar () throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -112,12 +113,12 @@ public final class TestCalculationBoxUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Set up form
-		final CalculationBoxUI box = new CalculationBoxUI ();
+		final MessageBoxUI box = new MessageBoxUI ();
 		box.setUtils (utils);
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
 		box.setTitle ("Message box test using fixed text");
-		box.setText ("Here's some\r\nfixed text\r\nthat includes\r\na bunch of\r\ncarriage returns\r\nof lines to\r\nmake sure that\r\nwe need\r\nto display\r\na scroll bar\r\non the\r\nmessage box\r\nblah blah\r\nanother line\r\nmore blah.");
+		box.setText ("Here's some fixed text\r\nthat includes\r\na bunch of carriage returns\r\nof lines to\r\nmake sure that\r\nwe need to display\r\na scroll bar\r\non the message box.");
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
 		// Display form		

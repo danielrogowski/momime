@@ -1,4 +1,4 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,19 +27,13 @@ import javax.swing.Timer;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.AnimationEx;
+import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.MapFeatureEx;
-import momime.client.graphics.database.SmoothedTileTypeEx;
 import momime.client.graphics.database.TileSetEx;
-import momime.client.graphics.database.v0_9_5.CityImage;
-import momime.client.graphics.database.v0_9_5.SmoothedTile;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
+import momime.client.ui.MomUIConstants;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
-import momime.common.messages.v0_9_5.FogOfWarStateID;
-import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
@@ -50,8 +44,6 @@ import momime.common.utils.MemoryGridCellUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -60,7 +52,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 /**
  * Screen for displaying the overland map, including the buttons and side panels and so on that appear in the same frame
  */
-public final class OverlandMapUI extends MomClientAbstractUI
+public final class OverlandMapUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (OverlandMapUI.class);
@@ -71,11 +63,11 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 	
-	/** Coordinate system utils */
-	private CoordinateSystemUtils coordinateSystemUtils;
-	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
+	
+	/** Bitmap generator */
+	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
 	
 	/** Small font */
 	private Font smallFont;
@@ -83,8 +75,8 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
-	/** Smoothed tiles to display at every map cell */
-	private SmoothedTile [] [] [] smoothedTiles;
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
@@ -92,9 +84,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	/** Bitmap for the shading at the edges of the area we can see */
 	private BufferedImage fogOfWarBitmap;
 	
-	/** Colour multiplied flags for each player's cities */
-	final Map<Integer, BufferedImage> cityFlagImages = new HashMap<Integer, BufferedImage> ();
-
 	/** Colour backgrounds for each player's units */
 	final Map<Integer, BufferedImage> unitBackgroundImages = new HashMap<Integer, BufferedImage> ();
 	
@@ -113,9 +102,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	/** Border around the top row of gold buttons */ 
 	private BufferedImage topBarBackground;
 
-	/** Right hand panel where the surveyor, next turn button and so on go */
-	private BufferedImage rightHandPanelBackground;
-	
 	/** Number of pixels at the edge of the window where the map scrolls */
 	private final static int MOUSE_SCROLL_WIDTH = 8;
 	
@@ -170,17 +156,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	private JLabel turnLabel;
 	
 	/**
-	 * Creates the smoothedTiles array as the correct size
-	 * Can't just do this at the start of init (), because the server sends the first FogOfWarVisibleAreaChanged prior to the overland map being displayed,
-	 * so we can prepare the map image before displaying it - so we have to create the area for it to prepare it into
-	 */
-	public final void afterJoinedSession ()
-	{
-		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
-		smoothedTiles = new SmoothedTile [mapSize.getDepth ()] [mapSize.getHeight ()] [mapSize.getWidth ()];
-	}
-	
-	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
 	 */
@@ -201,8 +176,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		final BufferedImage topBarZoomOutPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/zoomOutPressed.png");
 		final BufferedImage topBarOptionsNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/optionsNormal.png");
 		final BufferedImage topBarOptionsPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/optionsPressed.png");
-
-		rightHandPanelBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/background.png");
 
 		// Actions
 		gameAction = new AbstractAction ()
@@ -301,42 +274,10 @@ public final class OverlandMapUI extends MomClientAbstractUI
  		// This is a 2x2 grid, with the top two cells being joined into one long bar
 		contentPane.setLayout (new GridBagLayout ());
 		
-		final Dimension mapButtonBarSize = new Dimension (topBarBackground.getWidth (), topBarBackground.getHeight ());
-		final JPanel mapButtonBar = new JPanel ()
-		{
-			private static final long serialVersionUID = -7651440273728992760L;
-
-			@Override
-			protected final void paintComponent (final Graphics g)
-			{
-				super.paintComponent (g);
-				g.drawImage (topBarBackground, 0, 0, null);
-			}
-		};
-		
-		mapButtonBar.setMinimumSize (mapButtonBarSize);
-		mapButtonBar.setMaximumSize (mapButtonBarSize);
-		mapButtonBar.setPreferredSize (mapButtonBarSize);
+		final JPanel mapButtonBar = getUtils ().createPanelWithBackgroundImage (topBarBackground);
 		contentPane.add (mapButtonBar, getUtils ().createConstraintsNoFill (0, 0, 2, 1, INSET, GridBagConstraintsNoFill.WEST));
 
-		final Dimension rightHandPanelSize = new Dimension (rightHandPanelBackground.getWidth (), rightHandPanelBackground.getHeight ());
-		final JPanel rightHandPanel = new JPanel ()
-		{
-			private static final long serialVersionUID = -2570535503816766972L;
-
-			@Override
-			protected final void paintComponent (final Graphics g)
-			{
-				super.paintComponent (g);
-				g.drawImage (rightHandPanelBackground, 0, 0, null);
-			}
-		};
-		rightHandPanel.setBackground (Color.BLACK);
-		
-		rightHandPanel.setMinimumSize (rightHandPanelSize);
-		rightHandPanel.setMaximumSize (rightHandPanelSize);
-		rightHandPanel.setPreferredSize (rightHandPanelSize);
-		contentPane.add (rightHandPanel, getUtils ().createConstraintsNoFill (1, 1, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
+		contentPane.add (getOverlandMapRightHandPanel ().getPanel (), getUtils ().createConstraintsNoFill (1, 1, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
 		
 		final JPanel sceneryPanel = new JPanel ()
 		{
@@ -377,44 +318,53 @@ public final class OverlandMapUI extends MomClientAbstractUI
 							mapZoomedWidth, mapZoomedHeight, null);
 					}
 				
-				// Draw units dynamically, over the bitmap
+				// Draw units dynamically, over the bitmap.
+				
+				// For some reason, from the JUnit test for the overland map UI, this code makes the length of time that
+				// paintComponent takes to execute behave very erratically, despite the fact that it never has anything to do
+				// since the unit test includes no units to draw so unitToDrawAtEachLocation will always be a big area of nulls.
+				
+				// However this only seems to happen within the unit test and not when when this is running for real, so
+				// my only conclusion can be that its Mockito itself that behaves erratically.
 				final MemoryUnit [] [] unitToDrawAtEachLocation = chooseUnitToDrawAtEachLocation ();
-				for (int x = 0; x < getClient ().getSessionDescription ().getMapSize ().getWidth (); x++)
-					for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
-					{
-						final MemoryUnit unit = unitToDrawAtEachLocation [y] [x];
-						if (unit != null)
+				if (unitToDrawAtEachLocation != null)
+					for (int x = 0; x < getClient ().getSessionDescription ().getMapSize ().getWidth (); x++)
+						for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
 						{
-							try
+							final MemoryUnit unit = unitToDrawAtEachLocation [y] [x];
+							if (unit != null)
 							{
-								final BufferedImage unitBackground = getUnitBackgroundImage (unit.getOwningPlayerID ());
-								final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+								try
+								{
+									final BufferedImage unitBackground = getUnitBackgroundImage (unit.getOwningPlayerID ());
+									final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
 
-								final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
-								final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
+									final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
+									final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
 								
-								final int xpos = (((x * overlandMapTileSet.getTileWidth ()) - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
-								final int ypos = (((y * overlandMapTileSet.getTileHeight ()) - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+									final int xpos = (((x * overlandMapTileSet.getTileWidth ()) - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
+									final int ypos = (((y * overlandMapTileSet.getTileHeight ()) - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
 
-								for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
-									for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
-									{
-										// Draw the unit
-										g.drawImage (unitBackground,
-											(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
-											unitZoomedWidth, unitZoomedHeight, null);
+									for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+										for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+										{
+											// Draw the unit
+											g.drawImage (unitBackground,
+												(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+												unitZoomedWidth, unitZoomedHeight, null);
 
-										g.drawImage (unitImage,
-											(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
-											unitZoomedWidth, unitZoomedHeight, null);
-									}
-							}
-							catch (final IOException e)
-							{
-								log.error ("Error trying to load graphics to draw Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
+											g.drawImage (unitImage,
+												(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+												unitZoomedWidth, unitZoomedHeight, null);
+										}
+								}
+								catch (final IOException e)
+								{
+									log.error ("Error trying to load graphics to draw Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
+									
+								}
 							}
 						}
-					}
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);
@@ -551,7 +501,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 
 		final GridBagConstraints turnLabelConstraints = getUtils ().createConstraintsNoFill (13, 0, 1, 1, INSET, GridBagConstraintsNoFill.EAST);
 		turnLabelConstraints.weightx = 1;		// Right justify the label
-		turnLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "January 1400 (Turn X)");
+		turnLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		mapButtonBar.add (turnLabel, turnLabelConstraints);
 
 		mapButtonBar.add (Box.createRigidArea (new Dimension (7, 0)), getUtils ().createConstraintsNoFill (14, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
@@ -635,29 +585,45 @@ public final class OverlandMapUI extends MomClientAbstractUI
 					int newMapViewX = mapViewX;
 					int newMapViewY = mapViewY;
 					
+					boolean mapViewUpdated = false;
 					if (pos.x < MOUSE_SCROLL_WIDTH)
+					{
 						newMapViewX = newMapViewX - MOUSE_SCROLL_SPEED;
+						mapViewUpdated = true;
+					}
 					
 					if (pos.y < MOUSE_SCROLL_WIDTH)
+					{
 						newMapViewY = newMapViewY - MOUSE_SCROLL_SPEED;
+						mapViewUpdated = true;
+					}
 
 					if (pos.x >= contentPane.getWidth () - MOUSE_SCROLL_WIDTH)
+					{
 						newMapViewX = newMapViewX + MOUSE_SCROLL_SPEED;
+						mapViewUpdated = true;
+					}
 
 					if (pos.y >= contentPane.getHeight () - MOUSE_SCROLL_WIDTH)
-						newMapViewY = newMapViewY + MOUSE_SCROLL_SPEED;
-					
-					newMapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
-						sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
-
-					newMapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
-						sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
-					
-					if ((newMapViewX != mapViewX) || (newMapViewY != mapViewY))
 					{
-						mapViewX = newMapViewX;
-						mapViewY = newMapViewY;
-						sceneryPanel.repaint ();
+						newMapViewY = newMapViewY + MOUSE_SCROLL_SPEED;
+						mapViewUpdated = true;
+					}
+					
+					if (mapViewUpdated)
+					{
+						newMapViewX = fixMapViewLimits (newMapViewX, (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10,
+							sceneryPanel.getWidth (), getClient ().getSessionDescription ().getMapSize ().isWrapsLeftToRight ());
+
+						newMapViewY = fixMapViewLimits (newMapViewY, (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10,
+							sceneryPanel.getHeight (), getClient ().getSessionDescription ().getMapSize ().isWrapsTopToBottom ());
+					
+						if ((newMapViewX != mapViewX) || (newMapViewY != mapViewY))
+						{
+							mapViewX = newMapViewX;
+							mapViewY = newMapViewY;
+							sceneryPanel.repaint ();
+						}
 					}
 				}
 			}
@@ -672,6 +638,8 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	@Override
 	public final void languageChanged ()
 	{
+		log.trace ("Entering languageChanged");
+		
 		gameAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Game"));
 		spellsAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Spells"));
 		armiesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Armies"));
@@ -680,6 +648,8 @@ public final class OverlandMapUI extends MomClientAbstractUI
 		planeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Plane"));
 		messagesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "NewTurnMessages"));
 		chatAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Chat"));
+
+		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -713,117 +683,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	}
 	
 	/**
-	 * Converts the tile types sent by the server into actual tile numbers, smoothing the edges of various terrain types in the process
-	 * @param areaToSmooth Keeps track of which tiles have been updated, so we know which need graphics updating for; or can supply null to resmooth everything
-	 * @throws RecordNotFoundException If required entries in the graphics XML cannot be found
-	 */
-	public final void smoothMapTerrain (final MapArea3D<Boolean> areaToSmooth) throws RecordNotFoundException
-	{
-		log.trace ("Entering smoothMapTerrain: " + areaToSmooth);
-
-		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
-		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
-		
-		// Choose the appropriate tile set
-		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "smoothMapTerrain");
-		
-		// Now check each map cell
-		for (int planeNo = 0; planeNo < mapSize.getDepth (); planeNo++) 
-			for (int y = 0; y < mapSize.getHeight (); y++) 
-				for (int x = 0; x < mapSize.getWidth (); x++)
-					if ((areaToSmooth == null) || ((areaToSmooth.get (x, y, planeNo) != null) && (areaToSmooth.get (x, y, planeNo))))
-					{
-						final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-							(planeNo).getRow ().get (y).getCell ().get (x);
-						
-						// Have we ever seen this tile?
-						final String tileTypeID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getTileTypeID ();
-						if (tileTypeID == null)
-							smoothedTiles [planeNo] [y] [x] = null;
-						else
-						{
-							final SmoothedTileTypeEx smoothedTileType = overlandMapTileSet.findSmoothedTileType (tileTypeID, mapViewPlane, null);
-							
-							// If this is ticked then fix the bitmask
-							// If a land based tile, want to assume grass in every direction (e.g. for mountains, draw a single mountain), so want 11111111
-							
-							// But for a sea tile, this looks really daft - you get a 'sea' of lakes surrounded by grass!  So we have to force these to 00000000 instead
-							// to make it look remotely sensible
-							
-							// Rather than hard coding which tile types need 00000000 and which need 11111111, the graphics XML file has a special
-							// entry under every tile for the image to use for 'NoSmooth' = No Smoothing
-							final StringBuffer bitmask = new StringBuffer ();
-							
-							// --- Leaving this 'if' out for now since there's no options screen yet via which to turn smoothing off, but I did prove that it works ---
-							// bitmask.append (GraphicsDatabaseConstants.VALUE_TILE_BITMASK_NO_SMOOTHING);
-							
-							{
-								// 3 possibilities for how we create the bitmask
-								// 0 = force 00000000
-								// 1 = use 0 for this type of tile, 1 for anything else (assume grass)
-								// 2 = use 0 for this type of tile, 1 for anything else (assume grass), 2 for rivers (in a joining direction)
-								final int maxValueInEachDirection = overlandMapTileSet.findSmoothingSystem
-									(smoothedTileType.getSmoothingSystemID (), "smoothMapTerrain").getMaxValueEachDirection ();
-								
-								if (maxValueInEachDirection == 0)
-								{
-									for (int d = 1; d <= maxDirection; d++)
-										bitmask.append ("0");
-								}
-								
-								// If a river tile, decide whether to treat this direction as a river based on the RiverDirections FROM this tile, not by looking at adjoining tiles
-								// NB. This is only inland rivers - oceanside river mouths are just special shore/ocean tiles
-								else if ((maxValueInEachDirection == 1) && (gc.getTerrainData ().getRiverDirections () != null))
-								{
-									for (int d = 1; d <= maxDirection; d++)
-										if (gc.getTerrainData ().getRiverDirections ().contains (new Integer (d).toString ()))
-											bitmask.append ("0");
-										else
-											bitmask.append ("1");
-								}
-								
-								// Normal type of smoothing
-								else
-								{
-									for (int d = 1; d <= maxDirection; d++)
-										
-										// Want rivers? i.e. is this an ocean tile
-										if ((maxValueInEachDirection == 2) && (gc.getTerrainData ().getRiverDirections () != null) &&
-											(gc.getTerrainData ().getRiverDirections ().contains (new Integer (d).toString ())))
-											
-											bitmask.append ("2");
-										else
-										{
-											final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, planeNo);
-											if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
-											{
-												final MemoryGridCell otherGc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-													(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
-												final String otherTileTypeID = (otherGc.getTerrainData () == null) ? null : otherGc.getTerrainData ().getTileTypeID ();
-												
-												if ((otherTileTypeID == null) || (otherTileTypeID.equals (tileTypeID)) ||
-													(otherTileTypeID.equals (smoothedTileType.getSecondaryTileTypeID ())) ||
-													(otherTileTypeID.equals (smoothedTileType.getTertiaryTileTypeID ())))
-													
-													bitmask.append ("0");
-												else
-													bitmask.append ("1");
-											}
-											else
-												bitmask.append ("0");
-										}
-								}
-							}
-
-							// The cache works directly on unsmoothed bitmasks so no reduction to do
-							smoothedTiles [planeNo] [y] [x] = smoothedTileType.getRandomImage (bitmask.toString ());
-						}
-					}
-		
-		log.trace ("Exiting smoothMapTerrain");
-	}
-	
-	/**
 	 * Generates big bitmaps of the entire overland map in each frame of animation
 	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView
 	 * 
@@ -832,96 +691,8 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	public final void regenerateOverlandMapBitmaps () throws IOException
 	{
 		log.trace ("Entering regenerateOverlandMapBitmaps: " + mapViewPlane);
-
-		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
 		
-		// We need the tile set so we know how many animation frames there are
-		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "regenerateOverlandMapBitmaps");
-		
-		// Create the set of empty bitmaps
-		overlandMapBitmaps = new BufferedImage [overlandMapTileSet.getAnimationFrameCount ()];
-		final Graphics2D [] g = new Graphics2D [overlandMapTileSet.getAnimationFrameCount ()];
-		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-		{
-			overlandMapBitmaps [frameNo] = new BufferedImage
-				(mapSize.getWidth () * overlandMapTileSet.getTileWidth (), mapSize.getHeight () * overlandMapTileSet.getTileHeight (), BufferedImage.TYPE_INT_ARGB);
-			
-			g [frameNo] = overlandMapBitmaps [frameNo].createGraphics ();
-		}
-		
-		// Run through each tile
-		for (int y = 0; y < mapSize.getHeight (); y++) 
-			for (int x = 0; x < mapSize.getWidth (); x++)
-			{
-				// Terrain
-				final SmoothedTile tile = smoothedTiles [mapViewPlane] [y] [x];
-				if (tile != null)
-				{
-					if (tile.getTileFile () != null)
-					{
-						// Use same image for all frames
-						final BufferedImage image = getUtils ().loadImage (tile.getTileFile ());
-						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-							g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
-					}
-					else if (tile.getTileAnimation () != null)
-					{
-						// Copy each animation frame over to each bitmap
-						final AnimationEx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "regenerateOverlandMapBitmaps");
-						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-						{
-							final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getFrameImageFile ());
-							g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
-						}
-					}
-				}
-				
-				// Map feature
-				final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-					(mapViewPlane).getRow ().get (y).getCell ().get (x);
-				final String mapFeatureID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getMapFeatureID ();
-				if (mapFeatureID != null)
-				{
-					final MapFeatureEx mapFeature = getGraphicsDB ().findMapFeature (mapFeatureID, "regenerateOverlandMapBitmaps");
-					final BufferedImage image = getUtils ().loadImage (mapFeature.getOverlandMapImageFile ());
-
-					// Use same image for all frames
-					for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-						g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
-				}
-			}
-		
-		// Cities have to be done in a 2nd pass, since they're larger than the terrain tiles
-		for (int y = 0; y < mapSize.getHeight (); y++) 
-			for (int x = 0; x < mapSize.getWidth (); x++)
-			{
-				final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-					(mapViewPlane).getRow ().get (y).getCell ().get (x);
-				final String citySizeID = (gc.getCityData () == null) ? null : gc.getCityData ().getCitySizeID ();
-				if (citySizeID != null)
-				{
-					final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, mapViewPlane);
-					
-					final CityImage cityImage = getGraphicsDB ().findBestCityImage (citySizeID, cityLocation,
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "regenerateOverlandMapBitmaps");
-					final BufferedImage image = getUtils ().loadImage (cityImage.getCityImageFile ());
-					
-					final int xpos = (x * overlandMapTileSet.getTileWidth ()) - ((image.getWidth () - overlandMapTileSet.getTileWidth ()) / 2);
-					final int ypos = (y * overlandMapTileSet.getTileHeight ()) - ((image.getHeight () - overlandMapTileSet.getTileHeight ()) / 2);
-
-					// Use same image for all frames
-					final BufferedImage cityFlagImage = getCityFlagImage (gc.getCityData ().getCityOwnerID ());
-					for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-					{
-						g [frameNo].drawImage (image, xpos, ypos, null);
-						g [frameNo].drawImage (cityFlagImage, xpos + cityImage.getFlagOffsetX (), ypos + cityImage.getFlagOffsetY (), null);
-					}
-				}
-			}
-		
-		// Clean up the drawing contexts 
-		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-			g [frameNo].dispose ();
+		overlandMapBitmaps = getOverlandMapBitmapGenerator ().generateOverlandMapBitmaps (mapViewPlane);
 		
 		log.trace ("Exiting regenerateOverlandMapBitmaps"); 
 	}
@@ -936,121 +707,12 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	{
 		log.trace ("Entering regenerateFogOfWarBitmap");
 		
-		final MapSizeData mapSize = getClient ().getSessionDescription ().getMapSize ();
-		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (mapSize.getCoordinateSystemType ());
-		
-		// Choose the appropriate tile sets
-		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "regenerateFogOfWarBitmap");
-		final SmoothedTileTypeEx fullFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR, null, null);
-		final SmoothedTileTypeEx partialFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.VALUE_TILE_TYPE_FOG_OF_WAR_HAVE_SEEN, null, null);
-
-		// Create the empty bitmap
-		fogOfWarBitmap = new BufferedImage
-			(mapSize.getWidth () * overlandMapTileSet.getTileWidth (), mapSize.getHeight () * overlandMapTileSet.getTileHeight (), BufferedImage.TYPE_INT_ARGB);
-			
-		final Graphics2D g = fogOfWarBitmap.createGraphics ();
-		
-		// Run through each tile
-		for (int y = 0; y < mapSize.getHeight (); y++) 
-			for (int x = 0; x < mapSize.getWidth (); x++)
-			{
-				final FogOfWarStateID state = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
-					(mapViewPlane).getRow ().get (y).getCell ().get (x);
-				
-				// First deal with the "full" fog of war, i.e. the border between areas we either
-				// can or have seen, & haven't seen, which is a totally black smoothing border
-				if (state != FogOfWarStateID.NEVER_SEEN)
-				{
-					// Generate the bitmask for this map cell
-					final StringBuffer bitmask = new StringBuffer ();
-					for (int d = 1; d <= maxDirection; d++)
-					{
-						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, mapViewPlane);
-						if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
-						{
-							final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
-								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
-							
-							if (otherState == FogOfWarStateID.NEVER_SEEN)
-								bitmask.append ("0");
-							else
-								bitmask.append ("1");
-						}
-						else
-							bitmask.append ("1");
-					}
-
-					// If this tile has no Fog of War anywhere around it, then we don't need to obscure its edges in any way
-					final String bitmaskString = bitmask.toString ();
-					if (!bitmaskString.equals ("11111111"))
-					{
-						final BufferedImage image = getUtils ().loadImage (fullFogOfWar.getRandomImage (bitmaskString).getTileFile ());
-						g.drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
-					}							 
-				}
-				
-				// Now deal with the "partial" fog of war, i.e. the border between areas we can see now, and areas we've seen
-				// before and are remembering, which is greyed out slightly on the map display
-				if (state == FogOfWarStateID.CAN_SEE)
-				{
-					// Generate the bitmask for this map cell
-					final StringBuffer bitmask = new StringBuffer ();
-					for (int d = 1; d <= maxDirection; d++)
-					{
-						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, mapViewPlane);
-						if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
-						{
-							final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
-								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
-							
-							if (otherState == FogOfWarStateID.HAVE_SEEN)
-								bitmask.append ("0");
-							else
-								bitmask.append ("1");
-						}
-						else
-							bitmask.append ("1");
-					}
-
-					// If this tile has no Fog of War anywhere around it, then we don't need to obscure its edges in any way
-					final String bitmaskString = bitmask.toString ();
-					if (!bitmaskString.equals ("11111111"))
-					{
-						final BufferedImage image = getUtils ().loadImage (partialFogOfWar.getRandomImage (bitmaskString).getTileFile ());
-						g.drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
-					}							 
-				}
-			}
-		
-		g.dispose ();
+		fogOfWarBitmap = getOverlandMapBitmapGenerator ().generateFogOfWarBitmap (mapViewPlane);
 		
 		log.trace ("Exiting regenerateFogOfWarBitmap"); 
 	}
-	
-	/**
-	 * @param playerID City owner player ID
-	 * @return City flag image in their correct colour 
-	 * @throws IOException If there is a problem loading the flag image
-	 */
-	private final BufferedImage getCityFlagImage (final int playerID) throws IOException
-	{
-		BufferedImage image = cityFlagImages.get (playerID);
-		if (image == null)
-		{
-			// Generate a new one
-			final BufferedImage whiteImage = getUtils ().loadImage (GraphicsDatabaseConstants.IMAGE_CITY_FLAG);
-			
-			final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), playerID, "getCityFlagImage");
-			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
-			
-			image = getUtils ().multiplyImageByColour (whiteImage, Integer.parseInt (trans.getFlagColour (), 16));
-			cityFlagImages.put (playerID, image);
-		}
-		return image;
-	}
 
-	/**
-	 * @param playerID Unit owner player ID
+	/**	 * @param playerID Unit owner player ID
 	 * @return Unit background image in their correct colour 
 	 * @throws IOException If there is a problem loading the background image
 	 */
@@ -1075,13 +737,14 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	 * This prefers to units with the highest special order - this will make settlers always show on top if
 	 * they're building cities, and make non-patrolling units appear in preference to patrolling units
 	 * 
-	 * @return Array of units to draw at each map cell
+	 * @return Array of units to draw at each map cell; or null if there are absolutely no units to draw
 	 */
 	final MemoryUnit [] [] chooseUnitToDrawAtEachLocation ()
 	{
 		final MemoryUnit [] [] bestUnits = new MemoryUnit
 			[getClient ().getSessionDescription ().getMapSize ().getHeight ()] [getClient ().getSessionDescription ().getMapSize ().getWidth ()];
 		
+		boolean found = false;
 		for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 
 			// Is it alive, and are we looking at the right plane to see it?
@@ -1089,6 +752,7 @@ public final class OverlandMapUI extends MomClientAbstractUI
 				(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 					(unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))))
 			{
+				found = true;
 				final MemoryUnit existingUnit = bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()];
 				
 				// Show real special orders in preference to patrol
@@ -1099,7 +763,34 @@ public final class OverlandMapUI extends MomClientAbstractUI
 					bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()] = unit;
 			}
 		
-		return bestUnits;
+		// This is really here for the benefit of the unit test, which has no units, but the performance of
+		// Mockito when executing 1000s of mocks (like in the unit loop that processes the output from this method)
+		// is very erratic and makes the scrolling very irregular.  So outputting null can cut that entire loop, and
+		// several 1000 mock invocations, out.
+		return found ? bestUnits : null;
+	}
+	
+	/**
+	 * Updates the turn label
+	 */
+	public final void updateTurnLabelText ()
+	{
+		log.trace ("Entering updateTurnLabelText");
+		
+		// Turn 1 is January 1400 - so last turn in 1400 is turn 12
+		// Months are numbered 1-12
+		final int year = 1400 + ((getClient ().getGeneralPublicKnowledge ().getTurnNumber () - 1) / 12);
+		int month = getClient ().getGeneralPublicKnowledge ().getTurnNumber () % 12;
+		if (month == 0)
+			month = 12;
+		
+		// Build up description
+		final String monthText = getLanguage ().findCategoryEntry ("Months", "MNTH" + ((month < 10) ? "0" : "") + month);
+		turnLabel.setText (getLanguage ().findCategoryEntry ("frmMapButtonBar", "Turn").replaceAll
+			("MONTH", monthText).replaceAll ("YEAR", new Integer (year).toString ()).replaceAll ("TURN",
+			new Integer (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
+		
+		log.trace ("Exiting updateTurnLabelText");
 	}
 	
 	/**
@@ -1132,22 +823,6 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	public final void setGraphicsDB (final GraphicsDatabaseEx db)
 	{
 		graphicsDB = db;
-	}
-
-	/**
-	 * @return Coordinate system utils
-	 */
-	public final CoordinateSystemUtils getCoordinateSystemUtils ()
-	{
-		return coordinateSystemUtils;
-	}
-
-	/**
-	 * @param csu Coordinate system utils
-	 */
-	public final void setCoordinateSystemUtils (final CoordinateSystemUtils csu)
-	{
-		coordinateSystemUtils = csu;
 	}
 
 	/**
@@ -1196,5 +871,36 @@ public final class OverlandMapUI extends MomClientAbstractUI
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Bitmap generator */
+	public final OverlandMapBitmapGenerator getOverlandMapBitmapGenerator ()
+	{
+		return overlandMapBitmapGenerator;
+	}
+
+	/**
+	 * @param gen Bitmap generator
+	 */
+	public final void setOverlandMapBitmapGenerator (final OverlandMapBitmapGenerator gen)
+	{
+		overlandMapBitmapGenerator = gen;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

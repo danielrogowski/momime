@@ -237,6 +237,14 @@ public final class TileSetEx extends TileSet
 		return animationFrameCount;
 	}
 
+	/** 
+	 * @param frameCount All animations used by tiles in the same tile set must share the same number of frames, which gets set here; if tile set is all static images, will be set to 1
+	 */
+	public final void setAnimationFrameCount (final int frameCount)
+	{
+		animationFrameCount = frameCount;
+	}
+
 	/**
 	 * @return All animations used by tiles in the same tile set must share the same animation speed, which gets set here; if tile set is all static images, will be left as null
 	 */
@@ -245,6 +253,14 @@ public final class TileSetEx extends TileSet
 		return animationSpeed;
 	}
 
+	/**
+	 * @param speed All animations used by tiles in the same tile set must share the same animation speed, which gets set here; if tile set is all static images, will be left as null
+	 */
+	public final void setAnimationSpeed (final Double speed)
+	{
+		animationSpeed = speed;
+	}
+	
 	/**
 	 * @return All images and animation frames used by tiles in the same tile set must share the same width
 	 */

@@ -9,8 +9,8 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.v0_9_5.NewGameDatabase;
-import momime.client.ui.ChangeConstructionUI;
-import momime.client.ui.CityViewUI;
+import momime.client.ui.frames.ChangeConstructionUI;
+import momime.client.ui.frames.CityViewUI;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;

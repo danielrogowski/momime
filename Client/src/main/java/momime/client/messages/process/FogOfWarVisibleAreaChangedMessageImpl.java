@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
-import momime.client.ui.OverlandMapUI;
+import momime.client.ui.frames.OverlandMapUI;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessageData;
 import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessageData;

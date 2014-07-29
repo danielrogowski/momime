@@ -1,4 +1,4 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,11 +27,12 @@ import javax.swing.event.DocumentListener;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.KnownServer;
+import momime.client.ui.MomUIConstants;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.sessionbase.CreateAccount;
 import com.ndg.multiplayer.sessionbase.Login;
@@ -40,7 +41,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 /**
  * Screen for choosing a server to connect to
  */
-public final class ConnectToServerUI extends MomClientAbstractUI
+public final class ConnectToServerUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (ConnectToServerUI.class);

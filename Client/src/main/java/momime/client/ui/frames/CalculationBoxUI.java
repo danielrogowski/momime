@@ -1,9 +1,6 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -18,12 +15,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
+import momime.client.ui.MomUIConstants;
+
 import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
- * Frame which displays a message with an OK button
+ * Frame which displays a long calculation with an OK button
  */
-public final class MessageBoxUI extends MomClientAbstractUI
+public final class CalculationBoxUI extends MomClientFrameUI
 {
 	/** Small font */
 	private Font smallFont;
@@ -63,7 +62,7 @@ public final class MessageBoxUI extends MomClientAbstractUI
 	protected final void init () throws IOException
 	{
 		// Load images
-		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/messageBox498x100.png");
+		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/calculationBox498x200.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Pressed.png");
 		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Disabled.png");
@@ -81,7 +80,7 @@ public final class MessageBoxUI extends MomClientAbstractUI
 		};
 		
 		// Initialize the frame
-		final MessageBoxUI ui = this;
+		final CalculationBoxUI ui = this;
 		getFrame ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
 		getFrame ().addWindowListener (new WindowAdapter ()
 		{
@@ -93,21 +92,7 @@ public final class MessageBoxUI extends MomClientAbstractUI
 		});
 		
 		// Initialize the content pane
-		final JPanel contentPane = new JPanel ()
-		{
-			private static final long serialVersionUID = 4787936461589746999L;
-
-			@Override
-			protected final void paintComponent (final Graphics g)
-			{
-				super.paintComponent (g);
-				g.drawImage (background, 0, 0, null);
-			}
-		};
-		contentPane.setBackground (Color.BLACK);
-		
-		final Dimension fixedSize = new Dimension (background.getWidth (), background.getHeight ());
- 		contentPane.setPreferredSize (fixedSize);
+		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());

@@ -1,4 +1,4 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
+import momime.client.ui.MomUIConstants;
 import momime.client.utils.AnimationController;
 
 import org.apache.commons.logging.Log;
@@ -35,7 +36,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 /**
  * Main menu with options to connect to a server and create or join games
  */
-public final class MainMenuUI extends MomClientAbstractUI
+public final class MainMenuUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MainMenuUI.class);

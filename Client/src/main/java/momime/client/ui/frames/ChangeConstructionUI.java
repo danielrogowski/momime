@@ -1,4 +1,4 @@
-package momime.client.ui;
+package momime.client.ui.frames;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -36,6 +36,7 @@ import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.ui.MomUIConstants;
 import momime.client.ui.renderer.BuildingListCellRenderer;
 import momime.client.ui.renderer.CellRendererFactory;
 import momime.client.utils.AnimationController;
@@ -63,7 +64,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 /**
  * Screen to change the current construction project at a city
  */
-public final class ChangeConstructionUI extends MomClientAbstractUI
+public final class ChangeConstructionUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (ChangeConstructionUI.class);

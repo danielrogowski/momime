@@ -40022,6 +40022,16 @@
 	<unitSkill unitSkillID="SC165">
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC165-icon.png</unitSkillImageFile>
 	</unitSkill>
+	<weaponGrade weaponGradeNumber="0" />
+	<weaponGrade weaponGradeNumber="1">
+		<weaponGradeMiniImageFile>/momime.client.graphics/weaponGrades/weaponGradeMiniImageAlchemy.png</weaponGradeMiniImageFile>
+	</weaponGrade>	
+	<weaponGrade weaponGradeNumber="2">
+		<weaponGradeMiniImageFile>/momime.client.graphics/weaponGrades/weaponGradeMiniImageMithril.png</weaponGradeMiniImageFile>
+	</weaponGrade>	
+	<weaponGrade weaponGradeNumber="3">
+		<weaponGradeMiniImageFile>/momime.client.graphics/weaponGrades/weaponGradeMiniImageAdamantium.png</weaponGradeMiniImageFile>
+	</weaponGrade>	
 	<combatTileUnitRelativeScale scale="1">
 		<combatTileFigurePositions figureCount="1">
 			<figurePositionsForFigureCount figureNumber="1">

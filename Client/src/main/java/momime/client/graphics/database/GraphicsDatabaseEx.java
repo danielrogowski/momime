@@ -6,6 +6,7 @@ import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.Unit;
+import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -62,6 +63,14 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	public Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @param weaponGradeNumber Weapon grade number to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Weapon grade object
+	 * @throws RecordNotFoundException If the weaponGradNumber doesn't exist
+	 */
+	public WeaponGrade findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param tileSetID Tile set ID to search for

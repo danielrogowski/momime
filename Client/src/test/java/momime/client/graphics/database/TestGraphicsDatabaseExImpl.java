@@ -15,6 +15,7 @@ import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.Unit;
+import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -247,6 +248,46 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		db.findUnit ("UN004", "testFindUnit_NotExists");
+	}
+
+	/**
+	 * Tests the findWeaponGrade method to find a weaponGrade ID that does exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testFindWeaponGrade_Exists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final WeaponGrade newWeaponGrade = new WeaponGrade ();
+			newWeaponGrade.setWeaponGradeNumber (n);
+			db.getWeaponGrade ().add (newWeaponGrade);
+		}
+
+		db.buildMaps ();
+
+		assertEquals (2, db.findWeaponGrade (2, "testFindWeaponGrade_Exists").getWeaponGradeNumber ());
+	}
+
+	/**
+	 * Tests the findWeaponGrade method to find a weaponGrade ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindWeaponGrade_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final WeaponGrade newWeaponGrade = new WeaponGrade ();
+			newWeaponGrade.setWeaponGradeNumber (n);
+			db.getWeaponGrade ().add (newWeaponGrade);
+		}
+
+		db.buildMaps ();
+
+		db.findWeaponGrade (4, "testFindWeaponGrade_NotExists");
 	}
 
 	/**

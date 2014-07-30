@@ -373,11 +373,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="utils" ref="uiUtils" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 	
 	<bean id="overlandMapProcessing" class="momime.client.process.OverlandMapProcessingImpl">
 		<property name="client" ref="momClient" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
+	</bean>
+	
+	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">
+		<property name="client" ref="momClient" />
+		<property name="utils" ref="uiUtils" />
 	</bean>
 	
 	<!-- Fonts
@@ -471,6 +477,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="client" ref="momClient" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="uiComponentFactory" ref="uiComponentFactory" />
 	</bean>
 
 	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">
@@ -484,6 +491,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<!-- Prototype UI components -->
@@ -496,6 +504,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="anim" ref="anim" />
+	</bean>
+
+	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.client.ui.components.UIComponentFactory" />
+	</bean>
+
+	<bean id="selectUnitButton" class="momime.client.ui.components.SelectUnitButton" scope="prototype">
+		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="momClient" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
 	<!-- Prototype UI frames -->

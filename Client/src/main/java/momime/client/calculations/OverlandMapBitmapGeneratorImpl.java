@@ -3,8 +3,6 @@ package momime.client.calculations;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationEx;
@@ -15,12 +13,12 @@ import momime.client.graphics.database.SmoothedTileTypeEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.SmoothedTile;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.messages.v0_9_5.FogOfWarStateID;
 import momime.common.messages.v0_9_5.MemoryGridCell;
-import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,8 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 
 /**
@@ -43,9 +39,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	/** Class logger */
 	private final Log log = LogFactory.getLog (OverlandMapBitmapGeneratorImpl.class);
 
-	/** Colour multiplied flags for each player's cities */
-	final Map<Integer, BufferedImage> cityFlagImages = new HashMap<Integer, BufferedImage> ();
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -57,6 +50,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
+	
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
 	
 	/** Smoothed tiles to display at every map cell */
 	private SmoothedTile [] [] [] smoothedTiles;
@@ -279,7 +275,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 					final int ypos = (y * overlandMapTileSet.getTileHeight ()) - ((image.getHeight () - overlandMapTileSet.getTileHeight ()) / 2);
 
 					// Use same image for all frames
-					final BufferedImage cityFlagImage = getCityFlagImage (gc.getCityData ().getCityOwnerID ());
+					final BufferedImage cityFlagImage = getPlayerColourImageGenerator ().getCityFlagImage (gc.getCityData ().getCityOwnerID ());
 					for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 					{
 						g [frameNo].drawImage (image, xpos, ypos, null);
@@ -402,28 +398,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	}
 	
 	/**
-	 * @param playerID City owner player ID
-	 * @return City flag image in their correct colour 
-	 * @throws IOException If there is a problem loading the flag image
-	 */
-	private final BufferedImage getCityFlagImage (final int playerID) throws IOException
-	{
-		BufferedImage image = cityFlagImages.get (playerID);
-		if (image == null)
-		{
-			// Generate a new one
-			final BufferedImage whiteImage = getUtils ().loadImage (GraphicsDatabaseConstants.IMAGE_CITY_FLAG);
-			
-			final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), playerID, "getCityFlagImage");
-			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
-			
-			image = getUtils ().multiplyImageByColour (whiteImage, Integer.parseInt (trans.getFlagColour (), 16));
-			cityFlagImages.put (playerID, image);
-		}
-		return image;
-	}
-
-	/**
 	 * @return Multiplayer client
 	 */
 	public final MomClient getClient ()
@@ -485,5 +459,21 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
+	}
+
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param gen Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
+	{
+		playerColourImageGenerator = gen;
 	}
 }

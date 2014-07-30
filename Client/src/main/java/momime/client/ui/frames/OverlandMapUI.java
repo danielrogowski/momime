@@ -15,8 +15,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -32,10 +30,10 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.UnitSpecialOrder;
 import momime.common.messages.v0_9_5.UnitStatusID;
@@ -45,8 +43,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
@@ -77,15 +73,15 @@ public final class OverlandMapUI extends MomClientFrameUI
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
 	
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
 	
 	/** Bitmap for the shading at the edges of the area we can see */
 	private BufferedImage fogOfWarBitmap;
-	
-	/** Colour backgrounds for each player's units */
-	final Map<Integer, BufferedImage> unitBackgroundImages = new HashMap<Integer, BufferedImage> ();
 	
 	/** The plane that the UI is currently displaying */
 	private int mapViewPlane = 0;
@@ -336,7 +332,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 							{
 								try
 								{
-									final BufferedImage unitBackground = getUnitBackgroundImage (unit.getOwningPlayerID ());
+									final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
 									final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
 
 									final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
@@ -712,27 +708,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		log.trace ("Exiting regenerateFogOfWarBitmap"); 
 	}
 
-	/**	 * @param playerID Unit owner player ID
-	 * @return Unit background image in their correct colour 
-	 * @throws IOException If there is a problem loading the background image
-	 */
-	private final BufferedImage getUnitBackgroundImage (final int playerID) throws IOException
-	{
-		BufferedImage image = unitBackgroundImages.get (playerID);
-		if (image == null)
-		{
-			// Generate a new one
-			final BufferedImage whiteImage = getUtils ().loadImage (GraphicsDatabaseConstants.UNIT_BACKGROUND_FLAG);
-			
-			final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), playerID, "getUnitBackgroundImage");
-			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
-			
-			image = getUtils ().multiplyImageByColour (whiteImage, Integer.parseInt (trans.getFlagColour (), 16));
-			unitBackgroundImages.put (playerID, image);
-		}
-		return image;
-	}
-	
 	/**
 	 * This prefers to units with the highest special order - this will make settlers always show on top if
 	 * they're building cities, and make non-patrolling units appear in preference to patrolling units
@@ -902,5 +877,21 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
+	}
+
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param gen Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
+	{
+		playerColourImageGenerator = gen;
 	}
 }

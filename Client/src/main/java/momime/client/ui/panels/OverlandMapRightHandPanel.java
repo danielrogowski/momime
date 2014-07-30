@@ -22,6 +22,8 @@ import javax.swing.JTextArea;
 import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.components.SelectUnitButton;
+import momime.client.ui.components.UIComponentFactory;
 import momime.client.utils.TextUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.utils.ResourceValueUtils;
@@ -66,6 +68,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
+	
+	/** UI component factory */
+	private UIComponentFactory uiComponentFactory;
 	
 	/** What is displayed in the variable top section */
 	private OverlandMapRightHandPanelTop top;
@@ -162,9 +167,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		final BufferedImage cancelBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/oneButton.png");
 		final BufferedImage specialOrdersBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/fourButtons.png");
 		
-		final BufferedImage unitButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/unitHealthButtonNormal.png");
-		final BufferedImage unitButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/unitHealthButtonPressed.png");
-
 		// Fix the size of the panel to be the same as the background
 		final Dimension backgroundSize = new Dimension (background.getWidth (), background.getHeight ());
 		getPanel ().setMinimumSize (backgroundSize);
@@ -441,16 +443,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		for (int y = 0; y < 5; y++)
 			for (int x = 0; x < 4; x++)
 			{
-				final Action toggleUnitSelectionAction = new AbstractAction ()
-				{
-					@Override
-					public void actionPerformed (final ActionEvent e)
-					{
-					}
-				};
+				final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
+				selectUnitButton.init ();
 				
-				unitsPanel.add (getUtils ().createImageButton (toggleUnitSelectionAction, null, null, null, unitButtonNormal, unitButtonPressed, unitButtonNormal),
-					getUtils ().createConstraintsNoFill (x, y, 1, 1, UNIT_BUTTONS_INSET, GridBagConstraintsNoFill.CENTRE));
+				unitsPanel.add (selectUnitButton, getUtils ().createConstraintsNoFill (x, y, 1, 1, UNIT_BUTTONS_INSET, GridBagConstraintsNoFill.CENTRE));
 			}
 		
 		unitsPanel.add (Box.createRigidArea (new Dimension (0, 10)), getUtils ().createConstraintsNoFill (0, 5, 4, 1, UNIT_BUTTONS_INSET, GridBagConstraintsNoFill.CENTRE));
@@ -734,5 +730,21 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setResourceValueUtils (final ResourceValueUtils util)
 	{
 		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return UI component factory
+	 */
+	public final UIComponentFactory getUiComponentFactory ()
+	{
+		return uiComponentFactory;
+	}
+
+	/**
+	 * @param factory UI component factory
+	 */
+	public final void setUiComponentFactory (final UIComponentFactory factory)
+	{
+		uiComponentFactory = factory;
 	}
 }

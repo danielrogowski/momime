@@ -17,6 +17,7 @@ import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Unit;
+import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -52,6 +53,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	
 	/** Map of unit IDs to unit objects */
 	private Map<String, Unit> unitsMap;
+	
+	/** Map of weapon grade numbers to weapon grade objects */
+	private Map<Integer, WeaponGrade> weaponGradesMap;
 	
 	/** Map of tileSet IDs to tileSet objects */
 	private Map<String, TileSetEx> tileSetsMap;
@@ -113,12 +117,17 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		for (final Unit thisUnit : getUnit ())
 			unitsMap.put (thisUnit.getUnitID (), thisUnit);
 
+		// Create weapon grades map
+		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
+		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
+			weaponGradesMap.put (thisWeaponGrade.getWeaponGradeNumber (), thisWeaponGrade);
+		
 		// Create animations map, and check for consistency
 		animationsMap = new HashMap<String, AnimationEx> ();
 		for (final Animation anim : getAnimation ())
 			animationsMap.put (anim.getAnimationID (), (AnimationEx) anim);
 		
-		// Create tileSets map, and build all the smoothing rule bitmask maps
+		// Create tile sets map, and build all the smoothing rule bitmask maps
 		tileSetsMap = new HashMap<String, TileSetEx> ();
 		for (final TileSet ts : getTileSet ())
 			tileSetsMap.put (ts.getTileSetID (), (TileSetEx) ts);
@@ -269,6 +278,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final Unit found = unitsMap.get (unitID);
 		if (found == null)
 			throw new RecordNotFoundException (Unit.class, unitID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param weaponGradeNumber Weapon grade number to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Weapon grade object
+	 * @throws RecordNotFoundException If the weaponGradNumber doesn't exist
+	 */
+	@Override
+	public final WeaponGrade findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException
+	{
+		final WeaponGrade found = weaponGradesMap.get (weaponGradeNumber);
+		if (found == null)
+			throw new RecordNotFoundException (WeaponGrade.class, weaponGradeNumber, caller);
 
 		return found;
 	}

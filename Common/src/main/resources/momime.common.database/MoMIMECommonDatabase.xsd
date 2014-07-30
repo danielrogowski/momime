@@ -540,7 +540,6 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
         	<xsd:documentation>Defines the wepaon grades available for normal units, such as that units can have Adamantium instead of regular weapons.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="weaponGradeImageNumber" type="momimecommon:imageNumber" nxe:label="Mini Image Number" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGradeAttributeBonus" type="momimecommon:weaponGradeAttributeBonus" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGradeSkillBonus" type="momimecommon:weaponGradeSkillBonus" />
 		</xsd:sequence>

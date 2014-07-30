@@ -53,6 +53,7 @@
 				</xsd:key>
 			</xsd:element>			
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimegfx:unitSkill" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimegfx:weaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileUnitRelativeScale" type="momimegfx:combatTileUnitRelativeScale" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimegfx:combatAreaEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileType" type="momimegfx:tileType" />
@@ -110,6 +111,10 @@
 		<xsd:key name="unitSkillPK">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="@unitSkillID" />
+		</xsd:key>
+		<xsd:key name="weaponGradePK">
+			<xsd:selector xpath="weaponGrade" />
+			<xsd:field xpath="@weaponGradeNumber" />
 		</xsd:key>
 		<xsd:key name="combatTileUnitRelativeScalePK">
 			<xsd:selector xpath="combatTileUnitRelativeScale" />
@@ -217,6 +222,10 @@
 		<xsd:keyref refer="momimesvr:unitSkillPK" name="unitSkillFKunitSkill">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="@unitSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:weaponGradePK" name="weaponGradeFKweaponGrade">
+			<xsd:selector xpath="weaponGrade" />
+			<xsd:field xpath="@weaponGradeNumber" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimegfx:combatActionPK" name="unitSkillFKcombatActionStand">
 			<xsd:selector xpath="unitSkill" />
@@ -609,6 +618,19 @@
 		</xsd:attribute>
 	</xsd:complexType>
 
+	<xsd:complexType name="weaponGrade" nxe:singular="Weapon Grade" nxe:plural="Weapon Grades" nxe:submenu="Units">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="weaponGradeMiniImageFile" type="momimegfx:imageFilename" nxe:label="Weapon grade mini image file" nxe:gridwidth="300" />
+		</xsd:sequence>
+		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>weaponGradeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
 	<xsd:complexType name="combatTileUnitRelativeScale" nxe:singular="Combat Tile Unit Relative Scale" nxe:plural="Combat Tile Unit Relative Scales" nxe:submenu="Units">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileFigurePositions" type="momimegfx:combatTileFigurePositions" />
@@ -865,7 +887,7 @@
         <xsd:annotation>
         	<xsd:documentation>1 if the tile type at a particular location equals a certain value, 0 if its something else.  2 is a special case for river mouths.</xsd:documentation>
         </xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
+		<xsd:restriction base="xsd:int">
 			<xsd:enumeration value="0" />
 			<xsd:enumeration value="1" />
 			<xsd:enumeration value="2" />

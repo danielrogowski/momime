@@ -14,6 +14,8 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.ui.components.SelectUnitButton;
+import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.database.CommonDatabaseConstants;
@@ -24,6 +26,8 @@ import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.utils.ResourceValueUtils;
 
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -115,6 +119,20 @@ public final class TestOverlandMapRightHandPanel
 		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (99999);
 		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (99999);
 		
+		// Component factory
+		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
+		when (uiComponentFactory.createSelectUnitButton ()).thenAnswer (new Answer<SelectUnitButton> ()
+		{
+			@Override
+			public final SelectUnitButton answer (final InvocationOnMock invocation) throws Throwable
+			{
+				final SelectUnitButton button = new SelectUnitButton ();
+				button.setUtils (utils);
+				button.init ();
+				return button;
+			}
+		});
+		
 		// Set up panel
 		final OverlandMapRightHandPanel panel = new OverlandMapRightHandPanel ();
 		panel.setUtils (utils);
@@ -123,6 +141,7 @@ public final class TestOverlandMapRightHandPanel
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setResourceValueUtils (resources);
 		panel.setTextUtils (new TextUtilsImpl ());
+		panel.setUiComponentFactory (uiComponentFactory);
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setLargeFont (CreateFontsForTests.getLargeFont ());

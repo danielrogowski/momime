@@ -195,6 +195,7 @@
 							<attach>true</attach>
 							<prefix>lib</prefix>
 							<attach>true</attach>
+							<includeScope>runtime</includeScope>
 						</configuration>
 					</execution>
 				</executions>

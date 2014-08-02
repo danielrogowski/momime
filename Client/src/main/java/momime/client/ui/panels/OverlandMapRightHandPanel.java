@@ -437,13 +437,13 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		specialOrdersPanel.setLayout (new GridBagLayout ());
 		
-		specialOrdersPanel.add (getUtils ().createImageButton (doneAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
+		specialOrdersPanel.add (getUtils ().createImageButton (doneAction, MomUIConstants.TRANSPARENT, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
 			getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (0, 0, 2, 2), GridBagConstraintsNoFill.CENTRE));
 
-		specialOrdersPanel.add (getUtils ().createImageButton (waitAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
+		specialOrdersPanel.add (getUtils ().createImageButton (waitAction, MomUIConstants.TRANSPARENT, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
 			getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, 0, 1, 2), GridBagConstraintsNoFill.CENTRE));
 
-		specialOrdersPanel.add (getUtils ().createImageButton (patrolAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
+		specialOrdersPanel.add (getUtils ().createImageButton (patrolAction, MomUIConstants.TRANSPARENT, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
 			getUtils ().createConstraintsNoFill (1, 0, 4, 1, new Insets (0, 0, 2, 1), GridBagConstraintsNoFill.CENTRE));
 
 		specialOrdersPanel.add (getUtils ().createImageButton (createOutpostAction, null, null, null, createOutpostButtonNormal, createOutpostButtonPressed, createOutpostButtonDisabled),

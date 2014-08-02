@@ -31,6 +31,9 @@ public final class MomUIConstants
 	/** Colour of fntMediumBlue font from the Delphi client */
 	public static final Color AQUA = new Color (0xBDEFEF);
 	
+	/** Transparent colour */
+	public static final Color TRANSPARENT = new Color (0, 0, 0, 0);
+	
 	/**
 	 * Prevent instantiation
 	 */

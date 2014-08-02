@@ -64,6 +64,9 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 			getOverlandMapUI ().updateTurnLabelText ();
 		}
 		
+		// Update player
+		getClient ().getGeneralPublicKnowledge ().setCurrentPlayerID (getCurrentPlayerID ());
+		
 		// Update label to show current player (if its our turn, this is hidden behind the next turn button)
 		
 		// Work out the position to scroll the colour patch to

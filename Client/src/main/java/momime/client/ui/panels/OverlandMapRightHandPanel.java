@@ -9,8 +9,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -21,11 +25,17 @@ import javax.swing.JTextArea;
 
 import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.utils.TextUtils;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.clienttoserver.v0_9_5.CancelPendingMovementAndSpecialOrdersMessage;
+import momime.common.messages.v0_9_5.PendingMovement;
+import momime.common.messages.v0_9_5.TurnSystem;
+import momime.common.messages.v0_9_5.UnitSpecialOrder;
+import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.ResourceValueUtils;
 
 import org.apache.commons.logging.Log;
@@ -45,6 +55,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Class logger */
 	private final Log log = LogFactory.getLog (OverlandMapRightHandPanel.class);
 	
+	/** Select unit buttons */
+	private List<SelectUnitButton> selectUnitButtons = new ArrayList<SelectUnitButton> ();
+
 	/** There's a lot of pixel precision positionining going on here so the panel typically uses no insets or custom insets per component */
 	private final static int INSET = 0;
 
@@ -68,6 +81,12 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
+	
+	/** Pending movement utils */
+	private PendingMovementUtils pendingMovementUtils;
+	
+	/** Turn sequence and movement helper methods */
+	private OverlandMapProcessing overlandMapProcessing;
 	
 	/** UI component factory */
 	private UIComponentFactory uiComponentFactory;
@@ -128,6 +147,18 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Wait action */
 	private Action waitAction;
+
+	/** Settlers creating a new outpost */
+	private Action createOutpostAction;
+	
+	/** Engineers building a road */
+	private Action buildRoadAction;
+	
+	/** Spirits melding with a node */
+	private Action meldWithNodeAction;
+	
+	/** Priests purifying corrupted lands */
+	private Action purifyAction;
 	
 	/**
 	 * Sets up the panel once all values have been injected
@@ -214,7 +245,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			}
 		};
 
-		final Action createOutpostAction = new AbstractAction ()
+		createOutpostAction = new AbstractAction ()
 		{
 			@Override
 			public void actionPerformed (final ActionEvent e)
@@ -222,7 +253,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			}
 		};
 
-		final Action buildRoadAction = new AbstractAction ()
+		buildRoadAction = new AbstractAction ()
 		{
 			@Override
 			public void actionPerformed (final ActionEvent e)
@@ -230,7 +261,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			}
 		};
 
-		final Action meldWithNodeAction = new AbstractAction ()
+		meldWithNodeAction = new AbstractAction ()
 		{
 			@Override
 			public void actionPerformed (final ActionEvent e)
@@ -238,7 +269,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			}
 		};
 
-		final Action purifyAction = new AbstractAction ()
+		purifyAction = new AbstractAction ()
 		{
 			@Override
 			public void actionPerformed (final ActionEvent e)
@@ -446,6 +477,74 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
 				selectUnitButton.init ();
 				
+				selectUnitButton.addMouseListener (new MouseAdapter ()
+				{
+					@Override
+					public final void mouseClicked (final MouseEvent ev)
+					{
+						// Right mouse clicks to open up the unit info screen are always enabled
+						if (ev.getButton () != MouseEvent.BUTTON1)
+							System.out.println ("Button right clicked, Show unit info screen");
+						
+						else
+						{
+							// Left clicks are more complicated - by default Swing will toggle the selected state
+							// of the button, but we might need to block that from happening.  We also need to
+							// clear pending moves/special orders from units even if we block them from being selected.
+							boolean allowClick = false;
+							
+							// Don't allow deselecting units that we don't own or that have no movement left.
+							// We aren't allowed to move then anyway so deselecting them just hides their flag colour which looks confusing.
+							// Also if it isn't our turn, then ignore clicks just as if we were clicking on someone else's unit
+							if ((selectUnitButton.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()) &&
+								((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
+									(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))))
+							{
+								try
+								{
+									// Remove any pending movements for this unit and blank out any special orders
+									final PendingMovement pendingMovement = getPendingMovementUtils ().findPendingMoveForUnit
+										(getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), selectUnitButton.getUnit ().getUnitURN ());
+								
+									// We don't need to tell the server about cancelling 'Patrol' orders since this is basically 'do nothing' -
+									// but cancelling any other kind of special order we do need to notify the server.
+									if ((pendingMovement != null) ||
+										((selectUnitButton.getUnit ().getSpecialOrder () != null) && (selectUnitButton.getUnit ().getSpecialOrder () != UnitSpecialOrder.PATROL)))
+									{
+										// Remove on server
+										final CancelPendingMovementAndSpecialOrdersMessage msg = new CancelPendingMovementAndSpecialOrdersMessage ();
+										msg.setUnitURN (selectUnitButton.getUnit ().getUnitURN ());
+										getClient ().getServerConnection ().sendMessageToServer (msg);
+									
+										// Remove on client
+										getPendingMovementUtils ().removeUnitFromAnyPendingMoves
+											(getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), selectUnitButton.getUnit ().getUnitURN ());
+										selectUnitButton.getUnit ().setSpecialOrder (null);
+									}
+								
+									// Select/deselect unit
+									if (selectUnitButton.getUnit ().getDoubleOverlandMovesLeft () > 0)
+									{
+										allowClick = true;
+										getOverlandMapProcessing ().enableOrDisableSpecialOrderButtons ();
+										getOverlandMapProcessing ().updateMovementRemaining ();
+									}
+								}
+								catch (final Exception e)
+								{
+									log.error (e, e);
+								}
+							}
+							
+							// If we disallowed the click, force the button back to its previous state
+							if (!allowClick)
+								selectUnitButton.setSelected (!selectUnitButton.isSelected ());
+						}
+					}
+				});
+				
+				selectUnitButtons.add (selectUnitButton);
+				
 				unitsPanel.add (selectUnitButton, getUtils ().createConstraintsNoFill (x, y, 1, 1, UNIT_BUTTONS_INSET, GridBagConstraintsNoFill.CENTRE));
 			}
 		
@@ -637,6 +736,62 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	}
 	
 	/**
+	 * @return Select unit buttons
+	 */
+	public final List<SelectUnitButton> getSelectUnitButtons ()
+	{
+		return selectUnitButtons;
+	}
+
+	/**
+	 * @param enabled Whether settlers can create a new outpost
+	 */
+	public final void setCreateOutpostEnabled (final boolean enabled)
+	{
+		createOutpostAction.setEnabled (enabled);
+	}
+	
+	/**
+	 * @param enabled Whether engineers can build a road
+	 */
+	public final void setBuildRoadEnabled (final boolean enabled)
+	{
+		buildRoadAction.setEnabled (enabled);
+	}
+	
+	/**
+	 * @param enabled Whether spirits can meld with a node
+	 */
+	public final void setMeldWithNodeEnabled (final boolean enabled)
+	{
+		meldWithNodeAction.setEnabled (enabled);
+	}
+
+	/**
+	 * @param enabled Whether priests can purify corrupted lands
+	 */
+	public final void setPurifyEnabled (final boolean enabled)
+	{
+		purifyAction.setEnabled (enabled);
+	}
+	
+	/**
+	 * @param enabled Whether units can go on patrol so as not to be asked for orders in future turns
+	 */
+	public final void setPatrolEnabled (final boolean enabled)
+	{
+		patrolAction.setEnabled (enabled);
+	}
+	
+	/**
+	 * @param enabled Whether units can be done to not take an action for this turn
+	 */
+	public final void setDoneEnabled (final boolean enabled)
+	{
+		doneAction.setEnabled (enabled);
+	}
+	
+	/**
 	 * @return Text utils
 	 */
 	public final TextUtils getTextUtils ()
@@ -732,6 +887,38 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		resourceValueUtils = util;
 	}
 
+	/**
+	 * @return Pending movement utils
+	 */
+	public final PendingMovementUtils getPendingMovementUtils ()
+	{
+		return pendingMovementUtils;
+	}
+
+	/**
+	 * @param utils Pending movement utils
+	 */
+	public final void setPendingMovementUtils (final PendingMovementUtils utils)
+	{
+		pendingMovementUtils = utils;
+	}
+
+	/**
+	 * @return Turn sequence and movement helper methods
+	 */
+	public final OverlandMapProcessing getOverlandMapProcessing ()
+	{
+		return overlandMapProcessing;
+	}
+
+	/**
+	 * @param proc Turn sequence and movement helper methods
+	 */
+	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
+	{
+		overlandMapProcessing = proc;
+	}
+	
 	/**
 	 * @return UI component factory
 	 */

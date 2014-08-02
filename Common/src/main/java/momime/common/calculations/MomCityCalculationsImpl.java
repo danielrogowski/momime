@@ -1238,6 +1238,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		
 		final BooleanMapAreaOperations2DImpl op = new BooleanMapAreaOperations2DImpl ();
 		op.setCoordinateSystemUtils (getCoordinateSystemUtils ());
+		op.deselectAll (result);
 		
 		for (int x = 0; x < mapSize.getWidth (); x++)
 			for (int y = 0; y < mapSize.getHeight (); y++)

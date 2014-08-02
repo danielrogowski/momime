@@ -33,6 +33,7 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.messages.servertoclient.v0_9_5.MapVolumeOfOverlandMoveType;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.UnitSpecialOrder;
@@ -53,6 +54,18 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** Class logger */
 	private final Log log = LogFactory.getLog (OverlandMapUI.class);
 
+	/** Number of pixels at the edge of the window where the map scrolls */
+	private final static int MOUSE_SCROLL_WIDTH = 8;
+	
+	/** Number of pixels the map scrolls with each tick of the timer */
+	private final static int MOUSE_SCROLL_SPEED = 4;
+	
+	/** Brighten areas we can move to in 1 turn */
+	private final static int MOVE_IN_ONE_TURN_COLOUR = 0x30FFFFFF;
+	
+	/** Darken areas we cannot move to at all */
+	private final static int CANNOT_MOVE_HERE_COLOUR = 0x70000000;
+	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -76,12 +89,18 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
-	
+
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
 	
 	/** Bitmap for the shading at the edges of the area we can see */
 	private BufferedImage fogOfWarBitmap;
+	
+	/** Area detailing which map cells we can/can't move to */
+	private MapVolumeOfOverlandMoveType movementTypes;
+
+	/** Shading area generated from movementTypes */
+	private BufferedImage movementTypesBitmap;
 	
 	/** The plane that the UI is currently displaying */
 	private int mapViewPlane = 0;
@@ -98,16 +117,13 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** Border around the top row of gold buttons */ 
 	private BufferedImage topBarBackground;
 
-	/** Number of pixels at the edge of the window where the map scrolls */
-	private final static int MOUSE_SCROLL_WIDTH = 8;
-	
-	/** Number of pixels the map scrolls with each tick of the timer */
-	private final static int MOUSE_SCROLL_SPEED = 4;
-	
 	// UI Components
 
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
+	
+	/** Panel showing the map terrain */
+	private JPanel sceneryPanel;
 	
 	/** Frame number being displayed */
 	private int terrainAnimFrame;
@@ -275,7 +291,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		contentPane.add (getOverlandMapRightHandPanel ().getPanel (), getUtils ().createConstraintsNoFill (1, 1, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
 		
-		final JPanel sceneryPanel = new JPanel ()
+		sceneryPanel = new JPanel ()
 		{
 			private static final long serialVersionUID = -266294091485642841L;
 
@@ -361,6 +377,19 @@ public final class OverlandMapUI extends MomClientFrameUI
 								}
 							}
 						}
+				
+				// Darken areas of the map that the selected units cannot move to
+				if (movementTypesBitmap != null)
+				{
+					// Turn anti-aliasing back off for this, so the shaded areas line up properly over the tiles
+					g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+					
+					for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+						for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+							g.drawImage (movementTypesBitmap,
+								(mapZoomedWidth * xRepeat) - mapViewX, (mapZoomedHeight * yRepeat) - mapViewY,
+								mapZoomedWidth, mapZoomedHeight, null);
+				}
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);
@@ -769,6 +798,52 @@ public final class OverlandMapUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @return Area detailing which map cells we can/can't move to
+	 */
+	public final MapVolumeOfOverlandMoveType getMovementTypes ()
+	{
+		return movementTypes;
+	}
+
+	/**
+	 * @param moves Area detailing which map cells we can/can't move to
+	 */
+	public final void setMovementTypes (final MapVolumeOfOverlandMoveType moves)
+	{
+		movementTypes = moves;
+		
+		// Regenerate shading bitmap
+		if (getMovementTypes () == null)
+			movementTypesBitmap = null;
+		else
+		{
+			movementTypesBitmap = new BufferedImage (getClient ().getSessionDescription ().getMapSize ().getWidth (),
+				getClient ().getSessionDescription ().getMapSize ().getHeight (), BufferedImage.TYPE_INT_ARGB);
+
+			for (int x = 0; x < getClient ().getSessionDescription ().getMapSize ().getWidth (); x++)
+				for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
+					switch (getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (y).getCell ().get (x))
+					{
+						// Brighten areas we can move to in 1 turn
+						case MOVE_IN_ONE_TURN:
+							movementTypesBitmap.setRGB (x, y, MOVE_IN_ONE_TURN_COLOUR);
+							break;
+							
+						// Darken areas we cannot move to at all
+						case CANNOT_MOVE_HERE:
+							movementTypesBitmap.setRGB (x, y, CANNOT_MOVE_HERE_COLOUR);
+							break;
+							
+						// Leave areas we can move to in multiple turns looking like normal
+						case MOVE_IN_MULTIPLE_TURNS:
+							break;
+					}
+		}
+		
+		sceneryPanel.repaint ();
+	}
+	
+	/**
 	 * @return Multiplayer client
 	 */
 	public final MomClient getClient ()
@@ -849,7 +924,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Bitmap generator */
+	 * @return Bitmap generator
+	 */
 	public final OverlandMapBitmapGenerator getOverlandMapBitmapGenerator ()
 	{
 		return overlandMapBitmapGenerator;

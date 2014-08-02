@@ -108,7 +108,7 @@ public final class CityAIImpl implements CityAI
 				// Can we build a city here?
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
 
-				if ((withinExistingCityRadius.get (x, y) == null) || (!withinExistingCityRadius.get (x, y)))
+				if (!withinExistingCityRadius.get (x, y))
 				{
 					final Boolean canBuildCityOnThisTerrain = db.findTileType (terrainData.getTileTypeID (), "chooseCityLocation").isCanBuildCity ();
 					final Boolean canBuildCityOnThisFeature = (terrainData.getMapFeatureID () == null) ? true : db.findMapFeature (terrainData.getMapFeatureID (), "chooseCityLocation").isCanBuildCity ();

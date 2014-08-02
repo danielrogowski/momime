@@ -236,6 +236,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="endOfContinuedMovementMessage" class="momime.client.messages.process.EndOfContinuedMovementMessageImpl" scope="prototype">
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
+
+	<bean id="overlandMovementTypesMessage" class="momime.client.messages.process.OverlandMovementTypesMessageImpl" scope="prototype">
+		<property name="overlandMapUI" ref="overlandMapUI" />
+	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype" />
@@ -278,7 +282,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype" />
 	<bean id="updateManaSpentOnCastingCurrentSpellMessage" class="momime.client.messages.process.UpdateManaSpentOnCastingCurrentSpellMessageImpl" scope="prototype" />
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
-	<bean id="overlandMovementTypesMessage" class="momime.client.messages.process.OverlandMovementTypesMessageImpl" scope="prototype" />
 	<bean id="cancelCombatAreaEffectMessage" class="momime.client.messages.process.CancelCombatAreaEffectMessageImpl" scope="prototype" />
 	<bean id="askForCaptureCityDecisionMessage" class="momime.client.messages.process.AskForCaptureCityDecisionMessageImpl" scope="prototype" />
 	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
@@ -378,7 +381,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="overlandMapProcessing" class="momime.client.process.OverlandMapProcessingImpl">
 		<property name="client" ref="momClient" />
+		<property name="unitUtils" ref="unitUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 	
 	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">
@@ -477,6 +484,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="client" ref="momClient" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
 	</bean>
 

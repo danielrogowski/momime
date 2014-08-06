@@ -90,8 +90,12 @@ public final class TestResourceValueClientUtilsImpl
 		productionTypeImages.getProductionTypeImage ().add (minusOneImageContainer);
 		productionTypeImages.buildMap ();
 
+		final ProductionTypeEx noProductionTypeImages = new ProductionTypeEx ();
+		noProductionTypeImages.buildMap ();
+		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findProductionType ("RE01")).thenReturn (productionTypeImages);
+		when (gfx.findProductionType ("RE01", "generateProductionImage")).thenReturn (productionTypeImages);
+		when (gfx.findProductionType ("RE02", "generateProductionImage")).thenReturn (noProductionTypeImages);
 		
 		// Set up object to test
 		final ResourceValueClientUtilsImpl obj = new ResourceValueClientUtilsImpl ();
@@ -169,8 +173,12 @@ public final class TestResourceValueClientUtilsImpl
 		productionTypeImages.getProductionTypeImage ().add (minusTenImageContainer);
 		productionTypeImages.buildMap ();
 
+		final ProductionTypeEx noProductionTypeImages = new ProductionTypeEx ();
+		noProductionTypeImages.buildMap ();
+		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findProductionType ("RE01")).thenReturn (productionTypeImages);
+		when (gfx.findProductionType ("RE01", "generateProductionImage")).thenReturn (productionTypeImages);
+		when (gfx.findProductionType ("RE02", "generateProductionImage")).thenReturn (noProductionTypeImages);
 		
 		// Set up object to test
 		final ResourceValueClientUtilsImpl obj = new ResourceValueClientUtilsImpl ();
@@ -251,9 +259,13 @@ public final class TestResourceValueClientUtilsImpl
 		manaImages.getProductionTypeImage ().add (plusHalfManaContainer);
 		manaImages.buildMap ();
 		
+		final ProductionTypeEx noProductionTypeImages = new ProductionTypeEx ();
+		noProductionTypeImages.buildMap ();
+		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findProductionType ("RE01")).thenReturn (productionTypeImages);
-		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (manaImages);
+		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (productionTypeImages);
+		when (gfx.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (noProductionTypeImages);
+		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, "generateUpkeepImage")).thenReturn (manaImages);
 		
 		// Set up object to test
 		final ResourceValueClientUtilsImpl obj = new ResourceValueClientUtilsImpl ();
@@ -385,9 +397,13 @@ public final class TestResourceValueClientUtilsImpl
 		manaImages.getProductionTypeImage ().add (plusHalfManaContainer);
 		manaImages.buildMap ();
 		
+		final ProductionTypeEx noProductionTypeImages = new ProductionTypeEx ();
+		noProductionTypeImages.buildMap ();
+		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findProductionType ("RE01")).thenReturn (productionTypeImages);
-		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (manaImages);
+		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (productionTypeImages);
+		when (gfx.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (noProductionTypeImages);
+		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, "generateUpkeepImage")).thenReturn (manaImages);
 		
 		// Set up object to test
 		final ResourceValueClientUtilsImpl obj = new ResourceValueClientUtilsImpl ();

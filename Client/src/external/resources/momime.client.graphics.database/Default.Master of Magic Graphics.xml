@@ -362,37 +362,69 @@
 	<pick pickID="RT17" />
 	<pick pickID="RT18" />
 	<unitAttribute unitAttributeID="UA01">
-		<attributeImageFile>/momime.client.graphics/unitAttributes/melee.png</attributeImageFile>
-		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
+		<unitAttributeWeaponGrade weaponGradeNumber="0">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/meleeNormal.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
+		<unitAttributeWeaponGrade weaponGradeNumber="1">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/meleeAlchemy.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
+		<unitAttributeWeaponGrade weaponGradeNumber="2">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/meleeMithril.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
+		<unitAttributeWeaponGrade weaponGradeNumber="3">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/meleeAdamantium.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
 	</unitAttribute>
-	<unitAttribute unitAttributeID="UA02">
-		<attributeImageFile>/momime.client.graphics/rangedAttacks/arrow/icon.png</attributeImageFile>
-		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
-	</unitAttribute>
+	<unitAttribute unitAttributeID="UA02" />
 	<unitAttribute unitAttributeID="UA03">
-		<attributeImageFile>/momime.client.graphics/unitAttributes/plusToHit.png</attributeImageFile>
-		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
+		<unitAttributeWeaponGrade weaponGradeNumber="0">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/plusToHit.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
 	</unitAttribute>
 	<unitAttribute unitAttributeID="UA04">
-		<attributeImageFile>/momime.client.graphics/unitAttributes/defence.png</attributeImageFile>
-		<mithrilAndAdamantiumVersions>true</mithrilAndAdamantiumVersions>
+		<unitAttributeWeaponGrade weaponGradeNumber="0">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/defenceNormal.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
+		<unitAttributeWeaponGrade weaponGradeNumber="1">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/defenceAlchemy.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
+		<unitAttributeWeaponGrade weaponGradeNumber="2">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/defenceMithril.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
+		<unitAttributeWeaponGrade weaponGradeNumber="3">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/defenceAdamantium.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
 	</unitAttribute>
 	<unitAttribute unitAttributeID="UA05">
-		<attributeImageFile>/momime.client.graphics/unitAttributes/resist.png</attributeImageFile>
-		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
+		<unitAttributeWeaponGrade weaponGradeNumber="0">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/resist.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
 	</unitAttribute>
 	<unitAttribute unitAttributeID="UA06">
-		<attributeImageFile>/momime.client.graphics/unitAttributes/hitPoints.png</attributeImageFile>
-		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
+		<unitAttributeWeaponGrade weaponGradeNumber="0">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/hitPoints.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
 	</unitAttribute>
 	<unitAttribute unitAttributeID="UA07">
-		<attributeImageFile>/momime.client.graphics/unitAttributes/plusToBlock.png</attributeImageFile>
-		<mithrilAndAdamantiumVersions>false</mithrilAndAdamantiumVersions>
+		<unitAttributeWeaponGrade weaponGradeNumber="0">
+			<attributeImageFile>/momime.client.graphics/unitAttributes/plusToBlock.png</attributeImageFile>
+		</unitAttributeWeaponGrade>
 	</unitAttribute>
 	<rangedAttackType rangedAttackTypeID="RAT0A">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>8</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconNormal.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="1">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconAlchemy.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="2">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconMithril.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="3">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconAdamantium.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT0A_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -443,9 +475,20 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT14">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/arrow/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>9</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/arrow/iconNormal.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="1">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/arrow/iconAlchemy.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="2">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/arrow/iconMithril.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="3">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/arrow/iconAdamantium.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT14_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -496,9 +539,20 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT15">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>10</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconNormal.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="1">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconAlchemy.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="2">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconMithril.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="3">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconAdamantium.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT15_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -549,9 +603,11 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT20">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/blueBigFatBlast/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>13</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/blueBigFatBlast/icon.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT20_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -602,9 +658,11 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT26">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>18</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT26_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -655,9 +713,11 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT25">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>18</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT25_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -708,9 +768,11 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT22">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>15</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT22_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -761,9 +823,11 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT21">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>14</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT21_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -814,9 +878,11 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT1E">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>11</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT1E_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -867,9 +933,11 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT24">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>17</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT24_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -920,9 +988,11 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT23">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>16</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT23_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>
@@ -973,9 +1043,11 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT1F">
-		<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
 		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
 		<rangedAttackSoundNumber>12</rangedAttackSoundNumber>
+		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
+			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
+		</rangedAttackTypeWeaponGrade>
 		<rangedAttackTypeCombatImage rangedAttackTypeActionID="FLY" direction="1">
 			<rangedAttackTypeCombatAnimation>RAT1F_D1_FLY</rangedAttackTypeCombatAnimation>
 		</rangedAttackTypeCombatImage>

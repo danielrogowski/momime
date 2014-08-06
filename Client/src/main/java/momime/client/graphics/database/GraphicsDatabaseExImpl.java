@@ -15,8 +15,10 @@ import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.client.graphics.database.v0_9_5.Race;
+import momime.client.graphics.database.v0_9_5.RangedAttackType;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Unit;
+import momime.client.graphics.database.v0_9_5.UnitAttribute;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
@@ -50,9 +52,15 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 	/** Map of building IDs to city view elements */
 	private Map<String, CityViewElement> buildingsMap;
+
+	/** Map of unit attribute IDs to unit attribute objects */
+	private Map<String, UnitAttributeEx> unitAttributesMap;
 	
 	/** Map of unit IDs to unit objects */
 	private Map<String, Unit> unitsMap;
+
+	/** Map of ranged attack type IDs to ranged attack type objects */
+	private Map<String, RangedAttackTypeEx> rangedAttackTypesMap;
 	
 	/** Map of weapon grade numbers to weapon grade objects */
 	private Map<Integer, WeaponGrade> weaponGradesMap;
@@ -111,12 +119,30 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			// Not all CityViewElements represent buildings
 			if (thisBuilding.getBuildingID () != null)
 				buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
+
+		// Create unit attributes map
+		unitAttributesMap = new HashMap<String, UnitAttributeEx> ();
+		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
+		{
+			final UnitAttributeEx attrEx = (UnitAttributeEx) thisUnitAttribute;
+			attrEx.buildMap ();
+			unitAttributesMap.put (attrEx.getUnitAttributeID (), attrEx);
+		}
 		
 		// Create units map
 		unitsMap = new HashMap<String, Unit> ();
 		for (final Unit thisUnit : getUnit ())
 			unitsMap.put (thisUnit.getUnitID (), thisUnit);
 
+		// Create ranged attack types map
+		rangedAttackTypesMap = new HashMap<String, RangedAttackTypeEx> ();
+		for (final RangedAttackType thisRangedAttackType : getRangedAttackType ())
+		{
+			final RangedAttackTypeEx ratEx = (RangedAttackTypeEx) thisRangedAttackType;
+			ratEx.buildMap ();
+			rangedAttackTypesMap.put (ratEx.getRangedAttackTypeID (), ratEx);
+		}
+		
 		// Create weapon grades map
 		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
 		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
@@ -226,12 +252,18 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 	/**
 	 * @param productionTypeID Production type ID to search for
-	 * @return Production type object; or null if not found
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Production type object
+	 * @throws RecordNotFoundException If the productionTypeID doesn't exist
 	 */
 	@Override
-	public final ProductionTypeEx findProductionType (final String productionTypeID)
+	public final ProductionTypeEx findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException
 	{
-		return productionTypesMap.get (productionTypeID);
+		final ProductionTypeEx found = productionTypesMap.get (productionTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (ProductionType.class, productionTypeID, caller);
+
+		return found;
 	}
 	
 	/**
@@ -267,6 +299,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 	
 	/**
+	 * @param unitAttributeID Unit attribute ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit attribute object
+	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
+	 */
+	@Override
+	public final UnitAttributeEx findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException
+	{
+		final UnitAttributeEx found = unitAttributesMap.get (unitAttributeID);
+		if (found == null)
+			throw new RecordNotFoundException (UnitAttribute.class, unitAttributeID, caller);
+
+		return found;
+	}
+	
+	/**
 	 * @param unitID Unit ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit object
@@ -278,6 +326,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final Unit found = unitsMap.get (unitID);
 		if (found == null)
 			throw new RecordNotFoundException (Unit.class, unitID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param rangedAttackTypeID Ranged attack type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Ranged attack type object
+	 * @throws RecordNotFoundException If the rangedAttackTypeID doesn't exist
+	 */
+	@Override
+	public final RangedAttackTypeEx findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException
+	{
+		final RangedAttackTypeEx found = rangedAttackTypesMap.get (rangedAttackTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (RangedAttackType.class, rangedAttackTypeID, caller);
 
 		return found;
 	}

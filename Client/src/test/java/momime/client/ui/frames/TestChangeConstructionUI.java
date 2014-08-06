@@ -122,7 +122,7 @@ public final class TestChangeConstructionUI
 		when (gfx.findBuilding (eq ("BL04"), anyString ())).thenReturn (granary);
 		when (gfx.findBuilding (eq ("BL05"), anyString ())).thenReturn (fightersGuild);
 		when (gfx.findAnimation ("FIGHTERS_GUILD", "registerRepaintTrigger")).thenReturn (fightersGuildAnim);
-		when (gfx.findProductionType ("RE01")).thenReturn (productionTypeImages);
+		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (productionTypeImages);
 		
 		// Client DB
 		final List<Building> buildings = new ArrayList<Building> ();

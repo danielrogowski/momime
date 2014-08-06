@@ -72,21 +72,19 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 
 		if ((productionValue > 0) || (consumptionValue > 0))
 		{
-			final ProductionTypeEx productionTypeImages = getGraphicsDB ().findProductionType (productionTypeID);
-			if (productionTypeImages != null)
-			{
-				// Get a list of all the images we need to draw, so we know how big to create the merged image
-				final List<BufferedImage> consumptionImages = new ArrayList<BufferedImage> ();
-				final List<BufferedImage> productionImages = new ArrayList<BufferedImage> ();
+			final ProductionTypeEx productionTypeImages = getGraphicsDB ().findProductionType (productionTypeID, "generateProductionImage");
+
+			// Get a list of all the images we need to draw, so we know how big to create the merged image
+			final List<BufferedImage> consumptionImages = new ArrayList<BufferedImage> ();
+			final List<BufferedImage> productionImages = new ArrayList<BufferedImage> ();
 			
-				// Draw consumption on the left and production on the right
-				// or more accurately, the production+consumption that cancel each other out are drawn on the left, and whatever is leftover on the right
-				addProductionImages (productionTypeImages, consumptionImages, Math.min (consumptionValue, productionValue));
-				addProductionImages (productionTypeImages, productionImages, productionValue - consumptionValue);
+			// Draw consumption on the left and production on the right
+			// or more accurately, the production+consumption that cancel each other out are drawn on the left, and whatever is leftover on the right
+			addProductionImages (productionTypeImages, consumptionImages, Math.min (consumptionValue, productionValue));
+			addProductionImages (productionTypeImages, productionImages, productionValue - consumptionValue);
 			
-				// Now can generate the bitmap from the lists
-				image = generateProductionImageFromLists (consumptionImages, productionImages);
-			}
+			// Now can generate the bitmap from the lists
+			image = generateProductionImageFromLists (consumptionImages, productionImages);
 		}
 		
 		log.trace ("Exiting generateProductionImage = " + ((image == null) ? "null" : (image.getWidth () + " x " + image.getHeight ())));
@@ -114,23 +112,21 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 			
 			for (final UnitUpkeep upkeep : upkeeps)
 			{
-				final ProductionTypeEx productionTypeImages = getGraphicsDB ().findProductionType (upkeep.getProductionTypeID ());
-				if (productionTypeImages != null)
+				final ProductionTypeEx productionTypeImages = getGraphicsDB ().findProductionType (upkeep.getProductionTypeID (), "generateUpkeepImage");
+
+				// Halve value or not?  This is so summoned units display half upkeep if we have the Channeler retort
+				int value = upkeep.getUpkeepValue ();
+				boolean showHalf = false;
+				if ((halveManaUpkeep) && (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA.equals (upkeep.getProductionTypeID ())))
 				{
-					// Halve value or not?  This is so summoned units display half upkeep if we have the Channeler retort
-					int value = upkeep.getUpkeepValue ();
-					boolean showHalf = false;
-					if ((halveManaUpkeep) && (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA.equals (upkeep.getProductionTypeID ())))
-					{
-						showHalf = ((value % 2) != 0);
-						value = value / 2;
-					}
-						
-					// Add images for this type of upkeep
-					addProductionImages (productionTypeImages, productionImages, value);
-					if (showHalf)
-						addProductionHalfImage (productionTypeImages, productionImages);
+					showHalf = ((value % 2) != 0);
+					value = value / 2;
 				}
+						
+				// Add images for this type of upkeep
+				addProductionImages (productionTypeImages, productionImages, value);
+				if (showHalf)
+					addProductionHalfImage (productionTypeImages, productionImages);
 			}
 			
 			// Now can generate the bitmap from the list

@@ -41,8 +41,18 @@
 				</xsd:key>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimegfx:pick" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttribute" type="momimegfx:unitAttribute" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimegfx:rangedAttackType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttribute" type="momimegfx:unitAttribute">
+				<xsd:key name="unitAttributeWeaponGradePK">
+					<xsd:selector xpath="unitAttributeWeaponGrade" />
+					<xsd:field xpath="@weaponGradeNumber" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimegfx:rangedAttackType">
+				<xsd:key name="rangedAttackTypeWeaponGradePK">
+					<xsd:selector xpath="rangedAttackTypeWeaponGrade" />
+					<xsd:field xpath="@weaponGradeNumber" />
+				</xsd:key>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimegfx:spell" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAction" type="momimegfx:combatAction" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimegfx:unit" />
@@ -365,23 +375,48 @@
 	
 	<xsd:complexType name="unitAttribute" nxe:singular="Unit Attribute" nxe:plural="Unit Attributes" nxe:submenu="Units">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="attributeImageFile" type="momimegfx:imageFilename" nxe:label="Unit Attribute image file" nxe:gridwidth="290" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="mithrilAndAdamantiumVersions" type="xsd:boolean" nxe:label="Mithril &amp; Adamantium versions?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitAttributeWeaponGrade" type="momimegfx:unitAttributeWeaponGrade" />
 		</xsd:sequence>
 		<xsd:attribute name="unitAttributeID" type="momimecommon:unitAttributeID" use="required" nxe:label="Unit Attribute ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+
+	<xsd:complexType name="unitAttributeWeaponGrade" nxe:singular="Attr Weapon Grade" nxe:plural="Attr Weapon Grades">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="attributeImageFile" type="momimegfx:imageFilename" nxe:label="Unit Attribute image file" nxe:gridwidth="290" />
+		</xsd:sequence>
+		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>weaponGradeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 	
 	<xsd:complexType name="rangedAttackType" nxe:singular="Ranged Attack Type" nxe:plural="Ranged Attack Types" nxe:submenu="Units">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitDisplayRangedImageFile" type="momimegfx:imageFilename" nxe:label="Unit Display RAT image file" nxe:gridwidth="330" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackSoundFile" type="momimegfx:imageFilename" nxe:label="RAT sound file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackSoundNumber" type="momimecommon:imageNumber" nxe:label="RAT sound number" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeWeaponGrade" type="momimegfx:rangedAttackTypeWeaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeCombatImage" type="momimegfx:rangedAttackTypeCombatImage" />
 		</xsd:sequence>
 		<xsd:attribute name="rangedAttackTypeID" type="momimecommon:rangedAttackTypeID" use="required" nxe:label="Ranged Attack Type ID" nxe:gridwidth="120">
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>rangedAttackTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="rangedAttackTypeWeaponGrade" nxe:singular="RAT Weapon Grade" nxe:plural="RAT Weapon Grades">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitDisplayRangedImageFile" type="momimegfx:imageFilename" nxe:label="Unit Display RAT image file" nxe:gridwidth="330" />
+		</xsd:sequence>
+		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>weaponGradeDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

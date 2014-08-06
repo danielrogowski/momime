@@ -80,7 +80,7 @@ public final class TestCityViewUI
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("-1", "/momime.client.graphics/production/rations/-1.png"));
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("-10", "/momime.client.graphics/production/rations/-10.png"));
 		rations.buildMap ();
-		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS)).thenReturn (rations);
+		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, "generateProductionImage")).thenReturn (rations);
 		
 		final ProductionTypeEx gold = new ProductionTypeEx ();
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("1", "/momime.client.graphics/production/gold/1.png"));
@@ -88,7 +88,11 @@ public final class TestCityViewUI
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("-1", "/momime.client.graphics/production/gold/-1.png"));
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("-10", "/momime.client.graphics/production/gold/-10.png"));
 		gold.buildMap ();
-		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (gold);
+		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, "generateProductionImage")).thenReturn (gold);
+
+		final ProductionTypeEx food = new ProductionTypeEx ();
+		food.buildMap ();
+		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, "generateProductionImage")).thenReturn (food);
 		
 		final CityViewElement granary = new CityViewElement ();
 		granary.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");

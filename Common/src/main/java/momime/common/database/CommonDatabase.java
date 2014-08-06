@@ -17,6 +17,7 @@ import momime.common.database.v0_9_5.Spell;
 import momime.common.database.v0_9_5.TaxRate;
 import momime.common.database.v0_9_5.TileType;
 import momime.common.database.v0_9_5.Unit;
+import momime.common.database.v0_9_5.UnitAttribute;
 import momime.common.database.v0_9_5.UnitMagicRealm;
 import momime.common.database.v0_9_5.UnitSkill;
 import momime.common.database.v0_9_5.UnitType;
@@ -157,6 +158,11 @@ public interface CommonDatabase
 	 */
 	public UnitSkill findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException;
 
+	/**
+	 * @return Complete list of all unit attributes in game
+	 */
+	public List<? extends UnitAttribute> getUnitAttribute ();
+	
 	/**
 	 * @param weaponGradeNumber Weapon grade number to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

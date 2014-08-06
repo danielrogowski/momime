@@ -1,7 +1,6 @@
 package momime.client.graphics.database;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -111,10 +110,11 @@ public final class TestGraphicsDatabaseExImpl
 	}
 
 	/**
-	 * Tests the findProductionType method
+	 * Tests the findProductionType method to find a productionType ID that does exist
+	 * @throws IOException If there is a problem
 	 */
 	@Test
-	public final void findProductionType ()
+	public final void testFindProductionType_Exists () throws IOException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -126,8 +126,27 @@ public final class TestGraphicsDatabaseExImpl
 
 		db.buildMaps ();
 
-		assertEquals ("RE02", db.findProductionType ("RE02").getProductionTypeID ());
-		assertNull ("RE04", db.findProductionType ("RE04"));
+		assertEquals ("RE02", db.findProductionType ("RE02", "testFindProductionType_Exists").getProductionTypeID ());
+	}
+
+	/**
+	 * Tests the findProductionType method to find a productionType ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindProductionType_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final ProductionTypeEx newProductionType = new ProductionTypeEx ();
+			newProductionType.setProductionTypeID ("RE0" + n);
+			db.getProductionType ().add (newProductionType);
+		}
+
+		db.buildMaps ();
+
+		db.findProductionType ("RE04", "testFindProductionType_NotExists");
 	}
 	
 	/**
@@ -211,6 +230,46 @@ public final class TestGraphicsDatabaseExImpl
 	}
 
 	/**
+	 * Tests the findUnitAttribute method to find a unit attribute ID that does exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testFindUnitAttribute_Exists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitAttributeEx newUnitAttribute = new UnitAttributeEx ();
+			newUnitAttribute.setUnitAttributeID ("UN00" + n);
+			db.getUnitAttribute ().add (newUnitAttribute);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("UN002", db.findUnitAttribute ("UN002", "testFindUnitAttribute_Exists").getUnitAttributeID ());
+	}
+
+	/**
+	 * Tests the findUnitAttribute method to find a unit attribute ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnitAttribute_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitAttributeEx newUnitAttribute = new UnitAttributeEx ();
+			newUnitAttribute.setUnitAttributeID ("UN00" + n);
+			db.getUnitAttribute ().add (newUnitAttribute);
+		}
+
+		db.buildMaps ();
+
+		db.findUnitAttribute ("UN004", "testFindUnitAttribute_NotExists");
+	}
+
+	/**
 	 * Tests the findUnit method to find a unit ID that does exist
 	 * @throws IOException If there is a problem
 	 */
@@ -248,6 +307,46 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		db.findUnit ("UN004", "testFindUnit_NotExists");
+	}
+
+	/**
+	 * Tests the findRangedAttackType method to find a rangedAttackType ID that does exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testFindRangedAttackType_Exists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final RangedAttackTypeEx newRangedAttackType = new RangedAttackTypeEx ();
+			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
+			db.getRangedAttackType ().add (newRangedAttackType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("RAT02", db.findRangedAttackType ("RAT02", "testFindRangedAttackType_Exists").getRangedAttackTypeID ());
+	}
+
+	/**
+	 * Tests the findRangedAttackType method to find a rangedAttackType ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindRangedAttackType_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final RangedAttackTypeEx newRangedAttackType = new RangedAttackTypeEx ();
+			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
+			db.getRangedAttackType ().add (newRangedAttackType);
+		}
+
+		db.buildMaps ();
+
+		db.findRangedAttackType ("RAT04", "testFindRangedAttackType_NotExists");
 	}
 
 	/**

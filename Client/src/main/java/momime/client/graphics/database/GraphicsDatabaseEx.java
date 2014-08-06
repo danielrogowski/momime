@@ -36,9 +36,11 @@ public interface GraphicsDatabaseEx
 
 	/**
 	 * @param productionTypeID Production type ID to search for
-	 * @return Production type object; or null if not found
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Production type object
+	 * @throws RecordNotFoundException If the productionTypeID doesn't exist
 	 */
-	public ProductionTypeEx findProductionType (final String productionTypeID);
+	public ProductionTypeEx findProductionType (final String productionTypeID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @param raceID Race ID to search for
@@ -55,6 +57,14 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
 	public CityViewElement findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @param unitAttributeID Unit attribute ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit attribute object
+	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
+	 */
+	public UnitAttributeEx findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param unitID Unit ID to search for
@@ -63,6 +73,14 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	public Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @param rangedAttackTypeID Ranged attack type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Ranged attack type object
+	 * @throws RecordNotFoundException If the rangedAttackTypeID doesn't exist
+	 */
+	public RangedAttackTypeEx findRangedAttackType (final String rangedAttackTypeID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param weaponGradeNumber Weapon grade number to search for

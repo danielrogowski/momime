@@ -7,6 +7,7 @@ import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
+import momime.client.language.database.v0_9_5.Hero;
 import momime.client.language.database.v0_9_5.LandProportion;
 import momime.client.language.database.v0_9_5.LanguageCategory;
 import momime.client.language.database.v0_9_5.LanguageDatabase;
@@ -24,6 +25,7 @@ import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.Unit;
+import momime.client.language.database.v0_9_5.UnitAttribute;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
 
@@ -61,9 +63,15 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	
 	/** Map of building IDs to building objects */
 	private Map<String, Building> buildingsMap;
+
+	/** Map of unit attribute IDs to unit attribute objects */
+	private Map<String, UnitAttribute> unitAttributesMap;
 	
 	/** Map of unit IDs to unit objects */
 	private Map<String, Unit> unitsMap;
+
+	/** Map of hero name IDs to hero name objects */
+	private Map<String, Hero> heroNamesMap;
 	
 	/** Map of city size IDs to city size objects */
 	private Map<String, CitySize> citySizesMap;
@@ -153,10 +161,20 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		for (final Building thisBuilding : getBuilding ())
 			buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
 		
+		// Create unit attributes map
+		unitAttributesMap = new HashMap<String, UnitAttribute> ();
+		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
+			unitAttributesMap.put (thisUnitAttribute.getUnitAttributeID (), thisUnitAttribute);
+		
 		// Create units map
 		unitsMap = new HashMap<String, Unit> ();
 		for (final Unit thisUnit : getUnit ())
 			unitsMap.put (thisUnit.getUnitID (), thisUnit);
+		
+		// Create hero names map
+		heroNamesMap = new HashMap<String, Hero> ();
+		for (final Hero thisHeroName : getHero ())
+			heroNamesMap.put (thisHeroName.getHeroNameID (), thisHeroName);
 		
 		// Create city sizes map
 		citySizesMap = new HashMap<String, CitySize> ();
@@ -321,6 +339,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	}
 	
 	/**
+	 * @param unitAttributeID Unit attribute ID to search for
+	 * @return Unit attribute descriptions object; or null if not found
+	 */
+	@Override
+	public final UnitAttribute findUnitAttribute (final String unitAttributeID)
+	{
+		return unitAttributesMap.get (unitAttributeID);
+	}
+	
+	/**
 	 * @param unitID Unit ID to search for
 	 * @return Unit descriptions object; or null if not found
 	 */
@@ -328,6 +356,17 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final Unit findUnit (final String unitID)
 	{
 		return unitsMap.get (unitID);
+	}
+	
+	/**
+	 * @param heroNameID Hero name ID to search for
+	 * @return Hero name; or replays back the ID if no description exists
+	 */
+	@Override
+	public final String findHeroName (final String heroNameID)
+	{
+		final Hero thisHeroName = heroNamesMap.get (heroNameID);
+		return (thisHeroName == null) ? heroNameID : thisHeroName.getHeroName ();
 	}
 	
 	/**

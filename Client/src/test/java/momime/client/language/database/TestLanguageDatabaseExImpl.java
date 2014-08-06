@@ -6,6 +6,7 @@ import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.CitySize;
 import momime.client.language.database.v0_9_5.DifficultyLevel;
 import momime.client.language.database.v0_9_5.FogOfWarSetting;
+import momime.client.language.database.v0_9_5.Hero;
 import momime.client.language.database.v0_9_5.LandProportion;
 import momime.client.language.database.v0_9_5.LanguageEntry;
 import momime.client.language.database.v0_9_5.MapFeature;
@@ -22,6 +23,7 @@ import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.Unit;
+import momime.client.language.database.v0_9_5.UnitAttribute;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.Wizard;
 
@@ -241,6 +243,27 @@ public final class TestLanguageDatabaseExImpl
 		assertEquals ("BLDesc02", lang.findBuilding ("BL02").getBuildingName ());
 		assertNull ("BL04", lang.findBuilding ("BL04"));
 	}
+
+	/**
+	 * Tests the findUnitAttribute method
+	 */
+	@Test
+	public final void findUnitAttribute ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitAttribute newUnitAttribute = new UnitAttribute ();
+			newUnitAttribute.setUnitAttributeID ("UA0" + n);
+			newUnitAttribute.setUnitAttributeDescription ("UADesc0" + n);
+			lang.getUnitAttribute ().add (newUnitAttribute);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("UADesc02", lang.findUnitAttribute ("UA02").getUnitAttributeDescription ());
+		assertNull ("UA04", lang.findUnitAttribute ("UA04"));
+	}
 	
 	/**
 	 * Tests the findUnit method
@@ -261,6 +284,27 @@ public final class TestLanguageDatabaseExImpl
 
 		assertEquals ("UNDesc02", lang.findUnit ("UN002").getUnitName ());
 		assertNull ("UN004", lang.findUnit ("UN004"));
+	}
+
+	/**
+	 * Tests the findHeroName method
+	 */
+	@Test
+	public final void findHeroName ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Hero newHeroName = new Hero ();
+			newHeroName.setHeroNameID ("HN0" + n);
+			newHeroName.setHeroName ("HNDesc0" + n);
+			lang.getHero ().add (newHeroName);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("HNDesc02", lang.findHeroName ("HN02"));
+		assertEquals ("HN04", lang.findHeroName ("HN04"));
 	}
 	
 	/**

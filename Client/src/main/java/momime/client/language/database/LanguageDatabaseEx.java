@@ -13,6 +13,7 @@ import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.Unit;
+import momime.client.language.database.v0_9_5.UnitAttribute;
 
 /**
  * Describes operations that we need to support over the language XML file
@@ -80,10 +81,22 @@ public interface LanguageDatabaseEx
 	public Building findBuilding (final String buildingID);
 	
 	/**
+	 * @param unitAttributeID Unit attribute ID to search for
+	 * @return Unit attribute descriptions object; or null if not found
+	 */
+	public UnitAttribute findUnitAttribute (final String unitAttributeID);
+	
+	/**
 	 * @param unitID Unit ID to search for
 	 * @return Unit descriptions object; or null if not found
 	 */
 	public Unit findUnit (final String unitID);
+
+	/**
+	 * @param heroNameID Hero name ID to search for
+	 * @return Hero name; or replays back the ID if no description exists
+	 */
+	public String findHeroName (final String heroNameID);
 	
 	/**
 	 * @param citySizeID City size ID to search for

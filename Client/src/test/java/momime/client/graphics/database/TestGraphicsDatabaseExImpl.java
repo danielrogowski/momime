@@ -14,6 +14,7 @@ import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.Unit;
+import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
@@ -240,13 +241,13 @@ public final class TestGraphicsDatabaseExImpl
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitAttributeEx newUnitAttribute = new UnitAttributeEx ();
-			newUnitAttribute.setUnitAttributeID ("UN00" + n);
+			newUnitAttribute.setUnitAttributeID ("UA0" + n);
 			db.getUnitAttribute ().add (newUnitAttribute);
 		}
 
 		db.buildMaps ();
 
-		assertEquals ("UN002", db.findUnitAttribute ("UN002", "testFindUnitAttribute_Exists").getUnitAttributeID ());
+		assertEquals ("UA02", db.findUnitAttribute ("UA02", "testFindUnitAttribute_Exists").getUnitAttributeID ());
 	}
 
 	/**
@@ -260,13 +261,53 @@ public final class TestGraphicsDatabaseExImpl
 		for (int n = 1; n <= 3; n++)
 		{
 			final UnitAttributeEx newUnitAttribute = new UnitAttributeEx ();
-			newUnitAttribute.setUnitAttributeID ("UN00" + n);
+			newUnitAttribute.setUnitAttributeID ("UA0" + n);
 			db.getUnitAttribute ().add (newUnitAttribute);
 		}
 
 		db.buildMaps ();
 
-		db.findUnitAttribute ("UN004", "testFindUnitAttribute_NotExists");
+		db.findUnitAttribute ("UA04", "testFindUnitAttribute_NotExists");
+	}
+
+	/**
+	 * Tests the findUnitSkill method to find a unit skill ID that does exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testFindUnitSkill_Exists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitSkill newUnitSkill = new UnitSkill ();
+			newUnitSkill.setUnitSkillID ("US0" + n);
+			db.getUnitSkill ().add (newUnitSkill);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("US02", db.findUnitSkill ("US02", "testFindUnitSkill_Exists").getUnitSkillID ());
+	}
+
+	/**
+	 * Tests the findUnitSkill method to find a unit skill ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnitSkill_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitSkill newUnitSkill = new UnitSkill ();
+			newUnitSkill.setUnitSkillID ("US0" + n);
+			db.getUnitSkill ().add (newUnitSkill);
+		}
+
+		db.buildMaps ();
+
+		db.findUnitSkill ("US04", "testFindUnitSkill_NotExists");
 	}
 
 	/**

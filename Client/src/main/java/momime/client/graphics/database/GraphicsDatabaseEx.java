@@ -6,6 +6,7 @@ import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.Unit;
+import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
@@ -65,6 +66,19 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the unitAttributeID doesn't exist
 	 */
 	public UnitAttributeEx findUnitAttribute (final String unitAttributeID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return List of all unit skill graphics
+	 */
+	public List<UnitSkill> getUnitSkill ();
+	
+	/**
+	 * @param unitSkillID Unit skill ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit skill object
+	 * @throws RecordNotFoundException If the unitSkillID doesn't exist
+	 */
+	public UnitSkill findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param unitID Unit ID to search for

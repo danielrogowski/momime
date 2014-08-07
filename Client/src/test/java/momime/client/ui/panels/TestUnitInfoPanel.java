@@ -14,6 +14,7 @@ import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
+import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeEx;
@@ -23,10 +24,13 @@ import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
 import momime.client.graphics.database.v0_9_5.RangedAttackTypeWeaponGrade;
 import momime.client.graphics.database.v0_9_5.UnitAttributeWeaponGrade;
+import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.ui.renderer.CellRendererFactory;
+import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
@@ -36,6 +40,7 @@ import momime.common.database.v0_9_5.Building;
 import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_5.Unit;
 import momime.common.database.v0_9_5.UnitAttribute;
+import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.database.v0_9_5.UnitUpkeep;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
@@ -196,6 +201,14 @@ public final class TestUnitInfoPanel
 			when (lang.findUnitAttribute ("UA0" + unitAttrNo)).thenReturn (unitAttrLang);
 		}
 
+		for (int n = 1; n <= 5; n++)
+		{
+			final momime.client.language.database.v0_9_5.UnitSkill skill = new momime.client.language.database.v0_9_5.UnitSkill ();
+			skill.setUnitSkillDescription ("Name of skill US0" + n);
+			
+			when (lang.findUnitSkill ("US0" + n)).thenReturn (skill);
+		}
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
 		
@@ -270,6 +283,14 @@ public final class TestUnitInfoPanel
 
 		rat.buildMap ();
 		when (gfx.findRangedAttackType ("RAT01", "unitInfoPanel.paintComponent")).thenReturn (rat);
+
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitSkill skill = new UnitSkill ();
+			skill.setUnitSkillImageFile ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png");
+			
+			when (gfx.findUnitSkill (eq ("US0" + n), anyString ())).thenReturn (skill);
+		}
 		
 		// Mock entries from client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
@@ -277,6 +298,7 @@ public final class TestUnitInfoPanel
 		final Unit longbowmen = new Unit ();
 		longbowmen.setProductionCost (80);
 		longbowmen.setRangedAttackType ("RAT01");
+		longbowmen.setDoubleMovement (4);
 
 		final UnitUpkeep goldUpkeep = new UnitUpkeep ();
 		goldUpkeep.setProductionTypeID ("RE01");
@@ -322,6 +344,14 @@ public final class TestUnitInfoPanel
 		unit.setUnitID ("UN001");
 		unit.setWeaponGrade (2);
 		
+		// Skills
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitHasSkill skill = new UnitHasSkill ();
+			skill.setUnitSkillID ("US0" + n);
+			unit.getUnitHasSkill ().add (skill);
+		}
+		
 		// Upkeep
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.getModifiedUpkeepValue (unit, "RE01", players, db)).thenReturn (2);
@@ -359,6 +389,22 @@ public final class TestUnitInfoPanel
 					MomUnitAttributeComponent.ALL, MomUnitAttributePositiveNegative.BOTH, players, fow.getMaintainedSpell (), fow.getCombatAreaEffect (), db)).thenReturn (total);
 		}
 		
+		// Movement
+		final MomClientUnitCalculations clientUnitCalc = mock (MomClientUnitCalculations.class);
+		
+		final UnitSkill movementSkill = new UnitSkill ();
+		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
+		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
+		
+		// Cell renderer
+		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
+		renderer.setLanguageHolder (langHolder);
+		renderer.setGraphicsDB (gfx);
+		renderer.setUtils (utils);
+		
+		final CellRendererFactory cellRendererFactory = mock (CellRendererFactory.class);
+		when (cellRendererFactory.createUnitSkillListCellRenderer ()).thenReturn (renderer);
+		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUtils (utils);
@@ -369,6 +415,8 @@ public final class TestUnitInfoPanel
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setUnitUtils (unitUtils);
 		panel.setUnitCalculations (unitCalc);
+		panel.setClientUnitCalculations (clientUnitCalc);
+		panel.setCellRendererFactory (cellRendererFactory);
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());

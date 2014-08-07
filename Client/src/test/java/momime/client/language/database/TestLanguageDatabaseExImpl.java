@@ -25,6 +25,7 @@ import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.database.v0_9_5.UnitAttribute;
 import momime.client.language.database.v0_9_5.UnitSetting;
+import momime.client.language.database.v0_9_5.UnitSkill;
 import momime.client.language.database.v0_9_5.Wizard;
 
 import org.junit.Test;
@@ -263,6 +264,27 @@ public final class TestLanguageDatabaseExImpl
 
 		assertEquals ("UADesc02", lang.findUnitAttribute ("UA02").getUnitAttributeDescription ());
 		assertNull ("UA04", lang.findUnitAttribute ("UA04"));
+	}
+	
+	/**
+	 * Tests the findUnitSkill method
+	 */
+	@Test
+	public final void findUnitSkill ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitSkill newUnitSkill = new UnitSkill ();
+			newUnitSkill.setUnitSkillID ("US0" + n);
+			newUnitSkill.setUnitSkillDescription ("USDesc0" + n);
+			lang.getUnitSkill ().add (newUnitSkill);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("USDesc02", lang.findUnitSkill ("US02").getUnitSkillDescription ());
+		assertNull ("US04", lang.findUnitSkill ("US04"));
 	}
 	
 	/**

@@ -14,6 +14,7 @@ import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.database.v0_9_5.UnitAttribute;
+import momime.client.language.database.v0_9_5.UnitSkill;
 
 /**
  * Describes operations that we need to support over the language XML file
@@ -85,6 +86,12 @@ public interface LanguageDatabaseEx
 	 * @return Unit attribute descriptions object; or null if not found
 	 */
 	public UnitAttribute findUnitAttribute (final String unitAttributeID);
+
+	/**
+	 * @param unitSkillID Unit skill ID to search for
+	 * @return Unit skill descriptions object; or null if not found
+	 */
+	public UnitSkill findUnitSkill (final String unitSkillID);
 	
 	/**
 	 * @param unitID Unit ID to search for

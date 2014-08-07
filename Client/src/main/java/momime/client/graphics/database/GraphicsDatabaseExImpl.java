@@ -19,6 +19,7 @@ import momime.client.graphics.database.v0_9_5.RangedAttackType;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.UnitAttribute;
+import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
@@ -55,6 +56,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 	/** Map of unit attribute IDs to unit attribute objects */
 	private Map<String, UnitAttributeEx> unitAttributesMap;
+	
+	/** Map of unit skill IDs to unit skill objects */
+	private Map<String, UnitSkill> unitSkillsMap;
 	
 	/** Map of unit IDs to unit objects */
 	private Map<String, Unit> unitsMap;
@@ -128,6 +132,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			attrEx.buildMap ();
 			unitAttributesMap.put (attrEx.getUnitAttributeID (), attrEx);
 		}
+
+		// Create unit skills map
+		unitSkillsMap = new HashMap<String, UnitSkill> ();
+		for (final UnitSkill thisUnitSkill : getUnitSkill ())
+			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), thisUnitSkill);
 		
 		// Create units map
 		unitsMap = new HashMap<String, Unit> ();
@@ -310,6 +319,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final UnitAttributeEx found = unitAttributesMap.get (unitAttributeID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitAttribute.class, unitAttributeID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param unitSkillID Unit skill ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit skill object
+	 * @throws RecordNotFoundException If the unitSkillID doesn't exist
+	 */
+	@Override
+	public final UnitSkill findUnitSkill (final String unitSkillID, final String caller) throws RecordNotFoundException
+	{
+		final UnitSkill found = unitSkillsMap.get (unitSkillID);
+		if (found == null)
+			throw new RecordNotFoundException (UnitSkill.class, unitSkillID, caller);
 
 		return found;
 	}

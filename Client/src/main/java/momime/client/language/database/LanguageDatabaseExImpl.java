@@ -27,6 +27,7 @@ import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.database.v0_9_5.UnitAttribute;
 import momime.client.language.database.v0_9_5.UnitSetting;
+import momime.client.language.database.v0_9_5.UnitSkill;
 import momime.client.language.database.v0_9_5.Wizard;
 
 /**
@@ -66,6 +67,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 
 	/** Map of unit attribute IDs to unit attribute objects */
 	private Map<String, UnitAttribute> unitAttributesMap;
+	
+	/** Map of unit skill IDs to unit skill objects */
+	private Map<String, UnitSkill> unitSkillsMap;
 	
 	/** Map of unit IDs to unit objects */
 	private Map<String, Unit> unitsMap;
@@ -165,6 +169,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		unitAttributesMap = new HashMap<String, UnitAttribute> ();
 		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
 			unitAttributesMap.put (thisUnitAttribute.getUnitAttributeID (), thisUnitAttribute);
+
+		// Create unit skills map
+		unitSkillsMap = new HashMap<String, UnitSkill> ();
+		for (final UnitSkill thisUnitSkill : getUnitSkill ())
+			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), thisUnitSkill);
 		
 		// Create units map
 		unitsMap = new HashMap<String, Unit> ();
@@ -346,6 +355,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final UnitAttribute findUnitAttribute (final String unitAttributeID)
 	{
 		return unitAttributesMap.get (unitAttributeID);
+	}
+	
+	/**
+	 * @param unitSkillID Unit skill ID to search for
+	 * @return Unit skill descriptions object; or null if not found
+	 */
+	@Override
+	public final UnitSkill findUnitSkill (final String unitSkillID)
+	{
+		return unitSkillsMap.get (unitSkillID);
 	}
 	
 	/**

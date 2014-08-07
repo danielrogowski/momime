@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -16,18 +17,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 
 import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
+import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RangedAttackTypeEx;
 import momime.client.graphics.database.UnitAttributeEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.renderer.CellRendererFactory;
+import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
@@ -39,6 +48,7 @@ import momime.common.database.v0_9_5.Building;
 import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_5.Unit;
 import momime.common.database.v0_9_5.UnitAttribute;
+import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.database.v0_9_5.UnitUpkeep;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -107,6 +117,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 	/** Unit calculations */
 	private MomUnitCalculations unitCalculations;
+
+	/** Client unit calculations */
+	private MomClientUnitCalculations clientUnitCalculations;
+	
+	/** Factory for creating cell renderers */
+	private CellRendererFactory cellRendererFactory;
 	
 	/** Overall background image */
 	private BufferedImage background;
@@ -131,6 +147,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 	/** Image of upkeep in coins */
 	private JLabel currentlyConstructingUpkeep;
+
+	/** Image of unit movement */
+	private JLabel currentlyConstructingMoves;
 	
 	/** Card layout for top section */
 	private CardLayout topCardLayout;
@@ -148,7 +167,10 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	private JTextArea currentlyConstructingDescription;
 	
 	/** List of what building allows us to construct once we complete it */
-	private JTextArea currentlyConstructingAllows;	
+	private JTextArea currentlyConstructingAllows;
+	
+	/** List model of unit skills */
+	private DefaultListModel<UnitHasSkill> unitSkillsItems;
 	
 	/** Map containing all the unit attribute labels */
 	private Map<String, JLabel> unitAttributeLabels = new HashMap<String, JLabel> ();
@@ -241,6 +263,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		currentlyConstructingUpkeep = new JLabel ();
 		getPanel ().add (currentlyConstructingUpkeep, getUtils ().createConstraintsNoFill (2, 2, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		
+		currentlyConstructingMoves = new JLabel ();
+		getPanel ().add (currentlyConstructingMoves, getUtils ().createConstraintsNoFill (2, 3, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
 		
 		// Card layouts
 		topCardLayout = new CardLayout ();
@@ -445,6 +470,28 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 		topCards.add (unitAttributesPanel, KEY_UNITS);
 		
+		// Bottom card - units
+		final UnitSkillListCellRenderer unitSkillListCellRenderer = getCellRendererFactory ().createUnitSkillListCellRenderer ();
+		unitSkillListCellRenderer.setFont (getSmallFont ());
+		unitSkillListCellRenderer.setForeground (MomUIConstants.AQUA);
+		unitSkillListCellRenderer.init ();
+		
+		unitSkillsItems = new DefaultListModel<UnitHasSkill> ();
+		
+		final JList<UnitHasSkill> unitSkillsList = new JList<UnitHasSkill>  ();		
+		unitSkillsList.setOpaque (false);
+		unitSkillsList.setModel (unitSkillsItems);
+		unitSkillsList.setCellRenderer (unitSkillListCellRenderer);
+		unitSkillsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
+		
+		final JScrollPane unitSkillsScrollPane = getUtils ().createTransparentScrollPane (unitSkillsList);
+		
+		unitSkillsScrollPane.setMinimumSize (bottomCardSize);
+		unitSkillsScrollPane.setMaximumSize (bottomCardSize);
+		unitSkillsScrollPane.setPreferredSize (bottomCardSize);
+
+		bottomCards.add (unitSkillsScrollPane, KEY_UNITS);
+		
 		log.trace ("Exiting init");
 	}
 	
@@ -468,6 +515,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		currentlyConstructingProductionCost.setText ((buildingInfo.getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (buildingInfo.getProductionCost ()));
 		costLabel.setVisible (buildingInfo.getProductionCost () != null);
 		movesLabel.setVisible (false);
+		currentlyConstructingMoves.setVisible (false);
 
 		// Search for upkeep values (i.e. no population task specified, and the value is negative)
 		final List<UnitUpkeep> upkeeps = new ArrayList<UnitUpkeep> ();
@@ -517,7 +565,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Update language independant labels
 		currentlyConstructingProductionCost.setText ((unitInfo.getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (unitInfo.getProductionCost ()));
 		costLabel.setVisible (unitInfo.getProductionCost () != null);
-		movesLabel.setVisible (true);
 		
 		// Search for upkeep values
 		final List<UnitUpkeep> upkeeps = new ArrayList<UnitUpkeep> ();
@@ -533,7 +580,60 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		final BufferedImage upkeepImage = getResourceValueClientUtils ().generateUpkeepImage (upkeeps, false);
 		currentlyConstructingUpkeep.setIcon ((upkeepImage == null) ? null : new ImageIcon (upkeepImage));
 		upkeepLabel.setVisible (upkeepImage != null);
+		
+		// Generate an image showing movement
+		final BufferedImage singleMovementImage = getUtils ().loadImage (getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getMovementIconImageFile ());
+		final int movementCount = unitInfo.getDoubleMovement () / 2;
+		
+		final BufferedImage movementImage;
+		if (movementCount <= 0)
+			movementImage = null;
+		else if (movementCount == 1)
+			movementImage = singleMovementImage;
+		else
+		{
+			// Create a merged image showing, 2,3, etc movement icons side-by-side
+			movementImage = new BufferedImage ((singleMovementImage.getWidth () * movementCount) + movementCount - 1,
+				singleMovementImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+			final Graphics2D g = movementImage.createGraphics ();
+			try
+			{
+				for (int movementNo = 0; movementNo < movementCount; movementNo++)
+					g.drawImage (singleMovementImage, (singleMovementImage.getWidth () + 1) * movementNo, 0, null);
+			}
+			finally
+			{
+				g.dispose ();
+			}
+		}
 
+		currentlyConstructingMoves.setIcon ((movementImage == null) ? null : new ImageIcon (movementImage));
+		movesLabel.setVisible (movementImage != null);
+		currentlyConstructingMoves.setVisible (movementImage != null);
+		
+		// Find all skills to show in the list box
+		final List<UnitHasSkill> mergedSkills;
+		if (unit instanceof MemoryUnit)
+			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) unit);
+		else
+			mergedSkills = unit.getUnitHasSkill ();
+		
+		for (final UnitHasSkill thisSkill : mergedSkills)
+		{
+			final UnitSkill skillGfx = getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit");
+			
+			// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form
+			if (skillGfx.getUnitSkillImageFile () != null)
+			{
+				final UnitHasSkill listSkill = new UnitHasSkill ();
+				listSkill.setUnitSkillID (thisSkill.getUnitSkillID ());
+				listSkill.setUnitSkillValue (getUnitUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), getClient ().getPlayers (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()));
+				unitSkillsItems.addElement (listSkill);
+			}
+		}
+		
 		// Update language dependant labels
 		currentConstructionChanged ();
 		
@@ -791,5 +891,37 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setUnitCalculations (final MomUnitCalculations calc)
 	{
 		unitCalculations = calc;
+	}
+
+	/**
+	 * @return Client unit calculations
+	 */
+	public final MomClientUnitCalculations getClientUnitCalculations ()
+	{
+		return clientUnitCalculations;
+	}
+
+	/**
+	 * @param calc Client unit calculations
+	 */
+	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	{
+		clientUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Factory for creating cell renderers
+	 */
+	public final CellRendererFactory getCellRendererFactory ()
+	{
+		return cellRendererFactory;
+	}
+
+	/**
+	 * @param fac Factory for creating cell renderers
+	 */
+	public final void setCellRendererFactory (final CellRendererFactory fac)
+	{
+		cellRendererFactory = fac;
 	}
 }

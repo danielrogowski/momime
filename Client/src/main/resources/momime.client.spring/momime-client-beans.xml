@@ -371,6 +371,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 
+	<bean id="clientUnitCalculations" class="momime.client.calculations.MomClientUnitCalculationsImpl">
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="client" ref="momClient" />
+		<property name="unitUtils" ref="unitUtils" />
+	</bean>
+
 	<bean id="overlandMapBitmapGenerator" class="momime.client.calculations.OverlandMapBitmapGeneratorImpl">
 		<property name="client" ref="momClient" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -515,6 +521,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 	</bean>
 
+	<bean id="unitSkillListCellRenderer" class="momime.client.ui.renderer.UnitSkillListCellRenderer" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="utils" ref="uiUtils" />
+	</bean>
+
 	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
 		<property name="serviceLocatorInterface" value="momime.client.ui.components.UIComponentFactory" />
 	</bean>
@@ -584,6 +596,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityViewPanel" ref="cityViewPanel" />		<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 
+	<bean id="unitInfoPanel" class="momime.client.ui.panels.UnitInfoPanel" scope="prototype">
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
+		<property name="anim" ref="anim" />
+		<property name="clientCityCalculations" ref="clientCityCalculations" />
+		<property name="client" ref="momClient" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="cellRendererFactory" ref="cellRendererFactory" />
+	</bean>	
+
 	<bean id="changeConstructionUI" class="momime.client.ui.frames.ChangeConstructionUI" scope="prototype">
 		<property name="client" ref="momClient" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -594,11 +624,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="clientCityCalculations" ref="clientCityCalculations" />
-		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="cellRendererFactory" ref="cellRendererFactory" />
-		<property name="textUtils" ref="textUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="anim" ref="anim" />
+		<property name="unitInfoPanel" ref="unitInfoPanel" />		<!-- So Spring will create and inject a new unitInfoPanel for each changeConstructionUI -->
 	</bean>
 	
 </beans>

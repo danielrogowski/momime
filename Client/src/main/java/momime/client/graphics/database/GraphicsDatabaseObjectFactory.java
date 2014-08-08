@@ -8,9 +8,11 @@ import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.ObjectFactory;
 import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.client.graphics.database.v0_9_5.Race;
+import momime.client.graphics.database.v0_9_5.RangedAttackType;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.client.graphics.database.v0_9_5.SmoothingSystem;
 import momime.client.graphics.database.v0_9_5.TileSet;
+import momime.client.graphics.database.v0_9_5.UnitAttribute;
 
 /**
  * Creates our custom extended GraphicsDatabase when it is unmarshalled with JAXB
@@ -91,6 +93,24 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final ProductionType createProductionType ()
 	{
 		return new ProductionTypeEx ();
+	}
+	
+	/**
+	 * @return Custom extended Unit attribute
+	 */
+	@Override
+	public final UnitAttribute createUnitAttribute ()
+	{
+		return new UnitAttributeEx ();
+	}
+	
+	/**
+	 * @return Custom extended Ranged attack type
+	 */
+	@Override
+	public final RangedAttackType createRangedAttackType ()
+	{
+		return new RangedAttackTypeEx ();
 	}
 
 	/**

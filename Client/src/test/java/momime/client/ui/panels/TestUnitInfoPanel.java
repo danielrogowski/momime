@@ -142,6 +142,15 @@ public final class TestUnitInfoPanel
 		building.setBuildingID ("BL01");
 		building.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 
+		// Cell renderer
+		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
+		renderer.setLanguageHolder (langHolder);
+		renderer.setGraphicsDB (gfx);
+		renderer.setUtils (utils);
+		
+		final CellRendererFactory cellRendererFactory = mock (CellRendererFactory.class);
+		when (cellRendererFactory.createUnitSkillListCellRenderer ()).thenReturn (renderer);
+		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUtils (utils);
@@ -153,6 +162,7 @@ public final class TestUnitInfoPanel
 		panel.setAnim (anim);
 		panel.setClientCityCalculations (clientCityCalc);
 		panel.setTextUtils (new TextUtilsImpl ());
+		panel.setCellRendererFactory (cellRendererFactory);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		panel.getPanel ();

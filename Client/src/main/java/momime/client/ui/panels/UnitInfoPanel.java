@@ -496,6 +496,18 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	}
 	
 	/**
+	 * This is called by the windowClosed handler of ChangeConstructionUI to close down all animations when the panel closes
+	 */
+	public final void unitInfoPanelClosing ()
+	{
+		log.trace ("Entering unitInfoPanelClosing");
+		
+		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
+
+		log.trace ("Exiting unitInfoPanelClosing");
+	}
+	
+	/**
 	 * @param showBuilding Building to show info about
 	 * @throws IOException If there is a problem
 	 */
@@ -544,6 +556,14 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding (building.getBuildingID (), "showBuilding").getCityViewAnimation (), currentlyConstructingImage);
 		
 		log.trace ("Entering showBuilding");
+	}
+	
+	/**
+	 * @return Building that we're displaying info about, or null if we're displaying info about a unit
+	 */
+	public final MemoryBuilding getBuilding ()
+	{
+		return building;
 	}
 
 	/**
@@ -618,6 +638,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		else
 			mergedSkills = unit.getUnitHasSkill ();
 		
+		unitSkillsItems.clear ();
 		for (final UnitHasSkill thisSkill : mergedSkills)
 		{
 			final UnitSkill skillGfx = getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit");

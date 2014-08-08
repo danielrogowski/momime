@@ -23,8 +23,10 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.BuildingListCellRenderer;
 import momime.client.ui.renderer.CellRendererFactory;
+import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
@@ -213,7 +215,8 @@ public final class TestChangeConstructionUI
 		
 		// Current construction
 		cityData.setCurrentlyConstructingBuildingOrUnitID ("BL05");
-		when (db.findBuilding ("BL05", "ChangeConstructionUI.init")).thenReturn (buildings.get (4));
+		when (db.findBuilding (eq ("BL04"), anyString ())).thenReturn (buildings.get (3));
+		when (db.findBuilding (eq ("BL05"), anyString ())).thenReturn (buildings.get (4));
 		
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
@@ -226,13 +229,34 @@ public final class TestChangeConstructionUI
 		anim.setUtils (utils);
 
 		// Cell renderer
-		final BuildingListCellRenderer renderer = new BuildingListCellRenderer ();
-		renderer.setGraphicsDB (gfx);
+		final BuildingListCellRenderer buildingRenderer = new BuildingListCellRenderer ();
+		buildingRenderer.setGraphicsDB (gfx);
+		buildingRenderer.setLanguageHolder (langHolder);
+		buildingRenderer.setAnim (anim);
+		
+		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
 		renderer.setLanguageHolder (langHolder);
-		renderer.setAnim (anim);
+		renderer.setGraphicsDB (gfx);
+		renderer.setUtils (utils);
 		
 		final CellRendererFactory cellRendererFactory = mock (CellRendererFactory.class);
-		when (cellRendererFactory.createBuildingListCellRenderer ()).thenReturn (renderer);
+		when (cellRendererFactory.createUnitSkillListCellRenderer ()).thenReturn (renderer);
+		when (cellRendererFactory.createBuildingListCellRenderer ()).thenReturn (buildingRenderer);
+		
+		// Set up panel
+		final UnitInfoPanel panel = new UnitInfoPanel ();
+		panel.setUtils (utils);
+		panel.setLanguageHolder (langHolder);
+		panel.setLanguageChangeMaster (langMaster);
+		panel.setClient (client);
+		panel.setGraphicsDB (gfx);
+		panel.setCellRendererFactory (cellRendererFactory);
+		panel.setResourceValueClientUtils (resourceValueClientUtils);
+		panel.setClientCityCalculations (clientCityCalc);
+		panel.setTextUtils (new TextUtilsImpl ());
+		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
+		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
+		panel.setAnim (anim);
 		
 		// Set up form
 		final ChangeConstructionUI changeConstruction = new ChangeConstructionUI ();
@@ -244,11 +268,9 @@ public final class TestChangeConstructionUI
 		changeConstruction.setCellRendererFactory (cellRendererFactory);
 		changeConstruction.setMemoryBuildingUtils (memoryBuildingUtils);
 		changeConstruction.setCityCalculations (cityCalc);
-		changeConstruction.setClientCityCalculations (clientCityCalc);
+		changeConstruction.setUnitInfoPanel (panel);
 		changeConstruction.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		changeConstruction.setCityViewUI (new CityViewUI ());
-		changeConstruction.setTextUtils (new TextUtilsImpl ());
-		changeConstruction.setResourceValueClientUtils (resourceValueClientUtils);
 		changeConstruction.setMediumFont (CreateFontsForTests.getMediumFont ());
 		changeConstruction.setSmallFont (CreateFontsForTests.getSmallFont ());
 		changeConstruction.setAnim (anim);

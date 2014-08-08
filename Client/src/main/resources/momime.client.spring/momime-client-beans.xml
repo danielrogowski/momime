@@ -368,7 +368,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="momClient" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="textUtils" ref="textUtils" />
+		<property name="unrestReplacer" ref="unrestReplacer" />
+		<property name="growthReplacer" ref="growthReplacer" />
+		<property name="productionReplacer" ref="productionReplacer" />
 	</bean>
 
 	<bean id="clientUnitCalculations" class="momime.client.calculations.MomClientUnitCalculationsImpl">
@@ -397,6 +399,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">
 		<property name="client" ref="momClient" />
 		<property name="utils" ref="uiUtils" />
+	</bean>
+	
+	<!-- Language variable replacers -->
+	
+	<bean id="unrestReplacer" class="momime.client.language.replacer.CityUnrestLanguageVariableReplacer">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="textUtils" ref="textUtils" />
+	</bean>
+	
+	<bean id="growthReplacer" class="momime.client.language.replacer.CityGrowthRateLanguageVariableReplacer">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="textUtils" ref="textUtils" />
+	</bean>
+	
+	<bean id="productionReplacer" class="momime.client.language.replacer.CityProductionLanguageVariableReplacer">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
 	<!-- Fonts

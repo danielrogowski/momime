@@ -5565,103 +5565,103 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>PRODUCTION</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromSinglePopulation">
-			<languageEntryText>TASK_NAME_SINGULAR producing PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>TASK_NAME_SINGULAR producing PRODUCTION_ALL_PEOPLE_DOING_TASK PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromMultiplePopulation">
-			<languageEntryText>NUMBER_DOING_TASK TASK_NAME_PLURAL each producing PRODUCTION_PER_PERSON PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>NUMBER_DOING_TASK TASK_NAME_PLURAL each producing PRODUCTION_PER_TASK PRODUCTION_TYPE = PRODUCTION_ALL_PEOPLE_DOING_TASK PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="GoldFromTaxes">
-			<languageEntryText>NUMBER_DOING_TASK population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>APPLICABLE_POPULATION population each paying PRODUCTION_PER_PERSON PRODUCTION_TYPE in taxes = PRODUCTION_ALL_PEOPLE PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromSingleTile">
-			<languageEntryText>TILE_TYPE tile producing PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>TILE_TYPE tile producing PRODUCTION_ALL_TILES PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromMultipleTiles">
-			<languageEntryText>TILE_COUNT TILE_TYPE tiles each producing PRODUCTION_PER_TILE PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>TILE_COUNT TILE_TYPE tiles each producing PRODUCTION_PER_TILE PRODUCTION_TYPE = PRODUCTION_ALL_TILES PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromSingleMapFeature">
-			<languageEntryText>MAP_FEATURE production PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>MAP_FEATURE production PRODUCTION_ALL_MAP_FEATURES PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromMultipleMapFeatures">
-			<languageEntryText>MAP_FEATURE_COUNT MAP_FEATURE each producing PRODUCTION_PER_MAP_FEATURE PRODUCTION_TYPE = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>MAP_FEATURE_COUNT MAP_FEATURE each producing PRODUCTION_PER_MAP_FEATURE PRODUCTION_TYPE = PRODUCTION_ALL_MAP_FEATURES PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromMapFeatureRaceBonus">
 			<languageEntryText>xMINERAL_BONUS_FROM_RACE due to Race = MAP_FEATURE_PRODUCTION_AMOUNT_AFTER_RACE_BONUS PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromMapFeatureBuildingBonus">
-			<languageEntryText>+PERCENTAGE_BONUS% bonus from buildings = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>+BUILDING_MINERAL_PERCENTAGE_BONUS% bonus from buildings = MAP_FEATURE_PRODUCTION_AMOUNT_FINAL PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromBuildingWithoutReligiousRetortBonus">
-			<languageEntryText>BUILDING_NAME produces PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>BUILDING_NAME produces BUILDING_MODIFIED_PRODUCTION PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromBuildingWithReligiousRetortBonus">
-			<languageEntryText>BUILDING_NAME produces UNMODIFIED_PRODUCTION_AMOUNT PRODUCTION_TYPE +PERCENTAGE_BONUS% bonus from RETORT_LIST = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>BUILDING_NAME produces BUILDING_UNMODIFIED_PRODUCTION PRODUCTION_TYPE +RELIGIOUS_PERCENTAGE_BONUS% bonus from RETORT_LIST = BUILDING_MODIFIED_PRODUCTION PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromFortressPicks">
-			<languageEntryText>BUILDING_NAME produces PRODUCTION_PER_PICK PRODUCTION_TYPE for each PICK_TYPE xPICK_COUNT= PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>FORTRESS_NAME produces PRODUCTION_PER_PICK PRODUCTION_TYPE for each PICK_TYPE xPICK_COUNT= PRODUCTION_ALL_PICKS PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionFromFortressPlane">
-			<languageEntryText>BUILDING_NAME being on PLANE_NAME produces PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>FORTRESS_NAME being on PLANE_NAME produces FORTRESS_PLANE_PRODUCTION PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="RoundingTotalBefore">
 			<languageEntryText>Total PRODUCTION_TYPE = UNMODIFIED_PRODUCTION_AMOUNT</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="RoundingUp">
-			<languageEntryText>Rounded up = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>Rounded up = ROUNDED_PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="RoundingDown">
-			<languageEntryText>Rounded down = PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>Rounded down = ROUNDED_PRODUCTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionPercentageBonusHeading">
 			<languageEntryText>Percentage Bonuses</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="PercentageBonusFromSingleTile">
-			<languageEntryText>TILE_TYPE gives PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</languageEntryText>
+			<languageEntryText>TILE_TYPE gives PERCENTAGE_ALL_TILES% PRODUCTION_TYPE bonus</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="PercentageBonusFromMultipleTiles">
-			<languageEntryText>TILE_COUNT TILE_TYPE each gives PERCENTAGE_PER_TILE% PRODUCTION_TYPE bonus = PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</languageEntryText>
+			<languageEntryText>TILE_COUNT TILE_TYPE each gives PERCENTAGE_PER_TILE% PRODUCTION_TYPE bonus = PERCENTAGE_ALL_TILES% PRODUCTION_TYPE bonus</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="PercentageBonusFromBuilding">
-			<languageEntryText>BUILDING_NAME gives PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</languageEntryText>
+			<languageEntryText>BUILDING_NAME gives BUILDING_PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="GoldTradeBonusFromTileType">
-			<languageEntryText>PERCENTAGE_VALUE% gold trade bonus from river/ocean</languageEntryText>
+			<languageEntryText>GOLD_TRADE_BONUS_TILE_TYPE% gold trade bonus from river/ocean</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="GoldTradeBonusFromRoads">
-			<languageEntryText>PERCENTAGE_VALUE% gold trade bonus from direct road connections to other cities</languageEntryText>
+			<languageEntryText>GOLD_TRADE_BONUS_ROADS% gold trade bonus from direct road connections to other cities</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="GoldTradeBonusFromRace">
-			<languageEntryText>PERCENTAGE_VALUE% gold trade bonus from race</languageEntryText>
+			<languageEntryText>GOLD_TRADE_BONUS_RACE% gold trade bonus from race</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="GoldTradeBonusUncapped">
-			<languageEntryText>Total gold trade bonus = PERCENTAGE_VALUE%</languageEntryText>
+			<languageEntryText>Total gold trade bonus = GOLD_TRADE_BONUS_TOTAL%</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="GoldTradeBonusCapped">
-			<languageEntryText>However trade bonus is capped at CURRENT_POPULATION_DIV_1000 x 3% = CAP_VALUE%</languageEntryText>
+			<languageEntryText>However trade bonus is capped at CURRENT_POPULATION_DIV_1000 x 3% = GOLD_TRADE_BONUS_CAPPED%</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionPercentageBonusTotal">
-			<languageEntryText>PERCENTAGE_BONUS% of UNMODIFIED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS for a total of PRODUCTION_AMOUNT</languageEntryText>
+			<languageEntryText>PERCENTAGE_BONUS% of ROUNDED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS for a total of PRODUCTION_TOTAL</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionCapped">
-			<languageEntryText>However value is capped at CAP_VALUE</languageEntryText>
+			<languageEntryText>However value is capped at PRODUCTION_CAPPED</languageEntryText>
 		</languageEntry>		
 		<languageEntry languageEntryID="ConsumptionMainHeading">
 			<languageEntryText>CONSUMPTION</languageEntryText>
 		</languageEntry>		
 		<languageEntry languageEntryID="RationsAteByPopulation">
-			<languageEntryText>NUMBER_DOING_TASK population each eating CONSUMPTION_PER_PERSON PRODUCTION_TYPE = CONSUMPTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>APPLICABLE_POPULATION population each eating CONSUMPTION_PER_PERSON PRODUCTION_TYPE = CONSUMPTION_ALL_PEOPLE PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="BuildingConsumption">
-			<languageEntryText>BUILDING_NAME has maintenance of CONSUMPTION_AMOUNT PRODUCTION_TYPE</languageEntryText>
+			<languageEntryText>BUILDING_NAME has maintenance of BUILDING_CONSUMPTION PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>		
 		<languageEntry languageEntryID="NetEffectBreakingEven">
 			<languageEntryText>Breaking even</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="NetEffectGain">
-			<languageEntryText>Net gain of PRODUCTION_AMOUNT - CONSUMPTION_AMOUNT = NET_GAIN</languageEntryText>
+			<languageEntryText>Net gain of PRODUCTION_CAPPED - CONSUMPTION_AMOUNT = NET_GAIN</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="NetEffectLoss">
-			<languageEntryText>Net loss of CONSUMPTION_AMOUNT - PRODUCTION_AMOUNT = NET_LOSS</languageEntryText>
+			<languageEntryText>Net loss of CONSUMPTION_AMOUNT - PRODUCTION_CAPPED = NET_LOSS</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="UnrestCalculation">

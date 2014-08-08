@@ -1237,6 +1237,7 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		freeSpellsComponents.clear ();
 		freeSpellActions.clear ();
+		spellRankTitles.clear ();
 		
 		// Set the colour of the labels to match the spell book colour
 		final Color magicRealmColour = new Color (Integer.parseInt (getGraphicsDB ().findPick (magicRealmID, "showInitialSpellsPanel").getPickBookshelfTitleColour (), 16));

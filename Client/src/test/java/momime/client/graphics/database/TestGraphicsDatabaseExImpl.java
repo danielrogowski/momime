@@ -231,6 +231,46 @@ public final class TestGraphicsDatabaseExImpl
 	}
 
 	/**
+	 * Tests the findUnitType method to find a unit type ID that does exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testFindUnitType_Exists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitTypeEx newUnitType = new UnitTypeEx ();
+			newUnitType.setUnitTypeID ("UT0" + n);
+			db.getUnitType ().add (newUnitType);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("UT02", db.findUnitType ("UT02", "testFindUnitType_Exists").getUnitTypeID ());
+	}
+
+	/**
+	 * Tests the findUnitType method to find a unit type ID that doesn't exist
+	 * @throws IOException If there is a problem
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindUnitType_NotExists () throws IOException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitTypeEx newUnitType = new UnitTypeEx ();
+			newUnitType.setUnitTypeID ("UT0" + n);
+			db.getUnitType ().add (newUnitType);
+		}
+
+		db.buildMaps ();
+
+		db.findUnitType ("UT04", "testFindUnitType_NotExists");
+	}
+	
+	/**
 	 * Tests the findUnitAttribute method to find a unit attribute ID that does exist
 	 * @throws IOException If there is a problem
 	 */

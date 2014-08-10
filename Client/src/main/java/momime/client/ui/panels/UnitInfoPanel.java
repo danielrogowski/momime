@@ -33,7 +33,6 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RangedAttackTypeEx;
 import momime.client.graphics.database.UnitAttributeEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
-import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.renderer.CellRendererFactory;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
@@ -645,10 +644,10 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		unitSkillListCellRenderer.setUnit (unit);
 		for (final UnitHasSkill thisSkill : mergedSkills)
 		{
-			final UnitSkill skillGfx = getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit");
-			
-			// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form
-			if (skillGfx.getUnitSkillImageFile () != null)
+			// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form.
+			// Experience is an exception since its images are derived differently.
+			if ((thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE)) ||
+				(getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit").getUnitSkillImageFile () != null))
 			{
 				final UnitHasSkill listSkill = new UnitHasSkill ();
 				listSkill.setUnitSkillID (thisSkill.getUnitSkillID ());

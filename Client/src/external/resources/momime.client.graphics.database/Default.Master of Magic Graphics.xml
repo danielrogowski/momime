@@ -39695,6 +39695,56 @@
 			</smoothedTile>
 		</smoothedTileType>
 	</tileSet>
+	<unitType unitTypeID="N">
+		<experienceLevel levelNumber="0">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel0.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="1">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel1.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="2">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel2.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="3">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel3.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="4">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel4.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="5">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel5.png</experienceLevelImageFile>
+		</experienceLevel>
+	</unitType>
+	<unitType unitTypeID="H">
+		<experienceLevel levelNumber="0">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel0.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="1">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel1.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="2">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel2.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="3">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel3.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="4">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel4.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="5">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel5.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="6">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel6.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="7">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel7.png</experienceLevelImageFile>
+		</experienceLevel>
+		<experienceLevel levelNumber="8">
+			<experienceLevelImageFile>/momime.client.graphics/unitSkills/expLevel8.png</experienceLevelImageFile>
+		</experienceLevel>
+	</unitType>
+	<unitType unitTypeID="S" />
 	<unitSkill unitSkillID="USX01">
 		<movementIconImageFile>/momime.client.graphics/unitSkills/USX01-move.png</movementIconImageFile>
 		<movementIconImagePreference>6</movementIconImagePreference>
@@ -39850,9 +39900,7 @@
 	<unitSkill unitSkillID="US051">
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US051-icon.png</unitSkillImageFile>
 	</unitSkill>
-	<unitSkill unitSkillID="US098">
-		<unitSkillImageFile>/momime.client.graphics/unitSkills/US098-icon.png</unitSkillImageFile>
-	</unitSkill>
+	<unitSkill unitSkillID="US098" />
 	<unitSkill unitSkillID="US122">
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US122-icon.png</unitSkillImageFile>
 	</unitSkill>

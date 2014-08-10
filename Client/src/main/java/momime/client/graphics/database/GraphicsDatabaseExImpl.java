@@ -20,6 +20,7 @@ import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.UnitAttribute;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
+import momime.client.graphics.database.v0_9_5.UnitType;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
@@ -54,6 +55,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of building IDs to city view elements */
 	private Map<String, CityViewElement> buildingsMap;
 
+	/** Map of unit type IDs to unit type objects */
+	private Map<String, UnitTypeEx> unitTypesMap;
+	
 	/** Map of unit attribute IDs to unit attribute objects */
 	private Map<String, UnitAttributeEx> unitAttributesMap;
 	
@@ -124,6 +128,15 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			if (thisBuilding.getBuildingID () != null)
 				buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
 
+		// Create unit types map
+		unitTypesMap = new HashMap<String, UnitTypeEx> ();
+		for (final UnitType thisUnitType : getUnitType ())
+		{
+			final UnitTypeEx utex = (UnitTypeEx) thisUnitType;
+			utex.buildMap ();
+			unitTypesMap.put (utex.getUnitTypeID (), utex);
+		}
+		
 		// Create unit attributes map
 		unitAttributesMap = new HashMap<String, UnitAttributeEx> ();
 		for (final UnitAttribute thisUnitAttribute : getUnitAttribute ())
@@ -303,6 +316,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final CityViewElement found = buildingsMap.get (buildingID);
 		if (found == null)
 			throw new RecordNotFoundException (CityViewElement.class, buildingID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param unitTypeID Unit type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit type object
+	 * @throws RecordNotFoundException If the unitTypeID doesn't exist
+	 */
+	@Override
+	public final UnitTypeEx findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException
+	{
+		final UnitTypeEx found = unitTypesMap.get (unitTypeID);
+		if (found == null)
+			throw new RecordNotFoundException (UnitType.class, unitTypeID, caller);
 
 		return found;
 	}

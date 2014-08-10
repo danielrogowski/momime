@@ -60,6 +60,14 @@ public interface GraphicsDatabaseEx
 	public CityViewElement findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
 
 	/**
+	 * @param unitTypeID Unit type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Unit type object
+	 * @throws RecordNotFoundException If the unitTypeID doesn't exist
+	 */
+	public UnitTypeEx findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @param unitAttributeID Unit attribute ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Unit attribute object

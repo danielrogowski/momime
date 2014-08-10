@@ -551,6 +551,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="client" ref="momClient" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 	</bean>
 

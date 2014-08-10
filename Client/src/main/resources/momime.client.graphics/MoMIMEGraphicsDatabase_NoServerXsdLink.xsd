@@ -55,6 +55,12 @@
 					<xsd:field xpath="@smoothingSystemID" />
 				</xsd:key>
 			</xsd:element>			
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitType" type="momimegfx:unitType">
+				<xsd:key name="experienceLevelPK">
+					<xsd:selector xpath="experienceLevel" />
+					<xsd:field xpath="@levelNumber" />
+				</xsd:key>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimegfx:unitSkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimegfx:weaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileUnitRelativeScale" type="momimegfx:combatTileUnitRelativeScale" />
@@ -110,6 +116,10 @@
 		<xsd:key name="tileSetPK">
 			<xsd:selector xpath="tileSet" />
 			<xsd:field xpath="@tileSetID" />
+		</xsd:key>
+		<xsd:key name="unitTypePK">
+			<xsd:selector xpath="unitType" />
+			<xsd:field xpath="@unitTypeID" />
 		</xsd:key>
 		<xsd:key name="unitSkillPK">
 			<xsd:selector xpath="unitSkill" />
@@ -360,6 +370,26 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="defaultActionSoundNumber" type="momimecommon:imageNumber" nxe:label="Default action sound number" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="combatActionID" type="momimegfx:combatActionID" use="required" nxe:label="Combat Action ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="unitType" nxe:singular="Unit Type" nxe:plural="Unit Types" nxe:submenu="Units">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceLevel" type="momimegfx:experienceLevel" />
+		</xsd:sequence>
+		<xsd:attribute name="unitTypeID" type="momimecommon:unitTypeID" use="required" nxe:label="Unit Type ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="experienceLevel" nxe:singular="Experience Level" nxe:plural="Experience Levels">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="experienceLevelImageFile" type="momimegfx:imageFilename" nxe:label="Name" nxe:gridwidth="300" />
+		</xsd:sequence>
+		<xsd:attribute name="levelNumber" type="momimecommon:experienceLevelNumber" use="required" nxe:label="Level" nxe:gridwidth="50">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>experienceRequired</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 	
 	<xsd:complexType name="unit" nxe:singular="Unit" nxe:plural="Units" nxe:submenu="Units">

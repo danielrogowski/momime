@@ -13,6 +13,7 @@ import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.client.graphics.database.v0_9_5.SmoothingSystem;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.UnitAttribute;
+import momime.client.graphics.database.v0_9_5.UnitType;
 
 /**
  * Creates our custom extended GraphicsDatabase when it is unmarshalled with JAXB
@@ -111,6 +112,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final RangedAttackType createRangedAttackType ()
 	{
 		return new RangedAttackTypeEx ();
+	}
+	
+	/**
+	 * @return Custom extended Unit type
+	 */
+	@Override
+	public final UnitType createUnitType ()
+	{
+		return new UnitTypeEx ();
 	}
 
 	/**

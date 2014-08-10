@@ -1,7 +1,8 @@
-package momime.client.language.database;
+package momime.client.graphics.database;
 
 import static org.junit.Assert.assertEquals;
-import momime.client.language.database.v0_9_5.ExperienceLevel;
+import static org.junit.Assert.assertNull;
+import momime.client.graphics.database.v0_9_5.ExperienceLevel;
 
 import org.junit.Test;
 
@@ -11,10 +12,10 @@ import org.junit.Test;
 public final class TestUnitTypeEx
 {
 	/**
-	 * Tests the findExperienceLevelName method
+	 * Tests the findExperienceLevelImageFile method
 	 */
 	@Test
-	public final void testFindExperienceLevelName ()
+	public final void testFindExperienceLevelImageFile ()
 	{
 		// Create some dummy entries
 		final UnitTypeEx unitType = new UnitTypeEx ();
@@ -22,7 +23,7 @@ public final class TestUnitTypeEx
 		{
 			final ExperienceLevel expLvl = new ExperienceLevel ();
 			expLvl.setLevelNumber (n);
-			expLvl.setExperienceLevelName ("L" + n);
+			expLvl.setExperienceLevelImageFile ("L" + n + ".png");
 			
 			unitType.getExperienceLevel ().add (expLvl);
 		}
@@ -30,7 +31,7 @@ public final class TestUnitTypeEx
 		unitType.buildMap ();
 		
 		// Run tests
-		assertEquals ("L2", unitType.findExperienceLevelName (2));
-		assertEquals ("4", unitType.findExperienceLevelName (4));
+		assertEquals ("L2.png", unitType.findExperienceLevelImageFile (2));
+		assertNull (unitType.findExperienceLevelImageFile (4));
 	}
 }

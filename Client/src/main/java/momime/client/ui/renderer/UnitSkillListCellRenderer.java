@@ -13,7 +13,9 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.common.database.v0_9_5.UnitHasSkill;
+import momime.common.messages.v0_9_5.AvailableUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +42,12 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
+	/** Variable replacer for outputting skill descriptions */
+	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
+	
+	/** The unit whose skills we're drawing */
+	private AvailableUnit unit;
+	
 	/**
 	 * Sets up the layout of the panel
 	 */
@@ -57,7 +65,13 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	{
 		// Look up the name of the skill
 		final momime.client.language.database.v0_9_5.UnitSkill skillLang = getLanguage ().findUnitSkill (value.getUnitSkillID ());
-		setText ((skillLang != null) ? skillLang.getUnitSkillDescription () : value.getUnitSkillID ());
+		if (skillLang == null)
+			setText (value.getUnitSkillID ());
+		else
+		{
+			getUnitStatsReplacer ().setUnit (getUnit ());
+			setText (getUnitStatsReplacer ().replaceVariables (skillLang.getUnitSkillDescription ()));
+		}
 		
 		setIcon (null);
 		try
@@ -130,5 +144,37 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
+	}
+
+	/**
+	 * @return Variable replacer for outputting skill descriptions
+	 */
+	public final UnitStatsLanguageVariableReplacer getUnitStatsReplacer ()
+	{
+		return unitStatsReplacer;
+	}
+
+	/**
+	 * @param replacer Variable replacer for outputting skill descriptions
+	 */
+	public final void setUnitStatsReplacer (final UnitStatsLanguageVariableReplacer replacer)
+	{
+		unitStatsReplacer = replacer;
+	}
+
+	/**
+	 * @return The unit whose skills we're drawing
+	 */
+	public final AvailableUnit getUnit ()
+	{
+		return unit;
+	}
+
+	/**
+	 * @param u The unit whose skills we're drawing
+	 */
+	public final void setUnit (final AvailableUnit u)
+	{
+		unit = u;
 	}
 }

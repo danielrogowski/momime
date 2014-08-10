@@ -59,7 +59,7 @@ public interface LanguageDatabaseEx
 	
 	/**
 	 * @param wizardID Wizard ID to search for
-	 * @return Wizard name; or replays back the ID if no description exists
+	 * @return Wizard name; or replays back the ID if no name exists
 	 */
 	public String findWizardName (final String wizardID);
 
@@ -82,6 +82,12 @@ public interface LanguageDatabaseEx
 	public Building findBuilding (final String buildingID);
 	
 	/**
+	 * @param unitTypeID Unit type ID to search for
+	 * @return Unit type descriptions object; or null if not found
+	 */
+	public UnitTypeEx findUnitType (final String unitTypeID);
+	
+	/**
 	 * @param unitAttributeID Unit attribute ID to search for
 	 * @return Unit attribute descriptions object; or null if not found
 	 */
@@ -92,6 +98,12 @@ public interface LanguageDatabaseEx
 	 * @return Unit skill descriptions object; or null if not found
 	 */
 	public UnitSkill findUnitSkill (final String unitSkillID);
+	
+	/**
+	 * @param rangedAttackTypeID Ranged attack type ID to search for
+	 * @return Ranged attack type description; or replays back the ID if no description exists
+	 */
+	public String findRangedAttackTypeDescription (final String rangedAttackTypeID);
 	
 	/**
 	 * @param unitID Unit ID to search for

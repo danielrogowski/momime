@@ -417,6 +417,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
 	</bean>
+
+	<bean id="unitStatsReplacer" class="momime.client.language.replacer.UnitStatsLanguageVariableReplacer">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="momClient" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+	</bean>
 	
 	<!-- Fonts
 		Having to use same font for medium and large sizes, because I can't find anywhere a decent
@@ -544,6 +551,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
+		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 	</bean>
 
 	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >

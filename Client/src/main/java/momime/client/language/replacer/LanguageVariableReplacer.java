@@ -1,5 +1,7 @@
 package momime.client.language.replacer;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,8 +26,9 @@ public abstract class LanguageVariableReplacer
 	/**
 	 * @param code Code to replace
 	 * @return Replacement value; or null if the code is not recognized
+	 * @throws IOException If there is an error calculating a replacement value
 	 */
-	protected abstract String determineVariableValue (final String code);
+	protected abstract String determineVariableValue (final String code) throws IOException;
 
 	/**
 	 * @param description Text containing codes to replace
@@ -53,11 +56,19 @@ public abstract class LanguageVariableReplacer
 			final String code = text.substring (codeStart, codeEnd);
 			
 			// Find the value to replace the code with
-			String replacement = determineVariableValue (code);
-			if (replacement == null)
+			String replacement = "";
+			try
 			{
-				log.warn (getClass ().getName () + " doesn't know what to replace code \"" + code + "\" with");
-				replacement = "";
+				replacement = determineVariableValue (code);
+				if (replacement == null)
+				{
+					log.warn (getClass ().getName () + " doesn't know what to replace code \"" + code + "\" with");
+					replacement = "";
+				}
+			}
+			catch (final IOException e)
+			{
+				log.error (getClass ().getName () + " threw an exception while trying to replace code \"" + code + "\"", e);
 			}
 			
 			// Perform the replacement

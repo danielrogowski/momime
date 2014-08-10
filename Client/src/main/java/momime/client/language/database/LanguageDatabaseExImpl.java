@@ -20,6 +20,7 @@ import momime.client.language.database.v0_9_5.Plane;
 import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
+import momime.client.language.database.v0_9_5.RangedAttackType;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
@@ -28,6 +29,7 @@ import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.database.v0_9_5.UnitAttribute;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.UnitSkill;
+import momime.client.language.database.v0_9_5.UnitType;
 import momime.client.language.database.v0_9_5.Wizard;
 
 /**
@@ -65,11 +67,17 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	/** Map of building IDs to building objects */
 	private Map<String, Building> buildingsMap;
 
+	/** Map of unit type IDs to unit type objects */
+	private Map<String, UnitTypeEx> unitTypesMap;
+	
 	/** Map of unit attribute IDs to unit attribute objects */
 	private Map<String, UnitAttribute> unitAttributesMap;
 	
 	/** Map of unit skill IDs to unit skill objects */
 	private Map<String, UnitSkill> unitSkillsMap;
+	
+	/** Map of ranged attack type IDs to unit skill objects */
+	private Map<String, RangedAttackType> rangedAttackTypesMap;
 	
 	/** Map of unit IDs to unit objects */
 	private Map<String, Unit> unitsMap;
@@ -164,6 +172,15 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		buildingsMap = new HashMap<String, Building> ();
 		for (final Building thisBuilding : getBuilding ())
 			buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
+
+		// Create unit types map
+		unitTypesMap = new HashMap<String, UnitTypeEx> ();
+		for (final UnitType thisUnitType : getUnitType ())
+		{
+			final UnitTypeEx utex = (UnitTypeEx) thisUnitType;
+			utex.buildMap ();
+			unitTypesMap.put (utex.getUnitTypeID (), utex);
+		}
 		
 		// Create unit attributes map
 		unitAttributesMap = new HashMap<String, UnitAttribute> ();
@@ -174,6 +191,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		unitSkillsMap = new HashMap<String, UnitSkill> ();
 		for (final UnitSkill thisUnitSkill : getUnitSkill ())
 			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), thisUnitSkill);
+
+		// Create ranged attack types map
+		rangedAttackTypesMap = new HashMap<String, RangedAttackType> ();
+		for (final RangedAttackType thisRangedAttackType : getRangedAttackType ())
+			rangedAttackTypesMap.put (thisRangedAttackType.getRangedAttackTypeID (), thisRangedAttackType);
 		
 		// Create units map
 		unitsMap = new HashMap<String, Unit> ();
@@ -308,7 +330,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	
 	/**
 	 * @param wizardID Wizard ID to search for
-	 * @return Wizard name; or replays back the ID if no description exists
+	 * @return Wizard name; or replays back the ID if no name exists
 	 */
 	@Override
 	public final String findWizardName (final String wizardID)
@@ -348,6 +370,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	}
 	
 	/**
+	 * @param unitTypeID Unit type ID to search for
+	 * @return Unit type descriptions object; or null if not found
+	 */
+	@Override
+	public final UnitTypeEx findUnitType (final String unitTypeID)
+	{
+		return unitTypesMap.get (unitTypeID);
+	}
+	
+	/**
 	 * @param unitAttributeID Unit attribute ID to search for
 	 * @return Unit attribute descriptions object; or null if not found
 	 */
@@ -365,6 +397,17 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final UnitSkill findUnitSkill (final String unitSkillID)
 	{
 		return unitSkillsMap.get (unitSkillID);
+	}
+
+	/**
+	 * @param rangedAttackTypeID Ranged attack type ID to search for
+	 * @return Ranged attack type description; or replays back the ID if no description exists
+	 */
+	@Override
+	public final String findRangedAttackTypeDescription (final String rangedAttackTypeID)
+	{
+		final RangedAttackType rat = rangedAttackTypesMap.get (rangedAttackTypeID);
+		return (rat == null) ? rangedAttackTypeID : rat.getRangedAttackTypeDescription ();
 	}
 	
 	/**

@@ -181,6 +181,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Unit being displayed */
 	private AvailableUnit unit;
 	
+	/** Cell renderer for drawing the unit skill icons and generating the correct descriptions (some, notably the experience 'skill', aren't straightforward static text) */
+	private UnitSkillListCellRenderer unitSkillListCellRenderer;
+	
 	/**
 	 * Sets up the panel once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -471,7 +474,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		topCards.add (unitAttributesPanel, KEY_UNITS);
 		
 		// Bottom card - units
-		final UnitSkillListCellRenderer unitSkillListCellRenderer = getCellRendererFactory ().createUnitSkillListCellRenderer ();
+		unitSkillListCellRenderer = getCellRendererFactory ().createUnitSkillListCellRenderer ();
 		unitSkillListCellRenderer.setFont (getSmallFont ());
 		unitSkillListCellRenderer.setForeground (MomUIConstants.AQUA);
 		unitSkillListCellRenderer.init ();
@@ -639,6 +642,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			mergedSkills = unit.getUnitHasSkill ();
 		
 		unitSkillsItems.clear ();
+		unitSkillListCellRenderer.setUnit (unit);
 		for (final UnitHasSkill thisSkill : mergedSkills)
 		{
 			final UnitSkill skillGfx = getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit");

@@ -18,6 +18,7 @@ import momime.client.language.database.v0_9_5.Plane;
 import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
+import momime.client.language.database.v0_9_5.RangedAttackType;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
@@ -246,6 +247,27 @@ public final class TestLanguageDatabaseExImpl
 	}
 
 	/**
+	 * Tests the findUnitType method
+	 */
+	@Test
+	public final void findUnitType ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitTypeEx newUnitType = new UnitTypeEx ();
+			newUnitType.setUnitTypeID ("UT0" + n);
+			newUnitType.setUnitTypeExperienced ("UTDesc0" + n);		// There's no "description" field, so just using any other text field to test with
+			lang.getUnitType ().add (newUnitType);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("UTDesc02", lang.findUnitType ("UT02").getUnitTypeExperienced ());
+		assertNull ("UT04", lang.findUnitType ("UT04"));
+	}
+	
+	/**
 	 * Tests the findUnitAttribute method
 	 */
 	@Test
@@ -285,6 +307,27 @@ public final class TestLanguageDatabaseExImpl
 
 		assertEquals ("USDesc02", lang.findUnitSkill ("US02").getUnitSkillDescription ());
 		assertNull ("US04", lang.findUnitSkill ("US04"));
+	}
+
+	/**
+	 * Tests the findRangedAttackTypeDescription method
+	 */
+	@Test
+	public final void findRangedAttackTypeDescription ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final RangedAttackType newRangedAttackType = new RangedAttackType ();
+			newRangedAttackType.setRangedAttackTypeID ("RAT0" + n);
+			newRangedAttackType.setRangedAttackTypeDescription ("RATDesc0" + n);
+			lang.getRangedAttackType ().add (newRangedAttackType);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("RATDesc02", lang.findRangedAttackTypeDescription ("RAT02"));
+		assertEquals ("RAT04", lang.findRangedAttackTypeDescription ("RAT04"));
 	}
 	
 	/**

@@ -1,0 +1,455 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:momimecommon="http://momime/common/database/v0_9_5" xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_5"
+	xmlns:momimeinternal="http://momime/common/internal" targetNamespace="http://momime/common/internal">
+	
+	<xsd:import namespace="http://momime/common/database/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_5"/>
+	
+    <xsd:annotation>
+    	<xsd:documentation>Defines data structures used by MoMIMECommon but that aren't stored in any XML files or send in any network messages.
+This is used for defining data structures used for calculation breakdowns.</xsd:documentation>
+	</xsd:annotation>
+
+	<!-- City growth calculation -->
+
+	<xsd:complexType name="cityGrowthRateBreakdownBuilding">
+		<xsd:annotation>
+			<xsd:documentation>Stores the growth rate modifier granted by a particular building.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="growthRateBonus" type="momimecommon:cityPopulationGrowthRate" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityGrowthRateBreakdown">
+		<xsd:annotation>
+			<xsd:documentation>Stores the breakdown of all the values used in calculating the population growth rate/death rate in a city.
+Use of this structure directly (rather than the Growing and Dying subclasses) implies that the population is stable and neither growing nor dying.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="currentPopulation" type="momimenewgame:cityPopulation" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="maximumPopulation" type="momimenewgame:cityPopulation" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="finalTotal" type="momimecommon:cityPopulationGrowthRate" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityGrowthRateBreakdownGrowing">
+		<xsd:complexContent>
+			<xsd:extension base="momimeinternal:cityGrowthRateBreakdown">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="baseGrowthRate" type="momimecommon:cityPopulationGrowthRate" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="racialGrowthModifier" type="momimecommon:cityPopulationGrowthRate" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingModifier" type="momimeinternal:cityGrowthRateBreakdownBuilding" />
+					
+					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRate" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Total growth = base + racial + buildings</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cappedGrowthRate" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Total growth rate, possibly reduced to prevent city going over maximum size.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityGrowthRateBreakdownDying">
+		<xsd:complexContent>
+			<xsd:extension base="momimeinternal:cityGrowthRateBreakdown">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="baseDeathRate" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Sets of 1,000 people or part thereof that we are in excess of maximum population.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cityDeathRate" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Number of people dying each turn</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- City unrest calculation -->
+
+	<xsd:complexType name="cityUnrestBreakdownBuilding">
+		<xsd:annotation>
+			<xsd:documentation>Stores the unrest reduction granted by a particular building.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unrestReduction" type="momimecommon:buildingUnrestReduction">
+				<xsd:annotation>
+					<xsd:documentation>How much unrest the building reduces - stored as a positive value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="cityUnrestBreakdown">
+		<xsd:annotation>
+			<xsd:documentation>Stores the breakdown of all the values used in calculating the number of rebels in a city.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="taxPercentage" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>% unrest from taxation rate.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="racialPercentage" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>% unrest from how much the race inhabiting this city distrusts our capital race.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="totalPercentage" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Total % unrest, i.e. taxPercentage + racialPercentage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="population" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Population of city in 1000s.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseValue" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Unrest generated from totalPercentage.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="racialLiteral" type="momimecommon:unrestLiteral">
+				<xsd:annotation>
+					<xsd:documentation>Literal unrest modifier (i.e. not percentage-based) between race inhabiting this city and our capital race (used for Klackons special -2 modifier).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingReducingUnrest" type="momimeinternal:cityUnrestBreakdownBuilding" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="religiousBuildingRetortPercentage" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>% that our retorts (Divine or Infernal Power) are improving the effectiveness of reglious buildings by.
+						Will only be set if we actually have some religious buildings, e.g. if we have Divine Power retort but no Shrine, this will be 0 not 50.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickIdContributingToReligiousBuildingBonus" type="momimecommon:pickID">
+				<xsd:annotation>
+					<xsd:documentation>List of retorts contributing to religiousBuildingRetortPercentage.  Will only be set if we actually have some religious buildings,
+						e.g. if we have Divine Power retort but no Shrine, this will be an empty list rather than stating that we have Divine Power.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="religiousBuildingReduction" type="momimecommon:unrestLiteral">
+				<xsd:annotation>
+					<xsd:documentation>Unrest reduction from religious buildings, before applying % bonus from retorts; will be a negative value.
+						Will only be set if we actually have a retort, e.g. if we have a Shrine but no Divine Power retort, this will be 0 not -1.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="religiousBuildingRetortValue" type="momimecommon:unrestLiteral">
+				<xsd:annotation>
+					<xsd:documentation>Additional unrest reduction from the retort bonus to our religious buildings; will be a negative value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitCount" type="momimenewgame:unitCount">
+				<xsd:annotation>
+					<xsd:documentation>Number of non-summoned units in the city.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitReduction" type="momimecommon:unrestLiteral">
+				<xsd:annotation>
+					<xsd:documentation>Amount of unrest reduction from non-summoned units in the city; will be a negative value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseTotal" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Total unrest, before applying bounding limits.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="forcePositive" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>True if baseTotal was negative and we forced it up to zero (they're so happy we have a negative number of rebels!)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="forceAll" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation>True if baseTotal was more than the population of the city and we forced it back to being exactly the population
+						(they're so mad that there's more rebels than number of civilians in the city!)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="minimumFarmers" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Minimum farmers in the city necessary to feed the population; only included if the
+						number of rebels was decreased to allow the minimum number of farmers.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="totalAfterFarmers" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>Number rebels were reduced to in order to allow some rebels to satisfy the minimum number of farmers;
+						only included if the number of rebels was decreased to allow the minimum number of farmers</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="finalTotal" type="momimenewgame:cityPopulationDiv1000" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- City production calculation -->
+
+	<xsd:complexType name="cityProductionBreakdownTileType">
+		<xsd:annotation>
+			<xsd:documentation>Stores the production and/or production % bonus generated by one tile type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="tileTypeID" type="momimenewgame:tileTypeID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="count" type="momimenewgame:mapTileCount">
+				<xsd:annotation>
+					<xsd:documentation>The number of this tile type that there are within the city radius.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountEachTile" type="momimenewgame:doubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageBonusEachTile" type="momimenewgame:percentage" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountAllTiles" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleProductionAmountEachTile * count.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageBonusAllTiles" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>percentageBonusEachTile * count.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityProductionBreakdownMapFeature">
+		<xsd:annotation>
+			<xsd:documentation>Stores the production generated by one map feature.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="mapFeatureID" type="momimecommon:mapFeatureID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="count" type="momimenewgame:mapTileCount">
+				<xsd:annotation>
+					<xsd:documentation>The number of this map feature that there are within the city radius.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleUnmodifiedProductionAmountEachFeature" type="momimenewgame:doubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleUnmodifiedProductionAmountAllFeatures" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleProductionAmountEachFeature * count.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="raceMineralBonusMultiplier" type="momimecommon:mineralBonusMultiplier">
+				<xsd:annotation>
+					<xsd:documentation>x2 if Dwarven city and is a mine-like map feature (e.g. gold or crystals, not wild game), otherwise 1x.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountAfterRacialMultiplier" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleProductionAmountAllFeatures * raceMineralBonusMultiplier.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="buildingMineralPercentageBonus" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>+50% if we have a Miners' Guild and is a mine-like map feature (e.g. gold or crystals, not wild game), otherwise +0%.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleModifiedProductionAmountAllFeatures" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleProductionAmountAfterRacialMultiplier with % bonus from buildingMineralPercentageBonus added in.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityProductionBreakdownPopulationTask">
+		<xsd:annotation>
+			<xsd:documentation>Stores the production generated by one population task type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="populationTaskID" type="momimecommon:populationTaskID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="count" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>The number of civilians performing this task.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountEachPopulation" type="momimenewgame:doubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountAllPopulation" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleProductionAmountEachPopulation * count.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityProductionBreakdownPickType">
+		<xsd:annotation>
+			<xsd:documentation>This is used for spell books (pickTypeID=B) generating magic power at your fortress city.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="pickTypeID" type="momimecommon:pickTypeID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="count" type="momimecommon:pickTypeCount">
+				<xsd:annotation>
+					<xsd:documentation>The number of this type of pick type that we have (i.e. the total number of spell books across all magic realms that we have, but not retorts).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountEachPick" type="momimenewgame:doubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountAllPicks" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleProductionAmountEachPick * count.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityProductionBreakdownBuilding">
+		<xsd:annotation>
+			<xsd:documentation>Buildings can generate production e.g. shrine, production % bonuses e.g. marketplace generates +25% gold,
+				consumption e.g. gold maintainence cost of buildings, or any combination of all three.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleUnmodifiedProductionAmount" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>Base production value from this building before applying any bonuses.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="religiousBuildingPercentageBonus" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Shrines etc. generate +50% more power if wizard has Divine or Infernal Power retort.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickIdContributingToReligiousBuildingBonus" type="momimecommon:pickID">
+				<xsd:annotation>
+					<xsd:documentation>List of retorts contributing to religiousBuildingPercentageBonus.  Will only be set on applicable buildings,
+						e.g. if we have Divine Power then on a Shrine this will say 50% and list the retort that's granting the bonus, but on a Library will say 0.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleModifiedProductionAmount" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleUnmodifiedProductionAmount with % bonus from religiousBuildingPercentageBonus added in.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="consumptionAmount" type="momimenewgame:undoubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageBonus" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Percentage bonus that applies to the overall production total rather than this single building, e.g. +25% gold from Marketplace.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityProductionBreakdown">
+		<xsd:annotation>
+			<xsd:documentation>Stores all the production, production % bonus and/or consumption values along with totals for a single production type.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="productionTypeID" type="momimecommon:productionTypeID" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeProduction" type="momimeinternal:cityProductionBreakdownTileType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureProduction" type="momimeinternal:cityProductionBreakdownMapFeature" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="populationTaskProduction" type="momimeinternal:cityProductionBreakdownPopulationTask" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypeProduction" type="momimeinternal:cityProductionBreakdownPickType" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingBreakdown" type="momimeinternal:cityProductionBreakdownBuilding" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="fortressPlane" type="momimenewgame:planeNumber" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountFortressPlane" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>This is used for your fortress generating +5 magic power if on Myrror.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			
+			<xsd:element minOccurs="1" maxOccurs="1" name="applicablePopulation" type="momimenewgame:cityPopulationDiv1000">
+				<xsd:annotation>
+					<xsd:documentation>This is used when production/consumption comes from the population as a whole, rather than specific tasks (farmer/worker/rebel).
+						So its used for the whole population paying taxes (excluding rebels) and whole population eating rations (including rebels).
+						These could be included against each population task, but it'd look dumb in the breakdown saying
+						2 farmers eating 1 ration each, 3 workers eating 1 ration each, 1 rebel eating 1 ration, etc all split out like that, so held at this level instead.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountEachPopulation" type="momimenewgame:doubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="consumptionAmountEachPopulation" type="momimenewgame:undoubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountAllPopulation" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleProductionAmountEachPopulation * applicablePopulation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="consumptionAmountAllPopulation" type="momimenewgame:undoubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>consumptionAmountEachPopulation * applicablePopulation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+
+			<xsd:element minOccurs="1" maxOccurs="1" name="tradePercentageBonusFromTileType" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Gold trade % bonus from the city being on a river and/or adjacent to shore.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="tradePercentageBonusFromRoads" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Gold trade % bonus from the city being directly connected to other cities via road.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="tradePercentageBonusFromRace" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>+50% if it is a Nomad city.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="tradePercentageBonusUncapped" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>tradePercentageBonusFromTileType + tradePercentageBonusFromRoads + tradePercentageBonusFromRace.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="totalPopulation" type="momimenewgame:cityPopulationDiv1000" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="tradePercentageBonusCapped" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>tradePercentageBonusUncapped, or 3x totalPopulation, whichever is less.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			
+			<!-- Totals -->
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmount" type="momimenewgame:doubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>Double the amount of this type of production the city is producing (before halving and applying % bonuses).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="roundingDirectionID" type="momimecommon:roundingDirectionID">
+				<xsd:annotation>
+					<xsd:documentation>Only filled in if there was actually a value to round (i.e. if doubleProductionAmount is an odd number).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseProductionAmount" type="momimenewgame:undoubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>doubleProductionAmount / 2, according to specified rounding direction.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageBonus" type="momimenewgame:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Percentage bonus that gets added to baseProductionAmount.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="modifiedProductionAmount" type="momimenewgame:undoubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>baseProductionAmount with % bonus from percentageBonus added in, rounded down.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="cappedProductionAmount" type="momimenewgame:undoubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>modifiedProductionAmount reduced to maximum set in session description (used for maxCitySize being 25).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="consumptionAmount" type="momimenewgame:undoubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>The amount of production the city is consuming, e.g. gold to maintain buildings, or rations eaten by the population.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="cityProductionBreakdowns">
+		<xsd:annotation>
+			<xsd:documentation>Stores all the production, production % bonus and/or consumption values along with totals for all production types generated by a city.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionType" type="momimeinternal:cityProductionBreakdown" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+</xsd:schema>

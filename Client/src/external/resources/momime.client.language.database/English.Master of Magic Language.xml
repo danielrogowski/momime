@@ -988,7 +988,7 @@ Also this means they cannot build Alchemists' Guilds and so cannot use Mithril o
 		<unitSkillHelpText>Death gaze makes all enemy units resist or die instantly. The gaze takes effect before actual melee is entered.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US132">
-		<unitSkillDescription>AMMO_REMAINING out of SKILL_VALUE_US132 RAT_NAME remaining</unitSkillDescription>
+		<unitSkillDescription>AMMO_REMAINING out of AMMO_TOTAL RAT_NAME remaining</unitSkillDescription>
 		<unitSkillHelpText>This skill indicates the number of ranged attacks a unit can make during combat.</unitSkillHelpText>
 	</unitSkill>
 	<unitSkill unitSkillID="US133">

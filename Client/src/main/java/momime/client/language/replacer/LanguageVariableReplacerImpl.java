@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Takes a line of text from the language XML file that contains variables and replaces the variables with appropriate text
  */
-public abstract class LanguageVariableReplacerImpl
+public abstract class LanguageVariableReplacerImpl implements LanguageVariableReplacer
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (LanguageVariableReplacerImpl.class);
@@ -34,6 +34,7 @@ public abstract class LanguageVariableReplacerImpl
 	 * @param description Text containing codes to replace
 	 * @return Input text, with codes replaced accordingly
 	 */
+	@Override
 	public final String replaceVariables (final String description)
 	{
 		log.trace ("Entering replaceVariables: " + description);
@@ -86,6 +87,7 @@ public abstract class LanguageVariableReplacerImpl
 	 * @param text Text buffer to add to
 	 * @param line Text to add, containing codes to replace
 	 */
+	@Override
 	public final void addLine (final StringBuilder text, final String line)
 	{
 		if (text.length () > 0)

@@ -17,7 +17,7 @@ import momime.common.internal.CityProductionBreakdownTileType;
 /**
  * Language replacer for city production variables
  */
-public final class CityProductionLanguageVariableReplacerImpl extends BreakdownLanguageVariableReplacerImpl<CityProductionBreakdown>
+public final class CityProductionLanguageVariableReplacerImpl extends BreakdownLanguageVariableReplacerImpl<CityProductionBreakdown> implements CityProductionLanguageVariableReplacer
 {
 	/** Population task specific breakdown */
 	private CityProductionBreakdownPopulationTask currentPopulationTask;
@@ -290,6 +290,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	/**
 	 * @param pop Population task specific breakdown
 	 */
+	@Override
 	public final void setCurrentPopulationTask (final CityProductionBreakdownPopulationTask pop)
 	{
 		currentPopulationTask = pop;
@@ -306,6 +307,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	/**
 	 * @param tile Tile type specific breakdown
 	 */
+	@Override
 	public final void setCurrentTileType (final CityProductionBreakdownTileType tile)
 	{
 		currentTileType = tile;
@@ -322,6 +324,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	/**
 	 * @param feature Map feature specific breakdown
 	 */
+	@Override
 	public final void setCurrentMapFeature (final CityProductionBreakdownMapFeature feature)
 	{
 		currentMapFeature = feature;
@@ -338,6 +341,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	/**
 	 * @param building Building specific breakdown
 	 */
+	@Override
 	public final void setCurrentBuilding (final CityProductionBreakdownBuilding building)
 	{
 		currentBuilding = building;
@@ -354,6 +358,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	/**
 	 * @param pickType Pick type specific breakdown
 	 */
+	@Override
 	public final void setCurrentPickType (final CityProductionBreakdownPickType pickType)
 	{
 		currentPickType = pickType;

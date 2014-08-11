@@ -9,7 +9,7 @@ import momime.common.internal.CityGrowthRateBreakdownGrowing;
 /**
  * Language replacer for city growth variables
  */
-public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownLanguageVariableReplacerImpl<CityGrowthRateBreakdown>
+public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownLanguageVariableReplacerImpl<CityGrowthRateBreakdown> implements CityGrowthRateLanguageVariableReplacer
 {
 	/** Building specific breakdown */
 	private CityGrowthRateBreakdownBuilding currentBuilding;
@@ -129,6 +129,7 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 	/**
 	 * @param building Building specific breakdown
 	 */
+	@Override
 	public final void setCurrentBuilding (final CityGrowthRateBreakdownBuilding building)
 	{
 		currentBuilding = building;

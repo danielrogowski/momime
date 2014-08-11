@@ -28,6 +28,7 @@ import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.CellRendererFactory;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
@@ -407,7 +408,12 @@ public final class TestUnitInfoPanel
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
 		
 		// Cell renderer
+		final UnitStatsLanguageVariableReplacer replacer = mock (UnitStatsLanguageVariableReplacer.class);
+		for (int n = 1; n <= 5; n++)
+			when (replacer.replaceVariables ("Name of skill US0" + n)).thenReturn ("Name of skill US0" + n);
+		
 		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
+		renderer.setUnitStatsReplacer (replacer);
 		renderer.setLanguageHolder (langHolder);
 		renderer.setGraphicsDB (gfx);
 		renderer.setUtils (utils);

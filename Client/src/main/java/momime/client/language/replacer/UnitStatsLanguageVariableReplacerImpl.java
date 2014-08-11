@@ -15,7 +15,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Replacer for replacing language strings to do with unit stats
  */
-public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariableReplacerImpl
+public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariableReplacerImpl implements UnitStatsLanguageVariableReplacer
 {
 	/** Multiplayer client */
 	private MomClient client;
@@ -202,6 +202,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	/**
 	 * @param u The unit whose stats we're outputting
 	 */
+	@Override
 	public final void setUnit (final AvailableUnit u)
 	{
 		unit = u;

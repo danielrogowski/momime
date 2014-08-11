@@ -34,7 +34,6 @@ import momime.client.graphics.database.RangedAttackTypeEx;
 import momime.client.graphics.database.UnitAttributeEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.ui.MomUIConstants;
-import momime.client.ui.renderer.CellRendererFactory;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
@@ -119,9 +118,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 	/** Client unit calculations */
 	private MomClientUnitCalculations clientUnitCalculations;
-	
-	/** Factory for creating cell renderers */
-	private CellRendererFactory cellRendererFactory;
 	
 	/** Overall background image */
 	private BufferedImage background;
@@ -473,17 +469,16 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		topCards.add (unitAttributesPanel, KEY_UNITS);
 		
 		// Bottom card - units
-		unitSkillListCellRenderer = getCellRendererFactory ().createUnitSkillListCellRenderer ();
-		unitSkillListCellRenderer.setFont (getSmallFont ());
-		unitSkillListCellRenderer.setForeground (MomUIConstants.AQUA);
-		unitSkillListCellRenderer.init ();
+		getUnitSkillListCellRenderer ().setFont (getSmallFont ());
+		getUnitSkillListCellRenderer ().setForeground (MomUIConstants.AQUA);
+		getUnitSkillListCellRenderer ().init ();
 		
 		unitSkillsItems = new DefaultListModel<UnitHasSkill> ();
 		
 		final JList<UnitHasSkill> unitSkillsList = new JList<UnitHasSkill>  ();		
 		unitSkillsList.setOpaque (false);
 		unitSkillsList.setModel (unitSkillsItems);
-		unitSkillsList.setCellRenderer (unitSkillListCellRenderer);
+		unitSkillsList.setCellRenderer (getUnitSkillListCellRenderer ());
 		unitSkillsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
 		final JScrollPane unitSkillsScrollPane = getUtils ().createTransparentScrollPane (unitSkillsList);
@@ -641,7 +636,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			mergedSkills = unit.getUnitHasSkill ();
 		
 		unitSkillsItems.clear ();
-		unitSkillListCellRenderer.setUnit (unit);
+		getUnitSkillListCellRenderer ().setUnit (unit);
 		for (final UnitHasSkill thisSkill : mergedSkills)
 		{
 			// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form.
@@ -934,18 +929,18 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	}
 
 	/**
-	 * @return Factory for creating cell renderers
+	 * @return Cell renderer for drawing the unit skill icons and generating the correct descriptions (some, notably the experience 'skill', aren't straightforward static text)
 	 */
-	public final CellRendererFactory getCellRendererFactory ()
+	public final UnitSkillListCellRenderer getUnitSkillListCellRenderer ()
 	{
-		return cellRendererFactory;
+		return unitSkillListCellRenderer;
 	}
 
 	/**
-	 * @param fac Factory for creating cell renderers
+	 * @param rend Cell renderer for drawing the unit skill icons and generating the correct descriptions (some, notably the experience 'skill', aren't straightforward static text)
 	 */
-	public final void setCellRendererFactory (final CellRendererFactory fac)
+	public final void setUnitSkillListCellRenderer (final UnitSkillListCellRenderer rend)
 	{
-		cellRendererFactory = fac;
+		unitSkillListCellRenderer = rend;
 	}
 }

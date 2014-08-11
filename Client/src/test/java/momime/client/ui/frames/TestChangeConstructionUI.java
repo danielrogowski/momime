@@ -25,7 +25,6 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.BuildingListCellRenderer;
-import momime.client.ui.renderer.CellRendererFactory;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
@@ -239,10 +238,6 @@ public final class TestChangeConstructionUI
 		renderer.setGraphicsDB (gfx);
 		renderer.setUtils (utils);
 		
-		final CellRendererFactory cellRendererFactory = mock (CellRendererFactory.class);
-		when (cellRendererFactory.createUnitSkillListCellRenderer ()).thenReturn (renderer);
-		when (cellRendererFactory.createBuildingListCellRenderer ()).thenReturn (buildingRenderer);
-		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUtils (utils);
@@ -250,9 +245,9 @@ public final class TestChangeConstructionUI
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
 		panel.setGraphicsDB (gfx);
-		panel.setCellRendererFactory (cellRendererFactory);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientCityCalculations (clientCityCalc);
+		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
@@ -265,10 +260,10 @@ public final class TestChangeConstructionUI
 		changeConstruction.setLanguageChangeMaster (langMaster);
 		changeConstruction.setClient (client);
 		changeConstruction.setGraphicsDB (gfx);
-		changeConstruction.setCellRendererFactory (cellRendererFactory);
 		changeConstruction.setMemoryBuildingUtils (memoryBuildingUtils);
 		changeConstruction.setCityCalculations (cityCalc);
 		changeConstruction.setUnitInfoPanel (panel);
+		changeConstruction.setBuildingListCellRenderer (buildingRenderer);
 		changeConstruction.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		changeConstruction.setCityViewUI (new CityViewUI ());
 		changeConstruction.setMediumFont (CreateFontsForTests.getMediumFont ());

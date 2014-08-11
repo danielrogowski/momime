@@ -537,10 +537,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<!-- Prototype UI components -->
 
-	<bean id="cellRendererFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
-		<property name="serviceLocatorInterface" value="momime.client.ui.renderer.CellRendererFactory" />
-	</bean>
-
 	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -640,7 +636,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
-		<property name="cellRendererFactory" ref="cellRendererFactory" />
+		<property name="unitSkillListCellRenderer" ref="unitSkillListCellRenderer" />		<!-- So Spring will create and inject a new skill list renderer for each unitInfoPanel -->
 	</bean>	
 
 	<bean id="changeConstructionUI" class="momime.client.ui.frames.ChangeConstructionUI" scope="prototype">
@@ -653,11 +649,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="cellRendererFactory" ref="cellRendererFactory" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="anim" ref="anim" />
-		<property name="unitInfoPanel" ref="unitInfoPanel" />		<!-- So Spring will create and inject a new unitInfoPanel for each changeConstructionUI -->
+		<property name="buildingListCellRenderer" ref="buildingListCellRenderer" />		<!-- So Spring will create and inject a new building list renderer for each change construction UI -->
+		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each changeConstructionUI -->
 	</bean>
 	
 </beans>

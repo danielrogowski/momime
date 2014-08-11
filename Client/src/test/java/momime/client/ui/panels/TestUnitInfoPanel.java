@@ -30,7 +30,6 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.fonts.CreateFontsForTests;
-import momime.client.ui.renderer.CellRendererFactory;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
@@ -149,9 +148,6 @@ public final class TestUnitInfoPanel
 		renderer.setGraphicsDB (gfx);
 		renderer.setUtils (utils);
 		
-		final CellRendererFactory cellRendererFactory = mock (CellRendererFactory.class);
-		when (cellRendererFactory.createUnitSkillListCellRenderer ()).thenReturn (renderer);
-		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUtils (utils);
@@ -162,8 +158,8 @@ public final class TestUnitInfoPanel
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setAnim (anim);
 		panel.setClientCityCalculations (clientCityCalc);
+		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setTextUtils (new TextUtilsImpl ());
-		panel.setCellRendererFactory (cellRendererFactory);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		panel.getPanel ();
@@ -418,9 +414,6 @@ public final class TestUnitInfoPanel
 		renderer.setGraphicsDB (gfx);
 		renderer.setUtils (utils);
 		
-		final CellRendererFactory cellRendererFactory = mock (CellRendererFactory.class);
-		when (cellRendererFactory.createUnitSkillListCellRenderer ()).thenReturn (renderer);
-		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUtils (utils);
@@ -432,7 +425,7 @@ public final class TestUnitInfoPanel
 		panel.setUnitUtils (unitUtils);
 		panel.setUnitCalculations (unitCalc);
 		panel.setClientUnitCalculations (clientUnitCalc);
-		panel.setCellRendererFactory (cellRendererFactory);
+		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());

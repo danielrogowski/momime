@@ -27,7 +27,6 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.BuildingListCellRenderer;
-import momime.client.ui.renderer.CellRendererFactory;
 import momime.client.utils.AnimationController;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomUnitCalculations;
@@ -89,8 +88,8 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/** City calculations */
 	private MomCityCalculations cityCalculations;
 	
-	/** Factory for creating cell renderers */
-	private CellRendererFactory cellRendererFactory;
+	/** Renderer for the buildings list */
+	private BuildingListCellRenderer buildingListCellRenderer;
 	
 	/** Animation controller */
 	private AnimationController anim;
@@ -188,17 +187,16 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		getFrame ().setLocationRelativeTo (getCityViewUI ().getFrame ());
 		
 		// Set up cell renderers
-		final BuildingListCellRenderer buildingListCellRenderer = getCellRendererFactory ().createBuildingListCellRenderer ();
-		buildingListCellRenderer.setFont (getMediumFont ());
-		buildingListCellRenderer.setForeground (MomUIConstants.SILVER);
-		buildingListCellRenderer.init ();
+		getBuildingListCellRenderer ().setFont (getMediumFont ());
+		getBuildingListCellRenderer ().setForeground (MomUIConstants.SILVER);
+		getBuildingListCellRenderer ().init ();
 
 		// Set list boxes
 		final DefaultListModel<Building> buildingsItems = new DefaultListModel<Building> ();
 		buildingsList = new JList<Building> ();
 		buildingsList.setOpaque (false);
 		buildingsList.setModel (buildingsItems);
-		buildingsList.setCellRenderer (buildingListCellRenderer);
+		buildingsList.setCellRenderer (getBuildingListCellRenderer ());
 		buildingsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
 		final DefaultListModel<Unit> unitsItems = new DefaultListModel<Unit> ();
@@ -522,19 +520,19 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @return Factory for creating cell renderers
+	 * @return Renderer for the buildings list
 	 */
-	public final CellRendererFactory getCellRendererFactory ()
+	public final BuildingListCellRenderer getBuildingListCellRenderer ()
 	{
-		return cellRendererFactory;
+		return buildingListCellRenderer;
 	}
 
 	/**
-	 * @param fac Factory for creating cell renderers
+	 * @param rend Factory for creating cell renderers
 	 */
-	public final void setCellRendererFactory (final CellRendererFactory fac)
+	public final void setBuildingListCellRenderer (final BuildingListCellRenderer rend)
 	{
-		cellRendererFactory = fac;
+		buildingListCellRenderer = rend;
 	}
 
 	/**

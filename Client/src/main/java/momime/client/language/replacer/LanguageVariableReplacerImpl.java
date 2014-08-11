@@ -8,10 +8,10 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Takes a line of text from the language XML file that contains variables and replaces the variables with appropriate text
  */
-public abstract class LanguageVariableReplacer
+public abstract class LanguageVariableReplacerImpl
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (LanguageVariableReplacer.class);
+	private final Log log = LogFactory.getLog (LanguageVariableReplacerImpl.class);
 	
 	/**
 	 * @param c Char to test 

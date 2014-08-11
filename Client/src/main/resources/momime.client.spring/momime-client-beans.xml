@@ -403,22 +403,22 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- Language variable replacers -->
 	
-	<bean id="unrestReplacer" class="momime.client.language.replacer.CityUnrestLanguageVariableReplacer">
+	<bean id="unrestReplacer" class="momime.client.language.replacer.CityUnrestLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
-	<bean id="growthReplacer" class="momime.client.language.replacer.CityGrowthRateLanguageVariableReplacer">
+	<bean id="growthReplacer" class="momime.client.language.replacer.CityGrowthRateLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
-	<bean id="productionReplacer" class="momime.client.language.replacer.CityProductionLanguageVariableReplacer">
+	<bean id="productionReplacer" class="momime.client.language.replacer.CityProductionLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 
-	<bean id="unitStatsReplacer" class="momime.client.language.replacer.UnitStatsLanguageVariableReplacer">
+	<bean id="unitStatsReplacer" class="momime.client.language.replacer.UnitStatsLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="momClient" />
 		<property name="unitUtils" ref="unitUtils" />

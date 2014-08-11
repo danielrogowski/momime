@@ -7,7 +7,7 @@ import momime.common.internal.CityUnrestBreakdownBuilding;
 /**
  * Language replacer for city unrest calculation variables
  */
-public final class CityUnrestLanguageVariableReplacer extends LanguageVariableReplacerEx<CityUnrestBreakdown>
+public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLanguageVariableReplacerImpl<CityUnrestBreakdown>
 {
 	/** Building specific breakdown */
 	private CityUnrestBreakdownBuilding currentBuilding;

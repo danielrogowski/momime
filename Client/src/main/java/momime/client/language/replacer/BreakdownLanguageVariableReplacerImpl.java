@@ -16,10 +16,10 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @param <B> Class of breakdown object
  */
-public abstract class LanguageVariableReplacerEx<B> extends LanguageVariableReplacer
+public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageVariableReplacerImpl
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (LanguageVariableReplacerEx.class);
+	private final Log log = LogFactory.getLog (BreakdownLanguageVariableReplacerImpl.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

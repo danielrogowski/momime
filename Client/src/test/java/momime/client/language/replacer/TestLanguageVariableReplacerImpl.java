@@ -7,9 +7,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * Tests the LanguageVariableReplacer class
+ * Tests the LanguageVariableReplacerImpl class
  */
-public final class TestLanguageVariableReplacer
+public final class TestLanguageVariableReplacerImpl
 {
 	/**
 	 * Tests the isCodeChar method
@@ -69,7 +69,7 @@ public final class TestLanguageVariableReplacer
 	/**
 	 * Dummy implementation to test with
 	 */
-	private final class DummyLanguageVariableReplacer extends LanguageVariableReplacer
+	private final class DummyLanguageVariableReplacer extends LanguageVariableReplacerImpl
 	{
 		/**
 		 * @param code Code to replace

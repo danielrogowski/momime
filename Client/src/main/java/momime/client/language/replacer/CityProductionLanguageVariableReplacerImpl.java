@@ -17,7 +17,7 @@ import momime.common.internal.CityProductionBreakdownTileType;
 /**
  * Language replacer for city production variables
  */
-public final class CityProductionLanguageVariableReplacer extends LanguageVariableReplacerEx<CityProductionBreakdown>
+public final class CityProductionLanguageVariableReplacerImpl extends BreakdownLanguageVariableReplacerImpl<CityProductionBreakdown>
 {
 	/** Population task specific breakdown */
 	private CityProductionBreakdownPopulationTask currentPopulationTask;

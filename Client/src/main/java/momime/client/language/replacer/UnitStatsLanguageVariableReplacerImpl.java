@@ -15,7 +15,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Replacer for replacing language strings to do with unit stats
  */
-public final class UnitStatsLanguageVariableReplacer extends LanguageVariableReplacer
+public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariableReplacerImpl
 {
 	/** Multiplayer client */
 	private MomClient client;

@@ -14,9 +14,9 @@ import momime.client.language.database.v0_9_5.Pick;
 import org.junit.Test;
 
 /**
- * Tests the LanguageVariableReplacerEx class
+ * Tests the BreakdownLanguageVariableReplacerImpl class
  */
-public final class TestLanguageVariableReplacerEx
+public final class TestBreakdownLanguageVariableReplacerImpl
 {
 	/**
 	 * Tests the listPickDescriptions method
@@ -60,7 +60,7 @@ public final class TestLanguageVariableReplacerEx
 	/**
 	 * Dummy implementation to test with
 	 */
-	private final class DummyLanguageVariableReplacer extends LanguageVariableReplacerEx<Object>
+	private final class DummyLanguageVariableReplacer extends BreakdownLanguageVariableReplacerImpl<Object>
 	{
 		/**
 		 * @param code Code to replace

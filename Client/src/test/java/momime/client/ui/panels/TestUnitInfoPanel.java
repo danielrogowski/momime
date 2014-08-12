@@ -434,6 +434,23 @@ public final class TestUnitInfoPanel
 		renderer.setLanguageHolder (langHolder);
 		renderer.setGraphicsDB (gfx);
 		renderer.setUtils (utils);
+
+		// Create some dummy actions for buttons
+		final Action blahAction = new AbstractAction ("Blah")
+		{
+			private static final long serialVersionUID = -2090183542982230327L;
+
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
+		
+		final Action pantsAction = new AbstractAction ("Pants")
+		{
+			private static final long serialVersionUID = 3337784121950953545L;
+
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
 		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
@@ -450,6 +467,8 @@ public final class TestUnitInfoPanel
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
+		panel.setActions (new Action [] {blahAction, pantsAction});
+		panel.setButtonsPositionRight (true);
 		panel.getPanel ();
 		panel.showUnit (unit);
 

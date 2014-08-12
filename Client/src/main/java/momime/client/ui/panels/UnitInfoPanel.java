@@ -88,8 +88,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Darkening colour drawn over the top of attributes that are being reduced by a negative effect, e.g. Black Prayer */
 	private final static Color COLOUR_NEGATIVE_ATTRIBUTES = new Color (0, 0, 0, 0xA0);
 	
-	/** How many pixels of the 'buttons below' background overlap the main background */
-	private final int BUTTONS_BELOW_OVERLAP = 5;
+	/** How many pixels of the buttons backgrounds overlap the main background */
+	private final int BUTTONS_OVERLAP = 5;
 	
 	/** Medium font */
 	private Font mediumFont;
@@ -126,6 +126,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** 0, 1 or 2 actions to set up red buttons for; NB. this must be set prior to init () being called */
 	private Action [] actions;
+	
+	/** If true then buttons appear on the right; if false then buttons appear underneath; NB. this must be set prior to init () being called */
+	private boolean buttonsPositionRight;
 	
 	/** Main background image */
 	private BufferedImage backgroundMain;
@@ -205,11 +208,19 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redPressed.png");
 		
 		if ((getActions () != null) && (getActions ().length > 0))
-			backgroundButtons = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetailsButtonsBelow.png");
+		{
+			if (isButtonsPositionRight ())
+				backgroundButtons = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetailsButtonsRight" +
+					((getActions ().length == 1) ? "One" : "Two") + ".png");
+			else
+				backgroundButtons = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetailsButtonsBelow.png");
+		}
 		
-		// Fix the size of the panel to be the same as the background
-		final Dimension backgroundSize = new Dimension (backgroundMain.getWidth (), backgroundMain.getHeight () +
-			((backgroundButtons == null) ? 0 : backgroundButtons.getHeight () - BUTTONS_BELOW_OVERLAP));
+		// Fix the size of the panel to be the same as the background.
+		// Add on space for the buttons background as appropriate.
+		final Dimension backgroundSize = new Dimension
+			(backgroundMain.getWidth () + (((backgroundButtons != null) && (isButtonsPositionRight ())) ? backgroundButtons.getWidth () - BUTTONS_OVERLAP : 0),
+			backgroundMain.getHeight () + (((backgroundButtons != null) && (!isButtonsPositionRight ())) ? backgroundButtons.getHeight () - BUTTONS_OVERLAP : 0));
 		getPanel ().setMinimumSize (backgroundSize);
 		getPanel ().setMaximumSize (backgroundSize);
 		getPanel ().setPreferredSize (backgroundSize);
@@ -296,23 +307,43 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		bottomCards.setOpaque (false);
 		getPanel ().add (bottomCards, getUtils ().createConstraintsNoFill (0, 6, 3, 1, new Insets (6, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
 		
-		// Mini panel at the bottom containing the 2 red buttons
+		// Mini panel at the bottom or right containing the 2 red buttons.
+		// The constraints to position these correctly are so different that its a mess trying to do this in 1 block; just keep them separate.
 		if (getActions () != null)
 		{
-			final JPanel redButtonsPanel = new JPanel ();
-			redButtonsPanel.setOpaque (false);
-			getPanel ().add (redButtonsPanel, getUtils ().createConstraintsNoFill (0, 7, 3, 1, new Insets (4, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
+			if (isButtonsPositionRight ())
+			{
+				final JPanel redButtonsPanel = new JPanel ();
+				redButtonsPanel.setOpaque (false);
+				getPanel ().add (redButtonsPanel, getUtils ().createConstraintsNoFill (3, 0, 1, 7, new Insets (0, 10, 0, 0), GridBagConstraintsNoFill.SOUTH));
 		
-			redButtonsPanel.setLayout (new GridBagLayout ());
-			redButtonsPanel.add (getUtils ().createImageButton (getActions () [0], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
-				buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
+				redButtonsPanel.setLayout (new GridBagLayout ());
+				redButtonsPanel.add (getUtils ().createImageButton (getActions () [0], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+					buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (0, 0, 3, 0), GridBagConstraintsNoFill.SOUTH));
 
-			redButtonsPanel.add (Box.createRigidArea (new Dimension (24, 0)), getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
+				if (getActions ().length == 2)
+					redButtonsPanel.add (getUtils ().createImageButton (getActions () [1], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+						buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (4, 0, 3, 0), GridBagConstraintsNoFill.SOUTH));
 
-			redButtonsPanel.add (getUtils ().createImageButton (getActions () [1], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
-				buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
+				redButtonsPanel.add (Box.createRigidArea (new Dimension (3, 0)), getUtils ().createConstraintsNoFill (1, 0, 1, 2, INSET, GridBagConstraintsNoFill.SOUTH));
+			}
+			else
+			{
+				final JPanel redButtonsPanel = new JPanel ();
+				redButtonsPanel.setOpaque (false);
+				getPanel ().add (redButtonsPanel, getUtils ().createConstraintsNoFill (0, 7, 3, 1, new Insets (4, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
+		
+				redButtonsPanel.setLayout (new GridBagLayout ());
+				redButtonsPanel.add (getUtils ().createImageButton (getActions () [0], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+					buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
 
-			redButtonsPanel.add (Box.createRigidArea (new Dimension (0, 1)), getUtils ().createConstraintsNoFill (0, 1, 3, 1, INSET, GridBagConstraintsNoFill.NORTH));
+				redButtonsPanel.add (Box.createRigidArea (new Dimension (24, 0)), getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
+
+				redButtonsPanel.add (getUtils ().createImageButton (getActions () [1], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+					buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
+
+				redButtonsPanel.add (Box.createRigidArea (new Dimension (0, 1)), getUtils ().createConstraintsNoFill (0, 1, 3, 1, INSET, GridBagConstraintsNoFill.NORTH));
+			}
 		}
 		
 		// Top card - buildings
@@ -703,9 +734,14 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	protected final void paintComponent (final Graphics g)
 	{
 		g.drawImage (backgroundMain, 0, 0, null);
+		
 		if (backgroundButtons != null)
-			g.drawImage (backgroundButtons, (backgroundMain.getWidth () - backgroundButtons.getWidth ()) / 2,
-				backgroundMain.getHeight () - BUTTONS_BELOW_OVERLAP, null);
+		{
+			if (isButtonsPositionRight ())
+				g.drawImage (backgroundButtons, backgroundMain.getWidth () - BUTTONS_OVERLAP, backgroundMain.getHeight () - backgroundButtons.getHeight (), null);
+			else
+				g.drawImage (backgroundButtons, (backgroundMain.getWidth () - backgroundButtons.getWidth ()) / 2, backgroundMain.getHeight () - BUTTONS_OVERLAP, null);
+		}
 	}
 	
 	/**
@@ -1001,5 +1037,21 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			throw new IllegalArgumentException ("UnitInfoPanel.setActions only supports 0, 1 or 2 actions, but was passed " + ac.length + " actions");
 		
 		actions = ac;
+	}
+
+	/**
+	 * @return If true then buttons appear on the right; if false then buttons appear underneath; NB. this must be set prior to init () being called
+	 */
+	public final boolean isButtonsPositionRight ()
+	{
+		return buttonsPositionRight;
+	}
+
+	/**
+	 * @param pos If true then buttons appear on the right; if false then buttons appear underneath; NB. this must be set prior to init () being called
+	 */
+	public final void setButtonsPositionRight (final boolean pos)
+	{
+		buttonsPositionRight = pos;
 	}
 }

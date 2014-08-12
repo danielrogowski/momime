@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -86,6 +88,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Darkening colour drawn over the top of attributes that are being reduced by a negative effect, e.g. Black Prayer */
 	private final static Color COLOUR_NEGATIVE_ATTRIBUTES = new Color (0, 0, 0, 0xA0);
 	
+	/** How many pixels of the 'buttons below' background overlap the main background */
+	private final int BUTTONS_BELOW_OVERLAP = 5;
+	
 	/** Medium font */
 	private Font mediumFont;
 
@@ -119,8 +124,14 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Client unit calculations */
 	private MomClientUnitCalculations clientUnitCalculations;
 	
-	/** Overall background image */
-	private BufferedImage background;
+	/** 0, 1 or 2 actions to set up red buttons for; NB. this must be set prior to init () being called */
+	private Action [] actions;
+	
+	/** Main background image */
+	private BufferedImage backgroundMain;
+
+	/** Extension to the background image according to the number and location of buttons to add */
+	private BufferedImage backgroundButtons;
 	
 	/** Upkeep label */
 	private JLabel upkeepLabel;
@@ -189,16 +200,23 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		log.trace ("Entering init");
 		
 		// Load images
-		background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetails.png");
+		backgroundMain = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetails.png");
+		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redNormal.png");
+		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redPressed.png");
+		
+		if ((getActions () != null) && (getActions ().length > 0))
+			backgroundButtons = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetailsButtonsBelow.png");
 		
 		// Fix the size of the panel to be the same as the background
-		final Dimension backgroundSize = new Dimension (background.getWidth (), background.getHeight ());
+		final Dimension backgroundSize = new Dimension (backgroundMain.getWidth (), backgroundMain.getHeight () +
+			((backgroundButtons == null) ? 0 : backgroundButtons.getHeight () - BUTTONS_BELOW_OVERLAP));
 		getPanel ().setMinimumSize (backgroundSize);
 		getPanel ().setMaximumSize (backgroundSize);
 		getPanel ().setPreferredSize (backgroundSize);
 
 		// Set up layout
 		getPanel ().setLayout (new GridBagLayout ());
+		getPanel ().setOpaque (false);
 	
 		final Dimension currentlyConstructingImageSize = new Dimension (62, 60);
 		
@@ -277,6 +295,25 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		bottomCards = new JPanel (bottomCardLayout);
 		bottomCards.setOpaque (false);
 		getPanel ().add (bottomCards, getUtils ().createConstraintsNoFill (0, 6, 3, 1, new Insets (6, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
+		
+		// Mini panel at the bottom containing the 2 red buttons
+		if (getActions () != null)
+		{
+			final JPanel redButtonsPanel = new JPanel ();
+			redButtonsPanel.setOpaque (false);
+			getPanel ().add (redButtonsPanel, getUtils ().createConstraintsNoFill (0, 7, 3, 1, new Insets (4, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
+		
+			redButtonsPanel.setLayout (new GridBagLayout ());
+			redButtonsPanel.add (getUtils ().createImageButton (getActions () [0], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+				buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
+
+			redButtonsPanel.add (Box.createRigidArea (new Dimension (24, 0)), getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
+
+			redButtonsPanel.add (getUtils ().createImageButton (getActions () [1], MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
+				buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
+
+			redButtonsPanel.add (Box.createRigidArea (new Dimension (0, 1)), getUtils ().createConstraintsNoFill (0, 1, 3, 1, INSET, GridBagConstraintsNoFill.NORTH));
+		}
 		
 		// Top card - buildings
 		final Dimension topCardSize = new Dimension (360, 119);
@@ -665,7 +702,10 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	@Override
 	protected final void paintComponent (final Graphics g)
 	{
-		g.drawImage (background, 0, 0, null);
+		g.drawImage (backgroundMain, 0, 0, null);
+		if (backgroundButtons != null)
+			g.drawImage (backgroundButtons, (backgroundMain.getWidth () - backgroundButtons.getWidth ()) / 2,
+				backgroundMain.getHeight () - BUTTONS_BELOW_OVERLAP, null);
 	}
 	
 	/**
@@ -942,5 +982,24 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setUnitSkillListCellRenderer (final UnitSkillListCellRenderer rend)
 	{
 		unitSkillListCellRenderer = rend;
+	}
+
+	/**
+	 * @return 0, 1 or 2 actions to set up red buttons for; NB. this must be set prior to init () being called
+	 */
+	public final Action [] getActions ()
+	{
+		return actions;
+	}
+
+	/**
+	 * @param ac 0, 1 or 2 actions to set up red buttons for; NB. this must be set prior to init () being called
+	 */
+	public final void setActions (final Action [] ac)
+	{
+		if ((ac != null) && (ac.length > 2))
+			throw new IllegalArgumentException ("UnitInfoPanel.setActions only supports 0, 1 or 2 actions, but was passed " + ac.length + " actions");
+		
+		actions = ac;
 	}
 }

@@ -6,9 +6,12 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
@@ -148,6 +151,23 @@ public final class TestUnitInfoPanel
 		renderer.setGraphicsDB (gfx);
 		renderer.setUtils (utils);
 		
+		// Create some dummy actions for buttons
+		final Action blahAction = new AbstractAction ("Blah")
+		{
+			private static final long serialVersionUID = -2090183542982230327L;
+
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
+		
+		final Action pantsAction = new AbstractAction ("Pants")
+		{
+			private static final long serialVersionUID = 3337784121950953545L;
+
+			@Override
+			public final void actionPerformed (final ActionEvent ev) {}
+		};
+		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUtils (utils);
@@ -162,6 +182,7 @@ public final class TestUnitInfoPanel
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
+		panel.setActions (new Action [] {blahAction, pantsAction});
 		panel.getPanel ();
 		panel.showBuilding (building);
 

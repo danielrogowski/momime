@@ -123,8 +123,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 
 		// Load images
 		final BufferedImage changeConstructionBackground = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/changeConstruction.png");
-		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redNormal.png");
-		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button49x12redPressed.png");
 		
 		// Actions
 		cancelAction = new AbstractAction ()
@@ -167,6 +165,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				}
 			}
 		};
+		
+		// Must do this prior to calling .getPanel () on it
+		getUnitInfoPanel ().setActions (new Action [] {cancelAction, okAction});
 		
 		// Initialize the frame
 		final ChangeConstructionUI ui = this;
@@ -222,23 +223,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		contentPane.add (buildingsScroll, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		contentPane.add (getUnitInfoPanel ().getPanel (), getUtils ().createConstraintsNoFill (1, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.CENTRE));
 		contentPane.add (unitsScroll, getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		// Mini panel at the bottom containing the 2 red buttons
-/*		final GridBagConstraints redButtonsConstraints = getUtils ().createConstraintsNoFill (0, 7, 3, 1, new Insets (1, 1, 1, 1), GridBagConstraintsNoFill.NORTH);
-		redButtonsConstraints.weighty = 1;
-		
-		final JPanel redButtonsPanel = new JPanel ();
-		redButtonsPanel.setOpaque (false);
-		currentlyConstructingPanel.add (redButtonsPanel, redButtonsConstraints);
-		
-		redButtonsPanel.setLayout (new GridBagLayout ());
-		redButtonsPanel.add (getUtils ().createImageButton (cancelAction, MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
-			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.NORTH));
-
-		redButtonsPanel.add (Box.createRigidArea (new Dimension (20, 0)), getUtils ().createConstraintsNoFill (1, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.NORTH));
-
-		redButtonsPanel.add (getUtils ().createImageButton (okAction, MomUIConstants.DULL_GOLD, MomUIConstants.GOLD, getSmallFont (),
-			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (2, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.NORTH)); */
 		
 		// What's currently being constructed?
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get

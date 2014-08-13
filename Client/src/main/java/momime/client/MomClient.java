@@ -11,6 +11,7 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.database.v0_9_5.NewGameDatabase;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.UnitInfoUI;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
@@ -104,7 +105,12 @@ public interface MomClient
 	/**
 	 * @return List of all change constructions currently open, keyed by coordinates.toString ()
 	 */
-	public Map<String, ChangeConstructionUI> getChangeConstructions (); 
+	public Map<String, ChangeConstructionUI> getChangeConstructions ();
+	
+	/**
+	 * @return List of all unit info screens currently open, keyed by Unit URN
+	 */
+	public Map<Integer, UnitInfoUI> getUnitInfos ();
 
 	/**
 	 * @return Info we need in order to create games; sent from server

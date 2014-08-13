@@ -227,7 +227,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 		// Set up layout
 		getPanel ().setLayout (new GridBagLayout ());
-		getPanel ().setOpaque (false);
+		getPanel ().setBackground (Color.BLACK);
 	
 		final Dimension currentlyConstructingImageSize = new Dimension (62, 60);
 		
@@ -826,6 +826,14 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		}
 		
 		log.trace ("Exiting currentConstructionChanged");
+	}
+	
+	/**
+	 * @return The name of the building or unit currently being displayed
+	 */
+	public final String getCurrentlyConstructingName ()
+	{
+		return currentlyConstructingName.getText ();
 	}
 	
 	/**

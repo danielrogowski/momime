@@ -20,6 +20,7 @@ import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.MessageBoxUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.frames.UnitInfoUI;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
@@ -76,7 +77,10 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	private Map<String, CityViewUI> cityViews = new HashMap<String, CityViewUI> (); 
 	
 	/** List of all change constructions currently open, keyed by coordinates.toString () */
-	private Map<String, ChangeConstructionUI> changeConstructions = new HashMap<String, ChangeConstructionUI> (); 
+	private Map<String, ChangeConstructionUI> changeConstructions = new HashMap<String, ChangeConstructionUI> ();
+	
+	/** List of all unit info screens currently open, keyed by Unit URN */
+	private Map<Integer, UnitInfoUI> unitInfos = new HashMap<Integer, UnitInfoUI> ();
 	
 	/**
 	 * Kick off method invoked by spring's init-method
@@ -545,5 +549,14 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final Map<String, ChangeConstructionUI> getChangeConstructions () 
 	{
 		return changeConstructions;
+	}
+
+	/**
+	 * @return List of all unit info screens currently open, keyed by Unit URN
+	 */
+	@Override
+	public final Map<Integer, UnitInfoUI> getUnitInfos ()
+	{
+		return unitInfos;
 	}
 }

@@ -29,4 +29,9 @@ public interface PrototypeFrameCreator
 	 * @return New change construction UI
 	 */
 	public ChangeConstructionUI createChangeConstruction ();
+	
+	/**
+	 * @return New unit info UI
+	 */
+	public UnitInfoUI createUnitInfo ();
 }

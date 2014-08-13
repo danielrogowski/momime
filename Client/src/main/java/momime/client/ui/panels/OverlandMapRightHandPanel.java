@@ -29,6 +29,8 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
+import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.TextUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.clienttoserver.v0_9_5.CancelPendingMovementAndSpecialOrdersMessage;
@@ -90,6 +92,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** UI component factory */
 	private UIComponentFactory uiComponentFactory;
+
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** What is displayed in the variable top section */
 	private OverlandMapRightHandPanelTop top;
@@ -482,25 +487,35 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					@Override
 					public final void mouseClicked (final MouseEvent ev)
 					{
-						// Right mouse clicks to open up the unit info screen are always enabled
-						if (ev.getButton () != MouseEvent.BUTTON1)
-							System.out.println ("Button right clicked, Show unit info screen");
-						
-						else
+						try
 						{
-							// Left clicks are more complicated - by default Swing will toggle the selected state
-							// of the button, but we might need to block that from happening.  We also need to
-							// clear pending moves/special orders from units even if we block them from being selected.
-							boolean allowClick = false;
-							
-							// Don't allow deselecting units that we don't own or that have no movement left.
-							// We aren't allowed to move then anyway so deselecting them just hides their flag colour which looks confusing.
-							// Also if it isn't our turn, then ignore clicks just as if we were clicking on someone else's unit
-							if ((selectUnitButton.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()) &&
-								((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
-									(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))))
+							// Right mouse clicks to open up the unit info screen are always enabled
+							if (ev.getButton () != MouseEvent.BUTTON1)
 							{
-								try
+								// Is there a unit info screen already open for this unit?
+								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (selectUnitButton.getUnit ().getUnitURN ());
+								if (unitInfo == null)
+								{
+									unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
+									unitInfo.setUnit (selectUnitButton.getUnit ());
+									getClient ().getUnitInfos ().put (selectUnitButton.getUnit ().getUnitURN (), unitInfo);
+								}
+							
+								unitInfo.setVisible (true);
+							}
+							else
+							{
+								// Left clicks are more complicated - by default Swing will toggle the selected state
+								// of the button, but we might need to block that from happening.  We also need to
+								// clear pending moves/special orders from units even if we block them from being selected.
+								boolean allowClick = false;
+							
+								// Don't allow deselecting units that we don't own or that have no movement left.
+								// We aren't allowed to move then anyway so deselecting them just hides their flag colour which looks confusing.
+								// Also if it isn't our turn, then ignore clicks just as if we were clicking on someone else's unit
+								if ((selectUnitButton.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()) &&
+									((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
+										(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))))
 								{
 									// Remove any pending movements for this unit and blank out any special orders
 									final PendingMovement pendingMovement = getPendingMovementUtils ().findPendingMoveForUnit
@@ -530,15 +545,15 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 										getOverlandMapProcessing ().updateMovementRemaining ();
 									}
 								}
-								catch (final Exception e)
-								{
-									log.error (e, e);
-								}
-							}
 							
-							// If we disallowed the click, force the button back to its previous state
-							if (!allowClick)
-								selectUnitButton.setSelected (!selectUnitButton.isSelected ());
+								// If we disallowed the click, force the button back to its previous state
+								if (!allowClick)
+									selectUnitButton.setSelected (!selectUnitButton.isSelected ());
+							}
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
 						}
 					}
 				});
@@ -933,5 +948,21 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setUiComponentFactory (final UIComponentFactory factory)
 	{
 		uiComponentFactory = factory;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

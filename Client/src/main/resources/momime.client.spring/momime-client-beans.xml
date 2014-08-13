@@ -519,6 +519,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">
@@ -618,7 +619,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="anim" ref="anim" />
-		<property name="cityViewPanel" ref="cityViewPanel" />		<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
+		<property name="cityViewPanel" ref="cityViewPanel" />									<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 
 	<bean id="unitInfoPanel" class="momime.client.ui.panels.UnitInfoPanel" scope="prototype">
@@ -654,6 +655,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 		<property name="buildingListCellRenderer" ref="buildingListCellRenderer" />		<!-- So Spring will create and inject a new building list renderer for each change construction UI -->
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each changeConstructionUI -->
+	</bean>
+	
+	<bean id="unitInfoUI" class="momime.client.ui.frames.UnitInfoUI" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each unitInfoUI -->
 	</bean>
 	
 </beans>

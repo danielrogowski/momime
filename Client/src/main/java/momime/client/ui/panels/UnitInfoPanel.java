@@ -40,6 +40,8 @@ import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
+import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
 import momime.common.MomException;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -111,6 +113,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** Client city calculations */
 	private MomClientCityCalculations clientCityCalculations;
+
+	/** Client-side unit utils */
+	private UnitClientUtils unitClientUtils;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -790,50 +795,21 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Labels if showing a unit
 		if (unit != null)
 		{
-			// Derive name of unit - this might include the race as a prefix if requested; e.g. "Wraiths" or "Demon Lord" or "Klackon Spearmen"
-			// N.B. This used to be a separate function in Delphi (UnitName in MomClientDBUtils)
-			final MemoryUnit mu = (unit instanceof MemoryUnit) ? (MemoryUnit) unit : null;
-			String unitName;
-			
-			// Is it a hero with a specifically assigned name?
-			if ((mu != null) && (mu.getUnitName () != null))
-				unitName = mu.getUnitName ();
-			
-			// Does it use hero names?
-			else if ((mu != null) && (mu.getHeroNameID () != null))
-				unitName = getLanguage ().findHeroName (mu.getHeroNameID ());
-			
-			else
+			String unitName = null;
+			try
 			{
-				// Regular unit name
-				unitName = getLanguage ().findUnit (unit.getUnitID ()).getUnitName ();
-			
-				// Do we need to prefix the unit name with the name of the race?
-				try
-				{
-					final Unit unitInfo = getClient ().getClientDB ().findUnit (unit.getUnitID (), "currentConstructionChanged");
-					if ((unitInfo.isIncludeRaceInUnitName () != null) && (unitInfo.isIncludeRaceInUnitName ()))
-						unitName = getLanguage ().findRace (unitInfo.getUnitRaceID ()).getRaceName () + " " + unitName;
-				}
-				catch (final RecordNotFoundException e)
-				{
-					// Log the error, but its only in generating the name, so keep going
-					log.error (e, e);
-				}
+				unitName = getUnitClientUtils ().getUnitName (unit, UnitNameType.RACE_UNIT_NAME);
+			}
+			catch (final RecordNotFoundException e)
+			{
+				// Log the error, but its only in generating the name, so keep going
+				log.error (e, e);
 			}
 			
 			currentlyConstructingName.setText (unitName);
 		}
 		
 		log.trace ("Exiting currentConstructionChanged");
-	}
-	
-	/**
-	 * @return The name of the building or unit currently being displayed
-	 */
-	public final String getCurrentlyConstructingName ()
-	{
-		return currentlyConstructingName.getText ();
 	}
 	
 	/**
@@ -1012,6 +988,22 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		clientUnitCalculations = calc;
 	}
 
+	/**
+	 * @return Client-side unit utils
+	 */
+	public final UnitClientUtils getUnitClientUtils ()
+	{
+		return unitClientUtils;
+	}
+
+	/**
+	 * @param util Client-side unit utils
+	 */
+	public final void setUnitClientUtils (final UnitClientUtils util)
+	{
+		unitClientUtils = util;
+	}
+	
 	/**
 	 * @return Cell renderer for drawing the unit skill icons and generating the correct descriptions (some, notably the experience 'skill', aren't straightforward static text)
 	 */

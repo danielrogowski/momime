@@ -37,6 +37,8 @@ import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
+import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.v0_9_5.Building;
@@ -214,10 +216,6 @@ public final class TestUnitInfoPanel
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Upkeep")).thenReturn ("Upkeep");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Moves")).thenReturn ("Moves");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
-		
-		final momime.client.language.database.v0_9_5.Unit longbowmenName = new momime.client.language.database.v0_9_5.Unit ();
-		longbowmenName.setUnitName ("Longbowmen");
-		when (lang.findUnit ("UN001")).thenReturn (longbowmenName);
 		
 		int unitAttrNo = 0;
 		for (final String unitAttributeDesc : new String [] {"Melee", "Ranged", "+ to Hit", "Defence", "Resistance", "Hit Points", "+ to Block"})
@@ -424,6 +422,10 @@ public final class TestUnitInfoPanel
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
 		
+		// Unit name
+		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
+		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
+		
 		// Cell renderer
 		final UnitStatsLanguageVariableReplacer replacer = mock (UnitStatsLanguageVariableReplacer.class);
 		for (int n = 1; n <= 5; n++)
@@ -463,6 +465,7 @@ public final class TestUnitInfoPanel
 		panel.setUnitUtils (unitUtils);
 		panel.setUnitCalculations (unitCalc);
 		panel.setClientUnitCalculations (clientUnitCalc);
+		panel.setUnitClientUtils (unitClientUtils);
 		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());

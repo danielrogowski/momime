@@ -263,7 +263,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype" />
-	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype" />
 	<bean id="chosenCustomPhotoMessage" class="momime.client.messages.process.ChosenCustomPhotoMessageImpl" scope="prototype" />
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
 	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
@@ -307,6 +306,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addUnitMessage" class="momime.client.messages.process.AddUnitMessageImpl" scope="prototype">
 		<property name="client" ref="momClient" />
 		<property name="unitUtils" ref="unitUtils" />
+	</bean>
+
+	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">
@@ -359,6 +366,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="textUtils" class="momime.client.utils.TextUtilsImpl" />
 
+	<bean id="unitClientUtils" class="momime.client.utils.UnitClientUtilsImpl">
+		<property name="client" ref="momClient" />
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
+
 	<bean id="resourceValueClientUtils" class="momime.client.utils.ResourceValueClientUtilsImpl">
 		<property name="utils" ref="uiUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -368,6 +380,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="momClient" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unrestReplacer" ref="unrestReplacer" />
 		<property name="growthReplacer" ref="growthReplacer" />
 		<property name="productionReplacer" ref="productionReplacer" />
@@ -423,6 +436,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="momClient" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 	</bean>
 	
 	<!-- Fonts
@@ -576,6 +590,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="momClient" />
+		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 	</bean>
 	
 	<bean id="calculationBoxUI" class="momime.client.ui.frames.CalculationBoxUI" scope="prototype">
@@ -635,6 +651,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="client" ref="momClient" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="unitSkillListCellRenderer" ref="unitSkillListCellRenderer" />		<!-- So Spring will create and inject a new skill list renderer for each unitInfoPanel -->
@@ -662,7 +679,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each unitInfoUI -->
 	</bean>
 	

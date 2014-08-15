@@ -8,10 +8,11 @@ import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Building;
-import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.replacer.CityGrowthRateLanguageVariableReplacer;
 import momime.client.language.replacer.CityProductionLanguageVariableReplacer;
 import momime.client.language.replacer.CityUnrestLanguageVariableReplacer;
+import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -31,6 +32,7 @@ import momime.common.internal.CityProductionBreakdownPopulationTask;
 import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
+import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 
@@ -55,6 +57,9 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Client-side unit utils */
+	private UnitClientUtils unitClientUtils;
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
@@ -468,7 +473,10 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 						}
 					}
 				}
-		
+
+			// We need a dummy unit to generate names from
+			final AvailableUnit dummyUnit = new AvailableUnit ();
+			
 			// Units
 			for (final momime.common.database.v0_9_5.Unit unit : getClient ().getClientDB ().getUnit ())
 			
@@ -489,8 +497,8 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 						if (allows.length () > 0)
 							allows.append (", ");
 					
-						final Unit unitLang = getLanguage ().findUnit (unit.getUnitID ());
-						allows.append ((unitLang != null) ? unitLang.getUnitName () : unit.getUnitID ());
+						dummyUnit.setUnitID (unit.getUnitID ());
+						allows.append (getUnitClientUtils ().getUnitName (dummyUnit, UnitNameType.SIMPLE_UNIT_NAME));
 					}
 				}
 		}
@@ -536,6 +544,22 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Client-side unit utils
+	 */
+	public final UnitClientUtils getUnitClientUtils ()
+	{
+		return unitClientUtils;
+	}
+
+	/**
+	 * @param util Client-side unit utils
+	 */
+	public final void setUnitClientUtils (final UnitClientUtils util)
+	{
+		unitClientUtils = util;
 	}
 	
 	/**

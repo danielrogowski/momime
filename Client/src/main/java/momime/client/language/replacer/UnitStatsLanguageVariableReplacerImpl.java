@@ -6,6 +6,8 @@ import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.UnitTypeEx;
+import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.v0_9_5.ExperienceLevel;
 import momime.common.messages.v0_9_5.AvailableUnit;
@@ -29,6 +31,9 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	/** Unit calculations */
 	private MomUnitCalculations unitCalculations;
 	
+	/** Client-side unit utils */
+	private UnitClientUtils unitClientUtils;
+	
 	/** The unit whose stats we're outputting */
 	private AvailableUnit unit;
 	
@@ -43,6 +48,23 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 		final String text;
 		switch (code)
 		{
+			// Unit names (see comments against the UnitNameType enum for exactly what text these generate)
+			case "SIMPLE_UNIT_NAME":
+				text = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.SIMPLE_UNIT_NAME);
+				break;
+			
+			case "RACE_UNIT_NAME":
+				text = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME);
+				break;
+			
+			case "A_UNIT_NAME":
+				text = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.A_UNIT_NAME);
+				break;
+			
+			case "THE_UNIT_OF_NAME":
+				text = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.THE_UNIT_OF_NAME);
+				break;
+			
 			// Used by skill descriptions
 			case "MANA_TOTAL":
 				text = new Integer (getUnitCalculations ().calculateManaTotal (getUnit (), getUnit ().getUnitHasSkill (), getClient ().getPlayers (),
@@ -189,6 +211,22 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	public final void setUnitCalculations (final MomUnitCalculations calc)
 	{
 		unitCalculations = calc;
+	}
+
+	/**
+	 * @return Client-side unit utils
+	 */
+	public final UnitClientUtils getUnitClientUtils ()
+	{
+		return unitClientUtils;
+	}
+
+	/**
+	 * @param util Client-side unit utils
+	 */
+	public final void setUnitClientUtils (final UnitClientUtils util)
+	{
+		unitClientUtils = util;
 	}
 	
 	/**

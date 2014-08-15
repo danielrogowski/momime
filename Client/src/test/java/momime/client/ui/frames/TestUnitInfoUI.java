@@ -15,6 +15,8 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.ResourceValueClientUtilsImpl;
+import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.v0_9_5.Unit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
@@ -48,10 +50,6 @@ public final class TestUnitInfoUI
 
 		when (lang.findCategoryEntry ("frmUnitInfo", "OK")).thenReturn ("OK");
 		when (lang.findCategoryEntry ("frmUnitInfo", "Dismiss")).thenReturn ("Dismiss");
-		
-		final momime.client.language.database.v0_9_5.Unit longbowmenName = new momime.client.language.database.v0_9_5.Unit ();
-		longbowmenName.setUnitName ("Longbowmen");
-		when (lang.findUnit ("UN001")).thenReturn (longbowmenName);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -98,6 +96,10 @@ public final class TestUnitInfoUI
 		// Skills
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit)).thenReturn (new UnitHasSkillMergedList ());
+
+		// Unit name
+		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
+		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
 		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
@@ -109,6 +111,7 @@ public final class TestUnitInfoUI
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitUtils (unitUtils);
+		panel.setUnitClientUtils (unitClientUtils);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
@@ -119,6 +122,7 @@ public final class TestUnitInfoUI
 		frame.setLanguageChangeMaster (langMaster);
 		frame.setClient (client);
 		frame.setUnit (unit);
+		frame.setUnitClientUtils (unitClientUtils);
 		frame.setUnitInfoPanel (panel);
 		frame.setOverlandMapUI (new OverlandMapUI ());
 

@@ -1530,15 +1530,19 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitAttributeH
 	</unit>
 	<unit unitID="UN036">
 		<unitName>Trireme</unitName>
+		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN037">
 		<unitName>Galley</unitName>
+		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN038">
 		<unitName>Catapult</unitName>
+		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN039">
 		<unitName>Warship</unitName>
+		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN040">
 		<unitName>Spearmen</unitName>
@@ -1650,6 +1654,7 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitAttributeH
 	</unit>
 	<unit unitID="UN076">
 		<unitName>Air Ship</unitName>
+		<unitNamePrefix>an</unitNamePrefix>
 	</unit>
 	<unit unitID="UN077">
 		<unitName>Swordsmen</unitName>
@@ -1665,9 +1670,11 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitAttributeH
 	</unit>
 	<unit unitID="UN081">
 		<unitName>Steam Cannon</unitName>
+		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN082">
 		<unitName>Golem</unitName>
+		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN083">
 		<unitName>Settlers</unitName>
@@ -1782,6 +1789,7 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitAttributeH
 	</unit>
 	<unit unitID="UN120">
 		<unitName>Stag Beetle</unitName>
+		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN121">
 		<unitName>Spearmen</unitName>
@@ -1803,6 +1811,7 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitAttributeH
 	</unit>
 	<unit unitID="UN127">
 		<unitName>Dragon Turtle</unitName>
+		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN128">
 		<unitName>Spearmen</unitName>
@@ -1908,8 +1917,7 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitAttributeH
 		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN161">
-		<unitName>Chimera</unitName>
-		<unitNamePrefix>a</unitNamePrefix>
+		<unitName>Chimeras</unitName>
 	</unit>
 	<unit unitID="UN162">
 		<unitName>Doom Bat</unitName>
@@ -1997,6 +2005,7 @@ IMAGE_UNIT_ATTRIBUTE_BACKGROUND_CAE Bonus from High Prayer spell</unitAttributeH
 	</unit>
 	<unit unitID="UN186">
 		<unitName>Colossus</unitName>
+		<unitNamePrefix>a</unitNamePrefix>
 	</unit>
 	<unit unitID="UN187">
 		<unitName>Gorgons</unitName>
@@ -4513,6 +4522,12 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="No">
+			<languageEntryText>No</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Yes">
+			<languageEntryText>Yes</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmConnectToServer">
 		<languageEntry languageEntryID="Title">
@@ -5193,7 +5208,7 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="ManaStored">
 			<languageEntryText>AMOUNT_STORED MP</languageEntryText>
 		</languageEntry>
-	</languageCategory>	
+	</languageCategory>
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Name City</languageEntryText>
@@ -5269,6 +5284,20 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="Dismiss">
 			<languageEntryText>Dismiss</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DismissTitle">
+			<languageEntryText>Dismiss unit?</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DismissPrompt">
+			<languageEntryText>Do you wish to disband THE_UNIT_OF_NAME?</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="UnitName">
+		<languageEntry languageEntryID="TheUnitOfNameSingular">
+			<languageEntryText>the RACE_UNIT_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TheUnitOfNamePlural">
+			<languageEntryText>the unit of RACE_UNIT_NAME</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmOptions">
@@ -5652,16 +5681,16 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ProductionCapped">
 			<languageEntryText>However value is capped at PRODUCTION_CAPPED</languageEntryText>
-		</languageEntry>		
+		</languageEntry>
 		<languageEntry languageEntryID="ConsumptionMainHeading">
 			<languageEntryText>CONSUMPTION</languageEntryText>
-		</languageEntry>		
+		</languageEntry>
 		<languageEntry languageEntryID="RationsAteByPopulation">
 			<languageEntryText>APPLICABLE_POPULATION population each eating CONSUMPTION_PER_PERSON PRODUCTION_TYPE = CONSUMPTION_ALL_PEOPLE PRODUCTION_TYPE</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="BuildingConsumption">
 			<languageEntryText>BUILDING_NAME has maintenance of BUILDING_CONSUMPTION PRODUCTION_TYPE</languageEntryText>
-		</languageEntry>		
+		</languageEntry>
 		<languageEntry languageEntryID="NetEffectBreakingEven">
 			<languageEntryText>Breaking even</languageEntryText>
 		</languageEntry>

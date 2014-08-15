@@ -1,8 +1,10 @@
 package momime.client.ui.frames;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -63,9 +65,8 @@ public final class CalculationBoxUI extends MomClientFrameUI
 	{
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/calculationBox498x200.png");
-		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Normal.png");
-		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Pressed.png");
-		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button74x21Disabled.png");
+		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldNormal.png");
+		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldPressed.png");
 
 		// Actions
 		okAction = new AbstractAction ()
@@ -97,15 +98,15 @@ public final class CalculationBoxUI extends MomClientFrameUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 		
-		final GridBagConstraints constraints = getUtils ().createConstraintsBothFill (0, 0, 1, 1, INSET);
+		final GridBagConstraints constraints = getUtils ().createConstraintsBothFill (0, 0, 1, 1, new Insets (INSET, INSET, 3, INSET));
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (getUtils ().createTransparentScrollPane (messageText), constraints);
 
-		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
-			buttonNormal, buttonPressed, buttonDisabled), getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, INSET, 9, INSET), GridBagConstraintsNoFill.CENTRE));
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

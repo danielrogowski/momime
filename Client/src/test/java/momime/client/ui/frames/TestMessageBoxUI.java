@@ -6,6 +6,7 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.messages.v0_9_5.MemoryUnit;
 
 import org.junit.Test;
 
@@ -120,6 +121,43 @@ public final class TestMessageBoxUI
 		box.setTitle ("Message box test using fixed text");
 		box.setText ("Here's some fixed text\r\nthat includes\r\na bunch of carriage returns\r\nof lines to\r\nmake sure that\r\nwe need to display\r\na scroll bar\r\non the message box.");
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
+		
+		// Display form		
+		box.setVisible (true);
+		Thread.sleep (5000);
+	}
+
+	/**
+	 * Tests the MessageBoxUI form, with no/yes buttons rather than just OK
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testMessageBoxUI_NoYes () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+		
+		// Mock entries from the language XML
+		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		when (lang.findCategoryEntry ("frmMessageBox", "No")).thenReturn ("No");
+		when (lang.findCategoryEntry ("frmMessageBox", "Yes")).thenReturn ("Yes");
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguage (lang);
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Set up form
+		final MessageBoxUI box = new MessageBoxUI ();
+		box.setUtils (utils);
+		box.setLanguageHolder (langHolder);
+		box.setLanguageChangeMaster (langMaster);
+		box.setTitle ("Message box test with no and yes buttons");
+		box.setText ("Here's some fixed text for the message box with no and yes buttons, which is long enough to have to split over a couple of lines.");
+		box.setSmallFont (CreateFontsForTests.getSmallFont ());
+		box.setUnitToDismiss (new MemoryUnit ());
 		
 		// Display form		
 		box.setVisible (true);

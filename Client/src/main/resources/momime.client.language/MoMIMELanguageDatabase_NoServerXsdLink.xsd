@@ -422,6 +422,7 @@
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>unitName</nxe:showreferencedfield>
+					<nxe:showreferencedfield>figureCount</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

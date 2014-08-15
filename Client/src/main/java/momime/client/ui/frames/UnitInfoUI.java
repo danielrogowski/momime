@@ -11,6 +11,9 @@ import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
 import momime.client.ui.panels.UnitInfoPanel;
+import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryUnit;
 
 import org.apache.commons.logging.Log;
@@ -30,9 +33,15 @@ public final class UnitInfoUI extends MomClientFrameUI
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
+
+	/** Client-side unit utils */
+	private UnitClientUtils unitClientUtils;
 	
 	/** Unit info panel */
 	private UnitInfoPanel unitInfoPanel;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** The unit being displayed */
 	private MemoryUnit unit;
@@ -55,6 +64,8 @@ public final class UnitInfoUI extends MomClientFrameUI
 		// Actions
 		okAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -9145955916028656307L;
+
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -67,9 +78,25 @@ public final class UnitInfoUI extends MomClientFrameUI
 		{
 			dismissAction = new AbstractAction ()
 			{
+				private static final long serialVersionUID = 8448189215131458272L;
+
 				@Override
 				public final void actionPerformed (final ActionEvent ev)
 				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("frmUnitInfo");
+					msg.setTitleLanguageEntryID ("DismissTitle");
+					msg.setTextLanguageCategoryID ("frmUnitInfo");
+					msg.setTextLanguageEntryID ("DismissPrompt");
+					msg.setUnitToDismiss (getUnit ());
+					try
+					{
+						msg.setVisible (true);
+					}
+					catch (final IOException e)
+					{
+						log.error (e, e);
+					}
 				}
 			};
 			
@@ -106,6 +133,18 @@ public final class UnitInfoUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * Close the unit info screen when a unit dies 
+	 */
+	public final void close ()
+	{
+		log.trace ("Entering close: " + getUnit ().getUnitURN ());
+		
+		getFrame ().dispose ();
+
+		log.trace ("Exiting close: " + getUnit ().getUnitURN ());
+	}
+	
+	/**
 	 * Update all labels and such from the chosen language 
 	 */
 	@Override
@@ -117,8 +156,14 @@ public final class UnitInfoUI extends MomClientFrameUI
 		if (dismissAction != null)
 			dismissAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmUnitInfo", "Dismiss"));
 
-		// Copy the unit name from the panel
-		getFrame ().setTitle (getUnitInfoPanel ().getCurrentlyConstructingName ());
+		try
+		{
+			getFrame ().setTitle (getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME));
+		}
+		catch (final RecordNotFoundException e)
+		{
+			log.error (e, e);
+		}
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -154,6 +199,22 @@ public final class UnitInfoUI extends MomClientFrameUI
 	{
 		overlandMapUI = ui;
 	}
+
+	/**
+	 * @return Client-side unit utils
+	 */
+	public final UnitClientUtils getUnitClientUtils ()
+	{
+		return unitClientUtils;
+	}
+
+	/**
+	 * @param util Client-side unit utils
+	 */
+	public final void setUnitClientUtils (final UnitClientUtils util)
+	{
+		unitClientUtils = util;
+	}
 	
 	/**
 	 * @return Unit info panel
@@ -171,6 +232,22 @@ public final class UnitInfoUI extends MomClientFrameUI
 		unitInfoPanel = pnl;
 	}
 
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+	
 	/**
 	 * @return The unit being displayed
 	 */

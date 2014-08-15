@@ -52,4 +52,45 @@ public interface OverlandMapProcessing
 	 * @param cont Whether we're in the middle of the server processing and sending us pending moves
 	 */
 	public void setProcessingContinuedMovement (final boolean cont);
+	
+	/**
+	 * Removes all currently selected units from the 'units left to move' list, so that we won't ask the player about these units again this turn
+	 * 
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If we cannot find any appropriate experience level for a unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void selectedUnitsDone () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Moves all currently selected units to the end of the 'units left to move' list, so that we will ask the player
+	 * about these units again this turn, but only after we've prompted them to move every other unit first
+	 * 
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If we cannot find any appropriate experience level for a unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void selectedUnitsWait () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Sets all selected units into patrolling mode, so that we won't ask the player about these units again in this or subsequent turns
+	 * 
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If we cannot find any appropriate experience level for a unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void selectedUnitsPatrol () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * Tell the server we clicked the Next Turn button
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void nextTurnButton () throws JAXBException, XMLStreamException;
 }

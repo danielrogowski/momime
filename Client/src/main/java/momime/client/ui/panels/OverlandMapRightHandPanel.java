@@ -212,41 +212,73 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		// Actions
 		final Action nextTurnAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = 3054222435032660297L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public void actionPerformed (final ActionEvent ev)
 			{
-			}
-		};
-		
-		cancelAction = new AbstractAction ()
-		{
-			@Override
-			public void actionPerformed (final ActionEvent e)
-			{
+				try
+				{
+					getOverlandMapProcessing ().nextTurnButton ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
 		doneAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -5692511662267150151L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getOverlandMapProcessing ().selectedUnitsDone ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
 		patrolAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -5895523199376874952L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getOverlandMapProcessing ().selectedUnitsPatrol ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
 		waitAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -6461377508761514254L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getOverlandMapProcessing ().selectedUnitsWait ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 
@@ -275,6 +307,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		};
 
 		purifyAction = new AbstractAction ()
+		{
+			@Override
+			public void actionPerformed (final ActionEvent e)
+			{
+			}
+		};
+		
+		cancelAction = new AbstractAction ()
 		{
 			@Override
 			public void actionPerformed (final ActionEvent e)

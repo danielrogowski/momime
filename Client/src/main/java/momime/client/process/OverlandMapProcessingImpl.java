@@ -19,10 +19,12 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.MapFeature;
 import momime.common.database.v0_9_5.TileType;
+import momime.common.messages.clienttoserver.v0_9_5.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.messages.v0_9_5.TurnSystem;
+import momime.common.messages.v0_9_5.UnitSpecialOrder;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
@@ -340,6 +342,110 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		}			
 		
 		log.trace ("Exiting updateMovementRemaining");
+	}
+	
+	/**
+	 * Removes all currently selected units from the 'units left to move' list, so that we won't ask the player about these units again this turn
+	 * 
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If we cannot find any appropriate experience level for a unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void selectedUnitsDone () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering selectedUnitsDone");
+
+		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+				unitsLeftToMoveOverland.remove (button.getUnit ());
+		
+		selectNextUnitToMoveOverland ();
+		
+		log.trace ("Exiting selectedUnitsDone");
+	}
+	
+	/**
+	 * Moves all currently selected units to the end of the 'units left to move' list, so that we will ask the player
+	 * about these units again this turn, but only after we've prompted them to move every other unit first
+	 * 
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If we cannot find any appropriate experience level for a unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void selectedUnitsWait () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering selectedUnitsWait");
+
+		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+			{
+				unitsLeftToMoveOverland.remove (button.getUnit ());
+				unitsLeftToMoveOverland.add (button.getUnit ());
+			}
+		
+		selectNextUnitToMoveOverland ();
+		
+		log.trace ("Exiting selectedUnitsWait");
+	}
+	
+	/**
+	 * Sets all selected units into patrolling mode, so that we won't ask the player about these units again in this or subsequent turns
+	 * 
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If we cannot find any appropriate experience level for a unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void selectedUnitsPatrol () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering selectedUnitsPatrol");
+
+		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+			{
+				unitsLeftToMoveOverland.remove (button.getUnit ());
+				button.getUnit ().setSpecialOrder (UnitSpecialOrder.PATROL);
+			}
+		
+		selectNextUnitToMoveOverland ();
+		
+		log.trace ("Exiting selectedUnitsPatrol");
+	}
+	
+	/**
+	 * Tell the server we clicked the Next Turn button
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public final void nextTurnButton () throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering nextTurn");
+
+		// Prevent doing anything with units after clicking next turn
+		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+		{
+			button.setVisible (false);
+			button.setSelected (false);
+			button.setUnit (null);
+		}
+		
+		// Make sure UpdateMovementRemaining will hide the next turn button rather than showing it
+		setProcessingContinuedMovement (true);
+		updateMovementRemaining ();
+		unitsLeftToMoveOverland.clear ();
+		
+		// Send message to server
+		getClient ().getServerConnection ().sendMessageToServer (new NextTurnButtonMessage ());
+			
+		log.trace ("Exiting nextTurn");
 	}
 	
 	/**

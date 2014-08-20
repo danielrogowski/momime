@@ -62,11 +62,10 @@ public final class TestOverlandMapRightHandPanel
 		when (lang.findCategoryEntry ("frmMapRightHandBar", "SimultaneousTurnsLine2")).thenReturn ("other players");
 		when (lang.findCategoryEntry ("frmMapRightHandBar", "ProductionPerTurn")).thenReturn ("AMOUNT_PER_TURN PRODUCTION_TYPE per turn");
 		when (lang.findCategoryEntry ("frmMapRightHandBar", "ProductionPerTurnMagicPower")).thenReturn ("Power Base AMOUNT_PER_TURN");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "GoldStored")).thenReturn ("AMOUNT_STORED GP");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "ManaStored")).thenReturn ("AMOUNT_STORED MP");
 		
 		final ProductionType goldProduction = new ProductionType ();
 		goldProduction.setProductionTypeDescription ("Gold");
+		goldProduction.setProductionTypeSuffix ("GP");
 		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (goldProduction);
 		
 		final ProductionType rationsProduction = new ProductionType ();
@@ -75,6 +74,7 @@ public final class TestOverlandMapRightHandPanel
 		
 		final ProductionType manaProduction = new ProductionType ();
 		manaProduction.setProductionTypeDescription ("Mana");
+		manaProduction.setProductionTypeSuffix ("MP");
 		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
@@ -128,7 +128,6 @@ public final class TestOverlandMapRightHandPanel
 			{
 				final SelectUnitButton button = new SelectUnitButton ();
 				button.setUtils (utils);
-				button.init ();
 				return button;
 			}
 		});

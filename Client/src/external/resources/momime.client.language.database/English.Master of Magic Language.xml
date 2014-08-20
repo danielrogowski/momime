@@ -24,6 +24,7 @@
 	</productionType>
 	<productionType productionTypeID="RE03">
 		<productionTypeDescription>Gold</productionTypeDescription>
+		<productionTypeSuffix>GP</productionTypeSuffix>
 		<unitKilledFromLackOfProduction>left your army because you couldn't afford to pay them</unitKilledFromLackOfProduction>
 		<buildingSoldFromLackOfProduction>sold because you couldn't afford to maintain it</buildingSoldFromLackOfProduction>
 		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
@@ -38,6 +39,7 @@
 	</productionType>
 	<productionType productionTypeID="RE05">
 		<productionTypeDescription>Spell Research</productionTypeDescription>
+		<productionTypeSuffix>RP</productionTypeSuffix>
 		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
 		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
 		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
@@ -66,6 +68,7 @@
 	</productionType>
 	<productionType productionTypeID="RE09">
 		<productionTypeDescription>Mana</productionTypeDescription>
+		<productionTypeSuffix>MP</productionTypeSuffix>
 		<unitKilledFromLackOfProduction>was unsummoned because you couldn't afford their mana upkeep</unitKilledFromLackOfProduction>
 		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
 		<spellSwitchedOffFromLackOfProduction>was switched off because you couldn't afford its upkeep</spellSwitchedOffFromLackOfProduction>
@@ -73,6 +76,7 @@
 	</productionType>
 	<productionType productionTypeID="RE10">
 		<productionTypeDescription>Skill Improvement</productionTypeDescription>
+		<productionTypeSuffix>SP</productionTypeSuffix>
 		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
 		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
 		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
@@ -5202,12 +5206,6 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="ProductionPerTurnMagicPower">
 			<languageEntryText>Power Base AMOUNT_PER_TURN</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="GoldStored">
-			<languageEntryText>AMOUNT_STORED GP</languageEntryText>
-		</languageEntry>
-		<languageEntry languageEntryID="ManaStored">
-			<languageEntryText>AMOUNT_STORED MP</languageEntryText>
-		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title">
@@ -5436,6 +5434,44 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="EnemyGotGoldFromYourCity">
 			<languageEntryText>GOLD_FROM_CITY gold pieces were lost.</languageEntryText>
+		</languageEntry>
+	</languageCategory>
+	<languageCategory languageCategoryID="frmMagicSliders">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Magic Power distribution</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PowerBase">
+			<languageEntryText>Power Base: AMOUNT_PER_TURN</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ManaTitle">
+			<languageEntryText>Mana</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ResearchTitle">
+			<languageEntryText>Research</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SkillTitle">
+			<languageEntryText>Skill</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ManaLabel">
+			<languageEntryText>Mana Stored</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ResearchLabel">
+			<languageEntryText>Researching</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SkillLabel">
+			<languageEntryText>Casting Skill</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ResearchingNothing">
+			<languageEntryText>None</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OverlandEnchantments">
+			<languageEntryText>Overland Enchantments</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Alchemy">
+			<languageEntryText>Alchemy</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OK">
+			<languageEntryText>OK</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">

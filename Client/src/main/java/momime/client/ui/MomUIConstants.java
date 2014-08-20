@@ -10,8 +10,14 @@ public final class MomUIConstants
 	/** Closest possible match to the gold font colours from the original MoM */
 	public static final Color GOLD = new Color (0xFCC864);
 	
-	/** Dull gold, for deselected buttons */
-	public static final Color DULL_GOLD = new Color (0xA88542);
+	/** Dull gold, for deselected buttons (got this colour from the Mana column heading on the magic sliders screen) */
+	public static final Color DULL_GOLD = new Color (0xBC7C14);
+
+	/** Green from the Research column heading on the magic sliders screen */
+	public static final Color GREEN = new Color (0x388C38);
+
+	/** Red from the Research column heading on the magic sliders screen */
+	public static final Color RED = new Color (0xD01C00);
 	
 	/** Color.GRAY is too bright and Color.DARK_GRAY is too dark */
 	public static final Color GRAY = new Color (0x606060);
@@ -30,6 +36,9 @@ public final class MomUIConstants
 	
 	/** Colour of fntMediumBlue font from the Delphi client */
 	public static final Color AQUA = new Color (0xBDEFEF);
+	
+	/** Colour of the 'Overland Enchantments' heading on the magic sliders screen */
+	public static final Color DULL_AQUA = new Color (0x527BA5);
 	
 	/** Transparent colour */
 	public static final Color TRANSPARENT = new Color (0, 0, 0, 0);

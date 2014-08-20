@@ -214,6 +214,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateGlobalEconomyMessage" class="momime.client.messages.process.UpdateGlobalEconomyMessageImpl" scope="prototype">
 		<property name="client" ref="momClient" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
 	</bean>
 
 	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype">
@@ -548,6 +549,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
+	</bean>
+
+	<bean id="magicSlidersUI" class="momime.client.ui.frames.MagicSlidersUI">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="momClient" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="skillCalculations" ref="skillCalculations" />
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="uiComponentFactory" ref="uiComponentFactory" />
 	</bean>
 
 	<!-- Prototype UI components -->
@@ -577,6 +593,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="unitUtils" ref="unitUtils" />
+	</bean>
+
+	<bean id="magicSlider" class="momime.client.ui.components.MagicSlider" scope="prototype">
+		<property name="utils" ref="uiUtils" />
 	</bean>
 	
 	<!-- Prototype UI frames -->

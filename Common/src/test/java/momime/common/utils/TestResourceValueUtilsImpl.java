@@ -374,17 +374,17 @@ public final class TestResourceValueUtilsImpl
 		assertEquals ("Prove don't get money from selling rations", 20, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, spellSettings, db));
 
 		// 20% of 24 = 4.8
-		assertEquals ("Unmodified skill calculation", 5, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
+		assertEquals ("Unmodified skill calculation", 4, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
 
 		// 5 + (40% of 24) = 5 + 9.6 = 14.6
-		assertEquals ("Unmodified research calculation", 15, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Unmodified research calculation", 14, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
 		// 24 - 5 - 10 = 9
 		assertEquals ("Unmodified mana calculation", 9, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, spellSettings, db));
 
-		// Archmage gives +50%, so 5 * 1.5 = 7.5
+		// Archmage gives +50%, so 4 * 1.5 = 6
 		playerPickUtils.updatePickQuantity (picks, GenerateTestData.ARCHMAGE, 1);
-		assertEquals ("Archmage", 7, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
+		assertEquals ("Archmage", 6, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
 
 		// Mana focusing gives +25%, so 9 * 1.25 = 11.25
 		playerPickUtils.updatePickQuantity (picks, GenerateTestData.MANA_FOCUSING, 1);
@@ -392,18 +392,18 @@ public final class TestResourceValueUtilsImpl
 
 		// Prove researching a non-chaos non-summoning spell gets no bonus
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.EARTH_TO_MUD);
-		assertEquals ("Research with no bonus", 15, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Research with no bonus", 14, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
-		// Chaos books give +40%, so 15 * 1.4 = 21
+		// Chaos books give +40%, so 14 * 1.4 = 19
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.WARP_WOOD);
-		assertEquals ("Research with book bonus", 21, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Research with book bonus", 19, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
-		// Summoner gives +25%, so 15 * 1.25 = 18.75
+		// Summoner gives +25%, so 14 * 1.25 = 17.5
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.GIANT_SPIDERS_SPELL);
-		assertEquals ("Research with Summoner bonus", 18, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Research with Summoner bonus", 17, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 
-		// Both combined gives +65%, so 15 * 1.65 = 24.75
+		// Both combined gives +65%, so 14 * 1.65 = 23.1
 		privateInfo.setSpellIDBeingResearched (GenerateTestData.HELL_HOUNDS_SPELL);
-		assertEquals ("Research with combined bonus", 24, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		assertEquals ("Research with combined bonus", 23, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 	}
 }

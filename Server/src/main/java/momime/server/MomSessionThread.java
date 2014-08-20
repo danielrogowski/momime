@@ -1,5 +1,6 @@
 package momime.server;
 
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.FogOfWarStateID;
 import momime.common.messages.v0_9_5.MagicPowerDistribution;
@@ -231,9 +232,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		
 		// Set default power distribution
 		final MagicPowerDistribution dist = new MagicPowerDistribution ();
-		dist.setManaRatio (80);
-		dist.setResearchRatio (80);
-		dist.setSkillRatio (80);
+		dist.setManaRatio		(CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX / 3);
+		dist.setResearchRatio	(CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX / 3);
+		dist.setSkillRatio			(CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX / 3);
 		priv.setMagicPowerDistribution (dist);
 
 		// Create and initialize fog of war area

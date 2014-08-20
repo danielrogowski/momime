@@ -48,18 +48,12 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 	private JLabel imageLabel;
 	
 	/**
-	 * Set up the panel with a border layout
-	 */
-	public BuildingListCellRenderer ()
-	{
-		super (new BorderLayout ());
-	}
-	
-	/**
 	 * Sets up the layout of the panel
 	 */
 	public final void init ()
 	{
+		setLayout (new BorderLayout ());
+		
 		textLabel = new JLabel ();
 		add (textLabel, BorderLayout.WEST);
 		

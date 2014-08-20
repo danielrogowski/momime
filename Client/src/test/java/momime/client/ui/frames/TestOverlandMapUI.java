@@ -120,7 +120,6 @@ public final class TestOverlandMapUI
 			{
 				final SelectUnitButton button = new SelectUnitButton ();
 				button.setUtils (utils);
-				button.init ();
 				return button;
 			}
 		});

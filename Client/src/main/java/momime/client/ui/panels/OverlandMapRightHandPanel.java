@@ -663,17 +663,20 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 * 
 	 * @param label Label to update
 	 * @param productionTypeID Production type to display in this label
-	 * @param languageEntryID Language entry to use to format the text
 	 */
-	private final void updateAmountStored (final JLabel label, final String productionTypeID, final String languageEntryID)
+	private final void updateAmountStored (final JLabel label, final String productionTypeID)
 	{
 		// Resource values get sent to us during game startup before the screen has been set up, so its possible to get here before the labels even exist
 		if (label != null)
 		{
-			final String amountStored = getTextUtils ().intToStrCommas (getResourceValueUtils ().findAmountStoredForProductionType
+			String amountStored = getTextUtils ().intToStrCommas (getResourceValueUtils ().findAmountStoredForProductionType
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), productionTypeID));
 		
-			label.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", languageEntryID).replaceAll ("AMOUNT_STORED", amountStored));
+			final ProductionType productionType = getLanguage ().findProductionType (productionTypeID);
+			if ((productionType != null) && (productionType.getProductionTypeSuffix () != null))
+				amountStored = amountStored + " " + productionType.getProductionTypeSuffix ();
+			
+			label.setText (amountStored);
 		}
 	}
 	
@@ -710,8 +713,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		log.trace ("Entering updateGlobalEconomyValues");
 		
 		// Amounts stored
-		updateAmountStored (goldAmountStored, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, "GoldStored");
-		updateAmountStored (manaAmountStored, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, "ManaStored");
+		updateAmountStored (goldAmountStored, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		updateAmountStored (manaAmountStored, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
 		
 		// Amounts per turn
 		updateAmountPerTurn (goldAmountPerTurn, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, "ProductionPerTurn", MomUIConstants.GOLD);

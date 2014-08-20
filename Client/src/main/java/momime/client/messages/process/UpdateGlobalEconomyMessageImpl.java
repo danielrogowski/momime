@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
 
@@ -40,6 +41,9 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 
+	/** Magic sliders screen */
+	private MagicSlidersUI magicSlidersUI;
+	
 	/**
 	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -60,6 +64,7 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 		
 		// Update new values in UI
 		getOverlandMapRightHandPanel ().updateGlobalEconomyValues ();
+		getMagicSlidersUI ().updateProductionLabels ();
 		
 		log.trace ("Exiting process");
 	}
@@ -94,5 +99,21 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
+	}
+
+	/**
+	 * @return Magic sliders screen
+	 */
+	public final MagicSlidersUI getMagicSlidersUI ()
+	{
+		return magicSlidersUI;
+	}
+
+	/**
+	 * @param ui Magic sliders screen
+	 */
+	public final void setMagicSlidersUI (final MagicSlidersUI ui)
+	{
+		magicSlidersUI = ui;
 	}
 }

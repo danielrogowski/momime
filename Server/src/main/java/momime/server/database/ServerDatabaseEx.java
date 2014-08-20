@@ -246,6 +246,7 @@ public interface ServerDatabaseEx extends CommonDatabase
 	/**
 	 * @return Complete list of all unit attributes in game
 	 */
+	@Override
 	public List<UnitAttribute> getUnitAttribute ();
 
 	/**

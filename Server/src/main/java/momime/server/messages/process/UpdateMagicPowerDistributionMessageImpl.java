@@ -3,6 +3,7 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.clienttoserver.v0_9_5.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
@@ -38,15 +39,15 @@ public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPo
 
 		// Check all the values are within valid ranges
 		if ((getDistribution ().getManaRatio () < 0) || (getDistribution ().getResearchRatio () < 0) || (getDistribution ().getSkillRatio () < 0) ||
-			(getDistribution ().getManaRatio () > 240) || (getDistribution ().getResearchRatio () > 240) || (getDistribution ().getSkillRatio () > 240))
+			(getDistribution ().getManaRatio () > CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX) || (getDistribution ().getResearchRatio () > CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX) || (getDistribution ().getSkillRatio () > CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX))
 
 			error = "One or more of the Magic Power Ratios was outside the range 0..100%";
 
 		else
 		{
-			// Check they add up to 100%, with a tolerance here to make up for floating point inexactness
-			final double total = getDistribution ().getManaRatio () + getDistribution ().getResearchRatio () + getDistribution ().getSkillRatio ();
-			if ((total < 239.999) || (total > 240.001))
+			// Check they add up to 100%
+			final int total = getDistribution ().getManaRatio () + getDistribution ().getResearchRatio () + getDistribution ().getSkillRatio ();
+			if (total != CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX)
 				error = "The total of all three Magic Power Ratios did not add up to 100% (" + total + ")";
 			else
 				error = null;

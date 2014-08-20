@@ -44,6 +44,9 @@ public final class CommonDatabaseConstants
 	/** Namespace of the server-to-client messages XSD */
 	public static final String STOC_MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages/servertoclient/" + MOM_IME_VERSION;
 	
+	/** Range of each magic power slider */
+	public static final int MAGIC_POWER_DISTRIBUTION_MAX = 240;
+	
 	/*------------------------------------------------------
 	 * Special values the various XML fields can take
 	 *-------------------------------------------------- */

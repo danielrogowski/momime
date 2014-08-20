@@ -221,14 +221,8 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		log.trace ("Entering calculateAmountPerTurnForProductionType = " + productionTypeID);
 
 		// Find directly produced values - for research, this will give the amounts produced by libraries, universities, etc.
-		final MomResourceValue playerResourceValue = findResourceValue (privateInfo.getResourceValue (), productionTypeID);
-		final int rawAmountPerTurn;
-		if (playerResourceValue == null)
-			rawAmountPerTurn = 0;
-		else
-			rawAmountPerTurn = playerResourceValue.getAmountPerTurn ();
-		
-		log.debug ("rawAmountPerTurn = " + rawAmountPerTurn);
+		final int rawAmountPerTurn = findAmountPerTurnForProductionType (privateInfo.getResourceValue (), productionTypeID);
+		log.debug ("rawAmountPerTurn " + productionTypeID + " = " + rawAmountPerTurn);
 
 		// If the production type ID is mana, research or skill improvement then we may also be channeling some in from magic power, and may also get various bonuses
 		// So there's 3 portions to the result: the raw value, the amount channeled from magic power, and percentage bonuses
@@ -243,11 +237,9 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 				CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, spellSettings, db);
 
 			// Calculate research and skill
-			final int researchPerTurnAmountFromMagicPower = (int) Math.round (powerBase * privateInfo.getMagicPowerDistribution ().getResearchRatio () / 240d);
-			final int skillPerTurnAmountFromMagicPower = (int) Math.round (powerBase * privateInfo.getMagicPowerDistribution ().getSkillRatio () / 240d);
-
-			// Mana is just whatever is left
-			final int manaPerTurnAmountFromMagicPower = powerBase - researchPerTurnAmountFromMagicPower - skillPerTurnAmountFromMagicPower;
+			final int manaPerTurnAmountFromMagicPower		= (powerBase * privateInfo.getMagicPowerDistribution ().getManaRatio ()		/ CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX);
+			final int researchPerTurnAmountFromMagicPower	= (powerBase * privateInfo.getMagicPowerDistribution ().getResearchRatio ()	/ CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX);
+			final int skillPerTurnAmountFromMagicPower			= (powerBase * privateInfo.getMagicPowerDistribution ().getSkillRatio ()			/ CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX);
 
 			// Add on the relevant amount
 			if (productionTypeID.equals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA))

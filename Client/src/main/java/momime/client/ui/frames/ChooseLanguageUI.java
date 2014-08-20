@@ -87,6 +87,8 @@ public final class ChooseLanguageUI extends MomClientFrameUI implements Language
 	@Override
 	protected final void init () throws IOException
 	{
+		log.trace ("Entering init");
+		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/background.png");
 		final BufferedImage divider = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/divider.png");
@@ -220,6 +222,8 @@ public final class ChooseLanguageUI extends MomClientFrameUI implements Language
 		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
 		getFrame ().pack ();
 		getFrame ().setPreferredSize (getFrame ().getSize ());
+
+		log.trace ("Exiting init");
 	}
 	
 	/**

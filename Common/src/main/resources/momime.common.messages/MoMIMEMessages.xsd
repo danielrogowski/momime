@@ -934,7 +934,7 @@ Not used for one-player-at-a-time games since combats in those all happen instan
 	    <xsd:annotation>
     		<xsd:documentation>Value 0..240 indicating the proportion of magic power to divert into mana/research/skill improvement.</xsd:documentation>
 		</xsd:annotation>
-		<xsd:restriction base="xsd:double" />
+		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 
 	<xsd:simpleType name="turnNumber">

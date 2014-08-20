@@ -229,6 +229,7 @@
 	<xsd:complexType name="productionType" nxe:singular="Production Type" nxe:plural="Production Types" nxe:submenu="Cities and Races">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="productionTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="productionTypeSuffix" type="momimecommon:description" nxe:label="Short suffix" nxe:gridwidth="80" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitKilledFromLackOfProduction" type="momimecommon:description" nxe:label="Suffix when unit killed from lack of production" nxe:gridwidth="250" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="buildingSoldFromLackOfProduction" type="momimecommon:description" nxe:label="Suffix when building sold from lack of production" nxe:gridwidth="250" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellSwitchedOffFromLackOfProduction" type="momimecommon:description" nxe:label="Suffix when spell switched off from lack of production" nxe:gridwidth="250" />

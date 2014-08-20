@@ -89,6 +89,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
+	
+	/** Magic sliders screen */
+	private MagicSlidersUI magicSlidersUI;
 
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
@@ -225,8 +228,16 @@ public final class OverlandMapUI extends MomClientFrameUI
 		magicAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getMagicSlidersUI ().setVisible (true);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 
@@ -969,5 +980,21 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
 	{
 		playerColourImageGenerator = gen;
+	}
+
+	/**
+	 * @return Magic sliders screen
+	 */
+	public final MagicSlidersUI getMagicSlidersUI ()
+	{
+		return magicSlidersUI;
+	}
+
+	/**
+	 * @param ui Magic sliders screen
+	 */
+	public final void setMagicSlidersUI (final MagicSlidersUI ui)
+	{
+		magicSlidersUI = ui;
 	}
 }

@@ -211,7 +211,6 @@ public final class TestCityViewUI
 		cityView.setLanguageChangeMaster (langMaster);
 		cityView.setGraphicsDB (gfx);
 		cityView.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
-		cityView.setOverlandMapUI (new OverlandMapUI ());
 		cityView.setCityViewPanel (panel);
 		cityView.setClient (client);
 		cityView.setCityCalculations (calc);

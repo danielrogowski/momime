@@ -17,6 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.ui.MomUIConstants;
 
 import com.ndg.swing.GridBagConstraintsNoFill;
@@ -26,6 +29,9 @@ import com.ndg.swing.GridBagConstraintsNoFill;
  */
 public final class CalculationBoxUI extends MomClientFrameUI
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (CalculationBoxUI.class);
+
 	/** Small font */
 	private Font smallFont;
 	
@@ -63,6 +69,8 @@ public final class CalculationBoxUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
+		log.trace ("Entering init");
+		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/calculationBox498x200.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldNormal.png");
@@ -88,7 +96,7 @@ public final class CalculationBoxUI extends MomClientFrameUI
 			@Override
 			public final void windowClosed (final WindowEvent ev)
 			{
-				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
+				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 			}
 		});
 		
@@ -110,9 +118,9 @@ public final class CalculationBoxUI extends MomClientFrameUI
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);		// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
-		getFrame ().pack ();
-		getFrame ().setLocationRelativeTo (null);
+		getFrame ().setResizable (false);
+
+		log.trace ("Exiting init");
 	}
 	
 	/**

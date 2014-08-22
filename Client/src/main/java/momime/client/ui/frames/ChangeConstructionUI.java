@@ -1,8 +1,12 @@
 package momime.client.ui.frames;
 
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -24,6 +28,7 @@ import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.ui.CompositeShape;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.BuildingListCellRenderer;
@@ -59,11 +64,8 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	private final Log log = LogFactory.getLog (ChangeConstructionUI.class);
 
 	/** Typical inset used on this screen layout */
-	private final static int INSET = 1;
+	private final static int INSET = 0;
 
-	/** No inset, used for positioning some components */
-	private final static int NO_INSET = 0;
-	
 	/** Medium font */
 	private Font mediumFont;
 
@@ -179,13 +181,10 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			{
 				getAnim ().unregisterRepaintTrigger (null, buildingsList);
 				getUnitInfoPanel ().unitInfoPanelClosing ();
-				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
+				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 				getClient ().getChangeConstructions ().remove (getCityLocation ().toString ());
 			}
 		});
-		
-		// Do this "too early" on purpose, so that the window isn't centred over the city view, but is a little down-right of it
-		getFrame ().setLocationRelativeTo (getCityViewUI ().getFrame ());
 		
 		// Set up cell renderers
 		getBuildingListCellRenderer ().setFont (getMediumFont ());
@@ -208,7 +207,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ();
-		contentPane.setBackground (Color.BLACK);
+		contentPane.setOpaque (false);
 		
 		// Set up the scroll panes containing the list boxes
 		final JScrollPane buildingsScroll = getUtils ().createScrollPaneWithBackgroundImage (buildingsList, changeConstructionBackground);
@@ -221,7 +220,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		contentPane.setLayout (new GridBagLayout ());
 		
 		contentPane.add (buildingsScroll, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		contentPane.add (getUnitInfoPanel ().getPanel (), getUtils ().createConstraintsNoFill (1, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (getUnitInfoPanel ().getPanel (), getUtils ().createConstraintsNoFill (1, 0, 1, 1, new Insets (0, 2, 0, 2), GridBagConstraintsNoFill.CENTRE));
 		contentPane.add (unitsScroll, getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// What's currently being constructed?
@@ -343,8 +342,28 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		
 		// Show the frame
 		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
-		getFrame ().pack ();
+		getFrame ().setResizable (false);
+		getFrame ().setUndecorated (true);
+		
+		// This gets a bit complicated, because there are 3 independant unjoined areas of the frame
+		final Dimension panelSize = getUnitInfoPanel ().getPanel ().getPreferredSize ();
+		final int panelLeft = changeConstructionBackground.getWidth () + 2;
+		final int panelTop = (changeConstructionBackground.getHeight () - panelSize.height) / 2;
+		final int panelSides = (panelSize.width - getUnitInfoPanel ().getBackgroundButtonsWidth ()) / 2;
+		final int panelButtonsTop = panelTop + panelSize.height - getUnitInfoPanel ().getBackgroundButtonsHeight ();
+		
+		getFrame ().setShape (new CompositeShape (new Shape []
+				
+			// Shape of buildings list box
+			{new Rectangle (0, 0, changeConstructionBackground.getWidth (), changeConstructionBackground.getHeight ()), new Polygon
+
+				// Shape of centre unit panel including the poking out buttons at the bottom
+				(new int [] {panelLeft, panelLeft + panelSize.width, panelLeft + panelSize.width, panelLeft + panelSize.width - panelSides, panelLeft + panelSize.width - panelSides, panelLeft + panelSides, panelLeft + panelSides, panelLeft},
+				new int [] {panelTop, panelTop, panelButtonsTop, panelButtonsTop, panelTop + panelSize.height, panelTop + panelSize.height, panelButtonsTop, panelButtonsTop},
+				8),
+				
+			// Shape of units list box
+			new Rectangle (panelLeft + panelSize.width + 2, 0, changeConstructionBackground.getWidth (), changeConstructionBackground.getHeight ())}));
 
 		log.trace ("Exiting init");
 	}

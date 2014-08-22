@@ -544,9 +544,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		
 		// Stop frame being shrunk smaller than this
 		getFrame ().setContentPane (contentPane);
-		getFrame ().pack ();
-		getFrame ().setLocationRelativeTo (null);
-		getFrame ().setMinimumSize (getFrame ().getSize ());
 		
 		// Capture mouse clicks on the scenery panel
 		sceneryPanel.addMouseListener (new MouseAdapter ()

@@ -42,7 +42,7 @@ public abstract class MomClientPanelUI extends LanguageVariableUIImpl
 			
 			init ();
 			languageChanged ();
-			getLanguageChangeMaster ().addLanuageChangeListener (this);
+			getLanguageChangeMaster ().addLanguageChangeListener (this);
 		}
 		
 		return panel;

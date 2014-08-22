@@ -13,8 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import momime.common.database.CommonDatabaseConstants;
 
@@ -50,18 +48,6 @@ public final class MagicSlider extends JPanel
 	/** Image of the head of the staff when the slider is locked */
 	private BufferedImage locked;
 
-	/** Image of the up arrow lit up when the slider value is increasing */
-	private BufferedImage arrowUp;
-
-	/** Image of the down arrow lit up when the slider value is decreasing */
-	private BufferedImage arrowDown;
-	
-	/** Value the slider had on last invocation to stateChanged - used to work out whether to draw arrowUp, arrowDown or neither */
-	private int previousValue;
-	
-	/** Which direction the value is moving in; true=increasing, false=decreasing, null=not moving */
-	private Boolean movementDirection;
-	
 	/** The button for the head of the staff */
 	private JToggleButton button;
 
@@ -85,8 +71,6 @@ public final class MagicSlider extends JPanel
 		full				= getUtils ().loadImage ("/momime.client.graphics/ui/magicSliders/" + prefix + "StaffFull.png");
 		unlocked		= getUtils ().loadImage ("/momime.client.graphics/ui/magicSliders/" + prefix + "Unlocked.png");
 		locked			= getUtils ().loadImage ("/momime.client.graphics/ui/magicSliders/" + prefix + "Locked.png");
-		arrowUp		= getUtils ().loadImage ("/momime.client.graphics/ui/magicSliders/arrowUp.png");
-		arrowDown	= getUtils ().loadImage ("/momime.client.graphics/ui/magicSliders/arrowDown.png");
 		
 		// Set up the layout
 		setLayout (new BorderLayout ());
@@ -106,8 +90,7 @@ public final class MagicSlider extends JPanel
 		// The slider has to be drawn and sized ourselves
 		final Dimension sliderSize = new Dimension (empty.getWidth (), empty.getHeight ());
 		
-		previousValue = initialValue;
-		slider = new JSlider (0, CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX, previousValue)
+		slider = new JSlider (0, CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX, initialValue)
 		{
 			private static final long serialVersionUID = 2862387801146292638L;
 
@@ -125,15 +108,6 @@ public final class MagicSlider extends JPanel
 				g.drawImage (full,
 					x, y + full.getHeight () - fullPixels, x + full.getWidth (), y + full.getHeight (),
 					0, full.getHeight () - fullPixels, full.getWidth (), full.getHeight (), null);
-				
-				// Light up the arrows if the slider is currently moving
-				if (movementDirection != null)
-				{
-					if (movementDirection)
-						g.drawImage (arrowUp, x, 4, null);
-					else
-						g.drawImage (arrowDown, x, empty.getHeight () - arrowDown.getHeight () - 4, null);
-				}
 			}
 		};
 		
@@ -143,22 +117,6 @@ public final class MagicSlider extends JPanel
 		slider.setOrientation (SwingConstants.VERTICAL);
 		
 		add (slider, BorderLayout.SOUTH);
-		
-		slider.addChangeListener (new ChangeListener ()
-		{
-			@Override
-			public final void stateChanged (final ChangeEvent ev)
-			{
-				// Is the value being increased, decreased, or have they just let go of the slider?
-				if (!slider.getValueIsAdjusting ())
-					movementDirection = null;
-				else
-					movementDirection = (slider.getValue () > previousValue);
-					
-				previousValue = slider.getValue ();
-				slider.repaint ();
-			}
-		});
 		
 		log.trace ("Exiting init");
 	}

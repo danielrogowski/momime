@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.AlchemyUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
@@ -44,6 +45,9 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
 	
+	/** Alchemy UI */
+	private AlchemyUI alchemyUI;
+	
 	/**
 	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -62,9 +66,10 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 		
 		getClient ().getOurTransientPlayerPrivateKnowledge ().setOverlandCastingSkillRemainingThisTurn (getOverlandCastingSkillRemainingThisTurn ());
 		
-		// Update new values in UI
+		// Update new values in UI screens that rely on any resource values
 		getOverlandMapRightHandPanel ().updateGlobalEconomyValues ();
 		getMagicSlidersUI ().updateProductionLabels ();
+		getAlchemyUI ().updateSliderMaximum ();
 		
 		log.trace ("Exiting process");
 	}
@@ -115,5 +120,21 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	public final void setMagicSlidersUI (final MagicSlidersUI ui)
 	{
 		magicSlidersUI = ui;
+	}
+
+	/**
+	 * @return Alchemy UI
+	 */
+	public final AlchemyUI getAlchemyUI ()
+	{
+		return alchemyUI;
+	}
+
+	/**
+	 * @param ui Alchemy UI
+	 */
+	public final void setAlchemyUI (final AlchemyUI ui)
+	{
+		alchemyUI = ui;
 	}
 }

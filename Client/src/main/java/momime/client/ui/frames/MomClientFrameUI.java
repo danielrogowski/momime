@@ -1,5 +1,8 @@
 package momime.client.ui.frames;
 
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -51,7 +54,51 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 			frame = new JFrame ();
 			init ();
 			languageChanged ();
-			getLanguageChangeMaster ().addLanuageChangeListener (this);
+			getLanguageChangeMaster ().addLanguageChangeListener (this);
+			
+			// If the window isn't resizeable, then hide the window border
+			// but this means it has no title bar to enable it to be moved, so also set up dragging the background for it
+			if (!frame.isResizable ())
+			{
+				frame.setUndecorated (true);
+				
+				final MouseAdapter undecoratedFrameMover = new MouseAdapter ()
+				{
+					/** The location the mouse was at when it was initially clicked */
+					private Point mouseStart;
+
+					/** The location the frame was at when the mouse was initially clicked */
+					private Point frameStart;
+					
+					/**
+					 * Record the current position of the mouse and frame, so we know where to drag from
+					 */
+					@Override
+					public final void mousePressed (final MouseEvent e)
+					{
+						mouseStart = e.getLocationOnScreen ();
+						frameStart = frame.getLocation ();
+					}
+
+					/**
+					 * Update the position of the frame based on how far the mouse has moved
+					 */
+					@Override
+					public final void mouseDragged (final MouseEvent e)
+					{
+						final Point mouseNow = e.getLocationOnScreen ();
+						final Point frameNow = new Point (frameStart.x + mouseNow.x - mouseStart.x, frameStart.y + mouseNow.y - mouseStart.y);
+						frame.setLocation (frameNow);
+					}
+				};
+				
+				frame.addMouseListener (undecoratedFrameMover);
+				frame.addMouseMotionListener (undecoratedFrameMover);
+			}
+
+			// Build and position the frame
+			getFrame ().pack ();
+			getFrame ().setLocationRelativeTo (null);
 		}
 		frame.setVisible (v);
 	}

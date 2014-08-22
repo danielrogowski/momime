@@ -53,7 +53,6 @@ public final class TestChooseLanguageUI
 		choose.setLanguageHolder (langHolder);
 		choose.setLanguageChangeMaster (langMaster);
 		choose.setPathToLanguageXmlFiles (path);
-		choose.setMainMenuUI (new MainMenuUI ());
 		choose.setSmallFont (CreateFontsForTests.getSmallFont ());
 		choose.setLargeFont (CreateFontsForTests.getLargeFont ());
 

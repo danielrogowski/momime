@@ -215,6 +215,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="momClient" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
+		<property name="alchemyUI" ref="alchemyUI" />
 	</bean>
 
 	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype">
@@ -485,7 +486,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="chooseLanguageUI" class="momime.client.ui.frames.ChooseLanguageUI">
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
-		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
@@ -499,7 +499,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
-		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
@@ -511,7 +510,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
-		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
@@ -564,6 +562,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="skillCalculations" ref="skillCalculations" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
+		<property name="alchemyUI" ref="alchemyUI" />
+	</bean>
+
+	<bean id="alchemyUI" class="momime.client.ui.frames.AlchemyUI">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="client" ref="momClient" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 
 	<!-- Prototype UI components -->
@@ -645,7 +655,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
-		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
@@ -700,7 +709,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
-		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each unitInfoUI -->
 	</bean>

@@ -40,6 +40,12 @@ public final class MomUIConstants
 	/** Colour of the 'Overland Enchantments' heading on the magic sliders screen */
 	public static final Color DULL_AQUA = new Color (0x527BA5);
 	
+	/** Colour used for text on the grey buttons */
+	public static final Color DARK_GRAY = new Color (0x34281C);
+	
+	/** Colour used for text on the grey buttons */
+	public static final Color LIGHT_GRAY = new Color (0xD3CBC7);
+	
 	/** Transparent colour */
 	public static final Color TRANSPARENT = new Color (0, 0, 0, 0);
 	

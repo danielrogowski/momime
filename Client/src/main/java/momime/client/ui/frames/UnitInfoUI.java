@@ -1,5 +1,7 @@
 package momime.client.ui.frames;
 
+import java.awt.Dimension;
+import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -31,9 +33,6 @@ public final class UnitInfoUI extends MomClientFrameUI
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Overland map UI */
-	private OverlandMapUI overlandMapUI;
-
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 	
@@ -114,20 +113,23 @@ public final class UnitInfoUI extends MomClientFrameUI
 			public final void windowClosed (final WindowEvent ev)
 			{
 				getUnitInfoPanel ().unitInfoPanelClosing ();
-				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
+				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 				getClient ().getUnitInfos ().remove (getUnit ().getUnitURN ());
 			}
 		});
-		
-		// Do this "too early" on purpose, so that the window isn't centred over the map, but is a little down-right of it
-		getFrame ().setLocationRelativeTo (getOverlandMapUI ().getFrame ());
 		
 		// Finish setting up the panel and frame
 		getUnitInfoPanel ().setButtonsPositionRight (true);
 		getFrame ().setContentPane (getUnitInfoPanel ().getPanel ());
 		getUnitInfoPanel ().showUnit (getUnit ());
-		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
-		getFrame ().pack ();
+		getFrame ().setResizable (false);
+		getFrame ().setUndecorated (true);
+		
+		final Dimension panelSize = getUnitInfoPanel ().getPanel ().getPreferredSize ();
+		getFrame ().setShape (new Polygon
+			(new int [] {0, panelSize.width - getUnitInfoPanel ().getBackgroundButtonsWidth (), panelSize.width - getUnitInfoPanel ().getBackgroundButtonsWidth (), panelSize.width, panelSize.width, 0},
+			new int [] {0, 0, panelSize.height - getUnitInfoPanel ().getBackgroundButtonsHeight (), panelSize.height - getUnitInfoPanel ().getBackgroundButtonsHeight (), panelSize.height, panelSize.height},
+			6));
 		
 		log.trace ("Exiting init");
 	}
@@ -182,22 +184,6 @@ public final class UnitInfoUI extends MomClientFrameUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
-	}
-
-	/**
-	 * @return Overland map UI
-	 */
-	public final OverlandMapUI getOverlandMapUI ()
-	{
-		return overlandMapUI;
-	}
-
-	/**
-	 * @param ui Overland map UI
-	 */
-	public final void setOverlandMapUI (final OverlandMapUI ui)
-	{
-		overlandMapUI = ui;
 	}
 
 	/**

@@ -59,7 +59,7 @@ public final class TestMagicSlidersUI
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
-		when (lang.findCategoryEntry ("frmMagicSliders", "Title")).thenReturn ("Magic Power distribution");
+		when (lang.findCategoryEntry ("frmMagicSliders", "Title")).thenReturn ("Magic");
 		when (lang.findCategoryEntry ("frmMagicSliders", "PowerBase")).thenReturn ("Power Base: AMOUNT_PER_TURN");
 		when (lang.findCategoryEntry ("frmMagicSliders", "ManaTitle")).thenReturn ("Mana");
 		when (lang.findCategoryEntry ("frmMagicSliders", "ResearchTitle")).thenReturn ("Research");
@@ -71,6 +71,7 @@ public final class TestMagicSlidersUI
 		when (lang.findCategoryEntry ("frmMagicSliders", "OverlandEnchantments")).thenReturn ("Overland Enchantments");
 		when (lang.findCategoryEntry ("frmMagicSliders", "Alchemy")).thenReturn ("Alchemy");
 		when (lang.findCategoryEntry ("frmMagicSliders", "OK")).thenReturn ("OK");
+		when (lang.findCategoryEntry ("frmMagicSliders", "Apply")).thenReturn ("Apply");
 		
 		final ProductionType manaProduction = new ProductionType ();
 		manaProduction.setProductionTypeSuffix ("MP");

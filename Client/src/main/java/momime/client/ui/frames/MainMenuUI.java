@@ -332,11 +332,9 @@ public final class MainMenuUI extends MomClientFrameUI
 		contentPane.addComponentListener (onResize);
 		getFrame ().addComponentListener (onResize);
 
-		// Stop frame being shrunk smaller than this
+		// Resizing the window is a bit pointless since there's no more info to display
 		getFrame ().setContentPane (contentPane);
-		getFrame ().pack ();
-		getFrame ().setMinimumSize (getFrame ().getSize ());
-		getFrame ().setLocationRelativeTo (null);
+		getFrame ().setResizable (false);
 		enableActions ();
 	}
 

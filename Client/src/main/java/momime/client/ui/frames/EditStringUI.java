@@ -85,6 +85,8 @@ public final class EditStringUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
+		log.trace ("Entering init");
+		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/editString298x76.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/okButton41x15Normal.png");
@@ -130,7 +132,7 @@ public final class EditStringUI extends MomClientFrameUI
 			@Override
 			public final void windowClosed (final WindowEvent ev)
 			{
-				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
+				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 			}
 		});
 		
@@ -155,9 +157,9 @@ public final class EditStringUI extends MomClientFrameUI
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);		// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
-		getFrame ().pack ();
-		getFrame ().setLocationRelativeTo (null);
+		getFrame ().setResizable (false);
+
+		log.trace ("Exiting init");
 	}
 	
 	/**

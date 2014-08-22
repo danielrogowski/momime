@@ -72,9 +72,6 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Panel where all the buildings are drawn */
 	private CityViewPanel cityViewPanel;
 	
-	/** Overland map UI */
-	private OverlandMapUI overlandMapUI;
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -294,13 +291,10 @@ public final class CityViewUI extends MomClientFrameUI
 			{
 				getAnim ().unregisterRepaintTrigger (null, constructionPanel);
 				getCityViewPanel ().cityViewClosing ();
-				getLanguageChangeMaster ().removeLanuageChangeListener (ui);
+				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 				getClient ().getCityViews ().remove (getCityLocation ().toString ());
 			}
 		});
-		
-		// Do this "too early" on purpose, so that the window isn't centred over the map, but is a little down-right of it
-		getFrame ().setLocationRelativeTo (getOverlandMapUI ().getFrame ());
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
@@ -505,8 +499,7 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);	// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
-		getFrame ().pack ();
+		getFrame ().setResizable (false);
 
 		log.trace ("Exiting init");
 	}
@@ -839,22 +832,6 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setCityViewPanel (final CityViewPanel pnl)
 	{
 		cityViewPanel = pnl;
-	}
-
-	/**
-	 * @return Overland map UI
-	 */
-	public final OverlandMapUI getOverlandMapUI ()
-	{
-		return overlandMapUI;
-	}
-
-	/**
-	 * @param ui Overland map UI
-	 */
-	public final void setOverlandMapUI (final OverlandMapUI ui)
-	{
-		overlandMapUI = ui;
 	}
 
 	/**

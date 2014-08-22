@@ -101,6 +101,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Alchemy UI */
+	private AlchemyUI alchemyUI;
+	
 	/** Mana title above the slider */
 	private JLabel manaTitle;
 	
@@ -158,6 +161,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** OK action */
 	private Action okAction;
 	
+	/** Apply action */
+	private Action applyAction;
+	
 	/** Last values sent to the server - so we don't bother resending if we just open up the screen and click OK without making changes */
 	private MagicPowerDistribution lastValuesSentToServer;
 	
@@ -178,18 +184,28 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		// Actions
 		alchemyAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = 1986507984605842240L;
+
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getAlchemyUI ().setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					log.error (e, e);
+				}
 			}
 		}; 
 		
-		okAction = new AbstractAction ()
+		applyAction = new AbstractAction ()
 		{
 			private static final long serialVersionUID = 3281074290844172318L;
 
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				// Do we need to inform the server of changed values?
 				final MagicPowerDistribution dist = getClient ().getOurPersistentPlayerPrivateKnowledge ().getMagicPowerDistribution ();
@@ -214,11 +230,22 @@ public final class MagicSlidersUI extends MomClientFrameUI
 						log.error (e, e);
 					}
 				}
+			}
+		};
+		
+		okAction = new AbstractAction ()
+		{
+			private static final long serialVersionUID = -5463992577360555129L;
+
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				applyAction.actionPerformed (ev);
 				
 				// Hide the screen
 				getFrame ().setVisible (false);
 			}
-		};
+		};				
 				
 		// Set whether the 3 slides are enabled.
 		// Even if a slider is unlocked, we only want to enable it if at least two sliders are unlocked.
@@ -363,34 +390,37 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		contentPane.setLayout (new GridBagLayout ());
 		
 		// Column headings
-		manaTitle = getUtils ().createShadowedLabel (MomUIConstants.DULL_GOLD.darker (), MomUIConstants.DULL_GOLD, getLargeFont ());
-		contentPane.add (manaTitle, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
-		
-		researchTitle = getUtils ().createShadowedLabel (MomUIConstants.GREEN.darker (), MomUIConstants.GREEN, getLargeFont ());
-		contentPane.add (researchTitle, getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
-		
-		skillTitle = getUtils ().createShadowedLabel (MomUIConstants.RED.darker (), MomUIConstants.RED, getLargeFont ());
-		contentPane.add (skillTitle, getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.NORTH));
-		
+		magicPowerPerTurn = getUtils ().createShadowedLabel (MomUIConstants.SILVER.darker (), MomUIConstants.SILVER, getLargeFont ());
+		contentPane.add (magicPowerPerTurn, getUtils ().createConstraintsNoFill (0, 0, 3, 1, new Insets (0, 0, 4, 0), GridBagConstraintsNoFill.CENTRE));
+
 		overlandEnchantmentsTitle = getUtils ().createShadowedLabel (MomUIConstants.DULL_AQUA.darker (), MomUIConstants.DULL_AQUA, getLargeFont ());
 		contentPane.add (overlandEnchantmentsTitle, getUtils ().createConstraintsNoFill (3, 0, 1, 1, new Insets (0, 35, 4, 0), GridBagConstraintsNoFill.NORTHWEST));
+		
+		manaTitle = getUtils ().createShadowedLabel (MomUIConstants.DULL_GOLD.darker (), MomUIConstants.DULL_GOLD, getLargeFont ());
+		contentPane.add (manaTitle, getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (13, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
+		
+		researchTitle = getUtils ().createShadowedLabel (MomUIConstants.GREEN.darker (), MomUIConstants.GREEN, getLargeFont ());
+		contentPane.add (researchTitle, getUtils ().createConstraintsNoFill (1, 1, 1, 1, new Insets (13, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
+		
+		skillTitle = getUtils ().createShadowedLabel (MomUIConstants.RED.darker (), MomUIConstants.RED, getLargeFont ());
+		contentPane.add (skillTitle, getUtils ().createConstraintsNoFill (2, 1, 1, 1, new Insets (13, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
 		
 		// The actual sliders
 		final MagicPowerDistribution dist = getClient ().getOurPersistentPlayerPrivateKnowledge ().getMagicPowerDistribution ();
 		
 		manaSlider = getUiComponentFactory ().createMagicSlider ();
 		manaSlider.init ("mana", lockAction, dist.getManaRatio ());
-		contentPane.add (manaSlider, getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (2, 0, 9, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (manaSlider, getUtils ().createConstraintsNoFill (0, 2, 1, 1, new Insets (6, 0, 7, 0), GridBagConstraintsNoFill.CENTRE));
 		sliders.add (manaSlider);
 		
 		researchSlider = getUiComponentFactory ().createMagicSlider ();
 		researchSlider.init ("research", lockAction, dist.getResearchRatio ());
-		contentPane.add (researchSlider, getUtils ().createConstraintsNoFill (1, 1, 1, 1, new Insets (2, 0, 9, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (researchSlider, getUtils ().createConstraintsNoFill (1, 2, 1, 1, new Insets (6, 0, 7, 0), GridBagConstraintsNoFill.CENTRE));
 		sliders.add (researchSlider);
 
 		skillSlider = getUiComponentFactory ().createMagicSlider ();
 		skillSlider.init ("skill", lockAction, dist.getSkillRatio ());
-		contentPane.add (skillSlider, getUtils ().createConstraintsNoFill (2, 1, 1, 1, new Insets (2, 0, 9, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (skillSlider, getUtils ().createConstraintsNoFill (2, 2, 1, 1, new Insets (6, 0, 7, 0), GridBagConstraintsNoFill.CENTRE));
 		sliders.add (skillSlider);
 		
 		for (final MagicSlider slider : sliders)
@@ -408,7 +438,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		manaPerTurn.setMinimumSize (progressBarSize);
 		manaPerTurn.setMaximumSize (progressBarSize);
 		manaPerTurn.setPreferredSize (progressBarSize);
-		contentPane.add (manaPerTurn, getUtils ().createConstraintsNoFill (0, 2, 1, 1, TINY_INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (manaPerTurn, getUtils ().createConstraintsNoFill (0, 3, 1, 1, TINY_INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		researchPerTurn = new JProgressBar ();
 		researchPerTurn.setStringPainted (true);
@@ -419,7 +449,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		researchPerTurn.setMinimumSize (progressBarSize);
 		researchPerTurn.setMaximumSize (progressBarSize);
 		researchPerTurn.setPreferredSize (progressBarSize);
-		contentPane.add (researchPerTurn, getUtils ().createConstraintsNoFill (1, 2, 1, 1, TINY_INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (researchPerTurn, getUtils ().createConstraintsNoFill (1, 3, 1, 1, TINY_INSET, GridBagConstraintsNoFill.CENTRE));
 
 		skillPerTurn = new JProgressBar ();
 		skillPerTurn.setStringPainted (true);
@@ -429,7 +459,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		skillPerTurn.setMinimumSize (progressBarSize);
 		skillPerTurn.setMaximumSize (progressBarSize);
 		skillPerTurn.setPreferredSize (progressBarSize);
-		contentPane.add (skillPerTurn, getUtils ().createConstraintsNoFill (2, 2, 1, 1, TINY_INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (skillPerTurn, getUtils ().createConstraintsNoFill (2, 3, 1, 1, TINY_INSET, GridBagConstraintsNoFill.CENTRE));
 
 		// Make the progress bars gold coloured.
 		// This is horrid that it can't be done against the individual progress bars, and we have to do it to ALL progress bars in the application,
@@ -438,13 +468,13 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		// Labels underneath
 		manaLabel = getUtils ().createLabel (MomUIConstants.DULL_GOLD, getSmallFont ());
-		contentPane.add (manaLabel, getUtils ().createConstraintsNoFill (0, 3, 1, 1, new Insets (8, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (manaLabel, getUtils ().createConstraintsNoFill (0, 4, 1, 1, new Insets (12, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
 		
 		researchLabel = getUtils ().createLabel (MomUIConstants.GREEN, getSmallFont ());
-		contentPane.add (researchLabel, getUtils ().createConstraintsNoFill (1, 3, 1, 1, new Insets (8, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (researchLabel, getUtils ().createConstraintsNoFill (1, 4, 1, 1, new Insets (12, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
 		
 		skillLabel = getUtils ().createLabel (MomUIConstants.RED, getSmallFont ());
-		contentPane.add (skillLabel, getUtils ().createConstraintsNoFill (2, 3, 1, 1, new Insets (8, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (skillLabel, getUtils ().createConstraintsNoFill (2, 4, 1, 1, new Insets (12, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
 
 		// Some of the spell names are long enough to overflow into the numeric labels on either side, and we want that to happen rather than
 		// displaying "..." and chopping the label off, so the only way to do it is to swap out that row of 3 columns with a special panel and
@@ -452,7 +482,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		final JPanel researchNamePanel = new JPanel ();
 		researchNamePanel.setLayout (new GridBagLayout ());
 		researchNamePanel.setOpaque (false);
-		contentPane.add (researchNamePanel, getUtils ().createConstraintsNoFill (0, 4, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (researchNamePanel, getUtils ().createConstraintsNoFill (0, 5, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		final Dimension outerLabelsSize = new Dimension (RESEARCH_NAME_OUTER_LABELS_WIDTH, 22);
 		final Dimension researchNameLabelsSize = new Dimension (RESEARCH_NAME_WIDTH, 22);
@@ -488,10 +518,10 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		final JPanel lowerPanel = new JPanel ();
 		lowerPanel.setLayout (new GridBagLayout ());
 		lowerPanel.setOpaque (false);
-		contentPane.add (lowerPanel, getUtils ().createConstraintsHorizontalFill (0, 5, 3, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE));
-		
-		magicPowerPerTurn = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		lowerPanel.add (magicPowerPerTurn, getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (0, 4, 0, 0), GridBagConstraintsNoFill.WEST));
+		contentPane.add (lowerPanel, getUtils ().createConstraintsHorizontalFill (0, 6, 3, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE));
+
+		lowerPanel.add (getUtils ().createImageButton (alchemyAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
 		
 		// Put all the spare space in the middle
 		final GridBagConstraints spaceConstraints = getUtils ().createConstraintsHorizontalFill (1, 0, 1, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE);
@@ -499,10 +529,10 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		lowerPanel.add (Box.createRigidArea (new Dimension (0, 0)), spaceConstraints);
 		
-		lowerPanel.add (getUtils ().createImageButton (alchemyAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		lowerPanel.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
 			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
 
-		lowerPanel.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+		lowerPanel.add (getUtils ().createImageButton (applyAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
 			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (3, 0, 1, 1, new Insets (0, 6, 0, 0), GridBagConstraintsNoFill.EAST));
 		
 		// Leave a space for the overland enchantments grid when we implement it
@@ -514,13 +544,11 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		overlandEnchantments.setMaximumSize (overlandEnchantmentsSize);
 		overlandEnchantments.setPreferredSize (overlandEnchantmentsSize);
 		
-		contentPane.add (overlandEnchantments, getUtils ().createConstraintsNoFill (3, 1, 1, 5, new Insets (0, 35, 6, 4), GridBagConstraintsNoFill.CENTRE));		
+		contentPane.add (overlandEnchantments, getUtils ().createConstraintsNoFill (3, 1, 1, 6, new Insets (0, 35, 6, 4), GridBagConstraintsNoFill.CENTRE));		
 
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);		// Must turn resizeable off before calling pack, so pack uses the size for the correct type of window decorations
-		getFrame ().pack ();
-		getFrame ().setLocationRelativeTo (null);
+		getFrame ().setResizable (false);
 		
 		log.trace ("Exiting init");
 	}
@@ -545,6 +573,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		overlandEnchantmentsTitle.setText (getLanguage ().findCategoryEntry ("frmMagicSliders", "OverlandEnchantments"));
 		alchemyAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMagicSliders", "Alchemy"));
 		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMagicSliders", "OK"));
+		applyAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMagicSliders", "Apply"));
 		
 		updateProductionLabels ();
 		
@@ -766,5 +795,21 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Alchemy UI
+	 */
+	public final AlchemyUI getAlchemyUI ()
+	{
+		return alchemyUI;
+	}
+
+	/**
+	 * @param ui Alchemy UI
+	 */
+	public final void setAlchemyUI (final AlchemyUI ui)
+	{
+		alchemyUI = ui;
 	}
 }

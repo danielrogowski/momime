@@ -232,7 +232,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 		// Set up layout
 		getPanel ().setLayout (new GridBagLayout ());
-		getPanel ().setBackground (Color.BLACK);
+		getPanel ().setOpaque (false);
 	
 		final Dimension currentlyConstructingImageSize = new Dimension (62, 60);
 		
@@ -811,6 +811,34 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		log.trace ("Exiting currentConstructionChanged");
 	}
+
+	/**
+	 * @return Width added to the main panel to accomodate any action button(s)
+	 */
+	public final int getBackgroundButtonsWidth ()
+	{
+		final int width;
+		if (backgroundButtons == null)
+			width = 0;
+		else
+			width = isButtonsPositionRight () ? backgroundButtons.getWidth () - BUTTONS_OVERLAP : backgroundButtons.getWidth ();
+			
+		return width;
+	}	
+	
+	/**
+	 * @return Height added to the main panel to accomodate any action button(s)
+	 */
+	public final int getBackgroundButtonsHeight ()
+	{
+		final int height;
+		if (backgroundButtons == null)
+			height = 0;
+		else
+			height = isButtonsPositionRight () ? backgroundButtons.getHeight () : backgroundButtons.getHeight () - BUTTONS_OVERLAP;
+			
+		return height;
+	}	
 	
 	/**
 	 * @return Medium font

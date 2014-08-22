@@ -55,9 +55,6 @@ public final class ConnectToServerUI extends MomClientFrameUI
 	/** Small font */
 	private Font smallFont;
 	
-	/** Main menu UI */
-	private MainMenuUI mainMenuUI;
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -191,9 +188,6 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
 		
-		// Do this "too early" on purpose, so that the window isn't centred over the main menu, but is a little down-right of it
-		getFrame ().setLocationRelativeTo (getMainMenuUI ().getFrame ());
-
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
@@ -340,7 +334,6 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
-		getFrame ().pack ();
 		getFrame ().setResizable (false);
 	}
 	
@@ -467,22 +460,6 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		smallFont = font;
 	}
 
-	/**
-	 * @return Main menu UI
-	 */
-	public final MainMenuUI getMainMenuUI ()
-	{
-		return mainMenuUI;
-	}
-
-	/**
-	 * @param ui Main menu UI
-	 */
-	public final void setMainMenuUI (final MainMenuUI ui)
-	{
-		mainMenuUI = ui;
-	}
-	
 	/**
 	 * @return Multiplayer client
 	 */

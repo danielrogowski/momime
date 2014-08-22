@@ -69,7 +69,6 @@ public final class TestConnectToServerUI
 		connect.setUtils (utils);
 		connect.setLanguageHolder (langHolder);
 		connect.setLanguageChangeMaster (langMaster);
-		connect.setMainMenuUI (new MainMenuUI ());
 		connect.setSmallFont (CreateFontsForTests.getSmallFont ());
 		connect.setMediumFont (CreateFontsForTests.getMediumFont ());
 		connect.setLargeFont (CreateFontsForTests.getLargeFont ());

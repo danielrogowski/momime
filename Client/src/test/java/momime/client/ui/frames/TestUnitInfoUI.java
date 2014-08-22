@@ -124,7 +124,101 @@ public final class TestUnitInfoUI
 		frame.setUnit (unit);
 		frame.setUnitClientUtils (unitClientUtils);
 		frame.setUnitInfoPanel (panel);
-		frame.setOverlandMapUI (new OverlandMapUI ());
+
+		// Display form		
+		frame.setVisible (true);
+		Thread.sleep (5000);
+	}
+
+	/**
+	 * Tests the UnitInfoUI form displaying somebody else's unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testUnitInfoUI_EnemyUnit () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+		
+		// Mock entries from the language XML
+		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+
+		when (lang.findCategoryEntry ("frmUnitInfo", "OK")).thenReturn ("OK");
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguage (lang);
+
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+
+		// Mock entries from client DB
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		
+		final Unit longbowmen = new Unit ();
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (longbowmen);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPlayerID ()).thenReturn (3);
+		
+		// FOW memory
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge ppk = new MomPersistentPlayerPrivateKnowledge ();
+		ppk.setFogOfWarMemory (fow);
+		
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
+		
+		// Cell renderer
+		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
+		
+		// Set up production image generator
+		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
+
+		// Set up unit to display
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (4);
+		
+		// Movement
+		final MomClientUnitCalculations clientUnitCalc = mock (MomClientUnitCalculations.class);
+		
+		final UnitSkill movementSkill = new UnitSkill ();
+		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
+		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
+
+		// Skills
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit)).thenReturn (new UnitHasSkillMergedList ());
+
+		// Unit name
+		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
+		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
+		
+		// Set up panel
+		final UnitInfoPanel panel = new UnitInfoPanel ();
+		panel.setUtils (utils);
+		panel.setLanguageHolder (langHolder);
+		panel.setLanguageChangeMaster (langMaster);
+		panel.setClient (client);
+		panel.setUnitSkillListCellRenderer (renderer);
+		panel.setResourceValueClientUtils (resourceValueClientUtils);
+		panel.setClientUnitCalculations (clientUnitCalc);
+		panel.setUnitUtils (unitUtils);
+		panel.setUnitClientUtils (unitClientUtils);
+		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
+		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
+		
+		// Set up form
+		final UnitInfoUI frame = new UnitInfoUI (); 
+		frame.setUtils (utils);
+		frame.setLanguageHolder (langHolder);
+		frame.setLanguageChangeMaster (langMaster);
+		frame.setClient (client);
+		frame.setUnit (unit);
+		frame.setUnitClientUtils (unitClientUtils);
+		frame.setUnitInfoPanel (panel);
 
 		// Display form		
 		frame.setVisible (true);

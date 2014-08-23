@@ -131,18 +131,170 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="msgType" type="momimemsgs:newTurnMessageTypeID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="otherPlayerID" type="mps:playerID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="oldPopulation" type="momimenewgame:cityPopulation"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="newPopulation" type="momimenewgame:cityPopulation"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="buildingOrUnitID" type="momimecommon:unitID"/>		<!-- Tied in to that constructing stores both in single field - should fix this -->
-			<xsd:element minOccurs="0" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="productionTypeID" type="momimecommon:productionTypeID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="otherUnitID" type="momimecommon:unitID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitAddBumpType" type="momimemsgs:unitAddBumpTypeID"/>
 		</xsd:sequence>
 	</xsd:complexType>
+
+	<xsd:complexType name="newTurnMessagePopulationChange">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM about the population of a city either growing or dying over a 1,000 boundary.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="oldPopulation" type="momimenewgame:cityPopulation"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="newPopulation" type="momimenewgame:cityPopulation"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageConstructUnit">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM describing a unit that completed construction.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="unitID" type="momimecommon:unitID"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="unitAddBumpType" type="momimemsgs:unitAddBumpTypeID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageSummonUnit">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM describing a unit that was added from a summoning spell.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageConstructUnit">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN">
+					    <xsd:annotation>
+    						<xsd:documentation>Its possible for this to be omitted if bumpType = No Room because the city and every adjacent tile was full,
+    							i.e. we completed casting the spell but failed to actually summon the unit.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageConstructBuilding">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM describing a building that completed construction.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageNode">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM about a node that we captured or lost.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="unitID" type="momimecommon:unitID"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="otherUnitID" type="momimecommon:unitID"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="otherPlayerID" type="mps:playerID">
+						<xsd:annotation>
+							<xsd:documentation>If capturing a node for the first time, we aren't capturing it from another player, so otherPlayerID will be null.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageKilledFromLackOfProduction">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM about us losing something because we didn't have enough production to pay for it/maintain it.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="productionTypeID" type="momimecommon:productionTypeID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageUnitKilledFromLackOfProduction">
+	    <xsd:annotation>
+    		<xsd:documentation>A unit was killed off because we couldn't afford the rations, gold and/or mana to pay for it.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageKilledFromLackOfProduction">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageBuildingSoldFromLackOfProduction">
+	    <xsd:annotation>
+    		<xsd:documentation>A building was sold off because we couldn't afford the gold to maintain it.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageKilledFromLackOfProduction">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageSpellSwitchedOffFromLackOfProduction">
+	    <xsd:annotation>
+    		<xsd:documentation>A spell was switched off because we couldn't afford the mana to maintain it.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageKilledFromLackOfProduction">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageSpell">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM about a spell, either one we've researched or need to pick a target for.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
+	<xsd:complexType name="newTurnMessageOverlandEnchantment">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM about an overland enchantment that completed casting (either by us or an opponent).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageSpell">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
 
 	<xsd:complexType name="momTransientPlayerPrivateKnowledge">
 	    <xsd:annotation>

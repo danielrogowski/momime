@@ -9,8 +9,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
+import momime.common.messages.v0_9_5.NewTurnMessageUnitKilledFromLackOfProduction;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
@@ -138,7 +138,7 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{
-			final NewTurnMessageData unitKilled = new NewTurnMessageData ();
+			final NewTurnMessageUnitKilledFromLackOfProduction unitKilled = new NewTurnMessageUnitKilledFromLackOfProduction ();
 			unitKilled.setMsgType (NewTurnMessageTypeID.UNIT_LACK_OF_PRODUCTION);
 			unitKilled.setUnitURN (getUnit ().getUnitURN ());
 			unitKilled.setProductionTypeID (getProductionTypeID ());

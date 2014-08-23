@@ -23,7 +23,9 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageConstructBuilding;
+import momime.common.messages.v0_9_5.NewTurnMessageConstructUnit;
+import momime.common.messages.v0_9_5.NewTurnMessagePopulationChange;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.UnitStatusID;
@@ -342,9 +344,9 @@ public final class CityProcessingImpl implements CityProcessing
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())
 											{
-												final NewTurnMessageData completedConstruction = new NewTurnMessageData ();
+												final NewTurnMessageConstructBuilding completedConstruction = new NewTurnMessageConstructBuilding ();
 												completedConstruction.setMsgType (NewTurnMessageTypeID.COMPLETED_BUILDING);
-												completedConstruction.setBuildingOrUnitID (building.getBuildingID ());
+												completedConstruction.setBuildingID (building.getBuildingID ());
 												completedConstruction.setLocation (cityLocation);
 												((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (completedConstruction);
 											}
@@ -364,9 +366,9 @@ public final class CityProcessingImpl implements CityProcessing
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())
 											{
-												final NewTurnMessageData completedConstruction = new NewTurnMessageData ();
+												final NewTurnMessageConstructUnit completedConstruction = new NewTurnMessageConstructUnit ();
 												completedConstruction.setMsgType (NewTurnMessageTypeID.COMPLETED_UNIT);
-												completedConstruction.setBuildingOrUnitID (unit.getUnitID ());
+												completedConstruction.setUnitID (unit.getUnitID ());
 												completedConstruction.setLocation (cityLocation);
 												completedConstruction.setUnitAddBumpType (addLocation.getBumpType ());
 												((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (completedConstruction);
@@ -423,7 +425,7 @@ public final class CityProcessingImpl implements CityProcessing
 							// Show on new turn messages?
 							if ((cityOwner.getPlayerDescription ().isHuman ()) && ((oldPopulation / 1000) != (newPopulation / 1000)))
 							{
-								final NewTurnMessageData populationChange = new NewTurnMessageData ();
+								final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
 								populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
 								populationChange.setLocation (cityLocation);
 								populationChange.setOldPopulation (oldPopulation);

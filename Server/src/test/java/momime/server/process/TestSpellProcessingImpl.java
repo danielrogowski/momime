@@ -1,10 +1,9 @@
 package momime.server.process;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;	
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +21,9 @@ import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.NewTurnMessageOverlandEnchantment;
+import momime.common.messages.v0_9_5.NewTurnMessageSpell;
+import momime.common.messages.v0_9_5.NewTurnMessageSummonUnit;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.UnitAddBumpTypeID;
@@ -188,13 +190,15 @@ public final class TestSpellProcessingImpl
 		// Human players should both have NTMs about it
 		assertEquals (1, trans1.getNewTurnMessage ().size ());
 		assertEquals (NewTurnMessageTypeID.OVERLAND_ENCHANTMENT, trans1.getNewTurnMessage ().get (0).getMsgType ());
-		assertEquals ("SP001", trans1.getNewTurnMessage ().get (0).getSpellID ());
-		assertEquals (pd3.getPlayerID (), trans1.getNewTurnMessage ().get (0).getOtherPlayerID ());
+		final NewTurnMessageOverlandEnchantment ntm1 = (NewTurnMessageOverlandEnchantment) trans1.getNewTurnMessage ().get (0);
+		assertEquals ("SP001", ntm1.getSpellID ());
+		assertEquals (pd3.getPlayerID ().intValue (), ntm1.getCastingPlayerID ());
 
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
 		assertEquals (NewTurnMessageTypeID.OVERLAND_ENCHANTMENT, trans3.getNewTurnMessage ().get (0).getMsgType ());
-		assertEquals ("SP001", trans3.getNewTurnMessage ().get (0).getSpellID ());
-		assertEquals (pd3.getPlayerID (), trans3.getNewTurnMessage ().get (0).getOtherPlayerID ());
+		final NewTurnMessageOverlandEnchantment ntm3 = (NewTurnMessageOverlandEnchantment) trans3.getNewTurnMessage ().get (0);
+		assertEquals ("SP001", ntm3.getSpellID ());
+		assertEquals (pd3.getPlayerID ().intValue (), ntm3.getCastingPlayerID ());
 	}
 
 	/**
@@ -371,10 +375,11 @@ public final class TestSpellProcessingImpl
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
 		assertEquals (NewTurnMessageTypeID.SUMMONED_UNIT, trans3.getNewTurnMessage ().get (0).getMsgType ());
-		assertEquals ("SP001", trans3.getNewTurnMessage ().get (0).getSpellID ());
-		assertEquals ("UN001", trans3.getNewTurnMessage ().get (0).getBuildingOrUnitID ());
-		assertEquals (summoningCircleLocation, trans3.getNewTurnMessage ().get (0).getLocation ());
-		assertEquals (UnitAddBumpTypeID.CITY, trans3.getNewTurnMessage ().get (0).getUnitAddBumpType ());
+		final NewTurnMessageSummonUnit ntm = (NewTurnMessageSummonUnit) trans3.getNewTurnMessage ().get (0);
+		assertEquals ("SP001", ntm.getSpellID ());
+		assertEquals ("UN001", ntm.getUnitID ());
+		assertEquals (summoningCircleLocation, ntm.getLocation ());
+		assertEquals (UnitAddBumpTypeID.CITY, ntm.getUnitAddBumpType ());
 	}
 
 	/**
@@ -486,10 +491,11 @@ public final class TestSpellProcessingImpl
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
 		assertEquals (NewTurnMessageTypeID.SUMMONED_UNIT, trans3.getNewTurnMessage ().get (0).getMsgType ());
-		assertEquals ("SP001", trans3.getNewTurnMessage ().get (0).getSpellID ());
-		assertEquals ("UN008", trans3.getNewTurnMessage ().get (0).getBuildingOrUnitID ());
-		assertEquals (summoningCircleLocation, trans3.getNewTurnMessage ().get (0).getLocation ());
-		assertEquals (UnitAddBumpTypeID.CITY, trans3.getNewTurnMessage ().get (0).getUnitAddBumpType ());
+		final NewTurnMessageSummonUnit ntm = (NewTurnMessageSummonUnit) trans3.getNewTurnMessage ().get (0);
+		assertEquals ("SP001", ntm.getSpellID ());
+		assertEquals ("UN008", ntm.getUnitID ());
+		assertEquals (summoningCircleLocation, ntm.getLocation ());
+		assertEquals (UnitAddBumpTypeID.CITY, ntm.getUnitAddBumpType ());
 	}
 	
 	/**
@@ -615,8 +621,8 @@ public final class TestSpellProcessingImpl
 		// Check we told human player to pick a target
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
 		assertEquals (NewTurnMessageTypeID.TARGET_SPELL, trans3.getNewTurnMessage ().get (0).getMsgType ());
-		assertEquals ("SP001", trans3.getNewTurnMessage ().get (0).getSpellID ());
-		assertNull (trans3.getNewTurnMessage ().get (0).getOtherPlayerID ());
+		final NewTurnMessageSpell ntm = (NewTurnMessageSpell) trans3.getNewTurnMessage ().get (0);
+		assertEquals ("SP001", ntm.getSpellID ());
 
 		// Check that we recorded targetless spell on server
 		assertEquals (1, trueMap.getMaintainedSpell ().size ());

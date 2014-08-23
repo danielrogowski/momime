@@ -17,7 +17,9 @@ import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageOverlandEnchantment;
+import momime.common.messages.v0_9_5.NewTurnMessageSpell;
+import momime.common.messages.v0_9_5.NewTurnMessageSummonUnit;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.UnitCombatSideID;
@@ -125,9 +127,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (gsk.getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
 			{
 				// Show message, everybody can see overland enchantment casts
-				final NewTurnMessageData overlandMessage = new NewTurnMessageData ();
+				final NewTurnMessageOverlandEnchantment overlandMessage = new NewTurnMessageOverlandEnchantment ();
 				overlandMessage.setMsgType (NewTurnMessageTypeID.OVERLAND_ENCHANTMENT);
-				overlandMessage.setOtherPlayerID (player.getPlayerDescription ().getPlayerID ());
+				overlandMessage.setCastingPlayerID (player.getPlayerDescription ().getPlayerID ());
 				overlandMessage.setSpellID (spell.getSpellID ());
 
 				for (final PlayerServerDetails messagePlayer : players)
@@ -218,10 +220,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 					// Show on new turn messages for the player who summoned it
 					if (player.getPlayerDescription ().isHuman ())
 					{
-						final NewTurnMessageData summoningSpell = new NewTurnMessageData ();
+						final NewTurnMessageSummonUnit summoningSpell = new NewTurnMessageSummonUnit ();
 						summoningSpell.setMsgType (NewTurnMessageTypeID.SUMMONED_UNIT);
 						summoningSpell.setSpellID (spell.getSpellID ());
-						summoningSpell.setBuildingOrUnitID (summonedUnitID);
+						summoningSpell.setUnitID (summonedUnitID);
 						summoningSpell.setLocation (addLocation.getUnitLocation ());
 						summoningSpell.setUnitAddBumpType (addLocation.getBumpType ());
 
@@ -247,7 +249,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			gsk.getTrueMap ().getMaintainedSpell ().add (trueSpell);
 
 			// Tell client to pick a target for this spell
-			final NewTurnMessageData targetSpell = new NewTurnMessageData ();
+			final NewTurnMessageSpell targetSpell = new NewTurnMessageSpell ();
 			targetSpell.setMsgType (NewTurnMessageTypeID.TARGET_SPELL);
 			targetSpell.setSpellID (spell.getSpellID ());
 			((MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (targetSpell);

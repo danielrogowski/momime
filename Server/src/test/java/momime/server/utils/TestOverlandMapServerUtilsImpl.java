@@ -31,7 +31,7 @@ import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageNode;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
@@ -339,10 +339,10 @@ public final class TestOverlandMapServerUtilsImpl
 		assertEquals (attacker.getPlayerDescription ().getPlayerID (), adjacentData.getNodeOwnerID ());
 		
 		assertEquals (1, attackerTrans.getNewTurnMessage ().size ());
-		final NewTurnMessageData attackerMsg = attackerTrans.getNewTurnMessage ().get (0);
-		assertEquals (NewTurnMessageTypeID.NODE_CAPTURED, attackerMsg.getMsgType ());
+		assertEquals (NewTurnMessageTypeID.NODE_CAPTURED, attackerTrans.getNewTurnMessage ().get (0).getMsgType ());
+		final NewTurnMessageNode attackerMsg = (NewTurnMessageNode) attackerTrans.getNewTurnMessage ().get (0);
 		assertEquals (nodeLocation, attackerMsg.getLocation ());
-		assertEquals ("GS", attackerMsg.getBuildingOrUnitID ());
+		assertEquals ("GS", attackerMsg.getUnitID ());
 		assertNull (attackerMsg.getOtherUnitID ());
 		assertNull (attackerMsg.getOtherPlayerID ());
 
@@ -550,18 +550,18 @@ public final class TestOverlandMapServerUtilsImpl
 		assertEquals (attacker.getPlayerDescription ().getPlayerID (), adjacentData.getNodeOwnerID ());
 		
 		assertEquals (1, attackerTrans.getNewTurnMessage ().size ());
-		final NewTurnMessageData attackerMsg = attackerTrans.getNewTurnMessage ().get (0);
-		assertEquals (NewTurnMessageTypeID.NODE_CAPTURED, attackerMsg.getMsgType ());
+		assertEquals (NewTurnMessageTypeID.NODE_CAPTURED, attackerTrans.getNewTurnMessage ().get (0).getMsgType ());
+		final NewTurnMessageNode attackerMsg = (NewTurnMessageNode) attackerTrans.getNewTurnMessage ().get (0);
 		assertEquals (nodeLocation, attackerMsg.getLocation ());
-		assertEquals ("GS", attackerMsg.getBuildingOrUnitID ());
+		assertEquals ("GS", attackerMsg.getUnitID ());
 		assertEquals ("MS", attackerMsg.getOtherUnitID ());
 		assertEquals (3, attackerMsg.getOtherPlayerID ().intValue ());
 
 		assertEquals (1, defenderTrans.getNewTurnMessage ().size ());
-		final NewTurnMessageData defenderMsg = defenderTrans.getNewTurnMessage ().get (0);
-		assertEquals (NewTurnMessageTypeID.NODE_LOST, defenderMsg.getMsgType ());
+		assertEquals (NewTurnMessageTypeID.NODE_LOST, defenderTrans.getNewTurnMessage ().get (0).getMsgType ());
+		final NewTurnMessageNode defenderMsg = (NewTurnMessageNode) defenderTrans.getNewTurnMessage ().get (0);
 		assertEquals (nodeLocation, defenderMsg.getLocation ());
-		assertEquals ("MS", defenderMsg.getBuildingOrUnitID ());
+		assertEquals ("MS", defenderMsg.getUnitID ());
 		assertEquals ("GS", defenderMsg.getOtherUnitID ());
 		assertEquals (2, defenderMsg.getOtherPlayerID ().intValue ());
 		

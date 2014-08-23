@@ -7,7 +7,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageBuildingSoldFromLackOfProduction;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.process.CityProcessing;
@@ -130,10 +130,10 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{
-			final NewTurnMessageData buildingSold = new NewTurnMessageData ();
+			final NewTurnMessageBuildingSoldFromLackOfProduction buildingSold = new NewTurnMessageBuildingSoldFromLackOfProduction ();
 			buildingSold.setMsgType (NewTurnMessageTypeID.BUILDING_LACK_OF_PRODUCTION);
 			buildingSold.setLocation (getBuilding ().getCityLocation ());
-			buildingSold.setBuildingOrUnitID (getBuilding ().getBuildingID ());
+			buildingSold.setBuildingID (getBuilding ().getBuildingID ());
 			buildingSold.setProductionTypeID (getProductionTypeID ());
 
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (buildingSold);

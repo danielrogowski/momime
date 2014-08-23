@@ -17,7 +17,7 @@ import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageNode;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
@@ -243,10 +243,10 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			final PlayerServerDetails attackingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (players, attackingSpirit.getOwningPlayerID (), "attemptToMeldWithNode (a)");
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
 			{
-				final NewTurnMessageData msg = new NewTurnMessageData ();
+				final NewTurnMessageNode msg = new NewTurnMessageNode ();
 				msg.setMsgType (NewTurnMessageTypeID.NODE_CAPTURED);
 				msg.setLocation (attackingSpirit.getUnitLocation ());
-				msg.setBuildingOrUnitID (attackingSpirit.getUnitID ());
+				msg.setUnitID (attackingSpirit.getUnitID ());
 				msg.setOtherUnitID (tc.getNodeSpiritUnitID ());
 				msg.setOtherPlayerID (tc.getTerrainData ().getNodeOwnerID ());
 				
@@ -259,10 +259,10 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 				final PlayerServerDetails defendingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (players, tc.getTerrainData ().getNodeOwnerID (), "attemptToMeldWithNode (d)");
 				if (defendingPlayer.getPlayerDescription ().isHuman ())
 				{
-					final NewTurnMessageData msg = new NewTurnMessageData ();
+					final NewTurnMessageNode msg = new NewTurnMessageNode ();
 					msg.setMsgType (NewTurnMessageTypeID.NODE_LOST);
 					msg.setLocation (attackingSpirit.getUnitLocation ());
-					msg.setBuildingOrUnitID (tc.getNodeSpiritUnitID ());
+					msg.setUnitID (tc.getNodeSpiritUnitID ());
 					msg.setOtherUnitID (attackingSpirit.getUnitID ());
 					msg.setOtherPlayerID (attackingSpirit.getOwningPlayerID ());
 					

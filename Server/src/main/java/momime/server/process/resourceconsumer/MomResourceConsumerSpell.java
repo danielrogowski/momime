@@ -7,7 +7,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.process.SpellProcessing;
@@ -132,7 +132,7 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{
-			final NewTurnMessageData spellSwitchedOff = new NewTurnMessageData ();
+			final NewTurnMessageSpellSwitchedOffFromLackOfProduction spellSwitchedOff = new NewTurnMessageSpellSwitchedOffFromLackOfProduction ();
 			spellSwitchedOff.setMsgType (NewTurnMessageTypeID.SPELL_LACK_OF_PRODUCTION);
 			spellSwitchedOff.setSpellID (getSpell ().getSpellID ());
 			spellSwitchedOff.setProductionTypeID (getProductionTypeID ());

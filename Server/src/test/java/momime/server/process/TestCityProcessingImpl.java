@@ -37,7 +37,7 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessagePopulationChange;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.PlayerPick;
@@ -617,11 +617,11 @@ public final class TestCityProcessingImpl
 		assertEquals (1, humanCity.getNumberOfRebels ().intValue ());
 		
 		assertEquals (1, humanTrans.getNewTurnMessage ().size ());
-		final NewTurnMessageData ntm = humanTrans.getNewTurnMessage ().get (0);
-		assertEquals (NewTurnMessageTypeID.POPULATION_CHANGE, ntm.getMsgType ());
+		assertEquals (NewTurnMessageTypeID.POPULATION_CHANGE, humanTrans.getNewTurnMessage ().get (0).getMsgType ());
+		final NewTurnMessagePopulationChange ntm = (NewTurnMessagePopulationChange) humanTrans.getNewTurnMessage ().get (0);
 		assertEquals (humanLocation, ntm.getLocation ());
-		assertEquals (4400, ntm.getOldPopulation ().intValue ());
-		assertEquals (4400+650, ntm.getNewPopulation ().intValue ());
+		assertEquals (4400, ntm.getOldPopulation ());
+		assertEquals (4400+650, ntm.getNewPopulation ());
 		
 		assertEquals ("BL01", humanCity.getCurrentlyConstructingBuildingOrUnitID ());
 		assertEquals (650, humanCell.getProductionSoFar ().intValue ());

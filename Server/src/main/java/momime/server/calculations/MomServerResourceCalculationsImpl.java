@@ -27,7 +27,7 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.v0_9_5.NewTurnMessageSpell;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
@@ -487,7 +487,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 				if (spellBeingResarched.getRemainingResearchCost () == 0)
 				{
 					// Show on New Turn Messages on the client
-					final NewTurnMessageData researchedSpell = new NewTurnMessageData ();
+					final NewTurnMessageSpell researchedSpell = new NewTurnMessageSpell ();
 					researchedSpell.setMsgType (NewTurnMessageTypeID.RESEARCHED_SPELL);
 					researchedSpell.setSpellID (priv.getSpellIDBeingResearched ());
 					trans.getNewTurnMessage ().add (researchedSpell);

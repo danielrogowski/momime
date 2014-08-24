@@ -288,8 +288,9 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
     		<xsd:documentation>NTM about an overland enchantment that completed casting (either by us or an opponent).</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
-			<xsd:extension base="momimemsgs:newTurnMessageSpell">
+			<xsd:extension base="momimemsgs:newTurnMessageData">
 				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID"/>
 				</xsd:sequence>
 			</xsd:extension>
@@ -310,7 +311,20 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 					<xsd:element minOccurs="1" maxOccurs="1" name="overlandCastingSkillRemainingThisTurn" type="momimecommon:spellCastingCost"/>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="scheduledCombat" type="momimemsgs:momScheduledCombat"/>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pendingMovement" type="momimemsgs:pendingMovement"/>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="newTurnMessage" type="momimemsgs:newTurnMessageData"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="newTurnMessage" type="momimemsgs:newTurnMessageData">
+					    <xsd:annotation>
+    						<xsd:documentation>The use of this list store is slightly different on the client and server.  The server uses it as a storage area to
+    							generate NTMs before they are sent to the client, so that multiple NTMs can be generated and the complete list sent in one go, typically
+    							at the start of the player's turn, but new NTMs can also be generated and sent during our own turn
+    							(e.g. instant casting a spell that needs a target chosen) or during other players' turns (e.g. they captured one of our a nodes).
+    							As soon as NTMs in this list are sent on to the client, the server then scrubs its copy of the list clean.
+    							
+	    						On the client, messages received from the server are added as-is to here, and rules around expiring old messages
+    							(i.e. messages from previous turns) are applied to here.  This list is still unsorted with no category headings.  For purposes of actually
+    							displaying the NTMs to the player, the client then copies and sorts this list and adds category headings - that visual list is stored in the
+    							DefaultListModel used by the list of the NTM frame in the UI.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 
 					<!-- These are only needed on the server during game startup - maybe worth creating a server side-only player knowledge structure in future -->
 		        	<xsd:element minOccurs="0" maxOccurs="1" name="firstCityRaceID" type="momimecommon:raceID"/>

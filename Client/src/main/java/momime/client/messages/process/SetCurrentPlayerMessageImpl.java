@@ -6,7 +6,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.newturnmessages.NewTurnMessageProcessing;
+import momime.client.newturnmessages.NewTurnMessageStatus;
 import momime.client.process.OverlandMapProcessing;
+import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.messages.servertoclient.v0_9_5.SetCurrentPlayerMessage;
@@ -41,6 +44,12 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
+	/** New turn messages helper methods */
+	private NewTurnMessageProcessing newTurnMessageProcessing;
+	
+	/** New turn messages UI */
+	private NewTurnMessagesUI newTurnMessagesUI;
+	
 	/**
 	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -53,10 +62,6 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	{
 		log.trace ("Entering process");
 		
-		// Read in the messages
-		if (getMessage ().size () > 0)
-			throw new UnsupportedOperationException ("SetCurrentPlayerMessageImpl: Got " + getMessage ().size () + " NTMs which there's no code to deal with yet");
-		
 		// Did the turn number change, or just the player?
 		if (getClient ().getGeneralPublicKnowledge ().getTurnNumber () != getTurnNumber ())
 		{
@@ -66,11 +71,21 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 		
 		// Update player
 		getClient ().getGeneralPublicKnowledge ().setCurrentPlayerID (getCurrentPlayerID ());
-		
+
 		// Update label to show current player (if its our turn, this is hidden behind the next turn button)
 		
 		// Work out the position to scroll the colour patch to
 
+		// Read in the new turn messages
+		if (isExpireMessages ())
+			getNewTurnMessageProcessing ().expireMessages ();
+		
+		getNewTurnMessageProcessing ().readNewTurnMessagesFromServer (getMessage (), NewTurnMessageStatus.MAIN);
+		getNewTurnMessagesUI ().setNewTurnMessages (getNewTurnMessageProcessing ().sortAndAddCategories ());
+		
+		if (getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().size () > 0)
+			getNewTurnMessagesUI ().setVisible (true);
+		
 		// Allow selling buildings
 		getCityCalculations ().blankBuildingsSoldThisTurn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCurrentPlayerID ());
 
@@ -168,5 +183,37 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return New turn messages helper methods
+	 */
+	public final NewTurnMessageProcessing getNewTurnMessageProcessing ()
+	{
+		return newTurnMessageProcessing;
+	}
+
+	/**
+	 * @param proc New turn messages helper methods
+	 */
+	public final void setNewTurnMessageProcessing (final NewTurnMessageProcessing proc)
+	{
+		newTurnMessageProcessing = proc;
+	}
+
+	/**
+	 * @return New turn messages UI
+	 */
+	public final NewTurnMessagesUI getNewTurnMessagesUI ()
+	{
+		return newTurnMessagesUI;
+	}
+
+	/**
+	 * @param ui New turn messages UI
+	 */
+	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
+	{
+		newTurnMessagesUI = ui;
 	}
 }

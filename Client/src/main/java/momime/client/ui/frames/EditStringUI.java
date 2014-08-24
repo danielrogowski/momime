@@ -168,6 +168,8 @@ public final class EditStringUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
+		log.trace ("Entering languageChanged");
+
 		// Title
 		if (getTitle () != null)
 			getFrame ().setTitle (getTitle ());
@@ -181,6 +183,8 @@ public final class EditStringUI extends MomClientFrameUI
 			promptLabel.setText (getLanguage ().findCategoryEntry (getPromptLanguageCategoryID (), getPromptLanguageEntryID ()));
 		
 		// No action text to set, because the button has OK on it as part of the image
+
+		log.trace ("Exiting languageChanged");
 	}
 
 	/**

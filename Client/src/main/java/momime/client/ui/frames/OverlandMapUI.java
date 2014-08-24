@@ -93,6 +93,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
 
+	/** New turn messages UI */
+	private NewTurnMessagesUI newTurnMessagesUI;
+	
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
 	
@@ -196,7 +199,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		gameAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -204,7 +207,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		spellsAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -212,7 +215,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		armiesAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -220,15 +223,17 @@ public final class OverlandMapUI extends MomClientFrameUI
 		citiesAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
 
 		magicAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -4965417316954818797L;
+
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				try
 				{
@@ -244,23 +249,33 @@ public final class OverlandMapUI extends MomClientFrameUI
 		planeAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
 
 		messagesAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = 2155191938368576867L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getNewTurnMessagesUI ().setVisible (true);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 
 		chatAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -268,7 +283,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		infoAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -276,7 +291,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		optionsAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -993,5 +1008,21 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setMagicSlidersUI (final MagicSlidersUI ui)
 	{
 		magicSlidersUI = ui;
+	}
+
+	/**
+	 * @return New turn messages UI
+	 */
+	public final NewTurnMessagesUI getNewTurnMessagesUI ()
+	{
+		return newTurnMessagesUI;
+	}
+
+	/**
+	 * @param ui New turn messages UI
+	 */
+	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
+	{
+		newTurnMessagesUI = ui;
 	}
 }

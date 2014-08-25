@@ -23,6 +23,9 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Factory for creating NTMs from spring prototypes */
+	private NewTurnMessagesFactory newTurnMessagesFactory;
+	
 	/**
 	 * At the start of a new turn, we get a new block of new turn messages, so need to get rid of the old ones.
 	 * However we also may get messages show up during a turn, and we may or may not have had a chance to look at those, so we leave them for an additional turn.
@@ -111,7 +114,9 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 				sortOrder = msg.getSortOrder ();
 				
 				// Slot in a category title
-				msgs.add (n, new NewTurnMessageCategory (sortOrder));
+				final NewTurnMessageCategory category = getNewTurnMessagesFactory ().createNewTurnMessageCategory ();
+				category.setSortOrder (sortOrder);
+				msgs.add (n, category);
 				n++;
 			}
 			
@@ -136,5 +141,21 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Factory for creating NTMs from spring prototypes
+	 */
+	public final NewTurnMessagesFactory getNewTurnMessagesFactory ()
+	{
+		return newTurnMessagesFactory;
+	}
+
+	/**
+	 * @param fac Factory for creating NTMs from spring prototypes
+	 */
+	public final void setNewTurnMessagesFactory (final NewTurnMessagesFactory fac)
+	{
+		newTurnMessagesFactory = fac;
 	}
 }

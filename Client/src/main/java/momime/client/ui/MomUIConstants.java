@@ -19,6 +19,9 @@ public final class MomUIConstants
 	/** Red from the Research column heading on the magic sliders screen */
 	public static final Color RED = new Color (0xD01C00);
 	
+	/** Dark red used for some fonts in the original */
+	public static final Color DARK_RED = new Color (0x5C1010);
+	
 	/** Color.GRAY is too bright and Color.DARK_GRAY is too dark */
 	public static final Color GRAY = new Color (0x606060);
 	

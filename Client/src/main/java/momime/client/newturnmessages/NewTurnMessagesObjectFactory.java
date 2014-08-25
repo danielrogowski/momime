@@ -17,13 +17,16 @@ import momime.common.messages.v0_9_5.ObjectFactory;
  */
 public final class NewTurnMessagesObjectFactory extends ObjectFactory
 {
+	/** Factory for creating NTMs from spring prototypes */
+	private NewTurnMessagesFactory newTurnMessagesFactory;
+	
 	/**
 	 * @return Custom extended NTM
 	 */
 	@Override
 	public final NewTurnMessageSpellSwitchedOffFromLackOfProduction createNewTurnMessageSpellSwitchedOffFromLackOfProduction ()
 	{
-		return new NewTurnMessageSpellSwitchedOffFromLackOfProductionEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessageSpellSwitchedOffFromLackOfProduction ();
 	}
 
 	/**
@@ -32,7 +35,7 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	@Override
 	public final NewTurnMessageBuildingSoldFromLackOfProduction createNewTurnMessageBuildingSoldFromLackOfProduction ()
 	{
-		return new NewTurnMessageBuildingSoldFromLackOfProductionEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessageBuildingSoldFromLackOfProduction ();
 	}
 
 	/**
@@ -41,7 +44,7 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	@Override
 	public final NewTurnMessageConstructBuilding createNewTurnMessageConstructBuilding ()
 	{
-		return new NewTurnMessageConstructBuildingEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessageConstructBuilding ();
 	}
 
 	/**
@@ -50,7 +53,7 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	@Override
 	public final NewTurnMessageConstructUnit createNewTurnMessageConstructUnit ()
 	{
-		return new NewTurnMessageConstructUnitEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessageConstructUnit ();
 	}
 
 	/**
@@ -59,7 +62,7 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	@Override
 	public final NewTurnMessageSummonUnit createNewTurnMessageSummonUnit ()
 	{
-		return new NewTurnMessageSummonUnitEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessageSummonUnit ();
 	}
 
 	/**
@@ -68,7 +71,7 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	@Override
 	public final NewTurnMessageOverlandEnchantment createNewTurnMessageOverlandEnchantment ()
 	{
-		return new NewTurnMessageOverlandEnchantmentEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessageOverlandEnchantment ();
 	}
 
 	/**
@@ -77,7 +80,7 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	@Override
 	public final NewTurnMessagePopulationChange createNewTurnMessagePopulationChange ()
 	{
-		return new NewTurnMessagePopulationChangeEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessagePopulationChange ();
 	}
 
 	/**
@@ -86,7 +89,7 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	@Override
 	public final NewTurnMessageUnitKilledFromLackOfProduction createNewTurnMessageUnitKilledFromLackOfProduction ()
 	{
-		return new NewTurnMessageUnitKilledFromLackOfProductionEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessageUnitKilledFromLackOfProduction ();
 	}
 
 	/**
@@ -95,7 +98,7 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	@Override
 	public final NewTurnMessageSpell createNewTurnMessageSpell ()
 	{
-		return new NewTurnMessageSpellEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessageSpell ();
 	}
 
 	/**
@@ -104,6 +107,22 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	@Override
 	public final NewTurnMessageNode createNewTurnMessageNode ()
 	{
-		return new NewTurnMessageNodeEx ();
+		return getNewTurnMessagesFactory ().createNewTurnMessageNode ();
+	}
+
+	/**
+	 * @return Factory for creating NTMs from spring prototypes
+	 */
+	public final NewTurnMessagesFactory getNewTurnMessagesFactory ()
+	{
+		return newTurnMessagesFactory;
+	}
+
+	/**
+	 * @param fac Factory for creating NTMs from spring prototypes
+	 */
+	public final void setNewTurnMessagesFactory (final NewTurnMessagesFactory fac)
+	{
+		newTurnMessagesFactory = fac;
 	}
 }

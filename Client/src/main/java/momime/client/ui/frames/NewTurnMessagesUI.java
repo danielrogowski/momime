@@ -10,12 +10,17 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 
 import momime.client.newturnmessages.NewTurnMessageUI;
+import momime.client.ui.renderer.NewTurnMessageRenderer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
  * Scroll that displays new turn messages like "City of blah has grown from population 4,900 to 5,050" or "City of blah has finished constructing a Granary" or
@@ -32,8 +37,14 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	/** Number of pixels that the roller at the bottom of the scroll overlaps the main piece of background */
 	private final static int SCROLL_OVERLAP_BOTTOM = 7;
 	
+	/** Typical inset used on this screen layout */
+	private final static int INSET = 0;
+	
 	/** Stores the list of messages to display on the scroll; initialize it out here, prior to the init method, so we can write to it before the UI gets displayed */
 	private final DefaultListModel<NewTurnMessageUI> newTurnMessages = new DefaultListModel<NewTurnMessageUI> ();
+
+	/** Messages list box */
+	private JList<NewTurnMessageUI> newTurnMessagesList;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -77,6 +88,20 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
+
+		final Dimension listSize = new Dimension (452, 360);
+		
+		newTurnMessagesList = new JList<NewTurnMessageUI> ();
+		newTurnMessagesList.setOpaque (false);
+		newTurnMessagesList.setModel (newTurnMessages);
+		newTurnMessagesList.setCellRenderer (new NewTurnMessageRenderer ());		// The renderer has no injections (yet) so doesn't have a spring prototype
+		newTurnMessagesList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
+		
+		newTurnMessagesList.setMinimumSize (listSize);
+		newTurnMessagesList.setMaximumSize (listSize);
+		newTurnMessagesList.setPreferredSize (listSize);
+		
+		contentPane.add (newTurnMessagesList, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -146,6 +171,8 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	public final void languageChanged ()
 	{
 		log.trace ("Entering languageChanged");
+		
+		newTurnMessagesList.repaint ();
 		
 		log.trace ("Exiting languageChanged");
 	}	

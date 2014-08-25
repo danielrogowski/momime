@@ -5828,6 +5828,32 @@ This will cease production of your PREREQUISITE_BUILDING_NAME.</languageEntryTex
 			<languageEntryText>You have found a LOCATION_DESCRIPTION.  Scouts have spotted UNIT_NAME within the LOCATION_DESCRIPTION.  Do you wish to enter?</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="NewTurnMessages">
+		<languageEntry languageEntryID="ConstructionCompletedCategory">
+			<languageEntryText>Construction Completed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="LackOfProductionCategory">
+			<languageEntryText>Losses from Lack of Production</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityGrowthCategory">
+			<languageEntryText>City Growth</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityGrowth">
+			<languageEntryText>CITY_NAME population has grown from OLD_POPULATION to NEW_POPULATION</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityDeathCategory">
+			<languageEntryText>City Death</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CityDeath">
+			<languageEntryText>CITY_NAME population has dropped from OLD_POPULATION to NEW_POPULATION</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SpellsCategory">
+			<languageEntryText>Spells</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NodesCategory">
+			<languageEntryText>Nodes</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<shortcutKey shortcut="ARMIES_SCREEN">
 		<shift>false</shift>
 		<alt>false</alt>
@@ -6081,4 +6107,3 @@ This will cease production of your PREREQUISITE_BUILDING_NAME.</languageEntryTex
 		<normalKey>N</normalKey>
 	</shortcutKey>
 </momimelang:languageDatabase>
-

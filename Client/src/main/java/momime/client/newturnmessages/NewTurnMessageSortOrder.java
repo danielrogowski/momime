@@ -11,32 +11,32 @@ package momime.client.newturnmessages;
 public enum NewTurnMessageSortOrder
 {
 	/** NTMs about one of our cities completing construction of a a unit or building */
-	 SORT_ORDER_CONSTRUCTION_COMPLETED (1, "ConstructionCompleted"),
+	 SORT_ORDER_CONSTRUCTION_COMPLETED (1, "ConstructionCompletedCategory"),
 	
 	/** NTMs about us losing units/buildings/spells because we couldn't afford the maintenance to pay for them */
-	 SORT_ORDER_LACK_OF_PRODUCTION (2, "LackOfProduction"),
+	 SORT_ORDER_LACK_OF_PRODUCTION (2, "LackOfProductionCategory"),
 	
 	/** NTMs about cities growing across a 1,000 population border */
-	 SORT_ORDER_CITY_GROWTH (3, "CityGrowth"),
+	 SORT_ORDER_CITY_GROWTH (3, "CityGrowthCategory"),
 	
 	/** NTMs about cities dying across a 1,000 population border */
-	 SORT_ORDER_CITY_DEATH (4, "CityDeath"),
+	 SORT_ORDER_CITY_DEATH (4, "CityDeathCategory"),
 	
 	/** NTMs about researching or requiring targetting our spells), or anybody casting an overland enchantment */
-	 SORT_ORDER_SPELLS (5, "Spells"),
+	 SORT_ORDER_SPELLS (5, "SpellsCategory"),
 	
 	/** NTMs about us capturing or losing nodes */
-	 SORT_ORDER_NODES (6, "Nodes");
+	 SORT_ORDER_NODES (6, "NodesCategory");
 	 
 	 /** Numeric sort order */
 	 private final int sortOrder;
 	 
-	 /** languageEntryID key under the NewTurnMessages category */
+	 /** languageEntryID key for the category heading */
 	 private final String languageEntryID;
 
 	 /**
 	  * @param aSortOrder Numeric sort order
-	  * @param aLanguageEntryID languageEntryID key under the NewTurnMessages category
+	  * @param aLanguageEntryID languageEntryID key for the category heading
 	  */
 	 private NewTurnMessageSortOrder (final int aSortOrder, final String aLanguageEntryID)
 	 {
@@ -53,7 +53,7 @@ public enum NewTurnMessageSortOrder
 	 }
 	 
 	 /**
-	  * @return languageEntryID key under the NewTurnMessages category
+	  * @return languageEntryID key for the category heading
 	  */
 	 public final String getLanguageEntryID ()
 	 {

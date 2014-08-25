@@ -325,6 +325,30 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="factory" ref="momClientServerToClientServerFactory" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 	</bean>
+
+	<!-- Create extended versions of NTMs which include drawing implementations -->
+
+	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">
+		<property name="largeFont" ref="largeFont" />
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
+	
+	<bean id="newTurnMessagePopulationChange" class="momime.client.newturnmessages.NewTurnMessagePopulationChangeEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="momClient" />
+	</bean>
+	
+	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype" />
+	<bean id="newTurnMessageBuildingSoldFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageBuildingSoldFromLackOfProductionEx" scope="prototype" />
+	<bean id="newTurnMessageConstructBuilding" class="momime.client.newturnmessages.NewTurnMessageConstructBuildingEx" scope="prototype" />
+	<bean id="newTurnMessageConstructUnit" class="momime.client.newturnmessages.NewTurnMessageConstructUnitEx" scope="prototype" />
+	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype" />
+	<bean id="newTurnMessageOverlandEnchantment" class="momime.client.newturnmessages.NewTurnMessageOverlandEnchantmentEx" scope="prototype" />
+	<bean id="newTurnMessageUnitKilledFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageUnitKilledFromLackOfProductionEx" scope="prototype" />
+	<bean id="newTurnMessageSpell" class="momime.client.newturnmessages.NewTurnMessageSpellEx" scope="prototype" />
+	<bean id="newTurnMessageNode" class="momime.client.newturnmessages.NewTurnMessageNodeEx" scope="prototype" />
 	
 	<!-- Version of the client -->
 	
@@ -335,8 +359,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="multiplayerSessionClientServerToClientObjectFactory" class="com.ndg.multiplayer.client.messages.process.MultiplayerSessionClientServerToClientObjectFactory" />
 
 	<bean id="clientDatabaseFactory" class="momime.client.database.ClientDatabaseFactory" />	<!-- Creates ClientDatabaseExImpl instead of ClientDatabase -->
+
+	<bean id="newTurnMessagesFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.client.newturnmessages.NewTurnMessagesFactory" />
+	</bean>
 	
-	<bean id="newTurnMessagesObjectFactory" class="momime.client.newturnmessages.NewTurnMessagesObjectFactory" />
+	<bean id="newTurnMessagesObjectFactory" class="momime.client.newturnmessages.NewTurnMessagesObjectFactory">
+		<property name="newTurnMessagesFactory" ref="newTurnMessagesFactory" />
+	</bean>
 	
 	<bean id="momClient" class="momime.client.MomClientImpl" init-method="start">
 		<property name="serverPort" value="18250" />
@@ -423,6 +453,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="newTurnMessageProcessing" class="momime.client.newturnmessages.NewTurnMessageProcessingImpl">
 		<property name="client" ref="momClient" />
+		<property name="newTurnMessagesFactory" ref="newTurnMessagesFactory" />
 	</bean>
 	
 	<!-- Language variable replacers -->

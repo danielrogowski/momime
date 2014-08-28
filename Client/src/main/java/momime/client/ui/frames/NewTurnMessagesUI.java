@@ -207,6 +207,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
+		getFrame ().setTitle (getLanguage ().findCategoryEntry ("NewTurnMessages", "Title"));
 		newTurnMessagesList.repaint ();
 		
 		log.trace ("Exiting languageChanged");

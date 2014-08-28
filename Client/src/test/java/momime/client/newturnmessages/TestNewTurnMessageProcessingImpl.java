@@ -14,6 +14,8 @@ import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.NewTurnMessageData;
 
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * Tests the NewTurnMessageProcessingImpl class
@@ -146,8 +148,20 @@ public final class TestNewTurnMessageProcessingImpl
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurTransientPlayerPrivateKnowledge ()).thenReturn (trans);
 		
+		// Factory for creating categories
+		final NewTurnMessagesFactory messageFactory = mock (NewTurnMessagesFactory.class);
+		when (messageFactory.createNewTurnMessageCategory ()).thenAnswer (new Answer<NewTurnMessageCategory> ()
+		{
+			@Override
+			public final NewTurnMessageCategory answer (final InvocationOnMock invocation) throws Throwable
+			{
+				return new NewTurnMessageCategory ();
+			}
+		});
+		
 		// Set up object to test
 		final NewTurnMessageProcessingImpl proc = new NewTurnMessageProcessingImpl ();
+		proc.setNewTurnMessagesFactory (messageFactory);
 		proc.setClient (client);
 		
 		// Run method

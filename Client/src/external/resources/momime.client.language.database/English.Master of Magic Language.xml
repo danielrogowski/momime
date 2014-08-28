@@ -4523,6 +4523,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmMessageBox">
+		<languageEntry languageEntryID="ErrorTitle">
+			<languageEntryText>Error</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>
 		</languageEntry>
@@ -5829,6 +5832,9 @@ This will cease production of your PREREQUISITE_BUILDING_NAME.</languageEntryTex
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="NewTurnMessages">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Messages</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="ConstructionCompletedCategory">
 			<languageEntryText>Construction Completed</languageEntryText>
 		</languageEntry>

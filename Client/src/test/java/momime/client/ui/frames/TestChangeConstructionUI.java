@@ -170,7 +170,7 @@ public final class TestChangeConstructionUI
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		doReturn (buildings).when (db).getBuilding ();
 		doReturn (units).when (db).getUnit ();
-		when (db.findRace ("RC01", "ChangeConstructionUI.init")).thenReturn (race);
+		when (db.findRace ("RC01", "updateWhatCanBeConstructed")).thenReturn (race);
 		
 		// City data
 		final OverlandMapCityData cityData = new OverlandMapCityData ();

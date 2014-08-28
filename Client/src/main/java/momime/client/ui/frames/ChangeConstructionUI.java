@@ -36,6 +36,7 @@ import momime.client.utils.AnimationController;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Building;
 import momime.common.database.v0_9_5.Race;
 import momime.common.database.v0_9_5.RaceCannotBuild;
@@ -108,8 +109,23 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/** OK action */
 	private Action okAction;
 
+	/** Items in the buildings list box */
+	private DefaultListModel<Building> buildingsItems; 
+	
 	/** Buildings list box */
 	private JList<Building> buildingsList;
+	
+	/** Handles clicks on the buildings list */
+	private ListSelectionListener buildingSelectionListener;
+	
+	/** Items in the units list box */
+	private DefaultListModel<Unit> unitsItems;
+	
+	/** Units list box */
+	private JList<Unit> unitsList;
+
+	/** Handles clicks on the units list */
+	private ListSelectionListener unitSelectionListener;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -189,15 +205,15 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		getBuildingListCellRenderer ().init ();
 
 		// Set list boxes
-		final DefaultListModel<Building> buildingsItems = new DefaultListModel<Building> ();
+		buildingsItems = new DefaultListModel<Building> ();
 		buildingsList = new JList<Building> ();
 		buildingsList.setOpaque (false);
 		buildingsList.setModel (buildingsItems);
 		buildingsList.setCellRenderer (getBuildingListCellRenderer ());
 		buildingsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
-		final DefaultListModel<Unit> unitsItems = new DefaultListModel<Unit> ();
-		final JList<Unit> unitsList = new JList<Unit>  ();		
+		unitsItems = new DefaultListModel<Unit> ();
+		unitsList = new JList<Unit>  ();		
 		unitsList.setOpaque (false);
 		unitsList.setModel (unitsItems);
 		unitsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
@@ -220,13 +236,112 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		contentPane.add (getUnitInfoPanel ().getPanel (), getUtils ().createConstraintsNoFill (1, 0, 1, 1, new Insets (0, 2, 0, 2), GridBagConstraintsNoFill.CENTRE));
 		contentPane.add (unitsScroll, getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
-		// What's currently being constructed?
+		// Clicking a building previews its details
+		buildingSelectionListener = new ListSelectionListener ()
+		{
+			@Override
+			public final void valueChanged (final ListSelectionEvent ev)
+			{
+				if (buildingsList.getSelectedIndex () >= 0)
+				{
+					final MemoryBuilding building = new MemoryBuilding ();
+					building.setBuildingID (buildingsItems.get (buildingsList.getSelectedIndex ()).getBuildingID ());
+					building.setCityLocation (getCityLocation ());
+					try
+					{
+						getUnitInfoPanel ().showBuilding (building);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			}
+		};
+		buildingsList.addListSelectionListener (buildingSelectionListener);
+		
+		// Clicking a unit previews its details
+		unitSelectionListener = new ListSelectionListener ()
+		{
+			@Override
+			public final void valueChanged (final ListSelectionEvent ev)
+			{
+				if (unitsList.getSelectedIndex () >= 0)
+				{
+					final AvailableUnit unit = new AvailableUnit ();
+					unit.setUnitID (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID ());
+					unit.setOwningPlayerID (getClient ().getOurPlayerID ());
+					try
+					{
+						final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), getClient ().getClientDB ());
+
+						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) MultiplayerSessionUtils.findPlayerWithID
+							(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener").getPersistentPlayerPublicKnowledge ();
+					
+						unit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
+							pub.getPick (), getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ()));
+					
+						getUnitUtils ().initializeUnitSkills (unit, startingExperience, true, getClient ().getClientDB ());
+						getUnitInfoPanel ().showUnit (unit);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			}
+		};
+		unitsList.addListSelectionListener (unitSelectionListener);
+
+		// Set up initial contents of the lists
+		updateWhatCanBeConstructed ();
+		
+		// Show the frame
+		getFrame ().setContentPane (contentPane);
+		getFrame ().setResizable (false);
+		getFrame ().setUndecorated (true);
+		
+		// This gets a bit complicated, because there are 3 independant unjoined areas of the frame
+		final Dimension panelSize = getUnitInfoPanel ().getPanel ().getPreferredSize ();
+		final int panelLeft = changeConstructionBackground.getWidth () + 2;
+		final int panelTop = (changeConstructionBackground.getHeight () - panelSize.height) / 2;
+		final int panelSides = (panelSize.width - getUnitInfoPanel ().getBackgroundButtonsWidth ()) / 2;
+		final int panelButtonsTop = panelTop + panelSize.height - getUnitInfoPanel ().getBackgroundButtonsHeight ();
+		
+		getFrame ().setShape (new CompositeShape (new Shape []
+				
+			// Shape of buildings list box
+			{new Rectangle (0, 0, changeConstructionBackground.getWidth (), changeConstructionBackground.getHeight ()), new Polygon
+
+				// Shape of centre unit panel including the poking out buttons at the bottom
+				(new int [] {panelLeft, panelLeft + panelSize.width, panelLeft + panelSize.width, panelLeft + panelSize.width - panelSides, panelLeft + panelSize.width - panelSides, panelLeft + panelSides, panelLeft + panelSides, panelLeft},
+				new int [] {panelTop, panelTop, panelButtonsTop, panelButtonsTop, panelTop + panelSize.height, panelTop + panelSize.height, panelButtonsTop, panelButtonsTop},
+				8),
+				
+			// Shape of units list box
+			new Rectangle (panelLeft + panelSize.width + 2, 0, changeConstructionBackground.getWidth (), changeConstructionBackground.getHeight ())}));
+
+		log.trace ("Exiting init");
+	}
+	
+	/**
+	 * Updates the buildings and units list boxes with what can be constructed in this city
+	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or an animation
+	 */
+	public final void updateWhatCanBeConstructed () throws RecordNotFoundException
+	{
+		log.trace ("Entering updateWhatCanBeConstructed");
+
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 		
-		final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "ChangeConstructionUI.init");
+		final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "updateWhatCanBeConstructed");
 		
 		// Which buildings can we construct?
+		buildingsItems.clear ();
 		for (final Building thisBuilding : getClient ().getClientDB ().getBuilding ())
 			
 			// If we don't have this building already
@@ -263,6 +378,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			}
 		
 		// Which units can we construct?
+		unitsItems.clear ();
 		for (final Unit thisUnit : getClient ().getClientDB ().getUnit ())
 			
 			// If its a regular unit
@@ -276,93 +392,15 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 					getCityLocation (), thisUnit)))
 				
 				unitsItems.addElement (thisUnit);
-		
-		// Clicking a building previews its details
-		final ListSelectionListener buildingSelectionListener = new ListSelectionListener ()
-		{
-			@Override
-			public final void valueChanged (final ListSelectionEvent ev)
-			{
-				final MemoryBuilding building = new MemoryBuilding ();
-				building.setBuildingID (buildingsItems.get (buildingsList.getSelectedIndex ()).getBuildingID ());
-				building.setCityLocation (getCityLocation ());
-				try
-				{
-					getUnitInfoPanel ().showBuilding (building);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		buildingsList.addListSelectionListener (buildingSelectionListener);
-		
+
+		// Select the current construction project
 		if (buildingsList.getSelectedIndex () >= 0)
 			buildingSelectionListener.valueChanged (null);
-		
-		// Clicking a unit previews its details
-		final ListSelectionListener unitSelectionListener = new ListSelectionListener ()
-		{
-			@Override
-			public final void valueChanged (final ListSelectionEvent ev)
-			{
-				final AvailableUnit unit = new AvailableUnit ();
-				unit.setUnitID (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID ());
-				unit.setOwningPlayerID (getClient ().getOurPlayerID ());
-				try
-				{
-					final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), getClient ().getClientDB ());
-
-					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) MultiplayerSessionUtils.findPlayerWithID
-						(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener").getPersistentPlayerPublicKnowledge ();
-					
-					unit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
-						pub.getPick (), getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ()));
-					
-					getUnitUtils ().initializeUnitSkills (unit, startingExperience, true, getClient ().getClientDB ());
-					getUnitInfoPanel ().showUnit (unit);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		unitsList.addListSelectionListener (unitSelectionListener);
 		
 		if (unitsList.getSelectedIndex () >= 0)
 			unitSelectionListener.valueChanged (null);
 		
-		// Show the frame
-		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);
-		getFrame ().setUndecorated (true);
-		
-		// This gets a bit complicated, because there are 3 independant unjoined areas of the frame
-		final Dimension panelSize = getUnitInfoPanel ().getPanel ().getPreferredSize ();
-		final int panelLeft = changeConstructionBackground.getWidth () + 2;
-		final int panelTop = (changeConstructionBackground.getHeight () - panelSize.height) / 2;
-		final int panelSides = (panelSize.width - getUnitInfoPanel ().getBackgroundButtonsWidth ()) / 2;
-		final int panelButtonsTop = panelTop + panelSize.height - getUnitInfoPanel ().getBackgroundButtonsHeight ();
-		
-		getFrame ().setShape (new CompositeShape (new Shape []
-				
-			// Shape of buildings list box
-			{new Rectangle (0, 0, changeConstructionBackground.getWidth (), changeConstructionBackground.getHeight ()), new Polygon
-
-				// Shape of centre unit panel including the poking out buttons at the bottom
-				(new int [] {panelLeft, panelLeft + panelSize.width, panelLeft + panelSize.width, panelLeft + panelSize.width - panelSides, panelLeft + panelSize.width - panelSides, panelLeft + panelSides, panelLeft + panelSides, panelLeft},
-				new int [] {panelTop, panelTop, panelButtonsTop, panelButtonsTop, panelTop + panelSize.height, panelTop + panelSize.height, panelButtonsTop, panelButtonsTop},
-				8),
-				
-			// Shape of units list box
-			new Rectangle (panelLeft + panelSize.width + 2, 0, changeConstructionBackground.getWidth (), changeConstructionBackground.getHeight ())}));
-
-		log.trace ("Exiting init");
+		log.trace ("Exiting updateWhatCanBeConstructed");
 	}
 
 	/**

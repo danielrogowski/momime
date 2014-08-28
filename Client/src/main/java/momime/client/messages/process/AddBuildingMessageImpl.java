@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessage;
 import momime.common.messages.v0_9_5.MemoryBuilding;
@@ -74,7 +75,19 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 			secondBuilding.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getData ().getCityLocation ()));
 			
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (secondBuilding);
-		}		
+		}
+		
+		// Addition of a building will alter what we can construct in that city, if we've got the change construction screen open
+		final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getData ().getCityLocation ().toString ());
+		if (changeConstruction != null)
+			try
+			{
+				changeConstruction.updateWhatCanBeConstructed ();
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}		
 		
 		log.trace ("Exiting processOneUpdate");
 	}

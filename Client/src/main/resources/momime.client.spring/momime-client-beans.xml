@@ -252,7 +252,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype" />
-	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype" />
+	
+	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype">
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
 	
 	<bean id="updateNodeLairTowerUnitIDMessage" class="momime.client.messages.process.UpdateNodeLairTowerUnitIDMessageImpl" scope="prototype" />
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype" />

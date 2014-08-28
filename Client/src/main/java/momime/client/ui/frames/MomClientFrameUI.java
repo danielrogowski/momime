@@ -97,6 +97,7 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 			}
 
 			// Build and position the frame
+			getFrame ().setIconImage (getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/frameIcon.png"));
 			getFrame ().pack ();
 			getFrame ().setLocationRelativeTo (null);
 		}

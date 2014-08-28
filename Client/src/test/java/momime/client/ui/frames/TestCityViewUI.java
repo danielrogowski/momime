@@ -62,7 +62,7 @@ public final class TestCityViewUI
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		final RaceEx race = new RaceEx ();
-		when (gfx.findRace ("RC01", "cityDataUpdated")).thenReturn (race);
+		when (gfx.findRace ("RC01", "cityDataChanged")).thenReturn (race);
 		
 		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER, "/momime.client.graphics/races/barbarian/farmer.png"));
 		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER, "/momime.client.graphics/races/barbarian/worker.png"));

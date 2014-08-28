@@ -16,6 +16,7 @@ import momime.client.newturnmessages.NewTurnMessagePopulationChangeEx;
 import momime.client.newturnmessages.NewTurnMessageSortOrder;
 import momime.client.newturnmessages.NewTurnMessageUI;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.AnimationController;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
@@ -46,6 +47,7 @@ public final class TestNewTurnMessagesUI
 
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		when (lang.findCategoryEntry ("NewTurnMessages", "Title")).thenReturn ("Messages");
 		when (lang.findCategoryEntry ("NewTurnMessages", "CityGrowthCategory")).thenReturn ("City Growth");
 		when (lang.findCategoryEntry ("NewTurnMessages", "CityDeathCategory")).thenReturn ("City Death");
 		when (lang.findCategoryEntry ("NewTurnMessages", "CityGrowth")).thenReturn ("CITY_NAME population has grown from OLD_POPULATION to NEW_POPULATION");
@@ -133,10 +135,11 @@ public final class TestNewTurnMessagesUI
 		scroll.setUtils (utils);
 		scroll.setLanguageHolder (langHolder);
 		scroll.setLanguageChangeMaster (langMaster);
+		scroll.setAnim (mock (AnimationController.class));
 		scroll.setNewTurnMessages (msgs);
 		
 		// Display form		
 		scroll.setVisible (true);
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 	}
 }

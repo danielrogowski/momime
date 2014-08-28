@@ -5832,6 +5832,12 @@ This will cease production of your PREREQUISITE_BUILDING_NAME.</languageEntryTex
 		<languageEntry languageEntryID="ConstructionCompletedCategory">
 			<languageEntryText>Construction Completed</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="ConstructionCompleted">
+			<languageEntryText>CITY_NAME has just finished constructing OLD_CONSTRUCTION</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NextConstruction">
+			<languageEntryText>and is now starting to construct NEW_CONSTRUCTION</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="LackOfProductionCategory">
 			<languageEntryText>Losses from Lack of Production</languageEntryText>
 		</languageEntry>

@@ -265,7 +265,6 @@ public final class TestChangeConstructionUI
 		changeConstruction.setUnitInfoPanel (panel);
 		changeConstruction.setBuildingListCellRenderer (buildingRenderer);
 		changeConstruction.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
-		changeConstruction.setCityViewUI (new CityViewUI ());
 		changeConstruction.setMediumFont (CreateFontsForTests.getMediumFont ());
 		changeConstruction.setSmallFont (CreateFontsForTests.getSmallFont ());
 		changeConstruction.setAnim (anim);

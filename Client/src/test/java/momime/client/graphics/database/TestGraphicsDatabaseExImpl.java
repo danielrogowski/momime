@@ -5,10 +5,13 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
@@ -17,6 +20,7 @@ import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
@@ -24,12 +28,94 @@ import momime.common.utils.MemoryBuildingUtils;
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Tests the GraphicsDatabaseExImpl class
  */
 public final class TestGraphicsDatabaseExImpl
 {
+	/**
+	 * Tests the derivation of the largestBuildingSize
+	 * @throws IOException If there is a problem
+	 */
+	@Test
+	public final void testLargestBuildingSize () throws IOException
+	{
+		// Set up some sample images
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
+		
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		db.setUtils (utils);
+		
+		final TileSetEx overlandMapTileSet = new TileSetEx ();
+		overlandMapTileSet.setTileSetID (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP);
+		db.getTileSet ().add (overlandMapTileSet);
+		
+		// 30 x 20 image
+		when (utils.loadImage ("building1.png")).thenReturn (new BufferedImage (30, 20, BufferedImage.TYPE_INT_ARGB));
+		
+		final CityViewElement building1 = new CityViewElement ();
+		building1.setBuildingID ("BL01");
+		building1.setCityViewImageFile ("building1.png");
+		db.getCityViewElement ().add (building1);
+		
+		// 50 x 10 image, note this is the alternate image
+		when (utils.loadImage ("building2.png")).thenReturn (new BufferedImage (60, 70, BufferedImage.TYPE_INT_ARGB));
+		when (utils.loadImage ("building2alt.png")).thenReturn (new BufferedImage (50, 10, BufferedImage.TYPE_INT_ARGB));
+
+		final CityViewElement building2 = new CityViewElement ();
+		building2.setBuildingID ("BL02");
+		building2.setCityViewImageFile ("building2.png");
+		building2.setCityViewAlternativeImageFile ("building2alt.png");
+		db.getCityViewElement ().add (building2);
+		
+		// 10 x 40 animation
+		when (utils.loadImage ("frame1.png")).thenReturn (new BufferedImage (10, 40, BufferedImage.TYPE_INT_ARGB));
+		when (utils.loadImage ("frame2.png")).thenReturn (new BufferedImage (10, 40, BufferedImage.TYPE_INT_ARGB));
+		
+		final AnimationFrame frame1 = new AnimationFrame ();
+		frame1.setFrameImageFile ("frame1.png");
+
+		final AnimationFrame frame2 = new AnimationFrame ();
+		frame2.setFrameImageFile ("frame2.png");
+		
+		final AnimationEx anim = new AnimationEx ();
+		anim.setAnimationID ("building3");
+		anim.getFrame ().add (frame1);
+		anim.getFrame ().add (frame2);
+		anim.setUtils (utils);
+		db.getAnimation ().add (anim);
+
+		final CityViewElement building3 = new CityViewElement ();
+		building3.setBuildingID ("BL03");
+		building3.setCityViewAnimation ("building3");
+		db.getCityViewElement ().add (building3);
+		
+		// Huge image that isn't a building
+		when (utils.loadImage ("nonBuilding.png")).thenReturn (new BufferedImage (100, 100, BufferedImage.TYPE_INT_ARGB));
+		
+		final CityViewElement nonBuilding = new CityViewElement ();
+		nonBuilding.setCityViewImageFile ("nonBuilding.png");
+		db.getCityViewElement ().add (nonBuilding);
+		
+		// Huge Wizard's Fortress to prove that it gets ignored
+		when (utils.loadImage ("fortress.png")).thenReturn (new BufferedImage (100, 100, BufferedImage.TYPE_INT_ARGB));
+		
+		final CityViewElement fortress = new CityViewElement ();
+		fortress.setBuildingID (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS);
+		fortress.setCityViewImageFile ("fortress.png");
+		db.getCityViewElement ().add (fortress);
+		
+		// Run method
+		db.buildMapsAndRunConsistencyChecks ();
+		final Dimension largestBuildingSize = db.getLargestBuildingSize ();
+		
+		// Check results
+		assertEquals (50, largestBuildingSize.width);
+		assertEquals (40, largestBuildingSize.height);
+	}
+	
 	/**
 	 * Tests the findPick method to find a pick ID that does exist
 	 * @throws IOException If there is a problem

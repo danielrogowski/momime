@@ -1,5 +1,7 @@
 package momime.client.graphics.database;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,6 +25,7 @@ import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.UnitType;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
@@ -31,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.NdgUIUtils;
 
 /**
  * Implementation of graphics XML database - extends stubs auto-generated from XSD to add additional functionality from the interface
@@ -84,6 +88,12 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
+
+	/** Helper methods and constants for creating and laying out Swing components */
+	private NdgUIUtils utils;
+	
+	/** Size of the largest building image that can be constructed */
+	private Dimension largestBuildingSize;
 	
 	/**
 	 * Builds all the hash maps to enable finding records faster
@@ -221,7 +231,41 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			final MapFeatureEx mfex = (MapFeatureEx) mf;
 			mfex.checkWidthAndHeight (overlandMapTileSet);
 		}
-		log.info ("All " + getMapFeature ().size () + " map features passed consistency checks");		
+		log.info ("All " + getMapFeature ().size () + " map features passed consistency checks");
+		
+		// Find the largest building
+		int largestWidth = 0;
+		int largestHeight = 0;
+		for (final CityViewElement thisBuilding : getCityViewElement ())
+			
+			// Not all CityViewElements represent buildings; also ignore Summoning circle and Wizard's fortress because we can't actually construct those
+			// (Hard coding these is a bit of a hack, but we don't learn "properly" that we can't construct these until we receive the XML from the server when we join a game)
+			if ((thisBuilding.getBuildingID () != null) && (!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE)) &&
+				(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS)))
+			{
+				// It could be an image or animation
+				final int thisWidth;
+				final int thisHeight;
+				if (thisBuilding.getCityViewAnimation () != null)
+				{
+					final AnimationEx anim = findAnimation (thisBuilding.getCityViewAnimation (), "consistencyChecks");
+					thisWidth = anim.getAnimationWidth ();
+					thisHeight = anim.getAnimationHeight ();
+				}
+				else
+				{
+					final BufferedImage image = getUtils ().loadImage
+						((thisBuilding.getCityViewAlternativeImageFile () != null) ? thisBuilding.getCityViewAlternativeImageFile () : thisBuilding.getCityViewImageFile ());
+					thisWidth = image.getWidth ();
+					thisHeight = image.getHeight ();
+				}
+				
+				largestWidth = Math.max (largestWidth, thisWidth);
+				largestHeight = Math.max (largestHeight, thisHeight);
+			}
+		
+		log.debug ("Largest building image is " + largestWidth + "x" + largestHeight);
+		largestBuildingSize = new Dimension (largestWidth, largestHeight);
 		
 		log.trace ("Exiting consistencyChecks");
 	}
@@ -513,6 +557,18 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 
 	/**
+	 * NB. This will find the largest width and the largest height separately, so its possible this may return a dimension
+	 * which no building actually has, if e.g. the widest is 50x25 and the tallest is 20x40 then it would return 50x40.
+	 * 
+	 * @return Size of the largest building image that can be constructed
+	 */
+	@Override
+	public final Dimension getLargestBuildingSize ()
+	{
+		return largestBuildingSize;
+	}
+	
+	/**
 	 * @return Memory building utils
 	 */
 	public final MemoryBuildingUtils getMemoryBuildingUtils ()
@@ -521,10 +577,26 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 
 	/**
-	 * @param utils Memory building utils
+	 * @param util Memory building utils
 	 */
-	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils util)
 	{
-		memoryBuildingUtils = utils;
+		memoryBuildingUtils = util;
+	}
+
+	/**
+	 * @return Helper methods and constants for creating and laying out Swing components
+	 */
+	public final NdgUIUtils getUtils ()
+	{
+		return utils;
+	}
+
+	/**
+	 * @param util Helper methods and constants for creating and laying out Swing components
+	 */
+	public final void setUtils (final NdgUIUtils util)
+	{
+		utils = util;
 	}
 }

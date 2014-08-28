@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.EditStringUI;
+import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessage;
@@ -22,7 +23,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
 
 /**
  * Server sends this to the client to tell them the map scenery
-y */
+ */
 public final class UpdateCityMessageImpl extends UpdateCityMessage implements SessionServerToClientMessage
 {
 	/** Class logger */
@@ -36,6 +37,9 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** New turn messages UI */
+	private NewTurnMessagesUI newTurnMessagesUI;
 	
 	/**
 	 * Method called when this message is sent in isolation
@@ -95,7 +99,10 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 		// If any city screen(s) are displaying this city then we need to update the display
 		final CityViewUI cityView = getClient ().getCityViews ().get (getData ().getMapLocation ().toString ());
 		if (cityView != null)
-			cityView.cityDataUpdated ();
+			cityView.cityDataChanged ();
+		
+		// If any new turn message(s) are showing what this city may have just constructed, then we need to update those as well
+		getNewTurnMessagesUI ().cityDataChanged ((MapCoordinates3DEx) getData ().getMapLocation ());
 		
 		log.trace ("Exiting processOneUpdate");
 	}
@@ -146,5 +153,21 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return New turn messages UI
+	 */
+	public final NewTurnMessagesUI getNewTurnMessagesUI ()
+	{
+		return newTurnMessagesUI;
+	}
+
+	/**
+	 * @param ui New turn messages UI
+	 */
+	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
+	{
+		newTurnMessagesUI = ui;
 	}
 }

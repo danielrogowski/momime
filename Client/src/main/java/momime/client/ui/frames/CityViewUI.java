@@ -191,7 +191,6 @@ public final class CityViewUI extends MomClientFrameUI
 				{
 					changeConstruction = getPrototypeFrameCreator ().createChangeConstruction ();
 					changeConstruction.setCityLocation (new MapCoordinates3DEx (getCityLocation ()));
-					changeConstruction.setCityViewUI (ui);
 					getClient ().getChangeConstructions ().put (getCityLocation ().toString (), changeConstruction);
 				}
 				
@@ -495,7 +494,7 @@ public final class CityViewUI extends MomClientFrameUI
 		contentPane.add (constructionPanel, getUtils ().createConstraintsNoFill (2, 9, 2, 1, new Insets (0, 0, 2, 10), GridBagConstraintsNoFill.SOUTHEAST));
 		
 		// Set up info that depends on cityData
-		cityDataUpdated ();
+		cityDataChanged ();
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -512,10 +511,6 @@ public final class CityViewUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged: " + getCityLocation ());
 		
-		// Get details about the city
-		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
-		
 		// Fixed labels
 		resourcesLabel.setText		(getLanguage ().findCategoryEntry ("frmCity", "Resources"));
 		enchantmentsLabel.setText	(getLanguage ().findCategoryEntry ("frmCity", "Enchantments"));
@@ -524,54 +519,12 @@ public final class CityViewUI extends MomClientFrameUI
 		units.setText						(getLanguage ().findCategoryEntry ("frmCity", "Units"));
 		production.setText				(getLanguage ().findCategoryEntry ("frmCity", "Production"));
 		
-		// Dynamic labels
-		if (cityData != null)
-		{
-			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID ()).replaceAll ("CITY_NAME", cityData.getCityName ()); 
-			cityNameLabel.setText (cityName);
-			getFrame ().setTitle (cityName);
-			
-			final Race race = getLanguage ().findRace (cityData.getCityRaceID ());
-			raceLabel.setText ((race == null) ? cityData.getCityRaceID () : race.getRaceName ());
-			
-			try
-			{
-				// Max city size
-				final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions
-					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ());
-			
-				final CityProductionBreakdown maxCitySizeProd = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
-				final int maxCitySize = (maxCitySizeProd == null) ? 0 : maxCitySizeProd.getCappedProductionAmount ();
-			
-				maximumPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "MaxCitySize").replaceAll ("MAX_CITY_SIZE",
-					getTextUtils ().intToStrCommas (maxCitySize * 1000)));
-			
-				// Growth rate
-				final CityGrowthRateBreakdown cityGrowthBreakdown = getCityCalculations ().calculateCityGrowthRate
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize, getClient ().getClientDB ());
-			
-				final int cityGrowth = cityGrowthBreakdown.getFinalTotal ();
-				final String cityPopulation = getTextUtils ().intToStrCommas (cityData.getCityPopulation ());
-			
-				if (cityGrowth == 0)
-					currentPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "PopulationMaxed").replaceAll ("POPULATION", cityPopulation));
-				else
-					currentPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "PopulationAndGrowth").replaceAll ("POPULATION", cityPopulation).replaceAll
-						("GROWTH_RATE", getTextUtils ().intToStrPlusMinus (cityGrowth)));
-			}
-			catch (final IOException e)
-			{
-				log.error (e, e);
-			}
-		}
-		
 		// Actions
 		rushBuyAction.putValue					(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "RushBuy"));
 		changeConstructionAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "ChangeConstruction"));
 		okAction.putValue							(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "OK"));
+		
+		languageOrCityDataChanged ();
 
 		log.trace ("Exiting languageChanged");
 	}
@@ -582,16 +535,16 @@ public final class CityViewUI extends MomClientFrameUI
 	 * 
 	 * @throws IOException If there is a problem
 	 */
-	public final void cityDataUpdated () throws IOException
+	public final void cityDataChanged () throws IOException
 	{
-		log.trace ("Entering cityDataUpdated: " + getCityLocation ());
+		log.trace ("Entering cityDataChanged: " + getCityLocation ());
 		civilianPanel.removeAll ();
 		productionPanel.removeAll ();
 
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
-		final RaceEx race = getGraphicsDB ().findRace (cityData.getCityRaceID (), "cityDataUpdated");
+		final RaceEx race = getGraphicsDB ().findRace (cityData.getCityRaceID (), "cityDataChanged");
 		
 		// Start with farmers
 		Image civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER)));
@@ -750,7 +703,7 @@ public final class CityViewUI extends MomClientFrameUI
 		// Find what we're currently constructing
 		getAnim ().unregisterRepaintTrigger (null, constructionPanel);
 		getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding
-			(cityData.getCurrentlyConstructingBuildingOrUnitID (), "cityDataUpdated").getCityViewAnimation (), constructionPanel);
+			(cityData.getCurrentlyConstructingBuildingOrUnitID (), "cityDataChanged").getCityViewAnimation (), constructionPanel);
 		constructionPanel.repaint ();
 
 		civilianPanel.revalidate ();
@@ -758,7 +711,66 @@ public final class CityViewUI extends MomClientFrameUI
 		productionPanel.revalidate ();
 		productionPanel.repaint ();
 		
-		log.trace ("Exiting cityDataUpdated");
+		languageOrCityDataChanged ();
+		
+		log.trace ("Exiting cityDataChanged");
+	}
+	
+	/**
+	 * Performs updates that depend both on the city data and the language file
+	 */
+	private final void languageOrCityDataChanged ()
+	{
+		log.trace ("Entering languageOrCityDataChanged");
+
+		// Get details about the city
+		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+
+		if (cityData != null)
+		{
+			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID ()).replaceAll ("CITY_NAME", cityData.getCityName ()); 
+			cityNameLabel.setText (cityName);
+			getFrame ().setTitle (cityName);
+			
+			final Race race = getLanguage ().findRace (cityData.getCityRaceID ());
+			raceLabel.setText ((race == null) ? cityData.getCityRaceID () : race.getRaceName ());
+			
+			try
+			{
+				// Max city size
+				final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions
+					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ());
+			
+				final CityProductionBreakdown maxCitySizeProd = productions.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+				final int maxCitySize = (maxCitySizeProd == null) ? 0 : maxCitySizeProd.getCappedProductionAmount ();
+			
+				maximumPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "MaxCitySize").replaceAll ("MAX_CITY_SIZE",
+					getTextUtils ().intToStrCommas (maxCitySize * 1000)));
+			
+				// Growth rate
+				final CityGrowthRateBreakdown cityGrowthBreakdown = getCityCalculations ().calculateCityGrowthRate
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize, getClient ().getClientDB ());
+			
+				final int cityGrowth = cityGrowthBreakdown.getFinalTotal ();
+				final String cityPopulation = getTextUtils ().intToStrCommas (cityData.getCityPopulation ());
+			
+				if (cityGrowth == 0)
+					currentPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "PopulationMaxed").replaceAll ("POPULATION", cityPopulation));
+				else
+					currentPopulationAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "PopulationAndGrowth").replaceAll ("POPULATION", cityPopulation).replaceAll
+						("GROWTH_RATE", getTextUtils ().intToStrPlusMinus (cityGrowth)));
+			}
+			catch (final IOException e)
+			{
+				log.error (e, e);
+			}
+		}
+		
+		log.trace ("Exiting languageOrCityDataChanged");
 	}
 	
 	/**

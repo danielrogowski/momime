@@ -5,8 +5,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Polygon;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -14,12 +17,17 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 
+import momime.client.newturnmessages.NewTurnMessageAnimated;
+import momime.client.newturnmessages.NewTurnMessageClickable;
+import momime.client.newturnmessages.NewTurnMessageRepaintOnCityDataChanged;
 import momime.client.newturnmessages.NewTurnMessageUI;
 import momime.client.ui.renderer.NewTurnMessageRenderer;
+import momime.client.utils.AnimationController;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
@@ -31,11 +39,17 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	/** Class logger */
 	private final Log log = LogFactory.getLog (NewTurnMessagesUI.class);
 
+	/** Animation controller */
+	private AnimationController anim;
+	
 	/** Number of pixels that the roller at the top of the scroll overlaps the main piece of background */
 	private final static int SCROLL_OVERLAP_TOP = 6;
 	
 	/** Number of pixels that the roller at the bottom of the scroll overlaps the main piece of background */
 	private final static int SCROLL_OVERLAP_BOTTOM = 7;
+	
+	/** Width of the drawable (list box) area of the NTM scroll */
+	public final static int SCROLL_WIDTH = 452;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
@@ -89,7 +103,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 
-		final Dimension listSize = new Dimension (452, 360);
+		final Dimension listSize = new Dimension (SCROLL_WIDTH, 360);
 		
 		newTurnMessagesList = new JList<NewTurnMessageUI> ();
 		newTurnMessagesList.setOpaque (false);
@@ -102,6 +116,27 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		newTurnMessagesList.setPreferredSize (listSize);
 		
 		contentPane.add (newTurnMessagesList, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		
+		// Pass clicks to the NTM objects
+		newTurnMessagesList.addMouseListener (new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				final NewTurnMessageUI msg = newTurnMessages.get (newTurnMessagesList.getSelectedIndex ());
+				
+				// Not all types of message are clickable
+				if (msg instanceof NewTurnMessageClickable)
+					try
+					{
+						((NewTurnMessageClickable) msg).clicked ();
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+			}
+		});
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -179,15 +214,71 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 
 	/**
 	 * @param msgs The replacement list of messages to display on the scroll
+	 * @throws IOException If there is a problem
 	 */
-	public final void setNewTurnMessages (final List<NewTurnMessageUI> msgs)
+	public final void setNewTurnMessages (final List<NewTurnMessageUI> msgs) throws IOException
 	{
 		log.trace ("Entering setNewTurnMessages: " + msgs.size ());
-		
+
+		// Clear out the old messages and repaint triggers
+		getAnim ().unregisterRepaintTrigger (null, newTurnMessagesList);
 		newTurnMessages.clear ();
+		
+		// Add in the new messages and repaint triggers
 		for (final NewTurnMessageUI msg : msgs)
+		{
 			newTurnMessages.addElement (msg);
+			
+			if (msg instanceof NewTurnMessageAnimated)
+				((NewTurnMessageAnimated) msg).registerRepaintTriggers (newTurnMessagesList);
+		}
 		
 		log.trace ("Exiting setNewTurnMessages");
+	}
+
+	/**
+	 * The data about a particular city has been updated; if any NTMs are displaying that info then we need to update them accordingly
+	 * @param cityLocation Location of the city that was updated
+	 * @throws IOException If there is a problem
+	 */
+	public final void cityDataChanged (final MapCoordinates3DEx cityLocation) throws IOException
+	{
+		log.trace ("Entering cityDataChanged: " + cityLocation);
+
+		boolean repaint = false;
+		
+		final Enumeration<NewTurnMessageUI> msgs = newTurnMessages.elements ();
+		while (msgs.hasMoreElements ())
+		{
+			final NewTurnMessageUI msg = msgs.nextElement ();
+			if (msg instanceof NewTurnMessageRepaintOnCityDataChanged)
+				if (((NewTurnMessageRepaintOnCityDataChanged) msg).equals (cityLocation))
+					repaint = true;
+
+			// This handles things like, if the current construction project is changed to a Sawmill then we need to kick off the Sawmill animation
+			if (msg instanceof NewTurnMessageAnimated)
+				((NewTurnMessageAnimated) msg).registerRepaintTriggers (newTurnMessagesList);
+		}
+		
+		if (repaint)
+			newTurnMessagesList.repaint ();
+
+		log.trace ("Exiting cityDataChanged");
+	}
+	
+	/**
+	 * @return Animation controller
+	 */
+	public final AnimationController getAnim ()
+	{
+		return anim;
+	}
+
+	/**
+	 * @param controller Animation controller
+	 */
+	public final void setAnim (final AnimationController controller)
+	{
+		anim = controller;
 	}
 }

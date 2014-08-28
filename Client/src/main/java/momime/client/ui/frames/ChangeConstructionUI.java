@@ -72,9 +72,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/** Small font */
 	private Font smallFont;
 	
-	/** The city view UI that opened this change construction window */
-	private CityViewUI cityViewUI;
-	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 	
@@ -395,14 +392,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @return The city view UI that opened this change construction window
-	 */
-	public final CityViewUI getCityViewUI ()
-	{
-		return cityViewUI;
-	}
-
-	/**
 	 * @return Medium font
 	 */
 	public final Font getMediumFont ()
@@ -434,14 +423,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		smallFont = font;
 	}
 	
-	/**
-	 * @param ui The city view UI that opened this change construction window
-	 */
-	public final void setCityViewUI (final CityViewUI ui)
-	{
-		cityViewUI = ui;
-	}
-
 	/**
 	 * @return Graphics database
 	 */

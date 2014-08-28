@@ -1,5 +1,6 @@
 package momime.client.graphics.database;
 
+import java.awt.Dimension;
 import java.util.List;
 
 import momime.client.graphics.database.v0_9_5.CityImage;
@@ -154,4 +155,12 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the animationID doesn't exist
 	 */
 	public AnimationEx findAnimation (final String animationID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * NB. This will find the largest width and the largest height separately, so its possible this may return a dimension
+	 * which no building actually has, if e.g. the widest is 50x25 and the tallest is 20x40 then it would return 50x40.
+	 * 
+	 * @return Size of the largest building image that can be constructed
+	 */
+	public Dimension getLargestBuildingSize ();
 }

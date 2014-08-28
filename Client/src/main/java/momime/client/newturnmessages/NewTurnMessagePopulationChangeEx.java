@@ -4,10 +4,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.messages.v0_9_5.NewTurnMessagePopulationChange;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
@@ -16,7 +20,7 @@ import momime.common.messages.v0_9_5.OverlandMapCityData;
  * NTM about the population of a city either growing or dying over a 1,000 boundary
  */
 public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopulationChange
-	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI
+	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageClickable
 {
 	/** Current status of this NTM */
 	private NewTurnMessageStatus status;
@@ -32,6 +36,9 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -94,6 +101,25 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	public final Color getColour ()
 	{
 		return MomUIConstants.SILVER;
+	}
+	
+	/**
+	 * Clicking on population changes brings up the city screen
+	 * @throws Exception If there is a problem
+	 */
+	@Override
+	public final void clicked () throws Exception
+	{
+		// Is there a city view already open for this city?
+		CityViewUI cityView = getClient ().getCityViews ().get (getLocation ().toString ());
+		if (cityView == null)
+		{
+			cityView = getPrototypeFrameCreator ().createCityView ();
+			cityView.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getLocation ()));
+			getClient ().getCityViews ().put (getLocation ().toString (), cityView);
+		}
+		
+		cityView.setVisible (true);
 	}
 	
 	/**
@@ -185,5 +211,21 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

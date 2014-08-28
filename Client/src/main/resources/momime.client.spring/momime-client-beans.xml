@@ -98,6 +98,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="graphicsDatabase" class="momime.client.graphics.database.GraphicsDatabaseExImpl" factory-bean="graphicsDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMapsAndRunConsistencyChecks">
 		<constructor-arg value="#{clientConfig.graphicsXmlFilename}" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="utils" ref="uiUtils" />
 	</bean>
 	
 	<bean id="smoothedTileType" class="momime.client.graphics.database.SmoothedTileTypeEx" scope="prototype">
@@ -244,6 +245,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="overlandMovementTypesMessage" class="momime.client.messages.process.OverlandMovementTypesMessageImpl" scope="prototype">
 		<property name="overlandMapUI" ref="overlandMapUI" />
 	</bean>
+
+	<bean id="updateProductionSoFarMessage" class="momime.client.messages.process.UpdateProductionSoFarMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype" />
@@ -279,7 +284,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype" />
 	<bean id="removeQueuedSpellMessage" class="momime.client.messages.process.RemoveQueuedSpellMessageImpl" scope="prototype" />
 	<bean id="updateUnitNameMessage" class="momime.client.messages.process.UpdateUnitNameMessageImpl" scope="prototype" />
-	<bean id="updateProductionSoFarMessage" class="momime.client.messages.process.UpdateProductionSoFarMessageImpl" scope="prototype" />
 	<bean id="moveUnitInCombatMessage" class="momime.client.messages.process.MoveUnitInCombatMessageImpl" scope="prototype" />
 	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype" />
 	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype" />
@@ -300,6 +304,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="momClient" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 	</bean>
 
 	<bean id="addBuildingMessage" class="momime.client.messages.process.AddBuildingMessageImpl" scope="prototype">
@@ -338,11 +343,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="client" ref="momClient" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
-	
+
+	<bean id="newTurnMessageConstructBuilding" class="momime.client.newturnmessages.NewTurnMessageConstructBuildingEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="anim" ref="anim" />
+		<property name="client" ref="momClient" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="utils" ref="uiUtils" />
+	</bean>
+
 	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype" />
 	<bean id="newTurnMessageBuildingSoldFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageBuildingSoldFromLackOfProductionEx" scope="prototype" />
-	<bean id="newTurnMessageConstructBuilding" class="momime.client.newturnmessages.NewTurnMessageConstructBuildingEx" scope="prototype" />
 	<bean id="newTurnMessageConstructUnit" class="momime.client.newturnmessages.NewTurnMessageConstructUnitEx" scope="prototype" />
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype" />
 	<bean id="newTurnMessageOverlandEnchantment" class="momime.client.newturnmessages.NewTurnMessageOverlandEnchantmentEx" scope="prototype" />
@@ -621,6 +636,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
+		<property name="anim" ref="anim" />
 	</bean>
 
 	<!-- Prototype UI components -->

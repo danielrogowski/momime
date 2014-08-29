@@ -28,10 +28,12 @@ import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.database.v0_9_5.Building;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
@@ -94,9 +96,9 @@ public final class TestCityViewUI
 		food.buildMap ();
 		when (gfx.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, "generateProductionImage")).thenReturn (food);
 		
-		final CityViewElement granary = new CityViewElement ();
-		granary.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
-		when (gfx.findBuilding (eq ("BL01"), anyString ())).thenReturn (granary);
+		final CityViewElement granaryGfx = new CityViewElement ();
+		granaryGfx.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
+		when (gfx.findBuilding (eq ("BL01"), anyString ())).thenReturn (granaryGfx);
 		
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
@@ -128,6 +130,12 @@ public final class TestCityViewUI
 		// Client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
+		final Building granary = new Building ();
+		granary.setProductionCost (200);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (granary);
+		
+		when (db.getMostExpensiveConstructionCost ()).thenReturn (1000);
+		
 		// City data
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC01");
@@ -137,7 +145,7 @@ public final class TestCityViewUI
 		cityData.setMinimumFarmers (2);
 		cityData.setOptionalFarmers (1);
 		cityData.setNumberOfRebels (2);
-		cityData.setCurrentlyConstructingBuildingOrUnitID ("BL01");
+		cityData.setCurrentlyConstructingBuildingID ("BL01");
 		
 		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
 		
@@ -145,7 +153,9 @@ public final class TestCityViewUI
 		sd.setMapSize (mapSize);
 		
 		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (mapSize);
-		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		final MemoryGridCell mc = terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20);
+		mc.setCityData (cityData);
+		mc.setProductionSoFar (60);
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);

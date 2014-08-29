@@ -180,17 +180,17 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
 			weaponGradesMap.put (thisWeaponGrade.getWeaponGradeNumber (), thisWeaponGrade);
 		
-		// Create animations map, and check for consistency
+		// Create animations map
 		animationsMap = new HashMap<String, AnimationEx> ();
 		for (final Animation anim : getAnimation ())
 			animationsMap.put (anim.getAnimationID (), (AnimationEx) anim);
 		
-		// Create tile sets map, and build all the smoothing rule bitmask maps
+		// Create tile sets map
 		tileSetsMap = new HashMap<String, TileSetEx> ();
 		for (final TileSet ts : getTileSet ())
 			tileSetsMap.put (ts.getTileSetID (), (TileSetEx) ts);
 
-		// Create map features map, and check for consistency
+		// Create map features map
 		mapFeaturesMap = new HashMap<String, MapFeatureEx> ();
 		for (final MapFeature mf : getMapFeature ())
 			mapFeaturesMap.put (mf.getMapFeatureID (), (MapFeatureEx) mf);
@@ -199,7 +199,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 
 	/**
-	 * Builds all the hash maps to enable finding records faster
+	 * Verifies that all animations, tiles and so on are consistent across the graphics DB
 	 * @throws IOException If any images cannot be loaded, or any consistency checks fail
 	 */
 	public final void consistencyChecks () throws IOException
@@ -264,7 +264,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 				largestHeight = Math.max (largestHeight, thisHeight);
 			}
 		
-		log.debug ("Largest building image is " + largestWidth + "x" + largestHeight);
+		log.info ("Largest building image is " + largestWidth + "x" + largestHeight);
 		largestBuildingSize = new Dimension (largestWidth, largestHeight);
 		
 		log.trace ("Exiting consistencyChecks");

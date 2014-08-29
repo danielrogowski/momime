@@ -138,6 +138,16 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 			}
 		});
 		
+		// If any messages were added prior to calling init (), then they may need anims started for them
+		final Enumeration<NewTurnMessageUI> msgs = newTurnMessages.elements ();
+		while (msgs.hasMoreElements ())
+		{
+			final NewTurnMessageUI msg = msgs.nextElement ();
+			
+			if (msg instanceof NewTurnMessageAnimated)
+				((NewTurnMessageAnimated) msg).registerRepaintTriggers (newTurnMessagesList);
+		}
+		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
@@ -222,15 +232,18 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		log.trace ("Entering setNewTurnMessages: " + msgs.size ());
 
 		// Clear out the old messages and repaint triggers
-		getAnim ().unregisterRepaintTrigger (null, newTurnMessagesList);
+		if (newTurnMessagesList != null)
+			getAnim ().unregisterRepaintTrigger (null, newTurnMessagesList);
+		
 		newTurnMessages.clear ();
 		
 		// Add in the new messages and repaint triggers
+		// However note setNewTurnMessages gets called before the NTM scroll opens up for the first time, in which case the list may be null
 		for (final NewTurnMessageUI msg : msgs)
 		{
 			newTurnMessages.addElement (msg);
 			
-			if (msg instanceof NewTurnMessageAnimated)
+			if ((newTurnMessagesList != null) && (msg instanceof NewTurnMessageAnimated))
 				((NewTurnMessageAnimated) msg).registerRepaintTriggers (newTurnMessagesList);
 		}
 		

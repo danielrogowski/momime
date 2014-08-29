@@ -15,8 +15,6 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
-import momime.server.database.v0_9_5.Building;
-import momime.server.database.v0_9_5.Unit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,29 +66,14 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		
 			// Check if we're constructing a building or a unit
-			final String buildingOrUnitID = (tc.getCityData () == null) ? null : tc.getCityData ().getCurrentlyConstructingBuildingOrUnitID ();  
-			if (buildingOrUnitID != null)
-			{
-				try
-				{
-					final Building building = mom.getServerDB ().findBuilding (buildingOrUnitID, "RushBuyMessageImpl");
-					productionCost = building.getProductionCost ();
-				}
-				catch (final RecordNotFoundException e)
-				{
-					// Ignore, maybe its a unit
-				}
+			final String buildingID = (tc.getCityData () == null) ? null : tc.getCityData ().getCurrentlyConstructingBuildingID ();
+			final String unitID = (tc.getCityData () == null) ? null : tc.getCityData ().getCurrentlyConstructingUnitID ();
+			
+			if (buildingID != null)
+				productionCost = mom.getServerDB ().findBuilding (buildingID, "RushBuyMessageImpl").getProductionCost ();
 
-				try
-				{
-					final Unit unit = mom.getServerDB ().findUnit (buildingOrUnitID, "RushBuyMessageImpl");
-					productionCost = unit.getProductionCost ();
-				}
-				catch (final RecordNotFoundException e)
-				{
-					// Ignore, maybe its a building
-				}
-			}
+			else if (unitID != null)
+				productionCost = mom.getServerDB ().findUnit (unitID, "RushBuyMessageImpl").getProductionCost ();
 		}
 		
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();

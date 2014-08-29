@@ -71,7 +71,8 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * @param player Player who wants to change construction
 	 * @param trueMap True map details
 	 * @param cityLocation Location where they want to set the construction project
-	 * @param buildingOrUnitID The building or unit that we want to construct
+	 * @param buildingID The building that we want to construct
+	 * @param unitID The unit that we want to construct
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return null if choice is acceptable; message to send back to client if choices isn't acceptable
@@ -79,10 +80,10 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 */
 	@Override
 	public final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final MapCoordinates3DEx cityLocation,
-		final String buildingOrUnitID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
+		final String buildingID, final String unitID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering validateCityConstruction: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + buildingOrUnitID);
+		log.trace ("Entering validateCityConstruction: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + buildingID + ", " + unitID);
 
 		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
@@ -93,29 +94,17 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		{
 			// Check if we're constructing a building or a unit
 			Building building = null;
-			try
-			{
-				building = db.findBuilding (buildingOrUnitID, "validateCityConstruction");
-			}
-			catch (final RecordNotFoundException e)
-			{
-				// Ignore, maybe its a unit
-			}
+			if (buildingID != null)
+				building = db.findBuilding (buildingID, "validateCityConstruction");
 
 			Unit unit = null;
-			try
-			{
-				unit = db.findUnit (buildingOrUnitID, "validateCityConstruction");
-			}
-			catch (final RecordNotFoundException e)
-			{
-				// Ignore, maybe its a building
-			}
+			if (unitID != null)
+				unit = db.findUnit (unitID, "validateCityConstruction");
 
 			if (building != null)
 			{
 				// Check that location doesn't already have that building
-				if (getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, buildingOrUnitID))
+				if (getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, buildingID))
 					msg = "The city already has the type of building you're trying to build - change ignored.";
 				else
 				{
@@ -125,7 +114,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 					boolean cannotBuild = false;
 					final Iterator<RaceCannotBuild> cannotBuildIter = race.getRaceCannotBuild ().iterator ();
 					while ((!cannotBuild) && (cannotBuildIter.hasNext ()))
-						if (cannotBuildIter.next ().getCannotBuildBuildingID ().equals (buildingOrUnitID))
+						if (cannotBuildIter.next ().getCannotBuildBuildingID ().equals (buildingID))
 							cannotBuild = true;
 
 					if (cannotBuild)
@@ -224,7 +213,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		cityData.setCityOwnerID (player.getPlayerDescription ().getPlayerID ());
 		cityData.setCityPopulation (1000);
 		cityData.setCityRaceID (settlerUnit.getUnitRaceID ());
-		cityData.setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+		cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 		cityData.setCityName (getOverlandMapServerUtils ().generateCityName (gsk, db.findRace (cityData.getCityRaceID (), "buildCityFromSettler")));
 		cityData.setOptionalFarmers (0);
 		tc.setCityData (cityData);

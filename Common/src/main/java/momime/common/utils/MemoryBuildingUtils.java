@@ -81,12 +81,22 @@ public interface MemoryBuildingUtils
 		final String buildingID, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
-	 * @param buildingID Building that is being removed from a city
-	 * @param buildingOrUnitID The building or unit that we were trying to build
+	 * @param buildingBeingRemoved Building that is being removed from a city
+	 * @param buildingID The building that we were trying to build
 	 * @param db Lookup lists built over the XML database
-	 * @return True if buildingID is a prerequisite for buildingOrUnitID
+	 * @return True if buildingBeingRemoved is a prerequisite for buildingID
+	 * @throws RecordNotFoundException If buildingID can't be found in the db
 	 */
-	public boolean isBuildingAPrerequisiteFor (final String buildingID, final String buildingOrUnitID, final CommonDatabase db);
+	public boolean isBuildingAPrerequisiteForBuilding (final String buildingBeingRemoved, final String buildingID, final CommonDatabase db) throws RecordNotFoundException;
+
+	/**
+	 * @param buildingBeingRemoved Building that is being removed from a city
+	 * @param unitID The unit that we were trying to build
+	 * @param db Lookup lists built over the XML database
+	 * @return True if buildingBeingRemoved is a prerequisite for unitID
+	 * @throws RecordNotFoundException If unitID can't be found in the db
+	 */
+	public boolean isBuildingAPrerequisiteForUnit (final String buildingBeingRemoved, final String unitID, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * Checks to see if this city contains any buildings that grant free experience to units constructed there (Fighters' Guild or War College)

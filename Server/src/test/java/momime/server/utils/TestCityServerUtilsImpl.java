@@ -77,7 +77,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 		
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 	}
 	
 	/**
@@ -126,18 +126,18 @@ public final class TestCityServerUtilsImpl
 		utils.setCityCalculations (cityCalc);
 
 		// Blacksmith - can't yet because we didn't set the city player yet so ANY change is invalid, even one with no prerequisities
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");		// Orcs can build everything
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 
 		cityData.setCityOwnerID (1);
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 
 		cityData.setCityOwnerID (2);
-		assertNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sys, db));
+		assertNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 	}
 
 	/**
@@ -190,7 +190,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 	}
 
 	/**
@@ -247,7 +247,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 	}
 
 	/**
@@ -300,7 +300,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 	}
 
 	/**
@@ -353,7 +353,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 	}
 
 	/**
@@ -400,7 +400,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNull (utils.validateCityConstruction (player, trueMap, cityLocation, "UN001", sys, db));
+		assertNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
 	}
 	
 	/**
@@ -447,7 +447,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "UN001", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
 	}
 	
 	/**
@@ -494,7 +494,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "UN001", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
 	}
 	
 	/**
@@ -541,7 +541,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "UN001", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
 	}
 	
 	/**
@@ -588,7 +588,7 @@ public final class TestCityServerUtilsImpl
 		cityData.setCityOwnerID (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
-		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "UN001", sys, db));
+		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
 	}
 	
 	/**

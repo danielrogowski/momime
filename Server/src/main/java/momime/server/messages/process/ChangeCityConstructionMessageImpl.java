@@ -44,12 +44,12 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.trace ("Entering process: " + getCityLocation () + ", " + getBuildingOrUnitID ());
+		log.trace ("Entering process: " + getCityLocation () + ", " + getBuildingID () + ", " + getUnitID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final String error = getCityServerUtils ().validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
-			(MapCoordinates3DEx) getCityLocation (), getBuildingOrUnitID (), mom.getSessionDescription ().getMapSize (), mom.getServerDB ());
+			(MapCoordinates3DEx) getCityLocation (), getBuildingID (), getUnitID (), mom.getSessionDescription ().getMapSize (), mom.getServerDB ());
 
 		if (error != null)
 		{
@@ -65,7 +65,8 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 			// Update construction on true map
 			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
-			cityData.setCurrentlyConstructingBuildingOrUnitID (getBuildingOrUnitID ());
+			cityData.setCurrentlyConstructingBuildingID (getBuildingID ());
+			cityData.setCurrentlyConstructingUnitID (getUnitID ());
 
 			// Send update to clients
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),

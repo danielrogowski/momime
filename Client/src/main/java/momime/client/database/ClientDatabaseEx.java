@@ -26,4 +26,9 @@ public interface ClientDatabaseEx extends CommonDatabase
 	 */
 	@Override
 	public List<Wizard> getWizard ();
+	
+	/**
+	 * @return Cost to construct the most expensive unit or building in the database
+	 */
+	public int getMostExpensiveConstructionCost ();
 }

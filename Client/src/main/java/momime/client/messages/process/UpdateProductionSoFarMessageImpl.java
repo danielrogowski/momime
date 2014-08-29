@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.CityViewUI;
 import momime.common.messages.servertoclient.v0_9_5.UpdateProductionSoFarMessage;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 
@@ -42,6 +43,11 @@ public final class UpdateProductionSoFarMessageImpl extends UpdateProductionSoFa
 		final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		gc.setProductionSoFar (getProductionSoFar ());
+		
+		// If that city screen is open, need to update the production coins
+		final CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
+		if (cityView != null)
+			cityView.productionSoFarChanged ();
 
 		log.trace ("Exiting process");
 	}

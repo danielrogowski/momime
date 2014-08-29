@@ -31,14 +31,15 @@ public interface CityServerUtils
 	 * @param player Player who wants to change construction
 	 * @param trueMap True map details
 	 * @param cityLocation Location where they want to set the construction project
-	 * @param buildingOrUnitID The building or unit that we want to construct
+	 * @param buildingID The building that we want to construct
+	 * @param unitID The unit that we want to construct
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return null if choice is acceptable; message to send back to client if choices isn't acceptable
 	 * @throws RecordNotFoundException If the race inhabiting the city cannot be found
 	 */
 	public String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final MapCoordinates3DEx cityLocation,
-		final String buildingOrUnitID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
+		final String buildingID, final String unitID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException;
 
 	/**

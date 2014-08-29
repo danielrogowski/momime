@@ -39,8 +39,9 @@ public interface AnimationController
 	 * @param animationID The animation that will be displayed; will be ignored and method will do nothing if this is null
 	 * @param component The component that needs to receive repaint events from the animation
 	 * @throws RecordNotFoundException If the animationID can't be found
+	 * @throws MomException If component is null
 	 */
-	public void registerRepaintTrigger (final String animationID, final JComponent component) throws RecordNotFoundException;
+	public void registerRepaintTrigger (final String animationID, final JComponent component) throws RecordNotFoundException, MomException;
 	
 	/**
 	 * When an animation is no longer being displayed on a particular component, call this method so that the
@@ -56,6 +57,7 @@ public interface AnimationController
 	 * 
 	 * @param animationID The animation that was being displayed; if this is left null, ALL animations that the specified component registered an interest in will be unregistered 
 	 * @param component The component that was receiving repaint events from the animation
+	 * @throws MomException If component is null
 	 */
-	public void unregisterRepaintTrigger (final String animationID, final JComponent component);
+	public void unregisterRepaintTrigger (final String animationID, final JComponent component) throws MomException;
 }

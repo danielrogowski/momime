@@ -188,9 +188,14 @@ public final class TestFogOfWarDuplicationImpl
 		assertFalse (dup.copyCityData (source, destination, true));
 
 		// Currently constructing
-		sourceData.setCurrentlyConstructingBuildingOrUnitID ("D");
+		sourceData.setCurrentlyConstructingBuildingID ("D");
 		assertTrue (dup.copyCityData (source, destination, true));
-		assertEquals ("D", destination.getCityData ().getCurrentlyConstructingBuildingOrUnitID ());
+		assertEquals ("D", destination.getCityData ().getCurrentlyConstructingBuildingID ());
+		assertFalse (dup.copyCityData (source, destination, true));
+
+		sourceData.setCurrentlyConstructingUnitID ("F");
+		assertTrue (dup.copyCityData (source, destination, true));
+		assertEquals ("F", destination.getCityData ().getCurrentlyConstructingUnitID ());
 		assertFalse (dup.copyCityData (source, destination, true));
 
 		// Change to another actual value
@@ -207,10 +212,12 @@ public final class TestFogOfWarDuplicationImpl
 
 		// Currently constructing gets blanked out if we pass in null, so since it currently has a value, that counts as a change
 		assertTrue (dup.copyCityData (source, destination, false));
-		assertNull (destination.getCityData ().getCurrentlyConstructingBuildingOrUnitID ());
+		assertNull (destination.getCityData ().getCurrentlyConstructingBuildingID ());
+		assertNull (destination.getCityData ().getCurrentlyConstructingUnitID ());
 
 		// Any change to its value doesn't count as a change
-		sourceData.setCurrentlyConstructingBuildingOrUnitID ("F");
+		sourceData.setCurrentlyConstructingBuildingID ("G");
+		sourceData.setCurrentlyConstructingUnitID ("H");
 		assertFalse (dup.copyCityData (source, destination, false));
 	}
 

@@ -183,7 +183,8 @@ Server figures out the effect, based on the type of game (one-at-a-time or simul
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="buildingOrUnitID" type="momimecommon:unitID"/>		<!-- In future should split this into an xsd:choice -->
+						<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
+						<xsd:element minOccurs="0" maxOccurs="1" name="unitID" type="momimecommon:unitID"/>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

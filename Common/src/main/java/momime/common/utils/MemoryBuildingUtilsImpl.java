@@ -197,47 +197,48 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	}
 
 	/**
-	 * @param buildingID Building that is being removed from a city
-	 * @param buildingOrUnitID The building or unit that we were trying to build
+	 * @param buildingBeingRemoved Building that is being removed from a city
+	 * @param buildingID The building that we were trying to build
 	 * @param db Lookup lists built over the XML database
-	 * @return True if buildingID is a prerequisite for buildingOrUnitID
+	 * @return True if buildingBeingRemoved is a prerequisite for buildingID
+	 * @throws RecordNotFoundException If buildingID can't be found in the db
 	 */
 	@Override
-	public final boolean isBuildingAPrerequisiteFor (final String buildingID, final String buildingOrUnitID,
-		final CommonDatabase db)
+	public final boolean isBuildingAPrerequisiteForBuilding (final String buildingBeingRemoved, final String buildingID, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering isBuildingAPrerequisiteFor: " + buildingID + ", " + buildingOrUnitID);
+		log.trace ("Entering isBuildingAPrerequisiteForBuilding: " + buildingBeingRemoved + ", " + buildingID);
 
 		boolean result = false;
+		final Building building = db.findBuilding (buildingID, "isBuildingAPrerequisiteForBuilding");
+		final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
+		while ((!result) && (iter.hasNext ()))
+			if (iter.next ().getPrerequisiteID ().equals (buildingBeingRemoved))
+				result = true;
 
-		// We don't know if it is a building or unit, so look for both
-		try
-		{
-			final Building building = db.findBuilding (buildingOrUnitID, "isBuildingAPrerequisiteFor");
-			final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
-			while ((!result) && (iter.hasNext ()))
-				if (iter.next ().getPrerequisiteID ().equals (buildingID))
-					result = true;
-		}
-		catch (final RecordNotFoundException e)
-		{
-			// Ignore, it could be a unit
-		}
+		log.trace ("Exiting isBuildingAPrerequisiteForBuilding = " + result);
+		return result;
+	}
 
-		try
-		{
-			final Unit unit = db.findUnit (buildingOrUnitID, "isBuildingAPrerequisiteFor");
-			final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
-			while ((!result) && (iter.hasNext ()))
-				if (iter.next ().getPrerequisiteID ().equals (buildingID))
-					result = true;
-		}
-		catch (final RecordNotFoundException e)
-		{
-			// Ignore, it could be a unit
-		}
+	/**
+	 * @param buildingBeingRemoved Building that is being removed from a city
+	 * @param unitID The unit that we were trying to build
+	 * @param db Lookup lists built over the XML database
+	 * @return True if buildingBeingRemoved is a prerequisite for buildingID
+	 * @throws RecordNotFoundException If unitID can't be found in the db
+	 */
+	@Override
+	public final boolean isBuildingAPrerequisiteForUnit (final String buildingBeingRemoved, final String unitID, final CommonDatabase db) throws RecordNotFoundException
+	{
+		log.trace ("Entering isBuildingAPrerequisiteForUnit: " + buildingBeingRemoved + ", " + unitID);
 
-		log.trace ("Exiting isBuildingAPrerequisiteFor = " + result);
+		boolean result = false;
+		final Unit unit = db.findUnit (unitID, "isBuildingAPrerequisiteForUnit");
+		final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
+		while ((!result) && (iter.hasNext ()))
+			if (iter.next ().getPrerequisiteID ().equals (buildingBeingRemoved))
+				result = true;
+
+		log.trace ("Exiting isBuildingAPrerequisiteForUnit = " + result);
 		return result;
 	}
 

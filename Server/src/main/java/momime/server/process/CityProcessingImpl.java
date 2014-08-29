@@ -209,7 +209,7 @@ public final class CityProcessingImpl implements CityProcessing
 				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (city);
 
 				// Set default production
-				city.setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+				city.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 
 				// Add starting buildings
 				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
@@ -293,30 +293,22 @@ public final class CityProcessingImpl implements CityProcessing
 							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, false, db);
 
 						// Use calculated values to determine construction rate
-						if (cityData.getCurrentlyConstructingBuildingOrUnitID () != null)
+						if ((cityData.getCurrentlyConstructingBuildingID () != null) || (cityData.getCurrentlyConstructingUnitID () != null))
 						{
 							// Check if we're constructing a building or a unit
 							Building building = null;
 							Integer productionCost = null;
-							try
+							if (cityData.getCurrentlyConstructingBuildingID () != null)
 							{
-								building = db.findBuilding (cityData.getCurrentlyConstructingBuildingOrUnitID (), "growCitiesAndProgressConstructionProjects");
+								building = db.findBuilding (cityData.getCurrentlyConstructingBuildingID (), "growCitiesAndProgressConstructionProjects");
 								productionCost = building.getProductionCost ();
-							}
-							catch (final RecordNotFoundException e)
-							{
-								// Ignore, maybe its a unit
 							}
 
 							Unit unit = null;
-							try
+							if (cityData.getCurrentlyConstructingUnitID () != null)
 							{
-								unit = db.findUnit (cityData.getCurrentlyConstructingBuildingOrUnitID (), "growCitiesAndProgressConstructionProjects");
+								unit = db.findUnit (cityData.getCurrentlyConstructingUnitID (), "growCitiesAndProgressConstructionProjects");
 								productionCost = unit.getProductionCost ();
-							}
-							catch (final RecordNotFoundException e)
-							{
-								// Ignore, maybe its a building
 							}
 
 							if (productionCost != null)
@@ -338,7 +330,7 @@ public final class CityProcessingImpl implements CityProcessing
 											// Current building is now finished - set next construction project FIRST
 											// This is a leftover from when NTMs showed up instantly, since the mmAddBuilding message would cause the
 											// client to immediately show the 'completed construction' window so we needed to send other data that appears in that window first
-											cityData.setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+											cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 											getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting (), false);
 
 											// Show on new turn messages for the player who built it
@@ -510,10 +502,14 @@ public final class CityProcessingImpl implements CityProcessing
 				tc.setBuildingIdSoldThisTurn (buildingID);
 
 			// If selling a building that the current construction project needs, then cancel the current construction project on the city owner's client
-			if (getMemoryBuildingUtils ().isBuildingAPrerequisiteFor (buildingID, tc.getCityData ().getCurrentlyConstructingBuildingOrUnitID (), db))
+			if (((tc.getCityData ().getCurrentlyConstructingBuildingID () != null) &&
+					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (buildingID, tc.getCityData ().getCurrentlyConstructingBuildingID (), db))) ||
+				((tc.getCityData ().getCurrentlyConstructingUnitID () != null) &&
+					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (buildingID, tc.getCityData ().getCurrentlyConstructingUnitID (), db))))
 			{
-				tc.getCityData ().setCurrentlyConstructingBuildingOrUnitID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-				// We send this lower down on the call to updatePlayerMemoryOfCity ()
+				tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+				tc.getCityData ().setCurrentlyConstructingUnitID (null);
+				// We send these lower down on the call to updatePlayerMemoryOfCity ()
 			}
 
 			// Actually remove the building, both on the server and on any clients who can see the city

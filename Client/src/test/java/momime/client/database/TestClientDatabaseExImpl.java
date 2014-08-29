@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import momime.client.database.v0_9_5.MapFeature;
 import momime.client.database.v0_9_5.Wizard;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Building;
 import momime.common.database.v0_9_5.CombatAreaEffect;
@@ -33,6 +34,43 @@ import org.junit.Test;
  */
 public final class TestClientDatabaseExImpl
 {
+	/**
+	 * Tests the derivation of the mostExpensiveConstructionCost
+	 */
+	@Test
+	public final void testMostExpensiveConstructionCost ()
+	{
+		// Set up some sample buildings and units
+		final ClientDatabaseExImpl db = new ClientDatabaseExImpl ();
+		
+		final Building building1 = new Building ();
+		building1.setProductionCost (30);
+		db.getBuilding ().add (building1);
+
+		final Building building2 = new Building ();
+		db.getBuilding ().add (building2);
+
+		final Unit unit1 = new Unit ();
+		unit1.setProductionCost (40);
+		unit1.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		db.getUnit ().add (unit1);
+
+		final Unit unit2 = new Unit ();
+		unit2.setProductionCost (50);
+		unit2.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		db.getUnit ().add (unit2);
+
+		final Unit unit3 = new Unit ();
+		unit3.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		db.getUnit ().add (unit3);
+		
+		// Run method
+		db.buildMapsAndRunConsistencyChecks ();
+		
+		// Check results
+		assertEquals (40, db.getMostExpensiveConstructionCost ());
+	}
+	
 	/**
 	 * Tests the findMapFeatureID method to find a mapFeature ID that does exist
 	 * @throws RecordNotFoundException If we can't find it

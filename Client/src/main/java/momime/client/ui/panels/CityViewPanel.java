@@ -12,6 +12,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.utils.AnimationController;
 import momime.client.utils.OverlandMapClientUtils;
+import momime.common.MomException;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 
@@ -116,8 +117,9 @@ public final class CityViewPanel extends JPanel
 	
 	/**
 	 * This is called by the windowClosed handler of CityViewUI to close down all animations when the panel closes
+	 * @throws MomException If unregisterRepaintTrigger is passed a null component, but that should never happen here 
 	 */
-	public final void cityViewClosing ()
+	public final void cityViewClosing () throws MomException
 	{
 		log.trace ("Entering cityViewClosing");
 		

@@ -315,7 +315,8 @@ public final class TestCityProcessingImpl
 		assertEquals ("RC01", humanCity.getCityRaceID ());
 		assertEquals ("Human city", humanCity.getCityName ());
 		assertEquals (1, humanCity.getNumberOfRebels ().intValue ());
-		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, humanCity.getCurrentlyConstructingBuildingOrUnitID ());
+		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, humanCity.getCurrentlyConstructingBuildingID ());
+		assertNull (humanCity.getCurrentlyConstructingUnitID ());
 		
 		// Check AI city
 		final ServerGridCell aiCell = (ServerGridCell) trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (40);
@@ -328,7 +329,8 @@ public final class TestCityProcessingImpl
 		assertEquals ("RC02", aiCity.getCityRaceID ());
 		assertEquals ("AI city", aiCity.getCityName ());
 		assertEquals (2, aiCity.getNumberOfRebels ().intValue ());
-		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, aiCity.getCurrentlyConstructingBuildingOrUnitID ());
+		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, aiCity.getCurrentlyConstructingBuildingID ());
+		assertNull (aiCity.getCurrentlyConstructingUnitID ());
 		
 		// Check raiders arcanus city
 		final ServerGridCell raidersArcanusCell = (ServerGridCell) trueTerrain.getPlane ().get (0).getRow ().get (27).getCell ().get (7);
@@ -341,7 +343,8 @@ public final class TestCityProcessingImpl
 		assertEquals ("RC03", raidersArcanusCity.getCityRaceID ());
 		assertEquals ("Raider city I", raidersArcanusCity.getCityName ());
 		assertEquals (3, raidersArcanusCity.getNumberOfRebels ().intValue ());
-		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, raidersArcanusCity.getCurrentlyConstructingBuildingOrUnitID ());
+		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, raidersArcanusCity.getCurrentlyConstructingBuildingID ());
+		assertNull (raidersArcanusCity.getCurrentlyConstructingUnitID ());
 		
 		// Check raiders myrror city		
 		final ServerGridCell raidersMyrrorCell = (ServerGridCell) trueTerrain.getPlane ().get (1).getRow ().get (13).getCell ().get (23);
@@ -354,7 +357,8 @@ public final class TestCityProcessingImpl
 		assertEquals ("RC04", raidersMyrrorCity.getCityRaceID ());
 		assertEquals ("Raider city II", raidersMyrrorCity.getCityName ());
 		assertEquals (4, raidersMyrrorCity.getNumberOfRebels ().intValue ());
-		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, raidersMyrrorCity.getCurrentlyConstructingBuildingOrUnitID ());
+		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, raidersMyrrorCity.getCurrentlyConstructingBuildingID ());
+		assertNull (raidersMyrrorCity.getCurrentlyConstructingUnitID ());
 		
 		// Check no other cities got created
 		int count = 0;
@@ -501,7 +505,7 @@ public final class TestCityProcessingImpl
 		final OverlandMapCityData humanCity = new OverlandMapCityData ();
 		humanCity.setCityOwnerID (humanPd.getPlayerID ());
 		humanCity.setCityPopulation (4400);
-		humanCity.setCurrentlyConstructingBuildingOrUnitID ("BL01");
+		humanCity.setCurrentlyConstructingBuildingID ("BL01");
 		humanCell.setProductionSoFar (500);
 		humanCell.setCityData (humanCity);
 		final int humanCityMaxSize = 12;
@@ -513,7 +517,7 @@ public final class TestCityProcessingImpl
 		final OverlandMapCityData aiCity = new OverlandMapCityData ();
 		aiCity.setCityOwnerID (aiPd.getPlayerID ());
 		aiCity.setCityPopulation (5700);
-		aiCity.setCurrentlyConstructingBuildingOrUnitID ("BL01");
+		aiCity.setCurrentlyConstructingBuildingID ("BL01");
 		aiCell.setProductionSoFar (500);
 		aiCell.setCityData (aiCity);
 		final int aiCityMaxSize = 11;
@@ -525,7 +529,7 @@ public final class TestCityProcessingImpl
 		final OverlandMapCityData raidersCity = new OverlandMapCityData ();
 		raidersCity.setCityOwnerID (raidersPd.getPlayerID ());
 		raidersCity.setCityPopulation (8700);
-		raidersCity.setCurrentlyConstructingBuildingOrUnitID ("UN001");
+		raidersCity.setCurrentlyConstructingUnitID ("UN001");
 		raidersCell.setProductionSoFar (50);
 		final int raidersCityMaxSize = 15;
 		
@@ -623,7 +627,7 @@ public final class TestCityProcessingImpl
 		assertEquals (4400, ntm.getOldPopulation ());
 		assertEquals (4400+650, ntm.getNewPopulation ());
 		
-		assertEquals ("BL01", humanCity.getCurrentlyConstructingBuildingOrUnitID ());
+		assertEquals ("BL01", humanCity.getCurrentlyConstructingBuildingID ());
 		assertEquals (650, humanCell.getProductionSoFar ().intValue ());
 		
 		assertEquals (1, msgs.getMessages ().size ());
@@ -636,7 +640,7 @@ public final class TestCityProcessingImpl
 		assertEquals (5700+250, aiCity.getCityPopulation ().intValue ());
 		assertEquals (2, aiCity.getNumberOfRebels ().intValue ());
 
-		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, aiCity.getCurrentlyConstructingBuildingOrUnitID ());
+		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, aiCity.getCurrentlyConstructingBuildingID ());
 		assertEquals (0, aiCell.getProductionSoFar ().intValue ());
 		
 		verify (midTurn, times (1)).addBuildingOnServerAndClients (gsk, players, aiLocation, "BL01", null, null, null, sd, db);
@@ -645,7 +649,7 @@ public final class TestCityProcessingImpl
 		assertEquals (9000, raidersCity.getCityPopulation ().intValue ());		// Not 9100, because its over the special Raiders cap
 		assertEquals (3, raidersCity.getNumberOfRebels ().intValue ());
 
-		assertEquals ("UN001", raidersCity.getCurrentlyConstructingBuildingOrUnitID ());
+		assertEquals ("UN001", raidersCity.getCurrentlyConstructingUnitID ());
 		assertEquals (0, raidersCell.getProductionSoFar ().intValue ());
 		
 		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", raidersLocation, raidersLocation, null, raidersPlayer, UnitStatusID.ALIVE, players, sd, db);
@@ -725,15 +729,15 @@ public final class TestCityProcessingImpl
 		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
 		unrest.setFinalTotal (3);
 
-		when (memoryBuildingUtils.isBuildingAPrerequisiteFor (GRANARY, BARRACKS, db)).thenReturn (false);
+		when (memoryBuildingUtils.isBuildingAPrerequisiteForBuilding (GRANARY, BARRACKS, db)).thenReturn (false);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granary)).thenReturn (12);
 		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, "TR", db)).thenReturn (unrest);
 		
-		cityData.setCurrentlyConstructingBuildingOrUnitID (BARRACKS);
+		cityData.setCurrentlyConstructingBuildingID (BARRACKS);
 		proc.sellBuilding (trueMap, players, cityLocation, GRANARY, false, true, sd, db);
 		
 		// Check results
-		assertEquals (BARRACKS, cityData.getCurrentlyConstructingBuildingOrUnitID ());	// i.e. it didn't change
+		assertEquals (BARRACKS, cityData.getCurrentlyConstructingBuildingID ());	// i.e. it didn't change
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());
 		assertEquals (3, cityData.getNumberOfRebels ().intValue ());
 		
@@ -809,15 +813,15 @@ public final class TestCityProcessingImpl
 		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
 		unrest.setFinalTotal (3);
 
-		when (memoryBuildingUtils.isBuildingAPrerequisiteFor (GRANARY, BARRACKS, db)).thenReturn (false);
+		when (memoryBuildingUtils.isBuildingAPrerequisiteForBuilding (GRANARY, BARRACKS, db)).thenReturn (false);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granary)).thenReturn (12);
 		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, "TR", db)).thenReturn (unrest);
 		
-		cityData.setCurrentlyConstructingBuildingOrUnitID (BARRACKS);
+		cityData.setCurrentlyConstructingBuildingID (BARRACKS);
 		proc.sellBuilding (trueMap, players, cityLocation, GRANARY, false, false, sd, db);
 		
 		// Check results
-		assertEquals (BARRACKS, cityData.getCurrentlyConstructingBuildingOrUnitID ());	// i.e. it didn't change
+		assertEquals (BARRACKS, cityData.getCurrentlyConstructingBuildingID ());	// i.e. it didn't change
 		assertNull (tc.getBuildingIdSoldThisTurn ());		// Isn't updated because it was a forced sale
 		assertEquals (3, cityData.getNumberOfRebels ().intValue ());
 		
@@ -893,15 +897,15 @@ public final class TestCityProcessingImpl
 		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
 		unrest.setFinalTotal (3);
 
-		when (memoryBuildingUtils.isBuildingAPrerequisiteFor (GRANARY, FARMERS_MARKET, db)).thenReturn (true);
+		when (memoryBuildingUtils.isBuildingAPrerequisiteForBuilding (GRANARY, FARMERS_MARKET, db)).thenReturn (true);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granary)).thenReturn (12);
 		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, "TR", db)).thenReturn (unrest);
 		
-		cityData.setCurrentlyConstructingBuildingOrUnitID (FARMERS_MARKET);
+		cityData.setCurrentlyConstructingBuildingID (FARMERS_MARKET);
 		proc.sellBuilding (trueMap, players, cityLocation, GRANARY, false, true, sd, db);
 		
 		// Check results
-		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, cityData.getCurrentlyConstructingBuildingOrUnitID ());	// Can't build Farmers' Market anymore
+		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, cityData.getCurrentlyConstructingBuildingID ());	// Can't build Farmers' Market anymore
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());
 		assertEquals (3, cityData.getNumberOfRebels ().intValue ());
 		

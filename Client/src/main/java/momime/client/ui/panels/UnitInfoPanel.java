@@ -567,8 +567,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/**
 	 * This is called by the windowClosed handler of ChangeConstructionUI to close down all animations when the panel closes
+	 * @throws MomException If unregisterRepaintTrigger is passed a null component
 	 */
-	public final void unitInfoPanelClosing ()
+	public final void unitInfoPanelClosing () throws MomException
 	{
 		log.trace ("Entering unitInfoPanelClosing");
 		

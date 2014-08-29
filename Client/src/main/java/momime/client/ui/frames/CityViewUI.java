@@ -35,6 +35,7 @@ import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
+import momime.common.MomException;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -42,6 +43,7 @@ import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
+import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
@@ -167,7 +169,21 @@ public final class CityViewUI extends MomClientFrameUI
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/cityViewButtonNormal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/cityViewButtonPressed.png");
 		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/cityViewButtonDisabled.png");
+		
+		final BufferedImage progressCoinDone = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/productionProgressDone.png");
+		final BufferedImage progressCoinNotDone = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/productionProgressNotDone.png");
 
+		final Dimension constructionProgressPanelSize = new Dimension (132, 62);
+		
+		// What's the maximum number of progress coins we can fit in the box
+		// Assume a gap of 1 between each coin
+		final int coinsTotal = ((constructionProgressPanelSize.width + 1) / (progressCoinNotDone.getWidth () + 1)) *
+			((constructionProgressPanelSize.height + 1) / (progressCoinNotDone.getHeight () + 1));
+		
+		// So how many production points must each coin represent in order for the most expensive building to still fit in the box?
+		// Need to round up
+		final int productionProgressDivisor = (getClient ().getClientDB ().getMostExpensiveConstructionCost () + coinsTotal - 1) / coinsTotal;
+		
 		// Actions
 		rushBuyAction = new AbstractAction ()
 		{
@@ -288,8 +304,16 @@ public final class CityViewUI extends MomClientFrameUI
 			@Override
 			public final void windowClosed (final WindowEvent ev)
 			{
-				getAnim ().unregisterRepaintTrigger (null, constructionPanel);
-				getCityViewPanel ().cityViewClosing ();
+				try
+				{
+					getAnim ().unregisterRepaintTrigger (null, constructionPanel);
+					getCityViewPanel ().cityViewClosing ();
+				}
+				catch (final MomException e)
+				{
+					log.error (e, e);
+				}
+				
 				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 				getClient ().getCityViews ().remove (getCityLocation ().toString ());
 			}
@@ -377,7 +401,6 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		// Set up the city view panel
 		getCityViewPanel ().setCityLocation (getCityLocation ());
-		getCityViewPanel ().init ();
 		
 		final GridBagConstraints cityViewPanelConstraints = getUtils ().createConstraintsNoFill (0, 6, 2, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.CENTRE);
 		cityViewPanelConstraints.gridheight = 4;
@@ -444,9 +467,65 @@ public final class CityViewUI extends MomClientFrameUI
 		contentPane.add (unitPanel, getUtils ().createConstraintsNoFill (0, 11, 4, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Set up the mini panel to show progress towards current construction
-		final Dimension constructionProgressPanelSize = new Dimension (132, 62);
+		final JPanel constructionProgressPanel = new JPanel ()
+		{
+			private static final long serialVersionUID = -2428422973639205496L;
+
+			/**
+			 * Draws coins appropriate for how far through construction we are
+			 */
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				try
+				{
+					// Find the cost of what's being built
+					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+					final OverlandMapCityData cityData = mc.getCityData ();
+
+					// How many coins does it take to draw this (round up)
+					Integer productionCost = null;
+					if (cityData.getCurrentlyConstructingBuildingID () != null)
+						productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionProgressPanel").getProductionCost ();
+
+					if (cityData.getCurrentlyConstructingUnitID () != null)
+						productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "constructionProgressPanel").getProductionCost ();
+					
+					if (productionCost != null)
+					{
+						// How many coins does it take to draw this? (round up)
+						final int totalCoins = (productionCost + productionProgressDivisor - 1) / productionProgressDivisor;
+						
+						// How many of those coins should be coloured in for what we've built so far? (round down, so things don't have every coin filled in but not completed)
+						final int goldCoins = (mc.getProductionSoFar () == null) ? 0 : (mc.getProductionSoFar () / productionProgressDivisor);
+						
+						// Draw the coins
+						int x = 0;
+						int y = 0;
+						
+						for (int n = 0; n < totalCoins; n++)
+						{
+							// Draw this one
+							g.drawImage ((n < goldCoins) ? progressCoinDone : progressCoinNotDone, x, y, null);
+							
+							// Move to next spot
+							x = x + progressCoinDone.getWidth () + 1;
+							if (x + progressCoinDone.getWidth () > constructionProgressPanelSize.width)
+							{
+								x = 0;
+								y = y + progressCoinDone.getHeight () + 1;
+							}
+						}
+					}
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+			}
+		};
 		
-		final JPanel constructionProgressPanel = new JPanel ();
 		constructionProgressPanel.setMinimumSize (constructionProgressPanelSize);
 		constructionProgressPanel.setMaximumSize (constructionProgressPanelSize);
 		constructionProgressPanel.setPreferredSize (constructionProgressPanelSize);
@@ -466,13 +545,11 @@ public final class CityViewUI extends MomClientFrameUI
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
-				super.paintComponent (g);
-				
 				final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 					(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 				try
 				{
-					final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingOrUnitID (), "constructionPanel");
+					final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionPanel");
 					final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 						((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 						buildingImage.getCityViewAnimation ());
@@ -703,7 +780,7 @@ public final class CityViewUI extends MomClientFrameUI
 		// Find what we're currently constructing
 		getAnim ().unregisterRepaintTrigger (null, constructionPanel);
 		getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding
-			(cityData.getCurrentlyConstructingBuildingOrUnitID (), "cityDataChanged").getCityViewAnimation (), constructionPanel);
+			(cityData.getCurrentlyConstructingBuildingID (), "cityDataChanged").getCityViewAnimation (), constructionPanel);
 		constructionPanel.repaint ();
 
 		civilianPanel.revalidate ();
@@ -712,6 +789,9 @@ public final class CityViewUI extends MomClientFrameUI
 		productionPanel.repaint ();
 		
 		languageOrCityDataChanged ();
+		
+		// The buildings are drawn dynamically, but if one is an animation then calling init () again will ensure it gets registered properly
+		getCityViewPanel ().init ();
 		
 		log.trace ("Exiting cityDataChanged");
 	}
@@ -771,6 +851,20 @@ public final class CityViewUI extends MomClientFrameUI
 		}
 		
 		log.trace ("Exiting languageOrCityDataChanged");
+	}
+	
+	/**
+	 * Forces the grey/gold coins to update to show how much has now been constructed
+	 */
+	public final void productionSoFarChanged ()
+	{
+		log.trace ("Entering productionSoFarChanged");
+		
+		// Since the panel is transparent and doesn't completely draw itself, can end up with garbage
+		// showing if we literally just redraw the panel, so need to redraw the whole screen
+		getFrame ().repaint ();
+
+		log.trace ("Exiting productionSoFarChanged");
 	}
 	
 	/**

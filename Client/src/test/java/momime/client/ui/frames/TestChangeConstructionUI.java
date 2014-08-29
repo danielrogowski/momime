@@ -213,7 +213,7 @@ public final class TestChangeConstructionUI
 			when (cityCalc.buildingPassesTileTypeRequirements (fow.getMap (), new MapCoordinates3DEx (20, 10, 0), buildings.get (n), mapSize)).thenReturn (true);
 		
 		// Current construction
-		cityData.setCurrentlyConstructingBuildingOrUnitID ("BL05");
+		cityData.setCurrentlyConstructingBuildingID ("BL05");
 		when (db.findBuilding (eq ("BL04"), anyString ())).thenReturn (buildings.get (3));
 		when (db.findBuilding (eq ("BL05"), anyString ())).thenReturn (buildings.get (4));
 		

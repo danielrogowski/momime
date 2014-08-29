@@ -144,14 +144,14 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 			(getLocation ().getZ ()).getRow ().get (getLocation ().getY ()).getCell ().get (getLocation ().getX ()).getCityData ();
 
 		final Building oldBuilding = getLanguage ().findBuilding (getBuildingID ());
-		final Building newBuilding = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingOrUnitID ());
+		final Building newBuilding = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
 		
 		constructionCompletedLabel.setText (getLanguage ().findCategoryEntry ("NewTurnMessages", "ConstructionCompleted").replaceAll
 			("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
 			("OLD_CONSTRUCTION", (oldBuilding != null) ? oldBuilding.getBuildingName () : getBuildingID ()));
 		
 		nextConstructionLabel.setText (getLanguage ().findCategoryEntry ("NewTurnMessages", "NextConstruction").replaceAll
-			("NEW_CONSTRUCTION", (newBuilding != null) ? newBuilding.getBuildingName () : cityData.getCurrentlyConstructingBuildingOrUnitID ()));
+			("NEW_CONSTRUCTION", (newBuilding != null) ? newBuilding.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ()));
 
 		// Look up the image for the old building
 		constructionCompletedImage.setIcon (null);
@@ -173,7 +173,7 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 		nextConstructionImage.setIcon (null);
 		try
 		{
-			final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingOrUnitID (), "getComponent-New");
+			final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
 			final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 				((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 				buildingImage.getCityViewAnimation ());
@@ -204,7 +204,7 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 		getAnim ().registerRepaintTrigger (oldBuilding.getCityViewAnimation (), newTurnMessagesList);
 
 		// Look up the image for the new building
-		final CityViewElement newBuilding = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingOrUnitID (), "registerRepaintTriggers-New");
+		final CityViewElement newBuilding = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
 		getAnim ().registerRepaintTrigger (newBuilding.getCityViewAnimation (), newTurnMessagesList);
 	}
 	

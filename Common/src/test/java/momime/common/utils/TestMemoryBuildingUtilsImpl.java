@@ -593,11 +593,11 @@ public final class TestMemoryBuildingUtilsImpl
 	}
 
 	/**
-	 * Tests the isBuildingAPrerequisiteFor method
+	 * Tests the isBuildingAPrerequisiteForBuilding method
 	 * @throws RecordNotFoundException If we encounter a building that can't be found in the DB
 	 */
 	@Test
-	public final void testIsBuildingAPrerequisiteFor () throws RecordNotFoundException
+	public final void testIsBuildingAPrerequisiteForBuilding () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
 		final Building dbBuildingOne = new Building ();
@@ -609,6 +609,23 @@ public final class TestMemoryBuildingUtilsImpl
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
 
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
+		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
+		
+		// Building tests
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
+		assertTrue (utils.isBuildingAPrerequisiteForBuilding ("BL02", "BL01", db));
+		assertFalse (utils.isBuildingAPrerequisiteForBuilding ("BL01", "BL02", db));
+	}
+
+	/**
+	 * Tests the isBuildingAPrerequisiteForUnit method
+	 * @throws RecordNotFoundException If we encounter a building that can't be found in the DB
+	 */
+	@Test
+	public final void testIsBuildingAPrerequisiteForUnit () throws RecordNotFoundException
+	{
 		// Set up dummy XML definitions for couple of unit types
 		final Unit dbUnitOne = new Unit ();
 		dbUnitOne.setUnitID ("UN001");
@@ -620,30 +637,13 @@ public final class TestMemoryBuildingUtilsImpl
 		dbUnitTwo.setUnitID ("UN002");
 
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
-		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (dbUnitOne);
 		when (db.findUnit (eq ("UN002"), anyString ())).thenReturn (dbUnitTwo);
 		
-		// Since the DB lookups throw RecordNotFoundException for not founds rather than outputting a null, we have to mock those too
-		when (db.findBuilding (eq ("UN001"), anyString ())).thenThrow (new RecordNotFoundException (Building.class, null, null));
-		when (db.findBuilding (eq ("UN002"), anyString ())).thenThrow (new RecordNotFoundException (Building.class, null, null));
-		when (db.findBuilding (eq ("Y"), anyString ())).thenThrow (new RecordNotFoundException (Building.class, null, null));
-		when (db.findUnit (eq ("BL01"), anyString ())).thenThrow (new RecordNotFoundException (Unit.class, null, null));
-		when (db.findUnit (eq ("BL02"), anyString ())).thenThrow (new RecordNotFoundException (Unit.class, null, null));
-		when (db.findUnit (eq ("Y"), anyString ())).thenThrow (new RecordNotFoundException (Unit.class, null, null));
-
-		// Building tests
-		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertTrue (utils.isBuildingAPrerequisiteFor ("BL02", "BL01", db));
-		assertFalse (utils.isBuildingAPrerequisiteFor ("BL01", "BL02", db));
-
 		// Unit tests
-		assertTrue (utils.isBuildingAPrerequisiteFor ("BL01", "UN001", db));
-		assertFalse (utils.isBuildingAPrerequisiteFor ("BL01", "UN002", db));
-
-		// Test obscure code that doesn't exist
-		assertFalse (utils.isBuildingAPrerequisiteFor ("X", "Y", db));
+		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
+		assertTrue (utils.isBuildingAPrerequisiteForUnit ("BL01", "UN001", db));
+		assertFalse (utils.isBuildingAPrerequisiteForUnit ("BL01", "UN002", db));
 	}
 
 	/**

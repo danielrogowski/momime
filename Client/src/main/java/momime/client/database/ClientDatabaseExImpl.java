@@ -6,6 +6,7 @@ import java.util.Map;
 import momime.client.database.v0_9_5.ClientDatabase;
 import momime.client.database.v0_9_5.MapFeature;
 import momime.client.database.v0_9_5.Wizard;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Building;
 import momime.common.database.v0_9_5.CombatAreaEffect;
@@ -26,11 +27,17 @@ import momime.common.database.v0_9_5.UnitSkill;
 import momime.common.database.v0_9_5.UnitType;
 import momime.common.database.v0_9_5.WeaponGrade;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Adds client-side specific extensions to the common database lookup class
  */
 public final class ClientDatabaseExImpl extends ClientDatabase implements ClientDatabaseEx
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (ClientDatabaseExImpl.class);
+	
 	/** Map of plane numbers to plane XML objects */
 	private Map<Integer, Plane> planesMap;
 
@@ -91,11 +98,16 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 	/** Map of combat tile border IDs to combat tile border objects */
 	private Map<String, CombatTileBorder> combatTileBordersMap;
 	
+	/** Cost to construct the most expensive unit or building in the database */
+	private int mostExpensiveConstructionCost;
+	
 	/**
 	 * Builds all the hash maps to enable finding records faster
 	 */
 	public final void buildMaps ()
 	{
+		log.trace ("Entering buildMaps");
+		
 		// Create planes map
 		planesMap = new HashMap<Integer, Plane> ();
 		for (final Plane thisPlane : getPlane ())
@@ -195,8 +207,48 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 		combatTileBordersMap = new HashMap<String, CombatTileBorder> ();
 		for (final CombatTileBorder thisCombatTileBorder : getCombatTileBorder ())
 			combatTileBordersMap.put (thisCombatTileBorder.getCombatTileBorderID (), thisCombatTileBorder);
+
+		log.trace ("Exiting buildMaps");
 	}
 
+	/**
+	 * Derives values from the received database
+	 */
+	public final void consistencyChecks ()
+	{
+		log.trace ("Entering consistencyChecks");
+		log.info ("Processing client XML file");
+		
+		// Check all buildings and units to find the most expensive one
+		mostExpensiveConstructionCost = 0;
+		for (final Building thisBuilding : getBuilding ())
+			if (thisBuilding.getProductionCost () != null)
+				mostExpensiveConstructionCost = Math.max (mostExpensiveConstructionCost, thisBuilding.getProductionCost ());
+
+		for (final Unit thisUnit : getUnit ())
+			if ((CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&
+				(thisUnit.getProductionCost () != null))
+				
+				mostExpensiveConstructionCost = Math.max (mostExpensiveConstructionCost, thisUnit.getProductionCost ());
+		
+		log.info ("Most expensive construction project is " + mostExpensiveConstructionCost);
+
+		log.trace ("Exiting consistencyChecks");
+	}
+	
+	/**
+	 * Method triggered when we receive the database from the server
+	 */
+	public final void buildMapsAndRunConsistencyChecks ()
+	{
+		log.trace ("Entering buildMapsAndRunConsistencyChecks");
+
+		buildMaps ();
+		consistencyChecks ();
+
+		log.trace ("Exiting buildMapsAndRunConsistencyChecks");
+	}
+	
 	/**
 	 * @param planeNumber Plane number to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
@@ -515,5 +567,14 @@ public final class ClientDatabaseExImpl extends ClientDatabase implements Client
 			throw new RecordNotFoundException (CombatTileBorder.class, combatTileBorderID, caller);
 
 		return found;
+	}
+
+	/**
+	 * @return Cost to construct the most expensive unit or building in the database
+	 */
+	@Override
+	public final int getMostExpensiveConstructionCost ()
+	{
+		return mostExpensiveConstructionCost;
 	}
 }

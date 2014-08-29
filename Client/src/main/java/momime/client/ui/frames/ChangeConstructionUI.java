@@ -33,6 +33,7 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.BuildingListCellRenderer;
 import momime.client.utils.AnimationController;
+import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -161,12 +162,12 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 					(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
-				if (getUnitInfoPanel ().getBuilding ().getBuildingID () != cityData.getCurrentlyConstructingBuildingOrUnitID ())
+				if (getUnitInfoPanel ().getBuilding ().getBuildingID () != cityData.getCurrentlyConstructingBuildingID ())
 				{
 					// Tell server that we want to change our construction
 					// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
 					final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
-					msg.setBuildingOrUnitID (getUnitInfoPanel ().getBuilding ().getBuildingID ());
+					msg.setBuildingID (getUnitInfoPanel ().getBuilding ().getBuildingID ());
 					msg.setCityLocation (getCityLocation ());
 					try
 					{
@@ -192,8 +193,16 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			@Override
 			public final void windowClosed (final WindowEvent ev)
 			{
-				getAnim ().unregisterRepaintTrigger (null, buildingsList);
-				getUnitInfoPanel ().unitInfoPanelClosing ();
+				try
+				{
+					getAnim ().unregisterRepaintTrigger (null, buildingsList);
+					getUnitInfoPanel ().unitInfoPanelClosing ();
+				}
+				catch (final MomException e)
+				{
+					log.error (e, e);
+				}
+				
 				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 				getClient ().getChangeConstructions ().remove (getCityLocation ().toString ());
 			}
@@ -330,8 +339,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/**
 	 * Updates the buildings and units list boxes with what can be constructed in this city
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or an animation
+	 * @throws MomException If registerRepaintTrigger gets called with a null component
 	 */
-	public final void updateWhatCanBeConstructed () throws RecordNotFoundException
+	public final void updateWhatCanBeConstructed () throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering updateWhatCanBeConstructed");
 
@@ -372,7 +382,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 					getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding (thisBuilding.getBuildingID (), "ChangeConstructionUI.init").getCityViewAnimation (), buildingsList);
 					
 					// Pre-select whatever was previously being built when the form first opens up
-					if (thisBuilding.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
+					if (thisBuilding.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()))
 						buildingsList.setSelectedIndex (buildingsItems.size () - 1);
 				}
 			}

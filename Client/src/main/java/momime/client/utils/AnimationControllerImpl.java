@@ -92,11 +92,15 @@ public final class AnimationControllerImpl implements AnimationController
 	 * @param animationID The animation that will be displayed; will be ignored and method will do nothing if this is null
 	 * @param component The component that needs to receive repaint events from the animation
 	 * @throws RecordNotFoundException If the animationID can't be found
+	 * @throws MomException If component is null
 	 */
 	@Override
-	public final void registerRepaintTrigger (final String animationID, final JComponent component) throws RecordNotFoundException
+	public final void registerRepaintTrigger (final String animationID, final JComponent component) throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering registerRepaintTrigger: " + animationID + ", " + component);
+		
+		if (component == null)
+			throw new MomException ("registerRepaintTrigger called for animationID " + animationID + " but component was null");
 		
 		if (animationID != null)
 		{
@@ -139,12 +143,16 @@ public final class AnimationControllerImpl implements AnimationController
 	 * 
 	 * @param animationID The animation that was being displayed; if this is left null, ALL animations that the specified component registered an interest in will be unregistered 
 	 * @param component The component that was receiving repaint events from the animation
+	 * @throws MomException If component is null
 	 */
 	@Override
-	public final void unregisterRepaintTrigger (final String animationID, final JComponent component)
+	public final void unregisterRepaintTrigger (final String animationID, final JComponent component) throws MomException
 	{
 		log.trace ("Entering unregisterRepaintTrigger: " + animationID + ", " + component);
 
+		if (component == null)
+			throw new MomException ("unregisterRepaintTrigger called for animationID " + animationID + " but component was null");
+		
 		if (animationID != null)
 		{
 			// Remove from a single specified animation ID

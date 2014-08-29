@@ -99,7 +99,10 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 		// If any city screen(s) are displaying this city then we need to update the display
 		final CityViewUI cityView = getClient ().getCityViews ().get (getData ().getMapLocation ().toString ());
 		if (cityView != null)
+		{
 			cityView.cityDataChanged ();
+			cityView.productionSoFarChanged ();
+		}
 		
 		// If any new turn message(s) are showing what this city may have just constructed, then we need to update those as well
 		getNewTurnMessagesUI ().cityDataChanged ((MapCoordinates3DEx) getData ().getMapLocation ());

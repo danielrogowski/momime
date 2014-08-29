@@ -190,11 +190,11 @@ public final class CityAIImpl implements CityAI
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) && (cityData.getCurrentlyConstructingBuildingOrUnitID () != null) &&
+					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) &&
 						(cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
 
-						if (((tradeGoods) && (cityData.getCurrentlyConstructingBuildingOrUnitID ().equals (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS))) ||
-							((!tradeGoods) && (!cityData.getCurrentlyConstructingBuildingOrUnitID ().equals (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS))))
+						if (((tradeGoods) && (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))) ||
+							((!tradeGoods) && (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
@@ -386,7 +386,8 @@ public final class CityAIImpl implements CityAI
 				if (getMemoryBuildingUtils ().meetsBuildingRequirements (trueBuildings, cityLocation, thisBuilding))
 				{
 					// Got one we can decide upon
-					cityData.setCurrentlyConstructingBuildingOrUnitID (thisBuilding.getBuildingID ());
+					cityData.setCurrentlyConstructingBuildingID (thisBuilding.getBuildingID ());
+					cityData.setCurrentlyConstructingUnitID (null);
 					decided = true;
 				}
 				else
@@ -408,12 +409,15 @@ public final class CityAIImpl implements CityAI
 
 		// If no appropriate buildings at all then resort to Trade Gooods
 		if (!decided)
-			cityData.setCurrentlyConstructingBuildingOrUnitID (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS);
+		{
+			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS);
+			cityData.setCurrentlyConstructingUnitID (null);
+		}
 
 		// Put this into the calling method, just to make this easier to test
 		// FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd);
 
-		log.trace ("Exiting decideWhatToBuild = " + cityData.getCurrentlyConstructingBuildingOrUnitID ());
+		log.trace ("Exiting decideWhatToBuild = " + cityData.getCurrentlyConstructingBuildingID () + ", " + cityData.getCurrentlyConstructingUnitID ()); 
 	}
 
 	/**

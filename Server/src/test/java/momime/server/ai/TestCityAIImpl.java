@@ -207,7 +207,7 @@ public final class TestCityAIImpl
 			cityData.setNumberOfRebels (1);
 			cityData.setOptionalFarmers (0);
 			cityData.setCityRaceID ("RC05");		// High men (standard ration production)
-			cityData.setCurrentlyConstructingBuildingOrUnitID (CommonDatabaseConstants.VALUE_BUILDING_HOUSING);
+			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.VALUE_BUILDING_HOUSING);
 			trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).setCityData (cityData);
 		}
 
@@ -228,7 +228,7 @@ public final class TestCityAIImpl
 			cityData.setNumberOfRebels (1);
 			cityData.setOptionalFarmers (0);
 			cityData.setCityRaceID ("RC05");		// High men (standard ration production)
-			cityData.setCurrentlyConstructingBuildingOrUnitID (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS);
+			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS);
 			trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x).setCityData (cityData);
 		}
 
@@ -303,16 +303,16 @@ public final class TestCityAIImpl
 		// Sit in a loop adding every building that it decides upon until we get trade goods
 		// Then check everything was built in the right order afterwards
 		cityData.setCityRaceID ("RC09");
-		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
+		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
 			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db);
-			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
+			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx (20, 10, 1);
 
 				final MemoryBuilding building = new MemoryBuilding ();
 				building.setCityLocation (buildingLocation);
-				building.setBuildingID (cityData.getCurrentlyConstructingBuildingOrUnitID ());
+				building.setBuildingID (cityData.getCurrentlyConstructingBuildingID ());
 
 				trueBuildings.add (building);
 			}
@@ -354,15 +354,15 @@ public final class TestCityAIImpl
 		// Try again with Barbarians, who can't build Animsts' Guilds, Universities or Cathedrals
 		trueBuildings.clear ();
 		cityData.setCityRaceID ("RC01");
-		cityData.setCurrentlyConstructingBuildingOrUnitID (null);
-		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
+		cityData.setCurrentlyConstructingBuildingID (null);
+		while (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
 			ai.decideWhatToBuild (cityLocation, cityData, trueTerrain, trueBuildings, sd, db);
-			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingOrUnitID ()))
+			if (!CommonDatabaseConstants.VALUE_BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MemoryBuilding building = new MemoryBuilding ();
 				building.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-				building.setBuildingID (cityData.getCurrentlyConstructingBuildingOrUnitID ());
+				building.setBuildingID (cityData.getCurrentlyConstructingBuildingID ());
 
 				trueBuildings.add (building);
 			}

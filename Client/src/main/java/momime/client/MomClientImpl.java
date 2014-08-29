@@ -201,7 +201,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			public final void joinedSession (final MultiplayerServerConnection sender)
 				throws JAXBException, XMLStreamException, IOException
 			{
-				((ClientDatabaseExImpl) getClientDB ()).buildMaps ();
+				((ClientDatabaseExImpl) getClientDB ()).buildMapsAndRunConsistencyChecks ();
 				getNewGameUI ().afterJoinedSession ();
 				getOverlandMapBitmapGenerator ().afterJoinedSession ();
 			}

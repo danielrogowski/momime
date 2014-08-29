@@ -15,6 +15,7 @@ import momime.client.MomClient;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MemoryUnit;
 
@@ -112,7 +113,15 @@ public final class UnitInfoUI extends MomClientFrameUI
 			@Override
 			public final void windowClosed (final WindowEvent ev)
 			{
-				getUnitInfoPanel ().unitInfoPanelClosing ();
+				try
+				{
+					getUnitInfoPanel ().unitInfoPanelClosing ();
+				}
+				catch (final MomException e)
+				{
+					log.error (e, e);
+				}
+				
 				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 				getClient ().getUnitInfos ().remove (getUnit ().getUnitURN ());
 			}

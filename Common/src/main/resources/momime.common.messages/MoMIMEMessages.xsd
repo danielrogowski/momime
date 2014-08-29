@@ -468,7 +468,8 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityRaceID" type="momimecommon:raceID"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeID" type="momimecommon:citySizeID"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityName" type="momimecommon:description"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="currentlyConstructingBuildingOrUnitID" type="momimecommon:unitID"/>		<!-- In future should split this into an xsd:choice -->
+			<xsd:element minOccurs="0" maxOccurs="1" name="currentlyConstructingBuildingID" type="momimecommon:buildingID"/>
+			<xsd:element minOccurs="0" maxOccurs="1" name="currentlyConstructingUnitID" type="momimecommon:unitID"/>
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityOwnerID" type="mps:playerID"/>
         </xsd:sequence>
 	</xsd:complexType>

@@ -123,11 +123,18 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		{
 			OverlandMapCityData destinationData = destination.getCityData ();
 
-			final String newCurrentlyConstructing;
+			final String newCurrentlyConstructingBuilding;
+			final String newCurrentlyConstructingUnit;
 			if (includeCurrentlyConstructing)
-				newCurrentlyConstructing = source.getCityData ().getCurrentlyConstructingBuildingOrUnitID ();
+			{
+				newCurrentlyConstructingBuilding = source.getCityData ().getCurrentlyConstructingBuildingID ();
+				newCurrentlyConstructingUnit = source.getCityData ().getCurrentlyConstructingUnitID ();
+			}
 			else
-				newCurrentlyConstructing = null;
+			{
+				newCurrentlyConstructingBuilding = null;
+				newCurrentlyConstructingUnit = null;
+			}
 
 			updateRequired = (destinationData == null) ||
 				(!CompareUtils.safeIntegerCompare (sourceData.getCityPopulation (), destinationData.getCityPopulation ())) ||
@@ -138,7 +145,8 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(!CompareUtils.safeStringCompare (sourceData.getCityRaceID (), destinationData.getCityRaceID ())) ||
 				(!CompareUtils.safeStringCompare (sourceData.getCitySizeID (), destinationData.getCitySizeID ())) ||
 				(!CompareUtils.safeStringCompare (sourceData.getCityName (), destinationData.getCityName ())) ||
-				(!CompareUtils.safeStringCompare (newCurrentlyConstructing, destinationData.getCurrentlyConstructingBuildingOrUnitID ()));
+				(!CompareUtils.safeStringCompare (newCurrentlyConstructingBuilding, destinationData.getCurrentlyConstructingBuildingID ())) ||
+				(!CompareUtils.safeStringCompare (newCurrentlyConstructingUnit, destinationData.getCurrentlyConstructingUnitID ()));
 
 			if (updateRequired)
 			{
@@ -156,7 +164,8 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				destinationData.setCityRaceID (sourceData.getCityRaceID ());
 				destinationData.setCitySizeID (sourceData.getCitySizeID ());
 				destinationData.setCityName (sourceData.getCityName ());
-				destinationData.setCurrentlyConstructingBuildingOrUnitID (newCurrentlyConstructing);
+				destinationData.setCurrentlyConstructingBuildingID (newCurrentlyConstructingBuilding);
+				destinationData.setCurrentlyConstructingUnitID (newCurrentlyConstructingUnit);
 			}
 		}
 
@@ -176,7 +185,8 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		final boolean updateRequired = (destinationData != null) &&
 			((destinationData.getCityPopulation () != null) || (destinationData.getMinimumFarmers () != null) || (destinationData.getOptionalFarmers () != null) ||
 			 (destinationData.getNumberOfRebels () != null) || (destinationData.getCityOwnerID () != null) || (destinationData.getCityRaceID () != null) ||
-			 (destinationData.getCitySizeID () != null) || (destinationData.getCityName () != null) || (destinationData.getCurrentlyConstructingBuildingOrUnitID () != null));
+			 (destinationData.getCitySizeID () != null) || (destinationData.getCityName () != null) ||
+			 (destinationData.getCurrentlyConstructingBuildingID () != null) || (destinationData.getCurrentlyConstructingUnitID () != null));
 
 		destination.setCityData (null);
 

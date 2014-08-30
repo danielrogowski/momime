@@ -108,8 +108,14 @@ public final class AnimationControllerImpl implements AnimationController
 			final AnimationFrameCounter counter = animationFrames.get (animationID);
 			if (counter != null)
 			{
-				log.debug ("registerRepaintTrigger already found a timer for animation " + animationID + " so adding new listener to it: " + component);
-				counter.repaintTriggers.add (component);
+				// Don't add triggers twice if register is called twice on the same anim+component (e.g. multiple calls to CityViewPanel.init)
+				if (counter.repaintTriggers.contains (component))
+					log.debug ("registerRepaintTrigger already found a timer for animation " + animationID + " and component was already listening to it, so nothing to do: " + component);
+				else
+				{
+					log.debug ("registerRepaintTrigger already found a timer for animation " + animationID + " so adding new listener to it: " + component);
+					counter.repaintTriggers.add (component);
+				}
 			}
 			else
 			{

@@ -44,7 +44,7 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	public final void process (final MultiplayerServerConnection sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: " + getData ().getCityLocation () + ", " + getData ().getFirstBuildingID ());
+		log.trace ("Entering process: " + getData ().getCityLocation () + ", " + getData ().getFirstBuildingID () + ", " + getData ().getSecondBuildingID ());
 		
 		processOneUpdate ();
 		
@@ -59,7 +59,7 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	 */
 	public final void processOneUpdate ()
 	{
-		log.trace ("Entering processOneUpdate: " + getData ().getCityLocation () + ", " + getData ().getFirstBuildingID ());
+		log.trace ("Entering processOneUpdate: " + getData ().getCityLocation () + ", " + getData ().getFirstBuildingID () + ", " + getData ().getSecondBuildingID ());
 		
 		// Add building(s)
 		final MemoryBuilding firstBuilding = new MemoryBuilding ();

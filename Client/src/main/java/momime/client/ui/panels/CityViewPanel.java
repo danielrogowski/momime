@@ -1,9 +1,15 @@
 package momime.client.ui.panels;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -57,6 +63,12 @@ public final class CityViewPanel extends JPanel
 	/** Animation controller */
 	private AnimationController anim;
 	
+	/** Whether we've added the mouse listener */
+	private boolean mouseListenerAdded;
+	
+	/** Where to send building clicks to */
+	private List<BuildingListener> buildingListeners = new ArrayList<BuildingListener> ();
+	
 	/**
 	 * Sets up the panel once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -79,30 +91,7 @@ public final class CityViewPanel extends JPanel
 		String elementSetsDone = "";
 		
 		for (final CityViewElement element : getGraphicsDB ().getCityViewElement ())
-			
-			// Some special "buildings" list trade goods have no coordinates and hence are never drawn in the city view
-			if ((element.getLocationX () != null) && (element.getLocationY () != null) &&
-			
-				// Once we've drawn an item from an element set, we never draw anything else from the same set 
-				((element.getCityViewElementSetID () == null) || (!elementSetsDone.contains (element.getCityViewElementSetID ()))) &&
-				
-				// Plane matches?
-				((element.getPlaneNumber () == null) || (element.getPlaneNumber () == getCityLocation ().getZ ())) &&
-				
-				// Terrain matches?
-				((element.getTileTypeID () == null) || (getOverlandMapClientUtils ().findAdjacentTileType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
-					getClient ().getSessionDescription ().getMapSize (), element.getTileTypeID ()))) &&
-				
-				// Building matches?
-				((element.getBuildingID () == null) || (getMemoryBuildingUtils ().findBuilding
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), element.getBuildingID ()))) &&
-					
-				// Spell matches?
-				((element.getCitySpellEffectID () == null) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					null, null, null, null, getCityLocation (), element.getCitySpellEffectID ()) != null)))
-				
+			if (drawElement (element, elementSetsDone))
 			{
 				// Register it, if its an animation
 				getAnim ().registerRepaintTrigger (element.getCityViewAnimation (), this);
@@ -111,6 +100,74 @@ public final class CityViewPanel extends JPanel
 				if (element.getCityViewElementSetID () != null)
 					elementSetsDone = elementSetsDone + element.getCityViewElementSetID ();
 			}
+		
+		// Sell buildings when they're clicked on
+		// init can get called multiple times to refresh the image from the cityViewUI, so make sure we don't add the mouse listener multiple times
+		if (!mouseListenerAdded)
+		{
+			mouseListenerAdded = true;
+			addMouseListener (new MouseAdapter ()
+			{
+				@Override
+				public final void mouseClicked (final MouseEvent ev)
+				{
+					// If we've got no listener(s) to send the clicks to, then don't even bother
+					if (buildingListeners.size () > 0)
+						try
+						{
+							// Look for a building that was clicked on
+							String elementSetsDoneClick = "";
+							String buildingID = null;
+					
+							final Iterator<CityViewElement> iter = getGraphicsDB ().getCityViewElement ().iterator ();
+							while ((buildingID == null) && (iter.hasNext ()))
+							{
+								final CityViewElement element = iter.next ();
+	
+								if (drawElement (element, elementSetsDoneClick))
+								{
+									// Ignore anything that isn't a building - we don't care if the e.g. river or some spell effect gets clicked on
+									if (element.getBuildingID () != null)
+									{
+										// How big is the image for this building?
+										// Just let the anim routines grab the image for us - we've registered for the anim anyway, and this means
+										// we'll correctly handle exactly the pixels that are transparent in the current frame
+										final BufferedImage image = getAnim ().loadImageOrAnimationFrame (element.getCityViewImageFile (), element.getCityViewAnimation ());
+							
+										// Is the click within this building image?
+										if ((ev.getPoint ().x >= element.getLocationX ()) && (ev.getPoint ().y >= element.getLocationY ()) &&
+											(ev.getPoint ().x < element.getLocationX () + (image.getWidth () * element.getSizeMultiplier ())) &&
+											(ev.getPoint ().y < element.getLocationY () + (image.getHeight () * element.getSizeMultiplier ())))
+										{
+											// Now more detailed check - ignore clicks on transparent pixels
+											// First shift the point relative to the building location and account for the size multiplier
+											final int x = (ev.getPoint ().x - element.getLocationX ()) / element.getSizeMultiplier ();
+											final int y = (ev.getPoint ().y - element.getLocationY ()) / element.getSizeMultiplier ();
+										
+											final int alpha = new Color (image.getRGB (x, y), true).getAlpha ();
+											if (alpha > 0)
+												buildingID = element.getBuildingID ();
+										}
+									}
+							
+									// List in sets
+									if (element.getCityViewElementSetID () != null)
+										elementSetsDoneClick = elementSetsDoneClick + element.getCityViewElementSetID ();
+								}
+							}
+							
+							// So was a building clicked on?
+							if (buildingID != null)
+								for (final BuildingListener listener : buildingListeners)
+									listener.buildingClicked (buildingID);
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
+			});
+		}
 		
 		log.trace ("Exiting init");
 	}
@@ -137,30 +194,7 @@ public final class CityViewPanel extends JPanel
 		String elementSetsDone = "";
 		
 		for (final CityViewElement element : getGraphicsDB ().getCityViewElement ())
-			
-			// Some special "buildings" list trade goods have no coordinates and hence are never drawn in the city view
-			if ((element.getLocationX () != null) && (element.getLocationY () != null) &&
-			
-				// Once we've drawn an item from an element set, we never draw anything else from the same set 
-				((element.getCityViewElementSetID () == null) || (!elementSetsDone.contains (element.getCityViewElementSetID ()))) &&
-				
-				// Plane matches?
-				((element.getPlaneNumber () == null) || (element.getPlaneNumber () == getCityLocation ().getZ ())) &&
-				
-				// Terrain matches?
-				((element.getTileTypeID () == null) || (getOverlandMapClientUtils ().findAdjacentTileType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
-					getClient ().getSessionDescription ().getMapSize (), element.getTileTypeID ()))) &&
-				
-				// Building matches?
-				((element.getBuildingID () == null) || (getMemoryBuildingUtils ().findBuilding
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), element.getBuildingID ()))) &&
-					
-				// Spell matches?
-				((element.getCitySpellEffectID () == null) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-					null, null, null, null, getCityLocation (), element.getCitySpellEffectID ()) != null)))
-				
+			if (drawElement (element, elementSetsDone))
 			{
 				// Draw it
 				try
@@ -179,6 +213,47 @@ public final class CityViewPanel extends JPanel
 				if (element.getCityViewElementSetID () != null)
 					elementSetsDone = elementSetsDone + element.getCityViewElementSetID ();
 			}
+	}
+	
+	/**
+	 * These rules are needed in a bunch of places so keep it out separately here 
+	 * 
+	 * @param element Element to be considered
+	 * @param elementSetsDone List of element sets that we already drew an element for
+	 * @return Whether this element should be drawn, depending on what buildings etc. are in this city
+	 */
+	final boolean drawElement (final CityViewElement element, final String elementSetsDone)
+	{
+		// Some special "buildings" list trade goods have no coordinates and hence are never drawn in the city view
+		return ((element.getLocationX () != null) && (element.getLocationY () != null) &&
+		
+			// Once we've drawn an item from an element set, we never draw anything else from the same set 
+			((element.getCityViewElementSetID () == null) || (!elementSetsDone.contains (element.getCityViewElementSetID ()))) &&
+			
+			// Plane matches?
+			((element.getPlaneNumber () == null) || (element.getPlaneNumber () == getCityLocation ().getZ ())) &&
+			
+			// Terrain matches?
+			((element.getTileTypeID () == null) || (getOverlandMapClientUtils ().findAdjacentTileType
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
+				getClient ().getSessionDescription ().getMapSize (), element.getTileTypeID ()))) &&
+			
+			// Building matches?
+			((element.getBuildingID () == null) || (getMemoryBuildingUtils ().findBuilding
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), element.getBuildingID ()))) &&
+				
+			// Spell matches?
+			((element.getCitySpellEffectID () == null) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				null, null, null, null, getCityLocation (), element.getCitySpellEffectID ()) != null)));
+	}
+	
+	/**
+	 * @param listener Listener to send building clicks to
+	 */
+	public final void addBuildingListener (final BuildingListener listener)
+	{
+		buildingListeners.add (listener);
 	}
 	
 	/**

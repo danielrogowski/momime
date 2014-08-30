@@ -48,8 +48,10 @@ public final class TestMessageBoxUI
 		box.setText ("Here's some fixed text for the message box which is long enough to have to split over a couple of lines.");
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
-		// Display form		
+		// Display form
+		box.setModal (false);
 		box.setVisible (true);
+		Thread.sleep (5000);
 	}
 
 	/**
@@ -87,7 +89,9 @@ public final class TestMessageBoxUI
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
 		// Display form		
+		box.setModal (false);
 		box.setVisible (true);
+		Thread.sleep (5000);
 	}
 
 	/**
@@ -121,7 +125,9 @@ public final class TestMessageBoxUI
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
 		// Display form		
+		box.setModal (false);
 		box.setVisible (true);
+		Thread.sleep (5000);
 	}
 
 	/**
@@ -161,6 +167,8 @@ public final class TestMessageBoxUI
 		box.setUnitToDismiss (new MemoryUnit ());		// Just to make it a yes/no dialog instead of an OK button
 		
 		// Display form		
+		box.setModal (false);
 		box.setVisible (true);
+		Thread.sleep (5000);
 	}
 }

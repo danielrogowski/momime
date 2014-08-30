@@ -172,6 +172,16 @@ public final class TestCityViewPanel
 		panel.setAnim (anim);
 		panel.init ();
 		
+		// For testing, dump clicks out to the console
+		panel.addBuildingListener (new BuildingListener ()
+		{
+			@Override
+			public final void buildingClicked (final String buildingID)
+			{
+				System.out.println ("Building " + buildingID + " was clicked on");
+			}
+		});
+		
 		// Set up a dummy frame to display the panel
 		final JFrame frame = new JFrame ("testCityViewPanel");
 		frame.setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);

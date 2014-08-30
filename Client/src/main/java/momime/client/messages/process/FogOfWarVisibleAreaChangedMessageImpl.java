@@ -101,11 +101,14 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		}
 		
 		// Buildings destroyed or gone out of view
-		for (final DestroyBuildingMessageData data : getDestroyBuilding ())
+		if (getDestroyBuilding ().size () > 0)
 		{
-			final DestroyBuildingMessageImpl proc = new DestroyBuildingMessageImpl ();
-			proc.setData (data);
-			proc.process (sender);
+			final DestroyBuildingMessageImpl proc = getFactory ().createDestroyBuildingMessage ();
+			for (final DestroyBuildingMessageData data : getDestroyBuilding ())
+			{
+				proc.setData (data);
+				proc.processOneUpdate ();
+			}
 		}
 		
 		// Units added or come into view

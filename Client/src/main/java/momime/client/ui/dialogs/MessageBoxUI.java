@@ -21,6 +21,7 @@ import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.clienttoserver.v0_9_5.DismissUnitMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RushBuyMessage;
+import momime.common.messages.clienttoserver.v0_9_5.SellBuildingMessage;
 import momime.common.messages.v0_9_5.MemoryUnit;
 
 import org.apache.commons.logging.Log;
@@ -76,8 +77,11 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/** The unit being dismissed; null if the message box isn't asking about dismissing a unit */
 	private MemoryUnit unitToDismiss;
 	
-	/** The city to rush by at; null if the message box isn't about rush buying */
-	private MapCoordinates3DEx rushBuyLocation;
+	/** The city to rush by at or sell a building at; null if the message box isn't about rush buying or selling a building */
+	private MapCoordinates3DEx cityLocation;
+	
+	/** The building being sold; null if the message box isn't about selling a building */
+	private String buildingID;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 8;
@@ -136,12 +140,22 @@ public final class MessageBoxUI extends MomClientDialogUI
 						getClient ().getServerConnection ().sendMessageToServer (msg);
 					}
 					
-					// Rush buy current construction project
-					else if (getRushBuyLocation () != null)
+					// Rush buy current construction project or sell a building
+					else if (getCityLocation () != null)
 					{
-						final RushBuyMessage msg = new RushBuyMessage ();
-						msg.setCityLocation (getRushBuyLocation ());
-						getClient ().getServerConnection ().sendMessageToServer (msg);
+						if (getBuildingID () == null)
+						{
+							final RushBuyMessage msg = new RushBuyMessage ();
+							msg.setCityLocation (getCityLocation ());
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+						}
+						else
+						{
+							final SellBuildingMessage msg = new SellBuildingMessage ();
+							msg.setCityLocation (getCityLocation ());
+							msg.setBuildingID (getBuildingID ());
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+						}
 					}
 					
 					else
@@ -175,7 +189,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 		
-		final int buttonCount = ((getUnitToDismiss () == null) && (getRushBuyLocation () == null)) ? 1 : 2;
+		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null)) ? 1 : 2;
 		
 		final GridBagConstraints constraints = getUtils ().createConstraintsBothFill (0, 0, buttonCount, 1, new Insets (INSET, INSET, 3, INSET));
 		constraints.weightx = 1;
@@ -384,18 +398,34 @@ public final class MessageBoxUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return The city to rush by at; null if the message box isn't about rush buying
+	 * @return The city to rush by at or sell a building at; null if the message box isn't about rush buying or selling a building
 	 */
-	public final MapCoordinates3DEx getRushBuyLocation ()
+	public final MapCoordinates3DEx getCityLocation ()
 	{
-		return rushBuyLocation;
+		return cityLocation;
 	}
 
 	/**
-	 * @param location The city to rush by at; null if the message box isn't about rush buying
+	 * @param location The city to rush by at or sell a building at; null if the message box isn't about rush buying or selling a building
 	 */
-	public final void setRushBuyLocation (final MapCoordinates3DEx location)
+	public final void setCityLocation (final MapCoordinates3DEx location)
 	{
-		rushBuyLocation = location;
+		cityLocation = location;
+	}
+
+	/**
+	 * @return The building being sold; null if the message box isn't about selling a building
+	 */
+	public final String getBuildingID ()
+	{
+		return buildingID;
+	}
+
+	/**
+	 * @param building The building being sold; null if the message box isn't about selling a building
+	 */
+	public final void setBuildingID (final String building)
+	{
+		buildingID = building;
 	}
 }

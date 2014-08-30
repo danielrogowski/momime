@@ -281,7 +281,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype" />
 	<bean id="overlandCastQueuedMessage" class="momime.client.messages.process.OverlandCastQueuedMessageImpl" scope="prototype" />
-	<bean id="destroyBuildingMessage" class="momime.client.messages.process.DestroyBuildingMessageImpl" scope="prototype" />
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype" />
 	<bean id="spellResearchChangedMessage" class="momime.client.messages.process.SpellResearchChangedMessageImpl" scope="prototype" />
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype" />
@@ -313,6 +312,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addBuildingMessage" class="momime.client.messages.process.AddBuildingMessageImpl" scope="prototype">
 		<property name="client" ref="momClient" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+	</bean>
+
+	<bean id="destroyBuildingMessage" class="momime.client.messages.process.DestroyBuildingMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 
 	<bean id="addUnitMessage" class="momime.client.messages.process.AddUnitMessageImpl" scope="prototype">
@@ -728,6 +733,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="anim" ref="anim" />

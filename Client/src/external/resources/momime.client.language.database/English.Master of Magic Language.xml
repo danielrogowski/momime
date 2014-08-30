@@ -5805,13 +5805,16 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="RushBuyPrompt">
 			<languageEntryText>Do you wish to spend PRODUCTION_VALUE Gold by purchasing A_UNIT_NAME?</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="SellTitle">
+			<languageEntryText>Sell building?</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="SellPromptNormal">
 			<languageEntryText>Do you want to sell your BUILDING_NAME for PRODUCTION_VALUE Gold?</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="SellPromptPrerequisite">
 			<languageEntryText>Do you want to sell your BUILDING_NAME for PRODUCTION_VALUE Gold?
 
-This will cease production of your PREREQUISITE_BUILDING_NAME.</languageEntryText>
+This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="CannotSellSpecialBuilding">
 			<languageEntryText>You cannot sell your BUILDING_NAME!</languageEntryText>
@@ -5820,7 +5823,7 @@ This will cease production of your PREREQUISITE_BUILDING_NAME.</languageEntryTex
 			<languageEntryText>You can only sell back one building each turn.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="CannotSellRequiredByAnother">
-			<languageEntryText>You cannot sell back your BUILDING_NAME because it is required by the PREREQUISITE_BUILDING_NAME.</languageEntryText>
+			<languageEntryText>You cannot sell back your BUILDING_NAME because it is required by the PREREQUISITE_NAME.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="FoundNodeLairTower">

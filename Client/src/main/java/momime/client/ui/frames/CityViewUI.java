@@ -31,9 +31,11 @@ import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
+import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.panels.BuildingListener;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
@@ -50,6 +52,7 @@ import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 
 import org.apache.commons.logging.Log;
@@ -100,6 +103,9 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
+
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/** Variable replacer for outputting skill descriptions */
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
@@ -243,7 +249,7 @@ public final class CityViewUI extends MomClientFrameUI
 						msg.setTitleLanguageCategoryID ("BuyingAndSellingBuildings");
 						msg.setTitleLanguageEntryID ("RushBuyTitle");
 						msg.setText (text);
-						msg.setRushBuyLocation (getCityLocation ());
+						msg.setCityLocation (getCityLocation ());
 						msg.setVisible (true);
 					}
 				}
@@ -632,6 +638,97 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		// Set up info that depends on cityData
 		cityDataChanged ();
+		
+		// Deal with clicking on buildings to sell them
+		getCityViewPanel ().addBuildingListener (new BuildingListener ()
+		{
+			@Override
+			public final void buildingClicked (final String buildingID) throws Exception
+			{
+				// If the city isn't ours then don't even show a message
+				final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+				final OverlandMapCityData cityData = mc.getCityData ();
+				if ((cityData != null) && (getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())))
+				{
+					// Language entry ID of error or confirmation message
+					final String languageEntryID;
+					String prerequisiteBuildingName = null;
+					boolean ok = false;
+					
+					// How much money do we get for selling it?
+					// If this is zero, then they're trying to do something daft like sell their Wizard's Fortress or Summoning Circle
+					final int goldValue = getMemoryBuildingUtils ().goldFromSellingBuilding (getClient ().getClientDB ().findBuilding (buildingID, "buildingClicked"));
+					if (goldValue <= 0)
+						languageEntryID = "CannotSellSpecialBuilding";
+					
+					// We can only sell one building a turn
+					else if (mc.getBuildingIdSoldThisTurn () != null)
+						languageEntryID = "OnlySellOneEachTurn";
+					
+					else
+					{
+						// We can't sell a building if another building depends on it, e.g. trying to sell a Granary when we already have a Farmers' Market
+						final String prerequisiteBuildingID = getMemoryBuildingUtils ().doAnyBuildingsDependOn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+							getCityLocation (), buildingID, getClient ().getClientDB ());
+						if (prerequisiteBuildingID != null)
+						{
+							languageEntryID = "CannotSellRequiredByAnother";
+							final Building prerequisiteBuilding = getLanguage ().findBuilding (prerequisiteBuildingID);
+							prerequisiteBuildingName = (prerequisiteBuilding != null) ? prerequisiteBuilding.getBuildingName () : prerequisiteBuildingID;
+						}
+						else
+						{
+							// OK - but first check if current construction project depends on the one we're selling
+							// If so, then we can still sell it, but it will cancel our current construction project
+							ok = true;
+							if (((cityData.getCurrentlyConstructingBuildingID () != null) &&
+									(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (buildingID, cityData.getCurrentlyConstructingBuildingID (), getClient ().getClientDB ()))) ||
+								((cityData.getCurrentlyConstructingUnitID () != null) &&
+									(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (buildingID, cityData.getCurrentlyConstructingUnitID (), getClient ().getClientDB ()))))
+							{
+								languageEntryID = "SellPromptPrerequisite";
+								if (cityData.getCurrentlyConstructingBuildingID () != null)
+								{
+									final Building currentConstruction = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
+									prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ();
+								}
+								else if (cityData.getCurrentlyConstructingUnitID () != null)
+								{
+									final Unit currentConstruction = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
+									prerequisiteBuildingName = (currentConstruction != null) ? currentConstruction.getUnitName () : cityData.getCurrentlyConstructingUnitID ();
+								}
+							}
+							else
+								languageEntryID = "SellPromptNormal";
+						}
+					}
+					
+					// Work out the text for the message box
+					final Building building = getLanguage ().findBuilding (buildingID);
+					String text = getLanguage ().findCategoryEntry ("BuyingAndSellingBuildings", languageEntryID).replaceAll
+						("BUILDING_NAME", (building != null) ? building.getBuildingName () : buildingID).replaceAll
+						("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldValue));
+					
+					if (prerequisiteBuildingName != null)
+						text = text.replaceAll ("PREREQUISITE_NAME", prerequisiteBuildingName);
+					
+					// Show message box
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("BuyingAndSellingBuildings");
+					msg.setTitleLanguageEntryID ("SellTitle");
+					msg.setText (text);
+					
+					if (ok)
+					{
+						msg.setCityLocation (getCityLocation ());
+						msg.setBuildingID (buildingID);
+					}
+					
+					msg.setVisible (true);
+				}				
+			}
+		});
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -1144,6 +1241,22 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setResourceValueUtils (final ResourceValueUtils util)
 	{
 		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param mbu Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils mbu)
+	{
+		memoryBuildingUtils = mbu;
 	}
 	
 	/**

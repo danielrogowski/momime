@@ -17,6 +17,9 @@ public abstract class MomClientDialogUI extends LanguageVariableUIImpl
 {
 	/** The actual dialog */
 	private JDialog dialog;
+	
+	/** Whether the dialog box should be modal - so that unit tests can set this to false */
+	private boolean modal = true;
 
 	/**
 	 * This is package-private so it can be accessed for setLocationRelativeTo () methods
@@ -93,8 +96,26 @@ public abstract class MomClientDialogUI extends LanguageVariableUIImpl
 			getDialog ().setIconImage (getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/frameIcon.png"));
 			getDialog ().pack ();
 			getDialog ().setLocationRelativeTo (null);
-			getDialog ().setModalityType (ModalityType.APPLICATION_MODAL);
+			
+			if (isModal ())
+				getDialog ().setModalityType (ModalityType.APPLICATION_MODAL);
 		}
 		dialog.setVisible (v);
+	}
+
+	/**
+	 * @return Whether the dialog box should be modal - so that unit tests can set this to false
+	 */
+	final boolean isModal ()
+	{
+		return modal;
+	}
+	
+	/**
+	 * @param value Whether the dialog box should be modal - so that unit tests can set this to false
+	 */
+	final void setModal (final boolean value)
+	{
+		modal = value;
 	}
 }

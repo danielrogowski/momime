@@ -30,6 +30,7 @@ import momime.client.language.database.v0_9_5.Spell;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -103,6 +104,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	
 	/** Alchemy UI */
 	private AlchemyUI alchemyUI;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/** Mana title above the slider */
 	private JLabel manaTitle;
@@ -224,6 +228,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 					try
 					{
 						getClient ().getServerConnection ().sendMessageToServer (msg);
+					
+						// Update the mana per turn shown on the right hand panel of the overland map
+						getOverlandMapRightHandPanel ().updateGlobalEconomyValues ();
 					}
 					catch (final Exception e)
 					{
@@ -811,5 +818,21 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	public final void setAlchemyUI (final AlchemyUI ui)
 	{
 		alchemyUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

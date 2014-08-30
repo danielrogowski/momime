@@ -627,6 +627,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
 		<property name="alchemyUI" ref="alchemyUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="alchemyUI" class="momime.client.ui.frames.AlchemyUI">

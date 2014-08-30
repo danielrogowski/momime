@@ -32,8 +32,11 @@ import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.TextUtils;
+import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.CancelPendingMovementAndSpecialOrdersMessage;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.PendingMovement;
 import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.messages.v0_9_5.UnitSpecialOrder;
@@ -44,6 +47,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 
@@ -652,7 +656,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		patrolAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Patrol"));
 		waitAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Wait"));
 
-		updateGlobalEconomyValues ();
+		try
+		{
+			updateGlobalEconomyValues ();
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
+		}
 		turnSystemOrCurrentPlayerChanged ();
 		
 		log.trace ("Exiting languageChanged");
@@ -687,16 +698,23 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 * @param productionTypeID Production type to display in this label
 	 * @param languageEntryID Language entry to use to format the text
 	 * @param positiveColour The colour to display this value if it is positive
+	 * @throws PlayerNotFoundException If our player isn't in the list
+	 * @throws RecordNotFoundException If we look for a particular record that we expect to be present in the XML file and we can't find it
+	 * @throws MomException If we find an invalid casting reduction type
 	 */
 	private final void updateAmountPerTurn (final JLabel label, final String productionTypeID, final String languageEntryID, final Color positiveColour)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		// Resource values get sent to us during game startup before the screen has been set up, so its possible to get here before the labels even exist
 		if (label != null)
 		{
+			final PlayerPublicDetails ourPlayer = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateAmountPerTurn");
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+			
 			final ProductionType productionType = getLanguage ().findProductionType (productionTypeID);
-			final int amountPerTurn = getResourceValueUtils ().findAmountPerTurnForProductionType
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), productionTypeID);
-		
+			final int amountPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
+				pub.getPick (), productionTypeID, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+			
 			label.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", languageEntryID).replaceAll
 				("AMOUNT_PER_TURN", getTextUtils ().intToStrCommas (amountPerTurn)).replaceAll
 				("PRODUCTION_TYPE", (productionType != null) ? productionType.getProductionTypeDescription () : productionTypeID));
@@ -707,8 +725,11 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/**
 	 * Updates the form when our resource values change 
+	 * @throws PlayerNotFoundException If our player isn't in the list
+	 * @throws RecordNotFoundException If we look for a particular record that we expect to be present in the XML file and we can't find it
+	 * @throws MomException If we find an invalid casting reduction type
 	 */
-	public final void updateGlobalEconomyValues ()
+	public final void updateGlobalEconomyValues () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering updateGlobalEconomyValues");
 		

@@ -47,7 +47,10 @@ public final class UpdateProductionSoFarMessageImpl extends UpdateProductionSoFa
 		// If that city screen is open, need to update the production coins
 		final CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
 		if (cityView != null)
+		{
 			cityView.productionSoFarChanged ();
+			cityView.recheckRushBuyEnabled ();
+		}
 
 		log.trace ("Exiting process");
 	}

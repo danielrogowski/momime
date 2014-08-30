@@ -28,9 +28,12 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
+import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
@@ -39,12 +42,15 @@ import momime.common.MomException;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
+import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.utils.ResourceValueUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,6 +97,12 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Resource value client utils */
 	private ResourceValueClientUtils resourceValueClientUtils;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Variable replacer for outputting skill descriptions */
+	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -187,9 +199,58 @@ public final class CityViewUI extends MomClientFrameUI
 		// Actions
 		rushBuyAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -1438162385777956688L;
+
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					// Get the text to display
+					String text = getLanguage ().findCategoryEntry ("BuyingAndSellingBuildings", "RushBuyPrompt");
+					
+					// How much will it cost us to rush buy it?
+					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+					final OverlandMapCityData cityData = mc.getCityData ();
+
+					Integer productionCost = null;
+					if (cityData.getCurrentlyConstructingBuildingID () != null)
+					{
+						productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "rushBuyAction").getProductionCost ();
+						final Building building = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
+						text = text.replaceAll ("A_UNIT_NAME", (building != null) ? building.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ());
+					}
+
+					else if (cityData.getCurrentlyConstructingUnitID () != null)
+					{
+						productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "rushBuyAction").getProductionCost ();
+
+						final AvailableUnit unit = new AvailableUnit ();
+						unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
+						getUnitStatsReplacer ().setUnit (unit);
+
+						text = getUnitStatsReplacer ().replaceVariables (text);
+					}
+					
+					if (productionCost != null)
+					{
+						final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (mc.getProductionSoFar () == null) ? 0 : mc.getProductionSoFar ());
+						text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
+					
+						// Now show the message
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setTitleLanguageCategoryID ("BuyingAndSellingBuildings");
+						msg.setTitleLanguageEntryID ("RushBuyTitle");
+						msg.setText (text);
+						msg.setRushBuyLocation (getCityLocation ());
+						msg.setVisible (true);
+					}
+				}
+				catch (final IOException e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 
@@ -327,7 +388,6 @@ public final class CityViewUI extends MomClientFrameUI
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
-				super.paintComponent (g);
 				g.drawImage (background, 0, 0, background.getWidth () * 2, background.getHeight () * 2, null);
 			}
 		};
@@ -789,6 +849,7 @@ public final class CityViewUI extends MomClientFrameUI
 		productionPanel.repaint ();
 		
 		languageOrCityDataChanged ();
+		recheckRushBuyEnabled ();
 		
 		// The buildings are drawn dynamically, but if one is an animation then calling init () again will ensure it gets registered properly
 		getCityViewPanel ().init ();
@@ -863,8 +924,41 @@ public final class CityViewUI extends MomClientFrameUI
 		// Since the panel is transparent and doesn't completely draw itself, can end up with garbage
 		// showing if we literally just redraw the panel, so need to redraw the whole screen
 		getFrame ().repaint ();
-
+		
 		log.trace ("Exiting productionSoFarChanged");
+	}
+	
+	/**
+	 *  
+	 * @throws RecordNotFoundException If we can't find the building or unit being constructed
+	 */
+	public final void recheckRushBuyEnabled () throws RecordNotFoundException
+	{
+		log.trace ("Entering recheckRushBuyEnabled");
+
+		boolean rushBuyEnabled = false;
+		
+		final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+		final OverlandMapCityData cityData = mc.getCityData ();
+
+		Integer productionCost = null;
+		if (cityData.getCurrentlyConstructingBuildingID () != null)
+			productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "recheckRushBuyEnabled").getProductionCost ();
+
+		if (cityData.getCurrentlyConstructingUnitID () != null)
+			productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "recheckRushBuyEnabled").getProductionCost ();
+		
+		if (productionCost != null)
+		{
+			final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (mc.getProductionSoFar () == null) ? 0 : mc.getProductionSoFar ());
+			rushBuyEnabled = (goldToRushBuy > 0) && (goldToRushBuy <= getResourceValueUtils ().findAmountStoredForProductionType
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD));
+		}
+		
+		rushBuyAction.setEnabled (rushBuyEnabled);
+		
+		log.trace ("Exiting recheckRushBuyEnabled = " + rushBuyEnabled);
 	}
 	
 	/**
@@ -1034,6 +1128,38 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setResourceValueClientUtils (final ResourceValueClientUtils utils)
 	{
 		resourceValueClientUtils = utils;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
+	}
+	
+	/**
+	 * @return Variable replacer for outputting skill descriptions
+	 */
+	public final UnitStatsLanguageVariableReplacer getUnitStatsReplacer ()
+	{
+		return unitStatsReplacer;
+	}
+
+	/**
+	 * @param replacer Variable replacer for outputting skill descriptions
+	 */
+	public final void setUnitStatsReplacer (final UnitStatsLanguageVariableReplacer replacer)
+	{
+		unitStatsReplacer = replacer;
 	}
 	
 	/**

@@ -1,11 +1,10 @@
-package momime.client.ui.frames;
+package momime.client.ui.dialogs;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.common.messages.v0_9_5.MemoryUnit;
 
@@ -51,7 +50,6 @@ public final class TestMessageBoxUI
 		
 		// Display form		
 		box.setVisible (true);
-		Thread.sleep (5000);
 	}
 
 	/**
@@ -90,7 +88,6 @@ public final class TestMessageBoxUI
 		
 		// Display form		
 		box.setVisible (true);
-		Thread.sleep (5000);
 	}
 
 	/**
@@ -125,7 +122,6 @@ public final class TestMessageBoxUI
 		
 		// Display form		
 		box.setVisible (true);
-		Thread.sleep (5000);
 	}
 
 	/**
@@ -150,13 +146,9 @@ public final class TestMessageBoxUI
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Variable replacer
+		// Text to display
 		final String title = "Message box test with no and yes buttons";
 		final String text = "Here's some fixed text for the message box with no and yes buttons, which is long enough to have to split over a couple of lines.";
-
-		final UnitStatsLanguageVariableReplacer replacer = mock (UnitStatsLanguageVariableReplacer.class);
-		when (replacer.replaceVariables (title)).thenReturn (title);
-		when (replacer.replaceVariables (text)).thenReturn (text);
 		
 		// Set up form
 		final MessageBoxUI box = new MessageBoxUI ();
@@ -166,11 +158,9 @@ public final class TestMessageBoxUI
 		box.setTitle (title);
 		box.setText (text);
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
-		box.setUnitToDismiss (new MemoryUnit ());
-		box.setUnitStatsReplacer (replacer);
+		box.setUnitToDismiss (new MemoryUnit ());		// Just to make it a yes/no dialog instead of an OK button
 		
 		// Display form		
 		box.setVisible (true);
-		Thread.sleep (5000);
 	}
 }

@@ -12,6 +12,8 @@ import javax.swing.Action;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
+import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
@@ -39,6 +41,9 @@ public final class UnitInfoUI extends MomClientFrameUI
 	
 	/** Unit info panel */
 	private UnitInfoPanel unitInfoPanel;
+	
+	/** Variable replacer for outputting skill descriptions */
+	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -83,11 +88,16 @@ public final class UnitInfoUI extends MomClientFrameUI
 				@Override
 				public final void actionPerformed (final ActionEvent ev)
 				{
+					// Show name of unit
+					String text = getLanguage ().findCategoryEntry ("frmUnitInfo", "DismissPrompt");
+					getUnitStatsReplacer ().setUnit (getUnit ());
+					text = getUnitStatsReplacer ().replaceVariables (text);
+					
+					// Show message box
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 					msg.setTitleLanguageCategoryID ("frmUnitInfo");
 					msg.setTitleLanguageEntryID ("DismissTitle");
-					msg.setTextLanguageCategoryID ("frmUnitInfo");
-					msg.setTextLanguageEntryID ("DismissPrompt");
+					msg.setText (text);
 					msg.setUnitToDismiss (getUnit ());
 					try
 					{
@@ -227,6 +237,22 @@ public final class UnitInfoUI extends MomClientFrameUI
 		unitInfoPanel = pnl;
 	}
 
+	/**
+	 * @return Variable replacer for outputting skill descriptions
+	 */
+	public final UnitStatsLanguageVariableReplacer getUnitStatsReplacer ()
+	{
+		return unitStatsReplacer;
+	}
+
+	/**
+	 * @param replacer Variable replacer for outputting skill descriptions
+	 */
+	public final void setUnitStatsReplacer (final UnitStatsLanguageVariableReplacer replacer)
+	{
+		unitStatsReplacer = replacer;
+	}
+	
 	/**
 	 * @return Prototype frame creator
 	 */

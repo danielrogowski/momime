@@ -5,15 +5,15 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.client.MultiplayerServerConnection;
 import com.ndg.multiplayer.client.SessionServerToClientMessage;
-
-import momime.client.ui.frames.MessageBoxUI;
-import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
 
 /**
  * Server sends to clients for warning/error messages

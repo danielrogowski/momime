@@ -5799,8 +5799,11 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="BuyingAndSellingBuildings">
+		<languageEntry languageEntryID="RushBuyTitle">
+			<languageEntryText>Rush buy?</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="RushBuyPrompt">
-			<languageEntryText>Do you wish to spend PRODUCTION_VALUE Gold by purchasing a BUILDING_NAME?</languageEntryText>
+			<languageEntryText>Do you wish to spend PRODUCTION_VALUE Gold by purchasing A_UNIT_NAME?</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="SellPromptNormal">
 			<languageEntryText>Do you want to sell your BUILDING_NAME for PRODUCTION_VALUE Gold?</languageEntryText>

@@ -1,4 +1,4 @@
-package momime.client.ui.frames;
+package momime.client.ui.dialogs;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -18,29 +18,27 @@ import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
-import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.clienttoserver.v0_9_5.DismissUnitMessage;
+import momime.common.messages.clienttoserver.v0_9_5.RushBuyMessage;
 import momime.common.messages.v0_9_5.MemoryUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
- * Frame which displays a message with an OK button
+ * Modal dialog which displays a message with an OK button, or a Yes and No choice, with Yes taking some action
  */
-public final class MessageBoxUI extends MomClientFrameUI
+public final class MessageBoxUI extends MomClientDialogUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MessageBoxUI.class);
 	
 	/** Multiplayer client */
 	private MomClient client;
-	
-	/** Variable replacer for outputting skill descriptions */
-	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
 	
 	/** Small font */
 	private Font smallFont;
@@ -78,11 +76,14 @@ public final class MessageBoxUI extends MomClientFrameUI
 	/** The unit being dismissed; null if the message box isn't asking about dismissing a unit */
 	private MemoryUnit unitToDismiss;
 	
+	/** The city to rush by at; null if the message box isn't about rush buying */
+	private MapCoordinates3DEx rushBuyLocation;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 8;
 	
 	/**
-	 * Sets up the frame once all values have been injected
+	 * Sets up the dialog once all values have been injected
 	 * @throws IOException If a resource cannot be found
 	 */
 	@Override
@@ -103,7 +104,7 @@ public final class MessageBoxUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
-				getFrame ().dispose ();
+				getDialog ().dispose ();
 			}
 		};
 		
@@ -114,7 +115,7 @@ public final class MessageBoxUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
-				getFrame ().dispose ();
+				getDialog ().dispose ();
 			}
 		};
 		
@@ -127,13 +128,22 @@ public final class MessageBoxUI extends MomClientFrameUI
 			{
 				try
 				{
-					// Dismiss a unit on overland map - just tell the server, it deals with the request
+					// Dismiss a unit on overland map
 					if (getUnitToDismiss () != null)
 					{
 						final DismissUnitMessage msg = new DismissUnitMessage ();
 						msg.setUnitURN (getUnitToDismiss ().getUnitURN ());
 						getClient ().getServerConnection ().sendMessageToServer (msg);
 					}
+					
+					// Rush buy current construction project
+					else if (getRushBuyLocation () != null)
+					{
+						final RushBuyMessage msg = new RushBuyMessage ();
+						msg.setCityLocation (getRushBuyLocation ());
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
+					
 					else
 						log.warn ("MessageBoxUI had yes button clicked for text \"" + messageText.getText () + " but took no action");
 				}
@@ -143,14 +153,14 @@ public final class MessageBoxUI extends MomClientFrameUI
 				}
 				
 				// Close the form
-				getFrame ().dispose ();
+				getDialog ().dispose ();
 			}
 		};
 		
-		// Initialize the frame
+		// Initialize the dialog
 		final MessageBoxUI ui = this;
-		getFrame ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
-		getFrame ().addWindowListener (new WindowAdapter ()
+		getDialog ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		getDialog ().addWindowListener (new WindowAdapter ()
 		{
 			@Override
 			public final void windowClosed (final WindowEvent ev)
@@ -165,7 +175,7 @@ public final class MessageBoxUI extends MomClientFrameUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 		
-		final int buttonCount = (getUnitToDismiss () == null) ? 1 : 2;
+		final int buttonCount = ((getUnitToDismiss () == null) && (getRushBuyLocation () == null)) ? 1 : 2;
 		
 		final GridBagConstraints constraints = getUtils ().createConstraintsBothFill (0, 0, buttonCount, 1, new Insets (INSET, INSET, 3, INSET));
 		constraints.weightx = 1;
@@ -193,9 +203,9 @@ public final class MessageBoxUI extends MomClientFrameUI
 				buttonNormal, buttonPressed, buttonNormal), constraintsYes);
 		}
 		
-		// Lock frame size
-		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);
+		// Lock dialog size
+		getDialog ().setContentPane (contentPane);
+		getDialog ().setResizable (false);
 
 		log.trace ("Exiting init");
 	}
@@ -220,15 +230,7 @@ public final class MessageBoxUI extends MomClientFrameUI
 		else
 			useText = getLanguage ().findCategoryEntry (getTextLanguageCategoryID (), getTextLanguageEntryID ());
 		
-		// If we've got a unit, use it to replace variables in the text
-		if (getUnitToDismiss () != null)
-		{
-			getUnitStatsReplacer ().setUnit (getUnitToDismiss ());
-			useTitle = getUnitStatsReplacer ().replaceVariables (useTitle);
-			useText = getUnitStatsReplacer ().replaceVariables (useText);
-		}
-		
-		getFrame ().setTitle (useTitle);
+		getDialog ().setTitle (useTitle);
 		messageText.setText (useText);
 		
 		// Button
@@ -253,22 +255,6 @@ public final class MessageBoxUI extends MomClientFrameUI
 		client = obj;
 	}
 
-	/**
-	 * @return Variable replacer for outputting skill descriptions
-	 */
-	public final UnitStatsLanguageVariableReplacer getUnitStatsReplacer ()
-	{
-		return unitStatsReplacer;
-	}
-
-	/**
-	 * @param replacer Variable replacer for outputting skill descriptions
-	 */
-	public final void setUnitStatsReplacer (final UnitStatsLanguageVariableReplacer replacer)
-	{
-		unitStatsReplacer = replacer;
-	}
-	
 	/**
 	 * @return Small font
 	 */
@@ -395,5 +381,21 @@ public final class MessageBoxUI extends MomClientFrameUI
 	public final void setUnitToDismiss (final MemoryUnit unit)
 	{
 		unitToDismiss = unit;
+	}
+
+	/**
+	 * @return The city to rush by at; null if the message box isn't about rush buying
+	 */
+	public final MapCoordinates3DEx getRushBuyLocation ()
+	{
+		return rushBuyLocation;
+	}
+
+	/**
+	 * @param location The city to rush by at; null if the message box isn't about rush buying
+	 */
+	public final void setRushBuyLocation (final MapCoordinates3DEx location)
+	{
+		rushBuyLocation = location;
 	}
 }

@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.AlchemyUI;
+import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
@@ -70,6 +71,10 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 		getOverlandMapRightHandPanel ().updateGlobalEconomyValues ();
 		getMagicSlidersUI ().updateProductionLabels ();
 		getAlchemyUI ().updateSliderMaximum ();
+		
+		// We may now have more gold to rush buy construction projects
+		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+			cityView.recheckRushBuyEnabled ();
 		
 		log.trace ("Exiting process");
 	}

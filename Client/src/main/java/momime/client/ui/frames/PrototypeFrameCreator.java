@@ -1,5 +1,7 @@
 package momime.client.ui.frames;
 
+import momime.client.ui.dialogs.MessageBoxUI;
+
 /**
  * Allows spring to create instances of frames that we allow multiple copies of, like message boxes and the city screen, and perform all necessary injections
  */

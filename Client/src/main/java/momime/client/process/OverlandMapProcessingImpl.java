@@ -425,6 +425,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
+	@Override
 	public final void nextTurnButton () throws JAXBException, XMLStreamException
 	{
 		log.trace ("Entering nextTurn");

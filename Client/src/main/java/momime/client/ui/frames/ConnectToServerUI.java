@@ -30,6 +30,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.KnownServer;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

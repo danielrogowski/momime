@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Unit;
+import momime.client.graphics.database.UnitEx;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.CommonDatabaseConstants;
@@ -91,7 +91,7 @@ public final class TestSelectUnitButton
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final Unit unit = new Unit ();
+		final UnitEx unit = new UnitEx ();
 		unit.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
 		when (gfx.findUnit ("UN176", "SelectUnitButton")).thenReturn (unit);
 		
@@ -180,7 +180,7 @@ public final class TestSelectUnitButton
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final Unit unit = new Unit ();
+		final UnitEx unit = new UnitEx ();
 		unit.setUnitOverlandImageFile ("/momime.client.graphics/units/UN102/overland.png");
 		when (gfx.findUnit ("UN102", "SelectUnitButton")).thenReturn (unit);
 		

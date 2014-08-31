@@ -6,7 +6,6 @@ import java.util.List;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
-import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -95,7 +94,7 @@ public interface GraphicsDatabaseEx
 	 * @return Unit object
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
-	public Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException;
+	public UnitEx findUnit (final String unitID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @param rangedAttackTypeID Ranged attack type ID to search for

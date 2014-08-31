@@ -70,7 +70,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	private Map<String, UnitSkill> unitSkillsMap;
 	
 	/** Map of unit IDs to unit objects */
-	private Map<String, Unit> unitsMap;
+	private Map<String, UnitEx> unitsMap;
 
 	/** Map of ranged attack type IDs to ranged attack type objects */
 	private Map<String, RangedAttackTypeEx> rangedAttackTypesMap;
@@ -166,9 +166,13 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			unitSkillsMap.put (thisUnitSkill.getUnitSkillID (), thisUnitSkill);
 		
 		// Create units map
-		unitsMap = new HashMap<String, Unit> ();
+		unitsMap = new HashMap<String, UnitEx> ();
 		for (final Unit thisUnit : getUnit ())
-			unitsMap.put (thisUnit.getUnitID (), thisUnit);
+		{
+			final UnitEx unitEx = (UnitEx) thisUnit;
+			unitEx.buildMap ();
+			unitsMap.put (unitEx.getUnitID (), unitEx);
+		}
 
 		// Create ranged attack types map
 		rangedAttackTypesMap = new HashMap<String, RangedAttackTypeEx> ();
@@ -432,9 +436,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	@Override
-	public final Unit findUnit (final String unitID, final String caller) throws RecordNotFoundException
+	public final UnitEx findUnit (final String unitID, final String caller) throws RecordNotFoundException
 	{
-		final Unit found = unitsMap.get (unitID);
+		final UnitEx found = unitsMap.get (unitID);
 		if (found == null)
 			throw new RecordNotFoundException (Unit.class, unitID, caller);
 

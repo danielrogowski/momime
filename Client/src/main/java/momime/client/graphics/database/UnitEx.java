@@ -24,6 +24,7 @@ public final class UnitEx extends Unit
 		for (final UnitCombatAction action : getUnitCombatAction ())
 		{
 			final UnitCombatActionEx actionEx = (UnitCombatActionEx) action;
+			actionEx.buildMap ();
 			combatActionsMap.put (actionEx.getCombatActionID (), actionEx);
 		}
 	}

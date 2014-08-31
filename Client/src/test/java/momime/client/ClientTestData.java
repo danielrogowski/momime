@@ -7,13 +7,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
+import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.GraphicsDatabaseExImpl;
+import momime.client.graphics.database.GraphicsDatabaseFactory;
+import momime.client.graphics.database.GraphicsDatabaseObjectFactory;
+import momime.client.graphics.database.MapFeatureEx;
+import momime.client.graphics.database.SmoothedTileTypeEx;
+import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.server.database.ServerXsdResourceResolver;
+
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
@@ -73,6 +91,60 @@ public final class ClientTestData
 		return graphicsXmlFile.getCanonicalFile ();
 	}
 
+	/**
+	 * @return Parsed graphics database with all the hash maps built, needed by a select few of the tests - usually avoid this because this makes tests really slow 
+	 * @throws Exception If there is a problem
+	 */
+	public final static GraphicsDatabaseEx loadGraphicsDatabase () throws Exception
+	{
+		// Need to set up a proper factory to create classes with spring injections
+		final GraphicsDatabaseObjectFactory factory = new GraphicsDatabaseObjectFactory ();
+		factory.setFactory (new GraphicsDatabaseFactory ()
+		{
+			@Override
+			public final SmoothedTileTypeEx createSmoothedTileType ()
+			{
+				return new SmoothedTileTypeEx ();
+			}
+			
+			@Override
+			public final TileSetEx createTileSet ()
+			{
+				return new TileSetEx ();
+			}
+			
+			@Override
+			public final MapFeatureEx createMapFeature ()
+			{
+				return new MapFeatureEx ();
+			}
+			
+			@Override
+			public final AnimationEx createAnimation ()
+			{
+				return new AnimationEx ();
+			}
+		});
+		
+		// XSD
+		final URL xsdResource = new Object ().getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION_NO_SERVER_LINK);
+		assertNotNull ("MoM IME Graphics XSD could not be found on classpath", xsdResource);
+
+		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		schemaFactory.setResourceResolver (new ServerXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
+		
+		final Schema schema = schemaFactory.newSchema (xsdResource);
+
+		final Unmarshaller unmarshaller = JAXBContext.newInstance (GraphicsDatabase.class).createUnmarshaller ();		
+		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {factory});
+		unmarshaller.setSchema (schema);
+		
+		// XML
+		final GraphicsDatabaseExImpl graphicsDB = (GraphicsDatabaseExImpl) unmarshaller.unmarshal (locateDefaultGraphicsXmlFile ());
+		graphicsDB.buildMaps ();
+		return graphicsDB;
+	}
+	
 	/**
 	 * @return Demo MoM overland map-like coordinate system with a 60x40 square map wrapping left-to-right but not top-to-bottom
 	 */

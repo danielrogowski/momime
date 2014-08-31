@@ -27,17 +27,19 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.CompositeShape;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.BuildingListCellRenderer;
+import momime.client.ui.renderer.UnitListCellRenderer;
 import momime.client.utils.AnimationController;
+import momime.client.utils.UnitClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Building;
 import momime.common.database.v0_9_5.Race;
 import momime.common.database.v0_9_5.RaceCannotBuild;
@@ -92,6 +94,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/** Renderer for the buildings list */
 	private BuildingListCellRenderer buildingListCellRenderer;
 	
+	/** Renderer for the units list */
+	private UnitListCellRenderer unitListCellRenderer;
+	
 	/** Animation controller */
 	private AnimationController anim;
 	
@@ -100,6 +105,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	
 	/** Unit calculations */
 	private MomUnitCalculations unitCalculations;
+
+	/** Utils for drawing units */
+	private UnitClientUtils unitClientUtils;
 	
 	/** Unit/building info panel */
 	private UnitInfoPanel unitInfoPanel;
@@ -196,6 +204,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				try
 				{
 					getAnim ().unregisterRepaintTrigger (null, buildingsList);
+					getAnim ().unregisterRepaintTrigger (null, unitsList);
 					getUnitInfoPanel ().unitInfoPanelClosing ();
 				}
 				catch (final MomException e)
@@ -213,6 +222,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		getBuildingListCellRenderer ().setForeground (MomUIConstants.SILVER);
 		getBuildingListCellRenderer ().init ();
 
+		getUnitListCellRenderer ().setFont (getMediumFont ());
+		getUnitListCellRenderer ().setForeground (MomUIConstants.SILVER);
+		
 		// Set list boxes
 		buildingsItems = new DefaultListModel<Building> ();
 		buildingsList = new JList<Building> ();
@@ -225,6 +237,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		unitsList = new JList<Unit>  ();		
 		unitsList.setOpaque (false);
 		unitsList.setModel (unitsItems);
+		unitsList.setCellRenderer (getUnitListCellRenderer ());
 		unitsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
 		// Initialize the content pane
@@ -338,10 +351,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	
 	/**
 	 * Updates the buildings and units list boxes with what can be constructed in this city
-	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or an animation
-	 * @throws MomException If registerRepaintTrigger gets called with a null component
+	 * @throws IOException If there is a problem
 	 */
-	public final void updateWhatCanBeConstructed () throws RecordNotFoundException, MomException
+	public final void updateWhatCanBeConstructed () throws IOException
 	{
 		log.trace ("Entering updateWhatCanBeConstructed");
 
@@ -400,8 +412,10 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				// and we have the necessary buildings to construct this unit
 				(getMemoryBuildingUtils ().meetsUnitRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 					getCityLocation (), thisUnit)))
-				
+			{
 				unitsItems.addElement (thisUnit);
+				getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, unitsList);
+			}
 
 		// Select the current construction project
 		if (buildingsList.getSelectedIndex () >= 0)
@@ -568,6 +582,22 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return Renderer for the units list
+	 */
+	public final UnitListCellRenderer getUnitListCellRenderer ()
+	{
+		return unitListCellRenderer;
+	}
+
+	/**
+	 * @param rend Factory for creating cell renderers
+	 */
+	public final void setUnitListCellRenderer (final UnitListCellRenderer rend)
+	{
+		unitListCellRenderer = rend;
+	}
+
+	/**
 	 * @return Animation controller
 	 */
 	public final AnimationController getAnim ()
@@ -615,6 +645,22 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		unitCalculations = calc;
 	}
 
+	/**
+	 * @return Utils for drawing units
+	 */
+	public final UnitClientUtils getUnitClientUtils ()
+	{
+		return unitClientUtils;
+	}
+
+	/**
+	 * @param util Utils for drawing units
+	 */
+	public final void setUnitClientUtils (final UnitClientUtils util)
+	{
+		unitClientUtils = util;
+	}
+	
 	/**
 	 * @return Unit/building info panel
 	 */

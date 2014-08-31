@@ -164,6 +164,10 @@
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="combatCastAnimation" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimegfx:unitPK" name="secondaryUnitFKunit">
+			<xsd:selector xpath="unit" />
+			<xsd:field xpath="secondaryUnitID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimegfx:combatActionPK" name="unitCombatActionFKcombatAction">
 			<xsd:selector xpath="unit/unitCombatAction" />
 			<xsd:field xpath="@combatActionID" />
@@ -397,6 +401,7 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSummonImageFile" type="momimegfx:imageFilename" nxe:label="Summoning image file" nxe:gridwidth="280" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitOverlandImageFile" type="momimegfx:imageFilename" nxe:label="Overland image file" nxe:gridwidth="280" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroPortraitImageFile" type="momimegfx:imageFilename" nxe:label="Hero Portrait image file" nxe:gridwidth="280" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="secondaryUnitID" type="momimecommon:unitID" nxe:label="Secondary unit" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitCombatAction" type="momimegfx:unitCombatAction" />
 		</xsd:sequence>
 		<xsd:attribute name="unitID" type="momimecommon:unitID" use="required" nxe:label="Unit ID" nxe:gridwidth="80">

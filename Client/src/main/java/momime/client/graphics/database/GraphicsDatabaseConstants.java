@@ -8,6 +8,9 @@ public final class GraphicsDatabaseConstants
 	/** Path and name to locate the graphics XSD file */
 	public static final String GRAPHICS_XSD_LOCATION = "/momime.client.graphics/MoMIMEGraphicsDatabase.xsd";
 	
+	/** Path and name to locate the graphics XSD file that doesn't include the link to the server XML */
+	public static final String GRAPHICS_XSD_LOCATION_NO_SERVER_LINK = "/momime.client.graphics/MoMIMEGraphicsDatabase_NoServerXsdLink.xsd";
+	
 	/** Tile set for the overland map */
 	public static final String VALUE_TILE_SET_OVERLAND_MAP = "TS01";
 	
@@ -16,6 +19,15 @@ public final class GraphicsDatabaseConstants
 	
 	/** Special bitmask for when smoothing is turned off */
 	public static final String VALUE_TILE_BITMASK_NO_SMOOTHING = "NoSmooth";
+	
+	/** Walk action - used for drawing units on the unit info panel, change construction screen and options screen */
+	public static final String UNIT_COMBAT_ACTION_WALK = "WALK";
+	
+	/** Sample of a grass tile, before obtaining the client XML so we can derive this properly from an AvailableUnit */
+	public static final String SAMPLE_GRASS_TILE = "/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png";
+	
+	/** Sample of an ocean tile, before obtaining the client XML so we can derive this properly from an AvailableUnit */
+	public static final String SAMPLE_OCEAN_TILE = "/momime.client.graphics/combat/terrain/arcanus/ocean/standard/00000000a-frame1.png";
 	
 	/**
 	 * Prevent instatiation of this class

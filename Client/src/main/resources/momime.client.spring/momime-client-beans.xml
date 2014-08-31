@@ -429,6 +429,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="unitClientUtils" class="momime.client.utils.UnitClientUtilsImpl">
 		<property name="client" ref="momClient" />
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="anim" ref="anim" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 	</bean>
 
 	<bean id="resourceValueClientUtils" class="momime.client.utils.ResourceValueClientUtilsImpl">
@@ -656,6 +662,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 	</bean>
 
+	<bean id="unitListCellRenderer" class="momime.client.ui.renderer.UnitListCellRenderer" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+	</bean>
+
 	<bean id="unitSkillListCellRenderer" class="momime.client.ui.renderer.UnitSkillListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -773,7 +787,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="anim" ref="anim" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="buildingListCellRenderer" ref="buildingListCellRenderer" />		<!-- So Spring will create and inject a new building list renderer for each change construction UI -->
+		<property name="unitListCellRenderer" ref="unitListCellRenderer" />					<!-- So Spring will create and inject a new unit list renderer for each change construction UI -->
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each changeConstructionUI -->
 	</bean>
 	

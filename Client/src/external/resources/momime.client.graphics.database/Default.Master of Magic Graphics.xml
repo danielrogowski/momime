@@ -1762,6 +1762,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN001/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN001/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN001/d1-stand.png</unitCombatImageFile>
@@ -1899,6 +1900,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN002/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN002/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN002/d1-stand.png</unitCombatImageFile>
@@ -2036,6 +2038,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN003/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN003/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN108</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN003/d1-stand.png</unitCombatImageFile>
@@ -2173,6 +2176,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN004/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN004/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN004/d1-stand.png</unitCombatImageFile>
@@ -2310,6 +2314,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN005/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN005/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN005/d1-stand.png</unitCombatImageFile>
@@ -2447,6 +2452,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonFemale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN006/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN006/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN108</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN006/d1-stand.png</unitCombatImageFile>
@@ -2584,6 +2590,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN007/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN007/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN142</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN007/d1-stand.png</unitCombatImageFile>
@@ -2721,6 +2728,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonFemale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN008/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN008/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN108</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN008/d1-stand.png</unitCombatImageFile>
@@ -2858,6 +2866,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonFemale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN009/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN009/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN009/d1-stand.png</unitCombatImageFile>
@@ -2995,6 +3004,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonFemale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN010/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN010/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN010/d1-stand.png</unitCombatImageFile>
@@ -3132,6 +3142,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN011/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN011/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN099</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN011/d1-stand.png</unitCombatImageFile>
@@ -3269,6 +3280,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN012/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN012/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN099</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN012/d1-stand.png</unitCombatImageFile>
@@ -3406,6 +3418,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN013/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN013/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN013/d1-stand.png</unitCombatImageFile>
@@ -3543,6 +3556,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN014/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN014/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN108</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN014/d1-stand.png</unitCombatImageFile>
@@ -3680,6 +3694,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN015/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN015/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN061</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN015/d1-stand.png</unitCombatImageFile>
@@ -3817,6 +3832,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN016/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN016/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN108</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN016/d1-stand.png</unitCombatImageFile>
@@ -3954,6 +3970,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN017/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN017/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN017/d1-stand.png</unitCombatImageFile>
@@ -4091,6 +4108,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN018/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN018/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN075</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN018/d1-stand.png</unitCombatImageFile>
@@ -4228,6 +4246,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonFemale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN019/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN019/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN061</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN019/d1-stand.png</unitCombatImageFile>
@@ -4365,6 +4384,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN020/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN020/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN099</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN020/d1-stand.png</unitCombatImageFile>
@@ -4502,6 +4522,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN021/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN021/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN061</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN021/d1-stand.png</unitCombatImageFile>
@@ -4639,6 +4660,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN022/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN022/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN022/d1-stand.png</unitCombatImageFile>
@@ -4776,6 +4798,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonFemale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN023/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN023/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN142</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN023/d1-stand.png</unitCombatImageFile>
@@ -4913,6 +4936,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN024/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN024/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN024/d1-stand.png</unitCombatImageFile>
@@ -5050,6 +5074,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN025/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN025/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN142</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN025/d1-stand.png</unitCombatImageFile>
@@ -5187,6 +5212,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonFemale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN026/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN026/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN099</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN026/d1-stand.png</unitCombatImageFile>
@@ -5324,6 +5350,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN027/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN027/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN099</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN027/d1-stand.png</unitCombatImageFile>
@@ -5461,6 +5488,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonFemale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN028/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN028/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN108</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN028/d1-stand.png</unitCombatImageFile>
@@ -5598,6 +5626,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN029/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN029/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN099</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN029/d1-stand.png</unitCombatImageFile>
@@ -5735,6 +5764,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN030/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN030/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN142</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN030/d1-stand.png</unitCombatImageFile>
@@ -5872,6 +5902,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonFemale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN031/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN031/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN099</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN031/d1-stand.png</unitCombatImageFile>
@@ -6009,6 +6040,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN032/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN032/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN043</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN032/d1-stand.png</unitCombatImageFile>
@@ -6146,6 +6178,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN033/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN033/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN061</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN033/d1-stand.png</unitCombatImageFile>
@@ -6283,6 +6316,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN034/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN034/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN142</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN034/d1-stand.png</unitCombatImageFile>
@@ -6420,6 +6454,7 @@
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
 		<unitOverlandImageFile>/momime.client.graphics/units/UN035/overland.png</unitOverlandImageFile>
 		<heroPortraitImageFile>/momime.client.graphics/units/UN035/portrait.png</heroPortraitImageFile>
+		<secondaryUnitID>UN099</secondaryUnitID>
 		<unitCombatAction combatActionID="STAND">
 			<unitCombatImage direction="1">
 				<unitCombatImageFile>/momime.client.graphics/units/UN035/d1-stand.png</unitCombatImageFile>
@@ -40269,6 +40304,28 @@
 				<tileRelativeY>24</tileRelativeY>
 			</figurePositionsForFigureCount>
 			<figurePositionsForFigureCount figureNumber="4">
+				<tileRelativeX>50</tileRelativeX>
+				<tileRelativeY>15</tileRelativeY>
+			</figurePositionsForFigureCount>
+		</combatTileFigurePositions>
+		<combatTileFigurePositions figureCount="5">
+			<figurePositionsForFigureCount figureNumber="1">
+				<tileRelativeX>30</tileRelativeX>
+				<tileRelativeY>5</tileRelativeY>
+			</figurePositionsForFigureCount>
+			<figurePositionsForFigureCount figureNumber="2">
+				<tileRelativeX>11</tileRelativeX>
+				<tileRelativeY>15</tileRelativeY>
+			</figurePositionsForFigureCount>
+			<figurePositionsForFigureCount figureNumber="3">
+				<tileRelativeX>30</tileRelativeX>
+				<tileRelativeY>14</tileRelativeY>
+			</figurePositionsForFigureCount>
+			<figurePositionsForFigureCount figureNumber="4">
+				<tileRelativeX>30</tileRelativeX>
+				<tileRelativeY>24</tileRelativeY>
+			</figurePositionsForFigureCount>
+			<figurePositionsForFigureCount figureNumber="5">
 				<tileRelativeX>50</tileRelativeX>
 				<tileRelativeY>15</tileRelativeY>
 			</figurePositionsForFigureCount>

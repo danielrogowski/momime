@@ -25,6 +25,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.BuildingListCellRenderer;
+import momime.client.ui.renderer.UnitListCellRenderer;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
@@ -154,10 +155,10 @@ public final class TestChangeConstructionUI
 			final Unit unit = new Unit ();
 			unit.setUnitID ("UN00" + n);
 
-			if (n == 1)
+//			if (n == 1)
 				unit.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
-			else
-				unit.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+//			else
+//				unit.setUnitMagicRealm (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 			
 			if (n == 2)
 				unit.setUnitRaceID ("RC01");
@@ -227,11 +228,15 @@ public final class TestChangeConstructionUI
 		anim.setGraphicsDB (gfx);
 		anim.setUtils (utils);
 
-		// Cell renderer
+		// Cell renderers
 		final BuildingListCellRenderer buildingRenderer = new BuildingListCellRenderer ();
 		buildingRenderer.setGraphicsDB (gfx);
 		buildingRenderer.setLanguageHolder (langHolder);
 		buildingRenderer.setAnim (anim);
+		
+		final UnitListCellRenderer unitRenderer = new UnitListCellRenderer ();
+		unitRenderer.setGraphicsDB (gfx);
+		unitRenderer.setLanguageHolder (langHolder);
 		
 		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
 		renderer.setLanguageHolder (langHolder);
@@ -264,6 +269,7 @@ public final class TestChangeConstructionUI
 		changeConstruction.setCityCalculations (cityCalc);
 		changeConstruction.setUnitInfoPanel (panel);
 		changeConstruction.setBuildingListCellRenderer (buildingRenderer);
+		changeConstruction.setUnitListCellRenderer (unitRenderer);
 		changeConstruction.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		changeConstruction.setMediumFont (CreateFontsForTests.getMediumFont ());
 		changeConstruction.setSmallFont (CreateFontsForTests.getSmallFont ());

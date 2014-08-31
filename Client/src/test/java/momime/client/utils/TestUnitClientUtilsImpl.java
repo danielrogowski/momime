@@ -3,23 +3,44 @@ package momime.client.utils;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.io.IOException;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+
+import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Unit;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.MemoryUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
 
 /**
  * Tests the UnitClientUtilsImpl class
  */
 public final class TestUnitClientUtilsImpl
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (TestUnitClientUtilsImpl.class);
+	
 	/**
 	 * Tests the getUnitName method
 	 * @throws RecordNotFoundException If we can't find the unit definition in the server XML
@@ -137,5 +158,84 @@ public final class TestUnitClientUtilsImpl
 		assertEquals ("the Magic Spirit",					utils.getUnitName (summonedSingular,		UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the unit of Hell Hounds",		utils.getUnitName (summonedPlural,		UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the unit of RC02 UN007",		utils.getUnitName (unknown,					UnitNameType.THE_UNIT_OF_NAME));
+	}
+	
+	/**
+	 * Tests the drawUnit method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testDrawUnit () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+		
+		// This is dependant on way too many values to mock them all - so use the real graphics DB
+		final GraphicsDatabaseEx gfx = ClientTestData.loadGraphicsDatabase ();
+		
+		// Animation controller
+		final AnimationControllerImpl anim = new AnimationControllerImpl ();
+		anim.setGraphicsDB (gfx);
+		anim.setUtils (utils);
+		
+		// Set up object to test
+		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
+		unitUtils.setAnim (anim);
+		unitUtils.setGraphicsDB (gfx);
+		unitUtils.setUtils (utils);
+		
+		// Set up a dummy panel
+		final Dimension panelSize = new Dimension (600, 400);
+		
+		final JPanel panel = new JPanel ()
+		{
+			private static final long serialVersionUID = 2679278561186067446L;
+
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				super.paintComponent (g);
+				try
+				{
+					int y = 40;
+					for (final UnitCombatScale scale : UnitCombatScale.values ())
+					{
+						unitUtils.drawUnitFigures ("UN106", null, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, scale);
+						unitUtils.drawUnitFigures ("UN075", null, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, scale);
+						unitUtils.drawUnitFigures ("UN035", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, scale);
+						unitUtils.drawUnitFigures ("UN197", CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, scale);
+						unitUtils.drawUnitFigures ("UN037", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, scale);
+						
+						y = y + 80;
+					}
+				}
+				catch (final IOException e)
+				{
+					log.error (e, e);
+				}
+			}
+		};
+		panel.setMinimumSize (panelSize);
+		panel.setMaximumSize (panelSize);
+		panel.setPreferredSize (panelSize);
+		
+		// Set up animations with the same params as all the draw calls above
+		unitUtils.registerUnitFiguresAnimation ("UN106", GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, panel);
+		unitUtils.registerUnitFiguresAnimation ("UN075", GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, panel);
+		unitUtils.registerUnitFiguresAnimation ("UN035", GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, panel);
+		unitUtils.registerUnitFiguresAnimation ("UN197", GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, panel);
+		unitUtils.registerUnitFiguresAnimation ("UN037", GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, panel);
+
+		// Set up a dummy frame
+		final JFrame frame = new JFrame ();
+		frame.setContentPane (panel);
+		frame.setResizable (false);
+		frame.pack ();
+		frame.setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		frame.setLocationRelativeTo (null);
+		frame.setVisible (true);
+		
+		Thread.sleep (50000);
 	}
 }

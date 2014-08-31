@@ -3,6 +3,8 @@ package momime.client.graphics.database;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.client.graphics.database.v0_9_5.Animation;
+import momime.client.graphics.database.v0_9_5.CombatTileFigurePositions;
+import momime.client.graphics.database.v0_9_5.CombatTileUnitRelativeScale;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.ObjectFactory;
@@ -12,7 +14,9 @@ import momime.client.graphics.database.v0_9_5.RangedAttackType;
 import momime.client.graphics.database.v0_9_5.SmoothedTileType;
 import momime.client.graphics.database.v0_9_5.SmoothingSystem;
 import momime.client.graphics.database.v0_9_5.TileSet;
+import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.UnitAttribute;
+import momime.client.graphics.database.v0_9_5.UnitCombatAction;
 import momime.client.graphics.database.v0_9_5.UnitType;
 
 /**
@@ -121,6 +125,42 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final UnitType createUnitType ()
 	{
 		return new UnitTypeEx ();
+	}
+
+	/**
+	 * @return Custom extended Unit
+	 */
+	@Override
+	public final Unit createUnit ()
+	{
+		return new UnitEx ();
+	}
+
+	/**
+	 * @return Custom extended scale
+	 */
+	@Override
+	public final CombatTileUnitRelativeScale createCombatTileUnitRelativeScale ()
+	{
+		return new CombatTileUnitRelativeScaleEx ();
+	}
+
+	/**
+	 * @return Custom extended Unit positions
+	 */
+	@Override
+	public final CombatTileFigurePositions createCombatTileFigurePositions ()
+	{
+		return new CombatTileFigurePositionsEx ();
+	}
+
+	/**
+	 * @return Custom extended Unit action
+	 */
+	@Override
+	public final UnitCombatAction createUnitCombatAction ()
+	{
+		return new UnitCombatActionEx ();
 	}
 
 	/**

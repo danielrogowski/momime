@@ -100,7 +100,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 					final String unitMagicRealmID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitSkillListCellRenderer").getUnitMagicRealm ();
 					final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "UnitSkillListCellRenderer").getUnitTypeID ();
 					final UnitTypeEx unitType = getGraphicsDB ().findUnitType (unitTypeID, "UnitSkillListCellRenderer");
-					image = unitType.findExperienceLevelImageFile (expLvl.getLevelNumber ());
+					image = unitType.findExperienceLevelImageFile (expLvl.getLevelNumber (), "UnitSkillListCellRenderer");
 				}
 			}
 			else

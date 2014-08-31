@@ -423,7 +423,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 								if ((unit.getWeaponGrade () == null) || (rat.getRangedAttackTypeWeaponGrade ().size () == 1))
 									attributeImageName = rat.getRangedAttackTypeWeaponGrade ().get (0).getUnitDisplayRangedImageFile ();
 								else
-									attributeImageName = rat.findWeaponGradeImageFile (unit.getWeaponGrade ());
+									attributeImageName = rat.findWeaponGradeImageFile (unit.getWeaponGrade (), "unitInfoPanel.paintComponent");
 							}
 						}
 						else
@@ -433,7 +433,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 							if ((unit.getWeaponGrade () == null) || (attrGfx.getUnitAttributeWeaponGrade ().size () == 1))
 								attributeImageName = attrGfx.getUnitAttributeWeaponGrade ().get (0).getAttributeImageFile ();
 							else
-								attributeImageName = attrGfx.findWeaponGradeImageFile (unit.getWeaponGrade ());
+								attributeImageName = attrGfx.findWeaponGradeImageFile (unit.getWeaponGrade (), "unitInfoPanel.paintComponent");
 						}
 						
 						final BufferedImage attributeImage = (attributeImageName == null) ? null : getUtils ().loadImage (attributeImageName);

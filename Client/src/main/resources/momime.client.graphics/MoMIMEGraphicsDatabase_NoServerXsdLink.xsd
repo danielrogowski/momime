@@ -789,7 +789,7 @@
 	</xsd:simpleType>
 
 	<xsd:simpleType name="combatTileUnitRelativeScaleID">
-		<xsd:restriction base="xsd:normalizedString" />
+		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 
 	<xsd:simpleType name="cityViewElementSetID">

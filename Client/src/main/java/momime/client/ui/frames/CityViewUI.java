@@ -781,18 +781,18 @@ public final class CityViewUI extends MomClientFrameUI
 		final RaceEx race = getGraphicsDB ().findRace (cityData.getCityRaceID (), "cityDataChanged");
 		
 		// Start with farmers
-		Image civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER)));
+		Image civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER, "cityDataChanged")));
 		final int civvyCount = cityData.getCityPopulation () / 1000;
 		int x = 0;
 		for (int civvyNo = 1; civvyNo <= civvyCount; civvyNo++)
 		{
 			// Is this the first rebel?
 			if (civvyNo == civvyCount - cityData.getNumberOfRebels () + 1)
-				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL)));
+				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_REBEL, "cityDataChanged")));
 			
 			// Is this the first worker?
 			else if (civvyNo == cityData.getMinimumFarmers () + cityData.getOptionalFarmers () + 1)
-				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER)));
+				civilianImage = doubleSize (getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_WORKER, "cityDataChanged")));
 			
 			// Is this civilian changeable (between farmer and worker) - if so, create a button for them instead of a plain image
 			final Action action;

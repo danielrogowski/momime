@@ -5,6 +5,7 @@ import java.util.Map;
 
 import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.RacePopulationTask;
+import momime.common.database.RecordNotFoundException;
 
 /**
  * Adds a map over the civlian types, so we can find their images faster
@@ -26,10 +27,17 @@ public final class RaceEx extends Race
 	
 	/**
 	 * @param populationTaskID Population task ID to search for
-	 * @return Filename for the image of this population task; or null if population task ID not found
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Filename for the image of this population task
+	 * @throws RecordNotFoundException If the populationTaskID doesn't exist
 	 */
-	public final String findCivilianImageFile (final String populationTaskID)
+	public final String findCivilianImageFile (final String populationTaskID, final String caller) throws RecordNotFoundException
 	{
-		return populationTasksMap.get (populationTaskID);
+		final String found = populationTasksMap.get (populationTaskID);
+
+		if (found == null)
+			throw new RecordNotFoundException (RacePopulationTask.class, populationTaskID, caller);
+		
+		return found;
 	}
 }

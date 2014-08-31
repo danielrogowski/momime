@@ -12,6 +12,7 @@ import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.graphics.database.v0_9_5.CombatTileUnitRelativeScale;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.Pick;
@@ -76,6 +77,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	
 	/** Map of weapon grade numbers to weapon grade objects */
 	private Map<Integer, WeaponGrade> weaponGradesMap;
+	
+	/** Map of scales to coordinates for each figure count */
+	private Map<Integer, CombatTileUnitRelativeScaleEx> combatTileUnitRelativeScalesMap;
 	
 	/** Map of tileSet IDs to tileSet objects */
 	private Map<String, TileSetEx> tileSetsMap;
@@ -179,6 +183,15 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		weaponGradesMap = new HashMap<Integer, WeaponGrade> ();
 		for (final WeaponGrade thisWeaponGrade : getWeaponGrade ())
 			weaponGradesMap.put (thisWeaponGrade.getWeaponGradeNumber (), thisWeaponGrade);
+		
+		// Create combat tile unit relative scales map
+		combatTileUnitRelativeScalesMap = new HashMap<Integer, CombatTileUnitRelativeScaleEx> ();
+		for (final CombatTileUnitRelativeScale scale : getCombatTileUnitRelativeScale ())
+		{
+			final CombatTileUnitRelativeScaleEx scaleEx = (CombatTileUnitRelativeScaleEx) scale;
+			scaleEx.buildMap ();
+			combatTileUnitRelativeScalesMap.put (scaleEx.getScale (), scaleEx);
+		}
 		
 		// Create animations map
 		animationsMap = new HashMap<String, AnimationEx> ();
@@ -460,6 +473,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		return found;
 	}
 
+	/**
+	 * @param scale Combat tile unit relative scale
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Scale object
+	 * @throws RecordNotFoundException If the scale doesn't exist
+	 */
+	@Override
+	public final CombatTileUnitRelativeScaleEx findCombatTileUnitRelativeScale (final int scale, final String caller) throws RecordNotFoundException
+	{
+		final CombatTileUnitRelativeScaleEx found = combatTileUnitRelativeScalesMap.get (scale);
+		if (found == null)
+			throw new RecordNotFoundException (CombatTileUnitRelativeScale.class, scale, caller);
+
+		return found;
+	}
+	
 	/**
 	 * @param tileSetID Tile set ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

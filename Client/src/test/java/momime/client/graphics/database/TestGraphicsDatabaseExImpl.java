@@ -16,7 +16,6 @@ import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
-import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -118,10 +117,10 @@ public final class TestGraphicsDatabaseExImpl
 	
 	/**
 	 * Tests the findPick method to find a pick ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindPick_Exists () throws IOException
+	public final void testFindPick_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -138,10 +137,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findPick method to find a pick ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindPick_NotExists () throws IOException
+	public final void testFindPick_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -158,10 +157,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findWizard method to find a wizard ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindWizard_Exists () throws IOException
+	public final void testFindWizard_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -178,10 +177,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findWizard method to find a wizard ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindWizard_NotExists () throws IOException
+	public final void testFindWizard_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -198,10 +197,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findProductionType method to find a productionType ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindProductionType_Exists () throws IOException
+	public final void testFindProductionType_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -218,10 +217,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findProductionType method to find a productionType ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindProductionType_NotExists () throws IOException
+	public final void testFindProductionType_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -238,10 +237,10 @@ public final class TestGraphicsDatabaseExImpl
 	
 	/**
 	 * Tests the findRace method to find a race ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindRace_Exists () throws IOException
+	public final void testFindRace_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -258,10 +257,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findRace method to find a race ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindRace_NotExists () throws IOException
+	public final void testFindRace_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -278,10 +277,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findBuilding method to find a building ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindBuilding_Exists () throws IOException
+	public final void testFindBuilding_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -298,10 +297,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findBuilding method to find a building ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindBuilding_NotExists () throws IOException
+	public final void testFindBuilding_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -318,10 +317,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findUnitType method to find a unit type ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindUnitType_Exists () throws IOException
+	public final void testFindUnitType_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -338,10 +337,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findUnitType method to find a unit type ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindUnitType_NotExists () throws IOException
+	public final void testFindUnitType_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -358,10 +357,10 @@ public final class TestGraphicsDatabaseExImpl
 	
 	/**
 	 * Tests the findUnitAttribute method to find a unit attribute ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindUnitAttribute_Exists () throws IOException
+	public final void testFindUnitAttribute_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -378,10 +377,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findUnitAttribute method to find a unit attribute ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindUnitAttribute_NotExists () throws IOException
+	public final void testFindUnitAttribute_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -398,10 +397,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findUnitSkill method to find a unit skill ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindUnitSkill_Exists () throws IOException
+	public final void testFindUnitSkill_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -418,10 +417,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findUnitSkill method to find a unit skill ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindUnitSkill_NotExists () throws IOException
+	public final void testFindUnitSkill_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -438,15 +437,15 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findUnit method to find a unit ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindUnit_Exists () throws IOException
+	public final void testFindUnit_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Unit newUnit = new Unit ();
+			final UnitEx newUnit = new UnitEx ();
 			newUnit.setUnitID ("UN00" + n);
 			db.getUnit ().add (newUnit);
 		}
@@ -458,15 +457,15 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findUnit method to find a unit ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindUnit_NotExists () throws IOException
+	public final void testFindUnit_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final Unit newUnit = new Unit ();
+			final UnitEx newUnit = new UnitEx ();
 			newUnit.setUnitID ("UN00" + n);
 			db.getUnit ().add (newUnit);
 		}
@@ -478,10 +477,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findRangedAttackType method to find a rangedAttackType ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindRangedAttackType_Exists () throws IOException
+	public final void testFindRangedAttackType_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -498,10 +497,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findRangedAttackType method to find a rangedAttackType ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindRangedAttackType_NotExists () throws IOException
+	public final void testFindRangedAttackType_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -518,10 +517,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findWeaponGrade method to find a weaponGrade ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindWeaponGrade_Exists () throws IOException
+	public final void testFindWeaponGrade_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -538,10 +537,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findWeaponGrade method to find a weaponGrade ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindWeaponGrade_NotExists () throws IOException
+	public final void testFindWeaponGrade_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -557,11 +556,51 @@ public final class TestGraphicsDatabaseExImpl
 	}
 
 	/**
-	 * Tests the findTileSet method to find a tile set ID that does exist
-	 * @throws IOException If there is a problem
+	 * Tests the findCombatTileUnitRelativeScale method to find a scale that does exist
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindTileSet_Exists () throws IOException
+	public final void testFindCombatTileUnitRelativeScale_Exists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatTileUnitRelativeScaleEx newCombatTileUnitRelativeScale = new CombatTileUnitRelativeScaleEx ();
+			newCombatTileUnitRelativeScale.setScale (n);
+			db.getCombatTileUnitRelativeScale ().add (newCombatTileUnitRelativeScale);
+		}
+
+		db.buildMaps ();
+
+		assertEquals (2, db.findCombatTileUnitRelativeScale (2, "testFindCombatTileUnitRelativeScale_Exists").getScale ());
+	}
+
+	/**
+	 * Tests the findCombatTileUnitRelativeScale method to find a scale that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindCombatTileUnitRelativeScale_NotExists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatTileUnitRelativeScaleEx newCombatTileUnitRelativeScale = new CombatTileUnitRelativeScaleEx ();
+			newCombatTileUnitRelativeScale.setScale (n);
+			db.getCombatTileUnitRelativeScale ().add (newCombatTileUnitRelativeScale);
+		}
+
+		db.buildMaps ();
+
+		db.findCombatTileUnitRelativeScale (4, "testFindCombatTileUnitRelativeScale_NotExists");
+	}
+
+	/**
+	 * Tests the findTileSet method to find a tile set ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindTileSet_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -578,10 +617,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findTileSet method to find a tile set ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindTileSet_NotExists () throws IOException
+	public final void testFindTileSet_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -598,10 +637,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findMapFeatureID method to find a mapFeature ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindMapFeatureID_Exists () throws IOException
+	public final void testFindMapFeatureID_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -618,10 +657,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findMapFeatureID method to find a mapFeature ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindMapFeatureID_NotExists () throws IOException
+	public final void testFindMapFeatureID_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -729,10 +768,10 @@ public final class TestGraphicsDatabaseExImpl
 	
 	/**
 	 * Tests the findAnimation method to find a animation ID that does exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindAnimation_Exists () throws IOException
+	public final void testFindAnimation_Exists () throws RecordNotFoundException
 	{
 		// Set up object to test
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
@@ -751,10 +790,10 @@ public final class TestGraphicsDatabaseExImpl
 
 	/**
 	 * Tests the findAnimation method to find a animation ID that doesn't exist
-	 * @throws IOException If there is a problem
+	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindAnimation_NotExists () throws IOException
+	public final void testFindAnimation_NotExists () throws RecordNotFoundException
 	{
 		// Set up object to test
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();

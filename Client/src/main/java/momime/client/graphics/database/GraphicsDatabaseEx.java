@@ -114,6 +114,14 @@ public interface GraphicsDatabaseEx
 	public WeaponGrade findWeaponGrade (final int weaponGradeNumber, final String caller) throws RecordNotFoundException;
 	
 	/**
+	 * @param scale Combat tile unit relative scale
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Scale object
+	 * @throws RecordNotFoundException If the scale doesn't exist
+	 */
+	public CombatTileUnitRelativeScaleEx findCombatTileUnitRelativeScale (final int scale, final String caller) throws RecordNotFoundException;
+		
+	/**
 	 * @param tileSetID Tile set ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Tile set object

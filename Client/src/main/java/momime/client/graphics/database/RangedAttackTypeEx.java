@@ -5,6 +5,7 @@ import java.util.Map;
 
 import momime.client.graphics.database.v0_9_5.RangedAttackType;
 import momime.client.graphics.database.v0_9_5.RangedAttackTypeWeaponGrade;
+import momime.common.database.RecordNotFoundException;
 
 /**
  * Adds a map over the weapon grades, so we can find their images faster
@@ -26,10 +27,17 @@ public final class RangedAttackTypeEx extends RangedAttackType
 	
 	/**
 	 * @param weaponGrade Weapon grade to search for
-	 * @return Filename for the image of this weapon grade; or null if no image exists for it
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Filename for the image of this weapon grade
+	 * @throws RecordNotFoundException If the weapon grade doesn't exist
 	 */
-	public final String findWeaponGradeImageFile (final int weaponGrade)
+	public final String findWeaponGradeImageFile (final int weaponGrade, final String caller) throws RecordNotFoundException
 	{
-		return weaponGradesMap.get (weaponGrade);
+		final String found = weaponGradesMap.get (weaponGrade);
+
+		if (found == null)
+			throw new RecordNotFoundException (RangedAttackTypeWeaponGrade.class, weaponGrade, caller);
+		
+		return found;
 	}
 }

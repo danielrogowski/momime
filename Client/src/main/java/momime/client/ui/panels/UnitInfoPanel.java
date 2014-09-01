@@ -31,6 +31,7 @@ import javax.swing.ListSelectionModel;
 import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
 import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RangedAttackTypeEx;
 import momime.client.graphics.database.UnitAttributeEx;
@@ -261,8 +262,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					
 					// Draw unit
 					if (unit != null)
-					{
-					}
+						getUnitClientUtils ().drawUnitFigures (unit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 1, 26, true);
 				}
 				catch (final Exception e)
 				{
@@ -729,6 +729,10 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Update language dependant labels
 		currentConstructionChanged ();
+
+		// Show the image of the selected unit
+		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
+		getUnitClientUtils ().registerUnitFiguresAnimation (unit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, currentlyConstructingImage); 
 		
 		log.trace ("Entering showUnit");
 	}

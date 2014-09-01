@@ -364,6 +364,11 @@ public final class TestUnitInfoPanel
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
 		resourceValueClientUtils.setGraphicsDB (gfx);
 		resourceValueClientUtils.setUtils (utils);
+
+		// Animation controller
+		final AnimationControllerImpl anim = new AnimationControllerImpl ();
+		anim.setGraphicsDB (gfx);
+		anim.setUtils (utils);
 		
 		// Set up unit to display
 		final AvailableUnit unit = new AvailableUnit ();
@@ -462,6 +467,7 @@ public final class TestUnitInfoPanel
 		panel.setClient (client);
 		panel.setGraphicsDB (gfx);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
+		panel.setAnim (anim);
 		panel.setUnitUtils (unitUtils);
 		panel.setUnitCalculations (unitCalc);
 		panel.setClientUnitCalculations (clientUnitCalc);

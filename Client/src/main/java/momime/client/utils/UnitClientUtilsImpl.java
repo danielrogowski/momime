@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 
 import momime.client.MomClient;
 import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.CombatTileFigurePositionsEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitEx;
@@ -55,6 +56,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
+	
+	/** Client config, containing the scale setting */
+	private MomImeClientConfig clientConfig;
 	
 	/**
 	 * Note the generated unit names are obviously very dependant on the selected language, but the names themselves don't get notified
@@ -158,12 +162,11 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
-	 * @param scale The combat scale chosen on the Options screen
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final UnitCombatScale scale) throws IOException
+		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile) throws IOException
 	{
 		// Draw sample tile
 		if (sampleTileImageFile != null)
@@ -184,7 +187,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		int figureMultiplier;
 		final int unitImageMultiplier;
 		
-		switch (scale)
+		switch (getClientConfig ().getUnitCombatScale ())
 		{
 			case DOUBLE_SIZE_UNITS:
 				relativeScale = 1;
@@ -208,7 +211,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				break;
 				
 			default:
-				throw new MomException ("drawUnitFigures encountered a scale that it doesn't know how to handle: " + scale);
+				throw new MomException ("drawUnitFigures encountered a scale that it doesn't know how to handle: " + getClientConfig ().getUnitCombatScale ());
 		}
 		
 		// Show heroes with entourage of cavalry accompanying them
@@ -261,12 +264,11 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param drawSampleTile Whether to draw a sample tile (grass or ocean) under this unit
-	 * @param scale The combat scale chosen on the Options screen
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final AvailableUnit unit, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile, final UnitCombatScale scale) throws IOException
+		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile) throws IOException
 	{
 		// Get total figures
 		final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "drawUnitFigures");
@@ -297,7 +299,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		
 		// Call other version now that we have all the necessary values
 		drawUnitFigures (unit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, combatActionID,
-			direction, g, offsetX, offsetY, sampleTileImageFile, scale);
+			direction, g, offsetX, offsetY, sampleTileImageFile);
 	}
 	
 	/**
@@ -435,5 +437,21 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
+	}
+
+	/**
+	 * @return Client config, containing the scale setting
+	 */
+	public final MomImeClientConfig getClientConfig ()
+	{
+		return clientConfig;
+	}
+
+	/**
+	 * @param config Client config, containing the scale setting
+	 */
+	public final void setClientConfig (final MomImeClientConfig config)
+	{
+		clientConfig = config;
 	}
 }

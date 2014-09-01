@@ -51,11 +51,10 @@ public interface UnitClientUtils
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
-	 * @param scale The combat scale chosen on the Options screen
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final UnitCombatScale scale) throws IOException;
+		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile) throws IOException;
 
 	/**
 	 * Version which derives most of the values from an existing unit object.
@@ -67,9 +66,8 @@ public interface UnitClientUtils
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
 	 * @param drawSampleTile Whether to draw a sample tile (grass or ocean) under this unit
-	 * @param scale The combat scale chosen on the Options screen
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final AvailableUnit unit, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile, final UnitCombatScale scale) throws IOException;
+		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile) throws IOException;
 }

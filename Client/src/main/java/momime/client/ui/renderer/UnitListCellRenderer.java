@@ -19,7 +19,6 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
-import momime.client.utils.UnitCombatScale;
 import momime.common.database.v0_9_5.Unit;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.utils.UnitUtils;
@@ -92,8 +91,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<Unit>
 				{
 					try
 					{
-						getUnitClientUtils ().drawUnitFigures (unit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 0, PANEL_SIZE.height - 32, true,
-							UnitCombatScale.DOUBLE_SIZE_UNITS);
+						getUnitClientUtils ().drawUnitFigures (unit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 0, PANEL_SIZE.height - 32, true);
 					}
 					catch (final Exception e)
 					{

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:momimecltconfig="http://momime/client/config/v0_9_5" targetNamespace="http://momime/client/config/v0_9_5">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:momimecltconfig="http://momime/client/config/v0_9_5" targetNamespace="http://momime/client/config/v0_9_5"
+	jaxb:version="2.0">
 
 	<xsd:element name="momImeClientConfig">
 		<xsd:complexType>
@@ -7,9 +9,27 @@
 				<xsd:element minOccurs="1" maxOccurs="1" name="graphicsXmlFilename" type="momimecltconfig:filename" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="pathToLanguageXmlFiles" type="momimecltconfig:path" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="chosenLanguage" type="xsd:normalizedString" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="unitCombatScale" type="momimecltconfig:unitCombatScale" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+
+	<xsd:simpleType name="unitCombatScale">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Double size units</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DOUBLE_SIZE_UNITS"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Four times figures</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Four times figures except for single-figure summoned creatures</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
 
 	<xsd:simpleType name="path">
 		<xsd:restriction base="xsd:normalizedString" />

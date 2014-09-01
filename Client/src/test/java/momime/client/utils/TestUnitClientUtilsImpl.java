@@ -14,6 +14,8 @@ import javax.swing.WindowConstants;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.config.v0_9_5.MomImeClientConfig;
+import momime.client.config.v0_9_5.UnitCombatScale;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -179,11 +181,15 @@ public final class TestUnitClientUtilsImpl
 		anim.setGraphicsDB (gfx);
 		anim.setUtils (utils);
 		
+		// Config
+		final MomImeClientConfig config = new MomImeClientConfig (); 
+		
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
 		unitUtils.setAnim (anim);
 		unitUtils.setGraphicsDB (gfx);
 		unitUtils.setUtils (utils);
+		unitUtils.setClientConfig (config);
 		
 		// Set up a dummy panel
 		final Dimension panelSize = new Dimension (600, 400);
@@ -201,11 +207,12 @@ public final class TestUnitClientUtilsImpl
 					int y = 40;
 					for (final UnitCombatScale scale : UnitCombatScale.values ())
 					{
-						unitUtils.drawUnitFigures ("UN106", null, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, scale);
-						unitUtils.drawUnitFigures ("UN075", null, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, scale);
-						unitUtils.drawUnitFigures ("UN035", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, scale);
-						unitUtils.drawUnitFigures ("UN197", CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, scale);
-						unitUtils.drawUnitFigures ("UN037", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, scale);
+						config.setUnitCombatScale (scale);
+						unitUtils.drawUnitFigures ("UN106", null, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE);
+						unitUtils.drawUnitFigures ("UN075", null, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE);
+						unitUtils.drawUnitFigures ("UN035", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE);
+						unitUtils.drawUnitFigures ("UN197", CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE);
+						unitUtils.drawUnitFigures ("UN037", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE);
 						
 						y = y + 80;
 					}

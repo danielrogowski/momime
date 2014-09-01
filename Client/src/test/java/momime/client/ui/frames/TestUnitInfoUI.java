@@ -1,9 +1,9 @@
 package momime.client.ui.frames;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import momime.client.MomClient;
 import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.database.ClientDatabaseEx;
@@ -14,6 +14,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
+import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
@@ -101,6 +102,9 @@ public final class TestUnitInfoUI
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
 		
+		// Animation controller
+		final AnimationController anim = mock (AnimationController.class);
+		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUtils (utils);
@@ -112,6 +116,7 @@ public final class TestUnitInfoUI
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitUtils (unitUtils);
 		panel.setUnitClientUtils (unitClientUtils);
+		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
@@ -195,6 +200,9 @@ public final class TestUnitInfoUI
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
+
+		// Animation controller
+		final AnimationController anim = mock (AnimationController.class);
 		
 		// Set up panel
 		final UnitInfoPanel panel = new UnitInfoPanel ();
@@ -207,6 +215,7 @@ public final class TestUnitInfoUI
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitUtils (unitUtils);
 		panel.setUnitClientUtils (unitClientUtils);
+		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		

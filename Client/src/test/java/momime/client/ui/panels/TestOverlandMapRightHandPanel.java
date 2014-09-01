@@ -21,6 +21,7 @@ import momime.client.utils.TextUtilsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.utils.ResourceValueUtils;
@@ -88,6 +89,7 @@ public final class TestOverlandMapRightHandPanel
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
+		when (client.getOurPlayerID ()).thenReturn (3);
 		
 		// General public knowledge
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -107,7 +109,9 @@ public final class TestOverlandMapRightHandPanel
 		pd1.setHuman (true);
 		pd1.setPlayerName ("Mr. Blah");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, null, null);
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub, null);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);

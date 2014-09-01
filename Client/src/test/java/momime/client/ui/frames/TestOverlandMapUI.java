@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
@@ -25,6 +27,7 @@ import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.utils.ResourceValueUtils;
@@ -33,6 +36,8 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
@@ -110,6 +115,22 @@ public final class TestOverlandMapUI
 		gpk.setCurrentPlayerID (3);
 		
 		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
+		
+		// Player
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (3);
+		pd1.setHuman (true);
+		pd1.setPlayerName ("Mr. Blah");
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player1);
+		
+		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPlayerID ()).thenReturn (3);
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);

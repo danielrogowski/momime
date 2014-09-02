@@ -10,5 +10,5 @@ public interface NewTurnMessageRepaintOnCityDataChanged
 	/**
 	 * @return The location of the city that this NTM is displaying info about
 	 */
-	public MapCoordinates3D getLocation ();
+	public MapCoordinates3D getCityLocation ();
 }

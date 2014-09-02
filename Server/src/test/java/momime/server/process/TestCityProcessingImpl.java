@@ -623,7 +623,7 @@ public final class TestCityProcessingImpl
 		assertEquals (1, humanTrans.getNewTurnMessage ().size ());
 		assertEquals (NewTurnMessageTypeID.POPULATION_CHANGE, humanTrans.getNewTurnMessage ().get (0).getMsgType ());
 		final NewTurnMessagePopulationChange ntm = (NewTurnMessagePopulationChange) humanTrans.getNewTurnMessage ().get (0);
-		assertEquals (humanLocation, ntm.getLocation ());
+		assertEquals (humanLocation, ntm.getCityLocation ());
 		assertEquals (4400, ntm.getOldPopulation ());
 		assertEquals (4400+650, ntm.getNewPopulation ());
 		

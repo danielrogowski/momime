@@ -40,6 +40,7 @@ import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
+import momime.client.utils.UnitClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
@@ -54,6 +55,7 @@ import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -109,6 +111,12 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Variable replacer for outputting skill descriptions */
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
+
+	/** Unit utils */
+	private UnitUtils unitUtils;
+
+	/** Utils for drawing units */
+	private UnitClientUtils unitClientUtils;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -172,6 +180,9 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Panel where we show the image of what we're currently constructing */
 	private JPanel constructionPanel;
+	
+	/** Sample unit to display in constructionpanel */
+	private AvailableUnit sampleUnit;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -615,12 +626,20 @@ public final class CityViewUI extends MomClientFrameUI
 					(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 				try
 				{
-					final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionPanel");
-					final BufferedImage image = getAnim ().loadImageOrAnimationFrame
-						((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-						buildingImage.getCityViewAnimation ());
+					// Draw building
+					if (cityData.getCurrentlyConstructingBuildingID () != null)
+					{
+						final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionPanel");
+						final BufferedImage image = getAnim ().loadImageOrAnimationFrame
+							((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
+							buildingImage.getCityViewAnimation ());
 					
-					g.drawImage (image, (getSize ().width - image.getWidth ()) / 2, (getSize ().height - image.getHeight ()) / 2, null);
+						g.drawImage (image, (getSize ().width - image.getWidth ()) / 2, (getSize ().height - image.getHeight ()) / 2, null);
+					}
+
+					// Draw unit
+					if (sampleUnit != null)
+						getUnitClientUtils ().drawUnitFigures (sampleUnit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, (constructionPanelSize.width - 60) / 2, 28, true);
 				}
 				catch (final Exception e)
 				{
@@ -936,8 +955,25 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		// Find what we're currently constructing
 		getAnim ().unregisterRepaintTrigger (null, constructionPanel);
-		getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding
-			(cityData.getCurrentlyConstructingBuildingID (), "cityDataChanged").getCityViewAnimation (), constructionPanel);
+		
+		if (cityData.getCurrentlyConstructingBuildingID () != null)
+			getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding
+				(cityData.getCurrentlyConstructingBuildingID (), "cityDataChanged").getCityViewAnimation (), constructionPanel);
+		
+		if (cityData.getCurrentlyConstructingUnitID () == null)
+			sampleUnit = null;
+		else
+		{
+			getUnitClientUtils ().registerUnitFiguresAnimation (cityData.getCurrentlyConstructingUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, constructionPanel);
+			
+			// Create a dummy unit here, rather than on every paintComponent call
+			sampleUnit = new AvailableUnit ();
+			sampleUnit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
+
+			// We don't have to get the weapon grade or experience right just to draw the figures
+			getUnitUtils ().initializeUnitSkills (sampleUnit, -1, true, getClient ().getClientDB ());			
+		}
+		
 		constructionPanel.repaint ();
 
 		civilianPanel.revalidate ();
@@ -1273,6 +1309,38 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setUnitStatsReplacer (final UnitStatsLanguageVariableReplacer replacer)
 	{
 		unitStatsReplacer = replacer;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Utils for drawing units
+	 */
+	public final UnitClientUtils getUnitClientUtils ()
+	{
+		return unitClientUtils;
+	}
+
+	/**
+	 * @param util Utils for drawing units
+	 */
+	public final void setUnitClientUtils (final UnitClientUtils util)
+	{
+		unitClientUtils = util;
 	}
 	
 	/**

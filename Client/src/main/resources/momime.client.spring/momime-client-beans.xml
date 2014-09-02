@@ -364,9 +364,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 
+	<bean id="newTurnMessageConstructUnit" class="momime.client.newturnmessages.NewTurnMessageConstructUnitEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="anim" ref="anim" />
+		<property name="client" ref="momClient" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="utils" ref="uiUtils" />
+	</bean>
+
 	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype" />
 	<bean id="newTurnMessageBuildingSoldFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageBuildingSoldFromLackOfProductionEx" scope="prototype" />
-	<bean id="newTurnMessageConstructUnit" class="momime.client.newturnmessages.NewTurnMessageConstructUnitEx" scope="prototype" />
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype" />
 	<bean id="newTurnMessageOverlandEnchantment" class="momime.client.newturnmessages.NewTurnMessageOverlandEnchantmentEx" scope="prototype" />
 	<bean id="newTurnMessageUnitKilledFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageUnitKilledFromLackOfProductionEx" scope="prototype" />
@@ -745,6 +754,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />

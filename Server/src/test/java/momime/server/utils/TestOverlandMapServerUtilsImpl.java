@@ -341,7 +341,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertEquals (1, attackerTrans.getNewTurnMessage ().size ());
 		assertEquals (NewTurnMessageTypeID.NODE_CAPTURED, attackerTrans.getNewTurnMessage ().get (0).getMsgType ());
 		final NewTurnMessageNode attackerMsg = (NewTurnMessageNode) attackerTrans.getNewTurnMessage ().get (0);
-		assertEquals (nodeLocation, attackerMsg.getLocation ());
+		assertEquals (nodeLocation, attackerMsg.getNodeLocation ());
 		assertEquals ("GS", attackerMsg.getUnitID ());
 		assertNull (attackerMsg.getOtherUnitID ());
 		assertNull (attackerMsg.getOtherPlayerID ());
@@ -552,7 +552,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertEquals (1, attackerTrans.getNewTurnMessage ().size ());
 		assertEquals (NewTurnMessageTypeID.NODE_CAPTURED, attackerTrans.getNewTurnMessage ().get (0).getMsgType ());
 		final NewTurnMessageNode attackerMsg = (NewTurnMessageNode) attackerTrans.getNewTurnMessage ().get (0);
-		assertEquals (nodeLocation, attackerMsg.getLocation ());
+		assertEquals (nodeLocation, attackerMsg.getNodeLocation ());
 		assertEquals ("GS", attackerMsg.getUnitID ());
 		assertEquals ("MS", attackerMsg.getOtherUnitID ());
 		assertEquals (3, attackerMsg.getOtherPlayerID ().intValue ());
@@ -560,7 +560,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertEquals (1, defenderTrans.getNewTurnMessage ().size ());
 		assertEquals (NewTurnMessageTypeID.NODE_LOST, defenderTrans.getNewTurnMessage ().get (0).getMsgType ());
 		final NewTurnMessageNode defenderMsg = (NewTurnMessageNode) defenderTrans.getNewTurnMessage ().get (0);
-		assertEquals (nodeLocation, defenderMsg.getLocation ());
+		assertEquals (nodeLocation, defenderMsg.getNodeLocation ());
 		assertEquals ("MS", defenderMsg.getUnitID ());
 		assertEquals ("GS", defenderMsg.getOtherUnitID ());
 		assertEquals (2, defenderMsg.getOtherPlayerID ().intValue ());

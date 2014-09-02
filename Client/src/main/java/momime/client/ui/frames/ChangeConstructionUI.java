@@ -170,23 +170,32 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 					(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
-				if (getUnitInfoPanel ().getBuilding ().getBuildingID () != cityData.getCurrentlyConstructingBuildingID ())
+				if (((getUnitInfoPanel ().getBuilding () != null) && (!getUnitInfoPanel ().getBuilding ().getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()))) ||
+					((getUnitInfoPanel ().getUnit () != null) && (!getUnitInfoPanel ().getUnit ().getUnitID ().equals ( cityData.getCurrentlyConstructingUnitID ()))))
 				{
 					// Tell server that we want to change our construction
 					// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
 					final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
-					msg.setBuildingID (getUnitInfoPanel ().getBuilding ().getBuildingID ());
+					
+					if (getUnitInfoPanel ().getBuilding () != null)
+						msg.setBuildingID (getUnitInfoPanel ().getBuilding ().getBuildingID ());
+
+					if (getUnitInfoPanel ().getUnit () != null)
+						msg.setUnitID (getUnitInfoPanel ().getUnit ().getUnitID ());
+					
 					msg.setCityLocation (getCityLocation ());
 					try
 					{
 						getClient ().getServerConnection ().sendMessageToServer (msg);
-						getFrame ().dispose ();
 					}
 					catch (final Exception e)
 					{
 						log.error (e, e);
 					}
 				}
+				
+				// Close form even if we didn't change what's being constructed
+				getFrame ().dispose ();
 			}
 		};
 		
@@ -415,6 +424,10 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			{
 				unitsItems.addElement (thisUnit);
 				getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, unitsList);
+
+				// Pre-select whatever was previously being built when the form first opens up
+				if (thisUnit.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()))
+					unitsList.setSelectedIndex (unitsItems.size () - 1);
 			}
 
 		// Select the current construction project

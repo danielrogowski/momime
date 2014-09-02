@@ -132,7 +132,7 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 		{
 			final NewTurnMessageBuildingSoldFromLackOfProduction buildingSold = new NewTurnMessageBuildingSoldFromLackOfProduction ();
 			buildingSold.setMsgType (NewTurnMessageTypeID.BUILDING_LACK_OF_PRODUCTION);
-			buildingSold.setLocation (getBuilding ().getCityLocation ());
+			buildingSold.setCityLocation (getBuilding ().getCityLocation ());
 			buildingSold.setBuildingID (getBuilding ().getBuildingID ());
 			buildingSold.setProductionTypeID (getProductionTypeID ());
 

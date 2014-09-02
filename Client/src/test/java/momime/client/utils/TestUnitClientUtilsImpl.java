@@ -243,6 +243,6 @@ public final class TestUnitClientUtilsImpl
 		frame.setLocationRelativeTo (null);
 		frame.setVisible (true);
 		
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 	}
 }

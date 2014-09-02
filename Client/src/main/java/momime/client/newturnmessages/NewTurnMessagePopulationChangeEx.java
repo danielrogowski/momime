@@ -77,7 +77,7 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 			languageEntryID = "CityDeath";
 		
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-			(getLocation ().getZ ()).getRow ().get (getLocation ().getY ()).getCell ().get (getLocation ().getX ()).getCityData ();
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 		
 		return getLanguage ().findCategoryEntry ("NewTurnMessages", languageEntryID).replaceAll
 			("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
@@ -111,12 +111,12 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	public final void clicked () throws Exception
 	{
 		// Is there a city view already open for this city?
-		CityViewUI cityView = getClient ().getCityViews ().get (getLocation ().toString ());
+		CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
 		if (cityView == null)
 		{
 			cityView = getPrototypeFrameCreator ().createCityView ();
-			cityView.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getLocation ()));
-			getClient ().getCityViews ().put (getLocation ().toString (), cityView);
+			cityView.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getCityLocation ()));
+			getClient ().getCityViews ().put (getCityLocation ().toString (), cityView);
 		}
 		
 		cityView.setVisible (true);

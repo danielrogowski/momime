@@ -378,7 +378,7 @@ public final class TestSpellProcessingImpl
 		final NewTurnMessageSummonUnit ntm = (NewTurnMessageSummonUnit) trans3.getNewTurnMessage ().get (0);
 		assertEquals ("SP001", ntm.getSpellID ());
 		assertEquals ("UN001", ntm.getUnitID ());
-		assertEquals (summoningCircleLocation, ntm.getLocation ());
+		assertEquals (summoningCircleLocation, ntm.getCityLocation ());
 		assertEquals (UnitAddBumpTypeID.CITY, ntm.getUnitAddBumpType ());
 	}
 
@@ -494,7 +494,7 @@ public final class TestSpellProcessingImpl
 		final NewTurnMessageSummonUnit ntm = (NewTurnMessageSummonUnit) trans3.getNewTurnMessage ().get (0);
 		assertEquals ("SP001", ntm.getSpellID ());
 		assertEquals ("UN008", ntm.getUnitID ());
-		assertEquals (summoningCircleLocation, ntm.getLocation ());
+		assertEquals (summoningCircleLocation, ntm.getCityLocation ());
 		assertEquals (UnitAddBumpTypeID.CITY, ntm.getUnitAddBumpType ());
 	}
 	

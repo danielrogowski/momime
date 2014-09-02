@@ -245,7 +245,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			{
 				final NewTurnMessageNode msg = new NewTurnMessageNode ();
 				msg.setMsgType (NewTurnMessageTypeID.NODE_CAPTURED);
-				msg.setLocation (attackingSpirit.getUnitLocation ());
+				msg.setNodeLocation (attackingSpirit.getUnitLocation ());
 				msg.setUnitID (attackingSpirit.getUnitID ());
 				msg.setOtherUnitID (tc.getNodeSpiritUnitID ());
 				msg.setOtherPlayerID (tc.getTerrainData ().getNodeOwnerID ());
@@ -261,7 +261,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 				{
 					final NewTurnMessageNode msg = new NewTurnMessageNode ();
 					msg.setMsgType (NewTurnMessageTypeID.NODE_LOST);
-					msg.setLocation (attackingSpirit.getUnitLocation ());
+					msg.setNodeLocation (attackingSpirit.getUnitLocation ());
 					msg.setUnitID (tc.getNodeSpiritUnitID ());
 					msg.setOtherUnitID (attackingSpirit.getUnitID ());
 					msg.setOtherPlayerID (attackingSpirit.getOwningPlayerID ());

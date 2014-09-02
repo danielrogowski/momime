@@ -20,6 +20,7 @@ import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Building;
+import momime.client.language.database.v0_9_5.Unit;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
@@ -141,17 +142,28 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 		
 		// Set labels for this NTM
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-			(getLocation ().getZ ()).getRow ().get (getLocation ().getY ()).getCell ().get (getLocation ().getX ()).getCityData ();
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
 		final Building oldBuilding = getLanguage ().findBuilding (getBuildingID ());
-		final Building newBuilding = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
-		
 		constructionCompletedLabel.setText (getLanguage ().findCategoryEntry ("NewTurnMessages", "ConstructionCompleted").replaceAll
 			("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
 			("OLD_CONSTRUCTION", (oldBuilding != null) ? oldBuilding.getBuildingName () : getBuildingID ()));
 		
-		nextConstructionLabel.setText (getLanguage ().findCategoryEntry ("NewTurnMessages", "NextConstruction").replaceAll
-			("NEW_CONSTRUCTION", (newBuilding != null) ? newBuilding.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ()));
+		String text = getLanguage ().findCategoryEntry ("NewTurnMessages", "NextConstruction");
+		
+		if (cityData.getCurrentlyConstructingBuildingID () != null)
+		{
+			final Building newBuilding = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
+			text = text.replaceAll ("NEW_CONSTRUCTION", (newBuilding != null) ? newBuilding.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ());
+		}
+
+		if (cityData.getCurrentlyConstructingUnitID () != null)
+		{
+			final Unit newUnit = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
+			text = text.replaceAll ("NEW_CONSTRUCTION", (newUnit != null) ? newUnit.getUnitName () : cityData.getCurrentlyConstructingUnitID ());
+		}
+		
+		nextConstructionLabel.setText (text);
 
 		// Look up the image for the old building
 		constructionCompletedImage.setIcon (null);
@@ -173,12 +185,25 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 		nextConstructionImage.setIcon (null);
 		try
 		{
-			final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
-			final BufferedImage image = getAnim ().loadImageOrAnimationFrame
-				((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-				buildingImage.getCityViewAnimation ());
+			// Building image
+			if (cityData.getCurrentlyConstructingBuildingID () != null)
+			{
+				final CityViewElement buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
+				final BufferedImage image = getAnim ().loadImageOrAnimationFrame
+					((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
+					buildingImage.getCityViewAnimation ());
 
-			nextConstructionImage.setIcon (new ImageIcon (image));
+				nextConstructionImage.setIcon (new ImageIcon (image));
+			}
+			
+			// Unit image
+			if (cityData.getCurrentlyConstructingUnitID () != null)
+			{
+				final BufferedImage image = getUtils ().loadImage (getGraphicsDB ().findUnit
+					(cityData.getCurrentlyConstructingUnitID (), "getComponent-New").getUnitOverlandImageFile ());
+
+				nextConstructionImage.setIcon (new ImageIcon (image));
+			}
 		}
 		catch (final Exception e)
 		{
@@ -197,15 +222,20 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 	public final void registerRepaintTriggers (final JList<NewTurnMessageUI> newTurnMessagesList) throws IOException
 	{
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-			(getLocation ().getZ ()).getRow ().get (getLocation ().getY ()).getCell ().get (getLocation ().getX ()).getCityData ();
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
 		// Look up the image for the old building
 		final CityViewElement oldBuilding = getGraphicsDB ().findBuilding (getBuildingID (), "registerRepaintTriggers-Old");
 		getAnim ().registerRepaintTrigger (oldBuilding.getCityViewAnimation (), newTurnMessagesList);
 
-		// Look up the image for the new building
-		final CityViewElement newBuilding = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
-		getAnim ().registerRepaintTrigger (newBuilding.getCityViewAnimation (), newTurnMessagesList);
+		// Look up the image for the new construction, if it is a building
+		if (cityData.getCurrentlyConstructingBuildingID () != null)
+		{
+			final CityViewElement newBuilding = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
+			getAnim ().registerRepaintTrigger (newBuilding.getCityViewAnimation (), newTurnMessagesList);
+		}
+		
+		// Units are displayed with their overland icon rather than the full combat tile and all the figures, so are never animated
 	}
 	
 	/**
@@ -216,12 +246,12 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 	public final void clicked () throws Exception
 	{
 		// Is there a change construction window already open for this city?
-		ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getLocation ().toString ());
+		ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getCityLocation ().toString ());
 		if (changeConstruction == null)
 		{
 			changeConstruction = getPrototypeFrameCreator ().createChangeConstruction ();
-			changeConstruction.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getLocation ()));
-			getClient ().getChangeConstructions ().put (getLocation ().toString (), changeConstruction);
+			changeConstruction.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getCityLocation ()));
+			getClient ().getChangeConstructions ().put (getCityLocation ().toString (), changeConstruction);
 		}
 		
 		changeConstruction.setVisible (true);

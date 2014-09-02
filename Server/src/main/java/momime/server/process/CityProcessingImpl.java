@@ -339,7 +339,7 @@ public final class CityProcessingImpl implements CityProcessing
 												final NewTurnMessageConstructBuilding completedConstruction = new NewTurnMessageConstructBuilding ();
 												completedConstruction.setMsgType (NewTurnMessageTypeID.COMPLETED_BUILDING);
 												completedConstruction.setBuildingID (building.getBuildingID ());
-												completedConstruction.setLocation (cityLocation);
+												completedConstruction.setCityLocation (cityLocation);
 												((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (completedConstruction);
 											}
 
@@ -361,7 +361,7 @@ public final class CityProcessingImpl implements CityProcessing
 												final NewTurnMessageConstructUnit completedConstruction = new NewTurnMessageConstructUnit ();
 												completedConstruction.setMsgType (NewTurnMessageTypeID.COMPLETED_UNIT);
 												completedConstruction.setUnitID (unit.getUnitID ());
-												completedConstruction.setLocation (cityLocation);
+												completedConstruction.setCityLocation (cityLocation);
 												completedConstruction.setUnitAddBumpType (addLocation.getBumpType ());
 												((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (completedConstruction);
 											}
@@ -419,7 +419,7 @@ public final class CityProcessingImpl implements CityProcessing
 							{
 								final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
 								populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
-								populationChange.setLocation (cityLocation);
+								populationChange.setCityLocation (cityLocation);
 								populationChange.setOldPopulation (oldPopulation);
 								populationChange.setNewPopulation (newPopulation);
 								((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);

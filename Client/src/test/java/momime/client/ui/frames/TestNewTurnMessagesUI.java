@@ -98,7 +98,7 @@ public final class TestNewTurnMessagesUI
 		msg1.setLanguageHolder (langHolder);
 		msg1.setSmallFont (CreateFontsForTests.getSmallFont ());
 		msg1.setClient (client);
-		msg1.setLocation (new MapCoordinates3DEx (20, 10, 0));
+		msg1.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		msg1.setTextUtils (textUtils);
 		msg1.setOldPopulation (4567);
 		msg1.setNewPopulation (5678);
@@ -108,7 +108,7 @@ public final class TestNewTurnMessagesUI
 		msg2.setLanguageHolder (langHolder);
 		msg2.setSmallFont (CreateFontsForTests.getSmallFont ());
 		msg2.setClient (client);
-		msg2.setLocation (new MapCoordinates3DEx (21, 10, 0));
+		msg2.setCityLocation (new MapCoordinates3DEx (21, 10, 0));
 		msg2.setTextUtils (textUtils);
 		msg2.setOldPopulation (14567);
 		msg2.setNewPopulation (15678);
@@ -124,7 +124,7 @@ public final class TestNewTurnMessagesUI
 		msg3.setLanguageHolder (langHolder);
 		msg3.setSmallFont (CreateFontsForTests.getSmallFont ());
 		msg3.setClient (client);
-		msg3.setLocation (new MapCoordinates3DEx (22, 10, 0));
+		msg3.setCityLocation (new MapCoordinates3DEx (22, 10, 0));
 		msg3.setTextUtils (textUtils);
 		msg3.setOldPopulation (23100);
 		msg3.setNewPopulation (22850);

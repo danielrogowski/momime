@@ -141,7 +141,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:newTurnMessageData">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="oldPopulation" type="momimenewgame:cityPopulation"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="newPopulation" type="momimenewgame:cityPopulation"/>
 				</xsd:sequence>
@@ -156,7 +156,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:newTurnMessageData">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitID" type="momimecommon:unitID"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitAddBumpType" type="momimemsgs:unitAddBumpTypeID"/>
 				</xsd:sequence>
@@ -190,7 +190,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:newTurnMessageData">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
 				</xsd:sequence>
 			</xsd:extension>
@@ -204,7 +204,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:newTurnMessageData">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="nodeLocation" type="map:mapCoordinates3D"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitID" type="momimecommon:unitID"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="otherUnitID" type="momimecommon:unitID"/>
 					<xsd:element minOccurs="0" maxOccurs="1" name="otherPlayerID" type="mps:playerID">
@@ -250,7 +250,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:newTurnMessageKilledFromLackOfProduction">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="location" type="map:mapCoordinates3D"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID"/>
 				</xsd:sequence>
 			</xsd:extension>

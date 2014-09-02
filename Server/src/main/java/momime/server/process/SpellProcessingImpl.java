@@ -224,7 +224,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						summoningSpell.setMsgType (NewTurnMessageTypeID.SUMMONED_UNIT);
 						summoningSpell.setSpellID (spell.getSpellID ());
 						summoningSpell.setUnitID (summonedUnitID);
-						summoningSpell.setLocation (addLocation.getUnitLocation ());
+						summoningSpell.setCityLocation (addLocation.getUnitLocation ());
 						summoningSpell.setUnitAddBumpType (addLocation.getBumpType ());
 
 						if (newUnit != null)

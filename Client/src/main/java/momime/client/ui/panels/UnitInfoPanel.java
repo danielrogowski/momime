@@ -638,6 +638,14 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	}
 
 	/**
+	 * @return Unit that we're displaying info about, or null if we're displaying info about a building
+	 */
+	public final AvailableUnit getUnit ()
+	{
+		return unit;
+	}
+
+	/**
 	 * @param showUnit Unit to show info about
 	 * @throws IOException If there is a problem
 	 */

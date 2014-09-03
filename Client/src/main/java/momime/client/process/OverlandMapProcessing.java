@@ -6,6 +6,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 
@@ -26,6 +27,18 @@ public interface OverlandMapProcessing
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public void buildUnitsLeftToMoveList ()
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Sets the select unit boxes appropriately for the units we have in the specified cell
+	 * @param unitLocation Location of the unit stack to move; null means we're moving nothing so just remove all old unit selection buttons
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If we cannot find any appropriate experience level for a unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void showSelectUnitBoxes (final MapCoordinates3DEx unitLocation)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**

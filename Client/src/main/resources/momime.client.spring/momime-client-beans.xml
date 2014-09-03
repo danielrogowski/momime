@@ -762,8 +762,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="anim" ref="anim" />
+		<property name="uiComponentFactory" ref="uiComponentFactory" />
 		<property name="cityViewPanel" ref="cityViewPanel" />									<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 

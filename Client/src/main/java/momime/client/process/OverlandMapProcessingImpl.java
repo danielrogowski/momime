@@ -153,7 +153,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	final void showSelectUnitBoxes (final MapCoordinates3DEx unitLocation)
+	@Override
+	public final void showSelectUnitBoxes (final MapCoordinates3DEx unitLocation)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering showSelectUnitBoxes: " + unitLocation);

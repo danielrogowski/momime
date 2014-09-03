@@ -8,10 +8,13 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.components.SelectUnitButton;
+import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitMessage;
+import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 
@@ -83,7 +86,9 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements Sessio
 				}
 			}
 		
-		// Select unit buttons on the City screen
+		// Find the unit being removed
+		final MemoryUnit unit = getUnitUtils ().findUnitURN (getData ().getUnitURN (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "KillUnitMessageImpl");
 		
 		// The server works out what action we need to take
 		switch (getData ().getKillUnitActionID ())
@@ -100,6 +105,14 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements Sessio
 			
 			default:
 				throw new MomException ("KillUnitMessageImpl got an KillUnitAction that it doesn't know how to handle: " + getData ().getKillUnitActionID ());
+		}
+
+		// Select unit buttons on the City screen
+		if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null))
+		{
+			final CityViewUI cityView = getClient ().getCityViews ().get (unit.getUnitLocation ().toString ());
+			if (cityView != null)
+				cityView.unitsChanged ();
 		}
 		
 		log.trace ("Exiting process");

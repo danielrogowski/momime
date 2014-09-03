@@ -9,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -33,7 +35,10 @@ import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.components.SelectUnitButton;
+import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.panels.BuildingListener;
 import momime.client.ui.panels.CityViewPanel;
@@ -52,7 +57,9 @@ import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -127,6 +134,12 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Animation controller */
 	private AnimationController anim;
 	
+	/** UI component factory */
+	private UIComponentFactory uiComponentFactory;
+	
+	/** Turn sequence and movement helper methods */
+	private OverlandMapProcessing overlandMapProcessing;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
 	
@@ -183,6 +196,9 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Sample unit to display in constructionpanel */
 	private AvailableUnit sampleUnit;
+	
+	/** Panel containing all the select unit buttons */
+	private JPanel unitPanel;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -536,7 +552,9 @@ public final class CityViewUI extends MomClientFrameUI
 		// Set up the mini panel to hold all the units
 		final Dimension unitPanelSize = new Dimension (background.getWidth () * 2, 40);
 		
-		final JPanel unitPanel = new JPanel ();
+		unitPanel = new JPanel ();
+		unitPanel.setLayout (new GridBagLayout ());
+		unitPanel.setOpaque (false);
 		unitPanel.setMinimumSize (unitPanelSize);
 		unitPanel.setMaximumSize (unitPanelSize);
 		unitPanel.setPreferredSize (unitPanelSize);
@@ -655,9 +673,6 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		contentPane.add (constructionPanel, getUtils ().createConstraintsNoFill (2, 9, 2, 1, new Insets (0, 0, 2, 10), GridBagConstraintsNoFill.SOUTHEAST));
 		
-		// Set up info that depends on cityData
-		cityDataChanged ();
-		
 		// Deal with clicking on buildings to sell them
 		getCityViewPanel ().addBuildingListener (new BuildingListener ()
 		{
@@ -748,12 +763,86 @@ public final class CityViewUI extends MomClientFrameUI
 				}				
 			}
 		});
+
+		cityDataChanged ();
+		unitsChanged ();
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
 
 		log.trace ("Exiting init");
+	}
+	
+	/**
+	 * Regenerates the buttons along the bottom showing the units that are in the city
+	 * @throws IOException If a resource cannot be found
+	 */
+	public final void unitsChanged () throws IOException
+	{
+		log.trace ("Entering unitsChanged: " + getCityLocation ());
+		
+		unitPanel.removeAll ();
+		int x = 0;
+		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
+			{
+				final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
+				selectUnitButton.init ();
+				selectUnitButton.setUnit (mu);
+				selectUnitButton.setSelected (true);		// Just so the owner's background colour appears
+
+				selectUnitButton.addMouseListener (new MouseAdapter ()
+				{
+					@Override
+					public final void mouseClicked (final MouseEvent ev)
+					{
+						try
+						{
+							// Right mouse clicks to open up the unit info screen are always enabled
+							if (ev.getButton () != MouseEvent.BUTTON1)
+							{
+								// Is there a unit info screen already open for this unit?
+								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (selectUnitButton.getUnit ().getUnitURN ());
+								if (unitInfo == null)
+								{
+									unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
+									unitInfo.setUnit (selectUnitButton.getUnit ());
+									getClient ().getUnitInfos ().put (selectUnitButton.getUnit ().getUnitURN (), unitInfo);
+								}
+							
+								unitInfo.setVisible (true);
+							}
+							else
+							{
+								// Left click shows the units in the city in the right hand panel of the overland map
+								getOverlandMapProcessing ().showSelectUnitBoxes (getCityLocation ());
+								
+								// Don't actually deselect the button
+								selectUnitButton.setSelected (!selectUnitButton.isSelected ());
+							}
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+					}
+				});
+
+				unitPanel.add (selectUnitButton, getUtils ().createConstraintsNoFill (x, 0, 1, 1, new Insets (0, 2, 0, 0), GridBagConstraintsNoFill.CENTRE));
+				x++;
+			}
+
+		// Left justify the buttons
+		final GridBagConstraints fillConstraints = getUtils ().createConstraintsHorizontalFill (x, 0, 1, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE);
+		fillConstraints.weightx = 1;
+		
+		unitPanel.add (Box.createRigidArea (new Dimension (0, 0)), fillConstraints);
+
+		unitPanel.revalidate ();
+		unitPanel.repaint ();
+		
+		log.trace ("Exiting unitsChanged");
 	}
 
 	/**
@@ -1389,5 +1478,37 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setAnim (final AnimationController controller)
 	{
 		anim = controller;
+	}
+
+	/**
+	 * @return UI component factory
+	 */
+	public final UIComponentFactory getUiComponentFactory ()
+	{
+		return uiComponentFactory;
+	}
+
+	/**
+	 * @param factory UI component factory
+	 */
+	public final void setUiComponentFactory (final UIComponentFactory factory)
+	{
+		uiComponentFactory = factory;
+	}
+
+	/**
+	 * @return Turn sequence and movement helper methods
+	 */
+	public final OverlandMapProcessing getOverlandMapProcessing ()
+	{
+		return overlandMapProcessing;
+	}
+
+	/**
+	 * @param proc Turn sequence and movement helper methods
+	 */
+	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
+	{
+		overlandMapProcessing = proc;
 	}
 }

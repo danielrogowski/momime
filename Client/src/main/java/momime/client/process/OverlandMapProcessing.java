@@ -5,6 +5,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.v0_9_5.MemoryUnit;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -27,6 +28,17 @@ public interface OverlandMapProcessing
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public void buildUnitsLeftToMoveList ()
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * Selects and centres the map on the next unit which we need to give a movement order to
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If we cannot find any appropriate experience level for a unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void selectNextUnitToMoveOverland ()
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**
@@ -100,6 +112,19 @@ public interface OverlandMapProcessing
 	 */
 	public void selectedUnitsPatrol () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 
+	/**
+	 * Tells the server that we want to move the currently selected units to a different location on the overland map
+	 * @param moveTo The place to move to
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void moveUnitStackTo (final MapCoordinates3DEx moveTo) throws JAXBException, XMLStreamException;
+
+	/**
+	 * @param unit Unit to remove from the unitsLeftToMoveOverland list
+	 */
+	public void removeUnitFromLeftToMoveOverland (final MemoryUnit unit);
+	
 	/**
 	 * Tell the server we clicked the Next Turn button
 	 * @throws JAXBException If there is a problem converting the object into XML

@@ -251,10 +251,19 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
-	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype" />
 	
 	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype">
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
+
+	<bean id="updateOverlandMovementRemainingMessage" class="momime.client.messages.process.UpdateOverlandMovementRemainingMessageImpl" scope="prototype">
+		<property name="client" ref="momClient" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+	</bean>
+
+	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype">
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 	
 	<bean id="updateNodeLairTowerUnitIDMessage" class="momime.client.messages.process.UpdateNodeLairTowerUnitIDMessageImpl" scope="prototype" />
@@ -262,7 +271,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="pendingMovementMessage" class="momime.client.messages.process.PendingMovementMessageImpl" scope="prototype" />
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
-	<bean id="updateOverlandMovementRemainingMessage" class="momime.client.messages.process.UpdateOverlandMovementRemainingMessageImpl" scope="prototype" />
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
 	<bean id="startSimultaneousTurnMessage" class="momime.client.messages.process.StartSimultaneousTurnMessageImpl" scope="prototype" />
 	<bean id="addNewTurnMessagesMessage" class="momime.client.messages.process.AddNewTurnMessagesMessageImpl" scope="prototype" />
@@ -628,6 +636,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 
 	<bean id="magicSlidersUI" class="momime.client.ui.frames.MagicSlidersUI">

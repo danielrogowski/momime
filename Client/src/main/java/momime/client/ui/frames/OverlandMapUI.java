@@ -29,13 +29,17 @@ import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
+import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.messages.servertoclient.v0_9_5.MapVolumeOfOverlandMoveType;
+import momime.common.messages.servertoclient.v0_9_5.OverlandMoveTypeID;
+import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.messages.v0_9_5.UnitSpecialOrder;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
@@ -95,6 +99,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
+
+	/** Turn sequence and movement helper methods */
+	private OverlandMapProcessing overlandMapProcessing;
 	
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
@@ -584,34 +591,53 @@ public final class OverlandMapUI extends MomClientFrameUI
 					while (mapCellX >= mapSize.getWidth ()) mapCellX = mapCellX - mapSize.getWidth (); 
 					while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
 					while (mapCellY >= mapSize.getHeight ()) mapCellY = mapCellY - mapSize.getHeight ();
+
+					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX);
 					
-					// What's at that location
-					final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-						(mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX).getCityData ();
-					if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
+					try
 					{
-						// Is there a city view already open for this city?
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane);
-						CityViewUI cityView = getClient ().getCityViews ().get (cityLocation.toString ());
-						if (cityView == null)
+						if (ev.getButton () != MouseEvent.BUTTON1)
 						{
-							cityView = getPrototypeFrameCreator ().createCityView ();
-							cityView.setCityLocation (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
-							getClient ().getCityViews ().put (cityLocation.toString (), cityView);
+							// Right clicking
+							final OverlandMapCityData cityData = mc.getCityData ();
+							if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
+							{
+								// Right clicking on a city to get the city screen up - is there a city view already open for this city?
+								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane);
+								CityViewUI cityView = getClient ().getCityViews ().get (cityLocation.toString ());
+								if (cityView == null)
+								{
+									cityView = getPrototypeFrameCreator ().createCityView ();
+									cityView.setCityLocation (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
+									getClient ().getCityViews ().put (cityLocation.toString (), cityView);
+								}
+							
+								cityView.setVisible (true);
+							}
+							else
+							{
+								// Right clicking to select or view a stack of units
+								if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
+									getOverlandMapProcessing ().showSelectUnitBoxes (new MapCoordinates3DEx (mapCellX, mapCellY, 0));
+								else
+									getOverlandMapProcessing ().showSelectUnitBoxes (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
+							}
 						}
-						
-						try
+						else
 						{
-							cityView.setVisible (true);
-						}
-						catch (final IOException e)
-						{
-							log.error (e, e);
+							// Left clicking on a space to move a stack of units to - can only do this if its our turn
+							if (((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
+								(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
+								(getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX) != OverlandMoveTypeID.CANNOT_MOVE_HERE))
+								
+								// NB. We don't check here that we actually have a unit selected - MoveUnitStackTo does this for us
+								getOverlandMapProcessing ().moveUnitStackTo (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
 						}
 					}
-					else
+					catch (final Exception e)
 					{
-						// Show selection boxes for any units at this location
+						log.error (e, e);
 					}
 				}
 			}
@@ -1024,5 +1050,21 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
 	{
 		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return Turn sequence and movement helper methods
+	 */
+	public final OverlandMapProcessing getOverlandMapProcessing ()
+	{
+		return overlandMapProcessing;
+	}
+
+	/**
+	 * @param proc Turn sequence and movement helper methods
+	 */
+	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
+	{
+		overlandMapProcessing = proc;
 	}
 }

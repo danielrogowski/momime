@@ -20,6 +20,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.MapFeature;
 import momime.common.database.v0_9_5.TileType;
 import momime.common.messages.clienttoserver.v0_9_5.NextTurnButtonMessage;
+import momime.common.messages.clienttoserver.v0_9_5.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
@@ -121,7 +122,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	final void selectNextUnitToMoveOverland ()
+	@Override
+	public final void selectNextUnitToMoveOverland ()
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering selectNextUnitToMoveOverland");
@@ -419,6 +421,44 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		selectNextUnitToMoveOverland ();
 		
 		log.trace ("Exiting selectedUnitsPatrol");
+	}
+	
+	/**
+	 * Tells the server that we want to move the currently selected units to a different location on the overland map
+	 * @param moveTo The place to move to
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void moveUnitStackTo (final MapCoordinates3DEx moveTo) throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering moveUnitStackTo: " + moveTo);
+
+		final List<Integer> movingUnitURNs = new ArrayList<Integer> ();
+		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((button.isVisible ()) && (button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+				movingUnitURNs.add (button.getUnit ().getUnitURN ());
+		
+		if (movingUnitURNs.size () > 0)
+		{
+			final RequestMoveOverlandUnitStackMessage msg = new RequestMoveOverlandUnitStackMessage ();
+			msg.setMoveFrom (unitMoveFrom);
+			msg.setMoveTo (moveTo);
+			msg.getUnitURN ().addAll (movingUnitURNs);
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+		}
+		
+		log.trace ("Exiting moveUnitStackTo");
+	}
+	
+	/**
+	 * @param unit Unit to remove from the unitsLeftToMoveOverland list
+	 */
+	@Override
+	public final void removeUnitFromLeftToMoveOverland (final MemoryUnit unit)
+	{
+		unitsLeftToMoveOverland.remove (unit);
 	}
 	
 	/**

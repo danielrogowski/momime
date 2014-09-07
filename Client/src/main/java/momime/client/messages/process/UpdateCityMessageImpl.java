@@ -18,13 +18,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to the client to tell them the map scenery
  */
-public final class UpdateCityMessageImpl extends UpdateCityMessage implements SessionServerToClientMessage
+public final class UpdateCityMessageImpl extends UpdateCityMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UpdateCityMessageImpl.class);
@@ -44,23 +43,21 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Se
 	/**
 	 * Method called when this message is sent in isolation
 	 * 
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: " + getData ().getMapLocation ());
+		log.trace ("Entering start: " + getData ().getMapLocation ());
 		
 		processOneUpdate ();
 		
 		// Regenerate city images to show change in size
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 	
 	/**

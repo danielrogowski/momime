@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -38,8 +37,8 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	/** Class logger */
 	private final Log log = LogFactory.getLog (CombatSchedulerImpl.class);
 	
-	/** Server-side multiplayer utils */
-	private MultiplayerServerUtils multiplayerServerUtils;
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
 	/** Scheduled combat utils */
 	private ScheduledCombatUtils scheduledCombatUtils; 
@@ -117,7 +116,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 		final PlayerCombatRequestStatusMessage msg = new PlayerCombatRequestStatusMessage ();
 		msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
 		msg.setCurrentlyPlayingCombat (currentlyPlayingCombat);
-		getMultiplayerServerUtils ().sendMessageToAllClients (players, msg);
+		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 
 		log.trace ("Exiting informClientsOfPlayerBusyInCombat");
 	}
@@ -198,7 +197,7 @@ public final class CombatSchedulerImpl implements CombatScheduler
 		final MomScheduledCombat combat = getScheduledCombatUtils ().findScheduledCombatURN 
 			(mom.getGeneralServerKnowledge ().getScheduledCombat (), scheduledCombatURN, "processEndOfScheduledCombat");
 		
-		final PlayerServerDetails attackingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), combat.getAttackingPlayerID (), "processEndOfScheduledCombat");
+		final PlayerServerDetails attackingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), combat.getAttackingPlayerID (), "processEndOfScheduledCombat");
 		
 		// Any other combats where this player is attacking the same square, change from a combat into an optional movement without a fight
 		if ((winningPlayer != null) && (combat.getAttackingPlayerID () == winningPlayer.getPlayerDescription ().getPlayerID ()))
@@ -235,19 +234,19 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	}
 
 	/**
-	 * @return Server-side multiplayer utils
+	 * @return Server only helper methods for dealing with players in a session
 	 */
-	public final MultiplayerServerUtils getMultiplayerServerUtils ()
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
 	{
-		return multiplayerServerUtils;
+		return multiplayerSessionServerUtils;
 	}
-	
+
 	/**
-	 * @param utils Server-side multiplayer utils
+	 * @param obj Server only helper methods for dealing with players in a session
 	 */
-	public final void setMultiplayerServerUtils (final MultiplayerServerUtils utils)
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
-		multiplayerServerUtils = utils;
+		multiplayerSessionServerUtils = obj;
 	}
 
 	/**

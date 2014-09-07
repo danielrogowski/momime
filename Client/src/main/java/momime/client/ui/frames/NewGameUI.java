@@ -117,6 +117,9 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Random number generator */
 	private RandomUtils randomUtils;
 
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -1355,7 +1358,7 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void showRacePanel () throws PlayerNotFoundException, RecordNotFoundException
 	{
 		// Enable/disable Myrran buttons, now we know what picks we chose
-		final PlayerPublicDetails ourPlayer = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "NewGameUI.showRacePanel");
+		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "NewGameUI.showRacePanel");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 		
 		for (final Entry<Race, Action> race : raceButtonActions.entrySet ())
@@ -1969,5 +1972,21 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

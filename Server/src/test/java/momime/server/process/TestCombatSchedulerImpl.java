@@ -25,6 +25,7 @@ import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -188,6 +189,10 @@ public final class TestCombatSchedulerImpl
 		players.add (attackingPlayer);
 		
 		final PlayerServerDetails winningPlayer = attackingPlayer;		// Lets say there's no defender, i.e. capturing an empty lair
+
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "processEndOfScheduledCombat")).thenReturn (attackingPlayer);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -210,6 +215,7 @@ public final class TestCombatSchedulerImpl
 		final CombatSchedulerImpl scheduler = new CombatSchedulerImpl ();
 		scheduler.setScheduledCombatUtils (scheduledCombatUtils);
 		scheduler.setPlayerMessageProcessing (msgProc);
+		scheduler.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		scheduler.processEndOfScheduledCombat (endingCombat.getScheduledCombatURN (), winningPlayer, mom);
@@ -244,6 +250,10 @@ public final class TestCombatSchedulerImpl
 		players.add (attackingPlayer);
 		
 		final PlayerServerDetails winningPlayer = attackingPlayer;		// Lets say there's no defender, i.e. capturing an empty lair
+
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "processEndOfScheduledCombat")).thenReturn (attackingPlayer);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -285,6 +295,7 @@ public final class TestCombatSchedulerImpl
 		final CombatSchedulerImpl scheduler = new CombatSchedulerImpl ();
 		scheduler.setScheduledCombatUtils (scheduledCombatUtils);
 		scheduler.setPlayerMessageProcessing (msgProc);
+		scheduler.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		scheduler.processEndOfScheduledCombat (endingCombat.getScheduledCombatURN (), winningPlayer, mom);

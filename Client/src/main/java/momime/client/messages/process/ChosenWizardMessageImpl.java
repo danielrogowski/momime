@@ -13,15 +13,14 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Message server sends to players to tell them which wizards players have chosen
  */
-public final class ChosenWizardMessageImpl extends ChosenWizardMessage implements SessionServerToClientMessage
+public final class ChosenWizardMessageImpl extends ChosenWizardMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (ChosenWizardMessageImpl.class);
@@ -32,20 +31,21 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	/** New Game UI */
 	private NewGameUI newGameUI;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Player ID " + getPlayerID () + ", " + getWizardID ());
+		log.trace ("Entering start: Player ID " + getPlayerID () + ", " + getWizardID ());
 
 		// Set the Wizard ID
-		final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ChosenWizardMessageImpl");
+		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ChosenWizardMessageImpl");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		pub.setWizardID (getWizardID ());
 		
@@ -57,7 +57,7 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 			
 		// Some screens need updating when we learn what wizard a player is using
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 	
 	/**
@@ -90,5 +90,21 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	public final void setNewGameUI (final NewGameUI ui)
 	{
 		newGameUI = ui;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

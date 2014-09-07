@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
@@ -132,6 +133,10 @@ public final class TestOverlandMapUI
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
 		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "updateAmountPerTurn")).thenReturn (player1);
+		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
 		when (uiComponentFactory.createSelectUnitButton ()).thenAnswer (new Answer<SelectUnitButton> ()
@@ -153,6 +158,7 @@ public final class TestOverlandMapUI
 		rhp.setClient (client);
 		rhp.setResourceValueUtils (mock (ResourceValueUtils.class));
 		rhp.setUiComponentFactory (uiComponentFactory);
+		rhp.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		rhp.setTextUtils (new TextUtilsImpl ());
 		rhp.setSmallFont (CreateFontsForTests.getSmallFont ());
 		rhp.setMediumFont (CreateFontsForTests.getMediumFont ());

@@ -79,10 +79,16 @@ public final class MomServer extends MultiplayerSessionServer
 		log.trace ("Entering createAndStartClientThread");
 		
 		final Object readyForMessagesMonitor = new Object ();
-		final MultiplayerClientConnection conn = new MultiplayerClientConnection (this, socket,
-			getClientToServerContext (), getClientToServerContextFactoryArray (), getServerToClientContext (), readyForMessagesMonitor);
+		
+		final MultiplayerClientConnection conn = new MultiplayerClientConnection ("ClientConnection-" + socket);
+		conn.setServer (this);
+		conn.setSocket (socket);
+		conn.setSendContext (getServerToClientContext ());
+		conn.setReceiveContext (getClientToServerContext ());
+		conn.setReceiveObjectFactoryArray (getClientToServerContextFactoryArray ());
+		conn.setReadyForMessagesMonitor (readyForMessagesMonitor);
 		conn.start ();
-
+		
 		// Wait until thread has started up properly, then send new game database to the client
 		synchronized (readyForMessagesMonitor)
 		{

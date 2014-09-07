@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -434,12 +435,19 @@ public final class TestUnitUtilsImpl
 	{
 		// Create player
 		final MomPersistentPlayerPublicKnowledge pk = new MomPersistentPlayerPublicKnowledge ();
-
+		
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pk, null);
+		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		final PlayerPublicDetails player = new PlayerPublicDetails (new PlayerDescription (), pk, null);
-		player.getPlayerDescription ().setPlayerID (1);
 		players.add (player);
 
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "getExperienceLevel")).thenReturn (player);
+		
 		// Create CAEs
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 
@@ -447,6 +455,7 @@ public final class TestUnitUtilsImpl
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 
 		// Create normal unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -496,11 +505,18 @@ public final class TestUnitUtilsImpl
 	{
 		// Create player
 		final MomPersistentPlayerPublicKnowledge pk = new MomPersistentPlayerPublicKnowledge ();
-
+		
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pk, null);
+		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		final PlayerPublicDetails player = new PlayerPublicDetails (new PlayerDescription (), pk, null);
-		player.getPlayerDescription ().setPlayerID (1);
 		players.add (player);
+
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "getExperienceLevel")).thenReturn (player);
 
 		// Create CAEs
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
@@ -509,6 +525,7 @@ public final class TestUnitUtilsImpl
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Create normal unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -1073,13 +1090,21 @@ public final class TestUnitUtilsImpl
 		skillWithoutValue.setUnitSkillID (GenerateTestData.UNIT_SKILL_FLIGHT);
 		unit.getUnitHasSkill ().add (skillWithoutValue);
 
-		// Create players
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		// Create player
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerPublicDetails ppd = new PlayerPublicDetails (new PlayerDescription (), ppk, new MomTransientPlayerPublicKnowledge ());
-		ppd.getPlayerDescription ().setPlayerID (1);
-		players.add (ppd);
+		
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, new MomTransientPlayerPublicKnowledge ());
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
 
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "getExperienceLevel")).thenReturn (player);
+		
 		// Create spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
@@ -1090,6 +1115,7 @@ public final class TestUnitUtilsImpl
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Test with no modifications
 		assertEquals (2, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
@@ -1151,12 +1177,20 @@ public final class TestUnitUtilsImpl
 		thrownWeapons.setUnitSkillValue (2);
 		unit.getUnitHasSkill ().add (thrownWeapons);
 
-		// Create players
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		// Create player
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerPublicDetails ppd = new PlayerPublicDetails (new PlayerDescription (), ppk, new MomTransientPlayerPublicKnowledge ());
-		ppd.getPlayerDescription ().setPlayerID (1);
-		players.add (ppd);
+		
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, new MomTransientPlayerPublicKnowledge ());
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "getExperienceLevel")).thenReturn (player);
 
 		// Create spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -1168,6 +1202,7 @@ public final class TestUnitUtilsImpl
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Test with no modifications
 		assertEquals (2, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), GenerateTestData.UNIT_SKILL_THROWN_WEAPONS, players, spells, combatAreaEffects, GenerateTestData.createDB ()));
@@ -1258,10 +1293,15 @@ public final class TestUnitUtilsImpl
 		final PlayerPublicDetails unitOwner = new PlayerPublicDetails (pd, pub, null);
 		players.add (unitOwner);
 		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "getExperienceLevel")).thenReturn (unitOwner);
+		
 		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());		// Just for reading picks, so easier to use real one than mock it
 		utils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());		// Used for looking for Crusade
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Simple case of no bonuses
 		final List<AvailableUnit> units = new ArrayList<AvailableUnit> ();
@@ -1492,13 +1532,21 @@ public final class TestUnitUtilsImpl
 		// Create player
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerPublicDetails ppd = new PlayerPublicDetails (new PlayerDescription (), ppk, new MomTransientPlayerPublicKnowledge ());
-		ppd.getPlayerDescription ().setPlayerID (1);
-		players.add (ppd);
+		
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, new MomTransientPlayerPublicKnowledge ());
+		players.add (player);
 
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "getModifiedUpkeepValue")).thenReturn (player);
+		
 		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Before any reductions
 		assertEquals (1, utils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, GenerateTestData.createDB ()));

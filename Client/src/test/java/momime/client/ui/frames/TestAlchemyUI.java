@@ -2,6 +2,8 @@ package momime.client.ui.frames;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import momime.common.utils.ResourceValueUtils;
 
 import org.junit.Test;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
@@ -103,6 +106,10 @@ public final class TestAlchemyUI
 		when (client.getOurPlayerID ()).thenReturn (3);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
+		
 		// Picks
 		final PlayerPickUtils pickUtils = mock (PlayerPickUtils.class);
 		when (pickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY)).thenReturn (retortValue);
@@ -120,6 +127,7 @@ public final class TestAlchemyUI
 		alchemy.setClient (client);
 		alchemy.setPlayerPickUtils (pickUtils);
 		alchemy.setResourceValueUtils (resourceUtils);
+		alchemy.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		alchemy.setLargeFont (CreateFontsForTests.getLargeFont ());
 		alchemy.setSmallFont (CreateFontsForTests.getSmallFont ());
 

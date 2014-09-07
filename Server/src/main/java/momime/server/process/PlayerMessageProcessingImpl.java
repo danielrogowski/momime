@@ -67,10 +67,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.MultiplayerServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -125,8 +123,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/** AI decisions about cities */
 	private CityAI cityAI;
 	
-	/** Player list utils */
-	private MultiplayerServerUtils multiplayerServerUtils;
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 
 	/** Player utils */
 	private PlayerServerUtils playerServerUtils;
@@ -332,7 +330,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
 		msg.setWizardID (wizardIdToSend);
 
-		getMultiplayerServerUtils ().sendMessageToAllClients (players, msg);
+		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 
 		log.trace ("Exiting broadcastWizardChoice");
 	}
@@ -351,7 +349,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		final StartGameProgressMessage msg = new StartGameProgressMessage ();
 		msg.setStage (stage);
 
-		getMultiplayerServerUtils ().sendMessageToAllClients (players, msg);
+		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 
 		log.trace ("Exiting sendStartGameProgressMessage");
 	}
@@ -480,7 +478,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					msg.setPlayerID (thisPlayer.getPlayerDescription ().getPlayerID ());
 					msg.setPhotoID (ppk.getStandardPhotoID ());
 
-					getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 				}
 
 				else if (ppk.getCustomPhoto () != null)
@@ -490,7 +488,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					msg.setFlagColour (ppk.getCustomFlagColour ());
 					msg.setNdgBmpImage (ppk.getCustomPhoto ());
 
-					getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 				}
 
 				// Send picks to everyone - note we don't know if they've already received them, if e.g. player
@@ -499,7 +497,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				final ReplacePicksMessage picksMsg = new ReplacePicksMessage ();
 				picksMsg.setPlayerID (thisPlayer.getPlayerDescription ().getPlayerID ());
 				picksMsg.getPick ().addAll (ppk.getPick ());
-				getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), picksMsg);
+				getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), picksMsg);
 
 				// Grant any free spells the player gets from the picks they've chosen (i.e. Enchant Item & Create Artifact from Artificer)
 				final List<String> freeSpellIDs = new ArrayList<String> ();
@@ -594,7 +592,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			// Kick off the game - this shows the map screen for the first time
 			mom.getSessionLogger ().info ("Starting game...");
-			getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), new StartGameMessage ());
+			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), new StartGameMessage ());
 
 			// Kick off the first turn
 			mom.getSessionLogger ().info ("Kicking off first turn...");
@@ -635,7 +633,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		if (onlyOnePlayerID == 0)
 			mom.getSessionLogger ().info ("Start phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
 		else
-			mom.getSessionLogger ().info ("Start phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + MultiplayerSessionServerUtils.findPlayerWithID
+			mom.getSessionLogger ().info ("Start phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + getMultiplayerSessionServerUtils ().findPlayerWithID
 				(mom.getPlayers (), onlyOnePlayerID, "startPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Give units their full movement back again
@@ -689,7 +687,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		if (mom.getGeneralPublicKnowledge ().getCurrentPlayerID () == null)	// First turn
 			playerIndex = mom.getPlayers ().size () - 1;		// So we make sure we trip the turn number over
 		else
-			playerIndex = MultiplayerSessionUtils.indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
+			playerIndex = getMultiplayerSessionServerUtils ().indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
 
 		// Find the next player
 		if (playerIndex >= mom.getPlayers ().size () - 1)
@@ -859,7 +857,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		if (onlyOnePlayerID == 0)
 			mom.getSessionLogger ().info ("End phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
 		else
-			mom.getSessionLogger ().info ("End phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + MultiplayerSessionServerUtils.findPlayerWithID
+			mom.getSessionLogger ().info ("End phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + getMultiplayerSessionServerUtils ().findPlayerWithID
 				(mom.getPlayers (), onlyOnePlayerID, "endPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Put mana into casting spells
@@ -925,7 +923,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// First tell everyone that this player has finished
 				final OnePlayerSimultaneousTurnDoneMessage turnDoneMsg = new OnePlayerSimultaneousTurnDoneMessage ();
 				turnDoneMsg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-				getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), turnDoneMsg);
+				getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), turnDoneMsg);
 
 				// Record on server that this player has finished
 				final MomTransientPlayerPublicKnowledge tpk = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
@@ -935,7 +933,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				if (getPlayerServerUtils ().allPlayersFinishedAllocatingMovement (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getTurnNumber ()))
 				{
 					// Erase all pending movements on the clients, since we're about to process movement
-					getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), new ErasePendingMovementsMessage ());
+					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), new ErasePendingMovementsMessage ());
 					
 					// Clear out list of combats, before movement generates more
 					mom.getGeneralServerKnowledge ().getScheduledCombat ().clear ();
@@ -994,7 +992,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		if (onlyOnePlayerID == 0)
 			mom.getSessionLogger ().info ("Continuing pending movements for everyone...");
 		else
-			mom.getSessionLogger ().info ("Continuing pending movements for " + MultiplayerSessionServerUtils.findPlayerWithID
+			mom.getSessionLogger ().info ("Continuing pending movements for " + getMultiplayerSessionServerUtils ().findPlayerWithID
 				(mom.getPlayers (), onlyOnePlayerID, "continueMovement").getPlayerDescription ().getPlayerName () + "...");
 		
 		for (final PlayerServerDetails player : mom.getPlayers ())
@@ -1248,19 +1246,19 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	}
 
 	/**
-	 * @return Player list utils
+	 * @return Server only helper methods for dealing with players in a session
 	 */
-	public final MultiplayerServerUtils getMultiplayerServerUtils ()
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
 	{
-		return multiplayerServerUtils;
+		return multiplayerSessionServerUtils;
 	}
 
 	/**
-	 * @param obj Player list utils
+	 * @param obj Server only helper methods for dealing with players in a session
 	 */
-	public final void setMultiplayerServerUtils (final MultiplayerServerUtils obj)
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
-		multiplayerServerUtils = obj;
+		multiplayerSessionServerUtils = obj;
 	}
 
 	/**

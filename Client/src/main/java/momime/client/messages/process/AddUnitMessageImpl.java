@@ -15,8 +15,7 @@ import momime.common.utils.UnitUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to clients to tell them about a new unit added to the map, or can add them in bulk as part of fogOfWarVisibleAreaChanged.
@@ -28,7 +27,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
  * 
  * Bulk adds (fogOfWarVisibleAreaChanged) can contain a mixture of units with and without skill lists included.
  */
-public final class AddUnitMessageImpl extends AddUnitMessage implements SessionServerToClientMessage
+public final class AddUnitMessageImpl extends AddUnitMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (AddUnitMessageImpl.class);
@@ -40,16 +39,14 @@ public final class AddUnitMessageImpl extends AddUnitMessage implements SessionS
 	private MomClient client;
 	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Unit URN " + getData ().getUnitURN ());
+		log.trace ("Entering start: Unit URN " + getData ().getUnitURN ());
 		
 		// Since Java server now supports units set to 'remember as last seen', its possible to get an 'add unit' message just to
 		// update a unit that we remember in a different state - easiest way to handle this is to see if the UnitURN already
@@ -77,7 +74,7 @@ public final class AddUnitMessageImpl extends AddUnitMessage implements SessionS
 				cityView.unitsChanged ();
 		}
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 
 	/**

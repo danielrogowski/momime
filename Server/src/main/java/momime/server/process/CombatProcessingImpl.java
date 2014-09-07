@@ -100,6 +100,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
 	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
 	/**
 	 * Sets up a potential combat on the server.  If we're attacking an enemy unit stack or city, then all this does is calls StartCombat.
 	 * If we're attacking a node/lair/tower, then this handles scouting the node/lair/tower, sending to the client the details
@@ -701,7 +704,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// AI or human player?
 			if (tc.getCombatCurrentPlayer () != null)
 			{
-				final PlayerServerDetails combatCurrentPlayer = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), tc.getCombatCurrentPlayer (), "progressCombat");
+				final PlayerServerDetails combatCurrentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCombatCurrentPlayer (), "progressCombat");
 				if ((combatCurrentPlayer.getPlayerDescription ().isHuman ()) && (!autoControlHumanPlayer))
 				{
 					// Human players' turn.
@@ -1301,5 +1304,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
 		combatStartAndEnd = cse;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

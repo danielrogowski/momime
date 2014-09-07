@@ -16,13 +16,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to clients to tell them about a building destroyed (or sold) from a city
  */
-public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage implements SessionServerToClientMessage
+public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (DestroyBuildingMessageImpl.class);
@@ -37,23 +36,21 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: " + getData ().getCityLocation () + ", " + getData ().getBuildingID () + ", " + getData ().isUpdateBuildingSoldThisTurn ());
+		log.trace ("Entering start: " + getData ().getCityLocation () + ", " + getData ().getBuildingID () + ", " + getData ().isUpdateBuildingSoldThisTurn ());
 		
 		processOneUpdate ();
 		
 		// Building may have been city walls and so affect the overland map view
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 
 	/**

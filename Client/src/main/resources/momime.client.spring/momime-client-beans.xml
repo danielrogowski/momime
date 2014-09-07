@@ -4,6 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 	
+	<import resource="../com.ndg.multiplayer.client/session-client-beans.xml"/>
 	<import resource="../momime.common.spring/momime-common-beans.xml"/>
 	
 	<!-- General XSD objects (may move these into common project at some stage) -->
@@ -169,17 +170,19 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="newGameDatabaseMessage" class="momime.client.messages.process.NewGameDatabaseMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 	</bean>
 
 	<bean id="chosenWizardMessage" class="momime.client.messages.process.ChosenWizardMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="newGameUI" ref="newGameUI" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<bean id="replacePicksMessage" class="momime.client.messages.process.ReplacePicksMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
 	<bean id="chooseInitialSpellsNowMessage" class="momime.client.messages.process.ChooseInitialSpellsNowMessageImpl" scope="prototype">
@@ -197,12 +200,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="startGameProgressMessage" class="momime.client.messages.process.StartGameProgressMessageImpl" scope="prototype" />
 
 	<bean id="chosenStandardPhotoMessage" class="momime.client.messages.process.ChosenStandardPhotoMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<bean id="fullSpellListMessage" class="momime.client.messages.process.FullSpellListMessageImpl" scope="prototype" >
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
@@ -213,23 +217,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="updateGlobalEconomyMessage" class="momime.client.messages.process.UpdateGlobalEconomyMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="alchemyUI" ref="alchemyUI" />
 	</bean>
 
 	<bean id="updateDamageTakenAndExperienceMessage" class="momime.client.messages.process.UpdateDamageTakenAndExperienceMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 	</bean>
 
 	<bean id="setCurrentPlayerMessage" class="momime.client.messages.process.SetCurrentPlayerMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -247,7 +251,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="updateProductionSoFarMessage" class="momime.client.messages.process.UpdateProductionSoFarMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 	</bean>
 	
 	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
@@ -257,7 +261,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="updateOverlandMovementRemainingMessage" class="momime.client.messages.process.UpdateOverlandMovementRemainingMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
@@ -304,37 +308,37 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateUnitToAliveMessage" class="momime.client.messages.process.UpdateUnitToAliveMessageImpl" scope="prototype" />
 	
 	<bean id="updateTerrainMessage" class="momime.client.messages.process.UpdateTerrainMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 	</bean>
 
 	<bean id="updateCityMessage" class="momime.client.messages.process.UpdateCityMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 	</bean>
 
 	<bean id="addBuildingMessage" class="momime.client.messages.process.AddBuildingMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 	</bean>
 
 	<bean id="destroyBuildingMessage" class="momime.client.messages.process.DestroyBuildingMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 
 	<bean id="addUnitMessage" class="momime.client.messages.process.AddUnitMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
@@ -342,7 +346,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="factory" ref="momClientServerToClientServerFactory" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 	</bean>
@@ -358,7 +362,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
@@ -367,7 +371,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="anim" ref="anim" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
@@ -377,7 +381,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="anim" ref="anim" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
@@ -396,8 +400,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- Singleton beans for client -->
 	
-	<bean id="multiplayerSessionClientServerToClientObjectFactory" class="com.ndg.multiplayer.client.messages.process.MultiplayerSessionClientServerToClientObjectFactory" />
-
 	<bean id="clientDatabaseFactory" class="momime.client.database.ClientDatabaseFactory" />	<!-- Creates ClientDatabaseExImpl instead of ClientDatabase -->
 
 	<bean id="newTurnMessagesFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
@@ -408,7 +410,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newTurnMessagesFactory" ref="newTurnMessagesFactory" />
 	</bean>
 	
-	<bean id="momClient" class="momime.client.MomClientImpl" init-method="start">
+	<bean id="client" class="momime.client.MomClientImpl" init-method="start">
 		<property name="serverPort" value="18250" />
 		<property name="processMessagesOnSwingEventDispatcherThread" value="true" />
 		<property name="clientToServerContext" ref="clientToServerJaxbContext" />
@@ -444,7 +446,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="textUtils" class="momime.client.utils.TextUtilsImpl" />
 
 	<bean id="unitClientUtils" class="momime.client.utils.UnitClientUtilsImpl">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="utils" ref="uiUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
@@ -461,7 +463,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="clientCityCalculations" class="momime.client.calculations.MomClientCityCalculationsImpl">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
@@ -472,12 +474,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="clientUnitCalculations" class="momime.client.calculations.MomClientUnitCalculationsImpl">
 		<property name="graphicsDB" ref="graphicsDatabase" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="overlandMapBitmapGenerator" class="momime.client.calculations.OverlandMapBitmapGeneratorImpl">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="utils" ref="uiUtils" />
@@ -485,7 +487,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="overlandMapProcessing" class="momime.client.process.OverlandMapProcessingImpl">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
@@ -494,12 +496,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
 	<bean id="newTurnMessageProcessing" class="momime.client.newturnmessages.NewTurnMessageProcessingImpl">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="newTurnMessagesFactory" ref="newTurnMessagesFactory" />
 	</bean>
 	
@@ -522,7 +525,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="unitStatsReplacer" class="momime.client.language.replacer.UnitStatsLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
@@ -566,7 +569,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="chooseLanguageUI" ref="chooseLanguageUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="anim" ref="anim" />
 	</bean>
 
@@ -589,7 +592,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 	
@@ -600,10 +603,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
 	<bean id="overlandMapRightHandPanel" class="momime.client.ui.panels.OverlandMapRightHandPanel">
@@ -614,19 +618,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="textUtils" ref="textUtils" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="utils" ref="uiUtils" />
@@ -646,13 +651,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="textUtils" ref="textUtils" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="skillCalculations" ref="skillCalculations" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
 		<property name="alchemyUI" ref="alchemyUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<bean id="alchemyUI" class="momime.client.ui.frames.AlchemyUI">
@@ -661,9 +667,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="smallFont" ref="smallFont" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<bean id="newTurnMessagesUI" class="momime.client.ui.frames.NewTurnMessagesUI">
@@ -682,7 +689,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="unitListCellRenderer" class="momime.client.ui.renderer.UnitListCellRenderer" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -694,7 +701,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 	</bean>
 
@@ -704,7 +711,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="selectUnitButton" class="momime.client.ui.components.SelectUnitButton" scope="prototype">
 		<property name="utils" ref="uiUtils" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -725,7 +732,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 	</bean>
 	
 	<bean id="calculationBoxUI" class="momime.client.ui.frames.CalculationBoxUI" scope="prototype">
@@ -740,11 +747,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 	</bean>
 	
 	<bean id="cityViewPanel" class="momime.client.ui.panels.CityViewPanel" scope="prototype">	
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
@@ -754,7 +761,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="cityViewUI" class="momime.client.ui.frames.CityViewUI" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
@@ -789,7 +796,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="anim" ref="anim" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
@@ -798,7 +805,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>	
 
 	<bean id="changeConstructionUI" class="momime.client.ui.frames.ChangeConstructionUI" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
@@ -811,13 +818,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="anim" ref="anim" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="buildingListCellRenderer" ref="buildingListCellRenderer" />		<!-- So Spring will create and inject a new building list renderer for each change construction UI -->
 		<property name="unitListCellRenderer" ref="unitListCellRenderer" />					<!-- So Spring will create and inject a new unit list renderer for each change construction UI -->
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each changeConstructionUI -->
 	</bean>
 	
 	<bean id="unitInfoUI" class="momime.client.ui.frames.UnitInfoUI" scope="prototype">
-		<property name="client" ref="momClient" />
+		<property name="client" ref="client" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />

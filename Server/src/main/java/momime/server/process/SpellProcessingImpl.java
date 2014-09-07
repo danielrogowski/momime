@@ -92,6 +92,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -441,7 +444,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		log.trace ("Entering switchOffSpell: Player ID " + castingPlayerID + ", " + spellID);
 
 		// Any secondary effects we also need to switch off?
-		final PlayerServerDetails player = MultiplayerSessionServerUtils.findPlayerWithID (players, castingPlayerID, "switchOffSpell");
+		final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, castingPlayerID, "switchOffSpell");
 		final Spell spell = db.findSpell (spellID, "switchOffSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
@@ -637,5 +640,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

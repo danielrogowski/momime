@@ -2,6 +2,7 @@ package momime.server.calculations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,12 +15,17 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
-import momime.common.calculations.MomCityCalculationsImpl;
+import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomSkillCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.database.newgame.v0_9_5.NodeStrengthData;
 import momime.common.database.newgame.v0_9_5.SpellSettingData;
-import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
 import momime.common.database.v0_9_5.RoundingDirectionID;
+import momime.common.database.v0_9_5.SpellUpkeep;
+import momime.common.database.v0_9_5.UnitUpkeep;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateRemainingResearchCostMessage;
@@ -38,26 +44,29 @@ import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.common.messages.v0_9_5.UnitStatusID;
-import momime.common.utils.MemoryBuildingUtilsImpl;
-import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.ResourceValueUtilsImpl;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitUtilsImpl;
+import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.Spell;
+import momime.server.database.v0_9_5.Unit;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerFactory;
 import momime.server.process.resourceconsumer.MomResourceConsumerSpell;
 import momime.server.process.resourceconsumer.MomResourceConsumerUnit;
-import momime.server.utils.UnitServerUtilsImpl;
+import momime.server.utils.UnitServerUtils;
 
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -74,12 +83,58 @@ public final class TestMomServerResourceCalculationsImpl
 	@Test
 	public final void testRecalculateAmountsPerTurn () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
-		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
 
+		when (db.getPlane ()).thenReturn (planes);
+		
+		final UnitUpkeep shadowDemonsUpkeep = new UnitUpkeep ();
+		shadowDemonsUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		
+		final Unit shadowDemonsDef = new Unit ();
+		shadowDemonsDef.getUnitUpkeep ().add (shadowDemonsUpkeep);
+		when (db.findUnit ("UN172", "recalculateAmountsPerTurn")).thenReturn (shadowDemonsDef);
+
+		final UnitUpkeep warlocksRations = new UnitUpkeep ();
+		warlocksRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+
+		final UnitUpkeep warlocksGold = new UnitUpkeep ();
+		warlocksGold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		
+		final Unit warlocksDef = new Unit ();
+		warlocksDef.getUnitUpkeep ().add (warlocksGold);
+		warlocksDef.getUnitUpkeep ().add (warlocksRations);
+		when (db.findUnit ("UN065", "recalculateAmountsPerTurn")).thenReturn (warlocksDef);
+		
+		final SpellUpkeep crusadeUpkeep = new SpellUpkeep ();
+		crusadeUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		crusadeUpkeep.setUpkeepValue (10);
+		
+		final Spell crusadeDef = new Spell ();
+		crusadeDef.getSpellUpkeep ().add (crusadeUpkeep);
+		when (db.findSpell ("SP158", "recalculateAmountsPerTurn")).thenReturn (crusadeDef);
+		
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final NodeStrengthData nodeStrength = new NodeStrengthData ();
+		nodeStrength.setDoubleNodeAuraMagicPower (3);		// 1.5 mana per node aura cell
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		sd.setNodeStrength (nodeStrength);
+
+		// Overland map
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 
@@ -95,27 +150,28 @@ public final class TestMomServerResourceCalculationsImpl
 		players.add (player);
 		
 		// Set up test object
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		final PlayerPickUtilsImpl playerPickUtils = new PlayerPickUtilsImpl ();
-		unitUtils.setPlayerPickUtils (playerPickUtils);
-		
-		final MomCityCalculationsImpl cityCalculations = new MomCityCalculationsImpl ();
-		cityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
-		cityCalculations.setPlayerPickUtils (playerPickUtils);
-		cityCalculations.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
+
 		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
-		calc.setResourceValueUtils (new ResourceValueUtilsImpl ());
-		calc.setUnitServerUtils (new UnitServerUtilsImpl ());
-		calc.setCityCalculations (cityCalculations);
 		calc.setUnitUtils (unitUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setCityCalculations (cityCalc);
+		calc.setUnitServerUtils (mock (UnitServerUtils.class));
+		
+		// Use real resource value utils, so we don't have to mock every possible value of addToAmountPerTurn
+		calc.setResourceValueUtils (new ResourceValueUtilsImpl ());		
 
 		// We have some shadow demons (7 mana upkeep)
-		final MemoryUnit shadowDemons = unitUtils.createMemoryUnit ("UN172", 1, null, -1, true, db);
+		final MemoryUnit shadowDemons = new MemoryUnit ();
+		shadowDemons.setUnitID ("UN172");
+		shadowDemons.setStatus (UnitStatusID.ALIVE);
 		shadowDemons.setOwningPlayerID (2);
 		trueMap.getUnit ().add (shadowDemons);
 
+		when (unitUtils.getModifiedUpkeepValue (shadowDemons, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (7);
+		
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
@@ -135,7 +191,7 @@ public final class TestMomServerResourceCalculationsImpl
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 
 		// Wizard has Channeler, halfing spell maintainence (half of 17 is 8.5, proves that maintainence is rounded up)
-		playerPickUtils.updatePickQuantity (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER, 1);
+		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER)).thenReturn (1);
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (1, priv.getResourceValue ().size ());
@@ -144,9 +200,14 @@ public final class TestMomServerResourceCalculationsImpl
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 
 		// Add some warlocks, so we get some other production type IDs
-		final MemoryUnit warlocks = unitUtils.createMemoryUnit ("UN065", 2, 0, 0, true, db);
+		final MemoryUnit warlocks = new MemoryUnit ();
+		warlocks.setUnitID ("UN065");
+		warlocks.setStatus (UnitStatusID.ALIVE);
 		warlocks.setOwningPlayerID (2);
 		trueMap.getUnit ().add (warlocks);
+		
+		when (unitUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, players, db)).thenReturn (1);
+		when (unitUtils.getModifiedUpkeepValue (warlocks, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, players, db)).thenReturn (5);
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
 		assertEquals (3, priv.getResourceValue ().size ());
@@ -188,6 +249,30 @@ public final class TestMomServerResourceCalculationsImpl
 		cityData.setOptionalFarmers (1);
 		cityData.setNumberOfRebels (2);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
+		
+		final CityProductionBreakdown cityGold = new CityProductionBreakdown ();
+		cityGold.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD);
+		cityGold.setCappedProductionAmount (4);
+
+		final CityProductionBreakdown cityProduction = new CityProductionBreakdown ();
+		cityProduction.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION);
+		cityProduction.setCappedProductionAmount (3);
+
+		final CityProductionBreakdown cityRations = new CityProductionBreakdown ();
+		cityRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		cityRations.setCappedProductionAmount (4);
+		cityRations.setConsumptionAmount (5);
+		
+		final CityProductionBreakdown cityMaxSize = new CityProductionBreakdown ();
+		cityMaxSize.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD);
+		
+		final CityProductionBreakdownsEx cityBreakdown = new CityProductionBreakdownsEx ();
+		cityBreakdown.getProductionType ().add (cityGold);
+		cityBreakdown.getProductionType ().add (cityProduction);
+		cityBreakdown.getProductionType ().add (cityRations);
+		cityBreakdown.getProductionType ().add (cityMaxSize);
+		
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), new MapCoordinates3DEx (2, 2, 0), "TR04", sd, true, false, db)).thenReturn (cityBreakdown);
 
 		// Population will eat 5 rations, but produce 2x2 = 4 rations, and generate 3 x 1.5 = 4.5 gold from taxes and 2x.5 + 1x2 production
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
@@ -208,59 +293,6 @@ public final class TestMomServerResourceCalculationsImpl
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
 
-		// Add a granary, costs 1 gold but produces 2 rations and 2 food (city size)
-		final MemoryBuilding granary = new MemoryBuilding ();
-		granary.setBuildingID ("BL29");
-		granary.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
-
-		trueMap.getBuilding ().add (granary);
-
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
-		assertEquals (5, priv.getResourceValue ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
-		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
-		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
-		assertEquals (-2, priv.getResourceValue ().get (1).getAmountPerTurn ());
-		assertEquals (10, priv.getResourceValue ().get (1).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
-		assertEquals (0, priv.getResourceValue ().get (2).getAmountPerTurn ());
-		assertEquals (0, priv.getResourceValue ().get (2).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION, priv.getResourceValue ().get (3).getProductionTypeID ());
-		assertEquals (3, priv.getResourceValue ().get (3).getAmountPerTurn ());
-		assertEquals (0, priv.getResourceValue ().get (3).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, priv.getResourceValue ().get (4).getProductionTypeID ());
-		assertEquals (2, priv.getResourceValue ().get (4).getAmountPerTurn ());
-		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
-
-		// Add a temple, costs 2 gold but produces 2 magic power
-		final MemoryBuilding temple = new MemoryBuilding ();
-		temple.setBuildingID ("BL23");
-		temple.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
-
-		trueMap.getBuilding ().add (temple);
-
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
-		assertEquals (6, priv.getResourceValue ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
-		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
-		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
-		assertEquals (-4, priv.getResourceValue ().get (1).getAmountPerTurn ());
-		assertEquals (10, priv.getResourceValue ().get (1).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
-		assertEquals (0, priv.getResourceValue ().get (2).getAmountPerTurn ());
-		assertEquals (0, priv.getResourceValue ().get (2).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION, priv.getResourceValue ().get (3).getProductionTypeID ());
-		assertEquals (3, priv.getResourceValue ().get (3).getAmountPerTurn ());
-		assertEquals (0, priv.getResourceValue ().get (3).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, priv.getResourceValue ().get (4).getProductionTypeID ());
-		assertEquals (2, priv.getResourceValue ().get (4).getAmountPerTurn ());
-		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, priv.getResourceValue ().get (5).getProductionTypeID ());
-		assertEquals (2, priv.getResourceValue ().get (5).getAmountPerTurn ());
-		assertEquals (0, priv.getResourceValue ().get (5).getAmountStored ());
-
 		// Player owns a node that covers 3 tiles of aura, giving 3x1.5 = 4.5 magic power
 		for (int x = 10; x <= 12; x++)
 		{
@@ -275,19 +307,19 @@ public final class TestMomServerResourceCalculationsImpl
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD, priv.getResourceValue ().get (1).getProductionTypeID ());
-		assertEquals (-4, priv.getResourceValue ().get (1).getAmountPerTurn ());
+		assertEquals (-1, priv.getResourceValue ().get (1).getAmountPerTurn ());
 		assertEquals (10, priv.getResourceValue ().get (1).getAmountStored ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS, priv.getResourceValue ().get (2).getProductionTypeID ());
-		assertEquals (0, priv.getResourceValue ().get (2).getAmountPerTurn ());
+		assertEquals (-2, priv.getResourceValue ().get (2).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (2).getAmountStored ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_PRODUCTION, priv.getResourceValue ().get (3).getProductionTypeID ());
 		assertEquals (3, priv.getResourceValue ().get (3).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (3).getAmountStored ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_FOOD, priv.getResourceValue ().get (4).getProductionTypeID ());
-		assertEquals (2, priv.getResourceValue ().get (4).getAmountPerTurn ());
+		assertEquals (0, priv.getResourceValue ().get (4).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (4).getAmountStored ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, priv.getResourceValue ().get (5).getProductionTypeID ());
-		assertEquals (6, priv.getResourceValue ().get (5).getAmountPerTurn ());
+		assertEquals (4, priv.getResourceValue ().get (5).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (5).getAmountStored ());
 	}
 
@@ -354,13 +386,34 @@ public final class TestMomServerResourceCalculationsImpl
 	@Test
 	public final void testListConsumersOfProductionType () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
-		// Modify wizards' guild type of consumption so we can test all 3 types in one run
-		final BuildingPopulationProductionModifier wizardsGuildConsumption = db.findBuilding ("BL21", "testListConsumersOfProductionType").getBuildingPopulationProductionModifier ().get (1);
-		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MAGIC_POWER, wizardsGuildConsumption.getProductionTypeID ());
-		wizardsGuildConsumption.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
-
+		final UnitUpkeep gargoylesUpkeep = new UnitUpkeep ();
+		gargoylesUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		
+		final Unit gargoylesDef = new Unit ();
+		gargoylesDef.getUnitUpkeep ().add (gargoylesUpkeep);
+		when (db.findUnit ("UN157", "listConsumersOfProductionType")).thenReturn (gargoylesDef);
+		
+		final Building wizardsGuildDef = new Building ();
+		when (db.findBuilding ("BL21", "listConsumersOfProductionType")).thenReturn (wizardsGuildDef);
+		
+		final Spell entangleDef = new Spell ();
+		when (db.findSpell ("SP033", "listConsumersOfProductionType")).thenReturn (entangleDef);
+		
+		final SpellUpkeep natureAwarenessUpkeep = new SpellUpkeep ();
+		natureAwarenessUpkeep.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		natureAwarenessUpkeep.setUpkeepValue (7);
+		
+		final Spell natureAwarenessDef = new Spell ();
+		natureAwarenessDef.getSpellUpkeep ().add (natureAwarenessUpkeep);
+		when (db.findSpell ("SP034", "listConsumersOfProductionType")).thenReturn (natureAwarenessDef);
+		
+		// Building consumption
+		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
+		when (buildingUtils.findBuildingConsumption (wizardsGuildDef, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (3);
+		
 		// Map
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
@@ -451,6 +504,12 @@ public final class TestMomServerResourceCalculationsImpl
 		natureAwarenessOtherPlayer.setCastingPlayerID (3);
 		trueMap.getMaintainedSpell ().add (natureAwarenessOtherPlayer);
 
+		// Unit upkeep
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.getModifiedUpkeepValue (gargoyles, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		when (unitUtils.getModifiedUpkeepValue (gargoylesOtherStatus, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		when (unitUtils.getModifiedUpkeepValue (gargoylesOtherPlayer, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, players, db)).thenReturn (5);
+		
 		// Create dummy implementation for the factory that is usually provided by spring
 		final MomResourceConsumerFactory factory = new MomResourceConsumerFactory ()
 		{
@@ -471,14 +530,11 @@ public final class TestMomServerResourceCalculationsImpl
 			{
 				return new MomResourceConsumerUnit ();
 			}
-		};		
+		};
 		
-		// Set up test object
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		unitUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
-		
+		// Set up object to test
 		final MomServerResourceCalculationsImpl calc = new MomServerResourceCalculationsImpl ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		calc.setMemoryBuildingUtils (buildingUtils);
 		calc.setUnitUtils (unitUtils);
 		calc.setMomResourceConsumerFactory (factory);
 		
@@ -492,19 +548,19 @@ public final class TestMomServerResourceCalculationsImpl
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, consumptions.get (0).getProductionTypeID ());
 		assertEquals (5, consumptions.get (0).getConsumptionAmount ());
 		assertEquals (player, consumptions.get (0).getPlayer ());
-		assertEquals (gargoyles, ((MomResourceConsumerUnit) consumptions.get (0)).getUnit ());
+		assertSame (gargoyles, ((MomResourceConsumerUnit) consumptions.get (0)).getUnit ());
 
 		assertEquals (MomResourceConsumerBuilding.class, consumptions.get (1).getClass ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, consumptions.get (1).getProductionTypeID ());
 		assertEquals (3, consumptions.get (1).getConsumptionAmount ());
 		assertEquals (player, consumptions.get (1).getPlayer ());
-		assertEquals (wizardsGuild, ((MomResourceConsumerBuilding) consumptions.get (1)).getBuilding ());
+		assertSame (wizardsGuild, ((MomResourceConsumerBuilding) consumptions.get (1)).getBuilding ());
 
 		assertEquals (MomResourceConsumerSpell.class, consumptions.get (2).getClass ());
 		assertEquals (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, consumptions.get (2).getProductionTypeID ());
 		assertEquals (7, consumptions.get (2).getConsumptionAmount ());
 		assertEquals (player, consumptions.get (2).getPlayer ());
-		assertEquals (natureAwareness, ((MomResourceConsumerSpell) consumptions.get (2)).getSpell ());
+		assertSame (natureAwareness, ((MomResourceConsumerSpell) consumptions.get (2)).getSpell ());
 	}
 
 	/**

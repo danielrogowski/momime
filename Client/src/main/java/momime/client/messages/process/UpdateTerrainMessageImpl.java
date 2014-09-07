@@ -20,13 +20,12 @@ import com.ndg.map.areas.operations.BooleanMapAreaOperations3D;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to the client to tell them the map scenery
  */
-public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage implements SessionServerToClientMessage
+public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UpdateTerrainMessageImpl.class);
@@ -46,16 +45,14 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	/**
 	 * Method called when this message is sent in isolation
 	 * 
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: " + getData ().getMapLocation ());
+		log.trace ("Entering start: " + getData ().getMapLocation ());
 
 		final MapArea3D<Boolean> areaToSmooth = new MapArea3DArrayListImpl<Boolean> ();
 		areaToSmooth.setCoordinateSystem (getClient ().getSessionDescription ().getMapSize ());
@@ -67,7 +64,7 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 		// about... so that's already almost everything (although we could avoid regenerating the units...)
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 	
 	/**

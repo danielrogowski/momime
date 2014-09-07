@@ -25,6 +25,9 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	/** Class logger */
 	private final Log log = LogFactory.getLog (CombatMapUtilsImpl.class);
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/**
 	 * @param tile Tile to search
 	 * @param layer Layer to look for
@@ -128,8 +131,8 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 		}
 		
 		final CombatPlayers result = new CombatPlayers
-			((attackingPlayerID == null) ? null : MultiplayerSessionUtils.findPlayerWithID (players, attackingPlayerID, "determinePlayersInCombatFromLocation-A"),
-			(defendingPlayerID == null) ? null : MultiplayerSessionUtils.findPlayerWithID (players, defendingPlayerID, "determinePlayersInCombatFromLocation-D"));
+			((attackingPlayerID == null) ? null : getMultiplayerSessionUtils ().findPlayerWithID (players, attackingPlayerID, "determinePlayersInCombatFromLocation-A"),
+			(defendingPlayerID == null) ? null : getMultiplayerSessionUtils ().findPlayerWithID (players, defendingPlayerID, "determinePlayersInCombatFromLocation-D"));
 		log.trace ("Exiting determinePlayersInCombatFromLocation = " + attackingPlayerID + ", " + defendingPlayerID);
 		
 		return result;
@@ -153,5 +156,21 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 
 		log.trace ("Exiting countPlayersAliveUnitsAtCombatLocation = " + count);
 		return count;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

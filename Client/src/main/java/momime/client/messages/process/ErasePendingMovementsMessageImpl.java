@@ -11,13 +11,12 @@ import momime.common.messages.servertoclient.v0_9_5.ErasePendingMovementsMessage
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends to clients to tell them to wipe out their pending movement store, before new pending movements are about to be sent
  */
-public final class ErasePendingMovementsMessageImpl extends ErasePendingMovementsMessage implements SessionServerToClientMessage
+public final class ErasePendingMovementsMessageImpl extends ErasePendingMovementsMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (ErasePendingMovementsMessageImpl.class);
@@ -26,20 +25,18 @@ public final class ErasePendingMovementsMessageImpl extends ErasePendingMovement
 	private MomClient client;
 	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process");
+		log.trace ("Entering start");
 		
 		getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement ().clear ();
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 
 	/**

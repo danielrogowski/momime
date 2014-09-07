@@ -12,8 +12,7 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
@@ -23,7 +22,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
  * 2) Chosen a custom wizard and server is confirming that the custom picks chosen are OK; or
  * 3) Found a book/retort from a lair during the game.
  */
-public final class ReplacePicksMessageImpl extends ReplacePicksMessage implements SessionServerToClientMessage
+public final class ReplacePicksMessageImpl extends ReplacePicksMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (ReplacePicksMessageImpl.class);
@@ -31,24 +30,25 @@ public final class ReplacePicksMessageImpl extends ReplacePicksMessage implement
 	/** Multiplayer client */
 	private MomClient client;
 
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Player ID " + getPlayerID ());
+		log.trace ("Entering start: Player ID " + getPlayerID ());
 
-		final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ReplacePicksMessageImpl");
+		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ReplacePicksMessageImpl");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		pub.getPick ().clear ();
 		pub.getPick ().addAll (getPick ());
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 	
 	/**
@@ -65,5 +65,21 @@ public final class ReplacePicksMessageImpl extends ReplacePicksMessage implement
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

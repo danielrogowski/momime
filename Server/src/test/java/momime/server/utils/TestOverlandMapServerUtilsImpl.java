@@ -58,6 +58,7 @@ import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -317,6 +318,10 @@ public final class TestOverlandMapServerUtilsImpl
 		final PlayerServerDetails attacker = new PlayerServerDetails (attackerPd, null, null, null, attackerTrans);
 		players.add (attacker);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackerPd.getPlayerID (), "attemptToMeldWithNode (a)")).thenReturn (attacker);
+		
 		// Units
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
 		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
@@ -329,6 +334,7 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
+		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
@@ -412,6 +418,10 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		final PlayerServerDetails attacker = new PlayerServerDetails (attackerPd, null, null, null, attackerTrans);
 		players.add (attacker);
+
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackerPd.getPlayerID (), "attemptToMeldWithNode (a)")).thenReturn (attacker);
 		
 		// Units
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
@@ -425,6 +435,7 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
+		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
@@ -516,6 +527,11 @@ public final class TestOverlandMapServerUtilsImpl
 		final PlayerServerDetails defender = new PlayerServerDetails (defenderPd, null, null, null, defenderTrans);
 		players.add (defender);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackerPd.getPlayerID (), "attemptToMeldWithNode (a)")).thenReturn (attacker);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defenderPd.getPlayerID (), "attemptToMeldWithNode (d)")).thenReturn (defender);
+		
 		// Units
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
 		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
@@ -540,6 +556,7 @@ public final class TestOverlandMapServerUtilsImpl
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
 		utils.setUnitUtils (unitUtils);
 		utils.setRandomUtils (randomUtils);
+		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);

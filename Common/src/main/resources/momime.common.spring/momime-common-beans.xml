@@ -165,6 +165,7 @@
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
 	<bean id="skillCalculations" class="momime.common.calculations.MomSkillCalculationsImpl" />
@@ -210,13 +211,18 @@
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
-	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl" />
+	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl">
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
 
 	<bean id="pendingMovementUtils" class="momime.common.utils.PendingMovementUtilsImpl" />
 
-	<bean id="scheduledCombatUtils" class="momime.common.utils.ScheduledCombatUtilsImpl" />
+	<bean id="scheduledCombatUtils" class="momime.common.utils.ScheduledCombatUtilsImpl">
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
 
 	<bean id="randomUtils" class="com.ndg.random.RandomUtilsImpl" />
 	

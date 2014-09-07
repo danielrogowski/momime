@@ -12,7 +12,7 @@ import momime.server.MomSessionVariables;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.server.MultiplayerServerUtils;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -26,8 +26,8 @@ public final class ChatMessageImpl extends ChatMessage implements PostSessionCli
 	/** Class logger */
 	private final Log log = LogFactory.getLog (ChatMessageImpl.class);
 
-	/** Server-side multiplayer utils */
-	private MultiplayerServerUtils multiplayerServerUtils;
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -50,24 +50,24 @@ public final class ChatMessageImpl extends ChatMessage implements PostSessionCli
 		msg.setPlayerName (sender.getPlayerDescription ().getPlayerName ());
 		msg.setText (getText ());
 		
-		getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+		getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 
 		log.trace ("Exiting process");
 	}
 
 	/**
-	 * @return Server-side multiplayer utils
+	 * @return Server only helper methods for dealing with players in a session
 	 */
-	public final MultiplayerServerUtils getMultiplayerServerUtils ()
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
 	{
-		return multiplayerServerUtils;
+		return multiplayerSessionServerUtils;
 	}
-	
+
 	/**
-	 * @param utils Server-side multiplayer utils
+	 * @param obj Server only helper methods for dealing with players in a session
 	 */
-	public final void setMultiplayerServerUtils (final MultiplayerServerUtils utils)
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
-		multiplayerServerUtils = utils;
+		multiplayerSessionServerUtils = obj;
 	}
 }

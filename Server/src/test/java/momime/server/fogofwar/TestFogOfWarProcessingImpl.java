@@ -3,12 +3,15 @@ package momime.server.fogofwar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.FogOfWarValue;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.FogOfWarStateID;
@@ -22,17 +25,16 @@ import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
-import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtilsImpl;
-import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
-import momime.common.utils.PlayerPickUtilsImpl;
-import momime.common.utils.UnitUtilsImpl;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.ServerTestData;
-import momime.server.calculations.MomServerCityCalculationsImpl;
-import momime.server.calculations.MomServerUnitCalculationsImpl;
+import momime.server.calculations.MomServerCityCalculations;
+import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.Spell;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -145,12 +147,33 @@ public final class TestFogOfWarProcessingImpl
 	@Test
 	public final void testMarkVisibleArea () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
+
+		when (db.getPlane ()).thenReturn (planes);
+		
+		final Spell naturesEyeDef = new Spell ();
+		naturesEyeDef.setSpellScoutingRange (5);
+		when (db.findSpell ("SP012", "markVisibleArea")).thenReturn (naturesEyeDef);
+
+		final Spell curseDef = new Spell ();
+		when (db.findSpell ("SP110", "markVisibleArea")).thenReturn (curseDef);
+		
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -189,12 +212,6 @@ public final class TestFogOfWarProcessingImpl
 
 		trueMap.getBuilding ().add (cityWalls);
 
-		final MemoryBuilding ourOracle = new MemoryBuilding ();
-		ourOracle.setBuildingID ("BL18");
-		ourOracle.setCityLocation (new MapCoordinates3DEx (1, 1, 1));
-
-		trueMap.getBuilding ().add (ourOracle);
-
 		// Enemy cities
 		final OverlandMapCityData enemyCityOne = new OverlandMapCityData ();
 		enemyCityOne.setCityOwnerID (1);
@@ -206,35 +223,36 @@ public final class TestFogOfWarProcessingImpl
 		enemyCityTwo.setCityPopulation (1);
 		trueTerrain.getPlane ().get (1).getRow ().get (32).getCell ().get (54).setCityData (enemyCityTwo);
 
-		// We can see enemy cities that we have a curse on, but having an oracle doesn't increase how much we can see
-		final MemoryMaintainedSpell curse = new MemoryMaintainedSpell ();
-		curse.setCastingPlayerID (2);
-		curse.setCityLocation (new MapCoordinates3DEx (54, 32, 1));
-		curse.setSpellID ("SP110");
-		curse.setCitySpellEffectID ("SE110");
-
-		trueMap.getMaintainedSpell ().add (curse);
-
-		final MemoryBuilding enemyOracle = new MemoryBuilding ();
-		enemyOracle.setBuildingID ("BL18");
-		enemyOracle.setCityLocation (new MapCoordinates3DEx (54, 32, 1));
-
-		trueMap.getBuilding ().add (enemyOracle);
+		// We can see enemy cities that we have a curse on
+		final MemoryMaintainedSpellUtils spellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, null, null, null, new MapCoordinates3DEx (54, 32, 1), null)).thenReturn (new MemoryMaintainedSpell ());
+		
+		// City scouting ranges
+		final MomServerCityCalculations cityCalc = mock (MomServerCityCalculations.class);
+		when (cityCalc.calculateCityScoutingRange (trueMap.getBuilding (), new MapCoordinates3DEx (35, 25, 0), db)).thenReturn (-1);
+		when (cityCalc.calculateCityScoutingRange (trueMap.getBuilding (), new MapCoordinates3DEx (50, 12, 0), db)).thenReturn (3);		// City walls can see 3
+		when (cityCalc.calculateCityScoutingRange (trueMap.getBuilding (), new MapCoordinates3DEx (1, 1, 1), db)).thenReturn (4);			// Oracle can see 4
 
 		// Units - a regular unit, flying unit (sees distance 2) and unit with actual scouting III skill
-		final MemoryUnit unitOne = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
+		final MemoryUnit unitOne = new MemoryUnit ();
+		unitOne.setUnitID ("UN105");
+		unitOne.setStatus (UnitStatusID.ALIVE);
 		unitOne.setUnitLocation (new MapCoordinates3DEx (54, 4, 1));
 		unitOne.setOwningPlayerID (2);
 
 		trueMap.getUnit ().add (unitOne);
 
-		final MemoryUnit unitTwo = unitUtils.createMemoryUnit ("UN067", 2, 0, 0, true, db);
+		final MemoryUnit unitTwo = new MemoryUnit ();
+		unitTwo.setUnitID ("UN067");
+		unitTwo.setStatus (UnitStatusID.ALIVE);
 		unitTwo.setUnitLocation (new MapCoordinates3DEx (14, 34, 1));
 		unitTwo.setOwningPlayerID (2);
 
 		trueMap.getUnit ().add (unitTwo);
 
-		final MemoryUnit unitThree = unitUtils.createMemoryUnit ("UN005", 3, 0, 0, true, db);
+		final MemoryUnit unitThree = new MemoryUnit ();
+		unitThree.setUnitID ("UN005");
+		unitThree.setStatus (UnitStatusID.ALIVE);
 		unitThree.setUnitLocation (new MapCoordinates3DEx (44, 17, 0));
 		unitThree.setOwningPlayerID (2);
 
@@ -249,18 +267,30 @@ public final class TestFogOfWarProcessingImpl
 			trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (22).getCell ().get (22).setTerrainData (terrainData);
 		}
 
-		final MemoryUnit unitFour = unitUtils.createMemoryUnit ("UN105", 4, 0, 0, true, db);
+		final MemoryUnit unitFour = new MemoryUnit ();
+		unitFour.setUnitID ("UN105");
+		unitFour.setStatus (UnitStatusID.ALIVE);
 		unitFour.setUnitLocation (new MapCoordinates3DEx (22, 22, 0));
 		unitFour.setOwningPlayerID (2);
 
 		trueMap.getUnit ().add (unitFour);
 
 		// Enemy unit
-		final MemoryUnit unitFive = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
+		final MemoryUnit unitFive = new MemoryUnit ();
+		unitFive.setUnitID ("UN105");
+		unitFive.setStatus (UnitStatusID.ALIVE);
 		unitFive.setUnitLocation (new MapCoordinates3DEx (23, 9, 1));
 		unitFive.setOwningPlayerID (1);
 
 		trueMap.getUnit ().add (unitFive);
+		
+		// Unit scouting ranges
+		final MomServerUnitCalculations unitCalc = mock (MomServerUnitCalculations.class);
+		when (unitCalc.calculateUnitScoutingRange (unitOne, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1);
+		when (unitCalc.calculateUnitScoutingRange (unitTwo, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (2);
+		when (unitCalc.calculateUnitScoutingRange (unitThree, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (3);
+		when (unitCalc.calculateUnitScoutingRange (unitFour, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1);
+		when (unitCalc.calculateUnitScoutingRange (unitFive, players, trueMap.getMaintainedSpell (), trueMap.getCombatAreaEffect (), db)).thenReturn (1);
 
 		// Nature's eye spell
 		final MemoryMaintainedSpell naturesEye = new MemoryMaintainedSpell ();
@@ -271,19 +301,13 @@ public final class TestFogOfWarProcessingImpl
 
 		trueMap.getMaintainedSpell ().add (naturesEye);
 
-		// Set up test object
-		unitUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
-		unitUtils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
-		
-		final MomServerUnitCalculationsImpl serverUnitCalculations = new MomServerUnitCalculationsImpl ();
-		serverUnitCalculations.setUnitUtils (unitUtils);
-		
+		// Set up object to test
 		final FogOfWarProcessingImpl proc = new FogOfWarProcessingImpl ();
-		proc.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
-		proc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
-		proc.setServerCityCalculations (new MomServerCityCalculationsImpl ());
-		proc.setServerUnitCalculations (serverUnitCalculations);
+		proc.setMemoryMaintainedSpellUtils (spellUtils);
+		proc.setServerCityCalculations (cityCalc);
+		proc.setServerUnitCalculations (unitCalc);
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		proc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 
 		// Test with no special spells
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
@@ -304,10 +328,7 @@ public final class TestFogOfWarProcessingImpl
 				}
 
 		// Awareness
-		final MemoryMaintainedSpell awareness = new MemoryMaintainedSpell ();
-		awareness.setCastingPlayerID (2);
-		awareness.setSpellID (ServerDatabaseValues.VALUE_SPELL_ID_AWARENESS);
-		trueMap.getMaintainedSpell ().add (awareness);
+		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.VALUE_SPELL_ID_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
@@ -324,7 +345,7 @@ public final class TestFogOfWarProcessingImpl
 				}
 
 		// Nature Awareness
-		awareness.setSpellID (ServerDatabaseValues.VALUE_SPELL_ID_NATURE_AWARENESS);
+		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.VALUE_SPELL_ID_NATURE_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 
 		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);

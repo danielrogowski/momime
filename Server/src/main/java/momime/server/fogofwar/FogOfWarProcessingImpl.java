@@ -103,6 +103,9 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
 	/**
 	 * Marks that we can see a particular cell
 	 * @param fogOfWarArea Player's fog of war area
@@ -561,7 +564,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			{
 				// Monsters in nodes/lairs/towers have to be scouted to see them, we can never see them by FOW coming into view (this routine)
 				// See corresponding code in FogOfWarMidTurnChanges.canSeeUnitMidTurn ()
-				final PlayerServerDetails unitOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, thisUnit.getOwningPlayerID (), "canSeeUnitMidTurn");
+				final PlayerServerDetails unitOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, thisUnit.getOwningPlayerID (), "canSeeUnitMidTurn");
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
 				
 				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
@@ -650,7 +653,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			{
 				// Monsters in nodes/lairs/towers have to be scouted to see them, we can never see them by FOW coming into view (this routine)
 				// See corresponding code in FogOfWarMidTurnChanges.canSeeUnitMidTurn ()
-				final PlayerServerDetails unitOwner = MultiplayerSessionServerUtils.findPlayerWithID (players, thisUnit.getOwningPlayerID (), "canSeeUnitMidTurn");
+				final PlayerServerDetails unitOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, thisUnit.getOwningPlayerID (), "canSeeUnitMidTurn");
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
 
 				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
@@ -1076,5 +1079,21 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

@@ -10,31 +10,28 @@ import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to notify clients of new CAEs, or those that have newly come into view.
  * Besides the info we remember, the client also needs the spell ID for animation purposes
  */
-public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMessage implements SessionServerToClientMessage
+public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (AddCombatAreaEffectMessageImpl.class);
 
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: " + getData ().getMapLocation () + ", " + getData ().getCombatAreaEffectID ());
+		log.trace ("Entering start: " + getData ().getMapLocation () + ", " + getData ().getCombatAreaEffectID ());
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 
 		throw new UnsupportedOperationException ("AddCombatAreaEffectMessageImpl");
 	}

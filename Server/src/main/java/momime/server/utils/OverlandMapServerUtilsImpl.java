@@ -67,6 +67,9 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
 	/**
 	 * Sets the race for all land squares connected to x, y
@@ -240,7 +243,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		if (successful)
 		{
 			// Add messages about it
-			final PlayerServerDetails attackingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (players, attackingSpirit.getOwningPlayerID (), "attemptToMeldWithNode (a)");
+			final PlayerServerDetails attackingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, attackingSpirit.getOwningPlayerID (), "attemptToMeldWithNode (a)");
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
 			{
 				final NewTurnMessageNode msg = new NewTurnMessageNode ();
@@ -256,7 +259,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			
 			if (tc.getTerrainData ().getNodeOwnerID () != null)
 			{
-				final PlayerServerDetails defendingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (players, tc.getTerrainData ().getNodeOwnerID (), "attemptToMeldWithNode (d)");
+				final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, tc.getTerrainData ().getNodeOwnerID (), "attemptToMeldWithNode (d)");
 				if (defendingPlayer.getPlayerDescription ().isHuman ())
 				{
 					final NewTurnMessageNode msg = new NewTurnMessageNode ();
@@ -437,5 +440,21 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

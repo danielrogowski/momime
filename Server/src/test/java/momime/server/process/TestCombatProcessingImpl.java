@@ -62,6 +62,7 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -742,6 +743,10 @@ public final class TestCombatProcessingImpl
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -765,6 +770,7 @@ public final class TestCombatProcessingImpl
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitUtils (unitUtils);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		proc.progressCombat (combatLocation, true, false, mom);
@@ -825,6 +831,11 @@ public final class TestCombatProcessingImpl
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
+
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "progressCombat")).thenReturn (attackingPlayer);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -854,6 +865,7 @@ public final class TestCombatProcessingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitUtils (unitUtils);
 		proc.setCombatAI (ai);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		proc.progressCombat (combatLocation, false, false, mom);
@@ -924,6 +936,11 @@ public final class TestCombatProcessingImpl
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "progressCombat")).thenReturn (attackingPlayer);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -952,6 +969,7 @@ public final class TestCombatProcessingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitUtils (unitUtils);
 		proc.setCombatAI (ai);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		proc.progressCombat (combatLocation, false, true, mom);
@@ -1022,6 +1040,11 @@ public final class TestCombatProcessingImpl
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "progressCombat")).thenReturn (attackingPlayer);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -1052,6 +1075,7 @@ public final class TestCombatProcessingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitUtils (unitUtils);
 		proc.setCombatAI (ai);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		proc.progressCombat (combatLocation, true, false, mom);

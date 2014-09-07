@@ -100,6 +100,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/** What is displayed in the variable top section */
 	private OverlandMapRightHandPanelTop top;
 	
@@ -708,7 +711,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		// Resource values get sent to us during game startup before the screen has been set up, so its possible to get here before the labels even exist
 		if (label != null)
 		{
-			final PlayerPublicDetails ourPlayer = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateAmountPerTurn");
+			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateAmountPerTurn");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 			
 			final ProductionType productionType = getLanguage ().findProductionType (productionTypeID);
@@ -765,7 +768,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					playerLine2.setText (null);
 				else
 				{
-					final PlayerPublicDetails currentPlayer = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ());
+					final PlayerPublicDetails currentPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ());
 					playerLine2.setText ((currentPlayer != null) ? currentPlayer.getPlayerDescription ().getPlayerName () : "Player ID " + getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ());
 				}
 				break;
@@ -1028,5 +1031,21 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
@@ -110,6 +111,10 @@ public final class TestMagicSlidersUI
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "updatePerTurnLabels")).thenReturn (player);
 		
 		// Mock client database
 		final Spell spell = new Spell ();
@@ -198,6 +203,7 @@ public final class TestMagicSlidersUI
 		sliders.setResourceValueUtils (resourceValueUtils);
 		sliders.setSkillCalculations (skillCalc);
 		sliders.setSpellUtils (spellUtils);
+		sliders.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		sliders.setTextUtils (new TextUtilsImpl ());
 		sliders.setLargeFont (CreateFontsForTests.getLargeFont ());
 		sliders.setSmallFont (CreateFontsForTests.getSmallFont ());

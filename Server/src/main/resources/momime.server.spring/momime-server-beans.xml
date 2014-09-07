@@ -4,6 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 	
+	<import resource="../com.ndg.multiplayer.server/session-server-beans.xml"/>
 	<import resource="../momime.common.spring/momime-common-beans.xml"/>
 	
 	<!-- General XSD objects (may move these into common project at some stage) -->
@@ -111,7 +112,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="chatMessage" class="momime.server.messages.process.ChatMessageImpl" scope="prototype">
-		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 	
 	<bean id="changeCityConstructionMessage" class="momime.server.messages.process.ChangeCityConstructionMessageImpl" scope="prototype">
@@ -175,6 +176,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="captureCityDecisionMessage" class="momime.server.messages.process.CaptureCityDecisionMessageImpl" scope="prototype">
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 	
 	<bean id="dismissUnitMessage" class="momime.server.messages.process.DismissUnitMessageImpl" scope="prototype">
@@ -246,8 +248,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="requestStartScheduledCombatMessage" class="momime.server.messages.process.RequestStartScheduledCombatMessageImpl" scope="prototype">
 		<property name="scheduledCombatUtils" ref="scheduledCombatUtils" />
-		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
 		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="unrequestStartScheduledCombatMessage" class="momime.server.messages.process.UnrequestStartScheduledCombatMessageImpl" scope="prototype" />
@@ -261,10 +263,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<context:property-placeholder location="classpath:MoMIMEServerVersion.properties" />
 	
 	<!-- Singleton beans for server -->
-	
-	<bean id="multiplayerSessionServerClientToServerObjectFactory" class="com.ndg.multiplayer.server.messages.process.MultiplayerSessionServerClientToServerObjectFactory" />
-	
-	<bean id="multiplayerServerUtils" class="com.ndg.multiplayer.server.MultiplayerServerUtilsImpl" />
 	
 	<bean id="userRegistry" class="com.ndg.multiplayer.server.users.MultiplayerSessionUserRegistryImpl">
 		<constructor-arg value="#{serverConfig.userRegistryFilename}" />
@@ -319,6 +317,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtilsImpl">
@@ -354,6 +353,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="serverCityCalculations" class="momime.server.calculations.MomServerCityCalculationsImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="serverUnitCalculations" class="momime.server.calculations.MomServerUnitCalculationsImpl">
@@ -424,11 +424,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="momAI" ref="momAI" />
 		<property name="cityAI" ref="cityAI" />
-		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
 		<property name="playerServerUtils" ref="playerServerUtils" />
 		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
 		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">
@@ -443,6 +443,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityAI" ref="cityAI" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">
@@ -457,6 +458,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -497,6 +499,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
@@ -510,12 +513,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 	
 	<bean id="combatScheduler" class="momime.server.process.CombatSchedulerImpl">
-		<property name="multiplayerServerUtils" ref="multiplayerServerUtils" />
 		<property name="scheduledCombatUtils" ref="scheduledCombatUtils" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">
@@ -526,6 +530,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<!-- AI -->
@@ -588,6 +593,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="combatScheduler" ref="combatScheduler" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">
@@ -600,6 +606,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 	
 	<!-- Beans created each time a new session is started
@@ -637,8 +644,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="sessionThread" class="momime.server.MomSessionThread" scope="prototype">
 		<property name="generalPublicKnowledge" ref="gpk" />
 		<property name="generalServerKnowledge" ref="gsk" />
-		<property name="utils" ref="multiplayerServerUtils" />
 		<property name="overlandMapGenerator" ref="overlandMapGenerator" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 	
 </beans>

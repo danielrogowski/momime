@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +15,7 @@ import momime.common.messages.v0_9_5.MomScheduledCombat;
 
 import org.junit.Test;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -92,8 +96,15 @@ public final class TestScheduledCombatUtilsImpl
 		final PlayerPublicDetails ai1 = new PlayerPublicDetails (pd3, null, null);
 		players.add (ai1);
 		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "determineOtherHumanPlayer")).thenReturn (human1);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd2.getPlayerID (), "determineOtherHumanPlayer")).thenReturn (human2);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd3.getPlayerID (), "determineOtherHumanPlayer")).thenReturn (ai1);
+		
 		// Set up object to test
 		final ScheduledCombatUtilsImpl utils = new ScheduledCombatUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Test combat with no defender
 		final MomScheduledCombat combat = new MomScheduledCombat ();

@@ -56,6 +56,9 @@ public final class UnitUtilsImpl implements UnitUtils
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/**
 	 * @param unitURN Unit URN to search for
 	 * @param units List of units to search through
@@ -386,7 +389,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				int levelIncludingBonuses = levelFromExperience.getLevelNumber ();
 
 				// Does the player have the Warlord retort?
-				final PlayerPublicDetails owningPlayer = MultiplayerSessionUtils.findPlayerWithID (players, unit.getOwningPlayerID (), "getExperienceLevel");
+				final PlayerPublicDetails owningPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, unit.getOwningPlayerID (), "getExperienceLevel");
 				final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
 				if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.VALUE_RETORT_ID_WARLORD) > 0)
 					levelIncludingBonuses++;
@@ -833,7 +836,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		{
 			// Get reduction as a percentage
 			// Note we use the special "unit upkeep" production type, not "Mana"
-			final PlayerPublicDetails owningPlayer = MultiplayerSessionUtils.findPlayerWithID (players, unit.getOwningPlayerID (), "getModifiedUpkeepValue");
+			final PlayerPublicDetails owningPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, unit.getOwningPlayerID (), "getModifiedUpkeepValue");
 			final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
 
 			final String unitMagicRealmID = db.findUnit (unit.getUnitID (), "getModifiedUpkeepValue").getUnitMagicRealm ();
@@ -1053,5 +1056,21 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

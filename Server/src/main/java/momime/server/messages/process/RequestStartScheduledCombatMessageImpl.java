@@ -18,7 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.MultiplayerServerUtils;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -35,8 +35,8 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 	/** Scheduled combat utils */
 	private ScheduledCombatUtils scheduledCombatUtils; 
 	
-	/** Server-side multiplayer utils */
-	private MultiplayerServerUtils multiplayerServerUtils;
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
@@ -111,7 +111,7 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 			msg.setPlayerID (sender.getPlayerDescription ().getPlayerID ());
 			msg.setRequestedScheduledCombatURN (getScheduledCombatURN ());
 			
-			getMultiplayerServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 		}
 		else
 		{
@@ -140,19 +140,19 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 	}
 
 	/**
-	 * @return Server-side multiplayer utils
+	 * @return Server only helper methods for dealing with players in a session
 	 */
-	public final MultiplayerServerUtils getMultiplayerServerUtils ()
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
 	{
-		return multiplayerServerUtils;
+		return multiplayerSessionServerUtils;
 	}
-	
+
 	/**
-	 * @param utils Server-side multiplayer utils
+	 * @param obj Server only helper methods for dealing with players in a session
 	 */
-	public final void setMultiplayerServerUtils (final MultiplayerServerUtils utils)
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
-		multiplayerServerUtils = utils;
+		multiplayerSessionServerUtils = obj;
 	}
 
 	/**

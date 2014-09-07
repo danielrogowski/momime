@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -405,6 +406,10 @@ public final class TestPlayerMessageProcessingImpl
 		players.add (player1);
 		players.add (player2);	
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd2.getPlayerID (), "continueMovement")).thenReturn (player2);
+		
 		// Units
 		final MemoryUnit unit1 = new MemoryUnit ();
 		final MemoryUnit unit2 = new MemoryUnit ();
@@ -448,6 +453,7 @@ public final class TestPlayerMessageProcessingImpl
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
 		proc.setUnitUtils (unitUtils);
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		proc.continueMovement (2, mom);

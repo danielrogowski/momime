@@ -26,14 +26,13 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this main message to update the client on changes in their fog of war area and what units, buildings, spells, CAEs, etc. they can see.
  * It basically comprises 0..n of most of the other types of message defined above, sent together so that the client processes them in a single transaction/locked update.
  */
-public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisibleAreaChangedMessage implements SessionServerToClientMessage
+public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisibleAreaChangedMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (FogOfWarVisibleAreaChangedMessageImpl.class);
@@ -48,17 +47,15 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	private OverlandMapUI overlandMapUI;
 	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
 		if (log.isTraceEnabled ())
-			log.trace ("Entering process: " + getTriggeredFrom () + ", " + getTerrainUpdate ().size () + ", " + getCityUpdate ().size () + ", " +
+			log.trace ("Entering start: " + getTriggeredFrom () + ", " + getTerrainUpdate ().size () + ", " + getCityUpdate ().size () + ", " +
 				getAddBuilding ().size () + ", " + getDestroyBuilding ().size () + ", " + getAddUnit ().size () + ", " + getKillUnit ().size () + ", " +
 				getUpdateNodeLairTowerUnitID ().size () + ", " + getAddMaintainedSpell ().size () + ", " + getSwitchOffMaintainedSpell ().size () + ", " +
 				getAddCombatAreaEffect ().size () + ", " + getCancelCombaAreaEffect ().size () + ", " + getFogOfWarUpdate ().size ());
@@ -118,7 +115,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			for (final AddUnitMessageData data : getAddUnit ())
 			{
 				proc.setData (data);
-				proc.process (sender);
+				proc.start ();
 			}
 		}
 		
@@ -127,7 +124,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		{
 			final KillUnitMessageImpl proc = new KillUnitMessageImpl ();
 			proc.setData (data);
-			proc.process (sender);
+			proc.start ();
 		}
 		
 		// Scouted monster IDs changed
@@ -135,7 +132,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		{
 			final UpdateNodeLairTowerUnitIDMessageImpl proc = new UpdateNodeLairTowerUnitIDMessageImpl ();
 			proc.setData (data);
-			proc.process (sender);
+			proc.start ();
 		}
 		
 		// Maintained spells added or come into view
@@ -143,7 +140,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		{
 			final AddMaintainedSpellMessageImpl proc = new AddMaintainedSpellMessageImpl ();
 			proc.setData (data);
-			proc.process (sender);
+			proc.start ();
 		}
 		
 		// Maintained spells switched off or gone out of view
@@ -151,7 +148,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		{
 			final SwitchOffMaintainedSpellMessageImpl proc = new SwitchOffMaintainedSpellMessageImpl ();
 			proc.setData (data);
-			proc.process (sender);
+			proc.start ();
 		}
 			
 		// CAEs added or come into view
@@ -159,7 +156,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		{
 			final AddCombatAreaEffectMessageImpl proc = new AddCombatAreaEffectMessageImpl ();
 			proc.setData (data);
-			proc.process (sender);
+			proc.start ();
 		}
 		
 		// CAEs cancelled or gone out of view
@@ -167,7 +164,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		{
 			final CancelCombatAreaEffectMessageImpl proc = new CancelCombatAreaEffectMessageImpl ();
 			proc.setData (data);
-			proc.process (sender);
+			proc.start ();
 		}
 		
 		// Changes in Fog of War area
@@ -179,7 +176,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		getOverlandMapUI ().regenerateFogOfWarBitmap ();
 
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 
 	/**

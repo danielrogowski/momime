@@ -71,6 +71,9 @@ public final class AlchemyUI extends MomClientFrameUI
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/** OK action */
 	private Action okAction;
 	
@@ -162,7 +165,7 @@ public final class AlchemyUI extends MomClientFrameUI
 					// If we do not have alchemy retort, then the actual slider value represents half, so it is only possible to select even numbers
 					int fromValue = slider.getValue ();
 				
-					final PlayerPublicDetails ourPlayer = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "okActionPerformed");
+					final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "okActionPerformed");
 					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 
 					if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY) == 0) 
@@ -368,7 +371,7 @@ public final class AlchemyUI extends MomClientFrameUI
 				int fromValue = getResourceValueUtils ().findAmountStoredForProductionType
 					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), fromProductionTypeID);
 
-				final PlayerPublicDetails ourPlayer = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateSliderMaximum");
+				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateSliderMaximum");
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 			
 				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY) > 0)
@@ -407,7 +410,7 @@ public final class AlchemyUI extends MomClientFrameUI
 			okAction.setEnabled (fromValue > 0);
 			
 			// If we do not have alchemy retort, then the actual slider value represents half, so it is only possible to select even numbers
-			final PlayerPublicDetails ourPlayer = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
+			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 
 			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_ALCHEMY) == 0) 
@@ -528,5 +531,21 @@ public final class AlchemyUI extends MomClientFrameUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

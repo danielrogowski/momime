@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd" >
+
+	<!-- This is needed by testBuildNewGameDatabase - Spring doesn't like if XML file A imports B and C, and both B and C import D -
+			D ends up being included twice.  The MoM server and client beans files import the MoM common beans file, and the multiplayer
+			server and client beans files, which in turn import the multiplayer common beans file.  Therefore we can't put an import to the
+			multiplayer common beans file in the MoM common beans file.
+			
+			That means the MoM common beans file can't be fired up in isolation - so we need this small file which loads both it and
+			the multiplayer common beans so the dependencies are satisfied --> 
+
+	<import resource="com.ndg.multiplayer.sessionbase/session-common-beans.xml"/>
+	<import resource="momime.common.spring/momime-common-beans.xml"/>
+
+</beans>

@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
@@ -118,6 +119,10 @@ public final class TestOverlandMapRightHandPanel
 		
 		when (client.getPlayers ()).thenReturn (players);
 		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "updateAmountPerTurn")).thenReturn (player1);
+		
 		// Resource values
 		final ResourceValueUtils resources = mock (ResourceValueUtils.class);
 		when (resources.findAmountStoredForProductionType (ppk.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD)).thenReturn (99999);
@@ -145,6 +150,7 @@ public final class TestOverlandMapRightHandPanel
 		panel.setResourceValueUtils (resources);
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setUiComponentFactory (uiComponentFactory);
+		panel.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setLargeFont (CreateFontsForTests.getLargeFont ());

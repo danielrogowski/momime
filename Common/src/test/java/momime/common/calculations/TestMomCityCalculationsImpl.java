@@ -6,9 +6,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +61,7 @@ import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.areas.operations.MapAreaOperations2DImpl;
 import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -570,11 +571,6 @@ public final class TestMomCityCalculationsImpl
 	@Test
 	public final void testCalculateCityRebels () throws PlayerNotFoundException, RecordNotFoundException
 	{
-		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
-		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
-		
 		// Location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
 
@@ -596,17 +592,27 @@ public final class TestMomCityCalculationsImpl
 		// Units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
-		// Players
+		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 
-		final PlayerPublicDetails ppd = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		players.add (ppd);
+		players.add (player);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
+		// Set up object to test
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		// Tax rate with no rebels!  and no gold...
 		final CityUnrestBreakdown zeroPercent = calc.calculateCityRebels
 			(players, map, units, buildings, cityLocation, GenerateTestData.TAX_RATE_0_GOLD_0_UNREST, GenerateTestData.createDB ());
@@ -1369,12 +1375,6 @@ public final class TestMomCityCalculationsImpl
 	@Test
 	public final void testCalculateAllCityProductions () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
-		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		
 		// Location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 1);
 
@@ -1438,11 +1438,22 @@ public final class TestMomCityCalculationsImpl
 
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 
-		final PlayerPublicDetails ppd = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		players.add (ppd);
+		players.add (player);
 
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateAllCityProductions")).thenReturn (player);
+
+		// Set up object to test
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		calc.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		// So far all we have are the basic production types:
 		// a) production from the population, bumped up by the % bonus from terrain
 		// b) max city size
@@ -2090,11 +2101,6 @@ public final class TestMomCityCalculationsImpl
 	@Test
 	public final void testCalculateSingleCityProduction () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		// Set up object to test
-		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
-		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		
 		// This is the same initial setup as the calculateAllCityProductions test
 		// Location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 1);
@@ -2159,11 +2165,21 @@ public final class TestMomCityCalculationsImpl
 
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 
-		final PlayerPublicDetails ppd = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		players.add (ppd);
+		players.add (player);
 
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateAllCityProductions")).thenReturn (player);
+
+		// Set up object to test
+		final MomCityCalculationsImpl calc = new MomCityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		// 20 production - 17 consumption = 3
 		assertEquals (3, calc.calculateSingleCityProduction (players, map, buildings, cityLocation,
 			GenerateTestData.TAX_RATE_2_GOLD_45_UNREST, sd, true, GenerateTestData.createDB (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS));

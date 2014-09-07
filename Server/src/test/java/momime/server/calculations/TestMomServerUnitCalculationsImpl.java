@@ -3,32 +3,35 @@ package momime.server.calculations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapVolumeOfStrings;
 import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.messages.v0_9_5.UnitStatusID;
-import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
 import momime.common.utils.MemoryGridCellUtilsImpl;
-import momime.common.utils.PlayerPickUtilsImpl;
+import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.UnitSkill;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -39,7 +42,6 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the MomServerUnitCalculations class
@@ -53,51 +55,59 @@ public final class TestMomServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateUnitScoutingRange () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final UnitSkill flightSkill = new UnitSkill ();
+		flightSkill.setUnitSkillScoutingRange (2);
+		
+		final UnitSkill otherSkill = new UnitSkill ();
 
+		final UnitSkill longSightSkill = new UnitSkill ();
+		longSightSkill.setUnitSkillScoutingRange (4);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.findUnitSkill ("US001", "calculateUnitScoutingRange")).thenReturn (flightSkill);
+		when (db.findUnitSkill ("US002", "calculateUnitScoutingRange")).thenReturn (otherSkill);
+		when (db.findUnitSkill ("US003", "calculateUnitScoutingRange")).thenReturn (longSightSkill);
+		
+		// Lists
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
 
-		// Player
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (2);
-
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		players.add (new PlayerServerDetails (pd, ppk, null, null, null));
+		// Unit skills
+		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList ();
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Set up object to test
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		unitUtils.setPlayerPickUtils (new PlayerPickUtilsImpl ());
-		unitUtils.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
-		
 		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 
-		// High men spearmen
-		final MemoryUnit highMenSpearmen = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
-		highMenSpearmen.setOwningPlayerID (2);
-		assertEquals (1, calc.calculateUnitScoutingRange (highMenSpearmen, players, spells, combatAreaEffects, db));
+		// Unit with no skills and no scouting range
+		final MemoryUnit unit = new MemoryUnit ();
+		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unit)).thenReturn (mergedSkills);
+		assertEquals (1, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
+		
+		// Unit with Scouting III
+		when (unitUtils.getModifiedSkillValue (unit, mergedSkills, ServerDatabaseValues.VALUE_UNIT_SKILL_ID_SCOUTING, players, spells, combatAreaEffects, db)).thenReturn (3);
+		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
+		
+		// Unit with two skills, one which grants Scouting II (like Flight) and one which has nothing at all to do with scouting
+		final UnitHasSkill flight = new UnitHasSkill ();
+		flight.setUnitSkillID ("US001");
+		mergedSkills.add (flight);
 
-		// Draconian spearmen can fly so can see range 2
-		final MemoryUnit draconianSpearmen = unitUtils.createMemoryUnit ("UN067", 2, 0, 0, true, db);
-		draconianSpearmen.setOwningPlayerID (2);
-		assertEquals (2, calc.calculateUnitScoutingRange (draconianSpearmen, players, spells, combatAreaEffects, db));
+		final UnitHasSkill other = new UnitHasSkill ();
+		other.setUnitSkillID ("US002");
+		mergedSkills.add (other);
+		
+		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
+		
+		// Unit with a skill which grants Scouting IV
+		final UnitHasSkill longSight = new UnitHasSkill ();
+		longSight.setUnitSkillID ("US003");
+		mergedSkills.add (longSight);
 
-		// Cast chaos channels flight on the high men spearmen to prove this is the same as if they had the skill naturally
-		final MemoryMaintainedSpell ccFlight = new MemoryMaintainedSpell ();
-		ccFlight.setUnitURN (1);
-		ccFlight.setSpellID ("SP093");
-		ccFlight.setUnitSkillID ("SS093C");
-		spells.add (ccFlight);
-
-		assertEquals (2, calc.calculateUnitScoutingRange (highMenSpearmen, players, spells, combatAreaEffects, db));
-
-		// Beastmaster hero has Scouting III skill
-		final MemoryUnit beastmaster = unitUtils.createMemoryUnit ("UN005", 3, 0, 0, true, db);
-		beastmaster.setOwningPlayerID (2);
-		assertEquals (3, calc.calculateUnitScoutingRange (beastmaster, players, spells, combatAreaEffects, db));
+		assertEquals (4, calc.calculateUnitScoutingRange (unit, players, spells, combatAreaEffects, db));
 	}
 
 	/**

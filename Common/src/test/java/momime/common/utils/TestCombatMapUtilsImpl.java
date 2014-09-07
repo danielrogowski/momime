@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -124,8 +127,6 @@ public final class TestCombatMapUtilsImpl
 	@Test
 	public final void testDeterminePlayersInCombatFromLocation () throws PlayerNotFoundException
 	{
-		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
-		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 10, 1);
 		
@@ -143,6 +144,11 @@ public final class TestCombatMapUtilsImpl
 		defenderPd.setPlayerID (-1);
 		final PlayerPublicDetails defender = new PlayerPublicDetails (defenderPd, null, null);
 		players.add (defender);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, attackerPd.getPlayerID (), "determinePlayersInCombatFromLocation-A")).thenReturn (attacker);
+		when (multiplayerSessionUtils.findPlayerWithID (players, defenderPd.getPlayerID (), "determinePlayersInCombatFromLocation-D")).thenReturn (defender);
 		
 		// Units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -184,6 +190,10 @@ public final class TestCombatMapUtilsImpl
 		unit4.setOwningPlayerID (attackerPd.getPlayerID ());
 		unit4.setCombatPosition (new MapCoordinates2DEx (0, 0));
 		units.add (unit4);
+
+		// Set up object to test
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Neither player found so far
 		final CombatPlayers result1 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players);

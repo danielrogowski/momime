@@ -41,6 +41,7 @@ import org.junit.Test;
 import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -116,6 +117,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player1);
 		players.add (player2);
+		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd1.getPlayerID (), "processSpecialOrders-s")).thenReturn (player1);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd2.getPlayerID (), "processSpecialOrders-s")).thenReturn (player2);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -222,6 +228,7 @@ public final class TestSimultaneousTurnsProcessingImpl
 		proc.setCityServerUtils (cityServerUtils);
 		proc.setOverlandMapServerUtils (overlandMapServerUtils);
 		proc.setRandomUtils (randomUtils);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		proc.processSpecialOrders (mom);

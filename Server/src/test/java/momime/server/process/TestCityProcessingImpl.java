@@ -71,6 +71,7 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -498,6 +499,12 @@ public final class TestCityProcessingImpl
 		players.add (aiPlayer);
 		players.add (raidersPlayer);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, humanPd.getPlayerID (), "growCitiesAndProgressConstructionProjects")).thenReturn (humanPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, aiPd.getPlayerID (), "growCitiesAndProgressConstructionProjects")).thenReturn (aiPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, raidersPd.getPlayerID (), "growCitiesAndProgressConstructionProjects")).thenReturn (raidersPlayer);
+		
 		// Human player is constructing a building, and won't finish it this turn
 		final MapCoordinates3DEx humanLocation = new MapCoordinates3DEx (25, 15, 1);
 
@@ -612,6 +619,7 @@ public final class TestCityProcessingImpl
 		proc.setServerCityCalculations (serverCityCalc);
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setUnitServerUtils (unitServerUtils);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		proc.growCitiesAndProgressConstructionProjects (0, players, gsk, sd, db);
@@ -701,6 +709,10 @@ public final class TestCityProcessingImpl
 		
 		players.add (cityOwner);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd.getPlayerID (), "sellBuilding")).thenReturn (cityOwner);
+		
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -724,6 +736,7 @@ public final class TestCityProcessingImpl
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setServerCityCalculations (serverCityCalculations);
 		proc.setCityCalculations (cityCalculations);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
@@ -785,6 +798,10 @@ public final class TestCityProcessingImpl
 		
 		players.add (cityOwner);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd.getPlayerID (), "sellBuilding")).thenReturn (cityOwner);
+		
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -808,6 +825,7 @@ public final class TestCityProcessingImpl
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setServerCityCalculations (serverCityCalculations);
 		proc.setCityCalculations (cityCalculations);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
@@ -869,6 +887,10 @@ public final class TestCityProcessingImpl
 		
 		players.add (cityOwner);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd.getPlayerID (), "sellBuilding")).thenReturn (cityOwner);
+		
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -892,6 +914,7 @@ public final class TestCityProcessingImpl
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setServerCityCalculations (serverCityCalculations);
 		proc.setCityCalculations (cityCalculations);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
@@ -950,6 +973,10 @@ public final class TestCityProcessingImpl
 		
 		players.add (cityOwner);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd.getPlayerID (), "sellBuilding")).thenReturn (cityOwner);
+		
 		// Connection
 		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
 		cityOwner.setConnection (msgs);
@@ -966,6 +993,7 @@ public final class TestCityProcessingImpl
 		
 		// Set up object to test
 		final CityProcessingImpl proc = new CityProcessingImpl ();
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		proc.sellBuilding (trueMap, players, cityLocation, GRANARY, true, true, sd, db);

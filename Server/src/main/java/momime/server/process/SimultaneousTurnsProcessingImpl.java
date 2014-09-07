@@ -61,6 +61,9 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
 	/**
 	 * Processes all unit & building special orders in a simultaneous turns game 'end phase'
 	 * 
@@ -132,7 +135,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			final MapFeature mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
 				(tc.getTerrainData ().getMapFeatureID (), "processSpecialOrders-f");
 			
-			final PlayerServerDetails settlerOwner = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), settler.getOwningPlayerID (), "processSpecialOrders-s");
+			final PlayerServerDetails settlerOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), settler.getOwningPlayerID (), "processSpecialOrders-s");
 
 			String error = null;
 			if (!tileType.isCanBuildCity ())
@@ -181,7 +184,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(spirit.getUnitLocation ().getZ ()).getRow ().get (spirit.getUnitLocation ().getY ()).getCell ().get (spirit.getUnitLocation ().getX ());
 
-			final PlayerServerDetails spiritOwner = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), spirit.getOwningPlayerID (), "processSpecialOrders-s");
+			final PlayerServerDetails spiritOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spirit.getOwningPlayerID (), "processSpecialOrders-s");
 			
 			// Since nodes can't be changed to any other kind of terrain, only thing which can go wrong here is if we already own the node
 			String error = null;
@@ -320,5 +323,21 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

@@ -37,6 +37,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/**
 	 * @param playerID Unit owner player ID
 	 * @return Unit background image in their correct colour 
@@ -81,7 +84,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 		if (image == null)
 		{
 			// Generate a new one
-			final PlayerPublicDetails player = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), playerID, "PlayerColourImageGeneratorImpl");
+			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), playerID, "PlayerColourImageGeneratorImpl");
 			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
 			
 			image = getUtils ().multiplyImageByColour (uncolouredImage, Integer.parseInt (trans.getFlagColour (), 16));
@@ -120,5 +123,21 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

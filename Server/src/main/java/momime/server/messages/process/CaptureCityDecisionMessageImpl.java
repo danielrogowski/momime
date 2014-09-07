@@ -29,6 +29,9 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
 	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -44,7 +47,7 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		final PlayerServerDetails defendingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
+		final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
 		getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
 
 		log.trace ("Exiting process");
@@ -64,5 +67,21 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
 		combatStartAndEnd = cse;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

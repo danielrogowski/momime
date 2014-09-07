@@ -29,6 +29,7 @@ import momime.common.utils.UnitUtils;
 
 import org.junit.Test;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.GridBagConstraintsNoFill;
@@ -111,6 +112,10 @@ public final class TestSelectUnitButton
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
 
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "PlayerColourImageGeneratorImpl")).thenReturn (player1);
+		
 		// Player knowledge
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -128,6 +133,7 @@ public final class TestSelectUnitButton
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
 		gen.setClient (client);
 		gen.setUtils (utils);
+		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Set up button
 		final SelectUnitButton button = new SelectUnitButton ();
@@ -204,6 +210,10 @@ public final class TestSelectUnitButton
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
 		when (client.getClientDB ()).thenReturn (db);
+
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "PlayerColourImageGeneratorImpl")).thenReturn (player1);
 		
 		// Player knowledge
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -237,6 +247,7 @@ public final class TestSelectUnitButton
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
 		gen.setClient (client);
 		gen.setUtils (utils);
+		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Set up button
 		final SelectUnitButton button = new SelectUnitButton ();

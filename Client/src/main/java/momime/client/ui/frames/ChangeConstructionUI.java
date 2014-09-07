@@ -109,6 +109,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/** Unit/building info panel */
 	private UnitInfoPanel unitInfoPanel;
 	
@@ -307,7 +310,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 						final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
 							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), getClient ().getClientDB ());
 
-						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) MultiplayerSessionUtils.findPlayerWithID
+						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) getMultiplayerSessionUtils ().findPlayerWithID
 							(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener").getPersistentPlayerPublicKnowledge ();
 					
 						unit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
@@ -688,5 +691,21 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	public final void setUnitInfoPanel (final UnitInfoPanel pnl)
 	{
 		unitInfoPanel = pnl;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

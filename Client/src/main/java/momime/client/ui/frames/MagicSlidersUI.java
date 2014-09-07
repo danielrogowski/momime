@@ -108,6 +108,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/** Mana title above the slider */
 	private JLabel manaTitle;
 	
@@ -601,7 +604,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				// Use the real calc routine to work out how much MP/RP/SP we'll actually get, because this takes everything into
 				// account such as getting a bonus to research if we've got a lot of spell books in the magic realm of the spell currently
 				// being researched; and retorts like Archmage that give a bonus to mana spent on improving skill
-				final PlayerPublicDetails ourPlayer = MultiplayerSessionUtils.findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updatePerTurnLabels");
+				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updatePerTurnLabels");
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 		
 				final int manaPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
@@ -834,5 +837,21 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

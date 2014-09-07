@@ -67,6 +67,7 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -133,6 +134,10 @@ public final class TestCombatStartAndEndImpl
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "startCombat")).thenReturn (defendingPlayer);
+		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 		for (int n = 1; n <= 2; n++)
@@ -180,6 +185,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setCombatMapGenerator (mapGen);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setResourceValueUtils (resourceValueUtils);
+		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		cse.startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
@@ -272,6 +278,10 @@ public final class TestCombatStartAndEndImpl
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "startCombat")).thenReturn (defendingPlayer);
+		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 		for (int n = 1; n <= 2; n++)
@@ -319,6 +329,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setCombatMapGenerator (mapGen);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setResourceValueUtils (resourceValueUtils);
+		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		cse.startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
@@ -598,6 +609,10 @@ public final class TestCombatStartAndEndImpl
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "startCombat-CD")).thenReturn (defendingPlayer);
+		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 		for (int n = 1; n <= 2; n++)
@@ -648,6 +663,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setCombatMapGenerator (mapGen);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setResourceValueUtils (resourceValueUtils);
+		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
 		cse.startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);

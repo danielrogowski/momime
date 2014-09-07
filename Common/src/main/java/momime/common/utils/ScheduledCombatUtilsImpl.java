@@ -19,8 +19,11 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 {
 	/** Class logger */
-	final Log log = LogFactory.getLog (ScheduledCombatUtilsImpl.class);
+	private final Log log = LogFactory.getLog (ScheduledCombatUtilsImpl.class);
 
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/**
 	 * @param combats List of scheduled combats to search
 	 * @param scheduledCombatURN scheduledCombatURN to search for
@@ -98,12 +101,28 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 				ohp = null;
 			else
 			{
-				final PlayerPublicDetails otherPlayer = MultiplayerSessionUtils.findPlayerWithID (players, otherPlayerID, "determineOtherHumanPlayer");
+				final PlayerPublicDetails otherPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, otherPlayerID, "determineOtherHumanPlayer");
 				ohp = (otherPlayer.getPlayerDescription ().isHuman ()) ? otherPlayer : null;
 			}			
 		}
 		
 		log.trace ("Exiting determineOtherHumanPlayer = " + ((ohp == null) ? "null" : ohp.getPlayerDescription ().getPlayerID ().toString ()));
 		return ohp;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

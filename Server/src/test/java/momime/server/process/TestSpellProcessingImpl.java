@@ -52,6 +52,7 @@ import org.junit.Test;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -1014,6 +1015,10 @@ public final class TestSpellProcessingImpl
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (castingPlayer);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, castingPd.getPlayerID (), "switchOffSpell")).thenReturn (castingPlayer);
+		
 		// Research status
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -1026,6 +1031,7 @@ public final class TestSpellProcessingImpl
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setSpellUtils (spellUtils);
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		proc.switchOffSpell (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);
@@ -1067,6 +1073,10 @@ public final class TestSpellProcessingImpl
 
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (castingPlayer);
+
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, castingPd.getPlayerID (), "switchOffSpell")).thenReturn (castingPlayer);
 		
 		// Research status
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -1085,6 +1095,7 @@ public final class TestSpellProcessingImpl
 		proc.setSpellUtils (spellUtils);
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setMemoryCombatAreaEffectUtils (caeUtils);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		proc.switchOffSpell (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);

@@ -21,13 +21,12 @@ import momime.common.utils.UnitUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to everyone to notify of dead units, except where it is already obvious from an Apply Damage message that a unit is dead
  */
-public final class KillUnitMessageImpl extends KillUnitMessage implements SessionServerToClientMessage
+public final class KillUnitMessageImpl extends KillUnitMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (KillUnitMessageImpl.class);
@@ -48,16 +47,14 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements Sessio
 	private OverlandMapProcessing overlandMapProcessing;
 	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Unit URN " + getData ().getUnitURN () + ", " + getData ().getKillUnitActionID ());
+		log.trace ("Entering start: Unit URN " + getData ().getUnitURN () + ", " + getData ().getKillUnitActionID ());
 
 		// Even if not actually freeing the unit, we still need to eliminate all references to it, except for it being in the main unit list
 		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), getData ().getUnitURN ());
@@ -115,7 +112,7 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements Sessio
 				cityView.unitsChanged ();
 		}
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 
 	/**

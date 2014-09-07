@@ -10,8 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomCityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.database.v0_9_5.RacePopulationTask;
+import momime.common.database.v0_9_5.RacePopulationTaskProduction;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
@@ -25,12 +29,15 @@ import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Building;
+import momime.server.database.v0_9_5.CitySize;
+import momime.server.database.v0_9_5.Race;
 
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -104,14 +111,65 @@ public final class TestMomServerCityCalculationsImpl
 	@Test
 	public final void testCalculateCitySizeIDAndMinimumFarmers () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final CitySize smallCity = new CitySize ();
+		smallCity.setCitySizeID ("CS01");
+		smallCity.setCitySizeMaximum (3999);
+		
+		final CitySize mediumCity = new CitySize ();
+		mediumCity.setCitySizeID ("CS02");
+		mediumCity.setCitySizeMinimum (4000);
+		mediumCity.setCitySizeMaximum (6999);
+		
+		final CitySize largeCity = new CitySize ();
+		largeCity.setCitySizeID ("CS03");
+		largeCity.setCitySizeMinimum (7000);
+		
+		final List<CitySize> citySizes = new ArrayList<CitySize> ();
+		citySizes.add (smallCity);
+		citySizes.add (mediumCity);
+		citySizes.add (largeCity);
+		
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		when (db.getCitySize ()).thenReturn (citySizes);
+		
+		final RacePopulationTaskProduction highMenRations = new RacePopulationTaskProduction ();
+		highMenRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		highMenRations.setDoubleAmount (4);
+		
+		final RacePopulationTask highMenFarmers = new RacePopulationTask ();
+		highMenFarmers.getRacePopulationTaskProduction ().add (highMenRations);
+		highMenFarmers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER);
+		
+		final Race highMen = new Race ();
+		highMen.getRacePopulationTask ().add (highMenFarmers);
+		when (db.findRace ("RC05", "calculateDoubleFarmingRate")).thenReturn (highMen);
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sd.getMapSize ());
+		final RacePopulationTaskProduction halflingRations = new RacePopulationTaskProduction ();
+		halflingRations.setProductionTypeID (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS);
+		halflingRations.setDoubleAmount (6);
+		
+		final RacePopulationTask halflingFarmers = new RacePopulationTask ();
+		halflingFarmers.getRacePopulationTaskProduction ().add (halflingRations);
+		halflingFarmers.setPopulationTaskID (CommonDatabaseConstants.VALUE_POPULATION_TASK_ID_FARMER);
+		
+		final Race halfling = new Race ();
+		halfling.getRacePopulationTask ().add (halflingFarmers);
+		when (db.findRace ("RC03", "calculateDoubleFarmingRate")).thenReturn (halfling);
+
+		// Session description
+		final MapSizeData mapSizeData = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSizeData);
+		
+		// Overland map
+		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (mapSizeData);
 
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
+		// Building utils
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 
 		// Player
@@ -120,24 +178,31 @@ public final class TestMomServerCityCalculationsImpl
 
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setTaxRateID ("TR04");
 
+		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
+		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		players.add (new PlayerServerDetails (pd, pub, priv, null, null));
+		players.add (player);
+		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCitySizeIDAndMinimumFarmers")).thenReturn (player);
 
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityOwnerID (2);
 		cityData.setCityRaceID ("RC05");		// High men
 		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
+		
+		// Rations from city
+		final MomCityCalculations cityCalc = mock (MomCityCalculations.class);
 
 		// Set up object to test
-		final MomCityCalculationsImpl cityCalc = new MomCityCalculationsImpl ();
-		cityCalc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		cityCalc.setMemoryBuildingUtils (memoryBuildingUtils);
-		
 		final MomServerCityCalculationsImpl calc = new MomServerCityCalculationsImpl ();
 		calc.setCityCalculations (cityCalc);
 		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Starter size city - with no wild game and no granary, we need 2 farmers to feed the 4 population
 		cityData.setCityPopulation (4900);
@@ -146,7 +211,8 @@ public final class TestMomServerCityCalculationsImpl
 		assertEquals (2, cityData.getMinimumFarmers ().intValue ());
 
 		// If we add a granary, that feeds 2 of the population so we need 1 less farmer
-		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (2, 2, 0), "BL29")).thenReturn (true);
+		when (cityCalc.calculateSingleCityProduction (players, map, buildings, new MapCoordinates3DEx (2, 2, 0),
+			"TR04", sd, false, db, CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RATIONS)).thenReturn (2);
 
 		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, new MapCoordinates3DEx (2, 2, 0), sd, db);
 		assertEquals ("CS02", cityData.getCitySizeID ());

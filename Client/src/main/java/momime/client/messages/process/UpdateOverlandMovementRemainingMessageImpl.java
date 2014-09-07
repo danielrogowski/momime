@@ -15,13 +15,12 @@ import momime.common.utils.UnitUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server tells the client how much movement each unit in a stack has left after completing its move (in case it can move again)
  */
-public final class UpdateOverlandMovementRemainingMessageImpl extends UpdateOverlandMovementRemainingMessage implements SessionServerToClientMessage
+public final class UpdateOverlandMovementRemainingMessageImpl extends UpdateOverlandMovementRemainingMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
@@ -36,16 +35,14 @@ public final class UpdateOverlandMovementRemainingMessageImpl extends UpdateOver
 	private OverlandMapProcessing overlandMapProcessing;
 	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process");
+		log.trace ("Entering start");
 		
 		for (final UpdateOverlandMovementRemainingUnit movementRemaining : getUnit ())
 		{
@@ -59,7 +56,7 @@ public final class UpdateOverlandMovementRemainingMessageImpl extends UpdateOver
 				getOverlandMapProcessing ().removeUnitFromLeftToMoveOverland (mu);
 		}
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 
 	/**

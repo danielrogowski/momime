@@ -11,8 +11,7 @@ import momime.common.messages.servertoclient.v0_9_5.SelectNextUnitToMoveOverland
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * When the server is sending a sequence of messages resulting from a unit moving, it sends this to say that the
@@ -20,7 +19,7 @@ import com.ndg.multiplayer.client.SessionServerToClientMessage;
  * 
  * So typical sequence is: MoveUnit -> VisAreaChg -> MoveUnit -> VisAreaChg -> SelectNextUnitToMove
  */
-public final class SelectNextUnitToMoveOverlandMessageImpl extends SelectNextUnitToMoveOverlandMessage implements SessionServerToClientMessage
+public final class SelectNextUnitToMoveOverlandMessageImpl extends SelectNextUnitToMoveOverlandMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
@@ -29,20 +28,18 @@ public final class SelectNextUnitToMoveOverlandMessageImpl extends SelectNextUni
 	private OverlandMapProcessing overlandMapProcessing;
 	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process");
+		log.trace ("Entering start");
 		
 		getOverlandMapProcessing ().selectNextUnitToMoveOverland ();
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 
 	/**

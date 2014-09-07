@@ -127,7 +127,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 
 		// Subtract the amount of gold, food and mana that units are eating up in upkeep from the amount of resources that we'll make this turn
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
-			if ( (thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
+			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
 			{
 				final Unit unitDetails = db.findUnit (thisUnit.getUnitID (), "recalculateAmountsPerTurn");
 				for (final UnitUpkeep upkeep : unitDetails.getUnitUpkeep ())
@@ -149,7 +149,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 		// At this point, the only Mana recorded is consumption - so we can halve consumption if the wizard has Channeler
 		// Round up, so 1 still = 1
 		final int manaConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
-		if ( (manaConsumption < -1) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER) > 0))
+		if ((manaConsumption < -1) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.VALUE_RETORT_ID_CHANNELER) > 0))
 			getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, (-manaConsumption) / 2);
 
 		// The gist of the ordering here is that, now we've dealt with mana consumption, we can now add on things that *might* generate mana
@@ -161,7 +161,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
 					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ( (cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
+					if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityPopulation () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () > 0))
 					{
 						// Calculate all productions from this city
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
@@ -181,7 +181,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 				for (int y = 0; y < sd.getMapSize ().getHeight (); y++)
 				{
 					final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-					if ( (terrainData != null) && (terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 						nodeAuraSquares++;
 				}
 
@@ -245,7 +245,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 
 		// Units
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
-			if ( (thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
 				final int consumptionAmount = getUnitUtils ().getModifiedUpkeepValue (thisUnit, productionTypeID, players, db);
 				if (consumptionAmount > 0)
@@ -264,7 +264,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 		{
 			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (thisBuilding.getCityLocation ().getZ ()).getRow ().get (thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ()).getCityData ();
 
-			if ( (cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+			if ((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 			{
 				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
 				final int consumptionAmount = getMemoryBuildingUtils ().findBuildingConsumption (building, productionTypeID);
@@ -288,7 +288,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 
 				boolean found = false;
 				final Iterator<SpellUpkeep> upkeepIter = spell.getSpellUpkeep ().iterator ();
-				while ( (!found) && (upkeepIter.hasNext ()))
+				while ((!found) && (upkeepIter.hasNext ()))
 				{
 					final SpellUpkeep upkeep = upkeepIter.next ();
 					if (upkeep.getProductionTypeID ().equals (productionTypeID))
@@ -335,7 +335,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 		// Search through different types of production looking for ones matching the required enforce type
 		boolean found = false;
 		final Iterator<ProductionType> productionTypeIter = mom.getServerDB ().getProductionType ().iterator ();
-		while ( (!found) && (productionTypeIter.hasNext ()))
+		while ((!found) && (productionTypeIter.hasNext ()))
 		{
 			final ProductionType productionType = productionTypeIter.next ();
 			if (enforceType.equals (productionType.getEnforceProduction ()))
@@ -366,7 +366,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 					int randomConsumption = getRandomUtils ().nextInt (totalConsumption);
 					MomResourceConsumer chosenConsumer = null;
 					final Iterator<MomResourceConsumer> consumerIter = consumers.iterator ();
-					while ( (chosenConsumer == null) && (consumerIter.hasNext ()))
+					while ((chosenConsumer == null) && (consumerIter.hasNext ()))
 					{
 						final MomResourceConsumer thisConsumer = consumerIter.next ();
 						if (randomConsumption < thisConsumer.getConsumptionAmount ())
@@ -559,7 +559,7 @@ public final class MomServerResourceCalculationsImpl implements MomServerResourc
 		log.trace ("Entering recalculateGlobalProductionValues: Player ID " + onlyOnePlayerID + ", " + duringStartPhase);
 
 		for (final PlayerServerDetails player : mom.getPlayers ())
-			if ( (onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
+			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
 			{
 				// Don't calc production for the Rampaging Monsters player, or the routine spots that they have lots of units
 				// that take a lot of mana to maintain, and no buildings generating any mana to support them, and kills them all off

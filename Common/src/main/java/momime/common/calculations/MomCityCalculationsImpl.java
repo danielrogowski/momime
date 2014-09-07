@@ -85,6 +85,9 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/**
 	 * A list of directions for traversing from a city's coordinates through all the map cells within that city's radius
 	 * Note this is different from the Delphi list TRACE_CITY_DIRECTION is in MomMap.pas in that the list here DOES include the tile the city itself is on, the Delphi code (unnecessarily) deals with the centre tile separately
@@ -593,7 +596,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		if (religiousUnrestReduction > 0)
 		{
 			// Find the picks of the player who owns this city
-			final PlayerPublicDetails cityOwner = MultiplayerSessionUtils.findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityRebels");
+			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityRebels");
 			final List<PlayerPick> cityOwnerPicks = ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
 
 			breakdown.setReligiousBuildingRetortPercentage (getPlayerPickUtils ().totalReligiousBuildingBonus (cityOwnerPicks, db));
@@ -971,7 +974,7 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 		final Race cityRace = (raceID != null) ? db.findRace (raceID, "calculateAllCityProductions") : null;
 
 		final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
-		final PlayerPublicDetails cityOwner = (cityOwnerID != null) ? MultiplayerSessionUtils.findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
+		final PlayerPublicDetails cityOwner = (cityOwnerID != null) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
 		final List<PlayerPick> cityOwnerPicks = (cityOwner != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick () : null;
 
 		// Set up results object
@@ -1320,5 +1323,21 @@ public final class MomCityCalculationsImpl implements MomCityCalculations
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

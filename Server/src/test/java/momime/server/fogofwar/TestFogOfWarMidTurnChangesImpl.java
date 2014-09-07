@@ -49,6 +49,7 @@ import org.junit.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -417,11 +418,16 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final PlayerServerDetails player3 = new PlayerServerDetails (null, null, null, null, null);
 		players.add (player3);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd1.getPlayerID (), "canSeeUnitMidTurn")).thenReturn (player1);
+		
 		// Set up test object
 		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
 		calc.setFogOfWarCalculations (single);
+		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// The unit we're trying to see
 		// Note creating units like this defaults them to ALIVE, so we don't need to set that
@@ -509,6 +515,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		players.add (player2);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd1.getPlayerID (), "canSeeUnitMidTurn")).thenReturn (player1);
+		
 		// Set up test object
 		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -516,6 +526,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
 		calc.setFogOfWarCalculations (single);
 		calc.setUnitUtils (unitUtils);
+		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 
 		// Spell to check
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
@@ -734,6 +745,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		cityData.setCityOwnerID (pd3.getPlayerID ());
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd3.getPlayerID (), "addBuildingOnServerAndClients")).thenReturn (player3);
+		
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -751,6 +766,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		midTurn.setFogOfWarCalculations (fow);
 		midTurn.setFogOfWarProcessing (proc);
 		midTurn.setFogOfWarDuplication (dup);
+		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		midTurn.addBuildingOnServerAndClients (gsk, players, cityLocation, "BL03", null, null, null, sd, db);
@@ -861,6 +877,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		cityData.setCityOwnerID (pd3.getPlayerID ());
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd3.getPlayerID (), "addBuildingOnServerAndClients")).thenReturn (player3);
+		
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -878,6 +898,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		midTurn.setFogOfWarCalculations (fow);
 		midTurn.setFogOfWarProcessing (proc);
 		midTurn.setFogOfWarDuplication (dup);
+		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		midTurn.addBuildingOnServerAndClients (gsk, players, cityLocation, CommonDatabaseConstants.VALUE_BUILDING_FORTRESS,
@@ -1017,10 +1038,14 @@ public final class TestFogOfWarMidTurnChangesImpl
 		cityData.setCityOwnerID (pd3.getPlayerID ());
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd3.getPlayerID (), "destroyBuildingOnServerAndClients")).thenReturn (player3);
+		
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
 		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
 		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
@@ -1032,6 +1057,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		midTurn.setFogOfWarCalculations (fow);
 		midTurn.setFogOfWarProcessing (proc);
 		midTurn.setMemoryBuildingUtils (buildingUtils);
+		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		midTurn.destroyBuildingOnServerAndClients (trueMap, players, cityLocation, "BL03", false, sd, db);
@@ -1158,6 +1184,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityOwnerID (pd3.getPlayerID ());
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd3.getPlayerID (), "destroyBuildingOnServerAndClients")).thenReturn (player3);
 		
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -1174,6 +1204,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		midTurn.setFogOfWarCalculations (fow);
 		midTurn.setFogOfWarProcessing (proc);
 		midTurn.setMemoryBuildingUtils (buildingUtils);
+		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
 		midTurn.destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, cityLocation, sd, db);

@@ -12,13 +12,12 @@ import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.client.MultiplayerServerConnection;
-import com.ndg.multiplayer.client.SessionServerToClientMessage;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends to clients for warning/error messages
  */
-public final class TextPopupMessageImpl extends TextPopupMessage implements SessionServerToClientMessage
+public final class TextPopupMessageImpl extends TextPopupMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (TextPopupMessageImpl.class);
@@ -27,16 +26,14 @@ public final class TextPopupMessageImpl extends TextPopupMessage implements Sess
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/**
-	 * @param sender Connection to the server
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
 	@Override
-	public final void process (final MultiplayerServerConnection sender)
-		throws JAXBException, XMLStreamException, IOException
+	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process");
+		log.trace ("Entering start");
 		
 		final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 		msg.setTitleLanguageCategoryID ("frmMessageBox");
@@ -44,7 +41,7 @@ public final class TextPopupMessageImpl extends TextPopupMessage implements Sess
 		msg.setText (getText ());
 		msg.setVisible (true);
 		
-		log.trace ("Exiting process");
+		log.trace ("Exiting start");
 	}
 
 	/**

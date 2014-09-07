@@ -125,6 +125,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
 	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
 	 *
@@ -169,7 +172,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		// Find out who we're attacking - if an empty lair, we can get null here
 		final MemoryUnit firstDefendingUnit = getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 			defendingLocation.getX (), defendingLocation.getY (), defendingLocation.getZ (), 0);
-		PlayerServerDetails defendingPlayer = (firstDefendingUnit == null) ? null : MultiplayerSessionServerUtils.findPlayerWithID
+		PlayerServerDetails defendingPlayer = (firstDefendingUnit == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID
 			(mom.getPlayers (), firstDefendingUnit.getOwningPlayerID (), "startCombat");
 		final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 		
@@ -218,7 +221,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				defendingPlayer = null;
 			
 			else if ((tc.getCityData () != null) && (tc.getCityData ().getCityPopulation () != null) && (tc.getCityData ().getCityPopulation () > 0) && (tc.getCityData ().getCityOwnerID () != null))
-				defendingPlayer = MultiplayerSessionServerUtils.findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "startCombat-CD");
+				defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "startCombat-CD");
 				
 			else
 				// It'll be null anyway, but just to be certain...
@@ -777,5 +780,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setCombatProcessing (final CombatProcessing proc)
 	{
 		combatProcessing = proc;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

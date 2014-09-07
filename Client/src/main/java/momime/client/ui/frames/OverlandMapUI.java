@@ -29,6 +29,7 @@ import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
+import momime.client.messages.process.MoveUnitStackOverlandMessageImpl;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
@@ -102,6 +103,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
+	
+	/** Unit stack that's in the middle of moving from one cell to another */
+	private MoveUnitStackOverlandMessageImpl unitStackMoving;
 	
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
@@ -406,10 +410,43 @@ public final class OverlandMapUI extends MomClientFrameUI
 								catch (final IOException e)
 								{
 									log.error ("Error trying to load graphics to draw Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
-									
 								}
 							}
 						}
+
+				// Draw the unit stack that's halfway between two cells during movement
+				if (getUnitStackMoving () != null)
+				{
+					final MemoryUnit unit = getUnitStackMoving ().getUnitToDraw ();
+					try
+					{
+						final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
+						final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+
+						final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
+						final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
+					
+						final int xpos = ((getUnitStackMoving ().getCurrentX () - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
+						final int ypos = ((getUnitStackMoving ().getCurrentY () - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+
+						for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+							for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+							{
+								// Draw the unit
+								g.drawImage (unitBackground,
+									(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+									unitZoomedWidth, unitZoomedHeight, null);
+
+								g.drawImage (unitImage,
+									(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+									unitZoomedWidth, unitZoomedHeight, null);
+							}
+					}
+					catch (final IOException e)
+					{
+						log.error ("Error trying to load graphics to draw moving Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
+					}
+				}
 				
 				// Darken areas of the map that the selected units cannot move to
 				if (movementTypesBitmap != null)
@@ -801,7 +838,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 
 			// Is it alive, and are we looking at the right plane to see it?
-			if ((unit.getStatus () == UnitStatusID.ALIVE) && ((unit.getUnitLocation ().getZ () == mapViewPlane) ||
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null) && ((unit.getUnitLocation ().getZ () == mapViewPlane) ||
 				(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 					(unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))))
 			{
@@ -859,6 +896,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 */
 	public final void setMovementTypes (final MapVolumeOfOverlandMoveType moves)
 	{
+		log.trace ("Entering setMovementTypes");
+
 		movementTypes = moves;
 		
 		// Regenerate shading bitmap
@@ -889,6 +928,16 @@ public final class OverlandMapUI extends MomClientFrameUI
 					}
 		}
 		
+		sceneryPanel.repaint ();
+
+		log.trace ("Exiting setMovementTypes");
+	}
+	
+	/**
+	 * Forces the scenery panel to be redrawn as soon as possible
+	 */
+	public final void repaintSceneryPanel ()
+	{
 		sceneryPanel.repaint ();
 	}
 	
@@ -1066,5 +1115,21 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return Unit stack that's in the middle of moving from one cell to another
+	 */
+	public final MoveUnitStackOverlandMessageImpl getUnitStackMoving ()
+	{
+		return unitStackMoving;
+	}
+
+	/**
+	 * @param stack Unit stack that's in the middle of moving from one cell to another
+	 */
+	public final void setUnitStackMoving (final MoveUnitStackOverlandMessageImpl stack)
+	{
+		unitStackMoving = stack;
 	}
 }

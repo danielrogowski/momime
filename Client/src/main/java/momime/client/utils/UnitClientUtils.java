@@ -4,8 +4,11 @@ import java.awt.Graphics;
 import java.io.IOException;
 
 import javax.swing.JComponent;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.v0_9_5.AvailableUnit;
 
 /**
@@ -25,6 +28,17 @@ public interface UnitClientUtils
 	 */
 	public String getUnitName (final AvailableUnit unit, final UnitNameType unitNameType) throws RecordNotFoundException;
 
+	/**
+	 * Kills a unit, either permanently removing it or marking it as dead in case it gets Raise or Animate Dead cast on it later
+	 * 
+	 * @param unitURN Unit to kill
+	 * @param action Type of update
+	 * @throws IOException If there is a problem
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void killUnit (final int unitURN, final KillUnitActionID action) throws IOException, JAXBException, XMLStreamException;
+	
 	/**
 	 * Many unit figures are animated, and so must call this routine to register the animation prior to calling drawUnitFigures. 
 	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.

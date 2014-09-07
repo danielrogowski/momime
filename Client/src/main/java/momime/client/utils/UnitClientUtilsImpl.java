@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.swing.JComponent;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.calculations.MomClientUnitCalculations;
@@ -17,14 +19,25 @@ import momime.client.graphics.database.v0_9_5.UnitCombatImage;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
+import momime.client.process.OverlandMapProcessing;
+import momime.client.ui.components.SelectUnitButton;
+import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.UnitInfoUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Unit;
+import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.swing.NdgUIUtils;
 
@@ -33,6 +46,9 @@ import com.ndg.swing.NdgUIUtils;
  */
 public final class UnitClientUtilsImpl implements UnitClientUtils
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (UnitClientUtilsImpl.class);
+	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -56,6 +72,15 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
+	/** Turn sequence and movement helper methods */
+	private OverlandMapProcessing overlandMapProcessing;
+	
+	/** Pending movement utils */
+	private PendingMovementUtils pendingMovementUtils;
 	
 	/** Client config, containing the scale setting */
 	private MomImeClientConfig clientConfig;
@@ -123,6 +148,79 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		return unitName;
 	}
 
+	/**
+	 * Kills a unit, either permanently removing it or marking it as dead in case it gets Raise or Animate Dead cast on it later
+	 * 
+	 * @param unitURN Unit to kill
+	 * @param action Type of update
+	 * @throws IOException If there is a problem
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void killUnit (final int unitURN, final KillUnitActionID action) throws IOException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering killUnit: Unit URN " + unitURN + ", " + action);
+
+		// Even if not actually freeing the unit, we still need to eliminate all references to it, except for it being in the main unit list
+		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), unitURN);
+		getUnitUtils ().beforeKillingUnit (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unitURN);	// Removes spells cast on unit
+		
+		// Is there a unit info screen open for it?
+		final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unitURN);
+		if (unitInfo != null)
+			unitInfo.close ();
+		
+		// Select unit buttons on the Map
+		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((button.getUnit () != null) && (button.getUnit ().getUnitURN () == unitURN))
+			{
+				button.setUnit (null);
+				
+				final boolean updateMovement = (button.isVisible ()) && (button.isSelected ());
+				button.setSelected (false);
+				button.setVisible (false);
+					
+				if (updateMovement)
+				{
+					// Do same processing as if button was manually clicked
+					getOverlandMapProcessing ().enableOrDisableSpecialOrderButtons ();
+					getOverlandMapProcessing ().updateMovementRemaining ();
+				}
+			}
+		
+		// Find the unit being removed
+		final MemoryUnit unit = getUnitUtils ().findUnitURN (unitURN,
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "killUnit");
+		
+		// The server works out what action we need to take
+		switch (action)
+		{
+			// Phyically free the unit
+			case FREE:
+			case VISIBLE_AREA_CHANGED:
+			case UNIT_LACK_OF_PRODUCTION:		// <-- Delphi client had different logic for this due to finicky memory management, TBC if needs to be different here or not
+			case HERO_LACK_OF_PRODUCTION:
+				getUnitUtils ().removeUnitURN (unitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+				break;
+				
+			// The two special statuses generated by ApplyDamageMessage on the client aren't handled yet
+			
+			default:
+				throw new MomException ("killUnit got a KillUnitActionID that it doesn't know how to handle: " + action);
+		}
+
+		// Select unit buttons on the City screen
+		if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null))
+		{
+			final CityViewUI cityView = getClient ().getCityViews ().get (unit.getUnitLocation ().toString ());
+			if (cityView != null)
+				cityView.unitsChanged ();
+		}
+		
+		log.trace ("Exiting killUnit");
+	}
+	
 	/**
 	 * Many unit figures are animated, and so must call this routine to register the animation prior to calling drawUnitFigures. 
 	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.
@@ -453,5 +551,53 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	public final void setClientConfig (final MomImeClientConfig config)
 	{
 		clientConfig = config;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
+	}
+
+	/**
+	 * @return Turn sequence and movement helper methods
+	 */
+	public final OverlandMapProcessing getOverlandMapProcessing ()
+	{
+		return overlandMapProcessing;
+	}
+
+	/**
+	 * @param proc Turn sequence and movement helper methods
+	 */
+	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
+	{
+		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return Pending movement utils
+	 */
+	public final PendingMovementUtils getPendingMovementUtils ()
+	{
+		return pendingMovementUtils;
+	}
+
+	/**
+	 * @param util Pending movement utils
+	 */
+	public final void setPendingMovementUtils (final PendingMovementUtils util)
+	{
+		pendingMovementUtils = util;
 	}
 }

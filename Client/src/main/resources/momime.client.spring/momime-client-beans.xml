@@ -269,6 +269,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype">
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
+
+	<bean id="moveUnitStackOverlandMessage" class="momime.client.messages.process.MoveUnitStackOverlandMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+	</bean>
 	
 	<bean id="updateNodeLairTowerUnitIDMessage" class="momime.client.messages.process.UpdateNodeLairTowerUnitIDMessageImpl" scope="prototype" />
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype" />
@@ -280,7 +290,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addNewTurnMessagesMessage" class="momime.client.messages.process.AddNewTurnMessagesMessageImpl" scope="prototype" />
 	<bean id="taxRateChangedMessage" class="momime.client.messages.process.TaxRateChangedMessageImpl" scope="prototype" />
 	<bean id="scheduledCombatWalkInWithoutAFightMessage" class="momime.client.messages.process.ScheduledCombatWalkInWithoutAFightMessageImpl" scope="prototype" />
-	<bean id="moveUnitStackOverlandMessage" class="momime.client.messages.process.MoveUnitStackOverlandMessageImpl" scope="prototype" />
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype" />
 	<bean id="foundLairNodeTowerMessage" class="momime.client.messages.process.FoundLairNodeTowerMessageImpl" scope="prototype" />
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype" />
@@ -338,11 +347,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype">
-		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
-		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
-		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
-		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">
@@ -454,6 +459,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="clientConfig" ref="clientConfig" />
 	</bean>
 

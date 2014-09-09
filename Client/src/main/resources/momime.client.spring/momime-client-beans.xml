@@ -232,6 +232,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 	</bean>
 
+	<bean id="pendingMovementMessage" class="momime.client.messages.process.PendingMovementMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+	</bean>
+
 	<bean id="setCurrentPlayerMessage" class="momime.client.messages.process.SetCurrentPlayerMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
@@ -282,7 +289,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="updateNodeLairTowerUnitIDMessage" class="momime.client.messages.process.UpdateNodeLairTowerUnitIDMessageImpl" scope="prototype" />
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype" />
-	<bean id="pendingMovementMessage" class="momime.client.messages.process.PendingMovementMessageImpl" scope="prototype" />
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
 	<bean id="damageCalculationMessage" class="momime.client.messages.process.DamageCalculationMessageImpl" scope="prototype" />
@@ -650,6 +656,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="magicSlidersUI" class="momime.client.ui.frames.MagicSlidersUI">

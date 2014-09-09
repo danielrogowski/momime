@@ -120,11 +120,14 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		}
 		
 		// Units killed or gone out of view
-		for (final KillUnitMessageData data : getKillUnit ())
+		if (getKillUnit ().size () > 0)
 		{
-			final KillUnitMessageImpl proc = new KillUnitMessageImpl ();
-			proc.setData (data);
-			proc.start ();
+			final KillUnitMessageImpl proc = getFactory ().createKillUnitMessage ();
+			for (final KillUnitMessageData data : getKillUnit ())
+			{
+				proc.setData (data);
+				proc.start ();
+			}
 		}
 		
 		// Scouted monster IDs changed

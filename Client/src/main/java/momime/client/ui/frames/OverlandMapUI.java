@@ -40,6 +40,7 @@ import momime.common.messages.servertoclient.v0_9_5.OverlandMoveTypeID;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.v0_9_5.PendingMovement;
 import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.messages.v0_9_5.UnitSpecialOrder;
 import momime.common.messages.v0_9_5.UnitStatusID;
@@ -48,6 +49,8 @@ import momime.common.utils.MemoryGridCellUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.GridBagConstraintsNoFill;
 
@@ -61,40 +64,40 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Number of pixels at the edge of the window where the map scrolls */
 	private final static int MOUSE_SCROLL_WIDTH = 8;
-	
+
 	/** Number of pixels the map scrolls with each tick of the timer */
 	private final static int MOUSE_SCROLL_SPEED = 4;
-	
+
 	/** Brighten areas we can move to in 1 turn */
 	private final static int MOVE_IN_ONE_TURN_COLOUR = 0x30FFFFFF;
-	
+
 	/** Darken areas we cannot move to at all */
 	private final static int CANNOT_MOVE_HERE_COLOUR = 0x70000000;
-	
+
 	/** Multiplayer client */
 	private MomClient client;
-	
+
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
-	
+
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
-	
+
 	/** Bitmap generator */
 	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
-	
+
 	/** Small font */
 	private Font smallFont;
-	
+
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
-	
+
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
-	
+
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
 
@@ -103,89 +106,93 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
-	
+
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+
 	/** Unit stack that's in the middle of moving from one cell to another */
 	private MoveUnitStackOverlandMessageImpl unitStackMoving;
-	
+
 	/** Bitmaps for each animation frame of the overland map */
 	private BufferedImage [] overlandMapBitmaps;
-	
+
 	/** Bitmap for the shading at the edges of the area we can see */
 	private BufferedImage fogOfWarBitmap;
-	
+
 	/** Area detailing which map cells we can/can't move to */
 	private MapVolumeOfOverlandMoveType movementTypes;
 
 	/** Shading area generated from movementTypes */
 	private BufferedImage movementTypesBitmap;
-	
+
 	/** The plane that the UI is currently displaying */
 	private int mapViewPlane = 0;
-	
+
 	/** Zoom factor for the overland map; between 10 (1x) and 20 (2x) */
 	private int mapViewZoom = 10;
-	
+
 	/** Pixel offset into the map where the top left of the window is currently positioned, for scrolling around */
 	private int mapViewX = 0;
 
 	/** Pixel offset into the map where the top left of the window is currently positioned, for scrolling around */
 	private int mapViewY = 0;
-	
-	/** Border around the top row of gold buttons */ 
+
+	/** Border around the top row of gold buttons */
 	private BufferedImage topBarBackground;
 
 	// UI Components
 
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
-	
+
 	/** Panel showing the map terrain */
 	private JPanel sceneryPanel;
-	
+
 	/** Frame number being displayed */
 	private int terrainAnimFrame;
-	
+
 	/** Game action */
 	private Action gameAction;
-	
+
 	/** Spells action */
 	private Action spellsAction;
-	
+
 	/** Armies action */
 	private Action armiesAction;
-	
+
 	/** Cities action */
 	private Action citiesAction;
-	
+
 	/** Magic action */
 	private Action magicAction;
-	
+
 	/** Plane action */
 	private Action planeAction;
-	
+
 	/** Messages action */
 	private Action messagesAction;
-	
+
 	/** Chat action */
 	private Action chatAction;
-	
+
 	/** Info action */
 	private Action infoAction;
-	
+
 	/** Zoom in action */
 	private Action zoomInAction;
-	
+
 	/** Zoom out action */
 	private Action zoomOutAction;
-	
+
 	/** Options action */
 	private Action optionsAction;
-	
+
 	/** Turn label */
 	private JLabel turnLabel;
-	
+
 	/**
 	 * Sets up the frame once all values have been injected
+	 * 
 	 * @throws IOException If a resource cannot be found
 	 */
 	@Override
@@ -460,6 +467,77 @@ public final class OverlandMapUI extends MomClientFrameUI
 								(mapZoomedWidth * xRepeat) - mapViewX, (mapZoomedHeight * yRepeat) - mapViewY,
 								mapZoomedWidth, mapZoomedHeight, null);
 				}
+				
+				// Show pending movements
+				if (getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement ().size () > 0)
+				{
+					try
+					{
+						// All pending movements are now drawn with a boot - its too difficult to figure out what icon to draw
+						// if we have e.g. a Spearmen, Magic Spirit and Great Drake in the same stack.
+						// The Delphi code actually tried to derive the location of this from the Graphics XML but it isn't really necessary.
+						final BufferedImage bootImage = getUtils ().loadImage ("/momime.client.graphics/unitSkills/USX01-move.png");
+
+						final int bootZoomedWidth = (bootImage.getWidth () * mapViewZoom) / 10;
+						final int bootZoomedHeight = (bootImage.getHeight () * mapViewZoom) / 10;
+
+						final int arrowZoomedWidth = (overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
+						final int arrowZoomedHeight = (overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
+						
+						for (final PendingMovement pendingMovement : getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement ())
+							if (pendingMovement.getMoveTo ().getZ () == mapViewPlane)
+							{
+								// Note we actually start from the destination and walk backwards to the current unit location
+								final MapCoordinates2DEx coords = new MapCoordinates2DEx (pendingMovement.getMoveTo ().getX (), pendingMovement.getMoveTo ().getY ());
+								int moveOutFromDirectionImageNo = 0;
+								
+								for (final Integer d : pendingMovement.getPath ())
+								{
+									final int dReversed = getCoordinateSystemUtils ().normalizeDirection (getClient ().getSessionDescription ().getMapSize ().getCoordinateSystemType (), d+4);
+
+									final int bootX = (((coords.getX () * overlandMapTileSet.getTileWidth ()) - ((bootImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
+									final int bootY = (((coords.getY () * overlandMapTileSet.getTileHeight ()) - ((bootImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+
+									final int arrowX = (coords.getX () * overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
+									final int arrowY = (coords.getY () * overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
+									
+									for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+										for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+										{
+											// Draw boot in centre
+											g.drawImage (bootImage,
+												(mapZoomedWidth * xRepeat) - mapViewX + bootX, (mapZoomedHeight * yRepeat) - mapViewY + bootY,
+												bootZoomedWidth, bootZoomedHeight, null);
+											
+											// Draw arrow moving out from this square
+											if (moveOutFromDirectionImageNo > 0)
+											{
+												final BufferedImage arrowImage = getUtils ().loadImage ("/momime.client.graphics/overland/pendingMovement/moveOutOfMapCell-d" + moveOutFromDirectionImageNo + ".png");
+												g.drawImage (arrowImage,
+													(mapZoomedWidth * xRepeat) - mapViewX + arrowX, (mapZoomedHeight * yRepeat) - mapViewY + arrowY,
+													arrowZoomedWidth, arrowZoomedHeight, null);
+											}
+											
+											// Draw arrow moving into this square
+											final BufferedImage arrowImage = getUtils ().loadImage ("/momime.client.graphics/overland/pendingMovement/moveInToMapCell-d" + d + ".png");
+											g.drawImage (arrowImage,
+												(mapZoomedWidth * xRepeat) - mapViewX + arrowX, (mapZoomedHeight * yRepeat) - mapViewY + arrowY,
+												arrowZoomedWidth, arrowZoomedHeight, null);
+										}
+									
+									// Set arrow number to draw moving out from the next square
+									moveOutFromDirectionImageNo = d;
+									
+									// Move to next square
+									getCoordinateSystemUtils ().move2DCoordinates (getClient ().getSessionDescription ().getMapSize (), coords, dReversed);
+								}
+							}
+					}
+					catch (final IOException e)
+					{
+						log.error (e, e);
+					}
+				}
 			}
 		};
 		sceneryPanel.setBackground (Color.BLACK);
@@ -666,6 +744,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 							// Left clicking on a space to move a stack of units to - can only do this if its our turn
 							if (((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
 								(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
+								(getMovementTypes () != null) &&
 								(getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX) != OverlandMoveTypeID.CANNOT_MOVE_HERE))
 								
 								// NB. We don't check here that we actually have a unit selected - MoveUnitStackTo does this for us
@@ -742,15 +821,15 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		log.trace ("Exiting init");
 	}
-	
+
 	/**
-	 * Update all labels and such from the chosen language 
+	 * Update all labels and such from the chosen language
 	 */
 	@Override
 	public final void languageChanged ()
 	{
 		log.trace ("Entering languageChanged");
-		
+
 		gameAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Game"));
 		spellsAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Spells"));
 		armiesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Armies"));
@@ -762,7 +841,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		log.trace ("Exiting languageChanged");
 	}
-	
+
 	/**
 	 * Make sure map scroll value doesn't go outside acceptable range; if it does then constrain it back or wrap, as appropriate
 	 * 
@@ -775,7 +854,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	final int fixMapViewLimits (final int value, final int mapSize, final int windowSize, final boolean wrapping)
 	{
 		int newValue = value;
-		
+
 		if (wrapping)
 		{
 			while (newValue < 0)
@@ -789,100 +868,90 @@ public final class OverlandMapUI extends MomClientFrameUI
 			newValue = Math.min (newValue, mapSize - windowSize);
 			newValue = Math.max (0, newValue);
 		}
-		
+
 		return newValue;
 	}
-	
+
 	/**
-	 * Generates big bitmaps of the entire overland map in each frame of animation
-	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView
+	 * Generates big bitmaps of the entire overland map in each frame of animation Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView
 	 * 
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	public final void regenerateOverlandMapBitmaps () throws IOException
 	{
 		log.trace ("Entering regenerateOverlandMapBitmaps: " + mapViewPlane);
-		
+
 		overlandMapBitmaps = getOverlandMapBitmapGenerator ().generateOverlandMapBitmaps (mapViewPlane);
-		
-		log.trace ("Exiting regenerateOverlandMapBitmaps"); 
+
+		log.trace ("Exiting regenerateOverlandMapBitmaps");
 	}
-	
+
 	/**
-	 * Generates big bitmap of the smoothed edges of blackness that obscure the edges
-	 * of the outermost tiles we can see, so that the edges aren't just a solid black line
+	 * Generates big bitmap of the smoothed edges of blackness that obscure the edges of the outermost tiles we can see, so that the edges aren't just a solid black line
 	 * 
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	public final void regenerateFogOfWarBitmap () throws IOException
 	{
 		log.trace ("Entering regenerateFogOfWarBitmap");
-		
+
 		fogOfWarBitmap = getOverlandMapBitmapGenerator ().generateFogOfWarBitmap (mapViewPlane);
-		
-		log.trace ("Exiting regenerateFogOfWarBitmap"); 
+
+		log.trace ("Exiting regenerateFogOfWarBitmap");
 	}
 
 	/**
-	 * This prefers to units with the highest special order - this will make settlers always show on top if
-	 * they're building cities, and make non-patrolling units appear in preference to patrolling units
+	 * This prefers to units with the highest special order - this will make settlers always show on top if they're building cities, and make non-patrolling units appear in preference to patrolling units
 	 * 
 	 * @return Array of units to draw at each map cell; or null if there are absolutely no units to draw
 	 */
-	final MemoryUnit [] [] chooseUnitToDrawAtEachLocation ()
+	final MemoryUnit [][] chooseUnitToDrawAtEachLocation ()
 	{
-		final MemoryUnit [] [] bestUnits = new MemoryUnit
-			[getClient ().getSessionDescription ().getMapSize ().getHeight ()] [getClient ().getSessionDescription ().getMapSize ().getWidth ()];
-		
+		final MemoryUnit [][] bestUnits = new MemoryUnit [getClient ().getSessionDescription ().getMapSize ().getHeight ()] [getClient ().getSessionDescription ().getMapSize ().getWidth ()];
+
 		boolean found = false;
 		for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 
 			// Is it alive, and are we looking at the right plane to see it?
-			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null) && ((unit.getUnitLocation ().getZ () == mapViewPlane) ||
-				(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-					(unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))))
+			if ( (unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null) && ( (unit.getUnitLocation ().getZ () == mapViewPlane) || (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get (unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))))
 			{
 				found = true;
 				final MemoryUnit existingUnit = bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()];
-				
+
 				// Show real special orders in preference to patrol
-				if ((existingUnit == null) ||
-					((existingUnit != null) && (existingUnit.getSpecialOrder () == null) && (unit.getSpecialOrder () != null)) ||
-					((existingUnit != null) && (existingUnit.getSpecialOrder () == UnitSpecialOrder.PATROL) && (unit.getSpecialOrder () != null) && (unit.getSpecialOrder () != UnitSpecialOrder.PATROL)))
-					
+				if ( (existingUnit == null) || ( (existingUnit != null) && (existingUnit.getSpecialOrder () == null) && (unit.getSpecialOrder () != null)) || ( (existingUnit != null) && (existingUnit.getSpecialOrder () == UnitSpecialOrder.PATROL) && (unit.getSpecialOrder () != null) && (unit.getSpecialOrder () != UnitSpecialOrder.PATROL)))
+
 					bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()] = unit;
 			}
-		
+
 		// This is really here for the benefit of the unit test, which has no units, but the performance of
 		// Mockito when executing 1000s of mocks (like in the unit loop that processes the output from this method)
-		// is very erratic and makes the scrolling very irregular.  So outputting null can cut that entire loop, and
+		// is very erratic and makes the scrolling very irregular. So outputting null can cut that entire loop, and
 		// several 1000 mock invocations, out.
 		return found ? bestUnits : null;
 	}
-	
+
 	/**
 	 * Updates the turn label
 	 */
 	public final void updateTurnLabelText ()
 	{
 		log.trace ("Entering updateTurnLabelText");
-		
+
 		// Turn 1 is January 1400 - so last turn in 1400 is turn 12
 		// Months are numbered 1-12
-		final int year = 1400 + ((getClient ().getGeneralPublicKnowledge ().getTurnNumber () - 1) / 12);
+		final int year = 1400 + ( (getClient ().getGeneralPublicKnowledge ().getTurnNumber () - 1) / 12);
 		int month = getClient ().getGeneralPublicKnowledge ().getTurnNumber () % 12;
 		if (month == 0)
 			month = 12;
-		
+
 		// Build up description
-		final String monthText = getLanguage ().findCategoryEntry ("Months", "MNTH" + ((month < 10) ? "0" : "") + month);
-		turnLabel.setText (getLanguage ().findCategoryEntry ("frmMapButtonBar", "Turn").replaceAll
-			("MONTH", monthText).replaceAll ("YEAR", new Integer (year).toString ()).replaceAll ("TURN",
-			new Integer (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
-		
+		final String monthText = getLanguage ().findCategoryEntry ("Months", "MNTH" + ( (month < 10) ? "0" : "") + month);
+		turnLabel.setText (getLanguage ().findCategoryEntry ("frmMapButtonBar", "Turn").replaceAll ("MONTH", monthText).replaceAll ("YEAR", new Integer (year).toString ()).replaceAll ("TURN", new Integer (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
+
 		log.trace ("Exiting updateTurnLabelText");
 	}
-	
+
 	/**
 	 * @return Area detailing which map cells we can/can't move to
 	 */
@@ -899,40 +968,39 @@ public final class OverlandMapUI extends MomClientFrameUI
 		log.trace ("Entering setMovementTypes");
 
 		movementTypes = moves;
-		
+
 		// Regenerate shading bitmap
 		if (getMovementTypes () == null)
 			movementTypesBitmap = null;
 		else
 		{
-			movementTypesBitmap = new BufferedImage (getClient ().getSessionDescription ().getMapSize ().getWidth (),
-				getClient ().getSessionDescription ().getMapSize ().getHeight (), BufferedImage.TYPE_INT_ARGB);
+			movementTypesBitmap = new BufferedImage (getClient ().getSessionDescription ().getMapSize ().getWidth (), getClient ().getSessionDescription ().getMapSize ().getHeight (), BufferedImage.TYPE_INT_ARGB);
 
 			for (int x = 0; x < getClient ().getSessionDescription ().getMapSize ().getWidth (); x++)
 				for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
 					switch (getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (y).getCell ().get (x))
 					{
-						// Brighten areas we can move to in 1 turn
+					// Brighten areas we can move to in 1 turn
 						case MOVE_IN_ONE_TURN:
 							movementTypesBitmap.setRGB (x, y, MOVE_IN_ONE_TURN_COLOUR);
 							break;
-							
+
 						// Darken areas we cannot move to at all
 						case CANNOT_MOVE_HERE:
 							movementTypesBitmap.setRGB (x, y, CANNOT_MOVE_HERE_COLOUR);
 							break;
-							
+
 						// Leave areas we can move to in multiple turns looking like normal
 						case MOVE_IN_MULTIPLE_TURNS:
 							break;
 					}
 		}
-		
+
 		sceneryPanel.repaint ();
 
 		log.trace ("Exiting setMovementTypes");
 	}
-	
+
 	/**
 	 * Forces the scenery panel to be redrawn as soon as possible
 	 */
@@ -940,7 +1008,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	{
 		sceneryPanel.repaint ();
 	}
-	
+
 	/**
 	 * @return Multiplayer client
 	 */
@@ -948,7 +1016,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	{
 		return client;
 	}
-	
+
 	/**
 	 * @param obj Multiplayer client
 	 */
@@ -988,7 +1056,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	{
 		memoryGridCellUtils = utils;
 	}
-	
+
 	/**
 	 * @return Small font
 	 */
@@ -1115,6 +1183,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param csu Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils csu)
+	{
+		coordinateSystemUtils = csu;
 	}
 
 	/**

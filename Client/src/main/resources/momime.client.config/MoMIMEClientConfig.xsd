@@ -9,6 +9,30 @@
 				<xsd:element minOccurs="1" maxOccurs="1" name="graphicsXmlFilename" type="momimecltconfig:filename" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="pathToLanguageXmlFiles" type="momimecltconfig:path" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="chosenLanguage" type="xsd:normalizedString" />
+				
+				<!-- Overland map options -->
+				<xsd:element minOccurs="1" maxOccurs="1" name="overlandSmoothTerrain" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>True to use the full terrain tileset so e.g. hills flow into each other and coastline is drawn between ocean and land; false to use only "blocky" tiles.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element minOccurs="1" maxOccurs="1" name="overlandSmoothTextures" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>When zooming in the overland map, this controls how the textures are scaled up.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element minOccurs="1" maxOccurs="1" name="overlandShowPartialFogOfWar" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>Whether to slightly darken terrain which we have seen, but cannot see now, so we're just remembering what we saw there before.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				<xsd:element minOccurs="1" maxOccurs="1" name="overlandSmoothFogOfWar" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>True to use the full FOW tileset so the FOW border slightly enchroaches into tiles we can see and so looks smooth; false to use hard square edges.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
+				
+				<!-- Combat map options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="unitCombatScale" type="momimecltconfig:unitCombatScale" />
 			</xsd:sequence>
 		</xsd:complexType>

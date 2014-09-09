@@ -26,6 +26,7 @@ import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
+import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
@@ -110,6 +111,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 
+	/** Client config, containing various overland map settings */
+	private MomImeClientConfig clientConfig;
+	
 	/** Unit stack that's in the middle of moving from one cell to another */
 	private MoveUnitStackOverlandMessageImpl unitStackMoving;
 
@@ -346,7 +350,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 				
 				// Scale the map image up smoothly
 				final Graphics2D g2 = (Graphics2D) g;
-				g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+				g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION,
+					getClientConfig ().isOverlandSmoothTextures () ? RenderingHints.VALUE_INTERPOLATION_BILINEAR : RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 				g2.setRenderingHint (RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 				// If the size of the map is smaller than the size of the space we're drawing it in, clip the right and/or bottom off, so that
@@ -369,9 +374,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 							mapZoomedWidth, mapZoomedHeight, null);
 						
 						// Shade the fog of war edges
-						g.drawImage (fogOfWarBitmap,
-							(mapZoomedWidth * xRepeat) - mapViewX, (mapZoomedHeight * yRepeat) - mapViewY,
-							mapZoomedWidth, mapZoomedHeight, null);
+						if (fogOfWarBitmap != null)
+							g.drawImage (fogOfWarBitmap,
+								(mapZoomedWidth * xRepeat) - mapViewX, (mapZoomedHeight * yRepeat) - mapViewY,
+								mapZoomedWidth, mapZoomedHeight, null);
 					}
 				
 				// Draw units dynamically, over the bitmap.
@@ -459,13 +465,17 @@ public final class OverlandMapUI extends MomClientFrameUI
 				if (movementTypesBitmap != null)
 				{
 					// Turn anti-aliasing back off for this, so the shaded areas line up properly over the tiles
-					g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+					if (getClientConfig ().isOverlandSmoothTextures ())
+						g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 					
 					for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
 						for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
 							g.drawImage (movementTypesBitmap,
 								(mapZoomedWidth * xRepeat) - mapViewX, (mapZoomedHeight * yRepeat) - mapViewY,
 								mapZoomedWidth, mapZoomedHeight, null);
+					
+					if (getClientConfig ().isOverlandSmoothTextures ())
+						g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 				}
 				
 				// Show pending movements
@@ -980,7 +990,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 				for (int y = 0; y < getClient ().getSessionDescription ().getMapSize ().getHeight (); y++)
 					switch (getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (y).getCell ().get (x))
 					{
-					// Brighten areas we can move to in 1 turn
+						// Brighten areas we can move to in 1 turn
 						case MOVE_IN_ONE_TURN:
 							movementTypesBitmap.setRGB (x, y, MOVE_IN_ONE_TURN_COLOUR);
 							break;
@@ -1201,6 +1211,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 		coordinateSystemUtils = csu;
 	}
 
+	/**
+	 * @return Client config, containing various overland map settings
+	 */	
+	public final MomImeClientConfig getClientConfig ()
+	{
+		return clientConfig;
+	}
+
+	/**
+	 * @param config Client config, containing various overland map settings
+	 */
+	public final void setClientConfig (final MomImeClientConfig config)
+	{
+		clientConfig = config;
+	}
+	
 	/**
 	 * @return Unit stack that's in the middle of moving from one cell to another
 	 */

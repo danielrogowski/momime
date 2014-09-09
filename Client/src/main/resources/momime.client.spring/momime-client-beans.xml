@@ -498,6 +498,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="utils" ref="uiUtils" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+		<property name="clientConfig" ref="clientConfig" />
 	</bean>
 	
 	<bean id="overlandMapProcessing" class="momime.client.process.OverlandMapProcessingImpl">
@@ -657,6 +658,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="clientConfig" ref="clientConfig" />
 	</bean>
 
 	<bean id="magicSlidersUI" class="momime.client.ui.frames.MagicSlidersUI">

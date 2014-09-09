@@ -3,5 +3,9 @@
 	<graphicsXmlFilename>C:\Your Eclipse Workspace\MoMIMEClient\src\external\resources\momime.client.graphics.database\Default.Master of Magic Graphics.xml</graphicsXmlFilename>
 	<pathToLanguageXmlFiles>C:\Your Eclipse Workspace\MoMIMEClient\src\external\resources\momime.client.language.database\</pathToLanguageXmlFiles>
 	<chosenLanguage>English</chosenLanguage>
+	<overlandSmoothTerrain>true</overlandSmoothTerrain>
+	<overlandSmoothTextures>true</overlandSmoothTextures>
+	<overlandShowPartialFogOfWar>true</overlandShowPartialFogOfWar>
+	<overlandSmoothFogOfWar>true</overlandSmoothFogOfWar>
 	<unitCombatScale>D</unitCombatScale>
 </config:momImeClientConfig>

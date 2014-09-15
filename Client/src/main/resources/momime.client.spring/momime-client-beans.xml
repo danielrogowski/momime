@@ -214,6 +214,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="mainMenuUI" ref="mainMenuUI" />
+		<property name="musicPlayer" ref="musicPlayer" />
 	</bean>
 
 	<bean id="updateGlobalEconomyMessage" class="momime.client.messages.process.UpdateGlobalEconomyMessageImpl" scope="prototype">
@@ -443,6 +444,26 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	
+	<bean id="advancedPlayerFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.client.audio.AdvancedPlayerFactory" />
+	</bean>
+	
+	<bean id="advancedPlayer" class="momime.client.audio.AdvancedPlayerImpl" scope="prototype" />
+	
+	<bean id="musicPlayer" class="momime.client.audio.AudioPlayerImpl">
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="advancedPlayerFactory" ref="advancedPlayerFactory" />
+		<property name="loop" value="true" />
+	</bean>
+	
+	<bean id="soundPlayer" class="momime.client.audio.AudioPlayerImpl">
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="advancedPlayerFactory" ref="advancedPlayerFactory" />
+		<property name="loop" value="false" />
+	</bean>
+	
 	<bean id="uiUtils" class="com.ndg.swing.NdgUIUtilsImpl" />
 	
 	<bean id="anim" class="momime.client.utils.AnimationControllerImpl">
@@ -519,6 +540,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="newTurnMessageProcessing" class="momime.client.newturnmessages.NewTurnMessageProcessingImpl">
 		<property name="client" ref="client" />
 		<property name="newTurnMessagesFactory" ref="newTurnMessagesFactory" />
+		<property name="musicPlayer" ref="musicPlayer" />
 	</bean>
 	
 	<!-- Language variable replacers -->
@@ -586,6 +608,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="client" ref="client" />
 		<property name="anim" ref="anim" />
+		<property name="musicPlayer" ref="musicPlayer" />
 	</bean>
 
 	<bean id="chooseLanguageUI" class="momime.client.ui.frames.ChooseLanguageUI">

@@ -16,6 +16,7 @@ import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.PlayList;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -808,5 +809,49 @@ public final class TestGraphicsDatabaseExImpl
 
 		// Check results
 		db.findAnimation ("AN04", "testFindAnimation_NotExists");
+	}
+
+	/**
+	 * Tests the findPlayList method to find a play list ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindPlayList_Exists () throws RecordNotFoundException
+	{
+		// Set up object to test
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final PlayList newPlayList = new PlayList ();
+			newPlayList.setPlayListID ("PL0" + n);
+			db.getPlayList ().add (newPlayList);
+		}
+
+		db.buildMaps ();
+
+		// Check results
+		assertEquals ("PL02", db.findPlayList ("PL02", "testFindPlayList_Exists").getPlayListID ());
+	}
+
+	/**
+	 * Tests the findPlayList method to find a play list ID that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindPlayList_NotExists () throws RecordNotFoundException
+	{
+		// Set up object to test
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final PlayList newPlayList = new PlayList ();
+			newPlayList.setPlayListID ("PL0" + n);
+			db.getPlayList ().add (newPlayList);
+		}
+
+		db.buildMaps ();
+
+		// Check results
+		db.findPlayList ("PL04", "testFindPlayList_NotExists");
 	}
 }

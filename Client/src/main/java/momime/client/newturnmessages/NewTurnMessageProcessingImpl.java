@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javazoom.jl.decoder.JavaLayerException;
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
 import momime.common.MomException;
 import momime.common.messages.v0_9_5.NewTurnMessageData;
 
@@ -25,6 +27,9 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	
 	/** Factory for creating NTMs from spring prototypes */
 	private NewTurnMessagesFactory newTurnMessagesFactory;
+	
+	/** Music player */
+	private AudioPlayer musicPlayer;
 	
 	/**
 	 * At the start of a new turn, we get a new block of new turn messages, so need to get rid of the old ones.
@@ -66,15 +71,45 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	{
 		log.trace ("Entering readNewTurnMessagesFromServer: " + msgs.size ());
 		
+		String musicResourceName = null;
+		Integer musicSortOrder = null;
+		
 		for (final NewTurnMessageData msg : msgs)
 			if (msg instanceof NewTurnMessageExpiration)
 			{
+				// Set the correct status and add the message
 				((NewTurnMessageExpiration) msg).setStatus (statusForNewMessages);
 				getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().add (msg);
+				
+				// See if the message should play some music, and if so, how to prioritise between multiple messages each with music.
+				// This is done here, rather than NewTurnMessagesUI, because here we only process new messages,
+				// whereas NewTurnMessagesUI can't tell the difference between old and new messages.
+				if ((msg instanceof NewTurnMessageUI) && (msg instanceof NewTurnMessageMusic))
+				{
+					final String thisMusicResourceName = ((NewTurnMessageMusic) msg).getMusicResourceName ();
+					final int thisSortOrder = ((NewTurnMessageUI) msg).getSortOrder ().getSortOrder ();
+					
+					if ((thisMusicResourceName != null) &&
+						((musicSortOrder == null) || (thisSortOrder > musicSortOrder)))
+					{
+						musicResourceName = thisMusicResourceName;
+						musicSortOrder = thisSortOrder;
+					}
+				}
 			}
 			else
 				throw new MomException ("readNewTurnMessagesFromServer: One of the messages in the list, with class " + msg.getClass ().getName () +
 					", doesn't support the NewTurnMessageExpiration interface");
+		
+		if (musicResourceName != null)
+			try
+			{
+				getMusicPlayer ().playThenResume (musicResourceName);
+			}
+			catch (final JavaLayerException e)
+			{
+				log.error (e, e);
+			}
 		
 		log.trace ("Exiting readNewTurnMessagesFromServer = " + getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().size ());
 	}
@@ -157,5 +192,21 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	public final void setNewTurnMessagesFactory (final NewTurnMessagesFactory fac)
 	{
 		newTurnMessagesFactory = fac;
+	}
+
+	/**
+	 * @return Music player
+	 */
+	public final AudioPlayer getMusicPlayer ()
+	{
+		return musicPlayer;
+	}
+
+	/**
+	 * @param player Music player
+	 */
+	public final void setMusicPlayer (final AudioPlayer player)
+	{
+		musicPlayer = player;
 	}
 }

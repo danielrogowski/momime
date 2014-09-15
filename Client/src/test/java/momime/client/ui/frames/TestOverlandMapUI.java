@@ -12,6 +12,7 @@ import java.util.List;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
+import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
@@ -29,6 +30,7 @@ import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.utils.ResourceValueUtils;
 
@@ -124,6 +126,7 @@ public final class TestOverlandMapUI
 		pd1.setPlayerName ("Mr. Blah");
 		
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 		
 		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub, null);
 		
@@ -132,10 +135,14 @@ public final class TestOverlandMapUI
 		
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
+		when (client.getOurTransientPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "updateAmountPerTurn")).thenReturn (player1);
+		
+		// Config
+		final MomImeClientConfig config = new MomImeClientConfig (); 
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
@@ -210,6 +217,7 @@ public final class TestOverlandMapUI
 		map.setLanguageHolder (langHolder);
 		map.setLanguageChangeMaster (langMaster);
 		map.setClient (client);
+		map.setClientConfig (config);
 		map.setOverlandMapRightHandPanel (rhp);
 		map.setSmallFont (CreateFontsForTests.getSmallFont ());
 

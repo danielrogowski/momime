@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.AnimationController;
 
@@ -67,6 +68,9 @@ public final class MainMenuUI extends MomClientFrameUI
 	
 	/** Animation controller */
 	private AnimationController anim;
+	
+	/** Music player */
+	private AudioPlayer musicPlayer;
 	
 	/** Change language action */
 	private Action changeLanguageAction;
@@ -132,7 +136,7 @@ public final class MainMenuUI extends MomClientFrameUI
 			private static final long serialVersionUID = 7129552133649247249L;
 
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				try
 				{
@@ -150,7 +154,7 @@ public final class MainMenuUI extends MomClientFrameUI
 			private static final long serialVersionUID = 438056656620043266L;
 
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				try
 				{
@@ -168,7 +172,7 @@ public final class MainMenuUI extends MomClientFrameUI
 			private static final long serialVersionUID = -1111824002334990953L;
 
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				try
 				{
@@ -185,7 +189,7 @@ public final class MainMenuUI extends MomClientFrameUI
 		joinGameAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -193,7 +197,7 @@ public final class MainMenuUI extends MomClientFrameUI
 		optionsAction = new AbstractAction ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 			}
 		};
@@ -203,7 +207,7 @@ public final class MainMenuUI extends MomClientFrameUI
 			private static final long serialVersionUID = 5037769648975101972L;
 
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
 				System.exit (0);
 			}
@@ -331,7 +335,17 @@ public final class MainMenuUI extends MomClientFrameUI
 		
 		contentPane.addComponentListener (onResize);
 		getFrame ().addComponentListener (onResize);
-
+		
+		// Start title screen music
+		try
+		{
+			getMusicPlayer ().playAudioFile ("/momime.client.music/MUSIC_104 - Title screen.mp3");
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
+		}
+		
 		// Resizing the window is a bit pointless since there's no more info to display
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
@@ -497,5 +511,21 @@ public final class MainMenuUI extends MomClientFrameUI
 	public final void setAnim (final AnimationController controller)
 	{
 		anim = controller;
+	}
+
+	/**
+	 * @return Music player
+	 */
+	public final AudioPlayer getMusicPlayer ()
+	{
+		return musicPlayer;
+	}
+
+	/**
+	 * @param player Music player
+	 */
+	public final void setMusicPlayer (final AudioPlayer player)
+	{
+		musicPlayer = player;
 	}
 }

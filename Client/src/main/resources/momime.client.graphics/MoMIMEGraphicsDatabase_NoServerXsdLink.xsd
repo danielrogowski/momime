@@ -72,6 +72,7 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityViewElementSet" type="momimegfx:cityViewElementSet" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityViewElement" type="momimegfx:cityViewElement" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimegfx:animation" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimegfx:playList" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -153,9 +154,17 @@
 			<xsd:selector xpath="mapFeature" />
 			<xsd:field xpath="@mapFeatureID" />
 		</xsd:key>
+		<xsd:key name="playListPK">
+			<xsd:selector xpath="playList" />
+			<xsd:field xpath="@playListID" />
+		</xsd:key>
 		
 <!-- Foreign keys -->
 
+		<xsd:keyref refer="momimegfx:playListPK" name="wizardCombatPlayListFKplayList">
+			<xsd:selector xpath="wizard/combatPlayList" />
+			<xsd:field xpath="@playListID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimegfx:animationPK" name="rangedAttackTypeCombatImageFKanimation">
 			<xsd:selector xpath="rangedAttackType/rangedAttackTypeCombatImage" />
 			<xsd:field xpath="rangedAttackTypeCombatAnimation" />
@@ -212,8 +221,13 @@
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="flagColour" type="momimecommon:colour" nxe:label="Flag colour" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="portraitFile" type="momimegfx:imageFilename" nxe:label="Portrait image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatPlayList" type="momimegfx:wizardCombatPlayList" nxe:label="Combat play list" nxe:gridwidth="250" />
 		</xsd:sequence>
 		<xsd:attribute name="wizardID" type="momimecommon:wizardID" use="required" nxe:label="Wizard ID" nxe:gridwidth="80" />
+	</xsd:complexType>
+
+	<xsd:complexType name="wizardCombatPlayList" nxe:singular="Wizard combat play list" nxe:plural="Wizard combat play lists">
+		<xsd:attribute name="playListID" type="momimegfx:playListID" use="required" nxe:label="Wizard combat play list ID" nxe:gridwidth="300" />
 	</xsd:complexType>
 
 	<xsd:complexType name="productionType" nxe:singular="Production Type" nxe:plural="Production Types" nxe:submenu="Cities and Races">
@@ -768,6 +782,13 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:complexType name="playList" nxe:singular="Play list" nxe:plural="Play lists">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="unbounded" name="audioFile" type="momimegfx:imageFilename" />
+		</xsd:sequence>
+		<xsd:attribute name="playListID" type="momimegfx:playListID" use="required" nxe:label="Play list ID" nxe:gridwidth="150" />
+	</xsd:complexType>
+
 <!-- Simple data types -->
 	
 	<xsd:simpleType name="imageFilename">
@@ -827,6 +848,10 @@
 
 	<xsd:simpleType name="sortPosition">
 		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="playListID">
+		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="productionImageValue">
@@ -903,4 +928,3 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>
-

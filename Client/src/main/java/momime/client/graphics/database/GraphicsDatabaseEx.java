@@ -6,6 +6,7 @@ import java.util.List;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.PlayList;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -162,6 +163,14 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the animationID doesn't exist
 	 */
 	public AnimationEx findAnimation (final String animationID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @param playListID Play list ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Play list object
+	 * @throws RecordNotFoundException If the playListID doesn't exist
+	 */
+	public PlayList findPlayList (final String playListID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * NB. This will find the largest width and the largest height separately, so its possible this may return a dimension

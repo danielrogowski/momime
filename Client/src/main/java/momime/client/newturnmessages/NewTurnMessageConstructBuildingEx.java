@@ -40,7 +40,7 @@ import com.ndg.swing.NdgUIUtils;
  * NTM describing a building that completed construction
  */
 public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConstructBuilding
-	implements NewTurnMessageExpiration, NewTurnMessageComplexUI, NewTurnMessageClickable, NewTurnMessageAnimated, NewTurnMessageRepaintOnCityDataChanged
+	implements NewTurnMessageExpiration, NewTurnMessageComplexUI, NewTurnMessageClickable, NewTurnMessageAnimated, NewTurnMessageRepaintOnCityDataChanged, NewTurnMessageMusic
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (NewTurnMessageConstructBuildingEx.class);
@@ -96,6 +96,15 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 		return NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION_COMPLETED;
 	}
 
+	/**
+	 * @return Name of music file on the classpath to play when this NTM is displayed; null if this message has no music associated
+	 */
+	@Override
+	public final String getMusicResourceName ()
+	{
+		return "/momime.client.music/MUSIC_108 - Finished a building.mp3";
+	}
+	
 	/**
 	 * @return Custom component to draw this NTM with
 	 */

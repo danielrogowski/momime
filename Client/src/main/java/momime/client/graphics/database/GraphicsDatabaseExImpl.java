@@ -16,6 +16,7 @@ import momime.client.graphics.database.v0_9_5.CombatTileUnitRelativeScale;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
 import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.graphics.database.v0_9_5.PlayList;
 import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.RangedAttackType;
@@ -89,6 +90,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationEx> animationsMap;
+	
+	/** Map of play list IDs to play list objects */
+	private Map<String, PlayList> playListsMap;
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -211,6 +215,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		mapFeaturesMap = new HashMap<String, MapFeatureEx> ();
 		for (final MapFeature mf : getMapFeature ())
 			mapFeaturesMap.put (mf.getMapFeatureID (), (MapFeatureEx) mf);
+
+		// Create play lists map
+		playListsMap = new HashMap<String, PlayList> ();
+		for (final PlayList pl : getPlayList ())
+			playListsMap.put (pl.getPlayListID (), pl);
 		
 		log.trace ("Exiting buildMaps");
 	}
@@ -589,6 +598,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		return found;
 	}
 
+	/**
+	 * @param playListID Play list ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Play list object
+	 * @throws RecordNotFoundException If the playListID doesn't exist
+	 */
+	@Override
+	public final PlayList findPlayList (final String playListID, final String caller) throws RecordNotFoundException
+	{
+		final PlayList found = playListsMap.get (playListID);
+		if (found == null)
+			throw new RecordNotFoundException (PlayList.class, playListID, caller);
+
+		return found;
+	}
+	
 	/**
 	 * NB. This will find the largest width and the largest height separately, so its possible this may return a dimension
 	 * which no building actually has, if e.g. the widest is 50x25 and the tallest is 20x40 then it would return 50x40.

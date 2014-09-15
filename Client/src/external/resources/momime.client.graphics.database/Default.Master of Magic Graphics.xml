@@ -3,62 +3,92 @@
 	<wizard wizardID="MONSTERS" />
 	<wizard wizardID="RAIDERS">
 		<flagColour>442404</flagColour>
+		<combatPlayList playListID="COMBAT_GENERAL_102" />
+		<combatPlayList playListID="COMBAT_GENERAL_103" />
 	</wizard>
 	<wizard wizardID="WZ01">
 		<flagColour>B2AAA6</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ01.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ01_102" />
+		<combatPlayList playListID="COMBAT_WZ01_103" />
 	</wizard>
 	<wizard wizardID="WZ02">
 		<flagColour>545D10</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ02.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ02_102" />
+		<combatPlayList playListID="COMBAT_WZ02_103" />
 	</wizard>
 	<wizard wizardID="WZ03">
 		<flagColour>A86E4E</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ03.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ03_102" />
+		<combatPlayList playListID="COMBAT_WZ03_103" />
 	</wizard>
 	<wizard wizardID="WZ04">
 		<flagColour>3C398C</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ04.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ04_102" />
+		<combatPlayList playListID="COMBAT_WZ04_103" />
 	</wizard>
 	<wizard wizardID="WZ05">
 		<flagColour>65483D</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ05.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ05_102" />
+		<combatPlayList playListID="COMBAT_WZ05_103" />
 	</wizard>
 	<wizard wizardID="WZ06">
 		<flagColour>D0CA7D</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ06.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ06_102" />
+		<combatPlayList playListID="COMBAT_WZ06_103" />
 	</wizard>
 	<wizard wizardID="WZ07">
 		<flagColour>571D56</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ07.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ07_102" />
+		<combatPlayList playListID="COMBAT_WZ07_103" />
 	</wizard>
 	<wizard wizardID="WZ08">
 		<flagColour>436243</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ08.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ08_102" />
+		<combatPlayList playListID="COMBAT_WZ08_103" />
 	</wizard>
 	<wizard wizardID="WZ09">
 		<flagColour>520101</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ09.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ09_102" />
+		<combatPlayList playListID="COMBAT_WZ09_103" />
 	</wizard>
 	<wizard wizardID="WZ10">
 		<flagColour>FBE270</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ10.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ10_102" />
+		<combatPlayList playListID="COMBAT_WZ10_103" />
 	</wizard>
 	<wizard wizardID="WZ11">
 		<flagColour>D48F1C</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ11.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ11_102" />
+		<combatPlayList playListID="COMBAT_WZ11_103" />
 	</wizard>
 	<wizard wizardID="WZ12">
 		<flagColour>E9BEA2</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ12.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ12_102" />
+		<combatPlayList playListID="COMBAT_WZ12_103" />
 	</wizard>
 	<wizard wizardID="WZ13">
 		<flagColour>900000</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ13.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ13_102" />
+		<combatPlayList playListID="COMBAT_WZ13_103" />
 	</wizard>
 	<wizard wizardID="WZ14">
 		<flagColour>042444</flagColour>
 		<portraitFile>/momime.client.graphics/wizards/WZ14.png</portraitFile>
+		<combatPlayList playListID="COMBAT_WZ14_102" />
+		<combatPlayList playListID="COMBAT_WZ14_103" />
 	</wizard>
 	<productionType productionTypeID="RE01">
 		<productionTypeImage productionValue="1">
@@ -88559,4 +88589,127 @@
 			<frameImageFile>/momime.client.graphics/ui/mainMenu/title-frame20.png</frameImageFile>
 		</frame>
 	</animation>
+	<playList playListID="OVERLAND">
+		<audioFile>/momime.client.music/MUSIC_099 - BGM.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_100 - BGM.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_101 - BGM.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_GENERAL_102">
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_GENERAL_103">
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ01_102">
+		<audioFile>/momime.client.music/MUSIC_071 - Combat Merlin Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ01_103">
+		<audioFile>/momime.client.music/MUSIC_071 - Combat Merlin Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ02_102">
+		<audioFile>/momime.client.music/MUSIC_073 - Combat Raven Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ02_103">
+		<audioFile>/momime.client.music/MUSIC_073 - Combat Raven Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ03_102">
+		<audioFile>/momime.client.music/MUSIC_075 - Combat Sharee Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ03_103">
+		<audioFile>/momime.client.music/MUSIC_075 - Combat Sharee Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ04_102">
+		<audioFile>/momime.client.music/MUSIC_077 - Combat Lo Pan Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ04_103">
+		<audioFile>/momime.client.music/MUSIC_077 - Combat Lo Pan Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ05_102">
+		<audioFile>/momime.client.music/MUSIC_079 - Combat Jafar Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ05_103">
+		<audioFile>/momime.client.music/MUSIC_079 - Combat Jafar Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ06_102">
+		<audioFile>/momime.client.music/MUSIC_082 - Combat Oberic Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ06_103">
+		<audioFile>/momime.client.music/MUSIC_082 - Combat Oberic Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ07_102">
+		<audioFile>/momime.client.music/MUSIC_084 - Combat Rjak Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ07_103">
+		<audioFile>/momime.client.music/MUSIC_084 - Combat Rjak Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ08_102">
+		<audioFile>/momime.client.music/MUSIC_086 - Combat Sss'ra Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ08_103">
+		<audioFile>/momime.client.music/MUSIC_086 - Combat Sss'ra Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ09_102">
+		<audioFile>/momime.client.music/MUSIC_088 - Combat Tauron Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ09_103">
+		<audioFile>/momime.client.music/MUSIC_088 - Combat Tauron Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ10_102">
+		<audioFile>/momime.client.music/MUSIC_090 - Combat Freya Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ10_103">
+		<audioFile>/momime.client.music/MUSIC_090 - Combat Freya Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ11_102">
+		<audioFile>/momime.client.music/MUSIC_092 - Combat Horus Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ11_103">
+		<audioFile>/momime.client.music/MUSIC_092 - Combat Horus Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ12_102">
+		<audioFile>/momime.client.music/MUSIC_094 - Combat Ariel Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ12_103">
+		<audioFile>/momime.client.music/MUSIC_094 - Combat Ariel Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ13_102">
+		<audioFile>/momime.client.music/MUSIC_096 - Combat Tlaloc Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ13_103">
+		<audioFile>/momime.client.music/MUSIC_096 - Combat Tlaloc Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ14_102">
+		<audioFile>/momime.client.music/MUSIC_098 - Combat Kali Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_102 - Combat general.mp3</audioFile>
+	</playList>
+	<playList playListID="COMBAT_WZ14_103">
+		<audioFile>/momime.client.music/MUSIC_098 - Combat Kali Prelude.mp3</audioFile>
+		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
+	</playList>
 </momimegfx:graphicsDatabase>

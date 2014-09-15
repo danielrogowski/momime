@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.audio.AudioPlayer;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.OverlandMapUI;
@@ -32,6 +34,9 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 	/** Main menu UI */
 	private MainMenuUI mainMenuUI;
 	
+	/** Music player */
+	private AudioPlayer musicPlayer;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -45,6 +50,17 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 		getNewGameUI ().setVisible (false);
 		getMainMenuUI ().setVisible (false);
 		getOverlandMapUI ().setVisible (true);
+		
+		// Switch to the overland map background music
+		try
+		{
+			getMusicPlayer ().setShuffle (true);
+			getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC);
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
+		}
 		
 		log.trace ("Exiting start");
 	}
@@ -95,5 +111,21 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 	public final void setMainMenuUI (final MainMenuUI ui)
 	{
 		mainMenuUI = ui;
+	}
+
+	/**
+	 * @return Music player
+	 */
+	public final AudioPlayer getMusicPlayer ()
+	{
+		return musicPlayer;
+	}
+
+	/**
+	 * @param player Music player
+	 */
+	public final void setMusicPlayer (final AudioPlayer player)
+	{
+		musicPlayer = player;
 	}
 }

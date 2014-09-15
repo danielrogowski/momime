@@ -3,6 +3,7 @@ package momime.client.ui.frames;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.AnimationFrame;
@@ -83,6 +84,7 @@ public final class TestMainMenuUI
 		main.setLanguageChangeMaster (langMaster);
 		main.setClient (client);
 		main.setVersion ("9.9.9");
+		main.setMusicPlayer (mock (AudioPlayer.class));
 		main.setLargeFont (CreateFontsForTests.getLargeFont ());
 		main.setMediumFont (CreateFontsForTests.getMediumFont ());
 		main.setAnim (anim);

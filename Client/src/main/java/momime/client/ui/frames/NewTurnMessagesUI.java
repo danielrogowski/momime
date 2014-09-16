@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Polygon;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -12,6 +14,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -48,11 +52,11 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	/** Number of pixels that the roller at the bottom of the scroll overlaps the main piece of background */
 	private final static int SCROLL_OVERLAP_BOTTOM = 7;
 	
+	/** Number of pixels that the close button overlaps the roller at the bottom */
+	private final static int CLOSE_BUTTON_OVERLAP = 6;
+	
 	/** Width of the drawable (list box) area of the NTM scroll */
 	public final static int SCROLL_WIDTH = 452;
-	
-	/** Typical inset used on this screen layout */
-	private final static int INSET = 0;
 	
 	/** Stores the list of messages to display on the scroll; initialize it out here, prior to the init method, so we can write to it before the UI gets displayed */
 	private final DefaultListModel<NewTurnMessageUI> newTurnMessages = new DefaultListModel<NewTurnMessageUI> ();
@@ -72,12 +76,29 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/background.png");
 		final BufferedImage roller = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/position3-0.png");
+		final BufferedImage closeButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/closeButtonNormal.png");
+		final BufferedImage closeButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/closeButtonPressed.png");
 		
 		final Dimension backgroundSize = new Dimension (roller.getWidth (),
-			background.getHeight () + (2 * roller.getHeight ()) - SCROLL_OVERLAP_TOP - SCROLL_OVERLAP_BOTTOM);
+			background.getHeight () + (2 * roller.getHeight ()) - SCROLL_OVERLAP_TOP - SCROLL_OVERLAP_BOTTOM +
+			closeButtonNormal.getHeight () - CLOSE_BUTTON_OVERLAP);
 		
 		final int backgroundTop = roller.getHeight () - SCROLL_OVERLAP_TOP;
 		final int backgroundLeft = (roller.getWidth () - background.getWidth ()) / 2;
+		final int bottomRollerTop = backgroundTop + background.getHeight () - SCROLL_OVERLAP_BOTTOM;
+		final int bottomRollerBottom = bottomRollerTop + roller.getHeight ();
+
+		// Actions
+		final Action okAction = new AbstractAction ()
+		{
+			private static final long serialVersionUID = 333951123000045641L;
+
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				getFrame ().setVisible (false);
+			}
+		};
 		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
@@ -91,7 +112,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 				g.drawImage (background, backgroundLeft, backgroundTop, null);
 				
 				g.drawImage (roller, 0, 0, null);
-				g.drawImage (roller, 0, backgroundSize.height - roller.getHeight (), null);
+				g.drawImage (roller, 0, bottomRollerTop, null);
 			}
 		};
 		
@@ -103,7 +124,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 
-		final Dimension listSize = new Dimension (SCROLL_WIDTH, 360);
+		final Dimension listSize = new Dimension (SCROLL_WIDTH, 361);
 		
 		newTurnMessagesList = new JList<NewTurnMessageUI> ();
 		newTurnMessagesList.setOpaque (false);
@@ -115,7 +136,11 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		newTurnMessagesList.setMaximumSize (listSize);
 		newTurnMessagesList.setPreferredSize (listSize);
 		
-		contentPane.add (newTurnMessagesList, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (newTurnMessagesList, getUtils ().createConstraintsNoFill (0, 0, 1, 1,
+			new Insets (backgroundTop + 2, 0, roller.getHeight () - SCROLL_OVERLAP_BOTTOM - CLOSE_BUTTON_OVERLAP + 2, 0), GridBagConstraintsNoFill.CENTRE));
+		
+		contentPane.add (getUtils ().createImageButton (okAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
+			getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, 300, 0, 0), GridBagConstraintsNoFill.CENTRE));
 		
 		// Pass clicks to the NTM objects
 		newTurnMessagesList.addMouseListener (new MouseAdapter ()
@@ -163,8 +188,8 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 				// Bottom-right roller
 				backgroundLeft + background.getWidth () + 2, backgroundSize.width - 29, backgroundSize.width - 22, backgroundSize.width - 16, backgroundSize.width - 7, backgroundSize.width, backgroundSize.width, backgroundSize.width - 7, backgroundSize.width - 16, backgroundSize.width - 22, backgroundSize.width - 29, backgroundLeft + background.getWidth () + 2,
 				
-				// Bottom edge
-				backgroundLeft + background.getWidth (), backgroundLeft,
+				// Bottom edge incl. close button
+				backgroundLeft + background.getWidth (), 428, 431, 431, 428, 428, 432, 412, 410, 410, 413, 413, 410, backgroundLeft,
 					
 				// Bottom-left roller
 				backgroundLeft - 2, 29, 22, 16, 7, 0, 0, 7, 16, 22, 29, backgroundLeft - 2,
@@ -184,13 +209,13 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 			new int [] {backgroundTop, backgroundTop + background.getHeight (),
 						
 				// Bottom-right roller
-				backgroundSize.height - roller.getHeight (), backgroundSize.height - roller.getHeight (), backgroundSize.height - roller.getHeight () + 9, backgroundSize.height - roller.getHeight () + 10, backgroundSize.height - roller.getHeight () + 6, backgroundSize.height - roller.getHeight () + 14, backgroundSize.height - 14, backgroundSize.height - 6, backgroundSize.height - 10, backgroundSize.height - 9, backgroundSize.height, backgroundSize.height,
+				bottomRollerTop, bottomRollerTop, bottomRollerTop + 9, bottomRollerTop + 10, bottomRollerTop + 6, bottomRollerTop + 14, bottomRollerBottom - 14, bottomRollerBottom - 6, bottomRollerBottom - 10, bottomRollerBottom - 9, bottomRollerBottom, bottomRollerBottom,
 
-				// Bottom edge
-				backgroundSize.height - 6, backgroundSize.height - 6,
+				// Bottom edge incl. close button
+				bottomRollerBottom - 6, bottomRollerBottom - 6, bottomRollerBottom - 3, bottomRollerBottom + 2, bottomRollerBottom + 5, backgroundSize.height - 7, backgroundSize.height, backgroundSize.height, backgroundSize.height - 7, bottomRollerBottom + 5, bottomRollerBottom + 2, bottomRollerBottom - 3, bottomRollerBottom - 6, bottomRollerBottom - 6,
 				
 				// Bottom-left roller
-				backgroundSize.height, backgroundSize.height, backgroundSize.height - 9, backgroundSize.height - 10, backgroundSize.height - 6, backgroundSize.height - 14, backgroundSize.height - roller.getHeight () + 14, backgroundSize.height - roller.getHeight () + 6, backgroundSize.height - roller.getHeight () + 10, backgroundSize.height - roller.getHeight () + 9, backgroundSize.height - roller.getHeight (), backgroundSize.height - roller.getHeight (),
+				bottomRollerBottom, bottomRollerBottom, bottomRollerBottom - 9, bottomRollerBottom - 10, bottomRollerBottom - 6, bottomRollerBottom - 14, bottomRollerTop + 14, bottomRollerTop + 6, bottomRollerTop + 10, bottomRollerTop + 9, bottomRollerTop, bottomRollerTop,
 					
 				// Left edge
 				backgroundTop + background.getHeight (), backgroundTop,
@@ -204,7 +229,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 				// Top-right roller
 				0, 0, 9, 10, 6, 14, roller.getHeight () - 14, roller.getHeight () - 6, roller.getHeight () - 10, roller.getHeight () - 9, roller.getHeight (), roller.getHeight ()},
 					
-			56));
+			68));
 		
 		log.trace ("Exiting init");
 	}

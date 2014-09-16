@@ -80,7 +80,8 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 		getNewTurnMessageProcessing ().readNewTurnMessagesFromServer (getMessage (), NewTurnMessageStatus.MAIN);
 		getNewTurnMessagesUI ().setNewTurnMessages (getNewTurnMessageProcessing ().sortAndAddCategories ());
 		
-		if (getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().size () > 0)
+		// Only show the form if we got new messages - doesn't matter if there's some old ones we've already seen
+		if (getMessage ().size () > 0)
 			getNewTurnMessagesUI ().setVisible (true);
 		
 		// Allow selling buildings

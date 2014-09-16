@@ -348,6 +348,41 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	}
 	
 	/**
+	 * @return Whether at least one of the select unit boxes is selected
+	 */
+	@Override
+	public final boolean isAnyUnitSelectedToMove ()
+	{
+		// Following the logic above in updateMovementRemaining, the 'Done' button is enabled only when leastDoubleOverlandMovesLeft > 0
+		// i.e. when we have a valid unit selected that has remaining movement
+		return getOverlandMapRightHandPanel ().isDoneEnabled ();
+	}
+
+	/**
+	 * @param unit Unit to test
+	 * @return Whether the specified unit has a selected box - this doesn't imply we can move it, enemy units' boxes are permanently selected so their wizard colour shows 
+	 */
+	@Override
+	public final boolean isUnitSelected (final MemoryUnit unit)
+	{
+		boolean found = false;
+		boolean selected = false;
+		
+		final Iterator<SelectUnitButton> iter = getOverlandMapRightHandPanel ().getSelectUnitButtons ().iterator ();
+		while ((!found) && (iter.hasNext ()))
+		{
+			final SelectUnitButton button = iter.next ();
+			if (button.getUnit () == unit)
+			{
+				found = true;
+				selected = button.isSelected ();
+			}
+		}
+		
+		return selected;
+	}
+	
+	/**
 	 * Removes all currently selected units from the 'units left to move' list, so that we won't ask the player about these units again this turn
 	 * 
 	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
@@ -506,6 +541,16 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void setProcessingContinuedMovement (final boolean cont)
 	{
 		processingContinuedMovement = cont;
+	}
+
+	/**
+	 * Note this being non-null doesn't necessarily mean we have any units actually selected to move - can select/deselect units via the buttons in the right hand panel
+	 * @return The map location we're currently selecting/deselecting units at ready to choose an order for them or tell them where to move/attack
+	 */
+	@Override
+	public final MapCoordinates3DEx getUnitMoveFrom ()
+	{
+		return unitMoveFrom;
 	}
 	
 	/**

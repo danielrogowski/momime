@@ -396,34 +396,57 @@ public final class OverlandMapUI extends MomClientFrameUI
 							final MemoryUnit unit = unitToDrawAtEachLocation [y] [x];
 							if (unit != null)
 							{
-								try
+								// Make the unit that's selected to move blink
+								final boolean drawUnit;
+								if ((terrainAnimFrame % 2 == 0) && (getOverlandMapProcessing ().isAnyUnitSelectedToMove ()) &&
+									(getOverlandMapProcessing ().getUnitMoveFrom () != null) &&
+									(getOverlandMapProcessing ().getUnitMoveFrom ().getX () == x) && (getOverlandMapProcessing ().getUnitMoveFrom ().getY () == y))
 								{
-									final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
-									final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+									// The moving stack might be on the other plane
+									final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+										(mapViewPlane).getRow ().get (y).getCell ().get (x);
 
-									final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
-									final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
+									if ((mapViewPlane == getOverlandMapProcessing ().getUnitMoveFrom ().getZ ()) ||
+										(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ())))
+										
+										// We are looking at the unit stack that's moving - so blink it off
+										drawUnit = false;
+									else
+										// We are looking at a unit in the same location as the unit stack that's moving, but on the other plane - so draw it
+										drawUnit = true;
+								}
+								else
+									drawUnit = true;
 								
-									final int xpos = (((x * overlandMapTileSet.getTileWidth ()) - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
-									final int ypos = (((y * overlandMapTileSet.getTileHeight ()) - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
-
-									for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
-										for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
-										{
-											// Draw the unit
-											g.drawImage (unitBackground,
-												(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
-												unitZoomedWidth, unitZoomedHeight, null);
-
-											g.drawImage (unitImage,
-												(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
-												unitZoomedWidth, unitZoomedHeight, null);
-										}
-								}
-								catch (final IOException e)
-								{
-									log.error ("Error trying to load graphics to draw Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
-								}
+								if (drawUnit)
+									try
+									{
+										final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
+										final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+	
+										final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
+										final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
+									
+										final int xpos = (((x * overlandMapTileSet.getTileWidth ()) - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
+										final int ypos = (((y * overlandMapTileSet.getTileHeight ()) - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+	
+										for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+											for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+											{
+												// Draw the unit
+												g.drawImage (unitBackground,
+													(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+													unitZoomedWidth, unitZoomedHeight, null);
+	
+												g.drawImage (unitImage,
+													(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+													unitZoomedWidth, unitZoomedHeight, null);
+											}
+									}
+									catch (final IOException e)
+									{
+										log.error ("Error trying to load graphics to draw Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
+									}
 							}
 						}
 
@@ -923,15 +946,27 @@ public final class OverlandMapUI extends MomClientFrameUI
 		for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 
 			// Is it alive, and are we looking at the right plane to see it?
-			if ( (unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null) && ( (unit.getUnitLocation ().getZ () == mapViewPlane) || (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get (unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))))
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null) && ((unit.getUnitLocation ().getZ () == mapViewPlane) || (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get (unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))))
 			{
-				found = true;
-				final MemoryUnit existingUnit = bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()];
-
-				// Show real special orders in preference to patrol
-				if ( (existingUnit == null) || ( (existingUnit != null) && (existingUnit.getSpecialOrder () == null) && (unit.getSpecialOrder () != null)) || ( (existingUnit != null) && (existingUnit.getSpecialOrder () == UnitSpecialOrder.PATROL) && (unit.getSpecialOrder () != null) && (unit.getSpecialOrder () != UnitSpecialOrder.PATROL)))
-
-					bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()] = unit;
+				// If this is a map cell where we've got units selected to move, make sure we show one of the units that's moving
+				final boolean drawUnit;
+				if ((getOverlandMapProcessing ().getUnitMoveFrom () != null) && (getOverlandMapProcessing ().isAnyUnitSelectedToMove ()) &&
+					(getOverlandMapProcessing ().getUnitMoveFrom ().equals (unit.getUnitLocation ())))
+					
+					drawUnit = getOverlandMapProcessing ().isUnitSelected (unit);
+				else
+					drawUnit = true;
+				
+				if (drawUnit)
+				{
+					found = true;
+					final MemoryUnit existingUnit = bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()];
+	
+					// Show real special orders in preference to patrol
+					if ((existingUnit == null) || ((existingUnit != null) && (existingUnit.getSpecialOrder () == null) && (unit.getSpecialOrder () != null)) || ((existingUnit != null) && (existingUnit.getSpecialOrder () == UnitSpecialOrder.PATROL) && (unit.getSpecialOrder () != null) && (unit.getSpecialOrder () != UnitSpecialOrder.PATROL)))
+	
+						bestUnits [unit.getUnitLocation ().getY ()] [unit.getUnitLocation ().getX ()] = unit;
+				}
 			}
 
 		// This is really here for the benefit of the unit test, which has no units, but the performance of
@@ -950,13 +985,13 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		// Turn 1 is January 1400 - so last turn in 1400 is turn 12
 		// Months are numbered 1-12
-		final int year = 1400 + ( (getClient ().getGeneralPublicKnowledge ().getTurnNumber () - 1) / 12);
+		final int year = 1400 + ((getClient ().getGeneralPublicKnowledge ().getTurnNumber () - 1) / 12);
 		int month = getClient ().getGeneralPublicKnowledge ().getTurnNumber () % 12;
 		if (month == 0)
 			month = 12;
 
 		// Build up description
-		final String monthText = getLanguage ().findCategoryEntry ("Months", "MNTH" + ( (month < 10) ? "0" : "") + month);
+		final String monthText = getLanguage ().findCategoryEntry ("Months", "MNTH" + ((month < 10) ? "0" : "") + month);
 		turnLabel.setText (getLanguage ().findCategoryEntry ("frmMapButtonBar", "Turn").replaceAll ("MONTH", monthText).replaceAll ("YEAR", new Integer (year).toString ()).replaceAll ("TURN", new Integer (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
 
 		log.trace ("Exiting updateTurnLabelText");

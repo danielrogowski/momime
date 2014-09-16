@@ -864,6 +864,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	{
 		patrolAction.setEnabled (enabled);
 	}
+
+	/**
+	 * @return Whether units can be done to not take an action for this turn
+	 */
+	public final boolean isDoneEnabled ()
+	{
+		return doneAction.isEnabled ();
+	}
 	
 	/**
 	 * @param enabled Whether units can be done to not take an action for this turn

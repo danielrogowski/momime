@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -163,25 +164,25 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		
 		// Search for units at this location.  Note unlike buildUnitsLeftToMoveList, which ignores units with no movement, pending movement or
 		// special orders, here we want any unit as long as its alive and at the right location.
-		final Iterator<SelectUnitButton> buttonIter = getOverlandMapRightHandPanel ().getSelectUnitButtons ().iterator ();
+		final Iterator<HideableComponent<SelectUnitButton>> buttonIter = getOverlandMapRightHandPanel ().getSelectUnitButtons ().iterator ();
 		
 		if (unitLocation != null)
 			for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				if ((unitLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
 				{
-					final SelectUnitButton button = buttonIter.next ();
-					button.setUnit (mu);
-					button.setSelected (unitsLeftToMoveOverland.contains (mu));	// Pre-select this unit as long as it hasn't already passed its allocated movement sequence
-					button.setVisible (true);
+					final HideableComponent<SelectUnitButton> button = buttonIter.next ();
+					button.getComponent ().setUnit (mu);
+					button.getComponent ().setSelected (unitsLeftToMoveOverland.contains (mu));	// Pre-select this unit as long as it hasn't already passed its allocated movement sequence
+					button.setHidden (false);
 				}
 
 		// Get rid of any remaining spare unused buttons
 		while (buttonIter.hasNext ())
 		{
-			final SelectUnitButton button = buttonIter.next ();
-			button.setVisible (false);
-			button.setSelected (false);
-			button.setUnit (null);
+			final HideableComponent<SelectUnitButton> button = buttonIter.next ();
+			button.setHidden (true);
+			button.getComponent ().setSelected (false);
+			button.getComponent ().setUnit (null);
 		}
 		
 		// Even if we auto selected zero units, we still have to set these, since the player might then decide to select one of the units
@@ -221,17 +222,17 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			
 			tileType = getClient ().getClientDB ().findTileType (terrainData.getTileTypeID (), "enableOrDisableSpecialOrderButtons");
 		
-			for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-				if ((button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+				if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				{
-					if (getUnitUtils ().getModifiedSkillValue (button.getUnit (), button.getUnit ().getUnitHasSkill (),
+					if (getUnitUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
 						CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_CREATE_OUTPOST, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
 					
 						settlerCount++;
 					
-					if (getUnitUtils ().getModifiedSkillValue (button.getUnit (), button.getUnit ().getUnitHasSkill (),
+					if (getUnitUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
 						CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_MELD_WITH_NODE, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) >= 0)
@@ -295,15 +296,15 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		
 		// Check all unit buttons
 		final List<Integer> selectedUnitURNs = new ArrayList<Integer> ();
-		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-			if (button.isVisible ())
+		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if (!button.isHidden ())
 			{
 				buttonCount++;
 				
-				if ((leastDoubleOverlandMovesLeft > 0) && (button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+				if ((leastDoubleOverlandMovesLeft > 0) && (button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				{
-					leastDoubleOverlandMovesLeft = Math.min (leastDoubleOverlandMovesLeft, button.getUnit ().getDoubleOverlandMovesLeft ());
-					selectedUnitURNs.add (button.getUnit ().getUnitURN ());
+					leastDoubleOverlandMovesLeft = Math.min (leastDoubleOverlandMovesLeft, button.getComponent ().getUnit ().getDoubleOverlandMovesLeft ());
+					selectedUnitURNs.add (button.getComponent ().getUnit ().getUnitURN ());
 				}
 			}
 		
@@ -368,14 +369,14 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		boolean found = false;
 		boolean selected = false;
 		
-		final Iterator<SelectUnitButton> iter = getOverlandMapRightHandPanel ().getSelectUnitButtons ().iterator ();
+		final Iterator<HideableComponent<SelectUnitButton>> iter = getOverlandMapRightHandPanel ().getSelectUnitButtons ().iterator ();
 		while ((!found) && (iter.hasNext ()))
 		{
-			final SelectUnitButton button = iter.next ();
-			if (button.getUnit () == unit)
+			final HideableComponent<SelectUnitButton> button = iter.next ();
+			if (button.getComponent ().getUnit () == unit)
 			{
 				found = true;
-				selected = button.isSelected ();
+				selected = button.getComponent ().isSelected ();
 			}
 		}
 		
@@ -396,9 +397,9 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	{
 		log.trace ("Entering selectedUnitsDone");
 
-		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-			if ((button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
-				unitsLeftToMoveOverland.remove (button.getUnit ());
+		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+				unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ());
 		
 		selectNextUnitToMoveOverland ();
 		
@@ -420,11 +421,11 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	{
 		log.trace ("Entering selectedUnitsWait");
 
-		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-			if ((button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 			{
-				unitsLeftToMoveOverland.remove (button.getUnit ());
-				unitsLeftToMoveOverland.add (button.getUnit ());
+				unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ());
+				unitsLeftToMoveOverland.add (button.getComponent ().getUnit ());
 			}
 		
 		selectNextUnitToMoveOverland ();
@@ -446,11 +447,11 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	{
 		log.trace ("Entering selectedUnitsPatrol");
 
-		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-			if ((button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 			{
-				unitsLeftToMoveOverland.remove (button.getUnit ());
-				button.getUnit ().setSpecialOrder (UnitSpecialOrder.PATROL);
+				unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ());
+				button.getComponent ().getUnit ().setSpecialOrder (UnitSpecialOrder.PATROL);
 			}
 		
 		selectNextUnitToMoveOverland ();
@@ -470,9 +471,9 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		log.trace ("Entering moveUnitStackTo: " + moveTo);
 
 		final List<Integer> movingUnitURNs = new ArrayList<Integer> ();
-		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-			if ((button.isVisible ()) && (button.isSelected ()) && (button.getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
-				movingUnitURNs.add (button.getUnit ().getUnitURN ());
+		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((!button.isHidden ()) && (button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+				movingUnitURNs.add (button.getComponent ().getUnit ().getUnitURN ());
 		
 		if (movingUnitURNs.size () > 0)
 		{
@@ -507,11 +508,11 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		log.trace ("Entering nextTurn");
 
 		// Prevent doing anything with units after clicking next turn
-		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 		{
-			button.setVisible (false);
-			button.setSelected (false);
-			button.setUnit (null);
+			button.setHidden (true);
+			button.getComponent ().setSelected (false);
+			button.getComponent ().setUnit (null);
 		}
 		
 		// Make sure UpdateMovementRemaining will hide the next turn button rather than showing it

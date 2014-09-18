@@ -27,6 +27,7 @@ import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.frames.PrototypeFrameCreator;
@@ -62,7 +63,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	private final Log log = LogFactory.getLog (OverlandMapRightHandPanel.class);
 	
 	/** Select unit buttons */
-	private List<SelectUnitButton> selectUnitButtons = new ArrayList<SelectUnitButton> ();
+	private List<HideableComponent<SelectUnitButton>> selectUnitButtons = new ArrayList<HideableComponent<SelectUnitButton>> ();
 
 	/** There's a lot of pixel precision positionining going on here so the panel typically uses no insets or custom insets per component */
 	private final static int INSET = 0;
@@ -605,9 +606,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					}
 				});
 				
-				selectUnitButtons.add (selectUnitButton);
+				final HideableComponent<SelectUnitButton> hideable = new HideableComponent<SelectUnitButton> (selectUnitButton);
+				selectUnitButtons.add (hideable);
 				
-				unitsPanel.add (selectUnitButton, getUtils ().createConstraintsNoFill (x, y, 1, 1, UNIT_BUTTONS_INSET, GridBagConstraintsNoFill.CENTRE));
+				unitsPanel.add (hideable, getUtils ().createConstraintsNoFill (x, y, 1, 1, UNIT_BUTTONS_INSET, GridBagConstraintsNoFill.CENTRE));
 			}
 		
 		unitsPanel.add (Box.createRigidArea (new Dimension (0, 10)), getUtils ().createConstraintsNoFill (0, 5, 4, 1, UNIT_BUTTONS_INSET, GridBagConstraintsNoFill.CENTRE));
@@ -820,7 +822,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/**
 	 * @return Select unit buttons
 	 */
-	public final List<SelectUnitButton> getSelectUnitButtons ()
+	public final List<HideableComponent<SelectUnitButton>> getSelectUnitButtons ()
 	{
 		return selectUnitButtons;
 	}

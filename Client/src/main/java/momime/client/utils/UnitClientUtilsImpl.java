@@ -20,6 +20,7 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.process.OverlandMapProcessing;
+import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.UnitInfoUI;
@@ -172,14 +173,14 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			unitInfo.close ();
 		
 		// Select unit buttons on the Map
-		for (final SelectUnitButton button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-			if ((button.getUnit () != null) && (button.getUnit ().getUnitURN () == unitURN))
+		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+			if ((button.getComponent ().getUnit () != null) && (button.getComponent ().getUnit ().getUnitURN () == unitURN))
 			{
-				button.setUnit (null);
+				button.getComponent ().setUnit (null);
 				
-				final boolean updateMovement = (button.isVisible ()) && (button.isSelected ());
-				button.setSelected (false);
-				button.setVisible (false);
+				final boolean updateMovement = (!button.isHidden ()) && (button.getComponent ().isSelected ());
+				button.getComponent ().setSelected (false);
+				button.setHidden (true);
 					
 				if (updateMovement)
 				{

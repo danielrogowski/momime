@@ -89,7 +89,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		final int bottomRollerBottom = bottomRollerTop + roller.getHeight ();
 
 		// Actions
-		final Action okAction = new AbstractAction ()
+		final Action closeAction = new AbstractAction ()
 		{
 			private static final long serialVersionUID = 333951123000045641L;
 
@@ -139,7 +139,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		contentPane.add (newTurnMessagesList, getUtils ().createConstraintsNoFill (0, 0, 1, 1,
 			new Insets (backgroundTop + 2, 0, roller.getHeight () - SCROLL_OVERLAP_BOTTOM - CLOSE_BUTTON_OVERLAP + 2, 0), GridBagConstraintsNoFill.CENTRE));
 		
-		contentPane.add (getUtils ().createImageButton (okAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
+		contentPane.add (getUtils ().createImageButton (closeAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
 			getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, 300, 0, 0), GridBagConstraintsNoFill.CENTRE));
 		
 		// Pass clicks to the NTM objects

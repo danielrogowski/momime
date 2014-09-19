@@ -16,7 +16,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import momime.client.ClientTestData;
+import momime.assembly.AssemblyConstants;
 import momime.server.database.ServerDatabaseConstants;
 import momime.server.database.ServerXsdResourceResolver;
 
@@ -44,7 +44,7 @@ public final class TestLanguageDatabase
 	private static final String MULTI_LEVEL_REFERENCE_PREFIX = "multilevelFKtosecondaryDB/";
 
 	/**
-	 * Tests that the English XML file conforms to the language XSD
+	 * Tests that the English XML file conforms to the language XSD, including all the links to the server XSD
 	 * @throws Exception If there is an error
 	 */
 	@Test
@@ -64,8 +64,14 @@ public final class TestLanguageDatabase
 
 		final DocumentBuilder builder = builderFactory.newDocumentBuilder ();
 
-		final Document serverXml = builder.parse (ClientTestData.locateServerXmlFile ());
-		final Document languageXml = builder.parse (ClientTestData.locateEnglishXmlFile ());
+		final URL serverXmlResource = getClass ().getResource (AssemblyConstants.SERVER_XML_LOCATION);
+		assertNotNull ("MoM IME server XML could not be found in target/unpack", serverXmlResource);
+
+		final URL englishXmlResource = getClass ().getResource (AssemblyConstants.ENGLISH_XML_LOCATION);
+		assertNotNull ("MoM IME English language XML could not be found in target/unpack", englishXmlResource);
+		
+		final Document serverXml = builder.parse (serverXmlResource.getFile ());
+		final Document languageXml = builder.parse (englishXmlResource.getFile ());
 
 		// Insert the server XML into the appropriate place in the language XML
 		// You can't transfer nodes from one document to another, so we have to make a copy (import) of the entire server XML
@@ -115,8 +121,14 @@ public final class TestLanguageDatabase
 
 		final DocumentBuilder builder = builderFactory.newDocumentBuilder ();
 
-		final Document serverXml = builder.parse (ClientTestData.locateServerXmlFile ());
-		final Document languageXml = builder.parse (ClientTestData.locateEnglishXmlFile ());
+		final URL serverXmlResource = getClass ().getResource (AssemblyConstants.SERVER_XML_LOCATION);
+		assertNotNull ("MoM IME server XML could not be found in target/unpack", serverXmlResource);
+
+		final URL englishXmlResource = getClass ().getResource (AssemblyConstants.ENGLISH_XML_LOCATION);
+		assertNotNull ("MoM IME English language XML could not be found in target/unpack", englishXmlResource);
+		
+		final Document serverXml = builder.parse (serverXmlResource.getFile ());
+		final Document languageXml = builder.parse (englishXmlResource.getFile ());
 
 		final Document serverXsd = builder.parse (getClass ().getResourceAsStream (ServerDatabaseConstants.SERVER_XSD_LOCATION));
 		final Document languageXsd = builder.parse (getClass ().getResourceAsStream (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION));

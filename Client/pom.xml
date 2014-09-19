@@ -192,15 +192,36 @@
 							<goal>build-classpath</goal>
 						</goals>
 						<configuration>
-							<attach>true</attach>
+							<outputFile>target/client-classpath.txt</outputFile>
 							<prefix>lib</prefix>
-							<attach>true</attach>
 							<includeScope>runtime</includeScope>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			
+			<!-- Zip the classpath and src/external/resources into the repository, so the assembly project can unpack them -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>assembly-classpath.xml</descriptor>
+								<descriptor>assembly-graphics.xml</descriptor>
+								<descriptor>assembly-languages.xml</descriptor>
+								<descriptor>assembly-config.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+		
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -272,11 +293,6 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-common</artifactId>
-			<version>0.9.5-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ndg.momime</groupId>
-			<artifactId>momime-serverdatabase</artifactId>
 			<version>0.9.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,11 +54,11 @@ public final class TestServerDatabaseConvertersImpl
 		final Schema xsd = schemaFactory.newSchema (xsdResource);
 		
 		// Locate XML
-		final URL xmlResource = getClass ().getResource (ServerTestData.SERVER_XML_LOCATION);
-		assertNotNull ("MoM IME Server XML could not be found on classpath", xmlResource);
+		final File serverXml = ServerTestData.locateServerXmlFile ();
+		assertNotNull ("MoM IME Server XML could not be found", serverXml);
 		
-		final Map<String, URL> map = new HashMap<String, URL> ();
-		map.put ("Original Master of Magic 1.31 rules", xmlResource);
+		final Map<String, File> map = new HashMap<String, File> ();
+		map.put ("Original Master of Magic 1.31 rules", serverXml);
 		
 		// Set up object to test
 		final ServerDatabaseConvertersImpl conv = new ServerDatabaseConvertersImpl ();

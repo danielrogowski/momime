@@ -30,15 +30,33 @@
 							<goal>build-classpath</goal>
 						</goals>
 						<configuration>
-							<attach>true</attach>
+							<outputFile>target/editors-classpath.txt</outputFile>
 							<prefix>lib</prefix>
-							<attach>true</attach>
 							<includeScope>runtime</includeScope>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- Zip the classpath, so the assembly project can unpack it -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>assembly-classpath.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+		
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -75,6 +93,11 @@
 			<groupId>com.ndg.common</groupId>
 			<artifactId>xmleditor</artifactId>
 			<version>0.0.9</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-server</artifactId>
+			<version>0.9.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>

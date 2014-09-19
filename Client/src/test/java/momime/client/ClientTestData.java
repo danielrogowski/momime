@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
@@ -24,12 +23,12 @@ import momime.client.graphics.database.SmoothedTileTypeEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
+import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryGridCell;
-import momime.server.database.ServerXsdResourceResolver;
 
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
@@ -43,24 +42,6 @@ import com.ndg.map.CoordinateSystemType;
  */
 public final class ClientTestData
 {
-	/**
-	 * Path and name to locate the server XML file on the classpath
-	 * Note the server XML in src/main/resource and hence on the classpath is only there to allow unit tests to access it - hence this constant
-	 * must only exist in test classes.  Running for real, the XML is read from a folder outside of the JARs so it can be edited.
-	 */
-	public static final String SERVER_XML_LOCATION = "/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml";
-	
-	/**
-	 * @return Input stream to "Original Master of Magic 1.31 rules.Master of Magic Server.xml" to test with
-	 * @throws IOException If we are unable to locate the server XML file
-	 */
-	public final static InputStream locateServerXmlFile () throws IOException
-	{
-		final InputStream xmlStream = new Object ().getClass ().getResourceAsStream (SERVER_XML_LOCATION);
-		assertNotNull ("MoM IME Server XML could not be found on classpath", xmlStream);
-		return xmlStream;
-	}
-
 	/**
 	 * @return Location of "English.Master of Magic Language.xml" to test with
 	 * @throws IOException If we are unable to locate the English XML file
@@ -131,7 +112,7 @@ public final class ClientTestData
 		assertNotNull ("MoM IME Graphics XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		schemaFactory.setResourceResolver (new ServerXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
+		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
 		
 		final Schema schema = schemaFactory.newSchema (xsdResource);
 

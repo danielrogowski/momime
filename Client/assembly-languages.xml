@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+	
+	<id>languages</id>
+	
+	<!-- I don't want to use JAR here instead of ZIP, but JAR files store filenames as UTF-8 and ZIP files store them as some OEM codepage.
+			Its possible to tweak the assembly plugin to use CP850 to get the ç in the Français filename correct in the .ZIP, but then unpacking
+			the dependencies assumes the archive is a JAR with UTF-8 names and corrupts the filename again. So the only way (and simplest)
+			I can find to make this work properly is just to let it be a JAR with UTF-8 names in the first place -->
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<directory>src/external/resources/momime.client.language.database</directory>
+			<includes>
+				<include>*.xml</include>
+			</includes>
+			<outputDirectory>/</outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>

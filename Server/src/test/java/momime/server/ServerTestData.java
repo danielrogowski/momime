@@ -2,6 +2,7 @@ package momime.server;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -59,14 +60,7 @@ import com.ndg.map.CoordinateSystemType;
 public final class ServerTestData
 {
 	/**
-	 * Path and name to locate the server XML file on the classpath
-	 * Note the server XML in src/main/resource and hence on the classpath is only there to allow unit tests to access it - hence this constant
-	 * must only exist in test classes.  Running for real, the XML is read from a folder outside of the JARs so it can be edited.
-	 */
-	public static final String SERVER_XML_LOCATION = "/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml";
-	
-	/**
-	 * @return Parsed server database with all the hash maps built, needed by most of the tests 
+	 * @return Parsed server database with all the hash maps built, needed by those tests that require too much data to mock out, but generally avoid using this if at all possible 
 	 * @throws Exception If there is a problem
 	 */
 	public final static ServerDatabaseEx loadServerDatabase () throws Exception
@@ -84,15 +78,29 @@ public final class ServerTestData
 		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new ServerDatabaseFactory ()});
 		unmarshaller.setSchema (schema);
 		
-		// XML
-		final URL xmlResource = new Object ().getClass ().getResource (SERVER_XML_LOCATION);
-		assertNotNull ("MoM IME Server XML could not be found on classpath", xmlResource);
-
-		final ServerDatabaseExImpl serverDB = (ServerDatabaseExImpl) unmarshaller.unmarshal (xmlResource);
+		// XML - not straightforward to find this, because its in src/external/resources so isn't on the classpath
+		// So instead find something that is on the classpath of the MoMIMEServer project, then modify that location
+		final File serverXsdFile = new File (xsdResource.getFile ());
+		final File serverXmlFile = new File (serverXsdFile, "../../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
+		
+		final ServerDatabaseExImpl serverDB = (ServerDatabaseExImpl) unmarshaller.unmarshal (serverXmlFile);
 		serverDB.buildMaps ();
 		return serverDB;
 	}
 
+	/**
+	 * @return Location of server XML to test with
+	 * @throws IOException If we are unable to locate the server XML file
+	 */
+	public final static File locateServerXmlFile () throws IOException
+	{
+		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
+		// So instead find something that is on the classpath of the MoMIMEServer project, then modify that location
+		final URL serverXSD = new Object ().getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
+		final File serverXsdFile = new File (serverXSD.getFile ());
+		return new File (serverXsdFile, "../../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
+	}
+	
 	/**
 	 * @param db Server database loaded from XML
 	 * @param mapSizeID Map size to use

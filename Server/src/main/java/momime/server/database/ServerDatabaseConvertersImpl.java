@@ -2,7 +2,6 @@ package momime.server.database;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -137,11 +136,11 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		Collections.sort (xmlFilenames);
 		
 		// Put them into a map
-		final Map<String, URL> map = new HashMap<String, URL> ();
+		final Map<String, File> map = new HashMap<String, File> ();
 		for (final String thisFilename : xmlFilenames)
 		{
 			final File thisFile = new File (xmlFolder, thisFilename + SERVER_XML_FILE_EXTENSION);
-			map.put (thisFilename, thisFile.toURI ().toURL ());
+			map.put (thisFilename, thisFile);
 		}
 		
 		// Call other method to do the guts of the work
@@ -163,7 +162,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	 * @throws JAXBException If there is a problem creating the server XML unmarshaller
 	 * @throws MomException If there are no compatible server XML databases
 	 */
-	final NewGameDatabaseMessage buildNewGameDatabase (final Map<String, URL> xmlFiles, final Unmarshaller serverDatabaseUnmarshaller)
+	final NewGameDatabaseMessage buildNewGameDatabase (final Map<String, File> xmlFiles, final Unmarshaller serverDatabaseUnmarshaller)
 		throws JAXBException, MomException
 	{
 		log.trace ("Entering buildNewGameDatabase");
@@ -171,7 +170,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		// Now open up each one to check if it is compatible
 		final NewGameDatabase newGameDatabase = new NewGameDatabase ();
 
-		for (final Entry<String, URL> thisXmlFile : xmlFiles.entrySet ())
+		for (final Entry<String, File> thisXmlFile : xmlFiles.entrySet ())
 			try
 			{
 				// Attempt to load it in

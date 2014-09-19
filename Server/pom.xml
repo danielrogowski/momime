@@ -27,15 +27,7 @@
 						<phase>generate-sources</phase>
 						<goals><goal>generate</goal></goals>
 						<configuration>
-							<schemas>                                                                                       
-								<schema>
-									<dependencyResource>                                                            
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-serverdatabase</artifactId>
-										<resource>momime.server.database/MoMIMEServerDatabase.xsd</resource>                                  
-									</dependencyResource>                                                           
-								</schema>                                                                               
-							</schemas>
+							<schemaDirectory>src/main/resources/momime.server.database</schemaDirectory>
 							<generateDirectory>target/generated-sources/xjc-momime-serverdb</generateDirectory>
 							<episodeFile>target/generated-sources/xjc-momime-serverdb/META-INF/momime-serverdb.episode</episodeFile>
 							<extension>true</extension>
@@ -243,11 +235,10 @@
 									</dependencyResource>
 								</catalog>
 								<catalog>
-									<dependencyResource>
-										<groupId>com.ndg.momime</groupId>
-										<artifactId>momime-serverdatabase</artifactId>
-										<resource>momime.server.database/catalog.txt</resource>
-									</dependencyResource>
+									<fileset>
+										<directory>src/main/resources/momime.server.database</directory>
+										<includes><include>catalog.txt</include></includes>
+									</fileset>
 								</catalog>
 							</catalogs>
 						</configuration>
@@ -267,15 +258,35 @@
 							<goal>build-classpath</goal>
 						</goals>
 						<configuration>
-							<attach>true</attach>
+							<outputFile>target/server-classpath.txt</outputFile>
 							<prefix>lib</prefix>
-							<attach>true</attach>
 							<includeScope>runtime</includeScope>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			
+			<!-- Zip the classpath and src/external/resources into the repository, so the assembly project can unpack them -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>assembly-classpath.xml</descriptor>
+								<descriptor>assembly-database.xml</descriptor>
+								<descriptor>assembly-config.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>			
 		</plugins>
+		
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -350,14 +361,9 @@
 			<version>0.9.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ndg.momime</groupId>
-			<artifactId>momime-serverdatabase</artifactId>
-			<version>0.9.5-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>com.ndg.common</groupId>
 			<artifactId>ndgutils</artifactId>
-			<version>0.0.11</version>
+			<version>0.0.12-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

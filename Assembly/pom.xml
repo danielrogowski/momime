@@ -5,7 +5,6 @@
 	<version>0.9.5-SNAPSHOT</version>
 	<name>momimeAssembly</name>
 	<description>MoM IME zip assembly</description>
-	<packaging>pom</packaging>
 
 	<scm>
 		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEAssembly/trunk</connection>
@@ -14,11 +13,110 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.0.6</version>
+		<version>0.0.9</version>
 	</parent>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+				
+					<!-- Unpacking XMLs needed for unit tests -->
+					<execution>
+						<id>unpack-server-database</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/unpack/server/databases</outputDirectory>
+							<includeClassifiers>databases</includeClassifiers>
+							<excludes>META-INF/**</excludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-client-graphics</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/unpack/client/graphics</outputDirectory>
+							<includeClassifiers>graphics</includeClassifiers>
+							<excludes>META-INF/**</excludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-client-languages</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/unpack/client/languages</outputDirectory>
+							<includeClassifiers>languages</includeClassifiers>
+							<excludes>META-INF/**</excludes>
+						</configuration>
+					</execution>
+					
+					<!-- Unpacking files only needed for the assembly -->
+					<execution>
+						<id>unpack-classpaths</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/unpack/lib/classpaths</outputDirectory>
+							<includeClassifiers>classpath</includeClassifiers>
+							<excludes>META-INF/**</excludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-server-config</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/unpack/server</outputDirectory>
+							<includeArtifactIds>momime-server</includeArtifactIds>
+							<includeClassifiers>config</includeClassifiers>
+							<excludes>META-INF/**</excludes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-client-config</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/unpack/client</outputDirectory>
+							<includeArtifactIds>momime-client</includeArtifactIds>
+							<includeClassifiers>config</includeClassifiers>
+							<excludes>META-INF/**</excludes>
+						</configuration>
+					</execution>
+					
+					<!-- Have to unpack this to a separate location so the assembly plugin can move/rename the file - maybe in the next multiplayer modules version I'll split this into its own artefact -->
+					<execution>
+						<id>unpack-server-userRegistry</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/userRegistry</outputDirectory>
+							<includeArtifactIds>ndgmultiplayer-sessionserver</includeArtifactIds>
+							<includes>com.ndg.multiplayer.userregistry/MultiplayerSessionUserRegistry_Empty.xml</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+	  
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -31,11 +129,51 @@
 							<descriptors>
 								<descriptor>assembly.xml</descriptor>
 							</descriptors>
+							<archiverConfig>
+								<encoding>CP850</encoding>		<!-- This is needed so the ç in the Français filename gets set correctly in the .zip -->
+							</archiverConfig>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
+		
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.8,)</versionRange>
+										<goals>
+											<goal>unpack-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<!-- Include all the unpacked locations on the classpath, so the unit tests can get at the XML files -->
+		<testResources>
+			<testResource>
+				<directory>target/unpack</directory>
+			</testResource>
+		</testResources>
 	</build>
 
 	<dependencies>
@@ -45,13 +183,8 @@
 			<artifactId>momime-editors</artifactId>
 			<version>0.9.5-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.ndg.momime</groupId>
-			<artifactId>momime-server</artifactId>
-			<version>0.9.5-SNAPSHOT</version>
-		</dependency>
 
-		<!-- Get the classpath artifacts included as 'dependencies' -->
+		<!-- Get the classpath and XML files  included as 'dependencies' -->
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-editors</artifactId>
@@ -69,6 +202,41 @@
 			<artifactId>momime-client</artifactId>
 			<version>0.9.5-SNAPSHOT</version>
 			<classifier>classpath</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-server</artifactId>
+			<version>0.9.5-SNAPSHOT</version>
+			<classifier>databases</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-client</artifactId>
+			<version>0.9.5-SNAPSHOT</version>
+			<classifier>graphics</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-client</artifactId>
+			<version>0.9.5-SNAPSHOT</version>
+			<classifier>languages</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-server</artifactId>
+			<version>0.9.5-SNAPSHOT</version>
+			<classifier>config</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.ndg.momime</groupId>
+			<artifactId>momime-client</artifactId>
+			<version>0.9.5-SNAPSHOT</version>
+			<classifier>config</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
 

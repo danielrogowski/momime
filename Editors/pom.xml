@@ -31,7 +31,7 @@
 						</goals>
 						<configuration>
 							<outputFile>target/editors-classpath.txt</outputFile>
-							<prefix>lib</prefix>
+							<prefix>../lib</prefix>
 							<includeScope>runtime</includeScope>
 						</configuration>
 					</execution>
@@ -50,6 +50,7 @@
 						<configuration>
 							<descriptors>
 								<descriptor>assembly-classpath.xml</descriptor>
+								<descriptor>assembly-config.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
@@ -92,7 +93,7 @@
 		<dependency>
 			<groupId>com.ndg.common</groupId>
 			<artifactId>xmleditor</artifactId>
-			<version>0.0.9</version>
+			<version>0.0.10-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
@@ -109,11 +110,11 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 		
-		<!-- Is this even needed anymore now that we don't reference .LBX and .NDGARC files in the editor? -->
+		<!-- Although we don't display .LBX and .NDGARC images in the graphics editor anymore, this is still needed to allow the LBX imports of building/spell/unit names-->
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-utils</artifactId>
-			<version>0.0.4</version>
+			<version>0.0.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

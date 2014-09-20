@@ -65,6 +65,9 @@ public final class ChooseLanguageUI extends MomClientFrameUI implements Language
 	/** Marshaller for saving client config */
 	private Marshaller clientConfigMarshaller;
 	
+	/** Location to save updated client config */
+	private String clientConfigLocation;
+	
 	/** Title */
 	private JLabel title;
 	
@@ -170,7 +173,7 @@ public final class ChooseLanguageUI extends MomClientFrameUI implements Language
 					try
 					{
 						// Load the new langauge XML
-						final LanguageDatabaseExImpl lang = (LanguageDatabaseExImpl) getLanguageDatabaseUnmarshaller ().unmarshal (new File (getPathToLanguageXmlFiles () + file));
+						final LanguageDatabaseExImpl lang = (LanguageDatabaseExImpl) getLanguageDatabaseUnmarshaller ().unmarshal (new File (getPathToLanguageXmlFiles () + "/" + file));
 						lang.buildMaps ();
 						getLanguageHolder ().setLanguage (lang);
 						
@@ -180,7 +183,7 @@ public final class ChooseLanguageUI extends MomClientFrameUI implements Language
 						
 						// Update selected language in the config XML
 						getClientConfig ().setChosenLanguage (language);
-						getClientConfigMarshaller ().marshal (getClientConfig (), new File ("MoMIMEClientConfig.xml"));
+						getClientConfigMarshaller ().marshal (getClientConfig (), new File (getClientConfigLocation ()));
 						
 						// Close out the screen
 						setVisible (false);
@@ -345,5 +348,21 @@ public final class ChooseLanguageUI extends MomClientFrameUI implements Language
 	public final void setClientConfigMarshaller (final Marshaller marsh)
 	{
 		clientConfigMarshaller = marsh;
+	}
+
+	/**
+	 * @return Location to save updated client config
+	 */
+	public final String getClientConfigLocation ()
+	{
+		return clientConfigLocation;
+	}
+
+	/**
+	 * @param loc Location to save updated client config
+	 */
+	public final void setClientConfigLocation (final String loc)
+	{
+		clientConfigLocation = loc;
 	}
 }

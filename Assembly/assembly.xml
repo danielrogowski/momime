@@ -13,6 +13,7 @@
 		<fileSet>
 			<directory>src/main/deploy</directory>
 			<outputDirectory>/</outputDirectory>
+			<filtered>true</filtered>
 		</fileSet>
 		<fileSet>
 			<directory>target/unpack</directory>

@@ -39,7 +39,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="serverConfig" class="momime.server.config.v0_9_5.MomImeServerConfig" factory-bean="serverConfigUnmarshaller" factory-method="unmarshal">
-		<constructor-arg value="MoMIMEServerConfig.xml" />
+		<constructor-arg value="${configDir}MoMIMEServerConfig.xml" />
 	</bean>
 	
 	<!-- Server database XMLs -->

@@ -125,7 +125,7 @@ public final class MomServer extends MultiplayerSessionServer
 
 		// Load server XML
 		thread.getSessionLogger ().info ("Loading server XML...");
-		final File fullFilename = new File (getPathToServerXmlDatabases () + sd.getXmlDatabaseName () + ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
+		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + sd.getXmlDatabaseName () + ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
 		final ServerDatabaseExImpl db = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
 
 		// Create hash maps to look up all the values from the DB

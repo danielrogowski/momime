@@ -11,13 +11,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
 	
-	<bean id="serverXsdResourceResolver" class="momime.server.database.ServerXsdResourceResolver">
+	<bean id="commonXsdResourceResolver" class="momime.common.database.CommonXsdResourceResolver">
 		<constructor-arg ref="domImplementationRegistry" />
 	</bean>
 	
 	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
 		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
-		<property name="resourceResolver" ref="serverXsdResourceResolver" />
+		<property name="resourceResolver" ref="commonXsdResourceResolver" />
 	</bean>	
 	
 	<!-- Client config XML -->
@@ -39,7 +39,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="clientConfig" class="momime.client.config.v0_9_5.MomImeClientConfig" factory-bean="clientConfigUnmarshaller" factory-method="unmarshal">
-		<constructor-arg value="MoMIMEClientConfig.xml" />
+		<constructor-arg value="${configDir}MoMIMEClientConfig.xml" />
 	</bean>
 
 	<bean id="clientConfigMarshaller" class="javax.xml.bind.Marshaller" factory-bean="clientConfigJaxbContext" factory-method="createMarshaller">
@@ -152,7 +152,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="languageDatabase" class="momime.client.language.database.LanguageDatabaseExImpl" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="#{clientConfig.pathToLanguageXmlFiles + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
+		<constructor-arg type="java.io.File" value="#{clientConfig.pathToLanguageXmlFiles + '/' + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
 	</bean>
 	
 	<bean id="languageHolder" class ="momime.client.language.database.LanguageDatabaseHolder">
@@ -621,6 +621,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageDatabaseUnmarshaller" ref="languageDatabaseUnmarshaller" />
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
+		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
 	</bean>
 	
 	<bean id="connectToServerUI" class="momime.client.ui.frames.ConnectToServerUI">

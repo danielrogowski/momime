@@ -14,14 +14,18 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public final class MomServerKickOff
 {
 	/**
-	 * @param args Command line arguments, ignored
+	 * @param args Command line arguments, first param can set the config location
 	 */
 	@SuppressWarnings ("resource")
 	public final static void main (final String [] args)
 	{
 		try
 		{
-			// Ensure v1.6 JVM
+			// Allow reading config from the 'server' folder after the app is assembled, but the root folder when in Eclipse
+			final String configDir = (args.length == 0) ? "" : (args [0] + "/");
+			System.setProperty ("configDir", configDir);
+			
+			// Ensure v1.7 JVM
 			final String [] javaVersion = System.getProperty ("java.version").split ("\\.");
 			final int majorVersion = Integer.parseInt (javaVersion [0]);
 			final int minorVersion = Integer.parseInt (javaVersion [1]);
@@ -34,7 +38,7 @@ public final class MomServerKickOff
 					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
 			
 			// Initialize logging first, in case debug logging for spring itself is enabled
-			System.setProperty ("log4j.configuration", "file:MoMIMEServerLogging.properties");
+			System.setProperty ("log4j.configuration", "file:" + configDir + "MoMIMEServerLogging.properties");
 
 			// Everything is now set to start with spring
 			new ClassPathXmlApplicationContext ("/momime.server.spring/momime-server-beans.xml");			

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config:momImeServerConfig xmlns:config="http://momime/server/config/v0_9_5">
 	<portNumber>18250</portNumber>
-	<userRegistryFilename>C:\Some Path\MoM IME server\MoM IME server user registry.xml</userRegistryFilename>
+	<userRegistryFilename>server/userRegistry/MoMIMEServerUserRegistry.xml</userRegistryFilename>
 	<createUserRegistry>false</createUserRegistry>
-	<pathToServerXmlDatabases>C:\Your Eclipse Workspace\MoMIMEServerDatabase\src\main\resources\momime.server.database\</pathToServerXmlDatabases>
-	<uiClassName>momime.server.ui.SingleWindowUI</uiClassName>
+	<pathToServerXmlDatabases>server/databases</pathToServerXmlDatabases>
+	<uiClassName>momime.server.ui.ConsoleUI</uiClassName>
 </config:momImeServerConfig>

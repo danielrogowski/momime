@@ -1,0 +1,124 @@
+<HTML><HEAD><TITLE>Master of Magic - Implode's Multiplayer Edition Version - Differences from original Master of Magic</TITLE></HEAD>
+<link rel="stylesheet" type="text/css" href="mom.css" />
+<BODY>
+<h2>Master of Magic - Implode's Multiplayer Edition Version - Differences from original Master of Magic</h2>
+
+<p>There are a number of intentional differences I have made from the original Master of Magic (aside from the obvious
+differences such as it running in 640x480, being a Windows DirectX application instead of a DOS application, and allowing
+multiplayer simultaneous turns!)  I'm starting to record a list of
+these differences here:</p>
+
+<h3>Fixed Bugs</h3>
+<li>The Strategy Guide states that the surveyor in the original Master of Magic didn't show food from Nature & Sorcery node tiles
+correctly, and that it was pessimistic about Wild Game squares when calculating max city size, assuming that another city would be
+sharing the square and so treating it only as +1 food & rations instead of +2.  The Surveyor in MoM IME shows all tile values
+correctly and treats all deposits exactly as they are, i.e. if there is already a city using a Wild Game resource, then any
+city you consider placing which will share it, the Surveyor will treat the Wild Game as +1.  If there isn't already a city using
+the Wild Game resource, the Surveyor will treat the Wild Game as +2 even though potentially another city could come along later and
+reduce the bonus to +1.
+<br><br>
+
+<li>Certain unit skills did not appear correctly on the unit info screen when choosing what to build in a city, for example Longbowmen
+do not show their 8 arrows or +1 to hit initially, but then once built both of these skills appear.  All skills appear correctly in
+MoM IME.
+<br><br>
+
+<li>The Mana, Research and Skill sliders on the Magic screen in the original Master of Magic were highly suspect - by tweaking their positions
+you would often be able to allocate more magic power than you had.  i.e. you could set so that Mana + Research + Skill > Power Base.  This always
+works out exactly in MoM IME.
+<br><br>
+
+<li>In the original Master of Magic, the Conjurer/Summoner retort would reduce Torin's maintainence from 12 Mana per turn to 9.  I don't think this is
+in the spirit of what Conjurer/Summoner is supposed to help with - I believe it was intended to only give bonuses to summoned <i>creatures</i>, not
+heroes.  It certainly doesn't give any research bonus, casting cost reduction or upkeep reduction to Summon Hero or Summon Champion, nor does it give
+any research bonus or casting cost reduction to Torin - so I consider that it reduces his upkeep to be a bug, which I've fixed in MoM IME.
+<br><br>
+
+<li>In the original Master of Magic, Oracles gave a scouting range of 6, even though the help text and strategy guide (p177) say it should be 4, and it
+makes more sense for it to be lower than Nature's Eye.  So I have set it at 4 in MoM IME.
+
+<h3>Differences with an effect on gameplay</h3>
+<li>The way Towers of Wizardry worked while Planar Seal is in effect in the original is rather dubious.  When nobody has Planar Seal cast, units
+in the tower are simultaneously on both planes, that is if you leave one stack of units guarding the tower, that stack will defend the
+tower whether the tower is attacked from Arcanus or Myrror - you don't need a separate stack defending each plane.  When someone does
+have Planar Seal cast, the towers on each plane become separated and in order to defend it you then need an army on each plane.  This
+breaks down when one wizard occupies the tower on one plane, and another wizard occupies the tower on the other plane, and then you
+switch off your Planar Seal spell.  Your units can then plane shift over to the other plane <i>on top of the other Wizards' units</i> without
+a fight!  I've decided to avoid this situation by altering the way Planar Seal works.  When Planar Seal is in effect, Towers of Wizardry
+become impassable terrain - you cannot move onto them at all, even if you already have units guarding the tower.  Any units in the tower
+at the time Planar Seal is cast will be able to move off onto either plane, but will not be able to move back onto the tower until
+Planar Seal is cancelled or dispelled.
+<br><br>
+
+<li>If you were producing insufficient rations or gold to support your army, the original Master of Magic would kill off your units.  However, even if
+you were producing negative gold and had no gold stored so had no gold to pay for maintenance on your buildings, it would never force you to sell
+off buildings (this really surprised me when I found it!)  MoM IME will sell of buildings as well as killing off units in order to get
+your gold production back above zero.  Note, this means even if you have units still alive that have gold upkeep, MoM IME may sell off buildings
+instead - it chooses randomly.
+<br><br>
+
+<li>At Hard and Impossible difficulty in the original MoM, raider cities would have an 80% chance of having a starting population between 2-5, and a 20%
+chance of a starting population between 2-11 (strategy guide p426).  I do not understand why you would ever want the smaller population range, and also
+there should be a different between Hard and Impossible, so in MoM IME at Hard difficultly raider cities always have a starting population between 2-8,
+and 2-11 at Impossible difficulty.
+
+<h3>Differences with no effect on gameplay</h3>
+<li>The original Master of Magic graphic LBX files include two sets of city graphics for the map view - one set with city walls and one set without.  I
+guess they decided to not use the city graphics without city walls, because in the original Master of Magic the 'with city walls'
+cities are used all the time, whether or not a city has city walls.  I think the 'without city walls' cities look quite cool as
+well, so I've done this how I think it was originally intended, so cities look different on the map view depending on whether
+they've built city walls or not.
+
+<li>Any leftover ration production you can sell for gold at the rate of 1 gold for 2 rations.  In the original Master of Magic, this type of
+Gold production did show on the map screen.  In MoM IME it doesn't - you still know that you will get the gold from the amount of ration
+production shown.  So if e.g. your gold production shows -1 per turn, and ration production shows +2 per turn, you will actually be breaking
+even on gold production.
+<br><br>
+
+<li>The spell book and the Apprentice advisor (F3) work a little differently.  In the original Master of Magic, the spells button shows spells that have
+been researched and spells that aren't yet available to research.  The 8 spells that you can currently research are accessed via the Apprentice advisor (F3).  In
+MoM IME the 8 spells that you can currently research are just another page in the regular spell book accessed by the spells button.  Because in simultaneous
+turns games, no actions take place until you hit End Turn, if you have particularly high skill you may be able to cast multiple spells per turn.  The list of
+spells you'll cast when you hit 'End Turn' is what the Apprentice advisor (F3) is for in MoM IME.  It is also used in one-at-a-time games, but less so, since it
+will only ever list a single spell.  This also means that if you're casting a big spell that takes many turns, the regular spell book will not show progress
+towards this (the mana count shown will not reduce each turn) since you want to know what the total mana cost is in case you want to queue up further spells
+behind the current one, e.g. you may want to queue up 3 "Summon Demon Lord" spells - progress towards the spell currently being cast can be seen with the
+Apprentice advisor (F3).
+<br><br>
+
+<li>I find the way the 50% spell maintenance reduction from the Channeler retort is handled in the original MoM to be terribly confusing.  After some experimenting,
+I've found that this reduction is applied right at the end of the economy calculations.  So if you have say 4 spells with 1 mana upkeep each, rather than applying
+the 50% reduction to each spell individually (which would be rounded back up to 1, giving no bonuses at all), it is applied once the total upkeep from all spells has
+been determined.  That's fine, but it means the reduction doesn't show up on the unit display - if you have a unit with Wind Walking cast on it (10 upkeep), it still
+shows as 10 upkeep even though you're only actually paying 5 upkeep.  This always led me to believe that Channeler didn't help reduce the upkeep of summoned
+creatures - whereas in fact it does help, you just can't see that its helping on the unit display.  In MoM IME, upkeep reductions from Channeler are shown correctly
+on the unit display (and will show the 1/2 mana point if applicable), and are shown correctly on the help scrolls for other types of spells (e.g. city spells or
+overland enchantments).
+
+<h3>Terminology</h3>
+<li>The original Master of Magic uses mixed and confusing terminology for 'Food'.  e.g. The 1½ 'Food' you get from
+grasslands is 'Food' which contributes towards the maximum size a city nearby can reach.  This is quite different to the 'Food'
+produced by farmers to feed city population and your armies.  I decided to use the term 'Rations' for feeding the city
+population and your armies, i.e. Farmers harvest the 'Food' from surrounding tiles and package them up into 'Rations' for your army.
+<br><br>
+
+<li>The original Master of Magic used mixed and confusing terminology for 'Mana'.  e.g. Shrines and Temples produce 'Mana', but
+it isn't really 'Mana' unless you use the Magic screen to set your Mana/Research/Skill ratios to actually produce 'Mana' from
+the 'Mana'.  In places the original Master of Magic refers to the original allocation as 'Power' so this is what I am using
+consistently.  i.e. Shrines, Temples, Nodes and so on produce 'Power'.  You can then choose to allocate this 'Power' to either
+'Mana', Research or Skill improvement.
+<br><br>
+
+<li>The original Master of Magic used mixed and confusing terminology for 'Fantanstic units'.  e.g. Certain spells state that they
+only affect Fantastic units - but this really means Summoned units - not the Fantanstic units you can build at a Fantanstic stable,
+these are considered regular units.  Some of the spell descriptions even say 'affects only Fantasic i.e. Summoned units'.  I use
+'Fantanstic' to refer to the units built at a Fantanstic stable.  Summoned units are summoned units, I never refer to them as being
+Fantanstic.
+<br><br>
+
+<li>I've renamed the 'Conjurer' retort to 'Summoner'.  It gives bonuses to do with Summoning and Summoned units, and there are too many quite
+similarly named retorts which has always confused me to no end, i.e. Channeler and Artificer ("I want to conjure some items for my heroes
+so I'll pick Conjurer so I get Create Artifact for free"!)
+
+
+</BODY></HTML>

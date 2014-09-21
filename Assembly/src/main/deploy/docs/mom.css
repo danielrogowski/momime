@@ -1,0 +1,60 @@
+BODY
+{
+    BACKGROUND-COLOR: #282828;
+    COLOR: #A0A0B0;
+    FONT-FAMILY: 'sans-serif';
+    FONT-SIZE: 'x-small'
+}
+A
+{
+    COLOR: #FFCC66;
+}
+TD
+{
+    BACKGROUND-COLOR: #282828;
+    COLOR: #A0A0B0;
+    FONT-FAMILY: 'sans-serif';
+    FONT-SIZE: 'x-small'
+}
+H1
+{
+    COLOR: #6666CC;
+    FONT-FAMILY: 'sans-serif';
+    TEXT-TRANSFORM: capitalize
+}
+H2
+{
+    COLOR: #6666CC;
+    FONT-FAMILY: 'sans-serif';
+    TEXT-TRANSFORM: capitalize
+}
+H3
+{
+    COLOR: #6666CC;
+    FONT-FAMILY: 'sans-serif';
+    TEXT-TRANSFORM: capitalize
+}
+
+H4
+{
+    COLOR: #6666CC;
+    FONT-FAMILY: 'sans-serif';
+    TEXT-TRANSFORM: capitalize
+}
+
+H5
+{
+    COLOR: #6666CC;
+    FONT-FAMILY: 'sans-serif';
+    TEXT-TRANSFORM: capitalize
+}
+H6
+{
+    COLOR: #6666CC;
+    FONT-FAMILY: 'sans-serif';
+    TEXT-TRANSFORM: capitalize
+}
+TH
+{
+ color: #6060cc
+}

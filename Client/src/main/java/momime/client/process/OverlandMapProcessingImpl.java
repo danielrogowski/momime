@@ -220,7 +220,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			terrainData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(unitMoveFrom.getZ ()).getRow ().get (unitMoveFrom.getY ()).getCell ().get (unitMoveFrom.getX ()).getTerrainData ();
 			
-			tileType = getClient ().getClientDB ().findTileType (terrainData.getTileTypeID (), "enableOrDisableSpecialOrderButtons");
+			if (terrainData != null)
+				tileType = getClient ().getClientDB ().findTileType (terrainData.getTileTypeID (), "enableOrDisableSpecialOrderButtons");
 		
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 				if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))

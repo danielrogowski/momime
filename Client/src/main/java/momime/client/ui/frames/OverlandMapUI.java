@@ -101,6 +101,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
+	
+	/** Spell book */
+	private SpellBookUI spellBookUI;
 
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
@@ -228,9 +231,19 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		spellsAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -5141972367832746499L;
+
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					getSpellBookUI ().setVisible (true);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 
@@ -1196,6 +1209,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setMagicSlidersUI (final MagicSlidersUI ui)
 	{
 		magicSlidersUI = ui;
+	}
+
+	/**
+	 * @return Spell book
+	 */
+	public final SpellBookUI getSpellBookUI ()
+	{
+		return spellBookUI;
+	}
+
+	/**
+	 * @param ui Spell book
+	 */
+	public final void setSpellBookUI (final SpellBookUI ui)
+	{
+		spellBookUI = ui;
 	}
 
 	/**

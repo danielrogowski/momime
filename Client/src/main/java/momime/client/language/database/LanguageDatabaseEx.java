@@ -11,6 +11,7 @@ import momime.client.language.database.v0_9_5.PopulationTask;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.database.v0_9_5.UnitAttribute;
@@ -128,6 +129,12 @@ public interface LanguageDatabaseEx
 	 * @return Spell rank description; or replays back the ID if no description exists
 	 */
 	public String findSpellRankDescription (final String spellRankID);
+	
+	/**
+	 * @param spellBookSectionID Spell book section ID to search for
+	 * @return Spell book section descriptions object; or null if not found
+	 */
+	public SpellBookSection findSpellBookSection (final String spellBookSectionID);
 	
 	/**
 	 * @param spellID Spell ID to search for

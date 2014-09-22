@@ -19493,6 +19493,9 @@
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmSpellBook">
+		<languageEntry languageEntryID="Title" />
+	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="10049" />

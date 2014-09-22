@@ -22,6 +22,7 @@ import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.RangedAttackType;
 import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.TileType;
@@ -90,6 +91,9 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	
 	/** Map of spell rank IDs to spell rank objects */
 	private Map<String, SpellRank> spellRanksMap;
+	
+	/** Map of spell book section IDs to spell book section objects */
+	private Map<String, SpellBookSection> spellBookSectionsMap;
 
 	/** Map of spell IDs to spell objects */
 	private Map<String, Spell> spellsMap;
@@ -216,6 +220,11 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		spellRanksMap = new HashMap<String, SpellRank> ();
 		for (final SpellRank thisSpellRank : getSpellRank ())
 			spellRanksMap.put (thisSpellRank.getSpellRankID (), thisSpellRank);
+
+		// Create spell book sections map
+		spellBookSectionsMap = new HashMap<String, SpellBookSection> ();
+		for (final SpellBookSection thisSection : getSpellBookSection ())
+			spellBookSectionsMap.put (thisSection.getSpellBookSectionID (), thisSection);
 		
 		// Create spells map
 		spellsMap = new HashMap<String, Spell> ();
@@ -453,6 +462,16 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 		return (thisSpellRank == null) ? spellRankID : thisSpellRank.getSpellRankDescription ();
 	}
 
+	/**
+	 * @param spellBookSectionID Spell book section ID to search for
+	 * @return Spell book section descriptions object; or null if not found
+	 */
+	@Override
+	public final SpellBookSection findSpellBookSection (final String spellBookSectionID)
+	{
+		return spellBookSectionsMap.get (spellBookSectionID);
+	}
+	
 	/**
 	 * @param spellID Spell ID to search for
 	 * @return Spell descriptions object; or null if not found

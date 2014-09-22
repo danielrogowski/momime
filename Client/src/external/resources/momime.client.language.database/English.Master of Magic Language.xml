@@ -5494,6 +5494,11 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>Cancel</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmSpellBook">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Spells</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Connection Error</languageEntryText>

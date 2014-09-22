@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.SpellBookUI;
 import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.SpellResearchStatusID;
@@ -31,6 +32,9 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 	/** Spell utils */
 	private SpellUtils spellUtils;
 	
+	/** Spell book */
+	private SpellBookUI spellBookUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -50,6 +54,9 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 		// Accept the new data
 		ourSpells.clear ();
 		ourSpells.addAll (getSpellResearchStatus ());
+		
+		// Update the UI
+		getSpellBookUI ().updateSpellBook ();
 		
 		// If finished researching current spell then we need to choose a new spell to start researching
 		if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () != null)
@@ -103,5 +110,21 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Spell book
+	 */
+	public final SpellBookUI getSpellBookUI ()
+	{
+		return spellBookUI;
+	}
+
+	/**
+	 * @param ui Spell book
+	 */
+	public final void setSpellBookUI (final SpellBookUI ui)
+	{
+		spellBookUI = ui;
 	}
 }

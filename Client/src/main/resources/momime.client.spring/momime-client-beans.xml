@@ -208,6 +208,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="fullSpellListMessage" class="momime.client.messages.process.FullSpellListMessageImpl" scope="prototype" >
 		<property name="client" ref="client" />
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="spellBookUI" ref="spellBookUI" />
 	</bean>
 
 	<bean id="startGameMessage" class="momime.client.messages.process.StartGameMessageImpl" scope="prototype">
@@ -679,6 +680,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
+		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
@@ -719,6 +721,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="anim" ref="anim" />
+	</bean>
+	
+	<bean id="spellBookUI" class="momime.client.ui.frames.SpellBookUI">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="client" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="spellUtils" ref="spellUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<!-- Prototype UI components -->

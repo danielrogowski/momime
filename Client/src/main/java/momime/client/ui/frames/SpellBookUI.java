@@ -7,26 +7,51 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.Timer;
 
+import momime.client.MomClient;
 import momime.client.graphics.database.AnimationEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.v0_9_5.Pick;
+import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.HideableComponent;
+import momime.client.utils.SpellSorter;
+import momime.client.utils.TextUtils;
+import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_5.Spell;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.utils.MomSpellCastType;
+import momime.common.utils.SpellUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 
 /**
@@ -51,8 +76,20 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 	
-	/** How many spells we show on each page */
-	private final static int SPELLS_PER_PAGE = 6;
+	/** Multiplayer client */
+	private MomClient client;
+
+	/** Spell utils */
+	private SpellUtils spellUtils;
+
+	/** Text utils */
+	private TextUtils textUtils;
+
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
+	private final static int SPELLS_PER_PAGE = 4;
 	
 	/** Vertical gap between spells */
 	private final static int GAP_BETWEEN_SPELLS = 2;
@@ -68,6 +105,12 @@ public final class SpellBookUI extends MomClientFrameUI
 	
 	/** Animation for the page turning */
 	final static String ANIM_PAGE_TURN = "SPELL_BOOK_PAGE_TURN";
+	
+	/** Typical inset used by layouts */
+	private final static int INSET = 0;
+	
+	/** Colour to draw arcane spells */
+	private final static Color ARCANE_SPELL_COLOUR = new Color (0xA0A0A0);
 
 	/** Content pane */
 	private JPanel contentPane;
@@ -83,6 +126,33 @@ public final class SpellBookUI extends MomClientFrameUI
 	
 	/** Timer for ticking up pageTurnFrame */
 	private Timer pageTurnTimer;
+	
+	/** Spell book pages */
+	private List<SpellBookPage> pages = new ArrayList<SpellBookPage> ();
+	
+	/** Currently visible left page */
+	private int leftPageNumber = 0;
+	
+	/** Currently visible right page (normally this is leftPageNumber+1, but they're updated during different frames of page turn animations) */
+	private int rightPageNumber = 1;
+	
+	/** Section heading */
+	private JLabel [] sectionHeadings = new JLabel [2];
+	
+	/** Spell names */
+	private JLabel [] [] spellNames = new JLabel [2] [SPELLS_PER_PAGE];
+
+	/** Spell descriptions */
+	private JTextArea [] [] spellDescriptions = new JTextArea [2] [SPELLS_PER_PAGE];
+
+	/** Spell overland costs */
+	private JLabel [] [] spellOverlandCosts = new JLabel [2] [SPELLS_PER_PAGE];
+
+	/** Spell combat costs */
+	private JLabel [] [] spellCombatCosts = new JLabel [2] [SPELLS_PER_PAGE];
+	
+	/** Overland or combat casting */
+	private MomSpellCastType castType = MomSpellCastType.OVERLAND;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -124,42 +194,10 @@ public final class SpellBookUI extends MomClientFrameUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
-				if (pageTurnTimer != null)
-					pageTurnTimer.stop ();				
+				// Any more pages available to turn after this anim finishes?
+				turnPageLeftButton.setHidden ((leftPageNumber - 2) <= 0);
 				
-				pageTurnFrame = 0;
-				contentPane.repaint ();
-				
-				pageTurnTimer = new Timer ((int) (1000 / pageTurnAnim.getAnimationSpeed ()), new ActionListener ()
-				{
-					@Override
-					public final void actionPerformed (final ActionEvent ev2)
-					{
-						if ((pageTurnFrame == null) || (pageTurnFrame+1 >= pageTurnAnim.getFrame ().size ()))
-						{
-							if (pageTurnTimer != null)
-								pageTurnTimer.stop ();
-							
-							pageTurnTimer = null;
-							pageTurnFrame = null;
-						}
-						else
-							pageTurnFrame = pageTurnFrame + 1;
-						
-						contentPane.repaint ();
-					}
-				});
-				pageTurnTimer.start ();
-			}
-		};
-		
-		final Action turnPageRightAction = new AbstractAction ()
-		{
-			private static final long serialVersionUID = 3223600649990240103L;
-
-			@Override
-			public final void actionPerformed (final ActionEvent ev)
-			{
+				// Show page turn animation
 				if (pageTurnTimer != null)
 					pageTurnTimer.stop ();				
 				
@@ -178,9 +216,83 @@ public final class SpellBookUI extends MomClientFrameUI
 							
 							pageTurnTimer = null;
 							pageTurnFrame = null;
+							
+							turnPageRightButton.setHidden (false);
 						}
 						else
+						{
 							pageTurnFrame = pageTurnFrame - 1;
+							
+							if (pageTurnFrame == 0)
+							{
+								// Update the right hand page while it is covered up
+								rightPageNumber = rightPageNumber - 2;
+								languageOrPageChanged ();
+							}
+							else if (pageTurnFrame == 2)
+							{
+								// Update the left hand page while it is covered up
+								leftPageNumber = leftPageNumber - 2;
+								languageOrPageChanged ();
+							}
+						}
+						
+						contentPane.repaint ();
+					}
+				});
+				pageTurnTimer.start ();
+			}
+		};
+		
+		final Action turnPageRightAction = new AbstractAction ()
+		{
+			private static final long serialVersionUID = 3223600649990240103L;
+
+			@Override
+			public final void actionPerformed (final ActionEvent ev)
+			{
+				// Any more pages available to turn after this anim finishes?
+				turnPageRightButton.setHidden ((rightPageNumber + 2) + 1 >= pages.size ());
+
+				// Show page turn animation
+				if (pageTurnTimer != null)
+					pageTurnTimer.stop ();				
+				
+				pageTurnFrame = 0;
+				contentPane.repaint ();
+				
+				pageTurnTimer = new Timer ((int) (1000 / pageTurnAnim.getAnimationSpeed ()), new ActionListener ()
+				{
+					@Override
+					public final void actionPerformed (final ActionEvent ev2)
+					{
+						if ((pageTurnFrame == null) || (pageTurnFrame+1 >= pageTurnAnim.getFrame ().size ()))
+						{
+							if (pageTurnTimer != null)
+								pageTurnTimer.stop ();
+							
+							pageTurnTimer = null;
+							pageTurnFrame = null;
+							
+							turnPageLeftButton.setHidden (false);
+						}
+						else
+						{
+							pageTurnFrame = pageTurnFrame + 1;
+							
+							if (pageTurnFrame == 1)
+							{
+								// Update the right hand page while it is covered up
+								rightPageNumber = rightPageNumber + 2;
+								languageOrPageChanged ();
+							}
+							else if (pageTurnFrame == 3)
+							{
+								// Update the left hand page while it is covered up
+								leftPageNumber = leftPageNumber + 2;
+								languageOrPageChanged ();
+							}
+						}
 						
 						contentPane.repaint ();
 					}
@@ -253,12 +365,14 @@ public final class SpellBookUI extends MomClientFrameUI
 			headingConstraints.weighty = 1;		// Push all the controls down, so the close tag sits at the bottom of the window
 			headingConstraints.weightx = 1;		// Don't let the page turns get more space than necessary
 			
-			final JLabel sectionHeading = getUtils ().createLabel (MomUIConstants.DARK_RED, getLargeFont (), "Spell book section Heading");
+			final JLabel sectionHeading = getUtils ().createLabel (MomUIConstants.DARK_RED, getLargeFont ());
 			contentPane.add (sectionHeading, headingConstraints);
+			sectionHeadings [x] = sectionHeading;
 			
 			for (int y = 0; y < SPELLS_PER_PAGE; y++)
 			{
 				final JPanel spellPanel = new JPanel ();
+				spellPanel.setLayout (new GridBagLayout ());
 				
 				spellPanel.setOpaque (false);
 				spellPanel.setMinimumSize (spellSize);
@@ -267,6 +381,35 @@ public final class SpellBookUI extends MomClientFrameUI
 				
 				contentPane.add (spellPanel, getUtils ().createConstraintsNoFill (x * 2, y + 1, 2, 1, new Insets (0, 9, GAP_BETWEEN_SPELLS, 9),
 					(x == 0) ? GridBagConstraintsNoFill.EAST : GridBagConstraintsNoFill.WEST));
+				
+				// Layout the individual spell panel
+				final GridBagConstraints spellNameConstraints = getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.WEST);
+				spellNameConstraints.weightx = 1;
+				
+				final JLabel spellName = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getMediumFont ());
+				spellPanel.add (spellName, spellNameConstraints);
+
+				final JLabel spellCombatCost = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getMediumFont ());
+				spellPanel.add (spellCombatCost, getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));				
+				
+				final JLabel spellOverlandCost = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getMediumFont ());
+				spellPanel.add (spellOverlandCost, getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+				
+				final GridBagConstraints descriptionConstraints = getUtils ().createConstraintsBothFill (0, 1, 3, 1, INSET);
+				descriptionConstraints.weightx = 1;
+				descriptionConstraints.weighty = 1;
+				
+				final JTextArea spellDescription = getUtils ().createWrappingLabel (MomUIConstants.DARK_BROWN, getSmallFont ());
+				spellPanel.add (spellDescription, descriptionConstraints);
+				
+				spellNames [x] [y] = spellName;
+				spellCombatCosts [x] [y] = spellCombatCost;
+				spellOverlandCosts [x] [y] = spellOverlandCost;
+				spellDescriptions [x] [y] = spellDescription;
+				
+				// Make the MP columns a consistent size
+				spellPanel.add (Box.createRigidArea (new Dimension (50, 0)), getUtils ().createConstraintsNoFill (1, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+				spellPanel.add (Box.createRigidArea (new Dimension (50, 0)), getUtils ().createConstraintsNoFill (2, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			}
 		}
 		
@@ -279,7 +422,45 @@ public final class SpellBookUI extends MomClientFrameUI
 		getFrame ().setUndecorated (true);
 
 		// Set custom shape
+		getFrame ().setShape (new Polygon
+			(new int [] {1, 5,
+					
+				// Top
+				19, 26, 250, 276, 282, fixedSize.width / 2, fixedSize.width - 282, fixedSize.width - 276, fixedSize.width - 250, fixedSize.width - 26, fixedSize.width - 19,
+					
+				// Right side
+				fixedSize.width - 4, fixedSize.width - 1, fixedSize.width - 1, fixedSize.width - 3, fixedSize.width - 3, fixedSize.width - 1, fixedSize.width - 1, fixedSize.width - 4, fixedSize.width - 47, fixedSize.width - 47,
+				
+				// Pendant with close button
+				355, 357, 357, 353, 353, 351, 335, 319, 317, 317, 321, 321, 319,
+				
+				// Book spine at the bottom
+				fixedSize.width - 261, fixedSize.width - 268, 267, 260,
+				
+				// Left side
+				47, 47, 5, 1, 1, 3, 3, 1},
+				
+			new int [] {37, 33,
+					
+				// Top
+				33, 25, 19, 23, 27, 33, 27, 23, 19, 25, 33,
+					
+				// Right side
+				33, 37, 83, 83, 313, 313, 355, 359, 359, 357,
+					
+				// Pendant with close button
+				357, 364, 375, 384, fixedSize.height, fixedSize.height, fixedSize.height - 7, fixedSize.height, fixedSize.height, 384, 375, 364, 357,
+				
+				// Book spine at the bottom
+				357, 361, 361, 357,
+				
+				// Left side
+				357, 359, 359, 355, 313, 313, 83, 83},
+				
+			48));
 		
+		updateSpellBook ();
+		turnPageLeftButton.setHidden (true);
 		log.trace ("Exiting init");
 	}
 	
@@ -290,7 +471,282 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void languageChanged ()
 	{
 		log.trace ("Entering languageChanged");
+		
+		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmSpellBook", "Title"));
+		languageOrPageChanged ();
+		
 		log.trace ("Exiting languageChanged");
+	}
+	
+	/**
+	 * When we learn a new spell, updates the spells in the spell book to include it.
+	 * That may involve shuffling pages around if a page is now full, or adding new pages if the spell is a kind we didn't previously have.
+	 * 
+	 * Unlike the original MoM and earlier MoM IME versions, because the spell book can be left up permanently now, it will always
+	 * draw all spells - so combat spells are shown when on the overland map, and overland spells are shown in combat, just greyed out.
+	 * So here we don't need to pay any attention to the cast type.
+	 * 
+	 * @throws MomException If we encounter an unknown research unexpected status
+	 * @throws RecordNotFoundException If we can't find a research status for a particular spell
+	 */
+	public final void updateSpellBook () throws MomException, RecordNotFoundException
+	{
+		log.trace ("Entering updateSpellBook");
+		
+		// Get a list of all spells we know, and all spells we can research now; grouped by section
+		final Map<String, List<Spell>> sections = new HashMap<String, List<Spell>> ();
+		for (final Spell spell : getClient ().getClientDB ().getSpell ())
+		{
+			final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ());
+			final String sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
+			if (sectionID != CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK)		// value of constant is null, so can't do .equals ()
+			{
+				// Do we have this section already?
+				List<Spell> section = sections.get (sectionID);
+				if (section == null)
+				{
+					section = new ArrayList<Spell> ();
+					sections.put (sectionID, section);
+				}
+				
+				section.add (spell);
+			}
+		}
+		
+		// Sort them into sections
+		final List<String> sortedSections = new ArrayList<String> ();
+		sortedSections.addAll (sections.keySet ());
+		Collections.sort (sortedSections);
+		
+		// Go through each section
+		pages.clear ();
+		for (final String sectionID : sortedSections)
+		{
+			final List<Spell> spells = sections.get (sectionID);
+			
+			// Sort the spells within this section
+			Collections.sort (spells, new SpellSorter (sectionID));
+			
+			// Divide them into pages with up to SPELLS_PER_PAGE on each page
+			boolean first = true;
+			while (spells.size () > 0)
+			{
+				final SpellBookPage page = new SpellBookPage ();
+				page.setSectionID (sectionID);
+				page.setFirstPageOfSection (first);
+				pages.add (page);
+				
+				while ((spells.size () > 0) && (page.getSpells ().size () < SPELLS_PER_PAGE))
+				{
+					page.getSpells ().add (spells.get (0));
+					spells.remove (0);
+				}
+				
+				first = false;
+			}
+		}
+		
+		// This can be called before we've ever opened the spell book, so none of the components exist
+		if (contentPane != null)
+			languageOrPageChanged ();
+		
+		log.trace ("Exiting updateSpellBook");
+	}
+	
+	/**
+	 * Called when either the language or the currently displayed page changes
+	 */
+	private final void languageOrPageChanged ()
+	{
+		log.trace ("Entering languageOrPageChanged");
+
+		final ProductionType manaProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
+		String manaSuffix = (manaProductionType == null) ? null : manaProductionType.getProductionTypeSuffix ();
+		if (manaSuffix == null)
+			manaSuffix = "";
+		
+		final ProductionType researchProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_RESEARCH);
+		String researchSuffix = (researchProductionType == null) ? null : researchProductionType.getProductionTypeSuffix ();
+		if (researchSuffix == null)
+			researchSuffix = "";
+		
+		try
+		{
+			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "languageOrPageChanged");
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+			
+			// Do the left+right pages in turn
+			for (int x = 0; x < 2; x++)
+			{
+				final int pageNumber = (x == 0) ? leftPageNumber : rightPageNumber;
+				if ((pageNumber >= 0) && (pageNumber < pages.size ()))
+				{
+					final SpellBookPage page = pages.get (pageNumber);
+					
+					// Write section heading?
+					if (page.isFirstPageOfSection ())
+					{
+						final SpellBookSection spellBookSection = getLanguage ().findSpellBookSection (page.getSectionID ());
+						final String sectionHeading = (spellBookSection == null) ? null : spellBookSection.getSpellBookSectionName ();
+						sectionHeadings [x].setText ((sectionHeading == null) ? page.getSectionID () : sectionHeading);
+					}
+					else
+						sectionHeadings [x].setText (null);
+					
+					// Spell names
+					for (int y = 0; y < SPELLS_PER_PAGE; y++)
+						if (y < page.getSpells ().size ())
+						{
+							final Spell spell = page.getSpells ().get (y);
+
+							// Let unknown spells be magic realm coloured too, as a hint
+							spellNames [x] [y].setForeground (ARCANE_SPELL_COLOUR);
+							spellCombatCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
+							spellOverlandCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
+							spellDescriptions [x] [y].setForeground (MomUIConstants.DARK_BROWN);
+							if (spell.getSpellRealm () != null)
+								try
+								{
+									final Pick magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
+									if (magicRealm.getPickBookshelfTitleColour () != null)
+									{
+										final Color spellColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
+										spellNames [x] [y].setForeground (spellColour);
+										spellCombatCosts [x] [y].setForeground (spellColour);
+										spellOverlandCosts [x] [y].setForeground (spellColour);
+									}
+								}
+								catch (final Exception e)
+								{
+									log.error (e, e);
+								}
+							
+							// Set text for this spell
+							if (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS.equals (page.getSectionID ()))
+							{
+								spellNames [x] [y].setText ("??????????");
+								spellDescriptions [x] [y].setText ("?????????????????????????????????????????");
+								spellCombatCosts [x] [y].setText (null);
+								spellOverlandCosts [x] [y].setText ("??? " + researchSuffix);
+							}
+							else
+							{
+								final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+								final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
+								final String spellDescription = (spellLang == null) ? null : spellLang.getSpellDescription ();
+								
+								spellNames [x] [y].setText ((spellName == null) ? spell.getSpellID () : spellName);
+								spellDescriptions [x] [y].setText ((spellDescription == null) ? spell.getSpellID () : spellDescription);
+								
+								// Show cost in MP for known spells, and RP for researchable spells
+								if (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS.equals (page.getSectionID ()))
+								{
+									spellCombatCosts [x] [y].setText (null);
+									if (spell.getResearchCost () == null)
+										spellOverlandCosts [x] [y].setText (null);
+									else
+										spellOverlandCosts [x] [y].setText (getTextUtils ().intToStrCommas (spell.getResearchCost ()) + " " + researchSuffix);
+								}
+								else
+								{
+									// Show combat and overland casting cost separately
+									String combatCostText = null;
+									String overlandCostText = null;
+									try
+									{
+										final Integer overlandCost = (spell.getOverlandCastingCost () == null) ? null :
+											getSpellUtils ().getReducedOverlandCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+
+										if (overlandCost != null)
+											overlandCostText = getTextUtils ().intToStrCommas (overlandCost) + " " + manaSuffix;
+										
+										final Integer combatCost = (spell.getCombatCastingCost () == null) ? null :
+											getSpellUtils ().getReducedCombatCastingCost (spell, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+										
+										if (combatCost != null)
+											combatCostText = getTextUtils ().intToStrCommas (combatCost) + " " + manaSuffix;
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
+									}
+
+									spellCombatCosts [x] [y].setText (combatCostText);
+									spellOverlandCosts [x] [y].setText (overlandCostText);
+									
+									// Grey out casting cost that's inappropriate for our current cast type
+									// Once combat is done, this needs improving to also grey out spells that we don't have enough mana to cast in combat
+									if (getCastType () == MomSpellCastType.COMBAT)
+									{
+										spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+										if (spell.getCombatCastingCost () == null)
+										{
+											spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+											spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+										}
+									}
+
+									if (getCastType () == MomSpellCastType.OVERLAND)
+									{
+										spellCombatCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+										if (spell.getOverlandCastingCost () == null)
+										{
+											spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+											spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+										}
+									}
+								}
+							}
+						}
+						else
+						{
+							// Blank spell
+							spellNames [x] [y].setText (null);
+							spellDescriptions [x] [y].setText (null);
+							spellCombatCosts [x] [y].setText (null);
+							spellOverlandCosts [x] [y].setText (null);
+						}
+				}
+				else
+				{
+					// Blank page
+					sectionHeadings [x].setText (null);
+					for (int y = 0; y < SPELLS_PER_PAGE; y++)
+					{
+						spellNames [x] [y].setText (null);
+						spellDescriptions [x] [y].setText (null);
+						spellCombatCosts [x] [y].setText (null);
+						spellOverlandCosts [x] [y].setText (null);
+					}
+				}
+			}
+		}
+		catch (final PlayerNotFoundException e)
+		{
+			log.error (e, e);
+		}
+		
+		log.trace ("Exiting languageOrPageChanged");
+	}
+
+	/**
+	 * @return Overland or combat casting
+	 */
+	public final MomSpellCastType getCastType ()
+	{
+		return castType;
+	}
+	
+	/**
+	 * @param ct Overland or combat casting
+	 */
+	public final void setCastType (final MomSpellCastType ct)
+	{
+		if (castType != ct)
+		{
+			castType = ct;
+			languageOrPageChanged ();
+		}
 	}
 
 	/**
@@ -355,5 +811,124 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void setGraphicsDB (final GraphicsDatabaseEx db)
 	{
 		graphicsDB = db;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
+	}
+
+	/**
+	 * @return Text utils
+	 */
+	public final TextUtils getTextUtils ()
+	{
+		return textUtils;
+	}
+
+	/**
+	 * @param tu Text utils
+	 */
+	public final void setTextUtils (final TextUtils tu)
+	{
+		textUtils = tu;
+	}
+	
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
+	
+	/**
+	 * Represents one page of the spell book and the up-to-6 spells on it
+	 */
+	final class SpellBookPage
+	{
+		/** The spell book section */
+		private String sectionID;
+		
+		/** Is this the first page of this section?  i.e. show the title or not */
+		private boolean firstPageOfSection;
+		
+		/** The spells on this page */
+		private List<Spell> spells = new ArrayList<Spell> ();
+
+		/**
+		 * @return The spell book section
+		 */
+		public final String getSectionID ()
+		{
+			return sectionID;
+		}
+
+		/**
+		 * @param section The spell book section
+		 */
+		public final void setSectionID (final String section)
+		{
+			sectionID = section;
+		}
+		
+		/**
+		 * @return Is this the first page of this section?  i.e. show the title or not
+		 */
+		public final boolean isFirstPageOfSection ()
+		{
+			return firstPageOfSection;
+		}
+
+		/**
+		 * @param first Is this the first page of this section?  i.e. show the title or not
+		 */
+		public final void setFirstPageOfSection (final boolean first)
+		{
+			firstPageOfSection = first;
+		}
+		
+		/**
+		 * @return The spells on this page
+		 */
+		public final List<Spell> getSpells ()
+		{
+			return spells;
+		}
 	}
 }

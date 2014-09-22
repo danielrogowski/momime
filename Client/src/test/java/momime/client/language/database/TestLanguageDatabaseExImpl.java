@@ -20,6 +20,7 @@ import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.language.database.v0_9_5.RangedAttackType;
 import momime.client.language.database.v0_9_5.Spell;
+import momime.client.language.database.v0_9_5.SpellBookSection;
 import momime.client.language.database.v0_9_5.SpellRank;
 import momime.client.language.database.v0_9_5.SpellSetting;
 import momime.client.language.database.v0_9_5.TileType;
@@ -40,7 +41,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findPlane method
 	 */
 	@Test
-	public final void findPlane ()
+	public final void testFindPlane ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -61,7 +62,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findProductionType method
 	 */
 	@Test
-	public final void findProductionType ()
+	public final void testFindProductionType ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -82,7 +83,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findMapFeature method
 	 */
 	@Test
-	public final void findMapFeature ()
+	public final void testFindMapFeature ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -103,7 +104,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findTileType method
 	 */
 	@Test
-	public final void findTileType ()
+	public final void testFindTileType ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -124,7 +125,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findPickTypeDescription method
 	 */
 	@Test
-	public final void findPickTypeDescription ()
+	public final void testFindPickTypeDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -145,7 +146,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findPick method
 	 */
 	@Test
-	public final void findPick ()
+	public final void testFindPick ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -166,7 +167,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findWizardName method
 	 */
 	@Test
-	public final void findWizardName ()
+	public final void testFindWizardName ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -187,7 +188,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findPopulationTask method
 	 */
 	@Test
-	public final void findPopulationTask ()
+	public final void testFindPopulationTask ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -208,7 +209,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findRace method
 	 */
 	@Test
-	public final void findRace ()
+	public final void testFindRace ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -229,7 +230,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findBuilding method
 	 */
 	@Test
-	public final void findBuilding ()
+	public final void testFindBuilding ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -250,7 +251,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findUnitType method
 	 */
 	@Test
-	public final void findUnitType ()
+	public final void testFindUnitType ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -271,7 +272,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findUnitAttribute method
 	 */
 	@Test
-	public final void findUnitAttribute ()
+	public final void testFindUnitAttribute ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -292,7 +293,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findUnitSkill method
 	 */
 	@Test
-	public final void findUnitSkill ()
+	public final void testFindUnitSkill ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -313,7 +314,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findRangedAttackTypeDescription method
 	 */
 	@Test
-	public final void findRangedAttackTypeDescription ()
+	public final void testFindRangedAttackTypeDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -334,7 +335,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findUnit method
 	 */
 	@Test
-	public final void findUnit ()
+	public final void testFindUnit ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -355,7 +356,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findHeroName method
 	 */
 	@Test
-	public final void findHeroName ()
+	public final void testFindHeroName ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -376,7 +377,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findCitySizeName method
 	 */
 	@Test
-	public final void findCitySizeName ()
+	public final void testFindCitySizeName ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -397,7 +398,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findSpellRankDescription method
 	 */
 	@Test
-	public final void findSpellRankDescription ()
+	public final void testFindSpellRankDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -415,10 +416,31 @@ public final class TestLanguageDatabaseExImpl
 	}
 
 	/**
+	 * Tests the findSpellBookSection method
+	 */
+	@Test
+	public final void testFindSpellBookSection ()
+	{
+		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final SpellBookSection newSection = new SpellBookSection ();
+			newSection.setSpellBookSectionID ("SC0" + n);
+			newSection.setSpellBookSectionName ("SCDesc0" + n);
+			lang.getSpellBookSection ().add (newSection);
+		}
+
+		lang.buildMaps ();
+
+		assertEquals ("SCDesc02", lang.findSpellBookSection ("SC02").getSpellBookSectionName ());
+		assertNull ("SC04", lang.findSpellBookSection ("SC04"));
+	}
+
+	/**
 	 * Tests the findSpell method
 	 */
 	@Test
-	public final void findSpell ()
+	public final void testFindSpell ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -439,7 +461,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findMapSizeDescription method
 	 */
 	@Test
-	public final void findMapSizeDescription ()
+	public final void testFindMapSizeDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -460,7 +482,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findLandProportionDescription method
 	 */
 	@Test
-	public final void findLandProportionDescription ()
+	public final void testFindLandProportionDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -481,7 +503,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findNodeStrengthDescription method
 	 */
 	@Test
-	public final void findNodeStrengthDescription ()
+	public final void testFindNodeStrengthDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -502,7 +524,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findDifficultyLevelDescription method
 	 */
 	@Test
-	public final void findDifficultyLevelDescription ()
+	public final void testFindDifficultyLevelDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -523,7 +545,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findFogOfWarSettingDescription method
 	 */
 	@Test
-	public final void findFogOfWarSettingDescription ()
+	public final void testFindFogOfWarSettingDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -544,7 +566,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findUnitSettingDescription method
 	 */
 	@Test
-	public final void findUnitSettingDescription ()
+	public final void testFindUnitSettingDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -565,7 +587,7 @@ public final class TestLanguageDatabaseExImpl
 	 * Tests the findSpellSettingDescription method
 	 */
 	@Test
-	public final void findSpellSettingDescription ()
+	public final void testFindSpellSettingDescription ()
 	{
 		final LanguageDatabaseExImpl lang = new LanguageDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)

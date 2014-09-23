@@ -5498,6 +5498,15 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Spells</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="SwitchResearchTitle">
+			<languageEntryText>Switch Research</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SwitchResearchDisallowed">
+			<languageEntryText>You can't switch to researching NEW_SPELL_NAME until you've finished researching OLD_SPELL_NAME.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SwitchResearchLose">
+			<languageEntryText>If you switch to researching NEW_SPELL_NAME before you've finished researching OLD_SPELL_NAME, the RESEARCH_SO_FAR / RESEARCH_TOTAL research progress towards OLD_SPELL_NAME will be lost.  Are you sure?</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title">
@@ -5872,6 +5881,12 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="SpellsCategory">
 			<languageEntryText>Spells</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ResearchNotChosen">
+			<languageEntryText>You have finished researching OLD_SPELL_NAME and need to choose a new spell to begin researching</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ResearchChosen">
+			<languageEntryText>You have finished researching OLD_SPELL_NAME and are now starting to research NEW_SPELL_NAME</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="NodesCategory">
 			<languageEntryText>Nodes</languageEntryText>

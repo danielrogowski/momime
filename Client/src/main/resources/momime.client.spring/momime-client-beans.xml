@@ -263,8 +263,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 	</bean>
 	
-	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype" />
-	
 	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype">
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
@@ -287,6 +285,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
+	</bean>
+
+	<bean id="spellResearchChangedMessage" class="momime.client.messages.process.SpellResearchChangedMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+	</bean>
+	
+	<bean id="updateRemainingResearchCostMessage" class="momime.client.messages.process.UpdateRemainingResearchCostMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 	
 	<bean id="updateNodeLairTowerUnitIDMessage" class="momime.client.messages.process.UpdateNodeLairTowerUnitIDMessageImpl" scope="prototype" />
@@ -311,7 +323,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype" />
 	<bean id="overlandCastQueuedMessage" class="momime.client.messages.process.OverlandCastQueuedMessageImpl" scope="prototype" />
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype" />
-	<bean id="spellResearchChangedMessage" class="momime.client.messages.process.SpellResearchChangedMessageImpl" scope="prototype" />
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype" />
 	<bean id="removeQueuedSpellMessage" class="momime.client.messages.process.RemoveQueuedSpellMessageImpl" scope="prototype" />
 	<bean id="updateUnitNameMessage" class="momime.client.messages.process.UpdateUnitNameMessageImpl" scope="prototype" />
@@ -399,12 +410,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 	</bean>
 
+	<bean id="newTurnMessageSpell" class="momime.client.newturnmessages.NewTurnMessageSpellEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
+		<property name="spellBookUI" ref="spellBookUI" />
+	</bean>
+
 	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype" />
 	<bean id="newTurnMessageBuildingSoldFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageBuildingSoldFromLackOfProductionEx" scope="prototype" />
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype" />
 	<bean id="newTurnMessageOverlandEnchantment" class="momime.client.newturnmessages.NewTurnMessageOverlandEnchantmentEx" scope="prototype" />
 	<bean id="newTurnMessageUnitKilledFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageUnitKilledFromLackOfProductionEx" scope="prototype" />
-	<bean id="newTurnMessageSpell" class="momime.client.newturnmessages.NewTurnMessageSpellEx" scope="prototype" />
 	<bean id="newTurnMessageNode" class="momime.client.newturnmessages.NewTurnMessageNodeEx" scope="prototype" />
 	
 	<!-- Version of the client -->
@@ -735,6 +752,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<!-- Prototype UI components -->

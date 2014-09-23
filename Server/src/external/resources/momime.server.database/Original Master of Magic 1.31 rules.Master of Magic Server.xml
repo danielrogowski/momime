@@ -19495,6 +19495,9 @@
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSpellBook">
 		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="SwitchResearchTitle" />
+		<languageEntry languageEntryID="SwitchResearchDisallowed" />
+		<languageEntry languageEntryID="SwitchResearchLose" />
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title" />
@@ -19636,6 +19639,8 @@
 		<languageEntry languageEntryID="CityDeathCategory" />
 		<languageEntry languageEntryID="CityDeath" />
 		<languageEntry languageEntryID="SpellsCategory" />
+		<languageEntry languageEntryID="ResearchNotChosen" />
+		<languageEntry languageEntryID="ResearchChosen" />
 		<languageEntry languageEntryID="NodesCategory" />
 	</languageCategory>
 </momimesvr:serverDatabase>

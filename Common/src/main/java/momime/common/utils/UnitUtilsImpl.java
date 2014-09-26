@@ -136,14 +136,14 @@ public final class UnitUtilsImpl implements UnitUtils
 	/**
 	 * Populates a unit's list of skills after creation - this is the equivalent of the TMomAvailableUnit.CreateAvailableUnit constructor in Delphi
 	 * @param unit Unit that has just been created
-	 * @param startingExperience Initial experience; if -1 then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
+	 * @param startingExperience Initial experience; if -1 or null then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
 	 * @param loadDefaultSkillsFromXML Whether to add the skills defined in the db for this unit into its skills list
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 * @return Unit definition
 	 */
 	@Override
-	public final Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
+	public final Unit initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final boolean loadDefaultSkillsFromXML,
 		final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering initializeUnitSkills: " + unit.getUnitID ());
@@ -152,8 +152,8 @@ public final class UnitUtilsImpl implements UnitUtils
 
 		// Check whether this type of unit gains experience (summoned units do not)
 		// Also when sending heroes from the server to the client, experience is sent in amongst the rest of the skill list, so we don't need to
-		// handle it separately here - in this case, experience will be -1
-		if (startingExperience >= 0)
+		// handle it separately here - in this case, experience will be -1 or null
+		if ((startingExperience != null) && (startingExperience >= 0))
 		{
 			final String unitTypeID = db.findUnitMagicRealm (unitDefinition.getUnitMagicRealm (), "initializeUnitSkills").getUnitTypeID ();
 			final UnitType unitType = db.findUnitType (unitTypeID, "initializeUnitSkills");
@@ -185,14 +185,14 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @param unitID Type of unit to create
 	 * @param unitURN Unique number identifying this unit
 	 * @param weaponGrade Weapon grade to give to this unit
-	 * @param startingExperience Initial experience; if -1 then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
+	 * @param startingExperience Initial experience; if -1 or null then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
 	 * @param loadDefaultSkillsFromXML Whether to add the skills defined in the db for this unit into its skills list
 	 * @param db Lookup lists built over the XML database
 	 * @return Newly created unit
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	@Override
-	public final MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final int startingExperience,
+	public final MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final Integer startingExperience,
 		final boolean loadDefaultSkillsFromXML, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering createMemoryUnit: " + unitID + ", Unit URN " + unitURN);

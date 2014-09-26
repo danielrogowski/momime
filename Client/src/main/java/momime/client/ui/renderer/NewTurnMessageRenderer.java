@@ -1,7 +1,7 @@
 package momime.client.ui.renderer;
 
 import java.awt.Component;
-import java.awt.image.BufferedImage;
+import java.awt.Image;
 import java.security.InvalidParameterException;
 
 import javax.swing.ImageIcon;
@@ -38,7 +38,7 @@ public final class NewTurnMessageRenderer implements ListCellRenderer<NewTurnMes
 			simpleUILabel.setText (simple.getText ());
 			simpleUILabel.setHorizontalAlignment (SwingConstants.CENTER);
 			
-			final BufferedImage image = simple.getImage ();
+			final Image image = simple.getImage ();
 			simpleUILabel.setIcon ((image == null) ? null : new ImageIcon (image));
 			
 			component = simpleUILabel;

@@ -20,6 +20,7 @@ import momime.client.graphics.database.v0_9_5.PlayList;
 import momime.client.graphics.database.v0_9_5.ProductionType;
 import momime.client.graphics.database.v0_9_5.Race;
 import momime.client.graphics.database.v0_9_5.RangedAttackType;
+import momime.client.graphics.database.v0_9_5.Spell;
 import momime.client.graphics.database.v0_9_5.TileSet;
 import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.graphics.database.v0_9_5.UnitAttribute;
@@ -60,6 +61,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 	/** Map of building IDs to city view elements */
 	private Map<String, CityViewElement> buildingsMap;
+	
+	/** Map of spell IDs to spell objects */
+	private Map<String, Spell> spellsMap;
 
 	/** Map of unit type IDs to unit type objects */
 	private Map<String, UnitTypeEx> unitTypesMap;
@@ -146,6 +150,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			if (thisBuilding.getBuildingID () != null)
 				buildingsMap.put (thisBuilding.getBuildingID (), thisBuilding);
 
+		// Create spells map
+		spellsMap = new HashMap<String, Spell> ();
+		for (final Spell thisSpell : getSpell ())
+			spellsMap.put (thisSpell.getSpellID (), thisSpell);
+		
 		// Create unit types map
 		unitTypesMap = new HashMap<String, UnitTypeEx> ();
 		for (final UnitType thisUnitType : getUnitType ())
@@ -386,6 +395,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final CityViewElement found = buildingsMap.get (buildingID);
 		if (found == null)
 			throw new RecordNotFoundException (CityViewElement.class, buildingID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param spellID Spell ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Spell object
+	 * @throws RecordNotFoundException If the spellID doesn't exist
+	 */
+	@Override
+	public final Spell findSpell (final String spellID, final String caller) throws RecordNotFoundException
+	{
+		final Spell found = spellsMap.get (spellID);
+		if (found == null)
+			throw new RecordNotFoundException (Spell.class, spellID, caller);
 
 		return found;
 	}

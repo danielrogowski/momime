@@ -2,7 +2,7 @@ package momime.client.newturnmessages;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.image.BufferedImage;
+import java.awt.Image;
 
 /**
  * The majority of NTMs are displayed as some kind of image to the left (or not) followed by some text.
@@ -13,7 +13,7 @@ public interface NewTurnMessageSimpleUI extends NewTurnMessageUI
 	/**
 	 * @return Image to draw for this NTM, or null to display only text
 	 */
-	public BufferedImage getImage ();
+	public Image getImage ();
 	
 	/**
 	 * @return Text to display for this NTM

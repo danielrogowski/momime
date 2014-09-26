@@ -2,7 +2,7 @@ package momime.client.newturnmessages;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.image.BufferedImage;
+import java.awt.Image;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -55,7 +55,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	 * @return Image to draw for this NTM, or null to display only text
 	 */
 	@Override
-	public final BufferedImage getImage ()
+	public final Image getImage ()
 	{
 		return null;
 	}

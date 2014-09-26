@@ -46,9 +46,11 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.SwitchResearch;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.messages.clienttoserver.v0_9_5.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RequestResearchSpellMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.MomSpellCastType;
 import momime.common.utils.SpellUtils;
 
@@ -94,6 +96,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
@@ -163,7 +168,7 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Spell combat costs */
 	private JLabel [] [] spellCombatCosts = new JLabel [2] [SPELLS_PER_PAGE];
 	
-	/** Overland or combat casting */
+	/** Overland or combat casting (this will probably change to something like getClient ().getCurrentCombatLocation () == null or not null) */
 	private MomSpellCastType castType = MomSpellCastType.OVERLAND;
 	
 	/**
@@ -441,9 +446,9 @@ public final class SpellBookUI extends MomClientFrameUI
 								final Spell spell = page.getSpells ().get (spellY);
 								final String sectionID = page.getSectionID ();
 								
-								if (sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS))
+								try
 								{
-									try
+									if (sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS))
 									{
 										// Clicking on a spell to research it
 										// Whether we're allowed to depends on what spell settings are, and what's currently selected to research
@@ -479,7 +484,6 @@ public final class SpellBookUI extends MomClientFrameUI
 												// we've got to display a message about it, and won't be sending any message now
 												final momime.client.language.database.v0_9_5.Spell oldSpellLang = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
 												final String oldSpellName = (oldSpellLang != null) ? oldSpellLang.getSpellName () : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ();
-												final String newSpellName = spellNames [spellX] [spellY].getText ();
 												final boolean lose = getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH;
 
 												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
@@ -487,12 +491,12 @@ public final class SpellBookUI extends MomClientFrameUI
 												msg.setTitleLanguageEntryID ("SwitchResearchTitle");
 												msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", lose ? "SwitchResearchLose" : "SwitchResearchDisallowed").replaceAll
 													("OLD_SPELL_NAME", oldSpellName).replaceAll
-													("NEW_SPELL_NAME", newSpellName).replaceAll
+													("NEW_SPELL_NAME", spellNames [spellX] [spellY].getText ()).replaceAll
 													("RESEARCH_SO_FAR", getTextUtils ().intToStrCommas (oldSpell.getResearchCost () - oldResearchStatus.getRemainingResearchCost ())).replaceAll
 													("RESEARCH_TOTAL", getTextUtils ().intToStrCommas (oldSpell.getResearchCost ())));
 												
-												//if (lose)
-												//	msg.setResearchSpellID (spell.getSpellID ());
+												if (lose)
+													msg.setResearchSpellID (spell.getSpellID ());
 												
 												msg.setVisible (true);
 												
@@ -508,15 +512,52 @@ public final class SpellBookUI extends MomClientFrameUI
 											getClient ().getServerConnection ().sendMessageToServer (msg);
 										}
 									}
-									catch (final Exception e)
+									else if (!sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS))
 									{
-										log.error (e, e);
+										// Clicking on a spell to cast it
+										final boolean proceed;
+										
+										// Check if it is an overland enchantment that we already have
+										if (sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS))
+										{
+											proceed = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+												(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+												getClient ().getOurPlayerID (), spell.getSpellID (), null, null, null, null) == null);
+											if (!proceed)
+											{
+												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+												msg.setTitleLanguageCategoryID ("frmSpellBook");
+												msg.setTitleLanguageEntryID ("CastSpellTitle");
+												msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "RequestCastExistingOverlandEnchantment").replaceAll
+													("SPELL_NAME", spellNames [spellX] [spellY].getText ()));
+	
+												msg.setCastSpellID (spell.getSpellID ());
+												msg.setVisible (true);
+											}
+										}
+										else if (castType == MomSpellCastType.COMBAT)
+										{
+											throw new UnsupportedOperationException ("Casting combat spells hasn't been written yet");
+										}
+										else
+											proceed = true;
+										
+										if (proceed)
+										{
+											// Tell server to cast it
+											final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
+											msg.setSpellID (spell.getSpellID ());
+											
+											getClient ().getServerConnection ().sendMessageToServer (msg);
+											
+											// Close the spell book
+											setVisible (false);
+										}
 									}
 								}
-								else if (!sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS))
+								catch (final Exception e)
 								{
-									// Clicking on a spell to cast it
-									System.out.println ("Cast " + spell.getSpellID () + ", section " + sectionID);
+									log.error (e, e);
 								}
 							}
 						}
@@ -996,6 +1037,38 @@ public final class SpellBookUI extends MomClientFrameUI
 	{
 		multiplayerSessionUtils = util;
 	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param su MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils su)
+	{
+		memoryMaintainedSpellUtils = su;
+	}
+	
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
 	
 	/**
 	 * Represents one page of the spell book and the up-to-6 spells on it
@@ -1050,21 +1123,5 @@ public final class SpellBookUI extends MomClientFrameUI
 		{
 			return spells;
 		}
-	}
-
-	/**
-	 * @return Prototype frame creator
-	 */
-	public final PrototypeFrameCreator getPrototypeFrameCreator ()
-	{
-		return prototypeFrameCreator;
-	}
-
-	/**
-	 * @param obj Prototype frame creator
-	 */
-	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
-	{
-		prototypeFrameCreator = obj;
 	}
 }

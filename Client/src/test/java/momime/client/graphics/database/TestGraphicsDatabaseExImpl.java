@@ -17,6 +17,7 @@ import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.PlayList;
+import momime.client.graphics.database.v0_9_5.Spell;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -316,6 +317,46 @@ public final class TestGraphicsDatabaseExImpl
 		db.findBuilding ("BL04", "testFindBuilding_NotExists");
 	}
 
+	/**
+	 * Tests the findSpell method to find a spell ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindSpell_Exists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Spell newSpell = new Spell ();
+			newSpell.setSpellID ("SP0" + n);
+			db.getSpell ().add (newSpell);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("SP02", db.findSpell ("SP02", "testFindSpell_Exists").getSpellID ());
+	}
+
+	/**
+	 * Tests the findSpell method to find a spell ID that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindSpell_NotExists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final Spell newSpell = new Spell ();
+			newSpell.setSpellID ("SP0" + n);
+			db.getSpell ().add (newSpell);
+		}
+
+		db.buildMaps ();
+
+		db.findSpell ("SP04", "testFindSpell_NotExists");
+	}
+	
 	/**
 	 * Tests the findUnitType method to find a unit type ID that does exist
 	 * @throws RecordNotFoundException If the record is not found

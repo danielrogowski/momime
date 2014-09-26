@@ -1150,7 +1150,9 @@
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
 	<spell spellID="SP005" />
-	<spell spellID="SP006" />
+	<spell spellID="SP006">
+		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP007">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1159,7 +1161,9 @@
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
 	<spell spellID="SP008" />
-	<spell spellID="SP009" />
+	<spell spellID="SP009">
+		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP010" />
 	<spell spellID="SP011" />
 	<spell spellID="SP012">
@@ -1170,13 +1174,19 @@
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
 	<spell spellID="SP013" />
-	<spell spellID="SP014" />
+	<spell spellID="SP014">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP015" />
 	<spell spellID="SP016" />
-	<spell spellID="SP017" />
+	<spell spellID="SP017">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP018" />
 	<spell spellID="SP019" />
-	<spell spellID="SP020" />
+	<spell spellID="SP020">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP021">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1185,7 +1195,9 @@
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
 	<spell spellID="SP022" />
-	<spell spellID="SP023" />
+	<spell spellID="SP023">
+		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP024">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1195,7 +1207,9 @@
 	</spell>
 	<spell spellID="SP025" />
 	<spell spellID="SP026" />
-	<spell spellID="SP027" />
+	<spell spellID="SP027">
+		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP028">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>4</spellMusicNumber>
@@ -1224,13 +1238,17 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>1</spellSoundNumber>
 	</spell>
-	<spell spellID="SP032" />
+	<spell spellID="SP032">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP033" />
 	<spell spellID="SP034">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP034/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
 	<spell spellID="SP035" />
-	<spell spellID="SP036" />
+	<spell spellID="SP036">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP037">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>4</spellMusicNumber>
@@ -1241,7 +1259,9 @@
 	<spell spellID="SP038">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP038/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
-	<spell spellID="SP039" />
+	<spell spellID="SP039">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP040">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP040/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
@@ -1253,7 +1273,9 @@
 		<spellSoundNumber>4</spellSoundNumber>
 	</spell>
 	<spell spellID="SP042" />
-	<spell spellID="SP043" />
+	<spell spellID="SP043">
+		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP044">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1277,7 +1299,9 @@
 	</spell>
 	<spell spellID="SP047" />
 	<spell spellID="SP048" />
-	<spell spellID="SP049" />
+	<spell spellID="SP049">
+		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP050" />
 	<spell spellID="SP051" />
 	<spell spellID="SP052" />
@@ -1333,7 +1357,9 @@
 		<spellSoundNumber>4</spellSoundNumber>
 	</spell>
 	<spell spellID="SP064" />
-	<spell spellID="SP065" />
+	<spell spellID="SP065">
+		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP066">
 		<combatCastAnimation>SUMMON_COMBAT_UNIT</combatCastAnimation>
 		<combatCastOffsetX>1</combatCastOffsetX>
@@ -1363,7 +1389,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>4</spellSoundNumber>
 	</spell>
-	<spell spellID="SP071" />
+	<spell spellID="SP071">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP072">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>5</spellMusicNumber>
@@ -1376,7 +1404,9 @@
 	<spell spellID="SP075" />
 	<spell spellID="SP076" />
 	<spell spellID="SP077" />
-	<spell spellID="SP078" />
+	<spell spellID="SP078">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP079">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP079/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
@@ -1386,7 +1416,9 @@
 	<spell spellID="SP081" />
 	<spell spellID="SP082" />
 	<spell spellID="SP083" />
-	<spell spellID="SP084" />
+	<spell spellID="SP084">
+		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP085" />
 	<spell spellID="SP086">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
@@ -1424,7 +1456,9 @@
 		<spellSoundNumber>40</spellSoundNumber>
 	</spell>
 	<spell spellID="SP091" />
-	<spell spellID="SP092" />
+	<spell spellID="SP092">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP093" />
 	<spell spellID="SP094">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
@@ -1433,9 +1467,13 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>5</spellSoundNumber>
 	</spell>
-	<spell spellID="SP095" />
+	<spell spellID="SP095">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP096" />
-	<spell spellID="SP097" />
+	<spell spellID="SP097">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP098" />
 	<spell spellID="SP099">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
@@ -1444,13 +1482,19 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>5</spellSoundNumber>
 	</spell>
-	<spell spellID="SP100" />
+	<spell spellID="SP100">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP101" />
 	<spell spellID="SP102" />
-	<spell spellID="SP103" />
+	<spell spellID="SP103">
+		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP104" />
 	<spell spellID="SP105" />
-	<spell spellID="SP106" />
+	<spell spellID="SP106">
+		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP107" />
 	<spell spellID="SP108" />
 	<spell spellID="SP109" />
@@ -1461,7 +1505,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>5</spellSoundNumber>
 	</spell>
-	<spell spellID="SP111" />
+	<spell spellID="SP111">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP112" />
 	<spell spellID="SP113">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP113/overlandEnchantment.png</overlandEnchantmentImageFile>
@@ -1476,7 +1522,9 @@
 	<spell spellID="SP117">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP117/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
-	<spell spellID="SP118" />
+	<spell spellID="SP118">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP119" />
 	<spell spellID="SP120">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP120/overlandEnchantment.png</overlandEnchantmentImageFile>
@@ -1509,7 +1557,9 @@
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP127/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
 	<spell spellID="SP128" />
-	<spell spellID="SP129" />
+	<spell spellID="SP129">
+		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP130">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1530,7 +1580,9 @@
 	<spell spellID="SP135">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP135/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
-	<spell spellID="SP136" />
+	<spell spellID="SP136">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP137" />
 	<spell spellID="SP138" />
 	<spell spellID="SP139">
@@ -1548,7 +1600,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>3</spellSoundNumber>
 	</spell>
-	<spell spellID="SP142" />
+	<spell spellID="SP142">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP143">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1577,7 +1631,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>3</spellSoundNumber>
 	</spell>
-	<spell spellID="SP147" />
+	<spell spellID="SP147">
+		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP148">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>3</spellMusicNumber>
@@ -1621,11 +1677,15 @@
 	<spell spellID="SP158">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP158/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
-	<spell spellID="SP159" />
+	<spell spellID="SP159">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP160">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP160/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
-	<spell spellID="SP161" />
+	<spell spellID="SP161">
+		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP162">
 		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1654,7 +1714,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>39</spellSoundNumber>
 	</spell>
-	<spell spellID="SP166" />
+	<spell spellID="SP166">
+		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP167" />
 	<spell spellID="SP168" />
 	<spell spellID="SP169" />
@@ -1664,7 +1726,9 @@
 	<spell spellID="SP173" />
 	<spell spellID="SP174" />
 	<spell spellID="SP175" />
-	<spell spellID="SP176" />
+	<spell spellID="SP176">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP177" />
 	<spell spellID="SP178">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
@@ -1680,7 +1744,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>6</spellSoundNumber>
 	</spell>
-	<spell spellID="SP180" />
+	<spell spellID="SP180">
+		<spellMusicFile>/momime.client.music/MUSIC_014 - Uncommon summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP181">
 		<combatCastAnimation>DEATH_HAND</combatCastAnimation>
 		<combatCastOffsetX>-15</combatCastOffsetX>
@@ -1696,7 +1762,9 @@
 		<spellSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</spellSoundFile>
 		<spellSoundNumber>6</spellSoundNumber>
 	</spell>
-	<spell spellID="SP184" />
+	<spell spellID="SP184">
+		<spellMusicFile>/momime.client.music/MUSIC_015 - Rare summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP185">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
 		<spellMusicNumber>2</spellMusicNumber>
@@ -1725,7 +1793,9 @@
 	</spell>
 	<spell spellID="SP191" />
 	<spell spellID="SP192" />
-	<spell spellID="SP193" />
+	<spell spellID="SP193">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP194" />
 	<spell spellID="SP195" />
 	<spell spellID="SP196">
@@ -1742,8 +1812,12 @@
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP198/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
 	<spell spellID="SP199" />
-	<spell spellID="SP200" />
-	<spell spellID="SP201" />
+	<spell spellID="SP200">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
+	<spell spellID="SP201">
+		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP202" />
 	<spell spellID="SP203">
 		<spellMusicFile>MOMORIGINALMIDS.NDGARC</spellMusicFile>
@@ -1757,13 +1831,17 @@
 	<spell spellID="SP206">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP206/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
-	<spell spellID="SP207" />
+	<spell spellID="SP207">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP208" />
 	<spell spellID="SP209">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP209/overlandEnchantment.png</overlandEnchantmentImageFile>
 	</spell>
 	<spell spellID="SP210" />
-	<spell spellID="SP211" />
+	<spell spellID="SP211">
+		<spellMusicFile>/momime.client.music/MUSIC_016 - Very rare summoning spell-Hero-Artifact.mp3</spellMusicFile>
+	</spell>
 	<spell spellID="SP212" />
 	<spell spellID="SP213" />
 	<spell spellID="SP214" />
@@ -40210,13 +40288,13 @@
 	<weaponGrade weaponGradeNumber="0" />
 	<weaponGrade weaponGradeNumber="1">
 		<weaponGradeMiniImageFile>/momime.client.graphics/weaponGrades/weaponGradeMiniImageAlchemy.png</weaponGradeMiniImageFile>
-	</weaponGrade>	
+	</weaponGrade>
 	<weaponGrade weaponGradeNumber="2">
 		<weaponGradeMiniImageFile>/momime.client.graphics/weaponGrades/weaponGradeMiniImageMithril.png</weaponGradeMiniImageFile>
-	</weaponGrade>	
+	</weaponGrade>
 	<weaponGrade weaponGradeNumber="3">
 		<weaponGradeMiniImageFile>/momime.client.graphics/weaponGrades/weaponGradeMiniImageAdamantium.png</weaponGradeMiniImageFile>
-	</weaponGrade>	
+	</weaponGrade>
 	<combatTileUnitRelativeScale scale="1">
 		<combatTileFigurePositions figureCount="1">
 			<figurePositionsForFigureCount figureNumber="1">
@@ -88729,3 +88807,4 @@
 		<audioFile>/momime.client.music/MUSIC_103 - Combat general.mp3</audioFile>
 	</playList>
 </momimegfx:graphicsDatabase>
+

@@ -19498,6 +19498,8 @@
 		<languageEntry languageEntryID="SwitchResearchTitle" />
 		<languageEntry languageEntryID="SwitchResearchDisallowed" />
 		<languageEntry languageEntryID="SwitchResearchLose" />
+		<languageEntry languageEntryID="CastSpellTitle" />
+		<languageEntry languageEntryID="RequestCastExistingOverlandEnchantment" />
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title" />
@@ -19641,6 +19643,10 @@
 		<languageEntry languageEntryID="SpellsCategory" />
 		<languageEntry languageEntryID="ResearchNotChosen" />
 		<languageEntry languageEntryID="ResearchChosen" />
+		<languageEntry languageEntryID="SummonedUnit" />
+		<languageEntry languageEntryID="SummonedUnitLastTurn" />
+		<languageEntry languageEntryID="SummonedUnitBumpedSuffix" />
+		<languageEntry languageEntryID="SummonedUnitNoRoomSuffix" />
 		<languageEntry languageEntryID="NodesCategory" />
 	</languageCategory>
 </momimesvr:serverDatabase>

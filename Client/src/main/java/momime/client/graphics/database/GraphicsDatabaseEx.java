@@ -7,6 +7,7 @@ import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.PlayList;
+import momime.client.graphics.database.v0_9_5.Spell;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
@@ -60,6 +61,14 @@ public interface GraphicsDatabaseEx
 	 */
 	public CityViewElement findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
 
+	/**
+	 * @param spellID Spell ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Spell object
+	 * @throws RecordNotFoundException If the spellID doesn't exist
+	 */
+	public Spell findSpell (final String spellID, final String caller) throws RecordNotFoundException;
+	
 	/**
 	 * @param unitTypeID Unit type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

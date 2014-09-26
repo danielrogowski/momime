@@ -53,13 +53,13 @@ public interface UnitUtils
 	/**
 	 * Populates a unit's list of skills after creation - this is the equivalent of the TMomAvailableUnit.CreateAvailableUnit constructor in Delphi
 	 * @param unit Unit that has just been created
-	 * @param startingExperience Initial experience; if -1 then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
+	 * @param startingExperience Initial experience; if -1 or null then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
 	 * @param loadDefaultSkillsFromXML Whether to add the skills defined in the db for this unit into its skills list
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 * @return Unit definition
 	 */
-	public Unit initializeUnitSkills (final AvailableUnit unit, final int startingExperience, final boolean loadDefaultSkillsFromXML,
+	public Unit initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final boolean loadDefaultSkillsFromXML,
 		final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
@@ -67,13 +67,13 @@ public interface UnitUtils
 	 * @param unitID Type of unit to create
 	 * @param unitURN Unique number identifying this unit
 	 * @param weaponGrade Weapon grade to give to this unit
-	 * @param startingExperience Initial experience; if -1 then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
+	 * @param startingExperience Initial experience; if -1 or null then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
 	 * @param loadDefaultSkillsFromXML Whether to add the skills defined in the db for this unit into its skills list
 	 * @param db Lookup lists built over the XML database
 	 * @return Newly created unit
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
-	public MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final int startingExperience,
+	public MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final Integer startingExperience,
 		final boolean loadDefaultSkillsFromXML, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**

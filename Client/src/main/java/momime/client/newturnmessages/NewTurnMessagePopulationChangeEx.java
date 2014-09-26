@@ -2,9 +2,7 @@ package momime.client.newturnmessages;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.image.BufferedImage;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
+import java.awt.Image;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
@@ -15,6 +13,8 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.messages.v0_9_5.NewTurnMessagePopulationChange;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * NTM about the population of a city either growing or dying over a 1,000 boundary
@@ -59,7 +59,7 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	 * @return Image to draw for this NTM, or null to display only text
 	 */
 	@Override
-	public final BufferedImage getImage ()
+	public final Image getImage ()
 	{
 		return null;
 	}

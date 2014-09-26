@@ -5507,6 +5507,12 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="SwitchResearchLose">
 			<languageEntryText>If you switch to researching NEW_SPELL_NAME before you've finished researching OLD_SPELL_NAME, the RESEARCH_SO_FAR / RESEARCH_TOTAL research progress towards OLD_SPELL_NAME will be lost.  Are you sure?</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="CastSpellTitle">
+			<languageEntryText>Cast Spell</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="RequestCastExistingOverlandEnchantment">
+			<languageEntryText>You have already cast SPELL_NAME.  You may cast it again but this will have no effect unless your existing spell is cancelled, disjunctioned or spell bound in the meantime.  Continue?</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="ConnectionErrors">
 		<languageEntry languageEntryID="Title">
@@ -5887,6 +5893,18 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ResearchChosen">
 			<languageEntryText>You have finished researching OLD_SPELL_NAME and are now starting to research NEW_SPELL_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SummonedUnit">
+			<languageEntryText>You have completed summoning A_UNIT_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SummonedUnitLastTurn">
+			<languageEntryText>Last turn you completed summoning A_UNIT_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SummonedUnitBumpedSuffix">
+			<languageEntryText>, but the city was full so the unit was placed outside</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SummonedUnitNoRoomSuffix">
+			<languageEntryText>, but the city and all nearby terrain was full so the unit was lost</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="NodesCategory">
 			<languageEntryText>Nodes</languageEntryText>

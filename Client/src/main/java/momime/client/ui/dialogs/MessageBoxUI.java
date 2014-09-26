@@ -20,6 +20,8 @@ import javax.swing.WindowConstants;
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.common.messages.clienttoserver.v0_9_5.DismissUnitMessage;
+import momime.common.messages.clienttoserver.v0_9_5.RequestCastSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_5.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RushBuyMessage;
 import momime.common.messages.clienttoserver.v0_9_5.SellBuildingMessage;
 import momime.common.messages.v0_9_5.MemoryUnit;
@@ -82,6 +84,12 @@ public final class MessageBoxUI extends MomClientDialogUI
 	
 	/** The building being sold; null if the message box isn't about selling a building */
 	private String buildingID;
+	
+	/** The spell we're trying to research; null if the message box isn't about researching a spell */
+	private String researchSpellID;
+	
+	/** The spell we're trying to cast; null if the message box isn't about casting a spell */
+	private String castSpellID;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 8;
@@ -156,6 +164,22 @@ public final class MessageBoxUI extends MomClientDialogUI
 							msg.setBuildingID (getBuildingID ());
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 						}
+					}
+					
+					// Research a spell
+					else if (getResearchSpellID () != null)
+					{
+						final RequestResearchSpellMessage msg = new RequestResearchSpellMessage ();
+						msg.setSpellID (getResearchSpellID ());
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
+					
+					// Cast a spell
+					else if (getCastSpellID () != null)
+					{
+						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
+						msg.setSpellID (getResearchSpellID ());
+						getClient ().getServerConnection ().sendMessageToServer (msg);
 					}
 					
 					else
@@ -427,5 +451,37 @@ public final class MessageBoxUI extends MomClientDialogUI
 	public final void setBuildingID (final String building)
 	{
 		buildingID = building;
+	}
+
+	/**
+	 * @return The spell we're trying to research; null if the message box isn't about researching a spell
+	 */
+	public final String getResearchSpellID ()
+	{
+		return researchSpellID;
+	}
+
+	/**
+	 * @param spellID The spell we're trying to research; null if the message box isn't about researching a spell
+	 */
+	public final void setResearchSpellID (final String spellID)
+	{
+		researchSpellID = spellID;
+	}
+	
+	/**
+	 * @return The spell we're trying to cast; null if the message box isn't about casting a spell
+	 */
+	public final String getCastSpellID ()
+	{
+		return castSpellID;
+	}
+	
+	/**
+	 * @param spellID The spell we're trying to cast; null if the message box isn't about casting a spell
+	 */
+	public final void setCastSpellID (final String spellID)
+	{
+		castSpellID = spellID;
 	}
 }

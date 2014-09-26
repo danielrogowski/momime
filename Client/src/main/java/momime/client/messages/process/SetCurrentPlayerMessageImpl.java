@@ -57,7 +57,7 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
+		log.trace ("Entering start: Turn " + getTurnNumber () + ", player ID " + getCurrentPlayerID () + ", message count " + getMessage ().size () + ", expire? " + isExpireMessages ());
 		
 		// Did the turn number change, or just the player?
 		if (getClient ().getGeneralPublicKnowledge ().getTurnNumber () != getTurnNumber ())

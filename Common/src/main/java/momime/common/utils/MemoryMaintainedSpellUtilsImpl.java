@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.database.v0_9_5.SpellHasCityEffect;
 import momime.common.database.v0_9_5.UnitSpellEffect;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
@@ -232,10 +232,10 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	final TargetUnitSpellResult result;
     	
     	// Do easy checks first
-    	if ((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS) && (unit.getOwningPlayerID () != castingPlayerID)))
+    	if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) && (unit.getOwningPlayerID () != castingPlayerID))
     		result = TargetUnitSpellResult.ENCHANTING_ENEMY_UNIT; 
 
-    	else if ((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES) && (unit.getOwningPlayerID () == castingPlayerID)))
+    	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) && (unit.getOwningPlayerID () == castingPlayerID))
     		result = TargetUnitSpellResult.CURSING_OWN_UNIT;
     	
     	else

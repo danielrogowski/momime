@@ -10,12 +10,13 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.calculations.MomSpellCalculationsImpl;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.SpellSettingData;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.database.v0_9_5.SpellValidUnitTarget;
 import momime.common.messages.v0_9_5.PlayerPick;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
@@ -243,11 +244,11 @@ public final class TestSpellUtilsImpl
 	public final void testModifiedGetSectionID_Unmodified () throws MomException
 	{
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		// This also proves that passing in null doesn't throw a NullPointerException if we pass in false
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING, utils.getModifiedSectionID (spell, null, false));
+		assertEquals (SpellBookSectionID.SUMMONING, utils.getModifiedSectionID (spell, null, false));
 	}
 
 	/**
@@ -258,14 +259,14 @@ public final class TestSpellUtilsImpl
 	public final void testModifiedGetSectionID_Unavailable () throws MomException
 	{
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		// Unmodified section
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.UNAVAILABLE);
 
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK, utils.getModifiedSectionID (spell, researchStatus, true));
+		assertNull (utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
 	/**
@@ -276,14 +277,14 @@ public final class TestSpellUtilsImpl
 	public final void testModifiedGetSectionID_NotInSpellBook () throws MomException
 	{
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		// Unmodified section
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.NOT_IN_SPELL_BOOK);
 
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK, utils.getModifiedSectionID (spell, researchStatus, true));
+		assertNull (utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
 	/**
@@ -294,14 +295,14 @@ public final class TestSpellUtilsImpl
 	public final void testModifiedGetSectionID_Researchable () throws MomException
 	{
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		// Unmodified section
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE);
 
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS, utils.getModifiedSectionID (spell, researchStatus, true));
+		assertEquals (SpellBookSectionID.RESEARCHABLE, utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
 	/**
@@ -312,14 +313,14 @@ public final class TestSpellUtilsImpl
 	public final void testModifiedGetSectionID_ResearchableNow () throws MomException
 	{
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		// Unmodified section
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
 
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS, utils.getModifiedSectionID (spell, researchStatus, true));
+		assertEquals (SpellBookSectionID.RESEARCHABLE_NOW, utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
 	/**
@@ -330,14 +331,14 @@ public final class TestSpellUtilsImpl
 	public final void testModifiedGetSectionID_Available () throws MomException
 	{
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		// Unmodified section
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING, utils.getModifiedSectionID (spell, researchStatus, true));
+		assertEquals (SpellBookSectionID.SUMMONING, utils.getModifiedSectionID (spell, researchStatus, true));
 	}
 
 	/**
@@ -621,7 +622,7 @@ public final class TestSpellUtilsImpl
 		// Sort on overland casting cost
 		// Test data contains 7 spells, but 2 are combat only
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		final List<Spell> overlandOrder = utils.getSortedSpellsInSection (statuses, CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK, MomSpellCastType.OVERLAND, db);
+		final List<Spell> overlandOrder = utils.getSortedSpellsInSection (statuses, null, MomSpellCastType.OVERLAND, db);
 		assertEquals (5, overlandOrder.size ());
 		assertEquals (GenerateTestData.GIANT_SPIDERS_SPELL, overlandOrder.get (0).getSpellID ());	// 3
 		assertEquals (GenerateTestData.WARP_WOOD, overlandOrder.get (1).getSpellID ());					// 5
@@ -631,7 +632,7 @@ public final class TestSpellUtilsImpl
 
 		// Sort on combat casting cost
 		// Test data contains 7 spells, but 4 are overland only
-		final List<Spell> combatOrder = utils.getSortedSpellsInSection (statuses, CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK, MomSpellCastType.COMBAT, db);
+		final List<Spell> combatOrder = utils.getSortedSpellsInSection (statuses, null, MomSpellCastType.COMBAT, db);
 		assertEquals (3, combatOrder.size ());
 		assertEquals (GenerateTestData.SUMMONING_CIRCLE, combatOrder.get (0).getSpellID ());			// 5
 		assertEquals (GenerateTestData.EARTH_TO_MUD, combatOrder.get (1).getSpellID ());				// 10
@@ -644,8 +645,8 @@ public final class TestSpellUtilsImpl
 			thisStatus.setRemainingResearchCost (db.findSpell (thisStatus.getSpellID (), "testGetSortedSpellsInSection").getResearchCost ());
 		}
 
-		assertEquals (0, utils.getSortedSpellsInSection (statuses, CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK, MomSpellCastType.OVERLAND, db).size ());
-		final List<Spell> researchOrder = utils.getSortedSpellsInSection (statuses, CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS, MomSpellCastType.OVERLAND, db);
+		assertEquals (0, utils.getSortedSpellsInSection (statuses, null, MomSpellCastType.OVERLAND, db).size ());
+		final List<Spell> researchOrder = utils.getSortedSpellsInSection (statuses, SpellBookSectionID.RESEARCHABLE_NOW, MomSpellCastType.OVERLAND, db);
 
 		assertEquals (7, researchOrder.size ());
 		assertEquals (GenerateTestData.DISPEL_MAGIC_SPELL, researchOrder.get (0).getSpellID ());		// 1

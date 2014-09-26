@@ -23,6 +23,7 @@ import momime.client.utils.TextUtilsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.SpellSettingData;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
@@ -65,20 +66,20 @@ public final class TestSpellBookUI
 		mana.setProductionTypeSuffix ("MP");
 		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
 		
-		for (int n = 0; n < 8; n++)
+		for (int n = 1; n < 8; n++)
 		{
 			final SpellBookSection section = new SpellBookSection ();
 			section.setSpellBookSectionName ("Spell book section " + (n+1));
-			when (lang.findSpellBookSection ("SC0" + n)).thenReturn (section);
+			when (lang.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + n))).thenReturn (section);
 		}
 
 		final SpellBookSection sectionResearch = new SpellBookSection ();
 		sectionResearch.setSpellBookSectionName ("Researchable spells");
-		when (lang.findSpellBookSection (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS)).thenReturn (sectionResearch);
+		when (lang.findSpellBookSection (SpellBookSectionID.RESEARCHABLE_NOW)).thenReturn (sectionResearch);
 		
 		final SpellBookSection sectionUnknown = new SpellBookSection ();
 		sectionUnknown.setSpellBookSectionName ("Unknown spells");
-		when (lang.findSpellBookSection (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS)).thenReturn (sectionUnknown);
+		when (lang.findSpellBookSection (SpellBookSectionID.RESEARCHABLE)).thenReturn (sectionUnknown);
 		
 		for (int n = 0; n < 100; n++)
 		{
@@ -163,15 +164,15 @@ public final class TestSpellBookUI
 		
 		// Research statuses - we know 0 of SP000 - SP009, 1 of SP010 - SP019 and so on
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		for (int m = 0; m < 10; m++)
+		for (int m = 1; m < 10; m++)
 		{
-			final String sectionID;
+			final SpellBookSectionID sectionID;
 			if (m == 9)
-				sectionID = CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS;
+				sectionID = SpellBookSectionID.RESEARCHABLE;
 			else if (m == 8)
-				sectionID = CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS;
+				sectionID = SpellBookSectionID.RESEARCHABLE_NOW;
 			else
-				sectionID = "SC0" + m;
+				sectionID = SpellBookSectionID.fromValue ("SC0" + m);
 
 			for (int n = 0; n < 10; n++)
 			{
@@ -180,14 +181,11 @@ public final class TestSpellBookUI
 				researchStatus.setStatus ((n < m) ? SpellResearchStatusID.AVAILABLE : SpellResearchStatusID.UNAVAILABLE);
 				
 				when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), researchStatus.getSpellID ())).thenReturn (researchStatus);
-				
-				when (spellUtils.getModifiedSectionID (spells.get ((m*10) + n), researchStatus, true)).thenReturn
-					((n < m) ? sectionID :  CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK);
+				when (spellUtils.getModifiedSectionID (spells.get ((m*10) + n), researchStatus, true)).thenReturn ((n < m) ? sectionID : null);
 			}
 		}
 		
 		// Player
-		
 		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (null, pub, null);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -219,6 +217,6 @@ public final class TestSpellBookUI
 
 		// Display form		
 		book.setVisible (true);
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 	}	
 }

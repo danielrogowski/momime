@@ -46,6 +46,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.SwitchResearch;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.messages.clienttoserver.v0_9_5.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RequestResearchSpellMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
@@ -444,11 +445,11 @@ public final class SpellBookUI extends MomClientFrameUI
 							if (spellY < page.getSpells ().size ())
 							{
 								final Spell spell = page.getSpells ().get (spellY);
-								final String sectionID = page.getSectionID ();
+								final SpellBookSectionID sectionID = page.getSectionID ();
 								
 								try
 								{
-									if (sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS))
+									if (sectionID == SpellBookSectionID.RESEARCHABLE_NOW)
 									{
 										// Clicking on a spell to research it
 										// Whether we're allowed to depends on what spell settings are, and what's currently selected to research
@@ -512,13 +513,13 @@ public final class SpellBookUI extends MomClientFrameUI
 											getClient ().getServerConnection ().sendMessageToServer (msg);
 										}
 									}
-									else if (!sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS))
+									else if (sectionID != SpellBookSectionID.RESEARCHABLE)
 									{
 										// Clicking on a spell to cast it
 										final boolean proceed;
 										
 										// Check if it is an overland enchantment that we already have
-										if (sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS))
+										if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
 										{
 											proceed = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
 												(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
@@ -650,12 +651,12 @@ public final class SpellBookUI extends MomClientFrameUI
 		log.trace ("Entering updateSpellBook");
 		
 		// Get a list of all spells we know, and all spells we can research now; grouped by section
-		final Map<String, List<Spell>> sections = new HashMap<String, List<Spell>> ();
+		final Map<SpellBookSectionID, List<Spell>> sections = new HashMap<SpellBookSectionID, List<Spell>> ();
 		for (final Spell spell : getClient ().getClientDB ().getSpell ())
 		{
 			final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spell.getSpellID ());
-			final String sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
-			if (sectionID != CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK)		// value of constant is null, so can't do .equals ()
+			final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
+			if (sectionID != null)
 			{
 				// Do we have this section already?
 				List<Spell> section = sections.get (sectionID);
@@ -670,13 +671,13 @@ public final class SpellBookUI extends MomClientFrameUI
 		}
 		
 		// Sort them into sections
-		final List<String> sortedSections = new ArrayList<String> ();
+		final List<SpellBookSectionID> sortedSections = new ArrayList<SpellBookSectionID> ();
 		sortedSections.addAll (sections.keySet ());
 		Collections.sort (sortedSections);
 		
 		// Go through each section
 		pages.clear ();
-		for (final String sectionID : sortedSections)
+		for (final SpellBookSectionID sectionID : sortedSections)
 		{
 			final List<Spell> spells = sections.get (sectionID);
 			
@@ -744,7 +745,7 @@ public final class SpellBookUI extends MomClientFrameUI
 					{
 						final SpellBookSection spellBookSection = getLanguage ().findSpellBookSection (page.getSectionID ());
 						final String sectionHeading = (spellBookSection == null) ? null : spellBookSection.getSpellBookSectionName ();
-						sectionHeadings [x].setText ((sectionHeading == null) ? page.getSectionID () : sectionHeading);
+						sectionHeadings [x].setText ((sectionHeading == null) ? page.getSectionID ().toString () : sectionHeading);
 					}
 					else
 						sectionHeadings [x].setText (null);
@@ -785,7 +786,7 @@ public final class SpellBookUI extends MomClientFrameUI
 								}
 							
 							// Set text for this spell
-							if (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS.equals (page.getSectionID ()))
+							if (page.getSectionID () == SpellBookSectionID.RESEARCHABLE)
 							{
 								spellNames [x] [y].setText ("??????????");
 								spellDescriptions [x] [y].setText ("?????????????????????????????????????????");
@@ -807,7 +808,7 @@ public final class SpellBookUI extends MomClientFrameUI
 								// Show cost in MP for known spells, and RP for researchable spells
 								try
 								{
-									if (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS.equals (page.getSectionID ()))
+									if (page.getSectionID () == SpellBookSectionID.RESEARCHABLE_NOW)
 									{
 										if (spell.getResearchCost () != null)
 										{
@@ -1076,7 +1077,7 @@ public final class SpellBookUI extends MomClientFrameUI
 	final class SpellBookPage
 	{
 		/** The spell book section */
-		private String sectionID;
+		private SpellBookSectionID sectionID;
 		
 		/** Is this the first page of this section?  i.e. show the title or not */
 		private boolean firstPageOfSection;
@@ -1087,7 +1088,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		/**
 		 * @return The spell book section
 		 */
-		public final String getSectionID ()
+		public final SpellBookSectionID getSectionID ()
 		{
 			return sectionID;
 		}
@@ -1095,7 +1096,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		/**
 		 * @param section The spell book section
 		 */
-		public final void setSectionID (final String section)
+		public final void setSectionID (final SpellBookSectionID section)
 		{
 			sectionID = section;
 		}

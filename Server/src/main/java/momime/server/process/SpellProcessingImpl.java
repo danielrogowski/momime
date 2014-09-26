@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.database.v0_9_5.SpellHasCombatEffect;
 import momime.common.database.v0_9_5.SummonedUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
@@ -120,10 +121,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
-		final String sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
+		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
 
 		// Overland enchantments
-		if (sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS))
+		if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
 		{
 			// Check if the player already has this overland enchantment cast
 			// If they do, they can't have it twice so nothing to do, they just lose the cast
@@ -154,7 +155,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 
 		// Summoning
-		else if (sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING))
+		else if (sectionID == SpellBookSectionID.SUMMONING)
 		{
 			// Find the location of the wizards' summoning circle 'building'
 			final MapCoordinates3DEx summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
@@ -240,10 +241,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 
 		// City or Unit enchantments
-		else if ((sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_CITY_ENCHANTMENTS)) ||
-			(sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS)) ||
-			(sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_CITY_CURSES)) ||
-			(sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES)))
+		else if ((sectionID == SpellBookSectionID.CITY_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+			(sectionID == SpellBookSectionID.CITY_CURSES) || (sectionID == SpellBookSectionID.UNIT_CURSES))
 		{
 			// Add it on server - note we add it without a target chosen
 			final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
@@ -306,7 +305,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			throw new MomException ("castCombatNow: Casting player is neither the attacker nor defender");
 		
 		// Combat enchantments
-		if (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS))
+		if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
 		{
 			// Pick an actual effect at random
 			if (spell.getSpellHasCombatEffect ().size () > 0)
@@ -320,8 +319,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 		
 		// Unit enchantments or curses
-		else if ((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS)) ||
-			(spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES)))
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
 		{
 			// What effects doesn't the unit already have - can cast Warp Creature multiple times
 			final List<String> unitSpellEffectIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
@@ -340,7 +339,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 		
 		// Combat summons
-		else if (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING))
+		else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 		{
 			// Pick an actual unit at random
 			if (spell.getSummonedUnit ().size () > 0)
@@ -448,10 +447,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final Spell spell = db.findSpell (spellID, "switchOffSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
-		final String sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
+		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus, true);
 
 		// Overland enchantments
-		if (sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS))
+		if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
 		{
 			// Check each combat area effect that this overland enchantment gives to see if we have any of them in effect - if so cancel them
 			for (final SpellHasCombatEffect effect : spell.getSpellHasCombatEffect ())

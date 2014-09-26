@@ -2,8 +2,8 @@ package momime.client.utils;
 
 import java.util.Comparator;
 
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 
 /**
  * Sorts spells in the order they should appear in the spell book.
@@ -12,12 +12,12 @@ import momime.common.database.v0_9_5.Spell;
 public final class SpellSorter implements Comparator<Spell>
 {
 	/** The section being sorted */
-	private final String sectionID;
+	private final SpellBookSectionID sectionID;
 
 	/**
 	 * @param aSectionID The section being sorted
 	 */
-	public SpellSorter (final String aSectionID)
+	public SpellSorter (final SpellBookSectionID aSectionID)
 	{
 		sectionID = aSectionID;
 	}
@@ -52,9 +52,8 @@ public final class SpellSorter implements Comparator<Spell>
 	{
 		// If we know the spell then sort it by casting cost; if we don't know it then sort it by research cost.
 		final int value;
-		if ((sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS)) ||
-			(sectionID.equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS)))
-
+		if ((sectionID == SpellBookSectionID.RESEARCHABLE_NOW) || (sectionID == SpellBookSectionID.RESEARCHABLE))
+			
 			value = (spell.getResearchCost () == null) ? 0 : spell.getResearchCost ();
 		else
 		{

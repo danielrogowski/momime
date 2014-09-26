@@ -32,6 +32,7 @@ import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.UnitSkill;
 import momime.client.language.database.v0_9_5.UnitType;
 import momime.client.language.database.v0_9_5.Wizard;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 
 /**
  * Implementation of language XML database - extends stubs auto-generated from XSD to add additional functionality from the interface
@@ -93,7 +94,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	private Map<String, SpellRank> spellRanksMap;
 	
 	/** Map of spell book section IDs to spell book section objects */
-	private Map<String, SpellBookSection> spellBookSectionsMap;
+	private Map<SpellBookSectionID, SpellBookSection> spellBookSectionsMap;
 
 	/** Map of spell IDs to spell objects */
 	private Map<String, Spell> spellsMap;
@@ -222,7 +223,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 			spellRanksMap.put (thisSpellRank.getSpellRankID (), thisSpellRank);
 
 		// Create spell book sections map
-		spellBookSectionsMap = new HashMap<String, SpellBookSection> ();
+		spellBookSectionsMap = new HashMap<SpellBookSectionID, SpellBookSection> ();
 		for (final SpellBookSection thisSection : getSpellBookSection ())
 			spellBookSectionsMap.put (thisSection.getSpellBookSectionID (), thisSection);
 		
@@ -467,7 +468,7 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	 * @return Spell book section descriptions object; or null if not found
 	 */
 	@Override
-	public final SpellBookSection findSpellBookSection (final String spellBookSectionID)
+	public final SpellBookSection findSpellBookSection (final SpellBookSectionID spellBookSectionID)
 	{
 		return spellBookSectionsMap.get (spellBookSectionID);
 	}

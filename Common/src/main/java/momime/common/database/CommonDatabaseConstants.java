@@ -190,38 +190,6 @@ public final class CommonDatabaseConstants
 	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */
 	public static final String VALUE_UNIT_SKILL_ID_CASTER_HERO = "HS05";
 	
-	// spell book sections
-
-	/** Spells in spell book but not researched and not in the list of 8 researchable spells */
-	public static final String SPELL_BOOK_SECTION_UNKNOWN_SPELLS = "SC99";
-
-	/** Spells in spell book, not researched, but in the list of 8 researchable spells */
-	public static final String SPELL_BOOK_SECTION_RESEARCH_SPELLS = "SC98";
-
-	/** Spells not in spell book but possible to get from lair/node/tower battles or from trading or from the ruins of a wizard's fortress */
-	public static final String SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK = null;
-
-	/** Spells in the summoning section of the spell book */
-	public static final String SPELL_BOOK_SECTION_SUMMONING = "SC01";
-
-	/** Spells in the overland section of the spell book */
-	public static final String SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS = "SC02";
-
-	/** Spells in the city enchantments section of the spell book */
-	public static final String SPELL_BOOK_SECTION_CITY_ENCHANTMENTS = "SC03";
-
-	/** Spells in the unit enchantments section of the spell book */
-	public static final String SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS = "SC04";
-
-	/** Spells in the combat enchantments section of the spell book */
-	public static final String SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS = "SC05";
-	
-	/** Spells in the city curses section of the spell book */
-	public static final String SPELL_BOOK_SECTION_CITY_CURSES = "SC06";
-
-	/** Spells in the unit curses section of the spell book */
-	public static final String SPELL_BOOK_SECTION_UNIT_CURSES = "SC07";
-
 	// combat area effects
 
 	/** Crusade */

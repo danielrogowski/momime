@@ -156,7 +156,6 @@
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimesvr:weaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimesvr:combatAreaEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellRank" type="momimesvr:spellRank" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellBookSection" type="momimesvr:spellBookSection" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimesvr:spell">
 				<xsd:key name="summonedUnitPK">
 					<xsd:selector xpath="summonedUnit" />
@@ -332,10 +331,6 @@
 		<xsd:key name="spellPK">
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="@spellID" />
-		</xsd:key>
-		<xsd:key name="spellBookSectionPK">
-			<xsd:selector xpath="spellBookSection" />
-			<xsd:field xpath="@spellBookSectionID" />
 		</xsd:key>
 		<xsd:key name="citySpellEffectPK">
 			<xsd:selector xpath="citySpellEffect" />
@@ -607,10 +602,6 @@
 		<xsd:keyref refer="momimesvr:spellRankPK" name="spellFKspellRank">
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="spellRank" />
-		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:spellBookSectionPK" name="spellFKspellBookSection">
-			<xsd:selector xpath="spell" />
-			<xsd:field xpath="spellBookSectionID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:buildingPK" name="spellFKbuilding">
 			<xsd:selector xpath="spell" />
@@ -1260,16 +1251,6 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			<xsd:element minOccurs="1" maxOccurs="1" name="citySpellEffectName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="citySpellEffectID" type="momimecommon:citySpellEffectID" use="required" nxe:label="City Spell Effect ID" nxe:gridwidth="110" />
-	</xsd:complexType>
-
-	<xsd:complexType name="spellBookSection" nxe:singular="Spell Book Section" nxe:plural="Spell Book Sections" nxe:submenu="Spells">
-        <xsd:annotation>
-        	<xsd:documentation>Defines the various types of spells, e.g. Overland, Unit, City and Combat Enchantments or Summoning spells.  A spell's "section" also dictates the rules for what it can be targetted at, so any changes to this list will require changes to the code to alter the targetting rules.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="spellBookSectionName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="200" />
-		</xsd:sequence>
-		<xsd:attribute name="spellBookSectionID" type="momimecommon:spellBookSectionID" use="required" nxe:label="Section ID" nxe:gridwidth="80" />
 	</xsd:complexType>
 
 	<xsd:complexType name="movementRateRule" nxe:singular="Movement Rate Rule" nxe:plural="Movement Rate Rules" nxe:submenu="Units">

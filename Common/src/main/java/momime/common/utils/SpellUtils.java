@@ -7,6 +7,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.SpellSettingData;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.messages.v0_9_5.PlayerPick;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.messages.v0_9_5.SpellResearchStatusID;
@@ -85,7 +86,7 @@ public interface SpellUtils
 	 * @return sectionID as described above
 	 * @throws MomException If getStatus () returns an unexpected status
 	 */
-	public String getModifiedSectionID (final Spell spell, final SpellResearchStatus researchStatus, final boolean considerWhetherResearched)
+	public SpellBookSectionID getModifiedSectionID (final Spell spell, final SpellResearchStatus researchStatus, final boolean considerWhetherResearched)
 		throws MomException;
 
 	/**
@@ -195,6 +196,6 @@ public interface SpellUtils
 	 * @throws MomException If we encounter an unkown research status or castType
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
-	public List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final String desiredSectionID,
+	public List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final SpellBookSectionID desiredSectionID,
 		final MomSpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException;
 }

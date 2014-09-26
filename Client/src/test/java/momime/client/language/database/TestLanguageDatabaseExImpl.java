@@ -29,6 +29,7 @@ import momime.client.language.database.v0_9_5.UnitAttribute;
 import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.UnitSkill;
 import momime.client.language.database.v0_9_5.Wizard;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 
 import org.junit.Test;
 
@@ -425,15 +426,15 @@ public final class TestLanguageDatabaseExImpl
 		for (int n = 1; n <= 3; n++)
 		{
 			final SpellBookSection newSection = new SpellBookSection ();
-			newSection.setSpellBookSectionID ("SC0" + n);
+			newSection.setSpellBookSectionID (SpellBookSectionID.fromValue ("SC0" + n));
 			newSection.setSpellBookSectionName ("SCDesc0" + n);
 			lang.getSpellBookSection ().add (newSection);
 		}
 
 		lang.buildMaps ();
 
-		assertEquals ("SCDesc02", lang.findSpellBookSection ("SC02").getSpellBookSectionName ());
-		assertNull ("SC04", lang.findSpellBookSection ("SC04"));
+		assertEquals ("SCDesc02", lang.findSpellBookSection (SpellBookSectionID.OVERLAND_ENCHANTMENTS).getSpellBookSectionName ());
+		assertNull ("SC04", lang.findSpellBookSection (SpellBookSectionID.UNIT_ENCHANTMENTS));
 	}
 
 	/**

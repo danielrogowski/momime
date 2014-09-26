@@ -17,6 +17,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.newgame.v0_9_5.SpellSettingData;
 import momime.common.database.newgame.v0_9_5.UnitSettingData;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.messages.servertoclient.v0_9_5.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.v0_9_5.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
@@ -288,7 +289,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -344,7 +345,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -560,7 +561,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -639,7 +640,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -730,7 +731,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -826,7 +827,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -935,7 +936,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -1048,7 +1049,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -1161,7 +1162,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -1276,7 +1277,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -1394,7 +1395,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -1519,7 +1520,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -1646,7 +1647,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -1767,7 +1768,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -1896,7 +1897,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -2032,7 +2033,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);

@@ -16,6 +16,7 @@ import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.database.v0_9_5.UnitAttribute;
 import momime.client.language.database.v0_9_5.UnitSkill;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 
 /**
  * Describes operations that we need to support over the language XML file
@@ -134,7 +135,7 @@ public interface LanguageDatabaseEx
 	 * @param spellBookSectionID Spell book section ID to search for
 	 * @return Spell book section descriptions object; or null if not found
 	 */
-	public SpellBookSection findSpellBookSection (final String spellBookSectionID);
+	public SpellBookSection findSpellBookSection (final SpellBookSectionID spellBookSectionID);
 	
 	/**
 	 * @param spellID Spell ID to search for

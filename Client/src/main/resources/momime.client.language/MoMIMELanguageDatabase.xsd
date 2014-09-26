@@ -297,10 +297,6 @@
 			<xsd:selector xpath="spellRank" />
 			<xsd:field xpath="@spellRankID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimesvr:spellBookSectionPK" name="spellBookSectionFKspellBookSection">
-			<xsd:selector xpath="spellBookSection" />
-			<xsd:field xpath="@spellBookSectionID" />
-		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:spellPK" name="spellFKspell">
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="@spellID" />

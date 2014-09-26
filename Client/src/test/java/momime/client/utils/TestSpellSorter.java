@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 
 import org.junit.Test;
 
@@ -38,17 +38,17 @@ public final class TestSpellSorter
 		spell4.setCombatCastingCost (18);
 		
 		// Test spells in the research section
-		final SpellSorter researchSorter = new SpellSorter (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS);
+		final SpellSorter researchSorter = new SpellSorter (SpellBookSectionID.RESEARCHABLE_NOW);
 		assertEquals (0, researchSorter.spellSortValue (spell1));
 		assertEquals (70, researchSorter.spellSortValue (spell2));
 
 		// Test spells in the unknown section
-		final SpellSorter unknownSorter = new SpellSorter (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS);
+		final SpellSorter unknownSorter = new SpellSorter (SpellBookSectionID.RESEARCHABLE);
 		assertEquals (0, unknownSorter.spellSortValue (spell1));
 		assertEquals (70, unknownSorter.spellSortValue (spell2));
 		
 		// Test spells in some regular casting section
-		final SpellSorter castingSorter = new SpellSorter ("X");
+		final SpellSorter castingSorter = new SpellSorter (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 		assertEquals (0, castingSorter.spellSortValue (spell1));
 		assertEquals (80, castingSorter.spellSortValue (spell2));
 		assertEquals (75, castingSorter.spellSortValue (spell3));
@@ -95,7 +95,7 @@ public final class TestSpellSorter
 		spells.add (spell6);
 		
 		// Deriving the right values is tested above, so no need to complicate that here, just test some fixed research values
-		final SpellSorter researchSorter = new SpellSorter (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS);
+		final SpellSorter researchSorter = new SpellSorter (SpellBookSectionID.RESEARCHABLE_NOW);
 		Collections.sort (spells, researchSorter);
 		
 		// Check results

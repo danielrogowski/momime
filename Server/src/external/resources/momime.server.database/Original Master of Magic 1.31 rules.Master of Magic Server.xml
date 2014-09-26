@@ -14833,33 +14833,6 @@
 	<spellRank spellRankID="SR05">
 		<spellRankDescription>Very Rare [Special rank for Spell of Mastery to ensure that this is always the last spell to appear in list of available spells to research]</spellRankDescription>
 	</spellRank>
-	<spellBookSection spellBookSectionID="SC01">
-		<spellBookSectionName>Summoning Spells</spellBookSectionName>
-	</spellBookSection>
-	<spellBookSection spellBookSectionID="SC02">
-		<spellBookSectionName>Overland Enchantments</spellBookSectionName>
-	</spellBookSection>
-	<spellBookSection spellBookSectionID="SC03">
-		<spellBookSectionName>City Enchantments</spellBookSectionName>
-	</spellBookSection>
-	<spellBookSection spellBookSectionID="SC04">
-		<spellBookSectionName>Unit Enchantments</spellBookSectionName>
-	</spellBookSection>
-	<spellBookSection spellBookSectionID="SC05">
-		<spellBookSectionName>Combat Enchantments</spellBookSectionName>
-	</spellBookSection>
-	<spellBookSection spellBookSectionID="SC06">
-		<spellBookSectionName>City Curses</spellBookSectionName>
-	</spellBookSection>
-	<spellBookSection spellBookSectionID="SC07">
-		<spellBookSectionName>Unit Curses</spellBookSectionName>
-	</spellBookSection>
-	<spellBookSection spellBookSectionID="SC98">
-		<spellBookSectionName>Research Spells</spellBookSectionName>
-	</spellBookSection>
-	<spellBookSection spellBookSectionID="SC99">
-		<spellBookSectionName>Unknown Spells</spellBookSectionName>
-	</spellBookSection>
 	<spell spellID="SP001">
 		<spellRealm>MB04</spellRealm>
 		<spellRank>SR01</spellRank>

@@ -8,10 +8,10 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.calculations.MomSpellCalculations;
 import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.SpellSettingData;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.database.v0_9_5.SpellValidUnitTarget;
 import momime.common.database.v0_9_5.SummonedUnit;
 import momime.common.messages.v0_9_5.PlayerPick;
@@ -80,7 +80,7 @@ public final class SpellUtilsImpl implements SpellUtils
 
 		// for War Bears, Sky Drakes, etc. we want "S", and for Summon Hero, Champion & Incarnation we want "H"
 		String result = null;
-		if ((spell.getSpellBookSectionID () != null) && (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING)))
+		if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 			for (final SummonedUnit spellSummonsUnit : spell.getSummonedUnit ())
 			{
 				// Now find the unit's magic realm / lifeform type
@@ -228,12 +228,12 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws MomException If getStatus () returns an unexpected status
 	 */
 	@Override
-	public final String getModifiedSectionID (final Spell spell, final SpellResearchStatus researchStatus, final boolean considerWhetherResearched)
+	public final SpellBookSectionID getModifiedSectionID (final Spell spell, final SpellResearchStatus researchStatus, final boolean considerWhetherResearched)
 		throws MomException
 	{
 		log.trace ("Entering getModifiedSectionID: " + researchStatus + ", " + considerWhetherResearched);
 
-		final String result;
+		final SpellBookSectionID result;
 		if (!considerWhetherResearched)
 		{
 			// Ignore whether researched or not, just return the value from the DB
@@ -244,13 +244,13 @@ public final class SpellUtilsImpl implements SpellUtils
 			{
 				case UNAVAILABLE:
 				case NOT_IN_SPELL_BOOK:
-					result = CommonDatabaseConstants.SPELL_BOOK_SECTION_NOT_IN_SPELL_BOOK;
+					result = null;
 					break;
 				case RESEARCHABLE:
-					result = CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS;
+					result = SpellBookSectionID.RESEARCHABLE;
 					break;
 				case RESEARCHABLE_NOW:
-					result = CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS;
+					result = SpellBookSectionID.RESEARCHABLE_NOW;
 					break;
 				case AVAILABLE:
 					result = spell.getSpellBookSectionID ();
@@ -547,15 +547,15 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	@Override
-	public final List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final String desiredSectionID,
+	public final List<Spell> getSortedSpellsInSection (final List<SpellResearchStatus> spells, final SpellBookSectionID desiredSectionID,
 		final MomSpellCastType castType, final CommonDatabase db) throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering getSortedSpellsInSection: " + desiredSectionID + ", " + castType);
 
 		// Different selection and sorting logic if we are after spells that we've not yet researched, so just check this once up front
 		final boolean desiredSectionIsResearch =
-			(CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS.equals (desiredSectionID)) ||
-			(CommonDatabaseConstants.SPELL_BOOK_SECTION_UNKNOWN_SPELLS.equals (desiredSectionID));
+			(desiredSectionID == SpellBookSectionID.RESEARCHABLE_NOW) ||
+			(desiredSectionID == SpellBookSectionID.RESEARCHABLE);
 
 		// Check each spell
 		final List<SpellWithSortValue> spellsFound = new ArrayList<SpellWithSortValue> ();
@@ -565,7 +565,7 @@ public final class SpellUtilsImpl implements SpellUtils
 			final Spell thisSpell = db.findSpell (thisSpellResearchStatus.getSpellID (), "getSortedSpellsInSection");
 
 			// Check section matches
-			final String modifiedSectionID = getModifiedSectionID (thisSpell, thisSpellResearchStatus, true);
+			final SpellBookSectionID modifiedSectionID = getModifiedSectionID (thisSpell, thisSpellResearchStatus, true);
 
 			if (((desiredSectionID == null) && (modifiedSectionID == null)) ||
 				((desiredSectionID != null) && (desiredSectionID.equals (modifiedSectionID))))

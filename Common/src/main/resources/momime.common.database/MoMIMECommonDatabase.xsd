@@ -1105,10 +1105,6 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="spellBookSectionID">
-		<xsd:restriction base="xsd:normalizedString" />
-	</xsd:simpleType>
-	
 	<xsd:simpleType name="citySpellEffectID">
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
@@ -1218,6 +1214,51 @@ Movement rules start from the top layer and work down, i.e. check if there is an
 		</xsd:restriction>
 	</xsd:simpleType>
 
+	<xsd:simpleType name="spellBookSectionID" nxe:singular="Spell Book Section">
+        <xsd:annotation>
+        	<xsd:documentation>Spell book sections not only define the way they're grouped in the spell book UI, but they also define the rules
+about what a spell must be targetted on.  e.g. Unit enchantments must be targetted on a friendly unit, but unit curses must be targetted on an enemy unit.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="SC01"><xsd:annotation>
+				<xsd:documentation>Summoning spells</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SUMMONING"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC02"><xsd:annotation>
+				<xsd:documentation>Overland enchantments</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OVERLAND_ENCHANTMENTS"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC03"><xsd:annotation>
+				<xsd:documentation>City enchantments</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CITY_ENCHANTMENTS"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC04"><xsd:annotation>
+				<xsd:documentation>Unit enchantments</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_ENCHANTMENTS"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC05"><xsd:annotation>
+				<xsd:documentation>Combat enchantments</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="COMBAT_ENCHANTMENTS"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC06"><xsd:annotation>
+				<xsd:documentation>City curses</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CITY_CURSES"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC07"><xsd:annotation>
+				<xsd:documentation>Unit curses</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_CURSES"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC98"><xsd:annotation>
+				<xsd:documentation>Researchable now - One of the 8 options for what to research next</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHABLE_NOW"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC99"><xsd:annotation>
+				<xsd:documentation>Researchable - Just not yet (e.g. you have to research most Common spells before proceeding to Uncommon, etc.)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHABLE"/></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
 <!-- Client database data types -->
 
 	<xsd:simpleType name="pickQuantity">

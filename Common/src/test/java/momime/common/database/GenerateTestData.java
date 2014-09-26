@@ -2,9 +2,9 @@ package momime.common.database;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +43,7 @@ import momime.common.database.v0_9_5.RaceUnrest;
 import momime.common.database.v0_9_5.RangedAttackType;
 import momime.common.database.v0_9_5.RoundingDirectionID;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.database.v0_9_5.SummonedUnit;
 import momime.common.database.v0_9_5.TaxRate;
 import momime.common.database.v0_9_5.TileType;
@@ -933,7 +934,7 @@ public final class GenerateTestData
 		giantSpiders.setSpellID (GIANT_SPIDERS_SPELL);
 		giantSpiders.setSpellRealm (NATURE_BOOK);
 		giantSpiders.setSpellRank (UNCOMMON);
-		giantSpiders.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		giantSpiders.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		giantSpiders.setOverlandCastingCost (3);
 		giantSpiders.setResearchCost (7);
 		final SummonedUnit giantSpidersSummon = new SummonedUnit ();
@@ -945,7 +946,7 @@ public final class GenerateTestData
 		hellHoundsSpell.setSpellID (HELL_HOUNDS_SPELL);
 		hellHoundsSpell.setSpellRealm (CHAOS_BOOK);
 		hellHoundsSpell.setSpellRank (COMMON);
-		hellHoundsSpell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		hellHoundsSpell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		hellHoundsSpell.setOverlandCastingCost (7);
 		hellHoundsSpell.setResearchCost (9);
 		final SummonedUnit hellHoundsSummon = new SummonedUnit ();
@@ -1424,7 +1425,7 @@ public final class GenerateTestData
 	public final static Spell createArcaneSummoningSpell ()
 	{
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		final SummonedUnit unit = new SummonedUnit ();
 		unit.setSummonedUnitID (MAGIC_SPIRIT_UNIT);
@@ -1450,7 +1451,7 @@ public final class GenerateTestData
 	{
 		final Spell spell = new Spell ();
 		spell.setSpellRealm (NATURE_BOOK);
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		final SummonedUnit unit = new SummonedUnit ();
 		unit.setSummonedUnitID (WAR_BEARS_UNIT);
@@ -1476,7 +1477,7 @@ public final class GenerateTestData
 	{
 		final Spell spell = new Spell ();
 		spell.setSpellRealm (CHAOS_BOOK);
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		final SummonedUnit unit = new SummonedUnit ();
 		unit.setSummonedUnitID (HELL_HOUNDS_UNIT);
@@ -1491,7 +1492,7 @@ public final class GenerateTestData
 	public final static Spell createSummonHeroSpell ()
 	{
 		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 
 		final SummonedUnit unit = new SummonedUnit ();
 		unit.setSummonedUnitID (DWARF_HERO);

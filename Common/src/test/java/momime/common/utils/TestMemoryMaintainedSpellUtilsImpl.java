@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.database.v0_9_5.SpellHasCityEffect;
 import momime.common.database.v0_9_5.UnitSpellEffect;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
@@ -640,17 +640,17 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 	
 		// Enchanting enemy unit
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		unit.setOwningPlayerID (2);
 		assertEquals (TargetUnitSpellResult.ENCHANTING_ENEMY_UNIT, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
 		
 		// Cursing own uint
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES);
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_CURSES);
 		unit.setOwningPlayerID (1);
 		assertEquals (TargetUnitSpellResult.CURSING_OWN_UNIT, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
 		
 		// Spell has no effects defined
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		assertEquals (TargetUnitSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell (spells, spell, 1, unit, db));
 		
 		// All effects already cast on this unit

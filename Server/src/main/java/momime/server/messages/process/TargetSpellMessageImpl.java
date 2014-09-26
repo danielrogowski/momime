@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.messages.clienttoserver.v0_9_5.TargetSpellMessage;
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
@@ -99,8 +100,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		
 		else
 		{
-			if ((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_CITY_ENCHANTMENTS)) ||
-				(spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_CITY_CURSES)))
+			if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) ||
+				(spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
 			{
 				// Find the city we're aiming at
 				if (getUnitURN () != null)
@@ -134,11 +135,11 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					else if ((city.getCityPopulation () == null) || (city.getCityPopulation () <= 0))
 						error = "The city you are trying to cast a spell on has been razed and no longer exists";
 					
-					else if ((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_CITY_ENCHANTMENTS)) &&
+					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) &&
 						(city.getCityOwnerID () != sender.getPlayerDescription ().getPlayerID ()))
 						error = "This spell can only be targetted at cities that you own";
 					
-					else if ((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_CITY_CURSES)) &&
+					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES) &&
 						(city.getCityOwnerID () == sender.getPlayerDescription ().getPlayerID ()))
 						error = "This spell can only be targetted at enemy cities";
 					
@@ -161,7 +162,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				}				
 			}
 			
-			else if (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS))
+			else if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 			{
 				// Find the unit we're aiming at
 				final MemoryUnit unit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());

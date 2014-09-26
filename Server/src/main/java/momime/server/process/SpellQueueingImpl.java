@@ -10,6 +10,7 @@ import momime.common.calculations.MomSpellCalculations;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.messages.servertoclient.v0_9_5.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.v0_9_5.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
@@ -136,13 +137,13 @@ public final class SpellQueueingImpl implements SpellQueueing
 			msg = "Cannot specify a target when casting an overland spell.";
 
 		else if ((combatLocation != null) && (combatTargetUnitURN == null) &&
-			((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS)) ||
-			 (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES))))
+			((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+			 (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES)))
 			msg = "You must specify a unit target when casting unit enchantments or curses in combat.";
 
 		else if ((combatLocation != null) && (combatTargetLocation == null) &&
-				(spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING)))
-				msg = "You must specify a target location when casting summoning spells in combat.";
+			(spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
+			msg = "You must specify a target location when casting summoning spells in combat.";
 		
 		else
 			msg = null;
@@ -214,8 +215,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 			{
 				// Do nothing - more serious message already generated
 			}
-			else if ((spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS)) ||
-				(spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_CURSES)))
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+				(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
 			{
 				// (Note overland spells tend to have a lot less validation since we don't pick targets until they've completed casting - so the checks are done then)
 				// Verify that the chosen unit is a valid target for unit enchantments/curses (we checked above that a unit has chosen)
@@ -236,7 +237,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					}
 				}
 			}
-			else if (spell.getSpellBookSectionID ().equals (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING))
+			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 			{
 				// Verify for summoning spells that there isn't a unit in that location
 				if (getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, combatTargetLocation) != null)

@@ -12,6 +12,7 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.database.v0_9_5.SpellHasCombatEffect;
 import momime.common.database.v0_9_5.SummonedUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
@@ -86,7 +87,7 @@ public final class TestSpellProcessingImpl
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (CommonDatabaseConstants.SPELL_BOOK_SECTION_RESEARCH_SPELLS);		// Can research, but don't know it yet
+		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.RESEARCHABLE_NOW);		// Can research, but don't know it yet
 		
 		// Set up test object
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
@@ -167,7 +168,7 @@ public final class TestSpellProcessingImpl
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (CommonDatabaseConstants.SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS);
+		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -262,7 +263,7 @@ public final class TestSpellProcessingImpl
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (CommonDatabaseConstants.SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS);
+		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 
 		// We've already cast it
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
@@ -349,7 +350,7 @@ public final class TestSpellProcessingImpl
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.SUMMONING);
 		
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (summoningCircleLocation, UnitAddBumpTypeID.CITY);
@@ -442,7 +443,7 @@ public final class TestSpellProcessingImpl
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.SUMMONING);
 		
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (summoningCircleLocation, UnitAddBumpTypeID.CITY);
@@ -554,7 +555,7 @@ public final class TestSpellProcessingImpl
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.SUMMONING);
 		
 		// Set up test object
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
@@ -610,7 +611,7 @@ public final class TestSpellProcessingImpl
 		
 		final SpellUtils utils = mock (SpellUtils.class);
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		when (utils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		// Set up test object
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
@@ -688,7 +689,7 @@ public final class TestSpellProcessingImpl
 		// Spell to cast
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_COMBAT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
 		// It grants one of 5 possible effects
 		for (int n = 1; n <= 5; n++)
@@ -789,7 +790,7 @@ public final class TestSpellProcessingImpl
 		// Spell to cast
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		// It grants one of 5 possible effects
 		final List<String> effects = new ArrayList<String> ();
@@ -892,7 +893,7 @@ public final class TestSpellProcessingImpl
 		// Spell to cast
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
-		spell.setSpellBookSectionID (CommonDatabaseConstants.SPELL_BOOK_SECTION_SUMMONING);
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
 		// It summons one of 5 possible units
 		for (int n = 1; n <= 5; n++)
@@ -1023,7 +1024,7 @@ public final class TestSpellProcessingImpl
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (castingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (spellUtils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (CommonDatabaseConstants.SPELL_BOOK_SECTION_UNIT_ENCHANTMENTS);
+		when (spellUtils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -1082,7 +1083,7 @@ public final class TestSpellProcessingImpl
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (castingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (spellUtils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (CommonDatabaseConstants.SPELL_BOOK_SECTION_OVERLAND_ENCHANTMENTS);
+		when (spellUtils.getModifiedSectionID (spell, researchStatus, true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 		
 		// One of the effects is actually cast
 		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);

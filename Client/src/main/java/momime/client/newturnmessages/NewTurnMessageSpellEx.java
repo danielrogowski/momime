@@ -48,7 +48,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	@Override
 	public final String getMusicResourceName ()
 	{
-		return "/momime.client.music/MUSIC_040 - ResearchedASpell-DetectMagic.mp3";
+		return "/momime.client.music/MUSIC_040 - ResearchedASpell-DetectMagic-Awareness-GreatUnsummoning-CharmOfLife.mp3";
 	}
 	
 	/**

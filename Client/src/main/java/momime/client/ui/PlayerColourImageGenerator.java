@@ -22,4 +22,11 @@ public interface PlayerColourImageGenerator
 	 * @throws IOException If there is a problem loading the flag image
 	 */
 	public BufferedImage getCityFlagImage (final int playerID) throws IOException;
+	
+	/**
+	 * @param playerID Spell owner player ID
+	 * @return Mirror image in their correct colour 
+	 * @throws IOException If there is a problem loading the mirror image
+	 */
+	public BufferedImage getOverlandEnchantmentMirror (final int playerID) throws IOException;
 }

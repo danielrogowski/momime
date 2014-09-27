@@ -5906,6 +5906,18 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		<languageEntry languageEntryID="SummonedUnitNoRoomSuffix">
 			<languageEntryText>, but the city and all nearby terrain was full so the unit was lost</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="OurOverlandEnchantment">
+			<languageEntryText>You have completed casting SPELL_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OurOverlandEnchantmentLastTurn">
+			<languageEntryText>Last turn you completed casting SPELL_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="EnemyOverlandEnchantment">
+			<languageEntryText>PLAYER_NAME has completed casting SPELL_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="EnemyOverlandEnchantmentLastTurn">
+			<languageEntryText>Last turn PLAYER_NAME completed casting SPELL_NAME</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="NodesCategory">
 			<languageEntryText>Nodes</languageEntryText>
 		</languageEntry>

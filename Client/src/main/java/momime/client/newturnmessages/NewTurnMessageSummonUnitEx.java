@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.v0_9_5.Unit;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
@@ -72,10 +71,10 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 		Image image = null;
 		try
 		{
-			final Unit unit = getGraphicsDB ().findUnit (getUnitID (), "NewTurnMessageSummonUnitEx");
-			if (unit.getUnitSummonImageFile () != null)
+			final String imageName = getGraphicsDB ().findUnit (getUnitID (), "NewTurnMessageSummonUnitEx").getUnitSummonImageFile ();
+			if (imageName != null)
 			{
-				final BufferedImage fullSizeImage = getUtils ().loadImage (unit.getUnitSummonImageFile ());
+				final BufferedImage fullSizeImage = getUtils ().loadImage (imageName);
 				image = fullSizeImage.getScaledInstance (fullSizeImage.getWidth () / 2, fullSizeImage.getHeight () / 2, Image.SCALE_SMOOTH);
 			}
 		}

@@ -19620,6 +19620,10 @@
 		<languageEntry languageEntryID="SummonedUnitLastTurn" />
 		<languageEntry languageEntryID="SummonedUnitBumpedSuffix" />
 		<languageEntry languageEntryID="SummonedUnitNoRoomSuffix" />
+		<languageEntry languageEntryID="OurOverlandEnchantment" />
+		<languageEntry languageEntryID="OurOverlandEnchantmentLastTurn" />
+		<languageEntry languageEntryID="EnemyOverlandEnchantment" />
+		<languageEntry languageEntryID="EnemyOverlandEnchantmentLastTurn" />
 		<languageEntry languageEntryID="NodesCategory" />
 	</languageCategory>
 </momimesvr:serverDatabase>

@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.MomClient;
 import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessage;
 
 import org.apache.commons.logging.Log;
@@ -20,6 +21,9 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	/** Class logger */
 	private final Log log = LogFactory.getLog (AddMaintainedSpellMessageImpl.class);
 
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -30,8 +34,24 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	{
 		log.trace ("Entering start: " + getData ().getSpellID ());
 		
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getData ());
+		
 		log.trace ("Exiting start");
+	}
 
-		throw new UnsupportedOperationException ("AddMaintainedSpellMessageImpl");
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 }

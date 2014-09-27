@@ -25,11 +25,17 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	/** Colour multiplied flags for each player's cities */
 	private final Map<Integer, BufferedImage> cityFlagImages = new HashMap<Integer, BufferedImage> ();
 
+	/** Colour multiplied flags for each player's mirrors */
+	private final Map<Integer, BufferedImage> mirrorImages = new HashMap<Integer, BufferedImage> ();
+	
 	/** Uncoloured unit background image */
 	private BufferedImage unitBackgroundImage;
 	
 	/** Uncoloured city flag image */
 	private BufferedImage cityFlagImage;
+	
+	/** Uncoloured mirror image */
+	private BufferedImage mirrorImage;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
@@ -66,6 +72,20 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 			cityFlagImage = getUtils ().loadImage ("/momime.client.graphics/overland/cities/cityFlag.png");
 
 		return getImage (playerID, cityFlagImage, cityFlagImages);
+	}
+	
+	/**
+	 * @param playerID Spell owner player ID
+	 * @return Mirror image in their correct colour 
+	 * @throws IOException If there is a problem loading the mirror image
+	 */
+	@Override
+	public final BufferedImage getOverlandEnchantmentMirror (final int playerID) throws IOException
+	{
+		if (mirrorImage == null)
+			mirrorImage = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/mirror.png");
+
+		return getImage (playerID, mirrorImage, mirrorImages);
 	}
 	
 	/**

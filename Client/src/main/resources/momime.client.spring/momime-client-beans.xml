@@ -329,7 +329,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype" />
 	<bean id="foundLairNodeTowerMessage" class="momime.client.messages.process.FoundLairNodeTowerMessageImpl" scope="prototype" />
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype" />
-	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype" />
 	<bean id="chosenCustomPhotoMessage" class="momime.client.messages.process.ChosenCustomPhotoMessageImpl" scope="prototype" />
@@ -380,6 +379,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="killUnitMessage" class="momime.client.messages.process.KillUnitMessageImpl" scope="prototype">
 		<property name="unitClientUtils" ref="unitClientUtils" />
+	</bean>
+
+	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">
@@ -440,9 +443,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 	</bean>
 
+	<bean id="newTurnMessageOverlandEnchantment" class="momime.client.newturnmessages.NewTurnMessageOverlandEnchantmentEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="utils" ref="uiUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+	</bean>
+
 	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype" />
 	<bean id="newTurnMessageBuildingSoldFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageBuildingSoldFromLackOfProductionEx" scope="prototype" />
-	<bean id="newTurnMessageOverlandEnchantment" class="momime.client.newturnmessages.NewTurnMessageOverlandEnchantmentEx" scope="prototype" />
 	<bean id="newTurnMessageUnitKilledFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageUnitKilledFromLackOfProductionEx" scope="prototype" />
 	<bean id="newTurnMessageNode" class="momime.client.newturnmessages.NewTurnMessageNodeEx" scope="prototype" />
 	

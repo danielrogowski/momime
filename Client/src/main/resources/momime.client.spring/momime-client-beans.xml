@@ -364,6 +364,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addBuildingMessage" class="momime.client.messages.process.AddBuildingMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 	</bean>
 
 	<bean id="destroyBuildingMessage" class="momime.client.messages.process.DestroyBuildingMessageImpl" scope="prototype">
@@ -383,6 +386,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">
@@ -431,6 +437,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
 		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
 	</bean>
 
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype">
@@ -736,6 +745,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="clientConfig" ref="clientConfig" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="magicSlidersUI" class="momime.client.ui.frames.MagicSlidersUI">
@@ -843,6 +853,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 	
 	<bean id="calculationBoxUI" class="momime.client.ui.frames.CalculationBoxUI" scope="prototype">
@@ -892,6 +904,19 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="anim" ref="anim" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
+		<property name="cityViewPanel" ref="cityViewPanel" />									<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
+	</bean>
+	
+	<bean id="miniCityViewUI" class="momime.client.ui.dialogs.MiniCityViewUI" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="soundPlayer" ref="soundPlayer" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="cityViewPanel" ref="cityViewPanel" />									<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 

@@ -38,7 +38,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.MomSpellCastType;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.TargetUnitSpellResult;
+import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
@@ -1490,7 +1490,7 @@ public final class TestSpellQueueingImpl
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (trueMap.getMaintainedSpell (), spell, attackingPd.getPlayerID (), targetUnit, db)).thenReturn
-			(TargetUnitSpellResult.ENCHANTING_ENEMY_UNIT);
+			(TargetSpellResult.ENCHANTING_ENEMY);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1508,7 +1508,7 @@ public final class TestSpellQueueingImpl
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
 		final TextPopupMessage msg = (TextPopupMessage) attackingMsgs.getMessages ().get (0);
-		assertEquals ("This unit is not a valid target for this spell for reason ENCHANTING_ENEMY_UNIT", msg.getText ());
+		assertEquals ("This unit is not a valid target for this spell for reason ENCHANTING_ENEMY", msg.getText ());
 	}
 
 	/**
@@ -1615,7 +1615,7 @@ public final class TestSpellQueueingImpl
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (trueMap.getMaintainedSpell (), spell, attackingPd.getPlayerID (), targetUnit, db)).thenReturn
-			(TargetUnitSpellResult.VALID_TARGET);
+			(TargetSpellResult.VALID_TARGET);
 		
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);

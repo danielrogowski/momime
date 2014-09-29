@@ -10,8 +10,11 @@ import momime.common.database.v0_9_5.Spell;
 import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.database.v0_9_5.SpellHasCityEffect;
 import momime.common.database.v0_9_5.UnitSpellEffect;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +34,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -224,42 +230,105 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
 	@Override
-	public final TargetUnitSpellResult isUnitValidTargetForSpell (final List<MemoryMaintainedSpell> spells,
-		final Spell spell, final int castingPlayerID, final MemoryUnit unit, final CommonDatabase db) throws RecordNotFoundException
+	public final TargetSpellResult isUnitValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
+		final MemoryUnit unit, final CommonDatabase db) throws RecordNotFoundException
 	{
     	log.trace ("Entering isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID);
     	
-    	final TargetUnitSpellResult result;
+    	final TargetSpellResult result;
     	
     	// Do easy checks first
     	if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) && (unit.getOwningPlayerID () != castingPlayerID))
-    		result = TargetUnitSpellResult.ENCHANTING_ENEMY_UNIT; 
+    		result = TargetSpellResult.ENCHANTING_ENEMY; 
 
     	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) && (unit.getOwningPlayerID () == castingPlayerID))
-    		result = TargetUnitSpellResult.CURSING_OWN_UNIT;
+    		result = TargetSpellResult.CURSING_OWN;
     	
     	else
     	{
     		// Now check unitSpellEffectIDs
     		final List<String> unitSpellEffectIDs = listUnitSpellEffectsNotYetCastOnUnit (spells, spell, castingPlayerID, unit.getUnitURN ());
     		if (unitSpellEffectIDs == null)
-    			result = TargetUnitSpellResult.NO_SPELL_EFFECT_IDS_DEFINED;
+    			result = TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED;
     		
     		else if (unitSpellEffectIDs.size () == 0)
-    			result = TargetUnitSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
+    			result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
     		
     		else if (getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell,
     			getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), spells, db)))
     			
-    			result = TargetUnitSpellResult.VALID_TARGET;
+    			result = TargetSpellResult.VALID_TARGET;
     		else
-    			result = TargetUnitSpellResult.INVALID_MAGIC_REALM_LIFEFORM_TYPE;
+    			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
     	}
 
     	log.trace ("Exiting isUnitValidTargetForSpell = " + result);
     	return result;
 	}
 
+	/**
+	 * Checks whether the specified spell can be targetted at the specified city.  There's lots of validation to do for this, and the
+	 * client does it in a few places and then repeated on the server, so much cleaner if we pull it out into a common routine.
+	 * 
+	 * In Delphi code the code for this was duplicated in both the client and server, so this method didn't exist.
+	 * 
+	 * @param spells List of known existing spells
+	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
+	 * @param cityLocation City to cast the spell on
+	 * @param map Known terrain
+	 * @param buildingsList Known buildings
+	 * @param db Lookup lists built over the XML database
+	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
+	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 */
+	@Override
+	public final TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
+		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildingsList,
+		final CommonDatabase db) throws RecordNotFoundException
+	{
+    	log.trace ("Entering isCityValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID);
+    	
+    	final TargetSpellResult result;
+    	
+    	final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+    	
+    	// Do easy checks first
+    	if ((cityData == null) || (cityData.getCityPopulation () == null) || (cityData.getCityPopulation () <= 0))
+    		result = TargetSpellResult.NO_CITY_HERE;
+    	
+    	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) && (cityData.getCityOwnerID () != castingPlayerID))
+    		result = TargetSpellResult.ENCHANTING_ENEMY; 
+
+    	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES) && (cityData.getCityOwnerID () == castingPlayerID))
+    		result = TargetSpellResult.CURSING_OWN;
+    	
+    	// Is it a spell that creates a building?
+    	else if (spell.getBuildingID () != null)
+    	{
+    		if (getMemoryBuildingUtils ().findBuilding (buildingsList, cityLocation, spell.getBuildingID ()))
+    			result = TargetSpellResult.CITY_ALREADY_HAS_BUILDING;
+    		else
+    			result = TargetSpellResult.VALID_TARGET;
+    	}
+    	else
+    	{
+    		// Now check citySpellEffectIDs
+    		final List<String> citySpellEffectIDs = listCitySpellEffectsNotYetCastAtLocation (spells, spell, castingPlayerID, cityLocation);
+    		if (citySpellEffectIDs == null)
+    			result = TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED;
+    		
+    		else if (citySpellEffectIDs.size () == 0)
+    			result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
+    		
+    		else    			
+    			result = TargetSpellResult.VALID_TARGET;
+    	}
+
+    	log.trace ("Exiting isCityValidTargetForSpell = " + result);
+    	return result;
+	}
+		
 	/**
 	 * @return Spell utils
 	 */
@@ -290,5 +359,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
 	}
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MemoryBuilding;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 
@@ -100,6 +102,26 @@ public interface MemoryMaintainedSpellUtils
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
-	public TargetUnitSpellResult isUnitValidTargetForSpell (final List<MemoryMaintainedSpell> spells,
-		final Spell spell, final int castingPlayerID, final MemoryUnit unit, final CommonDatabase db) throws RecordNotFoundException; 
+	public TargetSpellResult isUnitValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
+		final MemoryUnit unit, final CommonDatabase db) throws RecordNotFoundException; 
+
+	/**
+	 * Checks whether the specified spell can be targetted at the specified city.  There's lots of validation to do for this, and the
+	 * client does it in a few places and then repeated on the server, so much cleaner if we pull it out into a common routine.
+	 * 
+	 * In Delphi code the code for this was duplicated in both the client and server, so this method didn't exist.
+	 * 
+	 * @param spells List of known existing spells
+	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
+	 * @param cityLocation City to cast the spell on
+	 * @param map Known terrain
+	 * @param buildingsList Known buildings
+	 * @param db Lookup lists built over the XML database
+	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
+	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 */
+	public TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
+		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildingsList,
+		final CommonDatabase db) throws RecordNotFoundException; 
 }

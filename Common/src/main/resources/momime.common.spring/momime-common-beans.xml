@@ -193,6 +193,7 @@
 	<bean id="memoryMaintainedSpellUtils" class="momime.common.utils.MemoryMaintainedSpellUtilsImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />

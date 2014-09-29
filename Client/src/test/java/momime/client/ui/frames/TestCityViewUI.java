@@ -4,6 +4,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
@@ -199,20 +203,32 @@ public final class TestCityViewUI
 		cityGrowthBreakdown.setFinalTotal (70);
 		when (calc.calculateCityGrowthRate (terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), maxCitySize, db)).thenReturn (cityGrowthBreakdown);
 		
+		// Display at least some landscape
+		final CityViewElement landscape = new CityViewElement ();
+		landscape.setLocationX (0);
+		landscape.setLocationY (0);
+		landscape.setSizeMultiplier (2);
+		landscape.setCityViewImageFile ("/momime.client.graphics/cityView/landscape/arcanus.png");
+		
+		final List<CityViewElement> elements = new ArrayList<CityViewElement> ();
+		elements.add (landscape);
+		when (gfx.getCityViewElement ()).thenReturn (elements);
+
+		// Set up animation controller
+		final AnimationControllerImpl anim = new AnimationControllerImpl ();
+		anim.setGraphicsDB (gfx);
+		anim.setUtils (utils);
+		
 		// Set up terrain panel
 		final CityViewPanel panel = new CityViewPanel ();
 		panel.setUtils (utils);
 		panel.setGraphicsDB (gfx);
+		panel.setAnim (anim);
 		
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
 		resourceValueClientUtils.setGraphicsDB (gfx);
 		resourceValueClientUtils.setUtils (utils);
-		
-		// Set up animation controller
-		final AnimationControllerImpl anim = new AnimationControllerImpl ();
-		anim.setGraphicsDB (gfx);
-		anim.setUtils (utils);
 		
 		// Set up form
 		final CityViewUI cityView = new CityViewUI ();

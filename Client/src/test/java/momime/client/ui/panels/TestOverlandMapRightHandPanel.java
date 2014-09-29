@@ -10,15 +10,20 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
+import momime.client.database.ClientDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.v0_9_5.SpellBookSection;
+import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
@@ -64,6 +69,7 @@ public final class TestOverlandMapRightHandPanel
 		when (lang.findCategoryEntry ("frmMapRightHandBar", "SimultaneousTurnsLine2")).thenReturn ("other players");
 		when (lang.findCategoryEntry ("frmMapRightHandBar", "ProductionPerTurn")).thenReturn ("AMOUNT_PER_TURN PRODUCTION_TYPE per turn");
 		when (lang.findCategoryEntry ("frmMapRightHandBar", "ProductionPerTurnMagicPower")).thenReturn ("Power Base AMOUNT_PER_TURN");
+		when (lang.findCategoryEntry ("frmMapRightHandBar", "TargetSpell")).thenReturn ("Target Spell");
 		
 		final ProductionType goldProduction = new ProductionType ();
 		goldProduction.setProductionTypeDescription ("Gold");
@@ -79,11 +85,26 @@ public final class TestOverlandMapRightHandPanel
 		manaProduction.setProductionTypeSuffix ("MP");
 		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
 		
+		final SpellBookSection section = new SpellBookSection ();
+		section.setSpellTargetPrompt ("Select a friendly city to cast your SPELL_NAME spell on");
+		when (lang.findSpellBookSection (SpellBookSectionID.CITY_ENCHANTMENTS)).thenReturn (section);
+		
+		final momime.client.language.database.v0_9_5.Spell spellLang = new momime.client.language.database.v0_9_5.Spell ();
+		spellLang.setSpellName ("Heavenly Light");
+		when (lang.findSpell ("SP001")).thenReturn (spellLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock entries from client DB
+		final Spell spell = new Spell ();
+		spell.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
+		
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		when (db.findSpell ("SP001", "OverlandMapRightHandPanel")).thenReturn (spell);
 		
 		// Player private knowledge
 		final MomPersistentPlayerPrivateKnowledge ppk = new MomPersistentPlayerPrivateKnowledge ();
@@ -91,6 +112,7 @@ public final class TestOverlandMapRightHandPanel
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 		when (client.getOurPlayerID ()).thenReturn (3);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// General public knowledge
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -202,6 +224,11 @@ public final class TestOverlandMapRightHandPanel
 		final OverlandMapRightHandPanel panel = createPanel ();
 		panel.setTop (OverlandMapRightHandPanelTop.TARGET_SPELL);
 		panel.setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+		
+		final NewTurnMessageSpellEx ntm = new NewTurnMessageSpellEx ();
+		ntm.setSpellID ("SP001");
+		
+		panel.setTargetSpell (ntm);
 		Thread.sleep (5000);
 	}
 

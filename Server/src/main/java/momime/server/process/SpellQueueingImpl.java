@@ -29,7 +29,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.MomSpellCastType;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.TargetUnitSpellResult;
+import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
@@ -225,11 +225,11 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "Cannot find the unit you are trying to target the spell on";
 				else
 				{
-					final TargetUnitSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
 						player.getPlayerDescription ().getPlayerID (), combatTargetUnit, mom.getServerDB ());
 					
-					if (validTarget != TargetUnitSpellResult.VALID_TARGET)
+					if (validTarget != TargetSpellResult.VALID_TARGET)
 					{
 						// Using the enum name isn't that great, but the client will already have
 						// performed this validation so should never see any message generated here anyway

@@ -25,17 +25,21 @@ import javax.swing.JTextArea;
 
 import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.ProductionType;
+import momime.client.language.database.v0_9_5.SpellBookSection;
+import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.v0_9_5.Spell;
 import momime.common.messages.clienttoserver.v0_9_5.CancelPendingMovementAndSpecialOrdersMessage;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.PendingMovement;
@@ -148,6 +152,15 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 	/** Card layout for bottom section */
 	private CardLayout bottomCardLayout;
+	
+	/** Title for targetting spells */
+	private JLabel targetSpellTitle;
+	
+	/** Text saying what's being targetted */
+	private JTextArea targetSpellText;
+	
+	/** NTM about the spell being targetted */
+	private NewTurnMessageSpellEx targetSpell;
 	
 	/** Cancel action */
 	private Action cancelAction;
@@ -324,9 +337,25 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		cancelAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = -5816602032653924603L;
+
 			@Override
-			public void actionPerformed (final ActionEvent e)
+			public final void actionPerformed (final ActionEvent ev)
 			{
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setTitleLanguageCategoryID ("SpellTargetting");
+				msg.setTitleLanguageEntryID ("CancelTitle");
+				msg.setTextLanguageCategoryID ("SpellTargetting");
+				msg.setTextLanguageEntryID ("CancelText");
+				msg.setCancelTargettingSpell (getTargetSpell ());
+				try
+				{
+					msg.setVisible (true);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		};
 		
@@ -459,12 +488,11 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		targetSpellPanel.setLayout (new GridBagLayout ());
 		
-		final JLabel targetSpellTitle = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getLargeFont ());
+		targetSpellTitle = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.SILVER, getLargeFont ());
 		targetSpellTitle.setText ("Target Spell");
 		targetSpellPanel.add (targetSpellTitle, getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (4, 0, 4, 0), GridBagConstraintsNoFill.CENTRE));
 		
-		final JTextArea targetSpellText = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getSmallFont ());
-		targetSpellText.setText ("Select a friendly city as the target for a Dark Rituals spell.");
+		targetSpellText = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getSmallFont ());
 		
 		final GridBagConstraints targetSpellConstraints = getUtils ().createConstraintsNoFill (0, 1, 1, 1, INSET, GridBagConstraintsNoFill.NORTH);
 		targetSpellConstraints.weightx = 1;
@@ -661,6 +689,28 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		patrolAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Patrol"));
 		waitAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Wait"));
 
+		targetSpellTitle.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", "TargetSpell"));
+		
+		// A bit more involved to set the spell targetting text correctly
+		if (getTargetSpell () != null)
+			try
+			{
+				final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
+				final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+				
+				final Spell spell = getClient ().getClientDB ().findSpell (getTargetSpell ().getSpellID (), "OverlandMapRightHandPanel");
+				final SpellBookSection section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
+				final String target = (section != null) ? section.getSpellTargetPrompt () : null;
+				
+				targetSpellText.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :
+					(target.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getTargetSpell ().getSpellID ())));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+		
+		
 		try
 		{
 			updateGlobalEconomyValues ();
@@ -881,6 +931,23 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setDoneEnabled (final boolean enabled)
 	{
 		doneAction.setEnabled (enabled);
+	}
+
+	/**
+	 * @return NTM about the spell being targetted
+	 */
+	public final NewTurnMessageSpellEx getTargetSpell ()
+	{
+		return targetSpell;
+	}
+	
+	/**
+	 * @param msg NTM about the spell being targetted
+	 */
+	public final void setTargetSpell (final NewTurnMessageSpellEx msg)
+	{
+		targetSpell = msg;
+		languageChanged ();
 	}
 	
 	/**

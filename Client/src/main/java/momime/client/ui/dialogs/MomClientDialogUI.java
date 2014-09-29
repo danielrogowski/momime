@@ -20,6 +20,9 @@ public abstract class MomClientDialogUI extends LanguageVariableUIImpl
 	
 	/** Whether the dialog box should be modal - so that unit tests can set this to false */
 	private boolean modal = true;
+	
+	/** Whether clicks close the dialog box */
+	private boolean closeOnClick = false;
 
 	/**
 	 * This is package-private so it can be accessed for setLocationRelativeTo () methods
@@ -70,9 +73,9 @@ public abstract class MomClientDialogUI extends LanguageVariableUIImpl
 					 * Record the current position of the mouse and dialog, so we know where to drag from
 					 */
 					@Override
-					public final void mousePressed (final MouseEvent e)
+					public final void mousePressed (final MouseEvent ev)
 					{
-						mouseStart = e.getLocationOnScreen ();
+						mouseStart = ev.getLocationOnScreen ();
 						dialogStart = dialog.getLocation ();
 					}
 
@@ -80,11 +83,21 @@ public abstract class MomClientDialogUI extends LanguageVariableUIImpl
 					 * Update the position of the dialog based on how far the mouse has moved
 					 */
 					@Override
-					public final void mouseDragged (final MouseEvent e)
+					public final void mouseDragged (final MouseEvent ev)
 					{
-						final Point mouseNow = e.getLocationOnScreen ();
+						final Point mouseNow = ev.getLocationOnScreen ();
 						final Point dialogNow = new Point (dialogStart.x + mouseNow.x - mouseStart.x, dialogStart.y + mouseNow.y - mouseStart.y);
 						dialog.setLocation (dialogNow);
+					}
+
+					/**
+					 * Maybe close the dialog with a mouse click
+					 */
+					@Override
+					public final void mouseClicked (final MouseEvent ev)
+					{
+						if (isCloseOnClick ())
+							dialog.dispose ();
 					}
 				};
 				
@@ -117,5 +130,21 @@ public abstract class MomClientDialogUI extends LanguageVariableUIImpl
 	final void setModal (final boolean value)
 	{
 		modal = value;
+	}
+
+	/**
+	 * @return Whether clicks close the dialog box
+	 */
+	final boolean isCloseOnClick ()
+	{
+		return closeOnClick;
+	}
+
+	/**
+	 * @param close Whether clicks close the dialog box
+	 */
+	final void setCloseOnClick (final boolean close)
+	{
+		closeOnClick = close;
 	}
 }

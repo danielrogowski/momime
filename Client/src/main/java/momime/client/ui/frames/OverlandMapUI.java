@@ -30,12 +30,18 @@ import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
+import momime.client.language.database.v0_9_5.Building;
 import momime.client.messages.process.MoveUnitStackOverlandMessageImpl;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.database.v0_9_5.Spell;
+import momime.common.database.v0_9_5.SpellBookSectionID;
+import momime.common.messages.clienttoserver.v0_9_5.TargetSpellMessage;
 import momime.common.messages.servertoclient.v0_9_5.MapVolumeOfOverlandMoveType;
 import momime.common.messages.servertoclient.v0_9_5.OverlandMoveTypeID;
 import momime.common.messages.v0_9_5.MemoryGridCell;
@@ -46,6 +52,8 @@ import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.messages.v0_9_5.UnitSpecialOrder;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.TargetSpellResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -116,6 +124,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** Client config, containing various overland map settings */
 	private MomImeClientConfig clientConfig;
+
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Unit stack that's in the middle of moving from one cell to another */
 	private MoveUnitStackOverlandMessageImpl unitStackMoving;
@@ -753,19 +764,19 @@ public final class OverlandMapUI extends MomClientFrameUI
 					while (mapCellY < 0) mapCellY = mapCellY + mapSize.getHeight ();
 					while (mapCellY >= mapSize.getHeight ()) mapCellY = mapCellY - mapSize.getHeight ();
 
+					final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane);
 					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX);
 					
 					try
 					{
+						// Right clicking to get unit info screen
 						if (ev.getButton () != MouseEvent.BUTTON1)
 						{
-							// Right clicking
 							final OverlandMapCityData cityData = mc.getCityData ();
 							if ((cityData != null) && (cityData.getCityPopulation () != null) && (cityData.getCityPopulation () > 0))
 							{
 								// Right clicking on a city to get the city screen up - is there a city view already open for this city?
-								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane);
 								CityViewUI cityView = getClient ().getCityViews ().get (cityLocation.toString ());
 								if (cityView == null)
 								{
@@ -785,17 +796,76 @@ public final class OverlandMapUI extends MomClientFrameUI
 									getOverlandMapProcessing ().showSelectUnitBoxes (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
 							}
 						}
-						else
+						
+						// Left clicking to target an overland spell
+						else if (getOverlandMapRightHandPanel ().getTop () == OverlandMapRightHandPanelTop.TARGET_SPELL)
 						{
-							// Left clicking on a space to move a stack of units to - can only do this if its our turn
-							if (((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
-								(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
-								(getMovementTypes () != null) &&
-								(getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX) != OverlandMoveTypeID.CANNOT_MOVE_HERE))
-								
-								// NB. We don't check here that we actually have a unit selected - MoveUnitStackTo does this for us
-								getOverlandMapProcessing ().moveUnitStackTo (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
+							final Spell spell = getClient ().getClientDB ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID (), "OverlandMapUI");
+							if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) ||
+								(spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
+							{
+								// If there isn't even a city here then don't even display a message
+								if ((mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () != null) && (mc.getCityData ().getCityPopulation () > 0))
+								{
+									// Use common routine to do all the validation
+									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
+										(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
+										getClient ().getOurPlayerID (), cityLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getClientDB ());
+									
+									if (validTarget == TargetSpellResult.VALID_TARGET)
+									{
+										final TargetSpellMessage msg = new TargetSpellMessage ();
+										msg.setSpellID (spell.getSpellID ());
+										msg.setCityLocation (cityLocation);
+										getClient ().getServerConnection ().sendMessageToServer (msg);
+										
+										// Close out the "Target Spell" right hand panel
+										getOverlandMapProcessing ().updateMovementRemaining ();
+									}
+									else if (validTarget.getCityLanguageEntryID () != null)
+									{
+										final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
+										final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+										
+										String buildingName;
+										if (spell.getBuildingID () == null)
+											buildingName = "";
+										else
+										{
+											final Building buildingLang = getLanguage ().findBuilding (spell.getBuildingID ());
+											buildingName = (buildingLang != null) ? buildingLang.getBuildingName () : null;
+											if (buildingName == null)
+												buildingName = "";
+										}
+										
+										final String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getCityLanguageEntryID ()).replaceAll
+											("SPELL_NAME", (spellName != null) ? spellName : getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ()).replaceAll
+											("BUILDING_NAME", buildingName);
+										
+										final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+										msg.setTitleLanguageCategoryID ("SpellTargetting");
+										msg.setTitleLanguageEntryID ("Title");
+										msg.setText (text);
+										msg.setVisible (true);												
+									}
+								}
+							}
+							
+							// NB. There are no overland unit curses
+							else if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+							{
+							}
 						}
+						
+						// Left clicking on a space to move a stack of units to - can only do this if its our turn
+						else if (((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
+							(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
+							(getMovementTypes () != null) &&
+							(getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX) != OverlandMoveTypeID.CANNOT_MOVE_HERE))
+							
+							// NB. We don't check here that we actually have a unit selected - MoveUnitStackTo does this for us
+							getOverlandMapProcessing ().moveUnitStackTo (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
 					}
 					catch (final Exception e)
 					{
@@ -1289,6 +1359,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setClientConfig (final MomImeClientConfig config)
 	{
 		clientConfig = config;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 	
 	/**

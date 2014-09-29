@@ -18,6 +18,7 @@ import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
 
 import com.ndg.multiplayer.base.client.ClientToServerConnection;
+import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
@@ -47,6 +48,16 @@ public interface MomClient
 	 * @throws XMLStreamException If there is a problem sending something to connecting client
 	 */
 	public void connect () throws IOException, InterruptedException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Finishes a custom duration message, or an animated message with isFinishAfterDuration = false
+	 * 
+	 * @param msg Message to finish
+	 * @throws IOException If we are unable to process the message
+	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
+	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
+	 */
+	public void finishCustomDurationMessage (final CustomDurationServerToClientMessage msg) throws IOException, JAXBException, XMLStreamException;
 	
 	// Methods implemented in MultiplayerSessionClient
 	

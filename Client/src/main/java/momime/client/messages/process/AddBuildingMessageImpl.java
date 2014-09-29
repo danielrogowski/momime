@@ -6,21 +6,27 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.frames.ChangeConstructionUI;
+import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessage;
 import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.v0_9_5.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 
 /**
  * Server sends this to clients to tell them about a building added to a city
  */
-public final class AddBuildingMessageImpl extends AddBuildingMessage implements BaseServerToClientMessage
+public final class AddBuildingMessageImpl extends AddBuildingMessage implements CustomDurationServerToClientMessage
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (AddBuildingMessageImpl.class);
@@ -30,6 +36,15 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
+	/** New turn messages UI */
+	private NewTurnMessagesUI newTurnMessagesUI;
 	
 	/**
 	 * Method called when this message is sent in isolation
@@ -43,10 +58,48 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	{
 		log.trace ("Entering start: " + getData ().getCityLocation () + ", " + getData ().getFirstBuildingID () + ", " + getData ().getSecondBuildingID ());
 		
-		processOneUpdate ();
+		// If its a city spell, show an animation for it and don't even add the spell yet - the animation handles that as well
+		boolean animated = false;
+		if (getData ().getBuildingCreatedFromSpellID () != null)
+		{
+			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+			if ((getData ().getBuildingCreationSpellCastByPlayerID () != null) && (getData ().getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ())) &&
+				(getOverlandMapRightHandPanel ().getTargetSpell () != null) && (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getData ().getBuildingCreatedFromSpellID ())))
+			{
+				getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getData ().getCityLocation ());
+				
+				// Redraw the NTMs
+				getNewTurnMessagesUI ().languageChanged ();
+			}
+			
+			// If we cast it OR its our city, then display a popup window for it
+			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getData ().getCityLocation ().getZ ()).getRow ().get (getData ().getCityLocation ().getY ()).getCell ().get (getData ().getCityLocation ().getX ()).getCityData ();
+			
+			if (((getData ().getBuildingCreationSpellCastByPlayerID () != null) && (getData ().getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
+				((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID ().equals (getClient ().getOurPlayerID ()))))
+			{
+				animated = true;
+				
+				final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
+				miniCityView.setCityLocation ((MapCoordinates3DEx) getData ().getCityLocation ());
+				miniCityView.setBuildingMessage (this);
+				miniCityView.setVisible (true);
+			}
+		}
 		
-		// Building may have been city walls and so affect the overland map view
-		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+		// If no spell animation, then just add it right away
+		if (!animated)
+		{
+			processOneUpdate ();
+			
+			// Building may have been city walls and so affect the overland map view
+			getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+	
+			// Don't halt processing of messages
+			getClient ().finishCustomDurationMessage (this);
+			
+		}
 		
 		log.trace ("Exiting start");
 	}
@@ -74,6 +127,18 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (secondBuilding);
 		}
 		
+		// If we've got a city screen open showing this location, may need to set up animation to display the new building(s)
+		final CityViewUI cityView = getClient ().getCityViews ().get (getData ().getCityLocation ().toString ());
+		if (cityView != null)
+			try
+			{
+				cityView.cityDataChanged ();
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}		
+		
 		// Addition of a building will alter what we can construct in that city, if we've got the change construction screen open
 		final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getData ().getCityLocation ().toString ());
 		if (changeConstruction != null)
@@ -87,6 +152,14 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 			}		
 		
 		log.trace ("Exiting processOneUpdate");
+	}
+	
+	/**
+	 * Nothing to do here when the message completes, because its all handled in MiniCityViewUI
+	 */
+	@Override
+	public final void finish ()
+	{
 	}
 	
 	/**
@@ -119,5 +192,53 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	public final void setOverlandMapUI (final OverlandMapUI ui)
 	{
 		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
+	}
+
+	/**
+	 * @return New turn messages UI
+	 */
+	public final NewTurnMessagesUI getNewTurnMessagesUI ()
+	{
+		return newTurnMessagesUI;
+	}
+
+	/**
+	 * @param ui New turn messages UI
+	 */
+	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
+	{
+		newTurnMessagesUI = ui;
 	}
 }

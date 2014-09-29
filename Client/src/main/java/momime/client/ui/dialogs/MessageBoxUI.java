@@ -18,7 +18,11 @@ import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
+import momime.client.newturnmessages.NewTurnMessageSpellEx;
+import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.NewTurnMessagesUI;
+import momime.common.messages.clienttoserver.v0_9_5.CancelTargetSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_5.DismissUnitMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RequestResearchSpellMessage;
@@ -45,6 +49,12 @@ public final class MessageBoxUI extends MomClientDialogUI
 	
 	/** Small font */
 	private Font smallFont;
+	
+	/** New turn messages UI */
+	private NewTurnMessagesUI newTurnMessagesUI;
+	
+	/** Turn sequence and movement helper methods */
+	private OverlandMapProcessing overlandMapProcessing;
 	
 	/** OK action */
 	private Action okAction;
@@ -91,6 +101,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/** The spell we're trying to cast; null if the message box isn't about casting a spell */
 	private String castSpellID;
 	
+	/** The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targetting a spell */
+	private NewTurnMessageSpellEx cancelTargettingSpell;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 8;
 	
@@ -127,6 +140,18 @@ public final class MessageBoxUI extends MomClientDialogUI
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				try
+				{
+					// Cancel cancel targetting a spell, leaving it on the NTM list to be retargetted again, but still we have to close out the "Target Spell" right hand panel
+					if (getCancelTargettingSpell () != null)
+						getOverlandMapProcessing ().updateMovementRemaining ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+
+				// Close the form
 				getDialog ().dispose ();
 			}
 		};
@@ -182,6 +207,24 @@ public final class MessageBoxUI extends MomClientDialogUI
 						getClient ().getServerConnection ().sendMessageToServer (msg);
 					}
 					
+					// Cancel targetting a spell
+					else if (getCancelTargettingSpell () != null)
+					{
+						// Mark the NTM as cancelled
+						getCancelTargettingSpell ().setTargettingCancelled (true);
+						
+						// Redraw the NTMs
+						getNewTurnMessagesUI ().languageChanged ();
+						
+						// Server will have spell listed in their Maintained Spells list, so tell the server to remove it
+						final CancelTargetSpellMessage msg = new CancelTargetSpellMessage ();
+						msg.setSpellID (getCancelTargettingSpell ().getSpellID ());
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+						
+						// Close out the "Target Spell" right hand panel
+						getOverlandMapProcessing ().updateMovementRemaining ();
+					}
+					
 					else
 						log.warn ("MessageBoxUI had yes button clicked for text \"" + messageText.getText () + " but took no action");
 				}
@@ -213,7 +256,8 @@ public final class MessageBoxUI extends MomClientDialogUI
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
 		
-		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null)) ? 1 : 2;
+		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null) && (getResearchSpellID () == null) &&
+			(getCastSpellID () == null) && (getCancelTargettingSpell () == null)) ? 1 : 2;
 		
 		final GridBagConstraints constraints = getUtils ().createConstraintsBothFill (0, 0, buttonCount, 1, new Insets (INSET, INSET, 3, INSET));
 		constraints.weightx = 1;
@@ -309,6 +353,38 @@ public final class MessageBoxUI extends MomClientDialogUI
 		smallFont = font;
 	}
 
+	/**
+	 * @return New turn messages UI
+	 */
+	public final NewTurnMessagesUI getNewTurnMessagesUI ()
+	{
+		return newTurnMessagesUI;
+	}
+
+	/**
+	 * @param ui New turn messages UI
+	 */
+	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
+	{
+		newTurnMessagesUI = ui;
+	}
+	
+	/**
+	 * @return Turn sequence and movement helper methods
+	 */
+	public final OverlandMapProcessing getOverlandMapProcessing ()
+	{
+		return overlandMapProcessing;
+	}
+
+	/**
+	 * @param proc Turn sequence and movement helper methods
+	 */
+	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
+	{
+		overlandMapProcessing = proc;
+	}
+	
 	/**
 	 * @return Language category ID to use for the title; null if title is not language-variable
 	 */
@@ -483,5 +559,21 @@ public final class MessageBoxUI extends MomClientDialogUI
 	public final void setCastSpellID (final String spellID)
 	{
 		castSpellID = spellID;
+	}
+
+	/**
+	 * @return The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targetting a spell
+	 */
+	public final NewTurnMessageSpellEx getCancelTargettingSpell ()
+	{
+		return cancelTargettingSpell;
+	}
+
+	/**
+	 * @param msg The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targetting a spell
+	 */
+	public final void setCancelTargettingSpell (final NewTurnMessageSpellEx msg)
+	{
+		cancelTargettingSpell = msg;
 	}
 }

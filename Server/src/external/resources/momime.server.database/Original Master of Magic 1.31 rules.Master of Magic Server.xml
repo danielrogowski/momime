@@ -19359,6 +19359,7 @@
 		<languageEntry languageEntryID="SimultaneousTurnsLine2" />
 		<languageEntry languageEntryID="ProductionPerTurn" />
 		<languageEntry languageEntryID="ProductionPerTurnMagicPower" />
+		<languageEntry languageEntryID="TargetSpell" />
 	</languageCategory>	
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title" />
@@ -19512,11 +19513,19 @@
 		<languageEntry languageEntryID="SomeoneElseHasCast" />
 	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
+		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="InvalidMagicRealmLifeformType" />
-		<languageEntry languageEntryID="NoSpellEffectIDsDefined" />
+		<languageEntry languageEntryID="NoUnitSpellEffectIDsDefined" />
 		<languageEntry languageEntryID="EnchantingEnemyUnit" />
 		<languageEntry languageEntryID="CursingOwnUnit" />
-		<languageEntry languageEntryID="AlreadyHasAllPossibleSpellEffects" />
+		<languageEntry languageEntryID="AlreadyHasAllPossibleUnitSpellEffects" />
+		<languageEntry languageEntryID="NoCitySpellEffectIDsDefined" />
+		<languageEntry languageEntryID="EnchantingEnemyCity" />
+		<languageEntry languageEntryID="CursingOwnCity" />
+		<languageEntry languageEntryID="AlreadyHasAllPossibleCitySpellEffects" />
+		<languageEntry languageEntryID="AlreadyHasBuilding" />
+		<languageEntry languageEntryID="CancelTitle" />
+		<languageEntry languageEntryID="CancelText" />
 	</languageCategory>
 	<languageCategory languageCategoryID="CombatDamage">
 		<languageEntry languageEntryID="AttackStatistics" />
@@ -19624,7 +19633,11 @@
 		<languageEntry languageEntryID="OurOverlandEnchantmentLastTurn" />
 		<languageEntry languageEntryID="EnemyOverlandEnchantment" />
 		<languageEntry languageEntryID="EnemyOverlandEnchantmentLastTurn" />
+		<languageEntry languageEntryID="TargetSpell" />
+		<languageEntry languageEntryID="TargetSpellChosen" />
+		<languageEntry languageEntryID="TargetSpellCancelled" />
+		<languageEntry languageEntryID="TargetSpellChosenLastTurn" />
+		<languageEntry languageEntryID="TargetSpellCancelledLastTurn" />
 		<languageEntry languageEntryID="NodesCategory" />
 	</languageCategory>
 </momimesvr:serverDatabase>
-

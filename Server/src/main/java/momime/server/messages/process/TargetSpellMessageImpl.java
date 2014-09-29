@@ -18,10 +18,11 @@ import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.TargetUnitSpellResult;
+import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Spell;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
@@ -118,47 +119,30 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					error = "The coordinates you are trying to aim a city spell at are off the edge of the map";
 				else
 				{
-					// Get the city we're casting the spell on
-					final OverlandMapCityData city = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-						(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
-					
-					// Get the list of possible citySpellEffectIDs that this spell might cast
-					final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
-						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getCityLocation ());
-					
-					if ((spell.getBuildingID () == null) && (citySpellEffectIDs == null))
-						error = "Spell does not specify any city effects or a building ID so code doesn't know what to do with it";
-					
-					else if (city == null)
-						error = "There is no city at this location";
-					
-					else if ((city.getCityPopulation () == null) || (city.getCityPopulation () <= 0))
-						error = "The city you are trying to cast a spell on has been razed and no longer exists";
-					
-					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) &&
-						(city.getCityOwnerID () != sender.getPlayerDescription ().getPlayerID ()))
-						error = "This spell can only be targetted at cities that you own";
-					
-					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES) &&
-						(city.getCityOwnerID () == sender.getPlayerDescription ().getPlayerID ()))
-						error = "This spell can only be targetted at enemy cities";
-					
-					else if ((citySpellEffectIDs != null) && (citySpellEffectIDs.size () == 0))
-						error = "This city already has this enchantment cast on it";
-					
-					else if ((citySpellEffectIDs == null) && (getMemoryBuildingUtils ().findBuilding
-						(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), (MapCoordinates3DEx) getCityLocation (), spell.getBuildingID ())))
-						error = "This city already has the type of building that this spell creates";
-					
-					else
+					// Common routine used by both the client and server does the guts of the validation work
+					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getCityLocation (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
+					if (reason == TargetSpellResult.VALID_TARGET)
 					{
-						// Must be a valid target
-						// Choose an effect at random, unless this is a spell that creates a building
-						// In future this will need to be made choosable for Spell Ward
-						error = null;
-						if (citySpellEffectIDs != null)
-							citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
-					}					
+						// Looks ok but weird if at this point we can't find a free skill ID
+						final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
+							(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getCityLocation ());
+						if ((spell.getBuildingID () == null) && ((citySpellEffectIDs == null) || (citySpellEffectIDs.size () == 0)))
+							error = "City is supposedly a valid target, yet couldn't find any citySpellEffectIDs to use or a building to create";
+						else
+						{
+							// Must be a valid target
+							// Choose an effect at random, unless this is a spell that creates a building
+							// In future this will need to be made choosable for Spell Ward
+							error = null;
+							if ((citySpellEffectIDs != null) && (citySpellEffectIDs.size () > 0))
+								citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
+						}
+					}
+					else
+						// Using the enum name isn't that great, but the client will already have performed this validation so should never see any message generated here anyway
+						error = "This city is not a valid target for this spell for reason " + reason;
 				}				
 			}
 			
@@ -171,9 +155,9 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				else
 				{
 					// Common routine used by both the client and server does the guts of the validation work
-					final TargetUnitSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 						spell, sender.getPlayerDescription ().getPlayerID (), unit, mom.getServerDB ());
-					if (reason == TargetUnitSpellResult.VALID_TARGET)
+					if (reason == TargetSpellResult.VALID_TARGET)
 					{
 						// Looks ok but weird if at this point we can't find a free skill ID
 						final List<String> unitSkillIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
@@ -258,6 +242,18 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 							}
 						}
 					}
+				}
+
+				// Is the building that the spell is adding the same as what was being constructed?  If so then reset construction.
+				// (Casting Wall of Stone in a city that's building City Walls).
+				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+							
+				if ((cityData != null) && (spell.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ())))
+				{
+					cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getPlayers (), (MapCoordinates3DEx) cityLocation, mom.getSessionDescription ().getFogOfWarSetting (), false);
 				}
 				
 				// First create the building(s) on the server

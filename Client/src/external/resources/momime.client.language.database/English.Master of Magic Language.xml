@@ -5209,6 +5209,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="ProductionPerTurnMagicPower">
 			<languageEntryText>Power Base AMOUNT_PER_TURN</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="TargetSpell">
+			<languageEntryText>Target Spell</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmNameCity">
 		<languageEntry languageEntryID="Title">
@@ -5606,10 +5609,13 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Target Spell</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="InvalidMagicRealmLifeformType">
 			<languageEntryText>This spell can only be cast on the following type(s) of unit:</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="NoSpellEffectIDsDefined">
+		<languageEntry languageEntryID="NoUnitSpellEffectIDsDefined">
 			<languageEntryText>Definition for spell SPELL_NAME does not specify any unit effects.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="EnchantingEnemyUnit">
@@ -5618,8 +5624,29 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="CursingOwnUnit">
 			<languageEntryText>SPELL_NAME can only be cast on enemy units.</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="AlreadyHasAllPossibleSpellEffects">
+		<languageEntry languageEntryID="AlreadyHasAllPossibleUnitSpellEffects">
 			<languageEntryText>This unit already has SPELL_NAME cast on it.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NoCitySpellEffectIDsDefined">
+			<languageEntryText>Definition for spell SPELL_NAME does not specify any city effects or a building.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="EnchantingEnemyCity">
+			<languageEntryText>SPELL_NAME can only be cast on your own cities.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CursingOwnCity">
+			<languageEntryText>SPELL_NAME can only be cast on enemy cities.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AlreadyHasAllPossibleCitySpellEffects">
+			<languageEntryText>This city already has SPELL_NAME cast on it.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AlreadyHasBuilding">
+			<languageEntryText>This city already a BUILDING_NAME.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CancelTitle">
+			<languageEntryText>Cancel Spell</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="CancelText">
+			<languageEntryText>Do you want to cancel the spell completely and lose it?  Clicking No will leave the spell untargetted so you can select a target for later in your turn; clicking Yes cancels it completely.</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="CombatDamage">
@@ -5917,6 +5944,21 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="EnemyOverlandEnchantmentLastTurn">
 			<languageEntryText>Last turn PLAYER_NAME completed casting SPELL_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TargetSpell">
+			<languageEntryText>You have completed casting SPELL_NAME and need to choose a target for it</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TargetSpellChosen">
+			<languageEntryText>You have completed casting SPELL_NAME and cast it on TARGET</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TargetSpellCancelled">
+			<languageEntryText>You have completed casting SPELL_NAME but cancelled it rather than choosing a target for it</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TargetSpellChosenLastTurn">
+			<languageEntryText>Last turn you completed casting SPELL_NAME and cast it on TARGET</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TargetSpellCancelledLastTurn">
+			<languageEntryText>Last turn you completed casting SPELL_NAME but cancelled it rather than choosing a target for it</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="NodesCategory">
 			<languageEntryText>Nodes</languageEntryText>

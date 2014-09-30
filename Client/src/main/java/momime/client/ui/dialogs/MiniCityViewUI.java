@@ -1,10 +1,8 @@
 package momime.client.ui.dialogs;
 
-import java.awt.Dimension;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -36,7 +34,8 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Mini city screen, used to show spells and random effects.
@@ -46,6 +45,9 @@ public final class MiniCityViewUI extends MomClientDialogUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MiniCityViewUI.class);
+	
+	/** XML layout */
+	private XmlLayoutContainerEx miniCityViewLayout;
 	
 	/** Large font */
 	private Font largeFont;
@@ -71,9 +73,6 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/** The city being viewed */
 	private MapCoordinates3DEx cityLocation;
 
-	/** Typical inset used on this screen layout */
-	private final static int INSET = 0;
-	
 	/** City size+name label */
 	private JLabel cityNameLabel;
 	
@@ -156,20 +155,17 @@ public final class MiniCityViewUI extends MomClientDialogUI
 			}
 		};
 		
-		final Dimension fixedSize = new Dimension (background.getWidth () * 2, background.getHeight () * 2);
- 		contentPane.setPreferredSize (fixedSize);
-		
 		// Set up layout
-		contentPane.setLayout (new GridBagLayout ());
+		contentPane.setLayout (new XmlLayoutManager (getMiniCityViewLayout ()));
 
-		cityNameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		contentPane.add (cityNameLabel, getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (10, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
+		cityNameLabel = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (cityNameLabel, "frmMiniCityName");
 
 		getCityViewPanel ().setCityLocation (getCityLocation ());
-		contentPane.add (getCityViewPanel (), getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (14, 0, 4, 4), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (getCityViewPanel (), "frmMiniCityView");
 		
-		textLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		contentPane.add (textLabel, getUtils ().createConstraintsNoFill (0, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		textLabel = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (textLabel, "frmMiniCityText");
 
 		// Make the spell appear after a few seconds
 		String spellID = null;
@@ -335,6 +331,22 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		log.trace ("Exiting languageChanged");
 	}
 
+	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getMiniCityViewLayout ()
+	{
+		return miniCityViewLayout;
+	}
+
+	/**
+	 * @param layout XML layout
+	 */
+	public final void setMiniCityViewLayout (final XmlLayoutContainerEx layout)
+	{
+		miniCityViewLayout = layout;
+	}
+	
 	/**
 	 * @return Large font
 	 */

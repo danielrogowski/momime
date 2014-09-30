@@ -36,6 +36,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the MiniCityViewUI class
@@ -154,6 +155,10 @@ public final class TestMiniCityViewUI
 		panel.setAnim (anim);
 		panel.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());		// Since we need it to really look for the spell
 
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/frmMiniCity.xml"));
+		layout.buildMaps ();
+		
 		// Set up form
 		final MiniCityViewUI cityView = new MiniCityViewUI ();
 		cityView.setUtils (utils);
@@ -165,6 +170,7 @@ public final class TestMiniCityViewUI
 		cityView.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		cityView.setCityViewPanel (panel);
 		cityView.setLargeFont (CreateFontsForTests.getLargeFont ());
+		cityView.setMiniCityViewLayout (layout);
 		cityView.setSpellMessage (msg);
 	
 		// Display form

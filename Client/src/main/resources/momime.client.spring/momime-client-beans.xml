@@ -158,7 +158,40 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="languageHolder" class ="momime.client.language.database.LanguageDatabaseHolder">
 		<property name="language" ref="languageDatabase" />
 	</bean>
+
+	<!-- XML layouts -->
+
+	<bean id="xmlLayoutSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg value="/com.ndg.swing.layoutmanagers/XmlLayout.xsd"/>
+	</bean>
 	
+	<bean id="xmlLayoutJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+	
+	<bean id="xmlLayoutObjectFactory" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory" />
+	
+	<bean id="xmlLayoutUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="xmlLayoutJaxbContext" factory-method="createUnmarshaller">
+		<property name="schema" ref="xmlLayoutSchema" />
+	</bean>
+
+	<bean id="configureXmlLayoutUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="xmlLayoutUnmarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>com.sun.xml.bind.ObjectFactory</value>
+				<array>
+					<ref bean="xmlLayoutObjectFactory" />
+				</array>
+			</list>
+		</property>
+	</bean>
+
 	<!-- Create extended versions of server to clientmessages which include message implementations -->
 
 	<bean id="momClientServerToClientServerFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
@@ -907,7 +940,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityViewPanel" ref="cityViewPanel" />									<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 	
+	<bean id="miniCityViewLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/frmMiniCity.xml" />
+	</bean>
+	
 	<bean id="miniCityViewUI" class="momime.client.ui.dialogs.MiniCityViewUI" scope="prototype">
+		<property name="miniCityViewLayout" ref="miniCityViewLayout" />
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />

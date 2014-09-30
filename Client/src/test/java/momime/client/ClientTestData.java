@@ -34,6 +34,9 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutConstants;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
 
 /**
  * Since the tests in the common project can't use the XML file (since the classes generated from the server XSD that allow
@@ -181,6 +184,26 @@ public final class ClientTestData
 		}
 
 		return map;
+	}
+	
+	/**
+	 * @return XML layout unmarshaller
+	 * @throws Exception If there is a problem
+	 */
+	public final static Unmarshaller createXmlLayoutUnmarshaller () throws Exception
+	{
+		// XSD
+		final URL xsdResource = new Object ().getClass ().getResource (XmlLayoutConstants.XML_LAYOUT_XSD_LOCATION);
+		assertNotNull ("XML layout XSD could not be found on classpath", xsdResource);
+
+		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		final Schema schema = schemaFactory.newSchema (xsdResource);
+
+		final Unmarshaller unmarshaller = JAXBContext.newInstance (XmlLayoutContainer.class).createUnmarshaller ();		
+		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new XmlLayoutObjectFactory ()});
+		unmarshaller.setSchema (schema);
+		
+		return unmarshaller;
 	}
 	
 	/**

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>434</formWidth>
+	<formHeight>280</formHeight>
+	<component name="frmMiniCityName">
+		<left>217</left>
+		<top>29</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.5</verticalAlignment>
+	</component>
+	<component name="frmMiniCityView">
+		<left>10</left>
+		<top>54</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMiniCityText">
+		<left>217</left>
+		<top>261</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.5</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

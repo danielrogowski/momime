@@ -9,6 +9,7 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetEx;
+import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.utils.UnitClientUtils;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
@@ -135,6 +136,11 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 				unitToDraw = u;
 		}
 		
+		// If we've got the city screen open for the map cell the units just left then we need to update it to remove their select unit buttons
+		final CityViewUI cityView = getClient ().getCityViews ().get (getMoveFrom ().toString ());
+		if (cityView != null)
+			cityView.unitsChanged ();
+		
 		// We need this repeatedly so just work it out once
 		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "MoveUnitStackOverlandMessageImpl.start");
 		tickCount = Math.max (overlandMapTileSet.getTileWidth (), overlandMapTileSet.getTileHeight ());
@@ -215,6 +221,11 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		
 		getOverlandMapUI ().setUnitStackMoving (null);
 		getOverlandMapUI ().repaintSceneryPanel ();
+		
+		// If we've got the city screen open for the map cell the units just moved into then we need to update it to add their select unit buttons
+		final CityViewUI cityView = getClient ().getCityViews ().get (getMoveTo ().toString ());
+		if (cityView != null)
+			cityView.unitsChanged ();
 		
 		log.trace ("Exiting finish");
 	}

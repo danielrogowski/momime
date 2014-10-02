@@ -15,24 +15,33 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceEx;
-import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.language.database.v0_9_5.Building;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Race;
+import momime.client.language.database.v0_9_5.Spell;
 import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.process.OverlandMapProcessing;
@@ -42,6 +51,7 @@ import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.panels.BuildingListener;
 import momime.client.ui.panels.CityViewPanel;
+import momime.client.ui.renderer.MemoryMaintainedSpellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
@@ -57,6 +67,7 @@ import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.UnitStatusID;
@@ -68,8 +79,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsHorizontalFill;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * City screen, so you can view current buildings, production and civilians, examine
@@ -79,6 +92,9 @@ public final class CityViewUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (CityViewUI.class);
+	
+	/** XML layout */
+	private XmlLayoutContainerEx cityViewLayout;
 	
 	/** Large font */
 	private Font largeFont;
@@ -140,11 +156,17 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
+	/** Renderer for the enchantments list */
+	private MemoryMaintainedSpellRenderer memoryMaintainedSpellRenderer;
+
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
 	
 	/** Tiny 1 pixel inset */
 	private final static int TINY_INSET = 1;
+	
+	/** Content pane */
+	private JPanel contentPane;
 	
 	/** City size+name label */
 	private JLabel cityNameLabel;
@@ -197,8 +219,14 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Sample unit to display in constructionpanel */
 	private AvailableUnit sampleUnit;
 	
-	/** Panel containing all the select unit buttons */
-	private JPanel unitPanel;
+	/** Dynamically created select unit buttons */
+	private List<SelectUnitButton> selectUnitButtons = new ArrayList<SelectUnitButton> ();
+	
+	/** Items in the Enchantments box */
+	private DefaultListModel<MemoryMaintainedSpell> spellsItems;
+	
+	/** Enchantments list box */
+	private JList<MemoryMaintainedSpell> spellsList;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -218,12 +246,12 @@ public final class CityViewUI extends MomClientFrameUI
 		final BufferedImage progressCoinDone = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/productionProgressDone.png");
 		final BufferedImage progressCoinNotDone = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/productionProgressNotDone.png");
 
-		final Dimension constructionProgressPanelSize = new Dimension (132, 62);
+		final XmlLayoutComponent constructionProgressPanelSize = getCityViewLayout ().findComponent ("frmCityConstructionProgress");
 		
 		// What's the maximum number of progress coins we can fit in the box
 		// Assume a gap of 1 between each coin
-		final int coinsTotal = ((constructionProgressPanelSize.width + 1) / (progressCoinNotDone.getWidth () + 1)) *
-			((constructionProgressPanelSize.height + 1) / (progressCoinNotDone.getHeight () + 1));
+		final int coinsTotal = ((constructionProgressPanelSize.getWidth () + 1) / (progressCoinNotDone.getWidth () + 1)) *
+			((constructionProgressPanelSize.getHeight () + 1) / (progressCoinNotDone.getHeight () + 1));
 		
 		// So how many production points must each coin represent in order for the most expensive building to still fit in the box?
 		// Need to round up
@@ -414,7 +442,7 @@ public final class CityViewUI extends MomClientFrameUI
 		});
 		
 		// Initialize the content pane
-		final JPanel contentPane = new JPanel ()
+		contentPane = new JPanel ()
 		{
 			private static final long serialVersionUID = -63741181816458999L;
 
@@ -425,141 +453,107 @@ public final class CityViewUI extends MomClientFrameUI
 			}
 		};
 		
-		final Dimension fixedSize = new Dimension (background.getWidth () * 2, background.getHeight () * 2);
- 		contentPane.setPreferredSize (fixedSize);
-		
 		// Set up layout
-		contentPane.setLayout (new GridBagLayout ());
+		contentPane.setLayout (new XmlLayoutManager (getCityViewLayout ()));
 		
-		// Labels - put any spare space in the title bar, so everything else is pushed down
-		final GridBagConstraints cityNameConstraints = getUtils ().createConstraintsNoFill (0, 0, 4, 1, INSET, GridBagConstraintsNoFill.CENTRE);
-		cityNameConstraints.weighty = 1;
-		
-		cityNameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
-		contentPane.add (cityNameLabel, cityNameConstraints);
+		// Labels
+		cityNameLabel = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (cityNameLabel, "frmCityName");
 		
 		resourcesLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		contentPane.add (resourcesLabel, getUtils ().createConstraintsNoFill (0, 3, 1, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.WEST));
+		contentPane.add (resourcesLabel, "frmCityResources");
 		
 		enchantmentsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		contentPane.add (enchantmentsLabel, getUtils ().createConstraintsNoFill (1, 3, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		contentPane.add (enchantmentsLabel, "frmCityEnchantmentsLabel");
 		
 		terrainLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		contentPane.add (terrainLabel, getUtils ().createConstraintsNoFill (2, 3, 2, 1, new Insets (0, 4, 0, 0), GridBagConstraintsNoFill.WEST));
+		contentPane.add (terrainLabel, "frmCityTerrainLabel");
 		
 		buildings = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		contentPane.add (buildings, getUtils ().createConstraintsNoFill (0, 5, 1, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.WEST));
+		contentPane.add (buildings, "frmCityBuildings");
 		
 		production = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		contentPane.add (production, getUtils ().createConstraintsNoFill (2, 7, 2, 1, new Insets (0, 4, 0, 0), GridBagConstraintsNoFill.WEST));
+		contentPane.add (production, "frmCityProductionLabel");
 
-		// Make column 1 as wide as possible, so the 3 buttons don't get extra space
-		final GridBagConstraints unitsLabelConstraints = getUtils ().createConstraintsNoFill (0, 10, 1, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.SOUTHWEST);
-		unitsLabelConstraints.weightx = 1;
-		
 		units = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		contentPane.add (units, unitsLabelConstraints);
-		
-		// For some reason I couldn't figure out, trying to put the maximum population label into the main grid kept making
-		// the right hand column (including the OK button) too wide and I couldn't make it work right, so instead put
-		// the 3 labels into a subpanel so their columns are independant of the rest of the panel
-		final GridBagConstraints labelPanelConstraints = getUtils ().createConstraintsHorizontalFill (0, 1, 4, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE);
-		
-		final JPanel labelsPanel = new JPanel ();
-		labelsPanel.setOpaque (false);
-		labelsPanel.setLayout (new GridBagLayout ());
-		contentPane.add (labelsPanel, labelPanelConstraints);
-		
-		final GridBagConstraints raceLabelConstraints = getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.WEST);
-		raceLabelConstraints.weightx = 1;
+		contentPane.add (units, "frmCityUnits");
 		
 		raceLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
-		labelsPanel.add (raceLabel, raceLabelConstraints);
+		contentPane.add (raceLabel, "frmCityRace");
 
-		labelsPanel.add (getUtils ().createTextOnlyButton (currentPopulationAction, MomUIConstants.GOLD, getMediumFont ()),
-			getUtils ().createConstraintsNoFill (1, 0, 1, 1, new Insets (0, 0, 0, 8), GridBagConstraintsNoFill.EAST));
+		contentPane.add (getUtils ().createTextOnlyButton (currentPopulationAction, MomUIConstants.GOLD, getMediumFont ()), "frmCityGrowth");
+		contentPane.add (getUtils ().createTextOnlyButton (maximumPopulationAction, MomUIConstants.GOLD, getMediumFont ()), "frmCityMaxCitySize");
 		
-		labelsPanel.add (getUtils ().createTextOnlyButton (maximumPopulationAction, MomUIConstants.GOLD, getMediumFont ()),
-			getUtils ().createConstraintsNoFill (2, 0, 1, 1, new Insets (0, 0, 0, 8), GridBagConstraintsNoFill.EAST));
-		
-		// Buttons - put a gap of 10 underneath them to push the buttons slightly above the Units label, and 6 above to push the view panel up
-		contentPane.add (getUtils ().createImageButton (rushBuyAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
-			getUtils ().createConstraintsNoFill (1, 10, 1, 1, new Insets (6, 0, 10, 6), GridBagConstraintsNoFill.EAST));
-
-		contentPane.add (getUtils ().createImageButton (changeConstructionAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
-			getUtils ().createConstraintsNoFill (2, 10, 1, 1, new Insets (6, 0, 10, 6), GridBagConstraintsNoFill.EAST));
-
-		contentPane.add (getUtils ().createImageButton (okAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
-			getUtils ().createConstraintsNoFill (3, 10, 1, 1, new Insets (6, 0, 10, 8), GridBagConstraintsNoFill.EAST));
+		// Buttons
+		contentPane.add (getUtils ().createImageButton (rushBuyAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityBuy");
+		contentPane.add (getUtils ().createImageButton (changeConstructionAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityChange");
+		contentPane.add (getUtils ().createImageButton (okAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityOK");
 		
 		// Set up the city view panel
 		getCityViewPanel ().setCityLocation (getCityLocation ());
-		
-		final GridBagConstraints cityViewPanelConstraints = getUtils ().createConstraintsNoFill (0, 6, 2, 1, new Insets (0, 8, 0, 0), GridBagConstraintsNoFill.CENTRE);
-		cityViewPanelConstraints.gridheight = 4;
-		
-		contentPane.add (getCityViewPanel (), cityViewPanelConstraints);
+		contentPane.add (getCityViewPanel (), "frmCityView");
 		
 		// Set up the mini terrain panel
-		final TileSetEx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
-		final Dimension miniTerrainPanelSize = new Dimension (overlandMapTileSet.getTileWidth () * 7, overlandMapTileSet.getTileHeight () * 7);
-		
-		final JPanel miniTerrainPanel = new JPanel ();
-		miniTerrainPanel.setMinimumSize (miniTerrainPanelSize);
-		miniTerrainPanel.setMaximumSize (miniTerrainPanelSize);
-		miniTerrainPanel.setPreferredSize (miniTerrainPanelSize);
 
-		final GridBagConstraints miniTerrainPanelConstraints = getUtils ().createConstraintsNoFill (2, 4, 2, 1, new Insets (2, 0, 0, 10), GridBagConstraintsNoFill.EAST);
-		miniTerrainPanelConstraints.gridheight = 3;
-		
-		contentPane.add (miniTerrainPanel, miniTerrainPanelConstraints);
-		
 		// Set up the mini panel to hold all the civilians - this also has a 2 pixel gap to correct the labels above it
-		final Dimension civilianPanelSize = new Dimension (560, 36);
-		
 		civilianPanel = new JPanel ();
 		civilianPanel.setOpaque (false);
 		civilianPanel.setLayout (new GridBagLayout ());
-		civilianPanel.setMinimumSize (civilianPanelSize);
-		civilianPanel.setMaximumSize (civilianPanelSize);
-		civilianPanel.setPreferredSize (civilianPanelSize);
 		
-		contentPane.add (civilianPanel, getUtils ().createConstraintsNoFill (0, 2, 4, 1, new Insets (2, 0, 0, 0), GridBagConstraintsNoFill.CENTRE));
-
+		contentPane.add (civilianPanel, "frmCityCivilians");
+		
 		// Set up the mini panel to hold all the productions
-		// Note on this and other panels in the same row (enchantments+terrain) we put a 2 pixel filler above the panel, to push the labels above up a fraction higher
-		final Dimension productionPanelSize = new Dimension (256, 84);
-		
 		productionPanel = new JPanel ();
 		productionPanel.setOpaque (false);
 		productionPanel.setLayout (new GridBagLayout ());
-		productionPanel.setMinimumSize (productionPanelSize);
-		productionPanel.setMaximumSize (productionPanelSize);
-		productionPanel.setPreferredSize (productionPanelSize);
 		
-		contentPane.add (productionPanel, getUtils ().createConstraintsNoFill (0, 4, 1, 1, new Insets (2, 0, 0, 12), GridBagConstraintsNoFill.SOUTHEAST));
+		contentPane.add (productionPanel, "frmCityProduction");
 		
 		// Set up the mini panel to hold all the enchantments
-		final Dimension enchantmentPanelSize = new Dimension (138, 84);
+		getMemoryMaintainedSpellRenderer ().setFont (getSmallFont ());
 		
-		final JPanel enchantmentPanel = new JPanel ();
-		enchantmentPanel.setMinimumSize (enchantmentPanelSize);
-		enchantmentPanel.setMaximumSize (enchantmentPanelSize);
-		enchantmentPanel.setPreferredSize (enchantmentPanelSize);
+		spellsItems = new DefaultListModel<MemoryMaintainedSpell> ();
+		spellsList = new JList<MemoryMaintainedSpell> ();
+		spellsList.setOpaque (false);
+		spellsList.setModel (spellsItems);
+		spellsList.setCellRenderer (getMemoryMaintainedSpellRenderer ());
+		spellsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
-		contentPane.add (enchantmentPanel, getUtils ().createConstraintsNoFill (1, 4, 1, 1, new Insets (2, 0, 0, 6), GridBagConstraintsNoFill.CENTRE));
+		final JScrollPane spellsScrollPane = getUtils ().createTransparentScrollPane (spellsList);
+		spellsScrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		contentPane.add (spellsScrollPane, "frmCityEnchantments");
 		
-		// Set up the mini panel to hold all the units
-		final Dimension unitPanelSize = new Dimension (background.getWidth () * 2, 40);
-		
-		unitPanel = new JPanel ();
-		unitPanel.setLayout (new GridBagLayout ());
-		unitPanel.setOpaque (false);
-		unitPanel.setMinimumSize (unitPanelSize);
-		unitPanel.setMaximumSize (unitPanelSize);
-		unitPanel.setPreferredSize (unitPanelSize);
-		
-		contentPane.add (unitPanel, getUtils ().createConstraintsNoFill (0, 11, 4, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		// Clicking a spell asks about cancelling it
+		final ListSelectionListener spellSelectionListener = new ListSelectionListener ()
+		{
+			@Override
+			public final void valueChanged (final ListSelectionEvent ev)
+			{
+				if (spellsList.getSelectedIndex () >= 0)
+				{
+					final MemoryMaintainedSpell spell = spellsItems.get (spellsList.getSelectedIndex ());
+					if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
+					try
+					{
+						final Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+						
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setTitleLanguageCategoryID ("SpellCasting");
+						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
+						msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+							("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+						msg.setSwitchOffSpell (spell);
+						msg.setVisible (true);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			}
+		};
+		spellsList.addListSelectionListener (spellSelectionListener);
 		
 		// Set up the mini panel to show progress towards current construction
 		final JPanel constructionProgressPanel = new JPanel ()
@@ -606,7 +600,7 @@ public final class CityViewUI extends MomClientFrameUI
 							
 							// Move to next spot
 							x = x + progressCoinDone.getWidth () + 1;
-							if (x + progressCoinDone.getWidth () > constructionProgressPanelSize.width)
+							if (x + progressCoinDone.getWidth () > constructionProgressPanelSize.getWidth ())
 							{
 								x = 0;
 								y = y + progressCoinDone.getHeight () + 1;
@@ -621,15 +615,9 @@ public final class CityViewUI extends MomClientFrameUI
 			}
 		};
 		
-		constructionProgressPanel.setMinimumSize (constructionProgressPanelSize);
-		constructionProgressPanel.setMaximumSize (constructionProgressPanelSize);
-		constructionProgressPanel.setPreferredSize (constructionProgressPanelSize);
-		
-		contentPane.add (constructionProgressPanel, getUtils ().createConstraintsNoFill (2, 8, 2, 1, new Insets (8, 0, 0, 14), GridBagConstraintsNoFill.SOUTHEAST));
+		contentPane.add (constructionProgressPanel, "frmCityConstructionProgress");
 		
 		// Set up the mini panel to what's being currently constructed
-		final Dimension constructionPanelSize = new Dimension (140, 74);
-		
 		constructionPanel = new JPanel ()
 		{
 			private static final long serialVersionUID = -7350768464461438141L;
@@ -657,7 +645,7 @@ public final class CityViewUI extends MomClientFrameUI
 
 					// Draw unit
 					if (sampleUnit != null)
-						getUnitClientUtils ().drawUnitFigures (sampleUnit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, (constructionPanelSize.width - 60) / 2, 28, true);
+						getUnitClientUtils ().drawUnitFigures (sampleUnit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, (constructionPanel.getWidth () - 60) / 2, 28, true);
 				}
 				catch (final Exception e)
 				{
@@ -667,11 +655,7 @@ public final class CityViewUI extends MomClientFrameUI
 		};
 		
 		constructionPanel.setOpaque (false);
-		constructionPanel.setMinimumSize (constructionPanelSize);
-		constructionPanel.setMaximumSize (constructionPanelSize);
-		constructionPanel.setPreferredSize (constructionPanelSize);
-		
-		contentPane.add (constructionPanel, getUtils ().createConstraintsNoFill (2, 9, 2, 1, new Insets (0, 0, 2, 10), GridBagConstraintsNoFill.SOUTHEAST));
+		contentPane.add (constructionPanel, "frmCityConstruction");
 		
 		// Deal with clicking on buildings to sell them
 		getCityViewPanel ().addBuildingListener (new BuildingListener ()
@@ -766,6 +750,7 @@ public final class CityViewUI extends MomClientFrameUI
 
 		cityDataChanged ();
 		unitsChanged ();
+		spellsChanged ();
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -782,7 +767,11 @@ public final class CityViewUI extends MomClientFrameUI
 	{
 		log.trace ("Entering unitsChanged: " + getCityLocation ());
 		
-		unitPanel.removeAll ();
+		for (final SelectUnitButton button : selectUnitButtons)
+			contentPane.remove (button);
+		
+		selectUnitButtons.clear ();
+		
 		int x = 0;
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
@@ -829,20 +818,30 @@ public final class CityViewUI extends MomClientFrameUI
 					}
 				});
 
-				unitPanel.add (selectUnitButton, getUtils ().createConstraintsNoFill (x, 0, 1, 1, new Insets (0, 2, 0, 0), GridBagConstraintsNoFill.CENTRE));
+				selectUnitButtons.add (selectUnitButton);
+				contentPane.add (selectUnitButton, "frmCitySelectUnitButton." + x);
 				x++;
 			}
 
-		// Left justify the buttons
-		final GridBagConstraints fillConstraints = getUtils ().createConstraintsHorizontalFill (x, 0, 1, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE);
-		fillConstraints.weightx = 1;
-		
-		unitPanel.add (Box.createRigidArea (new Dimension (0, 0)), fillConstraints);
-
-		unitPanel.revalidate ();
-		unitPanel.repaint ();
+		contentPane.revalidate ();
+		contentPane.repaint ();
 		
 		log.trace ("Exiting unitsChanged");
+	}
+	
+	/**
+	 * Update the list of enchantments and curses cast on this city whenever they change
+	 */
+	public final void spellsChanged ()
+	{
+		log.trace ("Entering spellsChanged");
+		
+		spellsItems.clear ();
+		for (final MemoryMaintainedSpell spell : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ())
+			if (getCityLocation ().equals (spell.getCityLocation ()))
+				spellsItems.addElement (spell);
+		
+		log.trace ("Exiting spellsChanged");
 	}
 
 	/**
@@ -867,6 +866,9 @@ public final class CityViewUI extends MomClientFrameUI
 		okAction.putValue							(Action.NAME, getLanguage ().findCategoryEntry ("frmCity", "OK"));
 		
 		languageOrCityDataChanged ();
+		
+		// Spell names are dynamically looked up by the ListCellRenderer, so just force a repaint
+		spellsList.repaint ();
 
 		log.trace ("Exiting languageChanged");
 	}
@@ -1193,6 +1195,22 @@ public final class CityViewUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getCityViewLayout ()
+	{
+		return cityViewLayout;
+	}
+
+	/**
+	 * @param layout XML layout
+	 */
+	public final void setCityViewLayout (final XmlLayoutContainerEx layout)
+	{
+		cityViewLayout = layout;
+	}
+	
+	/**
 	 * @return Large font
 	 */
 	public final Font getLargeFont ()
@@ -1510,5 +1528,21 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return Renderer for the enchantments list
+	 */
+	public final MemoryMaintainedSpellRenderer getMemoryMaintainedSpellRenderer ()
+	{
+		return memoryMaintainedSpellRenderer;
+	}
+
+	/**
+	 * @param renderer Renderer for the enchantments list
+	 */
+	public final void setMemoryMaintainedSpellRenderer (final MemoryMaintainedSpellRenderer renderer)
+	{
+		memoryMaintainedSpellRenderer = renderer;
 	}
 }

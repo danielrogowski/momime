@@ -47,6 +47,7 @@ import org.junit.Test;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the CityViewUI class
@@ -230,6 +231,10 @@ public final class TestCityViewUI
 		resourceValueClientUtils.setGraphicsDB (gfx);
 		resourceValueClientUtils.setUtils (utils);
 		
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CityViewUI.xml"));
+		layout.buildMaps ();
+		
 		// Set up form
 		final CityViewUI cityView = new CityViewUI ();
 		cityView.setUtils (utils);
@@ -246,6 +251,7 @@ public final class TestCityViewUI
 		cityView.setSmallFont (CreateFontsForTests.getSmallFont ());
 		cityView.setMediumFont (CreateFontsForTests.getMediumFont ());
 		cityView.setLargeFont (CreateFontsForTests.getLargeFont ());
+		cityView.setCityViewLayout (layout);
 	
 		// Display form		
 		cityView.setVisible (true);

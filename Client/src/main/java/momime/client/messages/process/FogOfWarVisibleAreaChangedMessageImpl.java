@@ -150,11 +150,14 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		}
 		
 		// Maintained spells switched off or gone out of view
-		for (final SwitchOffMaintainedSpellMessageData data : getSwitchOffMaintainedSpell ())
+		if (getSwitchOffMaintainedSpell ().size () > 0)
 		{
-			final SwitchOffMaintainedSpellMessageImpl proc = new SwitchOffMaintainedSpellMessageImpl ();
-			proc.setData (data);
-			proc.start ();
+			final SwitchOffMaintainedSpellMessageImpl proc = getFactory ().createSwitchOffMaintainedSpellMessage ();
+			for (final SwitchOffMaintainedSpellMessageData data : getSwitchOffMaintainedSpell ())
+			{
+				proc.setData (data);
+				proc.processOneUpdate ();
+			}
 		}
 			
 		// CAEs added or come into view

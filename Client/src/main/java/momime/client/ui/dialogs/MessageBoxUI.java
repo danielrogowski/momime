@@ -2,9 +2,6 @@ package momime.client.ui.dialogs;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -26,15 +23,18 @@ import momime.common.messages.clienttoserver.v0_9_5.CancelTargetSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_5.DismissUnitMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RequestResearchSpellMessage;
+import momime.common.messages.clienttoserver.v0_9_5.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_5.RushBuyMessage;
 import momime.common.messages.clienttoserver.v0_9_5.SellBuildingMessage;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Modal dialog which displays a message with an OK button, or a Yes and No choice, with Yes taking some action
@@ -43,6 +43,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MessageBoxUI.class);
+	
+	/** XML layout */
+	private XmlLayoutContainerEx messageBoxLayout;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -104,8 +107,8 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/** The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targetting a spell */
 	private NewTurnMessageSpellEx cancelTargettingSpell;
 	
-	/** Typical inset used on this screen layout */
-	private final static int INSET = 8;
+	/** Spell we're thinking of switching off; null if the message box isn't about switching off a spell */
+	private MemoryMaintainedSpell switchOffSpell;
 	
 	/**
 	 * Sets up the dialog once all values have been injected
@@ -225,6 +228,19 @@ public final class MessageBoxUI extends MomClientDialogUI
 						getOverlandMapProcessing ().updateMovementRemaining ();
 					}
 					
+					// Switch off a spell
+					else if (getSwitchOffSpell () != null)
+					{
+						final RequestSwitchOffMaintainedSpellMessage msg = new RequestSwitchOffMaintainedSpellMessage ();
+					    msg.setSpellID (getSwitchOffSpell ().getSpellID ());
+					    msg.setUnitURN (getSwitchOffSpell ().getUnitURN ());
+					    msg.setCityLocation (getSwitchOffSpell ().getCityLocation ());
+					    msg.setCastingPlayerID (getSwitchOffSpell ().getCastingPlayerID ());
+					    msg.setUnitSkillID (getSwitchOffSpell ().getUnitSkillID ());
+					    msg.setCitySpellEffectID (getSwitchOffSpell ().getCitySpellEffectID ());
+					    getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
+					
 					else
 						log.warn ("MessageBoxUI had yes button clicked for text \"" + messageText.getText () + " but took no action");
 				}
@@ -254,35 +270,21 @@ public final class MessageBoxUI extends MomClientDialogUI
 		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		
 		// Set up layout
-		contentPane.setLayout (new GridBagLayout ());
+		contentPane.setLayout (new XmlLayoutManager (getMessageBoxLayout ()));
 		
 		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null) && (getResearchSpellID () == null) &&
-			(getCastSpellID () == null) && (getCancelTargettingSpell () == null)) ? 1 : 2;
-		
-		final GridBagConstraints constraints = getUtils ().createConstraintsBothFill (0, 0, buttonCount, 1, new Insets (INSET, INSET, 3, INSET));
-		constraints.weightx = 1;
-		constraints.weighty = 1;
+			(getCastSpellID () == null) && (getCancelTargettingSpell () == null) && (getSwitchOffSpell () == null)) ? 1 : 2;
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
-		contentPane.add (getUtils ().createTransparentScrollPane (messageText), constraints);
+		contentPane.add (getUtils ().createTransparentScrollPane (messageText), "frmMessageBoxText");
 
 		// Is it just a regular message box with an OK button, or do we need separate no/yes buttons?
 		if (buttonCount == 1)
-			contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
-				buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, INSET, 9, INSET), GridBagConstraintsNoFill.CENTRE));
+			contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxOK");
 		else
 		{
-			final GridBagConstraints constraintsNo = getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, INSET, 9, INSET), GridBagConstraintsNoFill.EAST);
-			constraintsNo.weightx = 0.5;
-			
-			contentPane.add (getUtils ().createImageButton (noAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
-				buttonNormal, buttonPressed, buttonNormal), constraintsNo);
-
-			final GridBagConstraints constraintsYes = getUtils ().createConstraintsNoFill (1, 1, 1, 1, new Insets (0, INSET, 9, INSET), GridBagConstraintsNoFill.WEST);
-			constraintsYes.weightx = 0.5;
-			
-			contentPane.add (getUtils ().createImageButton (yesAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
-				buttonNormal, buttonPressed, buttonNormal), constraintsYes);
+			contentPane.add (getUtils ().createImageButton (noAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxNo");
+			contentPane.add (getUtils ().createImageButton (yesAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmMessageBoxYes");
 		}
 		
 		// Lock dialog size
@@ -321,6 +323,22 @@ public final class MessageBoxUI extends MomClientDialogUI
 		yesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "Yes"));
 	}
 
+	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getMessageBoxLayout ()
+	{
+		return messageBoxLayout;
+	}
+
+	/**
+	 * @param layout XML layout
+	 */
+	public final void setMessageBoxLayout (final XmlLayoutContainerEx layout)
+	{
+		messageBoxLayout = layout;
+	}
+	
 	/**
 	 * @return Multiplayer client
 	 */
@@ -575,5 +593,21 @@ public final class MessageBoxUI extends MomClientDialogUI
 	public final void setCancelTargettingSpell (final NewTurnMessageSpellEx msg)
 	{
 		cancelTargettingSpell = msg;
+	}
+
+	/**
+	 * @return Spell we're thinking of switching off; null if the message box isn't about switching off a spell
+	 */
+	public final MemoryMaintainedSpell getSwitchOffSpell ()
+	{
+		return switchOffSpell;
+	}
+
+	/**
+	 * @param spell Spell we're thinking of switching off; null if the message box isn't about switching off a spell
+	 */
+	public final void setSwitchOffSpell (final MemoryMaintainedSpell spell)
+	{
+		switchOffSpell = spell;
 	}
 }

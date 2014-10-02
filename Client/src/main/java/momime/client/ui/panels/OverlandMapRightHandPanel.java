@@ -606,13 +606,13 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 										final CancelPendingMovementAndSpecialOrdersMessage msg = new CancelPendingMovementAndSpecialOrdersMessage ();
 										msg.setUnitURN (selectUnitButton.getUnit ().getUnitURN ());
 										getClient ().getServerConnection ().sendMessageToServer (msg);
-									
-										// Remove on client
-										getPendingMovementUtils ().removeUnitFromAnyPendingMoves
-											(getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), selectUnitButton.getUnit ().getUnitURN ());
-										selectUnitButton.getUnit ().setSpecialOrder (null);
 									}
-								
+
+									// Remove on client
+									getPendingMovementUtils ().removeUnitFromAnyPendingMoves
+										(getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), selectUnitButton.getUnit ().getUnitURN ());
+									selectUnitButton.getUnit ().setSpecialOrder (null);
+									
 									// Select/deselect unit
 									if (selectUnitButton.getUnit ().getDoubleOverlandMovesLeft () > 0)
 									{

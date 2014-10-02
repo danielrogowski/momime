@@ -2,6 +2,7 @@ package momime.client.ui.dialogs;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import momime.client.ClientTestData;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the MessageBoxUI class
@@ -39,6 +41,10 @@ public final class TestMessageBoxUI
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
+		layout.buildMaps ();
+		
 		// Set up form
 		final MessageBoxUI box = new MessageBoxUI ();
 		box.setUtils (utils);
@@ -47,6 +53,7 @@ public final class TestMessageBoxUI
 		box.setTitle ("Message box test using fixed text");
 		box.setText ("Here's some fixed text for the message box which is long enough to have to split over a couple of lines.");
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
+		box.setMessageBoxLayout (layout);
 		
 		// Display form
 		box.setModal (false);
@@ -76,6 +83,10 @@ public final class TestMessageBoxUI
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
+		layout.buildMaps ();
 		
 		// Set up form
 		final MessageBoxUI box = new MessageBoxUI ();
@@ -87,6 +98,7 @@ public final class TestMessageBoxUI
 		box.setTextLanguageCategoryID ("TextCat");
 		box.setTextLanguageEntryID ("TextEntry");
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
+		box.setMessageBoxLayout (layout);
 		
 		// Display form		
 		box.setModal (false);
@@ -114,6 +126,10 @@ public final class TestMessageBoxUI
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
+		layout.buildMaps ();
 		
 		// Set up form
 		final MessageBoxUI box = new MessageBoxUI ();
@@ -123,6 +139,7 @@ public final class TestMessageBoxUI
 		box.setTitle ("Message box test using fixed text");
 		box.setText ("Here's some fixed text\r\nthat includes\r\na bunch of carriage returns\r\nof lines to\r\nmake sure that\r\nwe need to display\r\na scroll bar\r\non the message box.");
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
+		box.setMessageBoxLayout (layout);
 		
 		// Display form		
 		box.setModal (false);
@@ -155,6 +172,10 @@ public final class TestMessageBoxUI
 		// Text to display
 		final String title = "Message box test with no and yes buttons";
 		final String text = "Here's some fixed text for the message box with no and yes buttons, which is long enough to have to split over a couple of lines.";
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
+		layout.buildMaps ();
 		
 		// Set up form
 		final MessageBoxUI box = new MessageBoxUI ();
@@ -165,6 +186,7 @@ public final class TestMessageBoxUI
 		box.setText (text);
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		box.setUnitToDismiss (new MemoryUnit ());		// Just to make it a yes/no dialog instead of an OK button
+		box.setMessageBoxLayout (layout);
 		
 		// Display form		
 		box.setModal (false);

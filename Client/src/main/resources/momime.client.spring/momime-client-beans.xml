@@ -370,7 +370,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype" />
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype" />
-	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype" />
 	<bean id="updateUnitNameMessage" class="momime.client.messages.process.UpdateUnitNameMessageImpl" scope="prototype" />
 	<bean id="moveUnitInCombatMessage" class="momime.client.messages.process.MoveUnitInCombatMessageImpl" scope="prototype" />
 	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype" />
@@ -422,6 +421,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+	</bean>
+
+	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">
@@ -858,6 +862,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 	</bean>
 
+	<bean id="memoryMaintainedSpellRenderer" class="momime.client.ui.renderer.MemoryMaintainedSpellRenderer" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+
 	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
 		<property name="serviceLocatorInterface" value="momime.client.ui.components.UIComponentFactory" />
 	</bean>
@@ -879,8 +889,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="prototypeFrameCreator" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
 		<property name="serviceLocatorInterface" value="momime.client.ui.frames.PrototypeFrameCreator" />
 	</bean>
+
+	<bean id="messageBoxLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/MessageBoxUI.xml" />
+	</bean>
 	
 	<bean id="messageBoxUI" class="momime.client.ui.dialogs.MessageBoxUI" scope="prototype">
+		<property name="messageBoxLayout" ref="messageBoxLayout" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
@@ -914,8 +929,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapClientUtils" ref="overlandMapClientUtils" />
 		<property name="anim" ref="anim" />
 	</bean>
+
+	<bean id="cityViewLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/CityViewUI.xml" />
+	</bean>
 	
 	<bean id="cityViewUI" class="momime.client.ui.frames.CityViewUI" scope="prototype">
+		<property name="cityViewLayout" ref="cityViewLayout" />
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />
@@ -937,11 +957,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="anim" ref="anim" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
-		<property name="cityViewPanel" ref="cityViewPanel" />									<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
+		<property name="cityViewPanel" ref="cityViewPanel" />															<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
+		<property name="memoryMaintainedSpellRenderer" ref="memoryMaintainedSpellRenderer" />	<!-- So Spring will create and inject a new spell list renderer for each city view UI -->
 	</bean>
 	
 	<bean id="miniCityViewLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/frmMiniCity.xml" />
+		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/MiniCityViewUI.xml" />
 	</bean>
 	
 	<bean id="miniCityViewUI" class="momime.client.ui.dialogs.MiniCityViewUI" scope="prototype">

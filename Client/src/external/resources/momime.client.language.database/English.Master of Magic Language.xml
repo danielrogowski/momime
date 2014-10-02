@@ -5607,6 +5607,12 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="SomeoneElseHasCast">
 			<languageEntryText>PLAYER_NAME has cast SPELL_NAME</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="SwitchOffSpellTitle">
+			<languageEntryText>Cancel spell?</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="SwitchOffSpell">
+			<languageEntryText>Do you wish to cancel your SPELL_NAME spell?</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
 		<languageEntry languageEntryID="Title">

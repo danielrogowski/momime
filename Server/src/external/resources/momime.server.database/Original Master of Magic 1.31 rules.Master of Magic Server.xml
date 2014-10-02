@@ -19511,6 +19511,8 @@
 	<languageCategory languageCategoryID="SpellCasting">
 		<languageEntry languageEntryID="YouHaveCast" />
 		<languageEntry languageEntryID="SomeoneElseHasCast" />
+		<languageEntry languageEntryID="SwitchOffSpellTitle" />
+		<languageEntry languageEntryID="SwitchOffSpell" />
 	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
 		<languageEntry languageEntryID="Title" />

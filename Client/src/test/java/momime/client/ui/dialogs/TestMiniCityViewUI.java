@@ -156,7 +156,7 @@ public final class TestMiniCityViewUI
 		panel.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());		// Since we need it to really look for the spell
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/frmMiniCity.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MiniCityViewUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

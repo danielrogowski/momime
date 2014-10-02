@@ -113,6 +113,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				try
 				{
 					cityView.cityDataChanged ();
+					cityView.spellsChanged ();
 				}
 				catch (final Exception e)
 				{

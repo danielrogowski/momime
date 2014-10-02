@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>580</formWidth>
+	<formHeight>482</formHeight>
+	<component name="frmCityNotOurs">
+		<left>342</left>
+		<top>252</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityName">
+		<left>290</left>
+		<top>8</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityResources">
+		<left>8</left>
+		<top>109</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCityEnchantmentsLabel">
+		<left>276</left>
+		<top>109</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCityTerrainLabel">
+		<left>428</left>
+		<top>109</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCityBuildings">
+		<left>8</left>
+		<top>213</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCityProductionLabel">
+		<left>428</left>
+		<top>255</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCityUnits">
+		<left>8</left>
+		<top>426</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.5</verticalAlignment>
+	</component>
+	<component name="frmCityRace">
+		<left>8</left>
+		<top>53</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCityGrowth">
+		<left>460</left>
+		<top>53</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCityMaxCitySize">
+		<left>572</left>
+		<top>53</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmCityBuy">
+		<left>344</left>
+		<top>410</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityChange">
+		<left>422</left>
+		<top>410</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityOK">
+		<left>500</left>
+		<top>410</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityView">
+		<left>8</left>
+		<top>212</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityTerrain">
+		<left>430</left>
+		<top>110</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityCivilians">
+		<left>10</left>
+		<top>54</top>
+		<width>560</width>
+		<height>36</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityProduction">
+		<left>12</left>
+		<top>112</top>
+		<width>252</width>
+		<height>80</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityEnchantments">
+		<left>278</left>
+		<top>110</top>
+		<width>138</width>
+		<height>84</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityConstructionProgress">
+		<left>435</left>
+		<top>263</top>
+		<width>130</width>
+		<height>60</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityConstruction">
+		<left>430</left>
+		<top>328</top>
+		<width>140</width>
+		<height>74</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.0">
+		<left>58</left>
+		<top>408</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.1">
+		<left>89</left>
+		<top>408</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.2">
+		<left>120</left>
+		<top>408</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.3">
+		<left>151</left>
+		<top>408</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.4">
+		<left>182</left>
+		<top>408</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.5">
+		<left>213</left>
+		<top>408</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.6">
+		<left>244</left>
+		<top>408</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.7">
+		<left>275</left>
+		<top>408</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.8">
+		<left>306</left>
+		<top>408</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.9">
+		<left>58</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.10">
+		<left>89</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.11">
+		<left>120</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.12">
+		<left>151</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.13">
+		<left>182</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.14">
+		<left>213</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.15">
+		<left>244</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.16">
+		<left>275</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.17">
+		<left>306</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.18">
+		<left>337</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitySelectUnitButton.19">
+		<left>368</left>
+		<top>455</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

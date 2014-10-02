@@ -269,7 +269,10 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		// If we've got a city screen open showing where the spell or building was added, may need to set up animation to display it
 		final CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
 		if (cityView != null)
+		{
 			cityView.cityDataChanged ();
+			cityView.spellsChanged ();
+		}
 
 		// Addition of a building will alter what we can construct in that city, if we've got the change construction screen open.
 		// Potentially that's true for spells too - casting Wall of Stone means we have to take City Walls off the list of what can be built.

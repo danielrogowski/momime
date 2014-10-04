@@ -74,7 +74,7 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmMagicManaStoredHeading">
+	<component name="frmMagicManaCastingNowHeading">
 		<left>70</left>
 		<top>410</top>
 		<horizontalAlignment>0.5</horizontalAlignment>
@@ -92,7 +92,7 @@
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmMagicManaStored">
+	<component name="frmMagicCastingSpellName">
 		<left>70</left>
 		<top>425</top>
 		<horizontalAlignment>0.5</horizontalAlignment>

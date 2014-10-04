@@ -5459,7 +5459,7 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>Skill</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ManaLabel">
-			<languageEntryText>Mana Stored</languageEntryText>
+			<languageEntryText>Casting</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ResearchLabel">
 			<languageEntryText>Researching</languageEntryText>

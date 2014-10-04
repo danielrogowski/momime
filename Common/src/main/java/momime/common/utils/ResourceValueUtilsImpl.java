@@ -222,7 +222,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 
 		// Find directly produced values - for research, this will give the amounts produced by libraries, universities, etc.
 		final int rawAmountPerTurn = findAmountPerTurnForProductionType (privateInfo.getResourceValue (), productionTypeID);
-		log.debug ("rawAmountPerTurn " + productionTypeID + " = " + rawAmountPerTurn);
+		log.trace ("rawAmountPerTurn " + productionTypeID + " = " + rawAmountPerTurn);
 
 		// If the production type ID is mana, research or skill improvement then we may also be channeling some in from magic power, and may also get various bonuses
 		// So there's 3 portions to the result: the raw value, the amount channeled from magic power, and percentage bonuses

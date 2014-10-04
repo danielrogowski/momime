@@ -27,7 +27,6 @@ import javax.swing.table.AbstractTableModel;
 
 import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.ProductionType;
-import momime.client.language.database.v0_9_5.Spell;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;
@@ -37,6 +36,7 @@ import momime.client.ui.renderer.MemoryMaintainedSpellTableCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.v0_9_5.Spell;
 import momime.common.messages.clienttoserver.v0_9_5.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.v0_9_5.MagicPowerDistribution;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
@@ -133,17 +133,17 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** Skill per turn according to current slider setting */
 	private JProgressBar skillPerTurn;
 	
-	/** Mana label below the slider */
+	/** Mana label below the progress bar */
 	private JLabel manaLabel;
 	
-	/** Research progress bar below the slider */
+	/** Research label below the progress bar */
 	private JLabel researchLabel;
 	
-	/** Skill progress bar below the slider */
+	/** Skill label below the progress bar */
 	private JLabel skillLabel;
 
-	/** Mana stored */
-	private JLabel manaStored;
+	/** Spell currently being cast overland */
+	private JLabel currentlyCasting;
 	
 	/** Spell currently being research */
 	private JLabel currentlyResearching;
@@ -396,11 +396,12 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getMagicSlidersLayout ()));
-		
-		// Column headings
+
+		// Big heading showing power base at the top
 		magicPowerPerTurn = getUtils ().createShadowedLabel (MomUIConstants.SILVER.darker (), MomUIConstants.SILVER, getLargeFont ());
 		contentPane.add (magicPowerPerTurn, "frmMagicPowerBase");
 
+		// Column headings
 		overlandEnchantmentsTitle = getUtils ().createShadowedLabel (MomUIConstants.DULL_AQUA.darker (), MomUIConstants.DULL_AQUA, getLargeFont ());
 		contentPane.add (overlandEnchantmentsTitle, "frmMagicOverlandEnchantmentsLabel");
 		
@@ -435,7 +436,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 			slider.getSlider ().addChangeListener (sliderChanged);
 
 		// Progress bars underneath.
-		// We don't actually display a progress bar for manaPerTurn, but defined it as one to make the spacing consistent
 		manaPerTurn = new JProgressBar ();
 		manaPerTurn.setStringPainted (true);
 		manaPerTurn.setFont (getSmallFont ());
@@ -447,7 +447,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		researchPerTurn.setStringPainted (true);
 		researchPerTurn.setFont (getSmallFont ());
 		researchPerTurn.setForeground (MomUIConstants.GREEN);
-		researchPerTurn.setValue (100);
 		researchPerTurn.setBackground (MomUIConstants.TRANSPARENT);
 		contentPane.add (researchPerTurn, "frmMagicResearchProgress");
 
@@ -458,14 +457,14 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		skillPerTurn.setBackground (MomUIConstants.TRANSPARENT);
 		contentPane.add (skillPerTurn, "frmMagicSkillProgress");
 
-		// Make the progress bars gold coloured.
+		// Change the colour of the progress bars.
 		// This is horrid that it can't be done against the individual progress bars, and we have to do it to ALL progress bars in the application,
 		// but there appears to be no way to do it.  The underlying ProgressBarPainter is final, package private, with an awkward constructor.
-		UIManager.put ("nimbusOrange", MomUIConstants.DULL_GOLD);
+		UIManager.put ("nimbusOrange", MomUIConstants.LIGHT_BROWN);
 		
 		// Labels underneath
 		manaLabel = getUtils ().createLabel (MomUIConstants.DULL_GOLD, getSmallFont ());
-		contentPane.add (manaLabel, "frmMagicManaStoredHeading");
+		contentPane.add (manaLabel, "frmMagicManaCastingNowHeading");
 		
 		researchLabel = getUtils ().createLabel (MomUIConstants.GREEN, getSmallFont ());
 		contentPane.add (researchLabel, "frmMagicResearchingHeading");
@@ -473,8 +472,8 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		skillLabel = getUtils ().createLabel (MomUIConstants.RED, getSmallFont ());
 		contentPane.add (skillLabel, "frmMagicCastingSkillHeading");
 
-		manaStored = getUtils ().createLabel (MomUIConstants.DULL_GOLD, getSmallFont ());
-		contentPane.add (manaStored, "frmMagicManaStored");
+		currentlyCasting = getUtils ().createLabel (MomUIConstants.DULL_GOLD, getSmallFont ());
+		contentPane.add (currentlyCasting, "frmMagicCastingSpellName");
 		
 		currentlyResearching = getUtils ().createLabel (MomUIConstants.GREEN, getSmallFont ());
 		contentPane.add (currentlyResearching, "frmMagicResearchingSpellName");
@@ -523,7 +522,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 					if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
 					try
 					{
-						final Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+						final momime.client.language.database.v0_9_5.Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
 						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
 						
 						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
@@ -622,12 +621,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				magicPowerPerTurn.setText (getLanguage ().findCategoryEntry ("frmMagicSliders", "PowerBase").replaceAll
 					("AMOUNT_PER_TURN", getTextUtils ().intToStrCommas (magicPowerPerTurnValue)));				
 			
-				// Update amount stored labels
-				final int manaStoredValue = getResourceValueUtils ().findAmountStoredForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA);
-			
-				manaStored.setText (getTextUtils ().intToStrCommas (manaStoredValue));
-			
+				// Update casting skill label
 				final int currentSkill = getResourceValueUtils ().calculateCastingSkillOfPlayer (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ());
 				castingSkill.setText (getTextUtils ().intToStrCommas (currentSkill));
 			
@@ -646,16 +640,37 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				}
 				else
 				{
-					final Spell spell = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
-					currentlyResearching.setText ((spell != null) ? spell.getSpellName () : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
+					final momime.client.language.database.v0_9_5.Spell spell = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
+					final String spellName = (spell != null) ? spell.getSpellName () : null;
+					currentlyResearching.setText ((spellName != null) ? spellName : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
 				
 					final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
 					final int totalResearchCost = getClient ().getClientDB ().findSpell
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched (), "updateProductionLabels").getResearchCost ();
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched (), "updateProductionLabels (r)").getResearchCost ();
 				
 					researchPerTurn.setMaximum (totalResearchCost);
 					researchPerTurn.setValue (totalResearchCost - researchStatus.getRemainingResearchCost ());
+				}
+				
+				// Spell being cast
+				if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().size () == 0)
+				{
+					manaPerTurn.setMaximum (100);
+					manaPerTurn.setValue (0);
+					currentlyCasting.setText (getLanguage ().findCategoryEntry ("frmMagicSliders", "ResearchingNothing"));
+				}
+				else
+				{
+					final momime.client.language.database.v0_9_5.Spell spell = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0));
+					final String spellName = (spell != null) ? spell.getSpellName () : null;
+					currentlyCasting.setText ((spellName != null) ? spellName : getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0));
+
+					final Spell spellBeingCast = getClient ().getClientDB ().findSpell
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpellID ().get (0), "updateProductionLabels (c)");
+					manaPerTurn.setMaximum (getSpellUtils ().getReducedOverlandCastingCost
+						(spellBeingCast, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()));
+					manaPerTurn.setValue (getClient ().getOurPersistentPlayerPrivateKnowledge ().getManaSpentOnCastingCurrentSpell ());					
 				}
 			}
 			catch (final Exception e)

@@ -22,6 +22,7 @@ import momime.common.calculations.MomSpellCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.SpellSettingData;
 import momime.common.database.v0_9_5.Spell;
+import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MagicPowerDistribution;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
@@ -67,7 +68,7 @@ public final class TestMagicSlidersUI
 		when (lang.findCategoryEntry ("frmMagicSliders", "ManaTitle")).thenReturn ("Mana");
 		when (lang.findCategoryEntry ("frmMagicSliders", "ResearchTitle")).thenReturn ("Research");
 		when (lang.findCategoryEntry ("frmMagicSliders", "SkillTitle")).thenReturn ("Skill");
-		when (lang.findCategoryEntry ("frmMagicSliders", "ManaLabel")).thenReturn ("Mana Stored");
+		when (lang.findCategoryEntry ("frmMagicSliders", "ManaLabel")).thenReturn ("Casting");
 		when (lang.findCategoryEntry ("frmMagicSliders", "ResearchLabel")).thenReturn ("Researching");
 		when (lang.findCategoryEntry ("frmMagicSliders", "SkillLabel")).thenReturn ("Casting Skill");
 		when (lang.findCategoryEntry ("frmMagicSliders", "ResearchingNothing")).thenReturn ("None");
@@ -88,9 +89,13 @@ public final class TestMagicSlidersUI
 		skillProduction.setProductionTypeSuffix ("SP");
 		when (lang.findProductionType (CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT)).thenReturn (skillProduction);
 		
-		final momime.client.language.database.v0_9_5.Spell spellLang = new momime.client.language.database.v0_9_5.Spell ();
-		spellLang.setSpellName ("Great Unsummoning");		// This was the longest spell name I could find!
-		when (lang.findSpell ("SP001")).thenReturn (spellLang);
+		final momime.client.language.database.v0_9_5.Spell spellLang1 = new momime.client.language.database.v0_9_5.Spell ();
+		spellLang1.setSpellName ("Great Unsummoning");		// This was the longest spell name I could find!
+		when (lang.findSpell ("SP001")).thenReturn (spellLang1);
+		
+		final momime.client.language.database.v0_9_5.Spell spellLang2 = new momime.client.language.database.v0_9_5.Spell ();
+		spellLang2.setSpellName ("Spell Binding");
+		when (lang.findSpell ("SP002")).thenReturn (spellLang2);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -119,11 +124,14 @@ public final class TestMagicSlidersUI
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "updatePerTurnLabels")).thenReturn (player);
 		
 		// Mock client database
-		final Spell spell = new Spell ();
-		spell.setResearchCost (50);
+		final Spell spell1 = new Spell ();
+		spell1.setResearchCost (50);
+		
+		final Spell spell2 = new Spell ();
 		
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		when (db.findSpell ("SP001", "updateProductionLabels")).thenReturn (spell);
+		when (db.findSpell ("SP001", "updateProductionLabels (r)")).thenReturn (spell1);
+		when (db.findSpell ("SP002", "updateProductionLabels (c)")).thenReturn (spell2);
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Initial slider values
@@ -132,7 +140,10 @@ public final class TestMagicSlidersUI
 		dist.setResearchRatio	(CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX / 3);
 		dist.setSkillRatio			(CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX / 3);
 		
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (fow);
 		priv.setMagicPowerDistribution (dist);
 		priv.setSpellIDBeingResearched ("SP001");
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
@@ -171,6 +182,12 @@ public final class TestMagicSlidersUI
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
+		
+		// Spell we're casting
+		priv.getQueuedSpellID ().add ("SP002");
+		priv.setManaSpentOnCastingCurrentSpell (70);
+		
+		when (spellUtils.getReducedOverlandCastingCost (spell2, pub.getPick (), spellSettings, db)).thenReturn (80);
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);

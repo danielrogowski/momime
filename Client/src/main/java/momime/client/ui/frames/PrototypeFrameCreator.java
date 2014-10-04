@@ -2,6 +2,7 @@ package momime.client.ui.frames;
 
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.MiniCityViewUI;
+import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 
 /**
  * Allows spring to create instances of frames that we allow multiple copies of, like message boxes and the city screen, and perform all necessary injections
@@ -42,4 +43,9 @@ public interface PrototypeFrameCreator
 	 * @return New unit info UI
 	 */
 	public UnitInfoUI createUnitInfo ();
+	
+	/**
+	 * @return New overland enchantment popup
+	 */
+	public OverlandEnchantmentsUI createOverlandEnchantments ();
 }

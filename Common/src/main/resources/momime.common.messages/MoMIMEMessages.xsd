@@ -283,20 +283,6 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		</xsd:complexContent>
 	</xsd:complexType>		       
 
-	<xsd:complexType name="newTurnMessageOverlandEnchantment">
-	    <xsd:annotation>
-    		<xsd:documentation>NTM about an overland enchantment that completed casting (either by us or an opponent).</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimemsgs:newTurnMessageData">
-				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID"/>
-					<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID"/>
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>		       
-
 	<xsd:complexType name="momTransientPlayerPrivateKnowledge">
 	    <xsd:annotation>
     		<xsd:documentation>Holds all private knowledge that a player only knows about themselves, they can't see the values for other players,
@@ -1026,10 +1012,6 @@ through lack of production, we can still look up their name to show it on the ne
 			<xsd:enumeration value="R"><xsd:annotation>
 				<xsd:documentation>Researched spell</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHED_SPELL"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="O"><xsd:annotation>
-				<xsd:documentation>Overland enchantment</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="OVERLAND_ENCHANTMENT"/></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="T"><xsd:annotation>
 				<xsd:documentation>Target spell</xsd:documentation>

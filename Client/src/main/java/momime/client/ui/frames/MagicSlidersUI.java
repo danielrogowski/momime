@@ -1,12 +1,11 @@
 package momime.client.ui.frames;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,15 +13,17 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.SwingConstants;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.AbstractTableModel;
 
 import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.ProductionType;
@@ -30,12 +31,15 @@ import momime.client.language.database.v0_9_5.Spell;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.client.ui.renderer.MemoryMaintainedSpellTableCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.clienttoserver.v0_9_5.UpdateMagicPowerDistributionMessage;
 import momime.common.messages.v0_9_5.MagicPowerDistribution;
+import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.SpellResearchStatus;
 import momime.common.utils.ResourceValueUtils;
@@ -46,8 +50,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.GridBagConstraintsHorizontalFill;
-import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 /**
  * Screen allowing setting magic power distribution into mana/research/skill, and viewing overland enchantments
@@ -56,27 +60,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MagicSlidersUI.class);
-
-	/** Typical inset used on this screen layout */
-	private final static int INSET = 0;
 	
-	/** Inset used to space the sliders correctly */
-	private final static int TINY_INSET = 1;
-	
-	/** The width of the progress bars */
-	private final static int PROGRESS_BAR_WIDTH = 92;
-	
-	/** The width of the main 3 columns */
-	private final static int COLUMN_WIDTH = PROGRESS_BAR_WIDTH + TINY_INSET + TINY_INSET;
-	
-	/** How much we chop off the side of the numeric labels either side of the name of the spell currently being researched */
-	private final static int RESEARCH_NAME_SPACERS = 30;
-	
-	/** How wide the MP/SP labels are, either side of the research name */
-	private final static int RESEARCH_NAME_OUTER_LABELS_WIDTH = COLUMN_WIDTH - RESEARCH_NAME_SPACERS - RESEARCH_NAME_SPACERS;
-	
-	/** How wide the research name itself is */
-	private final static int RESEARCH_NAME_WIDTH = COLUMN_WIDTH + RESEARCH_NAME_SPACERS + RESEARCH_NAME_SPACERS;
+	/** XML layout */
+	private XmlLayoutContainerEx magicSlidersLayout;
 	
 	/** UI component factory */
 	private UIComponentFactory uiComponentFactory;
@@ -111,6 +97,12 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
+	/** Renderer for the enchantments table */
+	private MemoryMaintainedSpellTableCellRenderer memoryMaintainedSpellTableCellRenderer;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+
 	/** Mana title above the slider */
 	private JLabel manaTitle;
 	
@@ -173,6 +165,12 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	
 	/** Last values sent to the server - so we don't bother resending if we just open up the screen and click OK without making changes */
 	private MagicPowerDistribution lastValuesSentToServer;
+	
+	/** Items in the Enchantments box */
+	private SpellsTableModel spellsTableModel;
+
+	/** Enchantments table */
+	private JTable spellsTable;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -397,40 +395,40 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		final JPanel contentPane = getUtils ().createPanelWithBackgroundImage (background);
 		
 		// Set up layout
-		contentPane.setLayout (new GridBagLayout ());
+		contentPane.setLayout (new XmlLayoutManager (getMagicSlidersLayout ()));
 		
 		// Column headings
 		magicPowerPerTurn = getUtils ().createShadowedLabel (MomUIConstants.SILVER.darker (), MomUIConstants.SILVER, getLargeFont ());
-		contentPane.add (magicPowerPerTurn, getUtils ().createConstraintsNoFill (0, 0, 3, 1, new Insets (0, 0, 4, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (magicPowerPerTurn, "frmMagicPowerBase");
 
 		overlandEnchantmentsTitle = getUtils ().createShadowedLabel (MomUIConstants.DULL_AQUA.darker (), MomUIConstants.DULL_AQUA, getLargeFont ());
-		contentPane.add (overlandEnchantmentsTitle, getUtils ().createConstraintsNoFill (3, 0, 1, 1, new Insets (0, 35, 4, 0), GridBagConstraintsNoFill.NORTHWEST));
+		contentPane.add (overlandEnchantmentsTitle, "frmMagicOverlandEnchantmentsLabel");
 		
 		manaTitle = getUtils ().createShadowedLabel (MomUIConstants.DULL_GOLD.darker (), MomUIConstants.DULL_GOLD, getLargeFont ());
-		contentPane.add (manaTitle, getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (13, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
+		contentPane.add (manaTitle, "frmMagicManaLabel");
 		
 		researchTitle = getUtils ().createShadowedLabel (MomUIConstants.GREEN.darker (), MomUIConstants.GREEN, getLargeFont ());
-		contentPane.add (researchTitle, getUtils ().createConstraintsNoFill (1, 1, 1, 1, new Insets (13, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
+		contentPane.add (researchTitle, "frmMagicResearchLabel");
 		
 		skillTitle = getUtils ().createShadowedLabel (MomUIConstants.RED.darker (), MomUIConstants.RED, getLargeFont ());
-		contentPane.add (skillTitle, getUtils ().createConstraintsNoFill (2, 1, 1, 1, new Insets (13, 0, 0, 0), GridBagConstraintsNoFill.NORTH));
+		contentPane.add (skillTitle, "frmMagicSkillLabel");
 		
 		// The actual sliders
 		final MagicPowerDistribution dist = getClient ().getOurPersistentPlayerPrivateKnowledge ().getMagicPowerDistribution ();
 		
 		manaSlider = getUiComponentFactory ().createMagicSlider ();
 		manaSlider.init ("mana", lockAction, dist.getManaRatio ());
-		contentPane.add (manaSlider, getUtils ().createConstraintsNoFill (0, 2, 1, 1, new Insets (6, 0, 7, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (manaSlider, "frmMagicManaSlider");
 		sliders.add (manaSlider);
 		
 		researchSlider = getUiComponentFactory ().createMagicSlider ();
 		researchSlider.init ("research", lockAction, dist.getResearchRatio ());
-		contentPane.add (researchSlider, getUtils ().createConstraintsNoFill (1, 2, 1, 1, new Insets (6, 0, 7, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (researchSlider, "frmMagicResearchSlider");
 		sliders.add (researchSlider);
 
 		skillSlider = getUiComponentFactory ().createMagicSlider ();
 		skillSlider.init ("skill", lockAction, dist.getSkillRatio ());
-		contentPane.add (skillSlider, getUtils ().createConstraintsNoFill (2, 2, 1, 1, new Insets (6, 0, 7, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (skillSlider, "frmMagicSkillSlider");
 		sliders.add (skillSlider);
 		
 		for (final MagicSlider slider : sliders)
@@ -438,17 +436,12 @@ public final class MagicSlidersUI extends MomClientFrameUI
 
 		// Progress bars underneath.
 		// We don't actually display a progress bar for manaPerTurn, but defined it as one to make the spacing consistent
-		final Dimension progressBarSize = new Dimension (PROGRESS_BAR_WIDTH, 22);
-		
 		manaPerTurn = new JProgressBar ();
 		manaPerTurn.setStringPainted (true);
 		manaPerTurn.setFont (getSmallFont ());
 		manaPerTurn.setForeground (MomUIConstants.DULL_GOLD);
 		manaPerTurn.setBackground (MomUIConstants.TRANSPARENT);
-		manaPerTurn.setMinimumSize (progressBarSize);
-		manaPerTurn.setMaximumSize (progressBarSize);
-		manaPerTurn.setPreferredSize (progressBarSize);
-		contentPane.add (manaPerTurn, getUtils ().createConstraintsNoFill (0, 3, 1, 1, TINY_INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (manaPerTurn, "frmMagicManaProgress");
 		
 		researchPerTurn = new JProgressBar ();
 		researchPerTurn.setStringPainted (true);
@@ -456,20 +449,14 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		researchPerTurn.setForeground (MomUIConstants.GREEN);
 		researchPerTurn.setValue (100);
 		researchPerTurn.setBackground (MomUIConstants.TRANSPARENT);
-		researchPerTurn.setMinimumSize (progressBarSize);
-		researchPerTurn.setMaximumSize (progressBarSize);
-		researchPerTurn.setPreferredSize (progressBarSize);
-		contentPane.add (researchPerTurn, getUtils ().createConstraintsNoFill (1, 3, 1, 1, TINY_INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (researchPerTurn, "frmMagicResearchProgress");
 
 		skillPerTurn = new JProgressBar ();
 		skillPerTurn.setStringPainted (true);
 		skillPerTurn.setFont (getSmallFont ());
 		skillPerTurn.setForeground (MomUIConstants.RED);
 		skillPerTurn.setBackground (MomUIConstants.TRANSPARENT);
-		skillPerTurn.setMinimumSize (progressBarSize);
-		skillPerTurn.setMaximumSize (progressBarSize);
-		skillPerTurn.setPreferredSize (progressBarSize);
-		contentPane.add (skillPerTurn, getUtils ().createConstraintsNoFill (2, 3, 1, 1, TINY_INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (skillPerTurn, "frmMagicSkillProgress");
 
 		// Make the progress bars gold coloured.
 		// This is horrid that it can't be done against the individual progress bars, and we have to do it to ALL progress bars in the application,
@@ -478,84 +465,84 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		// Labels underneath
 		manaLabel = getUtils ().createLabel (MomUIConstants.DULL_GOLD, getSmallFont ());
-		contentPane.add (manaLabel, getUtils ().createConstraintsNoFill (0, 4, 1, 1, new Insets (12, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (manaLabel, "frmMagicManaStoredHeading");
 		
 		researchLabel = getUtils ().createLabel (MomUIConstants.GREEN, getSmallFont ());
-		contentPane.add (researchLabel, getUtils ().createConstraintsNoFill (1, 4, 1, 1, new Insets (12, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (researchLabel, "frmMagicResearchingHeading");
 		
 		skillLabel = getUtils ().createLabel (MomUIConstants.RED, getSmallFont ());
-		contentPane.add (skillLabel, getUtils ().createConstraintsNoFill (2, 4, 1, 1, new Insets (12, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (skillLabel, "frmMagicCastingSkillHeading");
 
-		// Some of the spell names are long enough to overflow into the numeric labels on either side, and we want that to happen rather than
-		// displaying "..." and chopping the label off, so the only way to do it is to swap out that row of 3 columns with a special panel and
-		// fix the sizes so that everything still lines up centred under the main columns, so its a bit of a hack but is the only way I could think to make this look right
-		final JPanel researchNamePanel = new JPanel ();
-		researchNamePanel.setLayout (new GridBagLayout ());
-		researchNamePanel.setOpaque (false);
-		contentPane.add (researchNamePanel, getUtils ().createConstraintsNoFill (0, 5, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
-		final Dimension outerLabelsSize = new Dimension (RESEARCH_NAME_OUTER_LABELS_WIDTH, 22);
-		final Dimension researchNameLabelsSize = new Dimension (RESEARCH_NAME_WIDTH, 22);
-		
-		researchNamePanel.add (Box.createRigidArea (new Dimension (RESEARCH_NAME_SPACERS, 0)),
-			getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		
 		manaStored = getUtils ().createLabel (MomUIConstants.DULL_GOLD, getSmallFont ());
-		manaStored.setMinimumSize (outerLabelsSize);
-		manaStored.setMaximumSize (outerLabelsSize);
-		manaStored.setPreferredSize (outerLabelsSize);
-		manaStored.setHorizontalAlignment (SwingConstants.CENTER);
-		researchNamePanel.add (manaStored, getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (manaStored, "frmMagicManaStored");
 		
 		currentlyResearching = getUtils ().createLabel (MomUIConstants.GREEN, getSmallFont ());
-		currentlyResearching.setMinimumSize (researchNameLabelsSize);
-		currentlyResearching.setMaximumSize (researchNameLabelsSize);
-		currentlyResearching.setPreferredSize (researchNameLabelsSize);
-		currentlyResearching.setHorizontalAlignment (SwingConstants.CENTER);
-		researchNamePanel.add (currentlyResearching, getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (currentlyResearching, "frmMagicResearchingSpellName");
 		
 		castingSkill = getUtils ().createLabel (MomUIConstants.RED, getSmallFont ());
-		castingSkill.setMinimumSize (outerLabelsSize);
-		castingSkill.setMaximumSize (outerLabelsSize);
-		castingSkill.setPreferredSize (outerLabelsSize);
-		castingSkill.setHorizontalAlignment (SwingConstants.CENTER);
-		researchNamePanel.add (castingSkill, getUtils ().createConstraintsNoFill (3, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		contentPane.add (castingSkill, "frmMagicCastingSkill");
 
-		researchNamePanel.add (Box.createRigidArea (new Dimension (RESEARCH_NAME_SPACERS, 0)),
-			getUtils ().createConstraintsNoFill (4, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		// Buttons
+		contentPane.add (getUtils ().createImageButton (alchemyAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+			buttonNormal, buttonPressed, buttonNormal), "frmMagicAlchemy");
 		
-		// The power base label and buttons are also 3 items, but there's no reason for them to be lined up over the above columns, so put them into their own panel
-		final JPanel lowerPanel = new JPanel ();
-		lowerPanel.setLayout (new GridBagLayout ());
-		lowerPanel.setOpaque (false);
-		contentPane.add (lowerPanel, getUtils ().createConstraintsHorizontalFill (0, 6, 3, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE));
+		contentPane.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+			buttonNormal, buttonPressed, buttonNormal), "frmMagicOK");
 
-		lowerPanel.add (getUtils ().createImageButton (alchemyAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
-			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.WEST));
+		contentPane.add (getUtils ().createImageButton (applyAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
+			buttonNormal, buttonPressed, buttonNormal), "frmMagicApply");
 		
-		// Put all the spare space in the middle
-		final GridBagConstraints spaceConstraints = getUtils ().createConstraintsHorizontalFill (1, 0, 1, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE);
-		spaceConstraints.weightx = 1;
-		
-		lowerPanel.add (Box.createRigidArea (new Dimension (0, 0)), spaceConstraints);
-		
-		lowerPanel.add (getUtils ().createImageButton (okAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
-			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
+		// Overland enchantments grid
+		spellsTableModel = new SpellsTableModel ();
+		spellsTable = new JTable ();
+		spellsTable.setOpaque (false);
+		spellsTable.setModel (spellsTableModel);
+		spellsTable.setDefaultRenderer (MemoryMaintainedSpell.class, getMemoryMaintainedSpellTableCellRenderer ());
+		spellsTable.setRowHeight (getUtils ().loadImage ("/momime.client.graphics/ui/mirror/mirror.png").getHeight ());
+		spellsTable.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
+		spellsTable.setTableHeader (null);
 
-		lowerPanel.add (getUtils ().createImageButton (applyAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (),
-			buttonNormal, buttonPressed, buttonNormal), getUtils ().createConstraintsNoFill (3, 0, 1, 1, new Insets (0, 6, 0, 0), GridBagConstraintsNoFill.EAST));
-		
-		// Leave a space for the overland enchantments grid when we implement it
-		final Dimension overlandEnchantmentsSize = new Dimension (272, 430);
-		
-		final JPanel overlandEnchantments = new JPanel ();
-		overlandEnchantments.setOpaque (false);
-		overlandEnchantments.setMinimumSize (overlandEnchantmentsSize);
-		overlandEnchantments.setMaximumSize (overlandEnchantmentsSize);
-		overlandEnchantments.setPreferredSize (overlandEnchantmentsSize);
-		
-		contentPane.add (overlandEnchantments, getUtils ().createConstraintsNoFill (3, 1, 1, 6, new Insets (0, 35, 6, 4), GridBagConstraintsNoFill.CENTRE));		
+		final JScrollPane spellsScrollPane = getUtils ().createTransparentScrollPane (spellsTable);
+		contentPane.add (spellsScrollPane, "frmMagicOverlandEnchantments");
 
+		spellsChanged ();
+		
+		// Clicking a spell asks about cancelling it
+		final MouseListener spellSelectionListener = new MouseAdapter ()
+		{
+			@Override
+			public final void mouseClicked (final MouseEvent ev)
+			{
+				final int col = spellsTable.columnAtPoint (ev.getPoint ());
+				final int row = spellsTable.rowAtPoint (ev.getPoint ());
+				final int index = (row * 2) + col;
+				
+				if ((index >= 0) && (index < spellsTableModel.getSpells ().size ()))
+				{
+					final MemoryMaintainedSpell spell = spellsTableModel.getSpells ().get (index);
+					if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
+					try
+					{
+						final Spell spellLang = getLanguage ().findSpell (spell.getSpellID ());
+						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+						
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setTitleLanguageCategoryID ("SpellCasting");
+						msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
+						msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+							("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+						msg.setSwitchOffSpell (spell);
+						msg.setVisible (true);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			}
+		};
+		spellsTable.addMouseListener (spellSelectionListener);
+		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
@@ -678,7 +665,43 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		log.trace ("Exiting updateProductionLabels");
 	}	
+
+	/**
+	 * Update the list of overland enchantments whenever they change
+	 */
+	public final void spellsChanged ()
+	{
+		log.trace ("Entering spellsChanged");
+		
+		if (spellsTableModel != null)
+		{
+			spellsTableModel.getSpells ().clear ();
+			for (final MemoryMaintainedSpell spell : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ())
+				if ((spell.getCityLocation () == null) && (spell.getUnitURN () == null))
+					spellsTableModel.getSpells ().add (spell);
+			
+			spellsTableModel.fireTableDataChanged ();
+		}
+		
+		log.trace ("Exiting spellsChanged");
+	}
 	
+	/**
+	 * @return XML layout
+	 */
+	public final XmlLayoutContainerEx getMagicSlidersLayout ()
+	{
+		return magicSlidersLayout;
+	}
+
+	/**
+	 * @param layout XML layout
+	 */
+	public final void setMagicSlidersLayout (final XmlLayoutContainerEx layout)
+	{
+		magicSlidersLayout = layout;
+	}
+
 	/**
 	 * @return UI component factory
 	 */
@@ -853,5 +876,94 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Renderer for the enchantments table
+	 */
+	public final MemoryMaintainedSpellTableCellRenderer getMemoryMaintainedSpellTableCellRenderer ()
+	{
+		return memoryMaintainedSpellTableCellRenderer;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+	
+	/**
+	 * @param renderer Renderer for the enchantments table
+	 */
+	public final void setMemoryMaintainedSpellTableCellRenderer (final MemoryMaintainedSpellTableCellRenderer renderer)
+	{
+		memoryMaintainedSpellTableCellRenderer = renderer;
+	}
+	
+	/**
+	 * Table model for displaying the overland enchantments grid
+	 */
+	private class SpellsTableModel extends AbstractTableModel
+	{
+		/** Unique value for serialization */
+		private static final long serialVersionUID = 2007771542738429988L;
+		
+		/** Underlying storage */
+		private List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		/**
+		 * @return Underlying storage
+		 */
+		public final List<MemoryMaintainedSpell> getSpells ()
+		{
+			return spells;
+		}
+		
+		/**
+		 * @return Enough rows to fit however many spells we have to draw, rounding up
+		 */
+		@Override
+		public final int getRowCount ()
+		{
+			return (spells.size () + 1) / 2;
+		}
+
+		/**
+		 * @return Fixed at 2 columns
+		 */
+		@Override
+		public final int getColumnCount ()
+		{
+			return 2;
+		}
+
+		/**
+		 * @return Spell to display at the specified grid location
+		 */
+		@Override
+		public final Object getValueAt (final int rowIndex, final int columnIndex)
+		{
+			final int index = (rowIndex * 2) + columnIndex;
+			return ((index < 0) || (index >= spells.size ())) ? null : spells.get (index);
+		}
+
+		/**
+		 * @return Columns are all spells
+		 */
+		@Override
+		public final Class<?> getColumnClass (final int columnIndex)
+		{
+			return MemoryMaintainedSpell.class;
+		}
 	}
 }

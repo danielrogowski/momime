@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>640</formWidth>
+	<formHeight>480</formHeight>
+	<component name="frmMagicPowerBase">
+		<left>163</left>
+		<top>24</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.5</verticalAlignment>
+	</component>
+	<component name="frmMagicOverlandEnchantmentsLabel">
+		<left>340</left>
+		<top>32</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmMagicManaLabel">
+		<left>70</left>
+		<top>74</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmMagicResearchLabel">
+		<left>164</left>
+		<top>74</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmMagicSkillLabel">
+		<left>258</left>
+		<top>74</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+	<component name="frmMagicManaSlider">
+		<left>70</left>
+		<top>80</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicResearchSlider">
+		<left>164</left>
+		<top>80</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicSkillSlider">
+		<left>258</left>
+		<top>80</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicManaProgress">
+		<left>24</left>
+		<top>374</top>
+		<width>92</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicResearchProgress">
+		<left>118</left>
+		<top>374</top>
+		<width>92</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicSkillProgress">
+		<left>212</left>
+		<top>374</top>
+		<width>92</width>
+		<height>22</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicManaStoredHeading">
+		<left>70</left>
+		<top>410</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicResearchingHeading">
+		<left>164</left>
+		<top>410</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicCastingSkillHeading">
+		<left>258</left>
+		<top>410</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicManaStored">
+		<left>70</left>
+		<top>425</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicResearchingSpellName">
+		<left>164</left>
+		<top>425</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicCastingSkill">
+		<left>258</left>
+		<top>425</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicOK">
+		<left>167</left>
+		<top>450</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicApply">
+		<left>239</left>
+		<top>450</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicOverlandEnchantments">
+		<left>340</left>
+		<top>36</top>
+		<width>274</width>
+		<height>432</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmMagicAlchemy">
+		<left>23</left>
+		<top>450</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

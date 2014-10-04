@@ -22,7 +22,6 @@ import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageOverlandEnchantment;
 import momime.common.messages.v0_9_5.NewTurnMessageSpell;
 import momime.common.messages.v0_9_5.NewTurnMessageSummonUnit;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
@@ -189,18 +188,9 @@ public final class TestSpellProcessingImpl
 		// CAE should get added also
 		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", pd3.getPlayerID (), null, players, db, sd);
 		
-		// Human players should both have NTMs about it
-		assertEquals (1, trans1.getNewTurnMessage ().size ());
-		assertEquals (NewTurnMessageTypeID.OVERLAND_ENCHANTMENT, trans1.getNewTurnMessage ().get (0).getMsgType ());
-		final NewTurnMessageOverlandEnchantment ntm1 = (NewTurnMessageOverlandEnchantment) trans1.getNewTurnMessage ().get (0);
-		assertEquals ("SP001", ntm1.getSpellID ());
-		assertEquals (pd3.getPlayerID ().intValue (), ntm1.getCastingPlayerID ());
-
-		assertEquals (1, trans3.getNewTurnMessage ().size ());
-		assertEquals (NewTurnMessageTypeID.OVERLAND_ENCHANTMENT, trans3.getNewTurnMessage ().get (0).getMsgType ());
-		final NewTurnMessageOverlandEnchantment ntm3 = (NewTurnMessageOverlandEnchantment) trans3.getNewTurnMessage ().get (0);
-		assertEquals ("SP001", ntm3.getSpellID ());
-		assertEquals (pd3.getPlayerID ().intValue (), ntm3.getCastingPlayerID ());
+		// Human players won't get any NTMs about it
+		assertEquals (0, trans1.getNewTurnMessage ().size ());
+		assertEquals (0, trans3.getNewTurnMessage ().size ());
 	}
 
 	/**

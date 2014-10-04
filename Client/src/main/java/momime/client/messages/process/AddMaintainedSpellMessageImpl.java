@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.dialogs.MiniCityViewUI;
+import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
@@ -52,11 +53,21 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	{
 		log.trace ("Entering start: " + getData ().getSpellID ());
 		
-		// If its a city spell, show an animation for it and don't even add the spell yet - the animation handles that as well
+		// Some types of important spells show their castings as animations; in that case we don't even add the spell yet - the animation handles that as well
 		final Spell spell = getClient ().getClientDB ().findSpell (getData ().getSpellID (), "AddMaintainedSpellMessageImpl");
 		boolean animated = false;
+
+		// Overland enchantments are always animated
+		if (spell.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+		{
+			animated = true;
+			
+			final OverlandEnchantmentsUI overlandEnchantmentsPopup = getPrototypeFrameCreator ().createOverlandEnchantments ();
+			overlandEnchantmentsPopup.setSpellMessage (this);
+			overlandEnchantmentsPopup.setVisible (true);
+		}
 		
-		if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
 		{
 			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
 			if ((getData ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&

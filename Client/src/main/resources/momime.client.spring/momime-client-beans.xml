@@ -426,6 +426,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
 	</bean>
 
 	<bean id="fogOfWarVisibleAreaChangedMessage" class="momime.client.messages.process.FogOfWarVisibleAreaChangedMessageImpl" scope="prototype">
@@ -487,16 +488,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
-	</bean>
-
-	<bean id="newTurnMessageOverlandEnchantment" class="momime.client.newturnmessages.NewTurnMessageOverlandEnchantmentEx" scope="prototype">
-		<property name="smallFont" ref="smallFont" />
-		<property name="languageHolder" ref="languageHolder" />
-		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
-		<property name="utils" ref="uiUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
-		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype" />
@@ -785,7 +776,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
+	<bean id="magicSlidersLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.frames/MagicSlidersUI.xml" />
+	</bean>
+
 	<bean id="magicSlidersUI" class="momime.client.ui.frames.MagicSlidersUI">
+		<property name="magicSlidersLayout" ref="magicSlidersLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="chooseLanguageUI" />
 		<property name="utils" ref="uiUtils" />
@@ -800,6 +796,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="alchemyUI" ref="alchemyUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="memoryMaintainedSpellTableCellRenderer" ref="memoryMaintainedSpellTableCellRenderer" />
 	</bean>
 
 	<bean id="alchemyUI" class="momime.client.ui.frames.AlchemyUI">
@@ -862,10 +860,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 	</bean>
 
-	<bean id="memoryMaintainedSpellRenderer" class="momime.client.ui.renderer.MemoryMaintainedSpellRenderer" scope="prototype">
+	<bean id="memoryMaintainedSpellListCellRenderer" class="momime.client.ui.renderer.MemoryMaintainedSpellListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+
+	<bean id="memoryMaintainedSpellTableCellRenderer" class="momime.client.ui.renderer.MemoryMaintainedSpellTableCellRenderer" scope="prototype">
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="utils" ref="uiUtils" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<bean id="uiComponentFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
@@ -957,8 +961,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="anim" ref="anim" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
-		<property name="cityViewPanel" ref="cityViewPanel" />															<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
-		<property name="memoryMaintainedSpellRenderer" ref="memoryMaintainedSpellRenderer" />	<!-- So Spring will create and inject a new spell list renderer for each city view UI -->
+		<property name="cityViewPanel" ref="cityViewPanel" />																				<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
+		<property name="memoryMaintainedSpellListCellRenderer" ref="memoryMaintainedSpellListCellRenderer" />	<!-- So Spring will create and inject a new spell list renderer for each city view UI -->
 	</bean>
 	
 	<bean id="miniCityViewLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1027,6 +1031,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each unitInfoUI -->
+	</bean>
+	
+	<bean id="overlandEnchantmentsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/OverlandEnchantmentsUI.xml" />
+	</bean>
+	
+	<bean id="overlandEnchantmentsUI" class="momime.client.ui.dialogs.OverlandEnchantmentsUI" scope="prototype">
+		<property name="overlandEnchantmentsLayout" ref="overlandEnchantmentsLayout" />
+		<property name="client" ref="client" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
 	</bean>
 	
 </beans>

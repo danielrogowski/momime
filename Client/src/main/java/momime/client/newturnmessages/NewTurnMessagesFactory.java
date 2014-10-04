@@ -38,11 +38,6 @@ public interface NewTurnMessagesFactory
 	/**
 	 * @return NTM with injected dependencies
 	 */
-	public NewTurnMessageOverlandEnchantmentEx createNewTurnMessageOverlandEnchantment ();
-
-	/**
-	 * @return NTM with injected dependencies
-	 */
 	public NewTurnMessagePopulationChangeEx createNewTurnMessagePopulationChange ();
 
 	/**

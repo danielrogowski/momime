@@ -21,7 +21,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 /**
  * Renderer for writing spell names onto the city screen, and colouring spell names according to the wizard who cast them
  */
-public final class MemoryMaintainedSpellRenderer extends JLabel implements ListCellRenderer<MemoryMaintainedSpell>
+public final class MemoryMaintainedSpellListCellRenderer extends JLabel implements ListCellRenderer<MemoryMaintainedSpell>
 {
 	/** Unique value for serialization */
 	private static final long serialVersionUID = 9188194078229760332L;

@@ -83,7 +83,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	public final BufferedImage getOverlandEnchantmentMirror (final int playerID) throws IOException
 	{
 		if (mirrorImage == null)
-			mirrorImage = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/mirror.png");
+			mirrorImage = getUtils ().loadImage ("/momime.client.graphics/ui/mirror/mirror.png");
 
 		return getImage (playerID, mirrorImage, mirrorImages);
 	}

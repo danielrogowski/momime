@@ -39,6 +39,7 @@ import javax.swing.event.DocumentListener;
 import momime.client.MomClient;
 import momime.client.database.v0_9_5.AvailableDatabase;
 import momime.client.database.v0_9_5.Wizard;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.BookImage;
 import momime.client.language.database.v0_9_5.Pick;
@@ -156,9 +157,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Wizard portrait */
 	private JLabel wizardPortrait;
 	
-	/** Fixed size allocated for portrait, whether there's a pic yet there or not */
-	private final Dimension WIZARD_PORTRAIT_SIZE = new Dimension (218, 250);	
-
 	/** Wizard's colour flag */
 	private JLabel flag1;
 	
@@ -634,9 +632,9 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Images in left hand side
 		wizardPortrait = new JLabel (new ImageIcon ());		// If we don't create the ImageIcon, even though empty, the layout is set incorrectly, not sure why
-		wizardPortrait.setMinimumSize (WIZARD_PORTRAIT_SIZE);
-		wizardPortrait.setMaximumSize (WIZARD_PORTRAIT_SIZE);
-		wizardPortrait.setPreferredSize (WIZARD_PORTRAIT_SIZE);
+		wizardPortrait.setMinimumSize (GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE);
+		wizardPortrait.setMaximumSize (GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE);
+		wizardPortrait.setPreferredSize (GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE);
 		contentPane.add (wizardPortrait, getUtils ().createConstraintsNoFill (0, 1, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		final Dimension flagSize = new Dimension (flag.getWidth (), flag.getHeight ());
@@ -1053,7 +1051,7 @@ public final class NewGameUI extends MomClientFrameUI
 								{
 									final momime.client.graphics.database.v0_9_5.Wizard portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.wizardButtonAction"); 
 									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
-										(WIZARD_PORTRAIT_SIZE.width, WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
+										(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
 									
 									final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, Integer.parseInt (portrait.getFlagColour (), 16));
 									flag1.setIcon (new ImageIcon (wizardFlag));
@@ -1103,7 +1101,7 @@ public final class NewGameUI extends MomClientFrameUI
 								{
 									final momime.client.graphics.database.v0_9_5.Wizard portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.portraitButtonAction"); 
 									wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
-										(WIZARD_PORTRAIT_SIZE.width, WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
+										(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
 
 									final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, Integer.parseInt (portrait.getFlagColour (), 16));
 									flag1.setIcon (new ImageIcon (wizardFlag));

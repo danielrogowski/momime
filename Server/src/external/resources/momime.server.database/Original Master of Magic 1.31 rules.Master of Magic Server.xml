@@ -19511,6 +19511,8 @@
 	<languageCategory languageCategoryID="SpellCasting">
 		<languageEntry languageEntryID="YouHaveCast" />
 		<languageEntry languageEntryID="SomeoneElseHasCast" />
+		<languageEntry languageEntryID="OurOverlandEnchantment" />
+		<languageEntry languageEntryID="EnemyOverlandEnchantment" />
 		<languageEntry languageEntryID="SwitchOffSpellTitle" />
 		<languageEntry languageEntryID="SwitchOffSpell" />
 	</languageCategory>
@@ -19631,10 +19633,6 @@
 		<languageEntry languageEntryID="SummonedUnitLastTurn" />
 		<languageEntry languageEntryID="SummonedUnitBumpedSuffix" />
 		<languageEntry languageEntryID="SummonedUnitNoRoomSuffix" />
-		<languageEntry languageEntryID="OurOverlandEnchantment" />
-		<languageEntry languageEntryID="OurOverlandEnchantmentLastTurn" />
-		<languageEntry languageEntryID="EnemyOverlandEnchantment" />
-		<languageEntry languageEntryID="EnemyOverlandEnchantmentLastTurn" />
 		<languageEntry languageEntryID="TargetSpell" />
 		<languageEntry languageEntryID="TargetSpellChosen" />
 		<languageEntry languageEntryID="TargetSpellCancelled" />

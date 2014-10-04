@@ -18,7 +18,6 @@ import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageOverlandEnchantment;
 import momime.common.messages.v0_9_5.NewTurnMessageSpell;
 import momime.common.messages.v0_9_5.NewTurnMessageSummonUnit;
 import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
@@ -130,16 +129,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// If they do, they can't have it twice so nothing to do, they just lose the cast
 			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (gsk.getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
 			{
-				// Show message, everybody can see overland enchantment casts
-				final NewTurnMessageOverlandEnchantment overlandMessage = new NewTurnMessageOverlandEnchantment ();
-				overlandMessage.setMsgType (NewTurnMessageTypeID.OVERLAND_ENCHANTMENT);
-				overlandMessage.setCastingPlayerID (player.getPlayerDescription ().getPlayerID ());
-				overlandMessage.setSpellID (spell.getSpellID ());
-
-				for (final PlayerServerDetails messagePlayer : players)
-					if (messagePlayer.getPlayerDescription ().isHuman ())
-						((MomTransientPlayerPrivateKnowledge) messagePlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (overlandMessage);
-
 				// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
 				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (gsk, player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
 					null, null, false, null, null, players, null, null, null, db, sd);

@@ -88649,9 +88649,6 @@
 		<animationDescription>Page flipping from right to left when we turn the page in the spell book</animationDescription>
 		<animationSpeed>5</animationSpeed>
 		<frame>
-			<frameImageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame0.png</frameImageFile>
-		</frame>
-		<frame>
 			<frameImageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame1.png</frameImageFile>
 		</frame>
 		<frame>
@@ -88659,6 +88656,58 @@
 		</frame>
 		<frame>
 			<frameImageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame3.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/spellBook/spellBookAnim-frame4.png</frameImageFile>
+		</frame>
+	</animation>
+	<animation animationID="OVERLAND_ENCHANTMENTS_MIRROR">
+		<animationDescription>Swirl fading from one image in the mirror to another</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame01.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame02.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame03.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame04.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame05.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame06.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame07.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame08.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame09.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame10.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame11.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame12.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame13.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame14.png</frameImageFile>
+		</frame>
+		<frame>
+			<frameImageFile>/momime.client.graphics/ui/mirror/mirror-fade-frame15.png</frameImageFile>
 		</frame>
 	</animation>
 	<playList playListID="OVERLAND">

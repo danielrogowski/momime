@@ -172,6 +172,12 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Overland or combat casting (this will probably change to something like getClient ().getCurrentCombatLocation () == null or not null) */
 	private MomSpellCastType castType = MomSpellCastType.OVERLAND;
 	
+	/** Turn page left action */
+	private Action turnPageLeftAction;
+	
+	/** Turn page rightaction */
+	private Action turnPageRightAction;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -205,13 +211,16 @@ public final class SpellBookUI extends MomClientFrameUI
 			}
 		};
 
-		final Action turnPageLeftAction = new AbstractAction ()
+		turnPageLeftAction = new AbstractAction ()
 		{
 			private static final long serialVersionUID = 8767751980243329047L;
 
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				turnPageLeftAction.setEnabled (false);
+				turnPageRightAction.setEnabled (false);
+				
 				// Any more pages available to turn after this anim finishes?
 				turnPageLeftButton.setHidden ((leftPageNumber - 2) <= 0);
 				
@@ -236,6 +245,8 @@ public final class SpellBookUI extends MomClientFrameUI
 							pageTurnFrame = null;
 							
 							turnPageRightButton.setHidden (false);
+							turnPageLeftAction.setEnabled (true);
+							turnPageRightAction.setEnabled (true);
 						}
 						else
 						{
@@ -262,13 +273,16 @@ public final class SpellBookUI extends MomClientFrameUI
 			}
 		};
 		
-		final Action turnPageRightAction = new AbstractAction ()
+		turnPageRightAction = new AbstractAction ()
 		{
 			private static final long serialVersionUID = 3223600649990240103L;
 
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				turnPageLeftAction.setEnabled (false);
+				turnPageRightAction.setEnabled (false);
+
 				// Any more pages available to turn after this anim finishes?
 				turnPageRightButton.setHidden ((rightPageNumber + 2) + 1 >= pages.size ());
 
@@ -293,6 +307,8 @@ public final class SpellBookUI extends MomClientFrameUI
 							pageTurnFrame = null;
 							
 							turnPageLeftButton.setHidden (false);
+							turnPageLeftAction.setEnabled (true);
+							turnPageRightAction.setEnabled (true);
 						}
 						else
 						{

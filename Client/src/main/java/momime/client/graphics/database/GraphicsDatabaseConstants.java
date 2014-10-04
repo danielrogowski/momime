@@ -1,5 +1,7 @@
 package momime.client.graphics.database;
 
+import java.awt.Dimension;
+
 /**
  * XML tags and values used in MoM IME graphics file
  */
@@ -28,6 +30,15 @@ public final class GraphicsDatabaseConstants
 	
 	/** Sample of an ocean tile, before obtaining the client XML so we can derive this properly from an AvailableUnit */
 	public static final String SAMPLE_OCEAN_TILE = "/momime.client.graphics/combat/terrain/arcanus/ocean/standard/00000000a-frame1.png";
+
+	/** Controls how overland enchantment images fit inside the mirror */ 
+	public static final int IMAGE_MIRROR_X_OFFSET = 9;
+	
+	/** Controls how overland enchantment images fit inside the mirror */
+	public static final int IMAGE_MIRROR_Y_OFFSET = 8;
+	
+	/** Size that all wizard portraits are stretched to, whether standard or custom photos */
+	public static final Dimension WIZARD_PORTRAIT_SIZE = new Dimension (218, 250);	
 	
 	/** Play list containing all the music for the overland map */
 	public static final String PLAY_LIST_OVERLAND_MUSIC = "OVERLAND";

@@ -4,7 +4,6 @@ import momime.common.messages.v0_9_5.NewTurnMessageBuildingSoldFromLackOfProduct
 import momime.common.messages.v0_9_5.NewTurnMessageConstructBuilding;
 import momime.common.messages.v0_9_5.NewTurnMessageConstructUnit;
 import momime.common.messages.v0_9_5.NewTurnMessageNode;
-import momime.common.messages.v0_9_5.NewTurnMessageOverlandEnchantment;
 import momime.common.messages.v0_9_5.NewTurnMessagePopulationChange;
 import momime.common.messages.v0_9_5.NewTurnMessageSpell;
 import momime.common.messages.v0_9_5.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
@@ -63,15 +62,6 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	public final NewTurnMessageSummonUnit createNewTurnMessageSummonUnit ()
 	{
 		return getNewTurnMessagesFactory ().createNewTurnMessageSummonUnit ();
-	}
-
-	/**
-	 * @return Custom extended NTM
-	 */
-	@Override
-	public final NewTurnMessageOverlandEnchantment createNewTurnMessageOverlandEnchantment ()
-	{
-		return getNewTurnMessagesFactory ().createNewTurnMessageOverlandEnchantment ();
 	}
 
 	/**

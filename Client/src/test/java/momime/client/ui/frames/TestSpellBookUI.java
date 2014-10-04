@@ -104,7 +104,7 @@ public final class TestSpellBookUI
 		// Mock entries from the graphics XML
 		final AnimationEx pageTurn = new AnimationEx ();
 		pageTurn.setAnimationSpeed (5);
-		for (int n = 0; n < 4; n++)
+		for (int n = 1; n <= 4; n++)
 		{
 			final AnimationFrame frame = new AnimationFrame ();
 			frame.setFrameImageFile ("/momime.client.graphics/ui/spellBook/spellBookAnim-frame" + n + ".png");

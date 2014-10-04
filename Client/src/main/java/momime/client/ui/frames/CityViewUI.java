@@ -51,7 +51,7 @@ import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.panels.BuildingListener;
 import momime.client.ui.panels.CityViewPanel;
-import momime.client.ui.renderer.MemoryMaintainedSpellRenderer;
+import momime.client.ui.renderer.MemoryMaintainedSpellListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
@@ -157,7 +157,7 @@ public final class CityViewUI extends MomClientFrameUI
 	private OverlandMapProcessing overlandMapProcessing;
 	
 	/** Renderer for the enchantments list */
-	private MemoryMaintainedSpellRenderer memoryMaintainedSpellRenderer;
+	private MemoryMaintainedSpellListCellRenderer memoryMaintainedSpellListCellRenderer;
 
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
@@ -510,13 +510,13 @@ public final class CityViewUI extends MomClientFrameUI
 		contentPane.add (productionPanel, "frmCityProduction");
 		
 		// Set up the mini panel to hold all the enchantments
-		getMemoryMaintainedSpellRenderer ().setFont (getSmallFont ());
+		getMemoryMaintainedSpellListCellRenderer ().setFont (getSmallFont ());
 		
 		spellsItems = new DefaultListModel<MemoryMaintainedSpell> ();
 		spellsList = new JList<MemoryMaintainedSpell> ();
 		spellsList.setOpaque (false);
 		spellsList.setModel (spellsItems);
-		spellsList.setCellRenderer (getMemoryMaintainedSpellRenderer ());
+		spellsList.setCellRenderer (getMemoryMaintainedSpellListCellRenderer ());
 		spellsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
 		final JScrollPane spellsScrollPane = getUtils ().createTransparentScrollPane (spellsList);
@@ -1533,16 +1533,16 @@ public final class CityViewUI extends MomClientFrameUI
 	/**
 	 * @return Renderer for the enchantments list
 	 */
-	public final MemoryMaintainedSpellRenderer getMemoryMaintainedSpellRenderer ()
+	public final MemoryMaintainedSpellListCellRenderer getMemoryMaintainedSpellListCellRenderer ()
 	{
-		return memoryMaintainedSpellRenderer;
+		return memoryMaintainedSpellListCellRenderer;
 	}
 
 	/**
 	 * @param renderer Renderer for the enchantments list
 	 */
-	public final void setMemoryMaintainedSpellRenderer (final MemoryMaintainedSpellRenderer renderer)
+	public final void setMemoryMaintainedSpellListCellRenderer (final MemoryMaintainedSpellListCellRenderer renderer)
 	{
-		memoryMaintainedSpellRenderer = renderer;
+		memoryMaintainedSpellListCellRenderer = renderer;
 	}
 }

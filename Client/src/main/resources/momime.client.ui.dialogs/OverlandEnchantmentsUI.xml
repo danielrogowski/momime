@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>256</formWidth>
+	<formHeight>300</formHeight>
+	<component name="frmOverlandEnchantmentsText">
+		<left>128</left>
+		<top>300</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>1.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

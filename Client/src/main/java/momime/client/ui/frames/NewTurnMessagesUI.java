@@ -148,18 +148,21 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 			@Override
 			public final void mouseClicked (final MouseEvent ev)
 			{
-				final NewTurnMessageUI msg = newTurnMessages.get (newTurnMessagesList.getSelectedIndex ());
-				
-				// Not all types of message are clickable
-				if (msg instanceof NewTurnMessageClickable)
-					try
-					{
-						((NewTurnMessageClickable) msg).clicked ();
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+				if (newTurnMessagesList.getSelectedIndex () >= 0)
+				{
+					final NewTurnMessageUI msg = newTurnMessages.get (newTurnMessagesList.getSelectedIndex ());
+					
+					// Not all types of message are clickable
+					if (msg instanceof NewTurnMessageClickable)
+						try
+						{
+							((NewTurnMessageClickable) msg).clicked ();
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
 			}
 		});
 		

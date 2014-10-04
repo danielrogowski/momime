@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
@@ -40,6 +41,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the MagicSlidersUI class
@@ -192,6 +194,10 @@ public final class TestMagicSlidersUI
 		resourceValueUtils.setPlayerPickUtils (pickUtils);
 		resourceValueUtils.setSpellCalculations (spellCalc);
 		resourceValueUtils.setSkillCalculations (skillCalc);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/MagicSlidersUI.xml"));
+		layout.buildMaps ();
 		
 		// Set up form
 		final MagicSlidersUI sliders = new MagicSlidersUI ();
@@ -207,6 +213,7 @@ public final class TestMagicSlidersUI
 		sliders.setTextUtils (new TextUtilsImpl ());
 		sliders.setLargeFont (CreateFontsForTests.getLargeFont ());
 		sliders.setSmallFont (CreateFontsForTests.getSmallFont ());
+		sliders.setMagicSlidersLayout (layout);
 
 		// Display form		
 		sliders.setVisible (true);

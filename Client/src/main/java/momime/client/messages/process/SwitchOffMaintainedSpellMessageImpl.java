@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.MagicSlidersUI;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -30,6 +31,9 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Magic sliders screen */
+	private MagicSlidersUI magicSlidersUI;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -74,6 +78,10 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 				}
 		}
 		
+		// If we've got the magic screen loaded up, update overland enchantments
+		else if (getData ().getUnitURN () == null)
+			getMagicSlidersUI ().spellsChanged ();
+		
 		log.trace ("Exiting processOneUpdate");
 	}
 
@@ -107,5 +115,21 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Magic sliders screen
+	 */
+	public final MagicSlidersUI getMagicSlidersUI ()
+	{
+		return magicSlidersUI;
+	}
+
+	/**
+	 * @param ui Magic sliders screen
+	 */
+	public final void setMagicSlidersUI (final MagicSlidersUI ui)
+	{
+		magicSlidersUI = ui;
 	}
 }

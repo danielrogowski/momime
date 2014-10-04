@@ -961,6 +961,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="anim" ref="anim" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
+		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="cityViewPanel" ref="cityViewPanel" />																				<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 		<property name="memoryMaintainedSpellListCellRenderer" ref="memoryMaintainedSpellListCellRenderer" />	<!-- So Spring will create and inject a new spell list renderer for each city view UI -->
 	</bean>

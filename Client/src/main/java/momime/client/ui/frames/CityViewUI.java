@@ -34,6 +34,7 @@ import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
+import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceEx;
@@ -78,6 +79,8 @@ import momime.common.utils.UnitUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
@@ -159,6 +162,15 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Renderer for the enchantments list */
 	private MemoryMaintainedSpellListCellRenderer memoryMaintainedSpellListCellRenderer;
 
+	/** Bitmap generator */
+	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
+
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
 	
@@ -228,6 +240,18 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Enchantments list box */
 	private JList<MemoryMaintainedSpell> spellsList;
 	
+	/** Bitmaps for each animation frame of the mini map */
+	private BufferedImage [] miniMapBitmaps;
+
+	/** Bitmap for the shading at the edges of the area we can see in the mini map */
+	private BufferedImage fogOfWarBitmap;
+	
+	/** Panel showing the terrain around the city */
+	private JPanel miniMapPanel;
+	
+	/** Panel that covers up an area of the screen if it isn't our city */
+	private JPanel notOursPanel;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -245,6 +269,9 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		final BufferedImage progressCoinDone = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/productionProgressDone.png");
 		final BufferedImage progressCoinNotDone = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/productionProgressNotDone.png");
+		
+		final BufferedImage notOurs = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/notOurs.png");
+		final BufferedImage resourceArea = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/resourceArea.png");
 
 		final XmlLayoutComponent constructionProgressPanelSize = getCityViewLayout ().findComponent ("frmCityConstructionProgress");
 		
@@ -455,6 +482,28 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getCityViewLayout ()));
+
+		// Set up the city view panel first so its in front of the "not ours" panel
+		getCityViewPanel ().setCityLocation (getCityLocation ());
+		contentPane.add (getCityViewPanel (), "frmCityView");
+		
+		// OK button is also in front of the "not ours" panel
+		contentPane.add (getUtils ().createImageButton (okAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityOK");
+		
+		// Set up panel to cover up production images and buttons on cities that aren't ours.
+		// The ordering of when we add this is significant - it must be behind the area where we draw the city (all the buildings) but in front of all the production buttons.
+		notOursPanel = new JPanel ()
+		{
+			private static final long serialVersionUID = 179548056982390045L;
+
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				g.drawImage (notOurs, 0, 0, notOurs.getWidth () * 2, notOurs.getHeight () * 2, null);
+			}
+		};
+
+		contentPane.add (notOursPanel, "frmCityNotOurs");
 		
 		// Labels
 		cityNameLabel = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
@@ -487,13 +536,30 @@ public final class CityViewUI extends MomClientFrameUI
 		// Buttons
 		contentPane.add (getUtils ().createImageButton (rushBuyAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityBuy");
 		contentPane.add (getUtils ().createImageButton (changeConstructionAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityChange");
-		contentPane.add (getUtils ().createImageButton (okAction, Color.BLACK, MomUIConstants.SILVER, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCityOK");
-		
-		// Set up the city view panel
-		getCityViewPanel ().setCityLocation (getCityLocation ());
-		contentPane.add (getCityViewPanel (), "frmCityView");
 		
 		// Set up the mini terrain panel
+		miniMapPanel = new JPanel ()
+		{
+			private static final long serialVersionUID = -2428422973639205496L;
+
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				super.paintComponent (g);
+				
+				// Draw the terrain
+				g.drawImage (miniMapBitmaps [getOverlandMapUI ().getTerrainAnimFrame ()], 0, 0, null);
+						
+				// Shade the fog of war edges
+				if (fogOfWarBitmap != null)
+					g.drawImage (fogOfWarBitmap, 0, 0, null);
+				
+				// Draw a ring around the area the city gathers resources from
+				g.drawImage (resourceArea, 19, 17, null);
+			}
+		};
+		miniMapPanel.setBackground (Color.BLACK);
+		contentPane.add (miniMapPanel, "frmCityMiniMap");
 
 		// Set up the mini panel to hold all the civilians - this also has a 2 pixel gap to correct the labels above it
 		civilianPanel = new JPanel ();
@@ -656,7 +722,7 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		constructionPanel.setOpaque (false);
 		contentPane.add (constructionPanel, "frmCityConstruction");
-		
+
 		// Deal with clicking on buildings to sell them
 		getCityViewPanel ().addBuildingListener (new BuildingListener ()
 		{
@@ -751,6 +817,7 @@ public final class CityViewUI extends MomClientFrameUI
 		cityDataChanged ();
 		unitsChanged ();
 		spellsChanged ();
+		regenerateCityViewMiniMapBitmaps ();
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -1073,6 +1140,14 @@ public final class CityViewUI extends MomClientFrameUI
 		productionPanel.repaint ();
 		
 		languageOrCityDataChanged ();
+		
+		// Is it ours or not (note this can change - the city view might already be open when a city is captured).
+		// Also we have to take care to disable the buttons - just showing the panel doesn't stop you from clicking the buttons that its covering up.
+		notOursPanel.setVisible (!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ()));
+		production.setVisible (!notOursPanel.isVisible ());
+		changeConstructionAction.setEnabled (!notOursPanel.isVisible ());
+		
+		// Must do this after setting the "not ours" panel visibility, since it uses it
 		recheckRushBuyEnabled ();
 		
 		// The buildings are drawn dynamically, but if one is an animation then calling init () again will ensure it gets registered properly
@@ -1161,28 +1236,74 @@ public final class CityViewUI extends MomClientFrameUI
 		log.trace ("Entering recheckRushBuyEnabled");
 
 		boolean rushBuyEnabled = false;
-		
-		final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
-		final OverlandMapCityData cityData = mc.getCityData ();
-
-		Integer productionCost = null;
-		if (cityData.getCurrentlyConstructingBuildingID () != null)
-			productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "recheckRushBuyEnabled").getProductionCost ();
-
-		if (cityData.getCurrentlyConstructingUnitID () != null)
-			productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "recheckRushBuyEnabled").getProductionCost ();
-		
-		if (productionCost != null)
+		if (!notOursPanel.isVisible ())
 		{
-			final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (mc.getProductionSoFar () == null) ? 0 : mc.getProductionSoFar ());
-			rushBuyEnabled = (goldToRushBuy > 0) && (goldToRushBuy <= getResourceValueUtils ().findAmountStoredForProductionType
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD));
-		}
-		
+			final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+			final OverlandMapCityData cityData = mc.getCityData ();
+	
+			Integer productionCost = null;
+			if (cityData.getCurrentlyConstructingBuildingID () != null)
+				productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "recheckRushBuyEnabled").getProductionCost ();
+	
+			if (cityData.getCurrentlyConstructingUnitID () != null)
+				productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "recheckRushBuyEnabled").getProductionCost ();
+			
+			if (productionCost != null)
+			{
+				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (mc.getProductionSoFar () == null) ? 0 : mc.getProductionSoFar ());
+				rushBuyEnabled = (goldToRushBuy > 0) && (goldToRushBuy <= getResourceValueUtils ().findAmountStoredForProductionType
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_GOLD));
+			}
+		}		
 		rushBuyAction.setEnabled (rushBuyEnabled);
 		
 		log.trace ("Exiting recheckRushBuyEnabled = " + rushBuyEnabled);
+	}
+
+	/**
+	 * Generates bitmaps of little area of the overland map immediately surrounding this city, in each frame of animation.
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	public final void regenerateCityViewMiniMapBitmaps () throws IOException
+	{
+		log.trace ("Entering regenerateCityViewMiniMapBitmaps: " + getCityLocation ());
+
+		// This might move us off the top or left of the map and get -ve coordinates if they aren't wrapping edges, but that's fine, the bitmap generator copes with that
+		final MapCoordinates3DEx mapTopLeft = new MapCoordinates3DEx (getCityLocation ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		
+		miniMapBitmaps = getOverlandMapBitmapGenerator ().generateOverlandMapBitmaps (mapTopLeft.getZ (), mapTopLeft.getX (), mapTopLeft.getY (), 7, 7);
+		
+		log.trace ("Exiting regenerateCityViewMiniMapBitmaps");
+	}
+	
+	/**
+	 * Repaints the mini map view when the animation frame ticks
+	 */
+	public final void repaintCityViewMiniMap ()
+	{
+		miniMapPanel.repaint ();
+	}
+	
+	/**
+	 * Generates a bitmap of the fog of war in the little area of the overland map immediately surrounding this city.
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	public final void regenerateCityViewMiniMapFogOfWar () throws IOException
+	{
+		log.trace ("Entering regenerateCityViewMiniMapFogOfWar: " + getCityLocation ());
+
+		final MapCoordinates3DEx mapTopLeft = new MapCoordinates3DEx (getCityLocation ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
+		
+		fogOfWarBitmap = getOverlandMapBitmapGenerator ().generateFogOfWarBitmap (mapTopLeft.getZ (), mapTopLeft.getX (), mapTopLeft.getY (), 7, 7);
+		
+		log.trace ("Exiting regenerateCityViewMiniMapFogOfWar");
 	}
 	
 	/**
@@ -1544,5 +1665,53 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setMemoryMaintainedSpellListCellRenderer (final MemoryMaintainedSpellListCellRenderer renderer)
 	{
 		memoryMaintainedSpellListCellRenderer = renderer;
+	}
+
+	/**
+	 * @return Bitmap generator
+	 */
+	public final OverlandMapBitmapGenerator getOverlandMapBitmapGenerator ()
+	{
+		return overlandMapBitmapGenerator;
+	}
+
+	/**
+	 * @param gen Bitmap generator
+	 */
+	public final void setOverlandMapBitmapGenerator (final OverlandMapBitmapGenerator gen)
+	{
+		overlandMapBitmapGenerator = gen;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param csu Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils csu)
+	{
+		coordinateSystemUtils = csu;
+	}
+
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
 	}
 }

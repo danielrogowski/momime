@@ -28,22 +28,34 @@ public interface OverlandMapBitmapGenerator
 	public void smoothMapTerrain (final MapArea3D<Boolean> areaToSmooth) throws RecordNotFoundException;
 
 	/**
-	 * Generates big bitmaps of the entire overland map in each frame of animation
-	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView
+	 * Generates big bitmaps of the entire overland map in each frame of animation.
+	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView.
+	 * 
+	 * Generated bitmaps will all be 20x countX by 18x countY pixels in size.
 	 * 
 	 * @param mapViewPlane Which plane to generate bitmaps for
+	 * @param startX Map coordinate of the cell to draw at the left edge of the bitmaps
+	 * @param startY Map coordinate of the cell to draw at the top edge of the bitmaps
+	 * @param countX Width of the bitmap to generate, in number of map cells
+	 * @param countY Height of the bitmap to generate, in number of map cells
 	 * @return Array of overland map bitmaps
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	public BufferedImage [] generateOverlandMapBitmaps (final int mapViewPlane) throws IOException;
+	public BufferedImage [] generateOverlandMapBitmaps (final int mapViewPlane, final int startX, final int startY, final int countX, final int countY) throws IOException;
 
 	/**
 	 * Generates big bitmap of the smoothed edges of blackness that obscure the edges
-	 * of the outermost tiles we can see, so that the edges aren't just a solid black line
+	 * of the outermost tiles we can see, so that the edges aren't just a solid black line.
+	 * 
+	 * Generated bitmap will be 20x countX by 18x countY pixels in size.
 	 * 
 	 * @param mapViewPlane Which plane to generate FOW bitmap for
+	 * @param startX Map coordinate of the cell to draw at the left edge of the bitmaps
+	 * @param startY Map coordinate of the cell to draw at the top edge of the bitmaps
+	 * @param countX Width of the bitmap to generate, in number of map cells
+	 * @param countY Height of the bitmap to generate, in number of map cells
 	 * @return Fog of war bitmap
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	public BufferedImage generateFogOfWarBitmap (final int mapViewPlane) throws IOException;
+	public BufferedImage generateFogOfWarBitmap (final int mapViewPlane, final int startX, final int startY, final int countX, final int countY) throws IOException;
 }

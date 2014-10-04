@@ -208,7 +208,7 @@ public final class TestOverlandMapUI
 		}
 		
 		final OverlandMapBitmapGenerator gen = mock (OverlandMapBitmapGenerator.class);
-		when (gen.generateOverlandMapBitmaps (0)).thenReturn (overlandMapBitmaps);
+		when (gen.generateOverlandMapBitmaps (0, 0, 0, mapSize.getWidth (), mapSize.getHeight ())).thenReturn (overlandMapBitmaps);
 		
 		// Set up form
 		final OverlandMapUI map = new OverlandMapUI ();

@@ -88,8 +88,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	{
 		log.trace ("Entering start");
 		
-		getUtils ().useNimbusLookAndFeel ();
-		
 		// Multiplayer client event handlers
 		getEventListeners ().add (new MultiplayerSessionClientEvent ()
 		{
@@ -324,6 +322,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			{
 				try
 				{
+					getUtils ().useNimbusLookAndFeel ();
 					getMainMenuUI ().setVisible (true);
 				}
 				catch (final IOException e)

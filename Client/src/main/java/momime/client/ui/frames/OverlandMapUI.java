@@ -615,6 +615,10 @@ public final class OverlandMapUI extends MomClientFrameUI
 				final int newFrame = terrainAnimFrame + 1;
 				terrainAnimFrame = (newFrame >= overlandMapTileSet.getAnimationFrameCount ()) ? 0 : newFrame;
 				sceneryPanel.repaint ();
+				
+				// The mini maps on all the city views run from the same timer
+				for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+					cityView.repaintCityViewMiniMap ();
 			}
 		}).start ();
 
@@ -989,7 +993,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 	}
 
 	/**
-	 * Generates big bitmaps of the entire overland map in each frame of animation Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView
+	 * Generates big bitmaps of the entire overland map in each frame of animation.
+	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView.
 	 * 
 	 * @throws IOException If there is a problem loading any of the images
 	 */
@@ -997,7 +1002,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 	{
 		log.trace ("Entering regenerateOverlandMapBitmaps: " + mapViewPlane);
 
-		overlandMapBitmaps = getOverlandMapBitmapGenerator ().generateOverlandMapBitmaps (mapViewPlane);
+		overlandMapBitmaps = getOverlandMapBitmapGenerator ().generateOverlandMapBitmaps (mapViewPlane,
+			0, 0, getClient ().getSessionDescription ().getMapSize ().getWidth (), getClient ().getSessionDescription ().getMapSize ().getHeight ());
+		
+		// Tell all the city screens to do the same.
+		// A bit weird putting this in the map UI, it should go on the messages, but at least this way the messages then only have to call 1 method so I don't
+		// have to duplicate this city loop in 5+ places and forget to do it somewhere.
+		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+			cityView.regenerateCityViewMiniMapBitmaps ();
 
 		log.trace ("Exiting regenerateOverlandMapBitmaps");
 	}
@@ -1011,8 +1023,13 @@ public final class OverlandMapUI extends MomClientFrameUI
 	{
 		log.trace ("Entering regenerateFogOfWarBitmap");
 
-		fogOfWarBitmap = getOverlandMapBitmapGenerator ().generateFogOfWarBitmap (mapViewPlane);
+		fogOfWarBitmap = getOverlandMapBitmapGenerator ().generateFogOfWarBitmap (mapViewPlane,
+			0, 0, getClient ().getSessionDescription ().getMapSize ().getWidth (), getClient ().getSessionDescription ().getMapSize ().getHeight ());
 
+		// Tell all the city screens to do the same
+		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+			cityView.regenerateCityViewMiniMapFogOfWar ();
+		
 		log.trace ("Exiting regenerateFogOfWarBitmap");
 	}
 
@@ -1135,6 +1152,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void repaintSceneryPanel ()
 	{
 		sceneryPanel.repaint ();
+	}
+
+	/**
+	 * @return Frame number being displayed
+	 */
+	public final int getTerrainAnimFrame ()
+	{
+		return terrainAnimFrame;
 	}
 
 	/**

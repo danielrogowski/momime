@@ -5,11 +5,13 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -25,6 +27,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
+import momime.client.ui.renderer.MemoryMaintainedSpellListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
@@ -44,6 +47,7 @@ import momime.common.messages.v0_9_5.OverlandMapCityData;
 
 import org.junit.Test;
 
+import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -56,10 +60,11 @@ public final class TestCityViewUI
 {
 	/**
 	 * Tests the CityViewUI form
+	 * 
+	 * @param ourCity Whether the city is ours, or someone else's
 	 * @throws Exception If there is a problem
 	 */
-	@Test
-	public final void testCityViewUI () throws Exception
+	private final void testCityViewUI (final boolean ourCity) throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -151,6 +156,7 @@ public final class TestCityViewUI
 		cityData.setOptionalFarmers (1);
 		cityData.setNumberOfRebels (2);
 		cityData.setCurrentlyConstructingBuildingID ("BL01");
+		cityData.setCityOwnerID (ourCity ? 1 : 2);
 		
 		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
 		
@@ -173,6 +179,7 @@ public final class TestCityViewUI
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPlayerID ()).thenReturn (1);
 		
 		// City production
 		final MomCityCalculations calc = mock (MomCityCalculations.class);
@@ -231,6 +238,16 @@ public final class TestCityViewUI
 		resourceValueClientUtils.setGraphicsDB (gfx);
 		resourceValueClientUtils.setUtils (utils);
 		
+		// Set up spells list renderer
+		final MemoryMaintainedSpellListCellRenderer spellsRenderer = new MemoryMaintainedSpellListCellRenderer ();
+		
+		// Mock mini map generator
+		final BufferedImage [] miniMapBitmaps = new BufferedImage [1];
+		miniMapBitmaps [0] = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
+		
+		final OverlandMapBitmapGenerator gen = mock (OverlandMapBitmapGenerator.class);
+		when (gen.generateOverlandMapBitmaps (0, 20-3, 10-3, 7, 7)).thenReturn (miniMapBitmaps);
+		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CityViewUI.xml"));
 		layout.buildMaps ();
@@ -246,8 +263,12 @@ public final class TestCityViewUI
 		cityView.setClient (client);
 		cityView.setCityCalculations (calc);
 		cityView.setAnim (anim);
+		cityView.setOverlandMapBitmapGenerator (gen);
 		cityView.setTextUtils (new TextUtilsImpl ());
+		cityView.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		cityView.setOverlandMapUI (new OverlandMapUI ());		// Just to read the zero anim counter
 		cityView.setResourceValueClientUtils (resourceValueClientUtils);
+		cityView.setMemoryMaintainedSpellListCellRenderer (spellsRenderer);
 		cityView.setSmallFont (CreateFontsForTests.getSmallFont ());
 		cityView.setMediumFont (CreateFontsForTests.getMediumFont ());
 		cityView.setLargeFont (CreateFontsForTests.getLargeFont ());
@@ -286,5 +307,25 @@ public final class TestCityViewUI
 		image.setProductionValue (value);
 		image.setProductionImageFile (filename);
 		return image;
+	}
+
+	/**
+	 * Tests the CityViewUI form on one of our cities
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCityViewUI_Ours () throws Exception
+	{
+		testCityViewUI (true);
+	}
+
+	/**
+	 * Tests the CityViewUI form on one of someone else's cities
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCityViewUI_NotOurs () throws Exception
+	{
+		testCityViewUI (false);
 	}
 }

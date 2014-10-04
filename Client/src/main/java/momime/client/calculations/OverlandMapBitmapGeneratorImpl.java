@@ -26,7 +26,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 
@@ -193,15 +195,21 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	}
 	
 	/**
-	 * Generates big bitmaps of the entire overland map in each frame of animation
-	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView
+	 * Generates big bitmaps of the entire overland map in each frame of animation.
+	 * Delphi client did this rather differently, by building Direct3D vertex buffers to display all the map tiles; equivalent method there was RegenerateCompleteSceneryView.
+	 * 
+	 * Generated bitmaps will all be 20x countX by 18x countY pixels in size.
 	 * 
 	 * @param mapViewPlane Which plane to generate bitmaps for
+	 * @param startX Map coordinate of the cell to draw at the left edge of the bitmaps
+	 * @param startY Map coordinate of the cell to draw at the top edge of the bitmaps
+	 * @param countX Width of the bitmap to generate, in number of map cells
+	 * @param countY Height of the bitmap to generate, in number of map cells
 	 * @return Array of overland map bitmaps
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	@Override
-	public final BufferedImage [] generateOverlandMapBitmaps (final int mapViewPlane) throws IOException
+	public final BufferedImage [] generateOverlandMapBitmaps (final int mapViewPlane, final int startX, final int startY, final int countX, final int countY) throws IOException
 	{
 		log.trace ("Entering generateOverlandMapBitmaps: " + mapViewPlane);
 
@@ -216,80 +224,102 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 		{
 			overlandMapBitmaps [frameNo] = new BufferedImage
-				(mapSize.getWidth () * overlandMapTileSet.getTileWidth (), mapSize.getHeight () * overlandMapTileSet.getTileHeight (), BufferedImage.TYPE_INT_ARGB);
+				(countX * overlandMapTileSet.getTileWidth (), countY * overlandMapTileSet.getTileHeight (), BufferedImage.TYPE_INT_ARGB);
 			
 			g [frameNo] = overlandMapBitmaps [frameNo].createGraphics ();
 		}
 		
 		// Run through each tile
-		for (int y = 0; y < mapSize.getHeight (); y++) 
-			for (int x = 0; x < mapSize.getWidth (); x++)
+		final MapCoordinates2DEx mapCoords = new MapCoordinates2DEx (startX, startY);
+		for (int x = 0; x < countX; x++)
+		{
+			mapCoords.setY (startY);
+			for (int y = 0; y < countY; y++)
 			{
-				// Terrain
-				final SmoothedTile tile = smoothedTiles [mapViewPlane] [y] [x];
-				if (tile != null)
+				// If close to a non-wrapping edge (possible to put a city on the top/bottom row of tundra on the map), we may move off the end of the map
+				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (mapSize, mapCoords))
 				{
-					if (tile.getTileFile () != null)
+					// Terrain
+					final SmoothedTile tile = smoothedTiles [mapViewPlane] [mapCoords.getY ()] [mapCoords.getX ()];
+					if (tile != null)
 					{
+						if (tile.getTileFile () != null)
+						{
+							// Use same image for all frames
+							final BufferedImage image = getUtils ().loadImage (tile.getTileFile ());
+							for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+								g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+						}
+						else if (tile.getTileAnimation () != null)
+						{
+							// Copy each animation frame over to each bitmap
+							final AnimationEx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "generateOverlandMapBitmaps");
+							for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+							{
+								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getFrameImageFile ());
+								g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+							}
+						}
+					}
+					
+					// Map feature
+					final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());
+					final String mapFeatureID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getMapFeatureID ();
+					if (mapFeatureID != null)
+					{
+						final MapFeatureEx mapFeature = getGraphicsDB ().findMapFeature (mapFeatureID, "generateOverlandMapBitmaps");
+						final BufferedImage image = getUtils ().loadImage (mapFeature.getOverlandMapImageFile ());
+	
 						// Use same image for all frames
-						final BufferedImage image = getUtils ().loadImage (tile.getTileFile ());
 						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 							g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 					}
-					else if (tile.getTileAnimation () != null)
+				}
+				
+				// Use proper routine to move map coordinates so it correctly handles wrapping edges (startX might = 58 on a width 60 map)
+				getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
+			}
+			getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
+		}
+		
+		// Cities have to be done in a 2nd pass, since they're larger than the terrain tiles
+		mapCoords.setX (startX);
+		for (int x = 0; x < countX; x++)
+		{
+			mapCoords.setY (startY);
+			for (int y = 0; y < countY; y++)
+			{
+				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (mapSize, mapCoords))
+				{
+					final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());
+					final String citySizeID = (gc.getCityData () == null) ? null : gc.getCityData ().getCitySizeID ();
+					if (citySizeID != null)
 					{
-						// Copy each animation frame over to each bitmap
-						final AnimationEx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "generateOverlandMapBitmaps");
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (mapCoords.getX (), mapCoords.getY (), mapViewPlane);
+						
+						final CityImage cityImage = getGraphicsDB ().findBestCityImage (citySizeID, cityLocation,
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "generateOverlandMapBitmaps");
+						final BufferedImage image = getUtils ().loadImage (cityImage.getCityImageFile ());
+						
+						final int xpos = (x * overlandMapTileSet.getTileWidth ()) - ((image.getWidth () - overlandMapTileSet.getTileWidth ()) / 2);
+						final int ypos = (y * overlandMapTileSet.getTileHeight ()) - ((image.getHeight () - overlandMapTileSet.getTileHeight ()) / 2);
+	
+						// Use same image for all frames
+						final BufferedImage cityFlagImage = getPlayerColourImageGenerator ().getCityFlagImage (gc.getCityData ().getCityOwnerID ());
 						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 						{
-							final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getFrameImageFile ());
-							g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+							g [frameNo].drawImage (image, xpos, ypos, null);
+							g [frameNo].drawImage (cityFlagImage, xpos + cityImage.getFlagOffsetX (), ypos + cityImage.getFlagOffsetY (), null);
 						}
 					}
 				}
 				
-				// Map feature
-				final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-					(mapViewPlane).getRow ().get (y).getCell ().get (x);
-				final String mapFeatureID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getMapFeatureID ();
-				if (mapFeatureID != null)
-				{
-					final MapFeatureEx mapFeature = getGraphicsDB ().findMapFeature (mapFeatureID, "generateOverlandMapBitmaps");
-					final BufferedImage image = getUtils ().loadImage (mapFeature.getOverlandMapImageFile ());
-
-					// Use same image for all frames
-					for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-						g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
-				}
+				getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
 			}
-		
-		// Cities have to be done in a 2nd pass, since they're larger than the terrain tiles
-		for (int y = 0; y < mapSize.getHeight (); y++) 
-			for (int x = 0; x < mapSize.getWidth (); x++)
-			{
-				final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-					(mapViewPlane).getRow ().get (y).getCell ().get (x);
-				final String citySizeID = (gc.getCityData () == null) ? null : gc.getCityData ().getCitySizeID ();
-				if (citySizeID != null)
-				{
-					final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, mapViewPlane);
-					
-					final CityImage cityImage = getGraphicsDB ().findBestCityImage (citySizeID, cityLocation,
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "generateOverlandMapBitmaps");
-					final BufferedImage image = getUtils ().loadImage (cityImage.getCityImageFile ());
-					
-					final int xpos = (x * overlandMapTileSet.getTileWidth ()) - ((image.getWidth () - overlandMapTileSet.getTileWidth ()) / 2);
-					final int ypos = (y * overlandMapTileSet.getTileHeight ()) - ((image.getHeight () - overlandMapTileSet.getTileHeight ()) / 2);
-
-					// Use same image for all frames
-					final BufferedImage cityFlagImage = getPlayerColourImageGenerator ().getCityFlagImage (gc.getCityData ().getCityOwnerID ());
-					for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-					{
-						g [frameNo].drawImage (image, xpos, ypos, null);
-						g [frameNo].drawImage (cityFlagImage, xpos + cityImage.getFlagOffsetX (), ypos + cityImage.getFlagOffsetY (), null);
-					}
-				}
-			}
+			getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
+		}
 		
 		// Clean up the drawing contexts 
 		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
@@ -301,14 +331,20 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	
 	/**
 	 * Generates big bitmap of the smoothed edges of blackness that obscure the edges
-	 * of the outermost tiles we can see, so that the edges aren't just a solid black line
+	 * of the outermost tiles we can see, so that the edges aren't just a solid black line.
+	 * 
+	 * Generated bitmap will be 20x countX by 18x countY pixels in size.
 	 * 
 	 * @param mapViewPlane Which plane to generate FOW bitmap for
+	 * @param startX Map coordinate of the cell to draw at the left edge of the bitmaps
+	 * @param startY Map coordinate of the cell to draw at the top edge of the bitmaps
+	 * @param countX Width of the bitmap to generate, in number of map cells
+	 * @param countY Height of the bitmap to generate, in number of map cells
 	 * @return Fog of war bitmap
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	@Override
-	public final BufferedImage generateFogOfWarBitmap (final int mapViewPlane) throws IOException
+	public final BufferedImage generateFogOfWarBitmap (final int mapViewPlane, final int startX, final int startY, final int countX, final int countY) throws IOException
 	{
 		log.trace ("Entering generateFogOfWarBitmap: " + mapViewPlane);
 
@@ -328,64 +364,36 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 
 			// Create the empty bitmap
 			fogOfWarBitmap = new BufferedImage
-				(mapSize.getWidth () * overlandMapTileSet.getTileWidth (), mapSize.getHeight () * overlandMapTileSet.getTileHeight (), BufferedImage.TYPE_INT_ARGB);
+				(countX * overlandMapTileSet.getTileWidth (), countY * overlandMapTileSet.getTileHeight (), BufferedImage.TYPE_INT_ARGB);
 			final Graphics2D g = fogOfWarBitmap.createGraphics ();
 
-			// Run through each tile
-			for (int y = 0; y < mapSize.getHeight (); y++) 
-				for (int x = 0; x < mapSize.getWidth (); x++)
+			final MapCoordinates2DEx mapCoords = new MapCoordinates2DEx (startX, startY);
+			for (int x = 0; x < countX; x++)
+			{
+				mapCoords.setY (startY);
+				for (int y = 0; y < countY; y++)
 				{
-					final FogOfWarStateID state = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
-						(mapViewPlane).getRow ().get (y).getCell ().get (x);
-					
-					// First deal with the "full" fog of war, i.e. the border between areas we either
-					// can or have seen, & haven't seen, which is a totally black smoothing border
-					if ((state != FogOfWarStateID.NEVER_SEEN) && (getClientConfig ().isOverlandSmoothFogOfWar ()))
+					// If close to a non-wrapping edge (possible to put a city on the top/bottom row of tundra on the map), we may move off the end of the map
+					if (getCoordinateSystemUtils ().areCoordinatesWithinRange (mapSize, mapCoords))
 					{
-						// Generate the bitmask for this map cell
-						final StringBuffer bitmask = new StringBuffer ();
-						for (int d = 1; d <= maxDirection; d++)
-						{
-							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, mapViewPlane);
-							if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
-							{
-								final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
-									(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
-								
-								if (otherState == FogOfWarStateID.NEVER_SEEN)
-									bitmask.append ("0");
-								else
-									bitmask.append ("1");
-							}
-							else
-								bitmask.append ("1");
-						}
-	
-						// If this tile has no Fog of War anywhere around it, then we don't need to obscure its edges in any way
-						final String bitmaskString = bitmask.toString ();
-						if (!bitmaskString.equals ("11111111"))
-						{
-							final BufferedImage image = getUtils ().loadImage (fullFogOfWar.getRandomImage (bitmaskString).getTileFile ());
-							g.drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
-						}							 
-					}
-					
-					if (getClientConfig ().isOverlandShowPartialFogOfWar ())
-					{
-						// Borders at the edge of partial fog of war (i.e. what we have seen)
-						if ((state == FogOfWarStateID.CAN_SEE) && (getClientConfig ().isOverlandSmoothFogOfWar ()))
+						final FogOfWarStateID state = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+							(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());
+						
+						// First deal with the "full" fog of war, i.e. the border between areas we either
+						// can or have seen, & haven't seen, which is a totally black smoothing border
+						if ((state != FogOfWarStateID.NEVER_SEEN) && (getClientConfig ().isOverlandSmoothFogOfWar ()))
 						{
 							// Generate the bitmask for this map cell
 							final StringBuffer bitmask = new StringBuffer ();
 							for (int d = 1; d <= maxDirection; d++)
 							{
-								final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, mapViewPlane);
+								final MapCoordinates3DEx coords = new MapCoordinates3DEx (mapCoords.getX (), mapCoords.getY (), mapViewPlane);
 								if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
 								{
 									final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
 										(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 									
-									if (otherState == FogOfWarStateID.HAVE_SEEN)
+									if (otherState == FogOfWarStateID.NEVER_SEEN)
 										bitmask.append ("0");
 									else
 										bitmask.append ("1");
@@ -398,19 +406,58 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							final String bitmaskString = bitmask.toString ();
 							if (!bitmaskString.equals ("11111111"))
 							{
-								final BufferedImage image = getUtils ().loadImage (partialFogOfWar.getRandomImage (bitmaskString).getTileFile ());
+								final BufferedImage image = getUtils ().loadImage (fullFogOfWar.getRandomImage (bitmaskString).getTileFile ());
 								g.drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 							}							 
 						}
 						
-						// Solid area we have seen, but can no longer see
-						else if (state == FogOfWarStateID.HAVE_SEEN)
+						if (getClientConfig ().isOverlandShowPartialFogOfWar ())
 						{
-							g.setColor (PARTIAL_FOW_COLOUR);
-							g.fillRect (x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), overlandMapTileSet.getTileWidth (), overlandMapTileSet.getTileHeight ());
+							// Borders at the edge of partial fog of war (i.e. what we have seen)
+							if ((state == FogOfWarStateID.CAN_SEE) && (getClientConfig ().isOverlandSmoothFogOfWar ()))
+							{
+								// Generate the bitmask for this map cell
+								final StringBuffer bitmask = new StringBuffer ();
+								for (int d = 1; d <= maxDirection; d++)
+								{
+									final MapCoordinates3DEx coords = new MapCoordinates3DEx (mapCoords.getX (), mapCoords.getY (), mapViewPlane);
+									if (getCoordinateSystemUtils ().move3DCoordinates (mapSize, coords, d))
+									{
+										final FogOfWarStateID otherState = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+											(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
+										
+										if (otherState == FogOfWarStateID.HAVE_SEEN)
+											bitmask.append ("0");
+										else
+											bitmask.append ("1");
+									}
+									else
+										bitmask.append ("1");
+								}
+			
+								// If this tile has no Fog of War anywhere around it, then we don't need to obscure its edges in any way
+								final String bitmaskString = bitmask.toString ();
+								if (!bitmaskString.equals ("11111111"))
+								{
+									final BufferedImage image = getUtils ().loadImage (partialFogOfWar.getRandomImage (bitmaskString).getTileFile ());
+									g.drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+								}							 
+							}
+							
+							// Solid area we have seen, but can no longer see
+							else if (state == FogOfWarStateID.HAVE_SEEN)
+							{
+								g.setColor (PARTIAL_FOW_COLOUR);
+								g.fillRect (x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), overlandMapTileSet.getTileWidth (), overlandMapTileSet.getTileHeight ());
+							}
 						}
 					}
+					
+					// Use proper routine to move map coordinates so it correctly handles wrapping edges (startX might = 58 on a width 60 map)
+					getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
 				}
+				getCoordinateSystemUtils ().move2DCoordinates (mapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
+			}
 			
 			g.dispose ();
 		}

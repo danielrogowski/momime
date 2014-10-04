@@ -5,6 +5,8 @@
 	<component name="frmCityNotOurs">
 		<left>342</left>
 		<top>252</top>
+		<width>238</width>
+		<height>182</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -135,6 +137,14 @@
 		<top>328</top>
 		<width>140</width>
 		<height>74</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCityMiniMap">
+		<left>430</left>
+		<top>110</top>
+		<width>140</width>
+		<height>128</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

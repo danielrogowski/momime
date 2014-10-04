@@ -10,91 +10,51 @@
 	</plane>
 	<productionType productionTypeID="RE01">
 		<productionTypeDescription>Rations</productionTypeDescription>
-		<unitKilledFromLackOfProduction>starved to death</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>you are not producing enough Rations to feed your city populations and your army.  Allocate more farmers in cities, or disband some units.</cannotEndTurnDueToLackOfProduction>
+		<unitKilledFromLackOfProduction>A_UNIT_NAME starved to death</unitKilledFromLackOfProduction>
+		<cannotEndTurnDueToLackOfProduction>You are not producing enough Rations to feed your city populations and your army.  Allocate more farmers in cities, or disband some units.</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE02">
 		<productionTypeDescription>Production</productionTypeDescription>
-		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>XXX Not Used XXX</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE03">
 		<productionTypeDescription>Gold</productionTypeDescription>
 		<productionTypeSuffix>GP</productionTypeSuffix>
-		<unitKilledFromLackOfProduction>left your army because you couldn't afford to pay them</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>sold because you couldn't afford to maintain it</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>you are not producing enough Gold to maintain your buildings or pay your army.  Alter your tax rate, use Alchemy to convert Mana into Gold, sell some buildings, or disband some units.</cannotEndTurnDueToLackOfProduction>
+		<unitKilledFromLackOfProduction>A_UNIT_NAME left your army because you couldn't afford to pay them</unitKilledFromLackOfProduction>
+		<buildingSoldFromLackOfProduction>The CITY_SIZE_AND_NAME sold their BUILDING_NAME because you couldn't afford to maintain it</buildingSoldFromLackOfProduction>
+		<cannotEndTurnDueToLackOfProduction>You are not producing enough Gold to maintain your buildings or pay your army.  Alter your tax rate, use Alchemy to convert Mana into Gold, sell some buildings, or disband some units.</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE04">
 		<productionTypeDescription>Magic Power</productionTypeDescription>
-		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>XXX Not Used XXX</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE05">
 		<productionTypeDescription>Spell Research</productionTypeDescription>
 		<productionTypeSuffix>RP</productionTypeSuffix>
-		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>XXX Not Used XXX</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE06">
 		<productionTypeDescription>Food</productionTypeDescription>
-		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>XXX Not Used XXX</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE07">
 		<productionTypeDescription>Unit Cost</productionTypeDescription>
-		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>XXX Not Used XXX</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE08">
 		<productionTypeDescription>Map Feature Modifier</productionTypeDescription>
-		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>XXX Not Used XXX</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE09">
 		<productionTypeDescription>Mana</productionTypeDescription>
 		<productionTypeSuffix>MP</productionTypeSuffix>
-		<unitKilledFromLackOfProduction>was unsummoned because you couldn't afford their mana upkeep</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>was switched off because you couldn't afford its upkeep</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>you are not producing enough Mana to maintain your spells or summoned units.  Increase the proportion of Magic Power that is being used to generate Mana, use Alchemy to convert Gold into Mana, switch off some overland, city or unit spells, disband some summoned units, or break some hero items on the anvil.</cannotEndTurnDueToLackOfProduction>
+		<unitKilledFromLackOfProduction>A_UNIT_NAME was unsummoned because you couldn't afford their mana upkeep</unitKilledFromLackOfProduction>
+		<spellSwitchedOffFromLackOfProduction>Your SPELL_NAME spell was switched off because you couldn't afford its upkeep</spellSwitchedOffFromLackOfProduction>
+		<cannotEndTurnDueToLackOfProduction>You are not producing enough Mana to maintain your spells or summoned units.  Increase the proportion of Magic Power that is being used to generate Mana, use Alchemy to convert Gold into Mana, switch off some overland, city or unit spells, disband some summoned units, or break some hero items on the anvil.</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE10">
 		<productionTypeDescription>Skill Improvement</productionTypeDescription>
 		<productionTypeSuffix>SP</productionTypeSuffix>
-		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>XXX Not Used XXX</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE11">
 		<productionTypeDescription>Spell casting cost reduction</productionTypeDescription>
-		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>XXX Not Used XXX</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<productionType productionTypeID="RE12">
 		<productionTypeDescription>Unit upkeep cost reduction</productionTypeDescription>
-		<unitKilledFromLackOfProduction>XXX Not Used XXX</unitKilledFromLackOfProduction>
-		<buildingSoldFromLackOfProduction>XXX Not Used XXX</buildingSoldFromLackOfProduction>
-		<spellSwitchedOffFromLackOfProduction>XXX Not Used XXX</spellSwitchedOffFromLackOfProduction>
-		<cannotEndTurnDueToLackOfProduction>XXX Not Used XXX</cannotEndTurnDueToLackOfProduction>
 	</productionType>
 	<mapFeature mapFeatureID="MF01">
 		<mapFeatureDescription>Gems</mapFeatureDescription>

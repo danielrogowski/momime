@@ -1,5 +1,6 @@
 package momime.client.newturnmessages;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -63,11 +64,11 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	 * 
 	 * @param msgs New messages from server
 	 * @param statusForNewMessages Status to give to the new messages
-	 * @throws MomException If one of the messages doesn't support the NewTurnMessageExpiration interface
+	 * @throws IOException If one of the messages doesn't support the NewTurnMessageExpiration interface or a preProcess method fails
 	 */
 	@Override
 	public final void readNewTurnMessagesFromServer (final List<NewTurnMessageData> msgs, final NewTurnMessageStatus statusForNewMessages)
-		throws MomException
+		throws IOException
 	{
 		log.trace ("Entering readNewTurnMessagesFromServer: " + msgs.size ());
 		
@@ -77,6 +78,10 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 		for (final NewTurnMessageData msg : msgs)
 			if (msg instanceof NewTurnMessageExpiration)
 			{
+				// Does the message need to pre-process anything?
+				if (msg instanceof NewTurnMessagePreProcess)
+					((NewTurnMessagePreProcess) msg).preProcess ();
+				
 				// Set the correct status and add the message
 				((NewTurnMessageExpiration) msg).setStatus (statusForNewMessages);
 				getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().add (msg);

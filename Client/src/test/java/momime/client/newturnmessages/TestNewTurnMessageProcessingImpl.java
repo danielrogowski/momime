@@ -5,6 +5,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,10 +77,10 @@ public final class TestNewTurnMessageProcessingImpl
 	
 	/**
 	 * Tests the readNewTurnMessagesFromServer method
-	 * @throws MomException If one of the messages doesn't support the NewTurnMessageExpiration interface
+	 * @throws IOException If one of the messages doesn't support the NewTurnMessageExpiration interface or a preProcess method fails
 	 */
 	@Test
-	public final void testReadNewTurnMessagesFromServer () throws MomException
+	public final void testReadNewTurnMessagesFromServer () throws IOException
 	{
 		// Set up some existing messages, NB. we need a concrete message to test with - which one we choose to use is pretty irrelevant
 		final NewTurnMessagePopulationChangeEx msg1 = new NewTurnMessagePopulationChangeEx ();

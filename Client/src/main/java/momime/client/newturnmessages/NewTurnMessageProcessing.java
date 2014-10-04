@@ -1,5 +1,6 @@
 package momime.client.newturnmessages;
 
+import java.io.IOException;
 import java.util.List;
 
 import momime.common.MomException;
@@ -23,10 +24,10 @@ public interface NewTurnMessageProcessing
 	 * 
 	 * @param msgs New messages from server
 	 * @param statusForNewMessages Status to give to the new messages
-	 * @throws MomException If one of the messages doesn't support the NewTurnMessageExpiration interface
+	 * @throws IOException If one of the messages doesn't support the NewTurnMessageExpiration interface or a preProcess method fails
 	 */
 	public void readNewTurnMessagesFromServer (final List<NewTurnMessageData> msgs, final NewTurnMessageStatus statusForNewMessages)
-		throws MomException;
+		throws IOException;
 	
 	/**
 	 * @return List of NTMs sorted and with title categories added, ready to display in the UI

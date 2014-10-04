@@ -490,9 +490,25 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 	</bean>
 
-	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype" />
-	<bean id="newTurnMessageBuildingSoldFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageBuildingSoldFromLackOfProductionEx" scope="prototype" />
-	<bean id="newTurnMessageUnitKilledFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageUnitKilledFromLackOfProductionEx" scope="prototype" />
+	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
+	
+	<bean id="newTurnMessageBuildingSoldFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageBuildingSoldFromLackOfProductionEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
+	</bean>
+	
+	<bean id="newTurnMessageUnitKilledFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageUnitKilledFromLackOfProductionEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+	</bean>
+	
 	<bean id="newTurnMessageNode" class="momime.client.newturnmessages.NewTurnMessageNodeEx" scope="prototype" />
 	
 	<!-- Version of the client -->

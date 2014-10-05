@@ -425,8 +425,10 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 			if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 			{
-				unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ());
-				unitsLeftToMoveOverland.add (button.getComponent ().getUnit ());
+				// Only put units back in the 'left to move' list if they already were in it - otherwise this can result in units who've already used
+				// up all their movement being put back in the 'left to move' list which really screws things up.
+				if (unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ()))
+					unitsLeftToMoveOverland.add (button.getComponent ().getUnit ());
 			}
 		
 		selectNextUnitToMoveOverland ();

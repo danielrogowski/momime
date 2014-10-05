@@ -420,27 +420,27 @@ public final class OverlandMapUI extends MomClientFrameUI
 							final MemoryUnit unit = unitToDrawAtEachLocation [y] [x];
 							if (unit != null)
 							{
+								final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+									(mapViewPlane).getRow ().get (y).getCell ().get (x);
+
 								// Make the unit that's selected to move blink
 								final boolean drawUnit;
-								if ((terrainAnimFrame % 2 == 0) && (getOverlandMapProcessing ().isAnyUnitSelectedToMove ()) &&
-									(getOverlandMapProcessing ().getUnitMoveFrom () != null) &&
+								if ((getOverlandMapProcessing ().isAnyUnitSelectedToMove ()) && (getOverlandMapProcessing ().getUnitMoveFrom () != null) &&
 									(getOverlandMapProcessing ().getUnitMoveFrom ().getX () == x) && (getOverlandMapProcessing ().getUnitMoveFrom ().getY () == y))
 								{
 									// The moving stack might be on the other plane
-									final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-										(mapViewPlane).getRow ().get (y).getCell ().get (x);
-
 									if ((mapViewPlane == getOverlandMapProcessing ().getUnitMoveFrom ().getZ ()) ||
 										(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ())))
 										
-										// We are looking at the unit stack that's moving - so blink it off
-										drawUnit = false;
+										// We are looking at the unit stack that's moving - so blink it on and off, even if its inside a city
+										drawUnit = (terrainAnimFrame % 2 == 0);
 									else
-										// We are looking at a unit in the same location as the unit stack that's moving, but on the other plane - so draw it
-										drawUnit = true;
+										// We are looking at a unit in the same location as the unit stack that's moving, but on the other plane - so draw it, unless its a city
+										drawUnit = (mc.getCityData () == null);
 								}
 								else
-									drawUnit = true;
+									// Regular location away from the moving unit stack - don't draw units in cities since they cover the city up
+									drawUnit = (mc.getCityData () == null);
 								
 								if (drawUnit)
 									try

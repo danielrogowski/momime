@@ -21,7 +21,6 @@
 
 				<!-- MoM multiplayer messages -->
     			<value>momime.common.messages.clienttoserver.v0_9_5.AlchemyMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_5.AttackNodeLairTowerMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_5.CancelPendingMovementAndSpecialOrdersMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_5.CancelTargetSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_5.CaptureCityDecisionMessage</value>
@@ -36,7 +35,6 @@
     			<value>momime.common.messages.clienttoserver.v0_9_5.ChooseRaceMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_5.ChooseStandardPhotoMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_5.ChooseWizardMessage</value>
-    			<value>momime.common.messages.clienttoserver.v0_9_5.ChoseNotToDoScheduledCombatMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_5.CombatAutoControlMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_5.DismissUnitMessage</value>
     			<value>momime.common.messages.clienttoserver.v0_9_5.EndCombatTurnMessage</value>
@@ -103,7 +101,6 @@
     			<value>momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.EndOfContinuedMovementMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.ErasePendingMovementsMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_5.FoundLairNodeTowerMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.MoveUnitInCombatMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.MoveUnitStackOverlandMessage</value>
@@ -146,7 +143,6 @@
     			<value>momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.AddUnitMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.KillUnitMessage</value>
-    			<value>momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessage</value>
     			<value>momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessage</value>

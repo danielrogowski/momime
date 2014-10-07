@@ -18,7 +18,6 @@ import momime.common.messages.servertoclient.v0_9_5.FogOfWarVisibleAreaChangedMe
 import momime.common.messages.servertoclient.v0_9_5.KillUnitMessageData;
 import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessageData;
-import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessageData;
 
 import org.apache.commons.logging.Log;
@@ -57,7 +56,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (log.isTraceEnabled ())
 			log.trace ("Entering start: " + getTriggeredFrom () + ", " + getTerrainUpdate ().size () + ", " + getCityUpdate ().size () + ", " +
 				getAddBuilding ().size () + ", " + getDestroyBuilding ().size () + ", " + getAddUnit ().size () + ", " + getKillUnit ().size () + ", " +
-				getUpdateNodeLairTowerUnitID ().size () + ", " + getAddMaintainedSpell ().size () + ", " + getSwitchOffMaintainedSpell ().size () + ", " +
+				getAddMaintainedSpell ().size () + ", " + getSwitchOffMaintainedSpell ().size () + ", " +
 				getAddCombatAreaEffect ().size () + ", " + getCancelCombaAreaEffect ().size () + ", " + getFogOfWarUpdate ().size ());
 		
 		// Changes in Terrain
@@ -128,14 +127,6 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 				proc.setData (data);
 				proc.start ();
 			}
-		}
-		
-		// Scouted monster IDs changed
-		for (final UpdateNodeLairTowerUnitIDMessageData data : getUpdateNodeLairTowerUnitID ())
-		{
-			final UpdateNodeLairTowerUnitIDMessageImpl proc = new UpdateNodeLairTowerUnitIDMessageImpl ();
-			proc.setData (data);
-			proc.start ();
 		}
 		
 		// Maintained spells added or come into view

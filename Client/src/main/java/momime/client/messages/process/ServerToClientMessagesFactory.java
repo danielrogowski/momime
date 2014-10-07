@@ -28,11 +28,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public UpdateNodeLairTowerUnitIDMessageImpl createUpdateNodeLairTowerUnitIDMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public StartCombatMessageImpl createStartCombatMessage ();
 
 	/**
@@ -119,11 +114,6 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public YourPhotoIsOkMessageImpl createYourPhotoIsOkMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
-	public FoundLairNodeTowerMessageImpl createFoundLairNodeTowerMessage ();
 
 	/**
 	 * @return Newly created message

@@ -8,7 +8,6 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MomScheduledCombat;
-import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
@@ -32,13 +31,10 @@ public interface CombatScheduler
 	 * @param defendingPlayer Player being attacked; may be null if attacking an empty node/lair/tower
 	 * @param attackingPlayer Player owning the attacking units
 	 * @param attackingUnitURNs Which specific units are attacking (may not be everybody standing at in attackingFrom)
-	 * @param typeOfCombat Type of combat initiated
-	 * @param monsterUnitID Type of unit scouted here; empty string if "known to be empty"
 	 */
 	public void addScheduledCombatGeneratedURN (final MomGeneralServerKnowledge gsk,
 		final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
-		final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs,
-		final MoveResultsInAttackTypeID typeOfCombat, final String monsterUnitID);
+		final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs);
 	
 	/**
 	 * Updates whether a player is involved in a simultaneous turns combat or not, on both the server & all clients

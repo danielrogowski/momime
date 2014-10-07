@@ -69,7 +69,7 @@ public final class TestCombatSchedulerImpl
 
 		final MomScheduledCombat combat2 = new MomScheduledCombat ();
 		combat2.setAttackingPlayerID (3);
-		combat2.setDefendingPlayerID (null); 
+		combat2.setDefendingPlayerID (2); 
 
 		final MomScheduledCombat combat3 = new MomScheduledCombat ();
 		combat3.setAttackingPlayerID (10);
@@ -133,7 +133,7 @@ public final class TestCombatSchedulerImpl
 
 		final MomScheduledCombat combat2 = new MomScheduledCombat ();
 		combat2.setAttackingPlayerID (3);
-		combat2.setDefendingPlayerID (null); 
+		combat2.setDefendingPlayerID (2); 
 
 		final MomScheduledCombat combat3 = new MomScheduledCombat ();
 		combat3.setAttackingPlayerID (10);

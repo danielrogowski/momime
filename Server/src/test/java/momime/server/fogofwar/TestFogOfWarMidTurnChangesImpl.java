@@ -16,8 +16,10 @@ import java.util.List;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_5.FogOfWarValue;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessage;
+import momime.common.messages.servertoclient.v0_9_5.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessage;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
@@ -37,12 +39,16 @@ import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.MomFogOfWarCalculations;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.v0_9_5.MapFeature;
+import momime.server.database.v0_9_5.MapFeatureMagicRealm;
+import momime.server.database.v0_9_5.Plane;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import org.junit.Test;
@@ -179,7 +185,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		players.add (player5);
 		
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (true);
@@ -336,7 +342,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		players.add (player5);
 		
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (true);
@@ -422,7 +428,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd1.getPlayerID (), "canSeeUnitMidTurn")).thenReturn (player1);
 		
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
@@ -439,43 +445,15 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		// Regular situation of a unit we can't see because we can't see that location
 		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, settings.getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (false);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
+		assertFalse (calc.canSeeUnitMidTurn (spearmen, trueTerrain, player2, db, settings));
 
 		// Regular situation of a unit we can see because we can see that location
 		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, settings.getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (true);
-		assertTrue (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
+		assertTrue (calc.canSeeUnitMidTurn (spearmen, trueTerrain, player2, db, settings));
 
 		// Can't see dead units, even if we can see their location
 		spearmen.setStatus (UnitStatusID.DEAD);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
-		
-		// Rampaging monsters running around map that we can't see because we can't see that location
-		spearmen.setStatus (UnitStatusID.ALIVE);
-		pub1.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
-
-		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, settings.getUnits ())).thenReturn (false);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
-		
-		// Rampaging monsters running around map that we can see because we can see that location
-		priv2.getFogOfWar ().getPlane ().get (0).getRow ().get (10).getCell ().set (20,  FogOfWarStateID.CAN_SEE);
-		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, settings.getUnits ())).thenReturn (true);
-		assertTrue (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
-		
-		// Rampaging monsters that we can't see because they're hiding in a node/lair/tower
-		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID ("TT14");
-		trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, null, null, null, db, settings));
-		
-		// Still can't see them if someone else is attacking the lair
-		final MapCoordinates3DEx unitCombatLocation = new MapCoordinates3DEx (21, 10, 0);
-		spearmen.setCombatLocation (unitCombatLocation);
-		
-		final MapCoordinates3DEx playerCombatLocation = new MapCoordinates3DEx (21, 10, 0);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, playerCombatLocation, player3, player1, db, settings));
-		
-		// But can see them if we're attacking it
-		assertTrue (calc.canSeeUnitMidTurn (spearmen, players, trueTerrain, player2, playerCombatLocation, player3, player2, db, settings));
+		assertFalse (calc.canSeeUnitMidTurn (spearmen, trueTerrain, player2, db, settings));
 	}
 	
 	/**
@@ -519,7 +497,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd1.getPlayerID (), "canSeeUnitMidTurn")).thenReturn (player1);
 		
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
@@ -546,11 +524,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 		
 		// Regular situation of a unit we can't see because we can't see that location
 		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, settings.getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (false);
-		assertFalse (calc.canSeeSpellMidTurn (spell, players, trueTerrain, trueUnits, player2, null, null, null, db, settings));
+		assertFalse (calc.canSeeSpellMidTurn (spell, trueTerrain, trueUnits, player2, db, settings));
 
 		// Regular situation of a unit we can see because we can see that location
 		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, settings.getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (true);
-		assertTrue (calc.canSeeSpellMidTurn (spell, players, trueTerrain, trueUnits, player2, null, null, null, db, settings));
+		assertTrue (calc.canSeeSpellMidTurn (spell, trueTerrain, trueUnits, player2, db, settings));
 	}
 	
 	/**
@@ -580,7 +558,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
 		spell.setCityLocation (spellLocation);
 
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations single = mock (MomFogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (true);
@@ -589,10 +567,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setFogOfWarCalculations (single);
 		
 		// Run test
-		assertFalse (calc.canSeeSpellMidTurn (spell, null, null, null, player, null, null, null, db, settings));
+		assertFalse (calc.canSeeSpellMidTurn (spell, null, null, player, db, settings));
 		
 		priv.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		assertTrue (calc.canSeeSpellMidTurn (spell, null, null, null, player, null, null, null, db, settings));
+		assertTrue (calc.canSeeSpellMidTurn (spell, null, null, player, db, settings));
 	}
 	
 	/**
@@ -602,14 +580,14 @@ public final class TestFogOfWarMidTurnChangesImpl
 	@Test
 	public final void testCanSeeSpellMidTurn_OverlandEnchantment () throws Exception
 	{
-		// Set up test object
+		// Set up object to test
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
 
 		// Spell to check - assumed to be overland since it has no UnitURN or CityLocation set
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
 
 		// Run test
-		assertTrue (calc.canSeeSpellMidTurn (spell, null, null, null, null, null, null, null, null, null));
+		assertTrue (calc.canSeeSpellMidTurn (spell, null, null, null, null, null));
 	}
 	
 	/**
@@ -640,7 +618,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
 
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
 		
 		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
@@ -752,7 +730,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
 		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
 		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
@@ -884,7 +862,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 		
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
 		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
 		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
@@ -1192,7 +1170,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// City location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (20, 10, 1);
 
-		// Set up test object
+		// Set up object to test
 		final MomFogOfWarCalculations fow = mock (MomFogOfWarCalculations.class);
 		when (fow.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (false);
 		when (fow.canSeeMidTurn (FogOfWarStateID.CAN_SEE, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ())).thenReturn (true);		
@@ -1224,5 +1202,483 @@ public final class TestFogOfWarMidTurnChangesImpl
 		assertEquals (cityLocation, msg.getData ().getCityLocation ());
 		assertEquals ("BL03", msg.getData ().getBuildingID ());
 		assertFalse (msg.getData ().isUpdateBuildingSoldThisTurn ());
+	}
+	
+	/**
+	 * Tests the moveUnitStackOneCellOnServerAndClients method, when there's no cities, lairs, nodes, towers invovled
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testMoveUnitStackOneCellOnServerAndClients () throws Exception
+	{
+		// Server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Map feature is something irrelevant, like gems
+		final MapFeature mapFeature = new MapFeature ();
+		when (db.findMapFeature ("MF01", "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
+		
+		// Session description
+		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		fowSettings.setUnits (FogOfWarValue.REMEMBER_AS_LAST_SEEN);	// Value used is pretty much irrelevant since anything to do with it is mocked out
+		fowSettings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		fowSettings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setFogOfWarSetting (fowSettings);
+		sd.setMapSize (mapSize);
+		
+		// True map
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final OverlandMapTerrainData moveToCell = new OverlandMapTerrainData ();
+		trueTerrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCell);
+		moveToCell.setMapFeatureID ("MF01");
+		
+		// Lets say we're moving onto a tower, so plane on moveTo changes to 0
+		final MapCoordinates3DEx moveFrom = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (20, 11, 0);
+
+		// Mock what each player can see
+		final MomFogOfWarCalculations fowCalc = mock (MomFogOfWarCalculations.class);
+		
+		// Player owning the units
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (3);
+		pd1.setHuman (true);
+		
+		final FogOfWarMemory fow1 = new FogOfWarMemory ();
+		final MapVolumeOfFogOfWarStates fowArea1 = new MapVolumeOfFogOfWarStates ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		priv1.setFogOfWar (fowArea1);
+		priv1.setFogOfWarMemory (fow1);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
+		
+		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
+		player1.setConnection (conn1);
+		
+		// Player who can see the start of their move, but not the end
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (5);
+		pd2.setHuman (true);
+
+		final FogOfWarMemory fow2 = new FogOfWarMemory ();
+		final MapVolumeOfFogOfWarStates fowArea2 = new MapVolumeOfFogOfWarStates ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
+		priv2.setFogOfWar (fowArea2);
+		priv2.setFogOfWarMemory (fow2);
+		
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
+
+		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
+		player2.setConnection (conn2);
+		
+		when (fowCalc.canSeeMidTurnOnAnyPlaneIfTower (moveFrom, fowSettings.getUnits (), trueTerrain, fowArea2, db)).thenReturn (true);
+		when (fowCalc.canSeeMidTurnOnAnyPlaneIfTower (moveTo, fowSettings.getUnits (), trueTerrain, fowArea2, db)).thenReturn (false);
+		
+		// AI player who can see the end of their move, but not the start
+		final PlayerDescription pd3 = new PlayerDescription ();
+		pd3.setPlayerID (-1);
+		pd3.setHuman (false);
+
+		final FogOfWarMemory fow3 = new FogOfWarMemory ();
+		final MapVolumeOfFogOfWarStates fowArea3 = new MapVolumeOfFogOfWarStates ();
+
+		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
+		priv3.setFogOfWar (fowArea3);
+		priv3.setFogOfWarMemory (fow3);
+		
+		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
+
+		when (fowCalc.canSeeMidTurnOnAnyPlaneIfTower (moveFrom, fowSettings.getUnits (), trueTerrain, fowArea3, db)).thenReturn (false);
+		when (fowCalc.canSeeMidTurnOnAnyPlaneIfTower (moveTo, fowSettings.getUnits (), trueTerrain, fowArea3, db)).thenReturn (true);
+		
+		// Player whose seen the units at some point in the past, but can't see them now
+		final PlayerDescription pd4 = new PlayerDescription ();
+		pd4.setPlayerID (6);
+		pd4.setHuman (true);
+		
+		final FogOfWarMemory fow4 = new FogOfWarMemory ();
+		final MapVolumeOfFogOfWarStates fowArea4 = new MapVolumeOfFogOfWarStates ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
+		priv4.setFogOfWar (fowArea4);
+		priv4.setFogOfWarMemory (fow4);
+		
+		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
+		
+		final DummyServerToClientConnection conn4 = new DummyServerToClientConnection ();
+		player4.setConnection (conn4);
+
+		when (fowCalc.canSeeMidTurnOnAnyPlaneIfTower (moveFrom, fowSettings.getUnits (), trueTerrain, fowArea4, db)).thenReturn (false);
+		when (fowCalc.canSeeMidTurnOnAnyPlaneIfTower (moveTo, fowSettings.getUnits (), trueTerrain, fowArea4, db)).thenReturn (false);
+		
+		// Players list
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player1);
+		players.add (player2);
+		players.add (player3);
+		players.add (player4);
+		
+		// Units being moved
+		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryUnit tu = new MemoryUnit ();
+			tu.setUnitURN (n);
+			unitStack.add (tu);
+			
+			// Players 1, 2 & 4 can see the units before they move
+			final MemoryUnit mu1 = new MemoryUnit ();
+			mu1.setUnitURN (n);
+			mu1.setUnitLocation (new MapCoordinates3DEx (moveFrom));
+			fow1.getUnit ().add (mu1);
+
+			final MemoryUnit mu2 = new MemoryUnit ();
+			mu2.setUnitURN (n);
+			mu2.setUnitLocation (new MapCoordinates3DEx (moveFrom));
+			fow2.getUnit ().add (mu2);
+
+			final MemoryUnit mu4 = new MemoryUnit ();
+			mu4.setUnitURN (n);
+			mu4.setUnitLocation (new MapCoordinates3DEx (moveFrom));
+			fow4.getUnit ().add (mu4);
+		}
+		
+		// Set up object to test
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+		
+		final FogOfWarDuplicationImpl fowDup = new FogOfWarDuplicationImpl ();
+		fowDup.setUnitUtils (unitUtils);
+		
+		final FogOfWarProcessing fowProc = mock (FogOfWarProcessing.class);
+		
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		midTurn.setFogOfWarCalculations (fowCalc);
+		midTurn.setFogOfWarProcessing (fowProc);
+		midTurn.setFogOfWarDuplication (fowDup);
+		midTurn.setUnitUtils (unitUtils);
+
+		// Run method
+		midTurn.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, trueMap, sd, db);
+		
+		// Check player 1
+		assertEquals (3, fow1.getUnit ().size ());
+		for (final MemoryUnit mu1 : fow1.getUnit ())
+			assertEquals (moveTo, mu1.getUnitLocation ());
+
+		assertEquals (1, conn1.getMessages ().size ());
+		final MoveUnitStackOverlandMessage msg1 = (MoveUnitStackOverlandMessage) conn1.getMessages ().get (0);
+		assertFalse (msg1.isFreeAfterMoving ());
+		assertEquals (moveFrom, msg1.getMoveFrom ());
+		assertEquals (moveTo, msg1.getMoveTo ());
+		assertEquals (3, msg1.getUnitURN ().size ());
+		for (int n = 1; n <= 3; n++)
+			assertEquals (n, msg1.getUnitURN ().get (n-1).intValue ());
+
+		// Check player 2
+		assertEquals (0, fow2.getUnit ().size ());		// Units removed from player's memory on server
+
+		assertEquals (1, conn2.getMessages ().size ());
+		final MoveUnitStackOverlandMessage msg2 = (MoveUnitStackOverlandMessage) conn2.getMessages ().get (0);
+		assertTrue (msg2.isFreeAfterMoving ());
+		assertEquals (moveFrom, msg2.getMoveFrom ());
+		assertEquals (moveTo, msg2.getMoveTo ());
+		assertEquals (3, msg2.getUnitURN ().size ());
+		for (int n = 1; n <= 3; n++)
+			assertEquals (n, msg2.getUnitURN ().get (n-1).intValue ());
+
+		// Check player 3
+		assertEquals (3, fow3.getUnit ().size ());		// Units added to player's memory on server
+		for (final MemoryUnit mu3 : fow3.getUnit ())
+			assertEquals (moveTo, mu3.getUnitLocation ());
+
+		// Check player 4
+		assertEquals (3, fow4.getUnit ().size ());
+		for (final MemoryUnit mu4 : fow4.getUnit ())
+			assertEquals (moveFrom, mu4.getUnitLocation ());		// Player still knows about the units, but at their old location, we didn't see them move
+
+		assertEquals (0, conn4.getMessages ().size ());
+		
+		// The gems are still there
+		assertEquals ("MF01", moveToCell.getMapFeatureID ());
+	}
+
+	/**
+	 * Tests the moveUnitStackOneCellOnServerAndClients method, moving onto an empty lair.
+	 * Note from this method's point of view, its irrelevant whether the lair had monsters in it - we could be coming here from the movement
+	 * routine just directly moving onto an empty lair, or could be coming here from the combat routine after successfully clearing out the lair. 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testMoveUnitStackOneCellOnServerAndClients_MoveToLair () throws Exception
+	{
+		// Server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Map feature is one that may contain monsters
+		final MapFeature mapFeature = new MapFeature ();
+		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealm ());
+		when (db.findMapFeature ("MF01", "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
+		
+		// Session description
+		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		fowSettings.setUnits (FogOfWarValue.REMEMBER_AS_LAST_SEEN);	// Value used is pretty much irrelevant since anything to do with it is mocked out
+		fowSettings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		fowSettings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setFogOfWarSetting (fowSettings);
+		sd.setMapSize (mapSize);
+		
+		// True map
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final OverlandMapTerrainData moveToCell = new OverlandMapTerrainData ();
+		trueTerrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCell);
+		moveToCell.setMapFeatureID ("MF01");
+		
+		// Lets say we're moving onto a tower, so plane on moveTo changes to 0
+		final MapCoordinates3DEx moveFrom = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (20, 11, 0);
+
+		// Mock what each player can see
+		final MomFogOfWarCalculations fowCalc = mock (MomFogOfWarCalculations.class);
+		
+		// Player owning the units
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (3);
+		pd1.setHuman (true);
+		
+		final MapVolumeOfMemoryGridCells terrain1 = ServerTestData.createOverlandMap (mapSize);
+		
+		final FogOfWarMemory fow1 = new FogOfWarMemory ();
+		fow1.setMap (terrain1);
+		
+		final MapVolumeOfFogOfWarStates fowArea1 = ServerTestData.createFogOfWarArea (mapSize);
+		
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		priv1.setFogOfWar (fowArea1);
+		priv1.setFogOfWarMemory (fow1);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
+		
+		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
+		player1.setConnection (conn1);
+
+		// Players list
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player1);
+		
+		// Units being moved
+		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryUnit tu = new MemoryUnit ();
+			tu.setUnitURN (n);
+			unitStack.add (tu);
+			
+			// Players can see the units before they move
+			final MemoryUnit mu1 = new MemoryUnit ();
+			mu1.setUnitURN (n);
+			mu1.setUnitLocation (new MapCoordinates3DEx (moveFrom));
+			fow1.getUnit ().add (mu1);
+		}
+
+		// Its a lair, not a tower
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (moveToCell)).thenReturn (false);
+		
+		// Set up object to test
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+		
+		final FogOfWarDuplicationImpl fowDup = new FogOfWarDuplicationImpl ();
+		fowDup.setUnitUtils (unitUtils);
+		
+		final FogOfWarProcessing fowProc = mock (FogOfWarProcessing.class);
+		
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		midTurn.setFogOfWarCalculations (fowCalc);
+		midTurn.setFogOfWarProcessing (fowProc);
+		midTurn.setFogOfWarDuplication (fowDup);
+		midTurn.setUnitUtils (unitUtils);
+		midTurn.setMemoryGridCellUtils (memoryGridCellUtils);
+		
+		// Run method
+		midTurn.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, trueMap, sd, db);
+		
+		// Check player 1
+		assertEquals (3, fow1.getUnit ().size ());
+		for (final MemoryUnit mu1 : fow1.getUnit ())
+			assertEquals (moveTo, mu1.getUnitLocation ());
+
+		assertEquals (1, conn1.getMessages ().size ());
+		final MoveUnitStackOverlandMessage msg1 = (MoveUnitStackOverlandMessage) conn1.getMessages ().get (0);
+		assertFalse (msg1.isFreeAfterMoving ());
+		assertEquals (moveFrom, msg1.getMoveFrom ());
+		assertEquals (moveTo, msg1.getMoveTo ());
+		assertEquals (3, msg1.getUnitURN ().size ());
+		for (int n = 1; n <= 3; n++)
+			assertEquals (n, msg1.getUnitURN ().get (n-1).intValue ());
+
+		// The lair is gone
+		assertNull (moveToCell.getMapFeatureID ());
+	}
+
+	/**
+	 * Tests the moveUnitStackOneCellOnServerAndClients method, moving onto a Tower.
+	 * Note from this method's point of view, its irrelevant whether the tower had monsters in it - we could be coming here from the movement
+	 * routine just directly moving onto an empty tower, or could be coming here from the combat routine after successfully clearing out the tower. 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testMoveUnitStackOneCellOnServerAndClients_MoveToTower () throws Exception
+	{
+		// Server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
+		myrror.setPlaneNumber (1);
+		
+		final List<Plane> planes = new ArrayList<Plane> ();
+		planes.add (arcanus);
+		planes.add (myrror);
+
+		when (db.getPlane ()).thenReturn (planes);
+		
+		// Map feature is one that may contain monsters
+		final MapFeature mapFeature = new MapFeature ();
+		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealm ());
+		when (db.findMapFeature (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
+		
+		// Session description
+		final FogOfWarSettingData fowSettings = new FogOfWarSettingData ();
+		fowSettings.setUnits (FogOfWarValue.REMEMBER_AS_LAST_SEEN);	// Value used is pretty much irrelevant since anything to do with it is mocked out
+		fowSettings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		fowSettings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setFogOfWarSetting (fowSettings);
+		sd.setMapSize (mapSize);
+		
+		// True map
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final OverlandMapTerrainData moveToCell = new OverlandMapTerrainData ();
+		trueTerrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCell);
+		moveToCell.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		
+		final OverlandMapTerrainData moveToCellOtherPlane = new OverlandMapTerrainData ();
+		trueTerrain.getPlane ().get (1).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCellOtherPlane);
+		moveToCellOtherPlane.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		
+		// Lets say we're moving onto a tower, so plane on moveTo changes to 0
+		final MapCoordinates3DEx moveFrom = new MapCoordinates3DEx (20, 10, 1);
+		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (20, 11, 0);
+
+		// Mock what each player can see
+		final MomFogOfWarCalculations fowCalc = mock (MomFogOfWarCalculations.class);
+		
+		// Player owning the units
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (3);
+		pd1.setHuman (true);
+		
+		final MapVolumeOfMemoryGridCells terrain1 = ServerTestData.createOverlandMap (mapSize);
+		
+		final FogOfWarMemory fow1 = new FogOfWarMemory ();
+		fow1.setMap (terrain1);
+		
+		final MapVolumeOfFogOfWarStates fowArea1 = ServerTestData.createFogOfWarArea (mapSize);
+		
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		priv1.setFogOfWar (fowArea1);
+		priv1.setFogOfWarMemory (fow1);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
+		
+		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
+		player1.setConnection (conn1);
+
+		// Players list
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player1);
+		
+		// Units being moved
+		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryUnit tu = new MemoryUnit ();
+			tu.setUnitURN (n);
+			unitStack.add (tu);
+			
+			// Players can see the units before they move
+			final MemoryUnit mu1 = new MemoryUnit ();
+			mu1.setUnitURN (n);
+			mu1.setUnitLocation (new MapCoordinates3DEx (moveFrom));
+			fow1.getUnit ().add (mu1);
+		}
+
+		// Its a tower
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (moveToCell)).thenReturn (true);
+		
+		// Set up object to test
+		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+		
+		final FogOfWarDuplicationImpl fowDup = new FogOfWarDuplicationImpl ();
+		fowDup.setUnitUtils (unitUtils);
+		
+		final FogOfWarProcessing fowProc = mock (FogOfWarProcessing.class);
+		
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		midTurn.setFogOfWarCalculations (fowCalc);
+		midTurn.setFogOfWarProcessing (fowProc);
+		midTurn.setFogOfWarDuplication (fowDup);
+		midTurn.setUnitUtils (unitUtils);
+		midTurn.setMemoryGridCellUtils (memoryGridCellUtils);
+		
+		// Run method
+		midTurn.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, trueMap, sd, db);
+		
+		// Check player 1
+		assertEquals (3, fow1.getUnit ().size ());
+		for (final MemoryUnit mu1 : fow1.getUnit ())
+			assertEquals (moveTo, mu1.getUnitLocation ());
+
+		assertEquals (1, conn1.getMessages ().size ());
+		final MoveUnitStackOverlandMessage msg1 = (MoveUnitStackOverlandMessage) conn1.getMessages ().get (0);
+		assertFalse (msg1.isFreeAfterMoving ());
+		assertEquals (moveFrom, msg1.getMoveFrom ());
+		assertEquals (moveTo, msg1.getMoveTo ());
+		assertEquals (3, msg1.getUnitURN ().size ());
+		for (int n = 1; n <= 3; n++)
+			assertEquals (n, msg1.getUnitURN ().get (n-1).intValue ());
+
+		// The tower is now cleared, on both planes
+		assertEquals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY, moveToCell.getMapFeatureID ());
+		assertEquals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY, moveToCellOtherPlane.getMapFeatureID ());
 	}
 }

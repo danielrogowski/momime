@@ -57,7 +57,7 @@ public final class AddUnitMessageImpl extends AddUnitMessage implements BaseServ
 		
 		// Add it
 		final MemoryUnit newUnit = getUnitUtils ().createMemoryUnit (getData ().getUnitID (), getData ().getUnitURN (),
-			getData ().getWeaponGrade (), getData ().getExperience (), getData ().isReadSkillsFromXML (), getClient ().getClientDB ());
+			getData ().getWeaponGrade (), null, false, getClient ().getClientDB ());
 		
 		newUnit.setOwningPlayerID (getData ().getOwningPlayerID ());
 		newUnit.setUnitLocation (getData ().getUnitLocation ());

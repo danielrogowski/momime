@@ -1,8 +1,6 @@
 package momime.server.fogofwar;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -12,7 +10,6 @@ import java.util.List;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.FogOfWarValue;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
-import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.FogOfWarStateID;
 import momime.common.messages.v0_9_5.MapVolumeOfFogOfWarStates;
@@ -404,37 +401,5 @@ public final class TestFogOfWarProcessingImpl
 		// So regardless of what FOW setting we're on, we know we already have the correct values so no update required
 		for (final FogOfWarValue setting : FogOfWarValue.values ())
 			assertEquals (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF, proc.determineVisibleAreaChangedUpdateAction (FogOfWarStateID.TEMP_CAN_STILL_SEE, setting));
-	}
-
-	/**
-	 * Tests the areCoordinatesIncludedInMessage method
-	 */
-	@Test
-	public final void testAreCoordinatesIncludedInMessage ()
-	{
-		final List<UpdateNodeLairTowerUnitIDMessageData> coordinateList = new ArrayList<UpdateNodeLairTowerUnitIDMessageData> ();
-
-		// Put 3 sets of coordinates in the list
-		for (int n = 1; n <= 3; n++)
-		{
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx (n, n+1, n+2);
-			
-			final UpdateNodeLairTowerUnitIDMessageData msgData = new UpdateNodeLairTowerUnitIDMessageData ();
-			msgData.setNodeLairTowerLocation (coords);
-
-			coordinateList.add (msgData);
-		}
-
-		// Set up test object
-		final FogOfWarProcessingImpl proc = new FogOfWarProcessingImpl ();
-
-		// Test some coordinates that are in the list
-		final MapCoordinates3DEx coords = new MapCoordinates3DEx (2, 3, 4);
-		assertTrue (proc.areCoordinatesIncludedInMessage (coordinateList, coords));
-
-		// Test some coordinates that aren't in the list
-		coords.setX (3);
-
-		assertFalse (proc.areCoordinatesIncludedInMessage (coordinateList, coords));
 	}
 }

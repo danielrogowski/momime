@@ -17,7 +17,6 @@ import momime.common.messages.servertoclient.v0_9_5.OverlandMovementTypesMessage
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -106,13 +105,13 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		else
 		{
 			// Proceed with calculation
-			final int [] [] [] doubleMovementDistances										= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
-			final int [] [] [] movementDirections												= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
-			final boolean [] [] [] canMoveToInOneTurn										= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
-			final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack	= new MoveResultsInAttackTypeID [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
+			final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getMapSize ().getHeight ()] [mom.getSessionDescription ().getMapSize ().getWidth ()];
 
 			getServerUnitCalculations ().calculateOverlandMovementDistances (getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getZ (),
-				sender.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), priv.getNodeLairTowerKnownUnitIDs (),
+				sender.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (),
 				unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 				mom.getSessionDescription (), mom.getServerDB ());
 

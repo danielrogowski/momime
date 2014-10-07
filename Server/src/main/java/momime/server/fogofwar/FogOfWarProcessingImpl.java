@@ -9,7 +9,6 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.calculations.MomCityCalculationsImpl;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.FogOfWarValue;
 import momime.common.messages.servertoclient.v0_9_5.AddBuildingMessageData;
@@ -22,7 +21,6 @@ import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitMessageData;
 import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessageData;
-import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessageData;
 import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessageData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.FogOfWarStateID;
@@ -33,12 +31,10 @@ import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.messages.v0_9_5.UnitStatusID;
-import momime.common.utils.CompareUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
@@ -49,7 +45,6 @@ import momime.server.calculations.MomServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Plane;
-import momime.server.messages.ServerMemoryGridCellUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -330,27 +325,6 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	}
 
 	/**
-	 * I think now that there is a MapCoordinates3DEx.equals () method, that this could just be done with coordinateList.contains (), but leaving it for now
-	 * 
-	 * @param coordinateList List of coordinates to check
-	 * @param coordinates Coordinates to look for
-	 * @return True if coordinates are already in the list
-	 */
-	final boolean areCoordinatesIncludedInMessage (final List<UpdateNodeLairTowerUnitIDMessageData> coordinateList, final MapCoordinates3DEx coordinates)
-	{
-		boolean result = false;
-		final Iterator<UpdateNodeLairTowerUnitIDMessageData> iter = coordinateList.iterator ();
-		while ((!result) && (iter.hasNext ()))
-		{
-			final UpdateNodeLairTowerUnitIDMessageData theseCoords = iter.next ();
-			if (theseCoords.getNodeLairTowerLocation ().equals (coordinates))
-				result = true;
-		}
-
-		return result;
-	}
-
-	/**
 	 * This routine handles when the area that a player can see changes; it:
 	 * 1) Checks what the player can now see
 	 * 2) Compares the area against what the player could see before
@@ -562,84 +536,50 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if (thisUnit.getStatus () == UnitStatusID.ALIVE)
 			{
-				// Monsters in nodes/lairs/towers have to be scouted to see them, we can never see them by FOW coming into view (this routine)
-				// See corresponding code in FogOfWarMidTurnChanges.canSeeUnitMidTurn ()
-				final PlayerServerDetails unitOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, thisUnit.getOwningPlayerID (), "canSeeUnitMidTurn");
-				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
-				
 				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 					(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ();
 				
-				if ((thisUnit.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ()) &&
-					(ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))
+				// This can happen one of two ways:
+				// 1) We remember nothing about the unit and are seeing it for the first time
+				// 2) We remember the unit from it seeing it before (FOW setting = remember as last seen), its now coming back into view either in
+				//		the same or a different location
+				//
+				// In both cases action will be 'update', but that isn't enough to go on, since in (2) just because action=update doesn't mean that we don't
+				// still have the unit in our list from remembering it from last time we saw it
+				//
+				// Towers are a complication - all units in towers are set as being on plane 0, but the tile on plane 0 may be e.g. NEVER_SEEN
+				// The fact that we can see the terrain on plane 1 also allows us to see the unit, so have multiple states and multiple update actions to consider
+				final List<FogOfWarStateID> states = new ArrayList<FogOfWarStateID> ();
+
+				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 				{
-					// Can't be seen by FOW change
-					// The exception, handled by checking the playerIDs in the 'if' above, is that the monsters player CAN see their own units
+					// In a tower, consider all planes
+					for (final Plane plane : db.getPlane ())
+						states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
+							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 				}
 				else
+					// Outside of a tower - only one plane to consider
+					states.add (priv.getFogOfWar ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
+						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
+
+				// Convert to update actions
+				final List<FogOfWarUpdateAction> actions = new ArrayList<FogOfWarUpdateAction> ();
+				for (final FogOfWarStateID state : states)
+					actions.add (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getUnits ()));
+
+				// NONE can mean "none because we can't see it", or "none because it never left our sight so the info we remember must already be up to date"
+				// So NONE,UPDATE is a tower coming into view on one plane that we can't see at all on the other plane so we need to do an update, whereas
+				// NEVER_LOST_SIGHT_OF,UPDATE is a tower just coming into view on one plane that we have had a city next to on the other plane the whole time, so nothing to do
+				if ((actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)) &&
+					(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF)))
 				{
-					// This can happen one of two ways:
-					// 1) We remember nothing about the unit and are seeing it for the first time
-					// 2) We remember the unit from it seeing it before (FOW setting = remember as last seen), its now coming back into view either in
-					//		the same or a different location
-					//
-					// In both cases action will be 'update', but that isn't enough to go on, since in (2) just because action=update doesn't mean that we don't
-					// still have the unit in our list from remembering it from last time we saw it
-					//
-					// Towers are a complication - all units in towers are set as being on plane 0, but the tile on plane 0 may be e.g. NEVER_SEEN
-					// The fact that we can see the terrain on plane 1 also allows us to see the unit, so have multiple states and multiple update actions to consider
-					final List<FogOfWarStateID> states = new ArrayList<FogOfWarStateID> ();
+					final boolean unitChanged = getFogOfWarDuplication ().copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit ());
+					updatedUnitURNs.add (thisUnit.getUnitURN ());
 
-					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
-					{
-						// In a tower, consider all planes
-						for (final Plane plane : db.getPlane ())
-							states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
-								(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
-					}
-					else
-						// Outside of a tower - only one plane to consider
-						states.add (priv.getFogOfWar ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
-							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
-
-					// Convert to update actions
-					final List<FogOfWarUpdateAction> actions = new ArrayList<FogOfWarUpdateAction> ();
-					for (final FogOfWarStateID state : states)
-						actions.add (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getUnits ()));
-
-					// NONE can mean "none because we can't see it", or "none because it never left our sight so the info we remember must already be up to date"
-					// So NONE,UPDATE is a tower coming into view on one plane that we can't see at all on the other plane so we need to do an update, whereas
-					// NEVER_LOST_SIGHT_OF,UPDATE is a tower just coming into view on one plane that we have had a city next to on the other plane the whole time, so nothing to do
-					if ((actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)) &&
-						(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF)))
-					{
-						final boolean unitChanged = getFogOfWarDuplication ().copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit ());
-						updatedUnitURNs.add (thisUnit.getUnitURN ());
-
-						log.debug ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
-						if ((unitChanged) && (msg != null))
-							msg.getAddUnit ().add (getFogOfWarDuplication ().createAddUnitMessage (thisUnit, db));
-
-						// If this is a unit standing on a node or tower, then that proves that the node or tower has been cleared of monsters
-						final String nodeLairTowerKnownUnitID = priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
-							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ());
-
-						if ((ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)) && (!CompareUtils.safeStringCompare (nodeLairTowerKnownUnitID, "")))	// know it to be empty
-						{
-							priv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
-								(thisUnit.getUnitLocation ().getY ()).getCell ().set (thisUnit.getUnitLocation ().getX (), "");
-
-							if (msg != null)
-								if (!areCoordinatesIncludedInMessage (msg.getUpdateNodeLairTowerUnitID (), (MapCoordinates3DEx) thisUnit.getUnitLocation ()))
-								{
-									final UpdateNodeLairTowerUnitIDMessageData scoutMsg = new UpdateNodeLairTowerUnitIDMessageData ();
-									scoutMsg.setNodeLairTowerLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) thisUnit.getUnitLocation ()));
-									scoutMsg.setMonsterUnitID ("");
-
-									msg.getUpdateNodeLairTowerUnitID ().add (scoutMsg);
-								}
-						}
-					}
+					log.debug ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
+					if ((unitChanged) && (msg != null))
+						msg.getAddUnit ().add (getFogOfWarDuplication ().createAddUnitMessage (thisUnit));
 				}
 			}
 
@@ -651,86 +591,74 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			final MemoryUnit thisUnit = unitsIter.next ();
 			if (thisUnit.getStatus () == UnitStatusID.ALIVE)
 			{
-				// Monsters in nodes/lairs/towers have to be scouted to see them, we can never see them by FOW coming into view (this routine)
-				// See corresponding code in FogOfWarMidTurnChanges.canSeeUnitMidTurn ()
-				final PlayerServerDetails unitOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, thisUnit.getOwningPlayerID (), "canSeeUnitMidTurn");
-				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
-
 				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 					(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ();
 
-				if ((ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))
+				// This can happen one of two ways:
+				// 1) We need to forget what's at the location we saw the unit at (FOW setting = forget, and we've walked away)
+				// 2) We've remembered that we saw a unit at a particular location, but in between scouting it last time and it coming into view now, the unit is no longer there anymore
+				//		(it could either be dead, or just moved to somewhere that we can't see, from the player's point of view they can't tell the difference)
+				//
+				// Towers are a complication - all units in towers are set as being on plane 0, but the tile on plane 0 may be e.g. NEVER_SEEN
+				// The fact that we can see the terrain on plane 1 also allows us to see the unit, so have multiple states and multiple update actions to consider
+				final List<FogOfWarStateID> states = new ArrayList<FogOfWarStateID> ();
+
+				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 				{
-					// Can't be seen (or lose sight of it) by FOW change
+					// In a tower, consider all planes
+					for (final Plane plane : db.getPlane ())
+						states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
+							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 				}
 				else
+					// Outside of a tower - only one plane to consider
+					states.add (priv.getFogOfWar ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
+						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
+
+				// Convert to update actions
+				final List<FogOfWarUpdateAction> actions = new ArrayList<FogOfWarUpdateAction> ();
+				for (final FogOfWarStateID state : states)
+					actions.add (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getUnits ()));
+
+				// NONE can mean "none because we can't see it", or "none because it never left our sight so the info we remember must already be up to date"
+				// So NONE,FORGET is a tower going out of view on one plane that we can't see at all on the other plane so we need to forget it, whereas
+				// NEVER_LOST_SIGHT_OF,FORGET is a tower going out of view on one plane that we have had a city next to on the other plane the whole time, so nothing to do
+				// Also NEVER_LOST_SIGHT_OF,UPDATE is a tower going out of view on one plane at the same time as it is coming into view on the other plane, so again nothing to do
+				final boolean needToRemoveUnit;
+				if ((actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET)) &&
+					(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF)) &&
+					(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)))
+
+					needToRemoveUnit = true;
+
+				else if (actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE))
 				{
-					// This can happen one of two ways:
-					// 1) We need to forget what's at the location we saw the unit at (FOW setting = forget, and we've walked away)
-					// 2) We've remembered that we saw a unit at a particular location, but in between scouting it last time and it coming into view now, the unit is no longer there anymore
-					//		(it could either be dead, or just moved to somewhere that we can't see, from the player's point of view they can't tell the difference)
-					//
-					// Towers are a complication - all units in towers are set as being on plane 0, but the tile on plane 0 may be e.g. NEVER_SEEN
-					// The fact that we can see the terrain on plane 1 also allows us to see the unit, so have multiple states and multiple update actions to consider
-					final List<FogOfWarStateID> states = new ArrayList<FogOfWarStateID> ();
-
-					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
-					{
-						// In a tower, consider all planes
-						for (final Plane plane : db.getPlane ())
-							states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
-								(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
-					}
-					else
-						// Outside of a tower - only one plane to consider
-						states.add (priv.getFogOfWar ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
-							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
-
-					// Convert to update actions
-					final List<FogOfWarUpdateAction> actions = new ArrayList<FogOfWarUpdateAction> ();
-					for (final FogOfWarStateID state : states)
-						actions.add (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getUnits ()));
-
-					// NONE can mean "none because we can't see it", or "none because it never left our sight so the info we remember must already be up to date"
-					// So NONE,FORGET is a tower going out of view on one plane that we can't see at all on the other plane so we need to forget it, whereas
-					// NEVER_LOST_SIGHT_OF,FORGET is a tower going out of view on one plane that we have had a city next to on the other plane the whole time, so nothing to do
-					// Also NEVER_LOST_SIGHT_OF,UPDATE is a tower going out of view on one plane at the same time as it is coming into view on the other plane, so again nothing to do
-					final boolean needToRemoveUnit;
-					if ((actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_FORGET)) &&
-						(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF)) &&
-						(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)))
-
+					final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (thisUnit.getUnitURN (), trueMap.getUnit ());
+					if (trueUnit == null)
 						needToRemoveUnit = true;
-
-					else if (actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE))
-					{
-						final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (thisUnit.getUnitURN (), trueMap.getUnit ());
-						if (trueUnit == null)
-							needToRemoveUnit = true;
-						else
-							// We don't need to worry about checking whether or not we can see where the unit has moved to - we already know that we can't
-							// because if we could see it, we'd have already dealt with it and updated our memory of the unit in the 'add' section above
-							// The only way the code can drop into this block is if the unit has moved to somewhere that we can't see it
-							needToRemoveUnit = !trueUnit.getUnitLocation ().equals (thisUnit.getUnitLocation ());
-					}
 					else
-						needToRemoveUnit = false;
+						// We don't need to worry about checking whether or not we can see where the unit has moved to - we already know that we can't
+						// because if we could see it, we'd have already dealt with it and updated our memory of the unit in the 'add' section above
+						// The only way the code can drop into this block is if the unit has moved to somewhere that we can't see it
+						needToRemoveUnit = !trueUnit.getUnitLocation ().equals (thisUnit.getUnitLocation ());
+				}
+				else
+					needToRemoveUnit = false;
 
-					if (needToRemoveUnit)
+				if (needToRemoveUnit)
+				{
+					log.debug ("UnitURN " + thisUnit.getUnitURN () + " has gone out of view for player " + player.getPlayerDescription ().getPlayerID () + ", sending kill as part of VAC");
+					removedUnitURNs.add (thisUnit.getUnitURN ());
+
+					if (msg != null)
 					{
-						log.debug ("UnitURN " + thisUnit.getUnitURN () + " has gone out of view for player " + player.getPlayerDescription ().getPlayerID () + ", sending kill as part of VAC");
-						removedUnitURNs.add (thisUnit.getUnitURN ());
-
-						if (msg != null)
-						{
-							final KillUnitMessageData killMsg = new KillUnitMessageData ();
-							killMsg.setUnitURN (thisUnit.getUnitURN ());
-							killMsg.setKillUnitActionID (KillUnitActionID.VISIBLE_AREA_CHANGED);
-							msg.getKillUnit ().add (killMsg);
-						}
-
-						unitsIter.remove ();
+						final KillUnitMessageData killMsg = new KillUnitMessageData ();
+						killMsg.setUnitURN (thisUnit.getUnitURN ());
+						killMsg.setKillUnitActionID (KillUnitActionID.VISIBLE_AREA_CHANGED);
+						msg.getKillUnit ().add (killMsg);
 					}
+
+					unitsIter.remove ();
 				}
 			}
 		}

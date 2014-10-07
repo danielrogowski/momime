@@ -3,8 +3,6 @@ package momime.server.fogofwar;
 import java.util.Iterator;
 import java.util.List;
 
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessageData;
@@ -21,7 +19,6 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -401,13 +398,10 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	 * place that builds those messages based on a source true unit
 	 *
 	 * @param source True unit details held on server
-	 * @param db Lookup lists built over the XML database
 	 * @return Unit creation message to send to client
-	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
 	@Override
-	public final AddUnitMessageData createAddUnitMessage (final MemoryUnit source, final ServerDatabaseEx db)
-		throws RecordNotFoundException
+	public final AddUnitMessageData createAddUnitMessage (final MemoryUnit source)
 	{
 		final AddUnitMessageData destination = new AddUnitMessageData ();
 
@@ -422,21 +416,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		destination.setWeaponGrade (source.getWeaponGrade ());
 
 		// Skills
-		if (db.findUnit (source.getUnitID (), "createAddUnitMessage").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-		{
-			// Include skills in message; experience will be included in the skills list
-			destination.setReadSkillsFromXML (false);
-			destination.getUnitHasSkill ().addAll (source.getUnitHasSkill ());
-		}
-		else
-		{
-			// Tell client to read skills from XML file; include experience
-			final int experience = getUnitUtils ().getBasicSkillValue (source.getUnitHasSkill (), CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE);
-
-			destination.setReadSkillsFromXML (true);
-			if (experience >= 0)
-				destination.setExperience (experience);
-		}
+		destination.getUnitHasSkill ().addAll (source.getUnitHasSkill ());
 
 		return destination;
 	}

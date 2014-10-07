@@ -96,7 +96,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="mps:persistentPlayerPrivateKnowledge">
-		        <xsd:sequence>
+				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="taxRateID" type="momimecommon:taxRateID"/>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="resourceValue" type="momimemsgs:momResourceValue"/>
 
@@ -108,19 +108,13 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 						<xsd:annotation>
 							<xsd:documentation>In simultaneous turns games, spells aren't cast until we hit end turn, but we still need the possibility of casting
 								multiple spells per turn if we have a high skill, so this list stores the spells we've got queued up.
-     							In one-at-a-time games its only used if we're trying to cast an overland (i.e. non-combat) spell
-     							that is taking us more than one turn to cast (instant spells are cast instantly!)</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-
-					<xsd:element minOccurs="1" maxOccurs="1" name="nodeLairTowerKnownUnitIDs" type="momimemsgs:mapVolumeOfStrings">
-				 	   <xsd:annotation>
-    						<xsd:documentation>Lists unit IDs of nodes/lairs/towers that we've scouted; null = not yet scouted; empty string = scouted and it is empty</xsd:documentation>
+								In one-at-a-time games its only used if we're trying to cast an overland (i.e. non-combat) spell
+								that is taking us more than one turn to cast (instant spells are cast instantly!)</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWar" type="momimemsgs:mapVolumeOfFogOfWarStates"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWarMemory" type="momimemsgs:fogOfWarMemory"/>
-		        </xsd:sequence>
+				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -348,12 +342,13 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 					<xsd:element minOccurs="0" maxOccurs="1" name="standardPhotoID" type="momimecommon:wizardID">
 					    <xsd:annotation>
     						<xsd:documentation>For pre-defined wizards or custom wizards choosing a standard photo, indicates the wizard ID of the photo;
-    														for RAIDERS, MONSTERS and custom wizards uploading a custom photo, will be null</xsd:documentation>
+    														for RAIDERS, MONSTERS and custom wizards uploading a custom photo, will be null.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="customPhoto" type="xsd:base64Binary">
 					    <xsd:annotation>
-    						<xsd:documentation>Currently encoded in .ndgbmp format, likely will change this once client is also in Java</xsd:documentation>
+    						<xsd:documentation>Custom 218x250 photo encoded in any image format supported by Java, e.g. JPG or PNG;
+    														for RAIDERS, MONSTERS and custom wizards uploading a standard photo, will be null.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="customFlagColour" type="momimecommon:colour">
@@ -561,27 +556,15 @@ Spell Ward is SP072, but it provides one of the effects SE072C,D,L,N,S (player's
 	</xsd:complexType>
 
 	<xsd:complexType name="momScheduledCombatData">
-	    <xsd:annotation>
-    		<xsd:documentation>Data common to stored scheduled combats and the add message.</xsd:documentation>
+		<xsd:annotation>
+			<xsd:documentation>Data common to stored scheduled combats and the add message.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="map:mapCoordinates3D"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="map:mapCoordinates3D"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="defendingPlayerID" type="mps:playerID">
-			    <xsd:annotation>
-    				<xsd:documentation>Null if scouting an empty node/lair/tower, so there are no defending units at all.</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defendingPlayerID" type="mps:playerID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="attackingPlayerID" type="mps:playerID"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="monsterUnitID" type="momimecommon:unitID">
-			    <xsd:annotation>
-    				<xsd:documentation>This will always have some value in it - if we're scouting a node/lair/tower, it'll show the type of monster we
-scouted; if we're attacking another player, it'll be a unit ID of a sample unit from the enemy stack.  If we're scouting an empty node/lair/tower, or
-attacking an empty city, it'll be empty string since null means 'unknown' and empty string means 'known to be empty' (see nodeLairTowerKnownUnitIDs).</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="typeOfCombat" type="momimemsgs:moveResultsInAttackTypeID"/>
 			<xsd:element minOccurs="1" maxOccurs="unbounded" name="attackingUnitURN" type="momimemsgs:unitURN"/>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -807,23 +790,6 @@ Units with special orders won't be asked for movement orders and look visibly di
 		</xsd:restriction>
 	</xsd:simpleType>
 
-	<xsd:simpleType name="moveResultsInAttackTypeID">
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="N"><xsd:annotation>
-				<xsd:documentation>No - Moving here won't result in an attack</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="NO"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="Y"><xsd:annotation>
-				<xsd:documentation>Yes - Conventional attack - Moving here will attack enemy units walking around the map or a city (occupied or not)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="YES"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="S"><xsd:annotation>
-				<xsd:documentation>Scout - Moving here will result in scouting the monsters in a node/lair/tower and giving player choice to attack them or not</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="SCOUT"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-
 	<xsd:simpleType name="fogOfWarStateID">
 	    <xsd:annotation>
     		<xsd:documentation>Defines how well we can see a particular map cell.
@@ -906,7 +872,7 @@ we might be lucky and get it through trading, conquering nodes or banishing a wi
 	<xsd:simpleType name="unitStatusID">
 	    <xsd:annotation>
     		<xsd:documentation>Different statuses that a unit can have.  This is extremely complicated now that there are 2 copies of the unit data to worry about
-(the server's true memory, and the player's memory both as held on the server and client which should be identical) plus that the monsters player has its own special rules.
+(the server's true memory, and the player's memory both as held on the server and client which should be identical).
 
 The server's true memory always knows about all units - they can never go out of sight.  So:
 - Heroes start at "Not Generated" or "Generated" depending on settings, then move to "Alive" when summoned.
@@ -926,18 +892,14 @@ own units otherwise works as per the server's true memory, since players can alw
 	both owned by other players watching them fight) are removed immediately since we can't Raise Dead or Resurrect them.  And therefore by implication,
 	if one of the players involved in the combat -does- Raise Dead the unit, for any outside observers to the combat, its treated like a re-add.
 - Combat summons (like fire elementals or phantom warriors) go to status "Dead" when killed, and are removed entirely when the combat ends whether they were alive or not.
-- Player's memory only contains monsters in nodes/lairs/towers when we are in a combat with them, so the monsters are added to the player's memory on the server
-	and sent to the client in the StartCombat message, go to status "Dead" when killed, and are removed from the player's memory when the combat ends
-	whether they were still alive (monsters won) or not.
-- Outside observers to a node/lair/tower combat never get to see the monsters - they'll just see the attacking units taking damage.
-- Combat summons are visible by outside observers, unless they are summoned into nodes/lairs/towers by the monsters player (e.g. Demon Lords summoning Demons). 
+- Combat summons are visible by outside observers just like any other unit. 
 - Enemy units that we can no longer see on the overland map if the units FOW setting = forget are removed entirely.
 - Enemy units that we can no longer see on the overland map if the units FOW setting = remember are retained as we last saw them, including that if they get killed,
 	we don't know about it and will continue to remember the last place we saw that unit.
-	
-The monsters player (who owns the units guarding nodes/lairs/towers as well as rampaging monsters walking around the map) has a the exception that
-they obviously are aware of their own units, so are the only player who knows the exact units in nodes/lairs/towers even when not involved in a combat there.
-</xsd:documentation>
+- The concept of having to scout a lair to see what's in it was removed in 0.9.5 - this so vastly overcomplicated things, where players' memory would only know about
+	details of monster units while we are actually in combat with them, and rules around keeping the 'scoutedMonsterUnitID' up to date in odd scenarios like,
+	"we know the node must now be empty because we can see someone's captured it and/or has a unit standing there", so I decided just to strip it out.  The fact that
+	Units now work with FOW set at "Remember as last seen" rather makes the whole scouting thing redundant anyway.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="N"><xsd:annotation>

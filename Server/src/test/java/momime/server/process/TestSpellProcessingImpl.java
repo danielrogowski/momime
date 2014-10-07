@@ -183,7 +183,7 @@ public final class TestSpellProcessingImpl
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// Mocked method handles adding the spell to the true map, player's memories and sending the network msgs, so don't need to worry about any of that
-		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP001", null, null, false, null, null, players, null, null, null, db, sd);
+		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP001", null, null, false, null, null, players, db, sd);
 		
 		// CAE should get added also
 		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", pd3.getPlayerID (), null, players, db, sd);
@@ -271,7 +271,7 @@ public final class TestSpellProcessingImpl
 		proc.castOverlandNow (gsk, player3, spell, players, db, sd);
 		
 		// So this shouldn't happen
-		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, null, null, null, db, sd);
+		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd);
 		
 		// CAE shouldn't be added either
 		verify (midTurn, times (0)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", pd3.getPlayerID (), null, players, db, sd);
@@ -840,7 +840,7 @@ public final class TestSpellProcessingImpl
 		
 		// Prove right effect was added
 		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, attackingPd.getPlayerID (), "SP001", targetUnit.getUnitURN (),
-			"CSE004", true, null, null, players, combatLocation, attackingPlayer, defendingPlayer, db, sd);
+			"CSE004", true, null, null, players, db, sd);
 		
 		// We were charged MP for it
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.VALUE_PRODUCTION_TYPE_ID_MANA, -20);
@@ -1028,7 +1028,7 @@ public final class TestSpellProcessingImpl
 		proc.switchOffSpell (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);
 		
 		// Check spell was switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, null, null, null, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);
 	}
 
 	/**
@@ -1092,7 +1092,7 @@ public final class TestSpellProcessingImpl
 		proc.switchOffSpell (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);
 		
 		// Check spell was switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, null, null, null, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 7, "SP001", 101, "USX01", false, null, null, players, db, sd);
 		verify (midTurn, times (0)).removeCombatAreaEffectFromServerAndClients (trueMap, "USX01", 7, null, players, db, sd);
 	}
 }

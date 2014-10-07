@@ -228,10 +228,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellProcessing" ref="spellProcessing" />
 	</bean>
 	
-	<bean id="attackNodeLairTowerMessage" class="momime.server.messages.process.AttackNodeLairTowerMessageImpl" scope="prototype">
-		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
-	</bean>
-
 	<bean id="endCombatTurnMessage" class="momime.server.messages.process.EndCombatTurnMessageImpl" scope="prototype">
 		<property name="combatProcessing" ref="combatProcessing" />
 	</bean>
@@ -253,10 +249,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="unrequestStartScheduledCombatMessage" class="momime.server.messages.process.UnrequestStartScheduledCombatMessageImpl" scope="prototype" />
-	
-	<bean id="choseNotToDoScheduledCombatMessage" class="momime.server.messages.process.ChoseNotToDoScheduledCombatMessageImpl" scope="prototype">
-		<property name="combatScheduler" ref="combatScheduler" />
-	</bean>
 	
 	<!-- Version of the server -->
 	

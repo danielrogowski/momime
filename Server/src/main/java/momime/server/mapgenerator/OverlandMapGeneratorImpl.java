@@ -1755,6 +1755,16 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 							}
 						}
 					}
+					
+					// Check tile type - this covers nodes
+					else
+					{
+						final TileType tileType = db.findTileType (thisCell.getTerrainData ().getTileTypeID (), "fillNodesLairsAndTowersWithMonsters");
+						if (tileType.getMagicRealmID () != null)
+							fillSingleLairOrTowerWithMonsters (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()), tileType.getMagicRealmID (),
+								plane.getNormalLairMonstersMinimum (), plane.getNormalLairMonstersMaximum (),
+								thisCell.getNodeLairTowerPowerProportion (), gsk, monsterPlayer);
+					}
 				}
 		}
 

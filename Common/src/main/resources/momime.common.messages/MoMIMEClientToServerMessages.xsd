@@ -358,25 +358,6 @@ Server uses standard updateCity to reply.</xsd:documentation>
 	
 <!-- Combat -->
 
-	<xsd:element name="attackNodeLairTowerMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Client has clicked Yes, they want to attack those Sky Drakes :)
-These will be the actual cells containing the units, so if either side is in a tower, then their plane will say 0.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:clientToServerMessage">
-		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="map:mapCoordinates3D"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="map:mapCoordinates3D"/>
-						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
-						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN"/>
-		        	</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:element name="requestMoveCombatUnitMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Client sends this to server to request a unit be moved in combat</xsd:documentation>
@@ -475,23 +456,6 @@ and they've got fed up waiting and want to cancel the request</xsd:documentation
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="choseNotToDoScheduledCombatMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Client sends this if they've initiated a scheduled combat in the movement phase, but now decided they don't want to play it after all.
-Since you can't choose not to do a combat that you initiated, the only circumstance this happens in is when you've scouted a node/lair/tower and
-have second thoughts about attacking those sky drakes :)</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:clientToServerMessage">
-		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
-		        	</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 <!-- Magic -->
 
 	<xsd:element name="updateMagicPowerDistributionMessage">

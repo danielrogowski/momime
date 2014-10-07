@@ -1,11 +1,9 @@
 package momime.server.process;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
@@ -202,7 +200,6 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (defendingLocation, msg.getCombatLocation ());
 		assertNull (msg.getScheduledCombatURN ());
 		assertSame (tc.getCombatMap (), msg.getCombatTerrain ());
-		assertFalse (msg.isCreateDefenders ());
 		assertEquals (0, msg.getUnitPlacement ().size ());		// Is zero because these are added by positionCombatUnits (), which is mocked out
 		
 		// Check that units were added into combat on both sides
@@ -346,7 +343,6 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (defendingLocation, msg.getCombatLocation ());
 		assertNull (msg.getScheduledCombatURN ());
 		assertSame (tc.getCombatMap (), msg.getCombatTerrain ());
-		assertTrue (msg.isCreateDefenders ());
 		assertEquals (0, msg.getUnitPlacement ().size ());		// Is zero because these are added by positionCombatUnits (), which is mocked out
 		
 		// Check that units were added into combat on both sides
@@ -405,8 +401,6 @@ public final class TestCombatStartAndEndImpl
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		attackingPriv.setNodeLairTowerKnownUnitIDs (ServerTestData.createStringsVolume (sys));
-		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
@@ -532,7 +526,7 @@ public final class TestCombatStartAndEndImpl
 		
 		// All the following assertions copied from testCombatEnded_CaptureEmptyLair, to prove that combatEnded worked normally
 		// Check other tidyups were done
-		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, defendingLocation, attackingPlayer, null, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, defendingLocation, db, sd);
 		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (defendingLocation, attackingPlayer, null, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, null, trueMap, defendingLocation, db);
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, defendingLocation, players, db, sd);
@@ -542,13 +536,6 @@ public final class TestCombatStartAndEndImpl
 		
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
-		
-		// We know the lair is now empty because we captured it
-		assertEquals ("", attackingPriv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (1).getRow ().get (10).getCell ().get (20));
-		
-		// Check the lair was removed from the map
-		assertNull (terrainData.getMapFeatureID ());
-		verify (midTurn, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, defendingLocation, fowSettings.getTerrainAndNodeAuras ());
 		
 		// Check the attacker's units advanced forward into where the lair used to be
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -842,7 +829,7 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, attackingPlayer, defendingPlayer, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
 		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
@@ -896,8 +883,6 @@ public final class TestCombatStartAndEndImpl
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		attackingPriv.setNodeLairTowerKnownUnitIDs (ServerTestData.createStringsVolume (sys));
-		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 		
 		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
@@ -983,7 +968,7 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, attackingPlayer, defendingPlayer, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
 		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
@@ -995,13 +980,6 @@ public final class TestCombatStartAndEndImpl
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
-		
-		// We know the lair is now empty because we captured it
-		assertEquals ("", attackingPriv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (1).getRow ().get (10).getCell ().get (20));
-		
-		// Check the lair was removed from the map
-		assertNull (terrainData.getMapFeatureID ());
-		verify (midTurn, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, combatLocation, fowSettings.getTerrainAndNodeAuras ());
 		
 		// Check the attacker's units advanced forward into where the lair used to be
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -1048,8 +1026,6 @@ public final class TestCombatStartAndEndImpl
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		attackingPriv.setNodeLairTowerKnownUnitIDs (ServerTestData.createStringsVolume (sys));
-		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 		
 		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
@@ -1129,7 +1105,7 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, attackingPlayer, null, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
 		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, null, trueMap, combatLocation, db);
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
@@ -1139,13 +1115,6 @@ public final class TestCombatStartAndEndImpl
 		
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
-		
-		// We know the lair is now empty because we captured it
-		assertEquals ("", attackingPriv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (1).getRow ().get (10).getCell ().get (20));
-		
-		// Check the lair was removed from the map
-		assertNull (terrainData.getMapFeatureID ());
-		verify (midTurn, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, combatLocation, fowSettings.getTerrainAndNodeAuras ());
 		
 		// Check the attacker's units advanced forward into where the lair used to be
 		verify (midTurn, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -1202,8 +1171,6 @@ public final class TestCombatStartAndEndImpl
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		attackingPriv.setNodeLairTowerKnownUnitIDs (ServerTestData.createStringsVolume (sys));
-		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 		
 		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
@@ -1289,7 +1256,7 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, attackingPlayer, defendingPlayer, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
 		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
@@ -1301,13 +1268,6 @@ public final class TestCombatStartAndEndImpl
 		// Update both players' production
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
-		
-		// We know the tower is now empty because we captured it
-		assertEquals ("", attackingPriv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (1).getRow ().get (10).getCell ().get (20));
-		
-		// Check the light was turned on in the tower
-		assertEquals (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY, terrainData.getMapFeatureID ());
-		verify (midTurn, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, combatLocation, fowSettings.getTerrainAndNodeAuras ());
 		
 		// Check the attacker's units advanced forward, in the process jumping to plane 0
 		final MapCoordinates3DEx towerOnArcanus = new MapCoordinates3DEx (20, 10, 0);
@@ -1353,7 +1313,6 @@ public final class TestCombatStartAndEndImpl
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		attackingPriv.setNodeLairTowerKnownUnitIDs (ServerTestData.createStringsVolume (sys));
 		attackingPriv.setTaxRateID ("TR01");
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -1476,7 +1435,7 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, attackingPlayer, defendingPlayer, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
 		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
@@ -1508,10 +1467,8 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurn, times (1)).destroyBuildingOnServerAndClients (trueMap, players, combatLocation, CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, false, sd, db);
 		
 		// Check any old enchantments/curses cast by the old/new owner get switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, combatLocation,
-			attackingPlayer, defendingPlayer, attackingPd.getPlayerID (), db, sd);
-		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, combatLocation,
-			attackingPlayer, defendingPlayer, defendingPd.getPlayerID (), db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, attackingPd.getPlayerID (), db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, defendingPd.getPlayerID (), db, sd);
 	}
 	
 	/**
@@ -1551,7 +1508,6 @@ public final class TestCombatStartAndEndImpl
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		attackingPriv.setNodeLairTowerKnownUnitIDs (ServerTestData.createStringsVolume (sys));
 		attackingPriv.setTaxRateID ("TR01");
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -1679,7 +1635,7 @@ public final class TestCombatStartAndEndImpl
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, attackingPlayer, defendingPlayer, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, combatLocation, db, sd);
 		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
 		verify (midTurn, times (1)).removeCombatAreaEffectsFromLocalisedSpells (trueMap, combatLocation, players, db, sd);
@@ -1708,7 +1664,6 @@ public final class TestCombatStartAndEndImpl
 		verify (midTurn, times (1)).destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, combatLocation, sd, db);
 		
 		// Check all enchantments/curses were switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, combatLocation,
-			attackingPlayer, defendingPlayer, 0, db, sd);
+		verify (midTurn, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, 0, db, sd);
 	}
 }

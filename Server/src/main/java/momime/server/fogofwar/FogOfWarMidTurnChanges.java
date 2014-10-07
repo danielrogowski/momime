@@ -150,9 +150,6 @@ public interface FogOfWarMidTurnChanges
 	 * @param trueSpell True spell to add
 	 * @param players List of players in the session
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
-	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
-	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -162,7 +159,6 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final MapCoordinates3DEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -176,9 +172,6 @@ public interface FogOfWarMidTurnChanges
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param players List of players in the session
-	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
-	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
-	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -190,7 +183,6 @@ public interface FogOfWarMidTurnChanges
 	public void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -204,9 +196,6 @@ public interface FogOfWarMidTurnChanges
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param players List of players in the session
-	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
-	 * @param combatAttackingPlayer Player attacking combatLocation, or null if call isn't in relation to a combat in progress
-	 * @param combatDefendingPlayer Player defending combatLocation, or null if call isn't in relation to a combat in progress
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -218,7 +207,6 @@ public interface FogOfWarMidTurnChanges
 	public void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -226,8 +214,6 @@ public interface FogOfWarMidTurnChanges
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param combatLocation Location of combat that just ended
-	 * @param combatAttackingPlayer Player attacking combatLocation
-	 * @param combatDefendingPlayer Player defending combatLocation
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -237,17 +223,13 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx combatLocation, final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer,
-		final ServerDatabaseEx db, final MomSessionDescription sd)
+		final MapCoordinates3DEx combatLocation, final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param cityLocation Location to turn spells off from
-	 * @param combatLocation Combat location if this check is being done in relation to a combat in progress, otherwise null
-	 * @param combatAttackingPlayer Player attacking combatLocation
-	 * @param combatDefendingPlayer Player defending combatLocation
 	 * @param castingPlayerID Which player's spells to turn off; 0 = everybodys 
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -258,8 +240,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void switchOffMaintainedSpellsInLocationOnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx cityLocation, final MapCoordinates3DEx combatLocation,
-		final PlayerServerDetails combatAttackingPlayer, final PlayerServerDetails combatDefendingPlayer, final int castingPlayerID,
+		final MapCoordinates3DEx cityLocation, final int castingPlayerID,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
@@ -416,12 +397,9 @@ public interface FogOfWarMidTurnChanges
 	 * 
 	 * @param tuAttacker Server's true memory of unit that made the attack
 	 * @param tuDefender Server's true memory of unit that got hit
-	 * @param attackingPlayer Player who owns tuAttacker
-	 * @param defendingPlayer Player who owns tuDefender
 	 * @param isRangedAttack True if ranged attack; False if melee
 	 * @param players List of players in the session
 	 * @param trueTerrain True terrain map
-	 * @param combatLocation Where the combat is taking place
 	 * @param db Lookup lists built over the XML database
 	 * @param fogOfWarSettings Fog of War settings from session description
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or a player should know about one of the units but we can't find it in their memory
@@ -430,8 +408,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public void sendCombatDamageToClients (final MemoryUnit tuAttacker, final MemoryUnit tuDefender,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final boolean isRangedAttack, final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells trueTerrain, final MapCoordinates3DEx combatLocation,
+		final boolean isRangedAttack, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final ServerDatabaseEx db, final FogOfWarSettingData fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	

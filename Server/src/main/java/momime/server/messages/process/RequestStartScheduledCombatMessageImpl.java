@@ -117,7 +117,7 @@ public final class RequestStartScheduledCombatMessageImpl extends RequestStartSc
 		{
 			// Actually start the combat (Or pop up the 'found node/lair/tower' window if applicable)
 			getCombatProcessing ().initiateCombat ((MapCoordinates3DEx) combat.getDefendingLocation (), (MapCoordinates3DEx) combat.getAttackingFrom (),
-				getScheduledCombatURN (), sender, combat.getAttackingUnitURN (), combat.getTypeOfCombat (), combat.getMonsterUnitID (), mom);
+				getScheduledCombatURN (), sender, combat.getAttackingUnitURN (), mom);
 		}
 	
 		log.trace ("Exiting process");

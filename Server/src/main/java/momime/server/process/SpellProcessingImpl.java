@@ -131,7 +131,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			{
 				// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
 				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (gsk, player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-					null, null, false, null, null, players, null, null, null, db, sd);
+					null, null, false, null, null, players, db, sd);
 
 				// Does this overland enchantment give a global combat area effect? (Not all do)
 				if (spell.getSpellHasCombatEffect ().size () > 0)
@@ -324,7 +324,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			final String unitSpellEffectID = unitSpellEffectIDs.get (getRandomUtils ().nextInt (unitSpellEffectIDs.size ()));
 			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
 				player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffectID,
-				true, null, null, mom.getPlayers (), combatLocation, attackingPlayer, defendingPlayer, mom.getServerDB (), mom.getSessionDescription ());
+				true, null, null, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 		}
 		
 		// Combat summons
@@ -449,7 +449,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 		// Remove spell itself
 		getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, castingPlayerID, spellID, unitURN, unitSkillID, castInCombat,
-			cityLocation, citySpellEffectID, players, null, null, null, db, sd);
+			cityLocation, citySpellEffectID, players, db, sd);
 
 		log.trace ("Exiting switchOffSpell");
 	}

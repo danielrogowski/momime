@@ -173,8 +173,7 @@ public final class TestDamageProcessorImpl
 		assertEquals (2+2, attacker.getDamageTaken ());
 		assertEquals (3+5, defender.getDamageTaken ());
 		
-		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, defender, attackingPlayer, defendingPlayer, false, players,
-			trueTerrain, combatLocation, db, fogOfWarSettings);
+		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, defender, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check the dead unit was killed off, and exp given to the other side
 		verify (midTurn, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
@@ -310,8 +309,7 @@ public final class TestDamageProcessorImpl
 		assertEquals (2, attacker.getDamageTaken ());
 		assertEquals (3+5, defender.getDamageTaken ());
 		
-		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, defender, attackingPlayer, defendingPlayer, true, players,
-			trueTerrain, combatLocation, db, fogOfWarSettings);
+		verify (midTurn, times (1)).sendCombatDamageToClients (attacker, defender, true, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check the dead unit was killed off, and exp given to the other side
 		verify (midTurn, times (1)).killUnitOnServerAndClients (defender, null, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);

@@ -351,7 +351,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 	</bean>
 	
-	<bean id="updateNodeLairTowerUnitIDMessage" class="momime.client.messages.process.UpdateNodeLairTowerUnitIDMessageImpl" scope="prototype" />
 	<bean id="startCombatMessage" class="momime.client.messages.process.StartCombatMessageImpl" scope="prototype" />
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
@@ -360,7 +359,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="taxRateChangedMessage" class="momime.client.messages.process.TaxRateChangedMessageImpl" scope="prototype" />
 	<bean id="scheduledCombatWalkInWithoutAFightMessage" class="momime.client.messages.process.ScheduledCombatWalkInWithoutAFightMessageImpl" scope="prototype" />
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype" />
-	<bean id="foundLairNodeTowerMessage" class="momime.client.messages.process.FoundLairNodeTowerMessageImpl" scope="prototype" />
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype" />
 	<bean id="showListAndOtherScheduledCombatsMessage" class="momime.client.messages.process.ShowListAndOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="setCombatPlayerMessage" class="momime.client.messages.process.SetCombatPlayerMessageImpl" scope="prototype" />

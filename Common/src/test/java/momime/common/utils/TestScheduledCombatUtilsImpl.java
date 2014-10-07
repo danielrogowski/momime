@@ -106,15 +106,9 @@ public final class TestScheduledCombatUtilsImpl
 		final ScheduledCombatUtilsImpl utils = new ScheduledCombatUtilsImpl ();
 		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
-		// Test combat with no defender
-		final MomScheduledCombat combat = new MomScheduledCombat ();
-		combat.setAttackingPlayerID (1);
-		assertNull (utils.determineOtherHumanPlayer (combat, human1, players));
-
-		combat.setAttackingPlayerID (-1);
-		assertNull (utils.determineOtherHumanPlayer (combat, ai1, players));
-		
 		// Test combat with an AI player attacking a human player
+		final MomScheduledCombat combat = new MomScheduledCombat ();
+		combat.setAttackingPlayerID (-1);
 		combat.setDefendingPlayerID (1);
 		assertNull (utils.determineOtherHumanPlayer (combat, human1, players));
 		assertSame (human1, utils.determineOtherHumanPlayer (combat, ai1, players));

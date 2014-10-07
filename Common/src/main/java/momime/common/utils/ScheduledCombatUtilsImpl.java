@@ -73,7 +73,7 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 	 * @param combat Combat to check
 	 * @param besidesWho Human player we already know about
 	 * @param players List of known players
-	 * @return The other human player involved in the combat; null if there is no other player or its an AI player
+	 * @return The other human player involved in the combat; null if the other player is an AI player
 	 * @throws PlayerNotFoundException If one of the players listed for the combat can't be found in the players list
 	 */
 	@Override
@@ -91,7 +91,7 @@ public final class ScheduledCombatUtilsImpl implements ScheduledCombatUtils
 			final Integer otherPlayerID;
 			if (besidesWho.getPlayerDescription ().getPlayerID ().intValue () == combat.getAttackingPlayerID ())
 				otherPlayerID = combat.getDefendingPlayerID ();
-			else if (besidesWho.getPlayerDescription ().getPlayerID ().equals (combat.getDefendingPlayerID ()))
+			else if (besidesWho.getPlayerDescription ().getPlayerID ().intValue () == combat.getDefendingPlayerID ())
 				otherPlayerID = combat.getAttackingPlayerID ();
 			else
 				// besidesWho isn't either of the 2 players in the combat, so just return null

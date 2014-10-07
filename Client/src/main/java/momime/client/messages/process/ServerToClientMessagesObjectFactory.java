@@ -23,7 +23,6 @@ import momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.v0_9_5.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.v0_9_5.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.v0_9_5.FogOfWarVisibleAreaChangedMessage;
-import momime.common.messages.servertoclient.v0_9_5.FoundLairNodeTowerMessage;
 import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_5.MoveUnitInCombatMessage;
@@ -57,7 +56,6 @@ import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateDamageTakenAndExperienceMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateManaSpentOnCastingCurrentSpellMessage;
-import momime.common.messages.servertoclient.v0_9_5.UpdateNodeLairTowerUnitIDMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateOtherScheduledCombatsMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateOverlandMovementRemainingMessage;
 import momime.common.messages.servertoclient.v0_9_5.UpdateProductionSoFarMessage;
@@ -113,15 +111,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final NewGameDatabaseMessage createNewGameDatabaseMessage ()
 	{
 		return getFactory ().createNewGameDatabaseMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final UpdateNodeLairTowerUnitIDMessage createUpdateNodeLairTowerUnitIDMessage ()
-	{
-		return getFactory ().createUpdateNodeLairTowerUnitIDMessage ();
 	}
 
 	/**
@@ -284,15 +273,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final YourPhotoIsOkMessage createYourPhotoIsOkMessage ()
 	{
 		return getFactory ().createYourPhotoIsOkMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final FoundLairNodeTowerMessage createFoundLairNodeTowerMessage ()
-	{
-		return getFactory ().createFoundLairNodeTowerMessage ();
 	}
 
 	/**

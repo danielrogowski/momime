@@ -17,7 +17,6 @@ import momime.common.messages.servertoclient.v0_9_5.StartCombatMessage;
 import momime.common.messages.v0_9_5.CaptureCityDecisionID;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.messages.v0_9_5.UnitCombatSideID;
 import momime.common.messages.v0_9_5.UnitStatusID;
@@ -29,11 +28,9 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerCityCalculations;
 import momime.server.calculations.MomServerResourceCalculations;
-import momime.server.database.v0_9_5.Plane;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.mapgenerator.CombatMapGenerator;
-import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
@@ -174,7 +171,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			defendingLocation.getX (), defendingLocation.getY (), defendingLocation.getZ (), 0);
 		PlayerServerDetails defendingPlayer = (firstDefendingUnit == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID
 			(mom.getPlayers (), firstDefendingUnit.getOwningPlayerID (), "startCombat");
-		final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 		
 		// If there is a real defender, we need to inform all players that they're involved in a combat
 		// We dealt with informing about the attacker in InitiateCombat
@@ -185,8 +181,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		final StartCombatMessage startCombatMessage = new StartCombatMessage ();
 		startCombatMessage.setCombatLocation (combatLocation);
 		startCombatMessage.setScheduledCombatURN (scheduledCombatURN);
-		startCombatMessage.setCreateDefenders ((defPub != null) && (defPub.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
-			(ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), mom.getServerDB ())));
 		
 		// Generate the combat scenery
 		tc.setCombatMap (getCombatMapGenerator ().generateCombatMap (mom.getCombatMapCoordinateSystem (),
@@ -352,21 +346,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			
 			// Cancel any combat unit enchantments/curses that were cast in combat
 			getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients
-				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, attackingPlayer, defendingPlayer, mom.getServerDB (), mom.getSessionDescription ());
+				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
 			
 			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
 			// This also removes ('kills') on the client monsters in a lair/node/tower who won
 			// Have to do this before we advance the attacker, otherwise we end up trying to advance the combat summoned units
 			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
-			
-			// If we cleared out a node/lair/tower, then the player who cleared it now knows it to be empty
-			// Client knows to do this themselves because they won
-			if ((winningPlayer == attackingPlayer) && (ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), mom.getServerDB ())))
-			{
-				log.debug ("Attacking player " + attackingPlayer.getPlayerDescription ().getPlayerName () + " now knows the node/lair/tower to be empty");
-				atkPriv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().set (combatLocation.getX (), "");
-			}
 			
 			// If the attacker won then advance their units to the target square
 			if (winningPlayer == attackingPlayer)
@@ -392,32 +378,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				getFogOfWarMidTurnChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
 					moveFrom, moveTo, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 				
-				// If we captured a monster lair, temple, etc. then remove it from the map (don't removed nodes or towers of course)
-				if ((tc.getTerrainData ().getMapFeatureID () != null) &&
-					(mom.getServerDB ().findMapFeature (tc.getTerrainData ().getMapFeatureID (), "combatEnded").getMapFeatureMagicRealm ().size () > 0) &&
-					(!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ())))
-				{
-					log.debug ("Removing lair");
-					tc.getTerrainData ().setMapFeatureID (null);
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), combatLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
-				}					
-				
-				// If we captured a tower of wizardry, then turn the light on
-				else if (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY.equals (tc.getTerrainData ().getMapFeatureID ()))
-				{
-					log.debug ("Turning light on in tower");
-					for (final Plane plane : mom.getServerDB ().getPlane ())
-					{
-						final MapCoordinates3DEx towerCoords = new MapCoordinates3DEx (combatLocation.getX (), combatLocation.getY (), plane.getPlaneNumber ());
-						
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get
-							(combatLocation.getX ()).getTerrainData ().setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_CLEARED_TOWER_OF_WIZARDRY);
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getPlayers (), towerCoords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
-					}
-				}
-				
 				// Deal with cities
 				if (captureCityDecision == CaptureCityDecisionID.CAPTURE)
 				{
@@ -435,13 +395,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					// 2) Any spells the attacker had cast on the city must be curses - we don't want to curse our own city - so cancel them
 					// 3) Any spells a 3rd player (neither the defender nor attacker) had cast on the city must be curses - and I'm sure they'd like to continue cursing the new city owner :D
 					getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
-						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, combatLocation,
-						attackingPlayer, defendingPlayer, attackingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
+						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation,
+						attackingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
 				
 					if (defendingPlayer != null)
 						getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
-							(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, combatLocation,
-							attackingPlayer, defendingPlayer, defendingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
+							(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation,
+							defendingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
 
 					// Take ownership of the city
 					tc.getCityData ().setCityOwnerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
@@ -461,8 +421,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				{
 					// Cancel all spells cast on the city regardless of owner
 					getFogOfWarMidTurnChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
-						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, combatLocation,
-						attackingPlayer, defendingPlayer, 0, mom.getServerDB (), mom.getSessionDescription ());
+						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, 0, mom.getServerDB (), mom.getSessionDescription ());
 					
 					// Wreck all the buildings
 					getFogOfWarMidTurnChanges ().destroyAllBuildingsInLocationOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),

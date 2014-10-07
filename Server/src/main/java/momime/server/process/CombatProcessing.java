@@ -14,7 +14,6 @@ import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_5.UnitCombatSideID;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
@@ -41,8 +40,6 @@ public interface CombatProcessing
 	 * @param scheduledCombatURN Scheduled combat URN, if simultaneous turns game; null for one-at-a-time games
 	 * @param attackingPlayer Player who is attacking
 	 * @param attackingUnitURNs Which of the attacker's unit stack are attacking - they might be leaving some behind
-	 * @param typeOfCombat Whether we are scouting a node/lair/tower, or actually attacking something
-	 * @param monsterUnitID If typeOfCombat=SCOUT, then this says the type of monster that the attacker can see; if typeOfCombat=something else this is null
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -52,7 +49,7 @@ public interface CombatProcessing
 	 */
 	public void initiateCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
 		final Integer scheduledCombatURN, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs,
-		final MoveResultsInAttackTypeID typeOfCombat, final String monsterUnitID, final MomSessionVariables mom)
+		final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**

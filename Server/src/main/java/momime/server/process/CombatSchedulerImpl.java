@@ -14,7 +14,6 @@ import momime.common.messages.servertoclient.v0_9_5.ShowListAndOtherScheduledCom
 import momime.common.messages.servertoclient.v0_9_5.UpdateOtherScheduledCombatsMessage;
 import momime.common.messages.v0_9_5.MomScheduledCombat;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
@@ -55,22 +54,17 @@ public final class CombatSchedulerImpl implements CombatScheduler
 	 * @param defendingPlayer Player being attacked; may be null if attacking an empty node/lair/tower
 	 * @param attackingPlayer Player owning the attacking units
 	 * @param attackingUnitURNs Which specific units are attacking (may not be everybody standing at in attackingFrom)
-	 * @param typeOfCombat Type of combat initiated
-	 * @param monsterUnitID Type of unit scouted here; empty string if "known to be empty"
 	 */
 	@Override
 	public final void addScheduledCombatGeneratedURN (final MomGeneralServerKnowledge gsk,
 		final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
-		final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs,
-		final MoveResultsInAttackTypeID typeOfCombat, final String monsterUnitID)
+		final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer, final List<Integer> attackingUnitURNs)
 	{
 		log.trace ("Entering addScheduledCombatGeneratedURN");
 		
 		// Populate combat details
 		final MomScheduledCombat combat = new MomScheduledCombat ();
 		combat.setScheduledCombatURN (gsk.getNextFreeScheduledCombatURN ());
-		combat.setTypeOfCombat (typeOfCombat);
-		combat.setMonsterUnitID (monsterUnitID);
 		combat.getAttackingUnitURN ().addAll (attackingUnitURNs);
 		
 		combat.setAttackingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import momime.client.MomClient;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -48,7 +50,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	
 	/**
 	 * @param playerID Unit owner player ID
-	 * @return Unit background image in their correct colour 
+	 * @return Unit background image in their correct colour; null for the monsters player who has no colour
 	 * @throws IOException If there is a problem loading the background image
 	 */
 	@Override
@@ -62,7 +64,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 
 	/**
 	 * @param playerID City owner player ID
-	 * @return City flag image in their correct colour 
+	 * @return City flag image in their correct colour; null for the monsters player who has no colour
 	 * @throws IOException If there is a problem loading the flag image
 	 */
 	@Override
@@ -76,7 +78,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	
 	/**
 	 * @param playerID Spell owner player ID
-	 * @return Mirror image in their correct colour 
+	 * @return Mirror image in their correct colour; null for the monsters player who has no colour
 	 * @throws IOException If there is a problem loading the mirror image
 	 */
 	@Override
@@ -94,20 +96,30 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	 * @param playerID Player ID
 	 * @param uncolouredImage Uncoloured white images
 	 * @param map Map containing coloured images that have already been generated
-	 * @return Player coloured image
+	 * @return Player coloured image; null for the monsters player who has no colour
 	 * @throws PlayerNotFoundException If the specified playerID can't be found
 	 */
 	private final BufferedImage getImage (final int playerID, final BufferedImage uncolouredImage, final Map<Integer, BufferedImage> map)
 		throws PlayerNotFoundException
 	{
-		BufferedImage image = map.get (playerID);
-		if (image == null)
+		final BufferedImage image;
+		
+		// Use containsKey, because for the monsters player we'll put a null into the map
+		if (map.containsKey (playerID))
+			image = map.get (playerID);
+		else
 		{
 			// Generate a new one
 			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), playerID, "PlayerColourImageGeneratorImpl");
-			final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+				image = null;
+			else
+			{
+				final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+				image = getUtils ().multiplyImageByColour (uncolouredImage, Integer.parseInt (trans.getFlagColour (), 16));
+			}
 			
-			image = getUtils ().multiplyImageByColour (uncolouredImage, Integer.parseInt (trans.getFlagColour (), 16));
 			map.put (playerID, image);
 		}
 		return image;

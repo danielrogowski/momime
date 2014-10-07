@@ -3,7 +3,6 @@ package momime.server.messages.process;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.common.messages.clienttoserver.v0_9_5.AlchemyMessage;
-import momime.common.messages.clienttoserver.v0_9_5.AttackNodeLairTowerMessage;
 import momime.common.messages.clienttoserver.v0_9_5.CancelPendingMovementAndSpecialOrdersMessage;
 import momime.common.messages.clienttoserver.v0_9_5.CancelTargetSpellMessage;
 import momime.common.messages.clienttoserver.v0_9_5.CaptureCityDecisionMessage;
@@ -18,7 +17,6 @@ import momime.common.messages.clienttoserver.v0_9_5.ChooseInitialSpellsMessage;
 import momime.common.messages.clienttoserver.v0_9_5.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.v0_9_5.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.v0_9_5.ChooseWizardMessage;
-import momime.common.messages.clienttoserver.v0_9_5.ChoseNotToDoScheduledCombatMessage;
 import momime.common.messages.clienttoserver.v0_9_5.CombatAutoControlMessage;
 import momime.common.messages.clienttoserver.v0_9_5.DismissUnitMessage;
 import momime.common.messages.clienttoserver.v0_9_5.EndCombatTurnMessage;
@@ -304,15 +302,6 @@ public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 	}
 
 	/**
-	 * @return Newly created AttackNodeLairTowerMessage
-	 */
-	@Override
-	public final AttackNodeLairTowerMessage createAttackNodeLairTowerMessage ()
-	{
-		return getFactory ().createAttackNodeLairTowerMessage ();
-	}
-
-	/**
 	 * @return Newly created EndCombatTurnMessage
 	 */
 	@Override
@@ -339,15 +328,6 @@ public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 		return getFactory ().createRequestMoveCombatUnitMessage ();
 	}
 	
-	/**
-	 * @return Newly created ChoseNotToDoScheduledCombatMessage
-	 */
-	@Override
-	public final ChoseNotToDoScheduledCombatMessage createChoseNotToDoScheduledCombatMessage ()
-	{
-		return getFactory ().createChoseNotToDoScheduledCombatMessage ();
-	}
-
 	/**
 	 * @return Newly created CaptureCityDecisionMessage
 	 */

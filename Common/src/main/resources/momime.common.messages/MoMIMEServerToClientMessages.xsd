@@ -203,7 +203,7 @@ client can't predict how many of what spell ranks and magic realms they need to 
     		<xsd:documentation>Server updating client with the complete list of picks that a particular player now has; this could change because:
 1) They've chosen a standard wizard and the server is confirming what picks that standard wizard has;
 2) Chosen a custom wizard and server is confirming that the custom picks chosen are OK; or
-3) Found a book/retort from a lair during the game.</xsd:documentation>
+3) Found a book/retort from a node/lair/tower during the game.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
@@ -488,34 +488,6 @@ So typical sequence is: MoveUnit -> VisAreaChg -> MoveUnit -> VisAreaChg -> Sele
 
 <!-- Combat -->
 
-	<xsd:element name="foundLairNodeTowerMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Server sends this to client when a unit tries to move into a monster-type square, to make the
-client show the 'Your scouts have spotted Sky Drakes.  Do you want to attack?' message.
-
-Client sends back attackNodeLairTowerMessage if they click Yes.
-     
-These will be the actual cells containing the units, so if either side is in a tower, then their plane will say 0.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="defendingLocation" type="map:mapCoordinates3D"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="attackingFrom" type="map:mapCoordinates3D"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="monsterUnitID" type="momimecommon:unitID"/>
-						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
-						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN">
-						    <xsd:annotation>
-						    	<xsd:documentation>Lists which of the attackers' units are actually attacking, since not all of their unit stack may be attacking.</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:element name="setUnitIntoOrTakeUnitOutOfCombatMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to client when a combat is over to take those units out of combat.
@@ -544,17 +516,13 @@ For taking units out of combat, all the values will be omitted except for the un
 	
 	<xsd:complexType name="startCombatMessageUnit">
 	    <xsd:annotation>
-    		<xsd:documentation>Gives the details of the combat positioning of one unit involved in the combat.  If CreateDefenders = True and
-combatSide = Defender, then this will also include the full details of the unit so the client can create it.
-
-Since this is only used to add monsters, ReadSkillsFromXML for unit details will always be True, so there'll never be any skill structures.</xsd:documentation>
+    		<xsd:documentation>Gives the details of the combat positioning of one unit involved in the combat.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatPosition" type="map:mapCoordinates2D"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatHeading" type="map:mapDirection"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatSide" type="momimemsgs:unitCombatSideID"/>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitDetails" type="momimestoc:addUnitMessageData"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -570,12 +538,6 @@ details of all the units in the combat and the terrain, so is probably the most 
 						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="scheduledCombatURN" type="momimemsgs:scheduledCombatURN"/>
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTerrain" type="momimemsgs:mapAreaOfCombatTiles"/>
-						<xsd:element minOccurs="1" maxOccurs="1" name="createDefenders" type="xsd:boolean">
-						    <xsd:annotation>
-    							<xsd:documentation>True when attacking nodes/lairs/towers still occupied by monsters - in this
-case the client won't know about these units so we send all their details as part of the message.</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPlacement" type="momimestoc:startCombatMessageUnit"/>
 					</xsd:sequence>
 				</xsd:extension>
@@ -991,21 +953,13 @@ come into view (i.e. sent as part of 'visible area changed').</xsd:documentation
 	<xsd:complexType name="addUnitMessageData">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to clients to tell them about a new unit added to the map, or can add them in bulk as part of fogOfWarVisibleAreaChanged.
-
-If readSkillsFromXML is true, client will read unit skills from the XML database (otherwise the client, receiving a message with zero skills, cannot tell if it is a hero who
-genuinely has no skills (?) or is expected to read in the skills from the XML database).
-
-If skills are included, the Experience value is not used so is omitted, since the Experience value will be included in the skill list.
-
-Bulk adds (fogOfWarVisibleAreaChanged) can contain a mixture of units with and without skill lists included.</xsd:documentation>
+Server now always sends complete skill list.  Experience, if applicable, will be included in the complete skill list.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:availableUnit">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN"/>
 					<xsd:element minOccurs="0" maxOccurs="1" name="heroNameID" type="momimecommon:heroNameID"/>
-					<xsd:element minOccurs="0" maxOccurs="1" name="experience" type="momimecommon:experiencePoints"/>
-					<xsd:element minOccurs="1" maxOccurs="1" name="readSkillsFromXML" type="xsd:boolean"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1046,29 +1000,6 @@ Apply Damage message that a unit is dead.</xsd:documentation>
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:complexType name="updateNodeLairTowerUnitIDMessageData">
-	    <xsd:annotation>
-    		<xsd:documentation>Server sends this as part of the main FOW message if we need to update our knowledge of what monsters are in
-nodes/lairs/towers other than by scouting (initiating a combat). Or can send single message.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="nodeLairTowerLocation" type="map:mapCoordinates3D"/>
-			<xsd:element minOccurs="1" maxOccurs="1" name="monsterUnitID" type="momimecommon:unitID"/>
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:element name="updateNodeLairTowerUnitIDMessage">
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="data" type="momimestoc:updateNodeLairTowerUnitIDMessageData"/>
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:complexType name="addMaintainedSpellMessageData">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to notify clients of new maintained spells cast, or those that have newly come into view.</xsd:documentation>
@@ -1189,7 +1120,6 @@ It basically comprises 0..n of most of the other types of message defined above,
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="destroyBuilding" type="momimestoc:destroyBuildingMessageData"/>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="addUnit" type="momimestoc:addUnitMessageData"/>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="killUnit" type="momimestoc:killUnitMessageData"/>
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="updateNodeLairTowerUnitID" type="momimestoc:updateNodeLairTowerUnitIDMessageData"/>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="addMaintainedSpell" type="momimestoc:addMaintainedSpellMessageData"/>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="switchOffMaintainedSpell" type="momimestoc:switchOffMaintainedSpellMessageData"/>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="addCombatAreaEffect" type="momimestoc:addCombatAreaEffectMessageData"/>

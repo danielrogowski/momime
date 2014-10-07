@@ -1,6 +1,7 @@
 package momime.server.calculations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -15,12 +16,10 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapVolumeOfStrings;
 import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_5.OverlandMapCityData;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.messages.v0_9_5.UnitStatusID;
@@ -199,7 +198,6 @@ public final class TestMomServerUnitCalculationsImpl
 		// This is a really key method so there's a ton of test conditions
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
-		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsVolume (sys);
 
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
@@ -209,88 +207,25 @@ public final class TestMomServerUnitCalculationsImpl
 		calc.setUnitUtils (new UnitUtilsImpl ());
 		
 		// Null terrain and city data
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(20, 10, 0, 2, map, units, db));
 
 		// Terrain data present but tile type and map feature still null
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		map.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(20, 10, 0, 2, map, units, db));
 
 		// Regular tile type
 		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
 
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Node that we haven't scouted yet
-		terrainData.setTileTypeID ("TT12");
-
-		assertEquals (MoveResultsInAttackTypeID.SCOUT, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Node that we've previously scouted
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, "UN165");
-
-		assertEquals (MoveResultsInAttackTypeID.SCOUT, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Node that and we've previously cleared
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, "");
-
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Regular map feature
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, null);
-		terrainData.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
-		terrainData.setMapFeatureID ("MF01");
-
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Lair that we haven't scouted yet
-		terrainData.setMapFeatureID ("MF13");
-
-		assertEquals (MoveResultsInAttackTypeID.SCOUT, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Lair that we've previously scouted
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, "UN165");
-
-		assertEquals (MoveResultsInAttackTypeID.SCOUT, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// You can't have a lair that we've previously cleared, it would have been removed from the map when we cleared it
-		// If the lair was empty at the start of the game, then we'd have removed it when we scouted it - you can't choose NOT to enter empty lairs
-		// So keeping this here, but really it isn't a valid test scenario
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, "");
-
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Tower that we haven't scouted yet
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, null);
-		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
-
-		assertEquals (MoveResultsInAttackTypeID.SCOUT, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Tower that we've previously scouted
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, "UN165");
-
-		assertEquals (MoveResultsInAttackTypeID.SCOUT, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Tower that we've previously cleared
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, "");
-
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(20, 10, 0, 2, map, units, db));
 
 		// Tower that we've previously cleared but now occupied by our units
+		terrainData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		
 		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (20, 10, 0);
 
 		final MemoryUnit unit = new MemoryUnit ();
@@ -300,51 +235,31 @@ public final class TestMomServerUnitCalculationsImpl
 
 		units.add (unit);
 
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(20, 10, 0, 2, map, units, db));
 
 		// Tower that we've previously cleared but now occupied by enemy units
 		unit.setOwningPlayerID (1);
 
-		assertEquals (MoveResultsInAttackTypeID.YES, calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertTrue (calc.willMovingHereResultInAnAttack
+			(20, 10, 0, 2, map, units, db));
 
-		// Tower that we haven't scouted yet and we're on Myrror
-		unit.setUnitLocation (null);
-
+		// Tower that we've previously cleared but now occupied by our units and we're on Myrror
 		final OverlandMapTerrainData myrrorData = new OverlandMapTerrainData ();
 		myrrorData.setMapFeatureID (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (myrrorData);
-
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, null);
-
-		assertEquals (MoveResultsInAttackTypeID.SCOUT, calc.willMovingHereResultInAnAttack
-			(20, 10, 1, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Tower that we've previously scouted and we're on Myrror
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, "UN165");
-
-		assertEquals (MoveResultsInAttackTypeID.SCOUT, calc.willMovingHereResultInAnAttack
-			(20, 10, 1, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Tower that we've previously cleared and we're on Myrror
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (20, "");
-
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 1, 2, map, units, nodeLairTowerKnownUnitIDs, db));
-
-		// Tower that we've previously cleared but now occupied by our units and we're on Myrror
+		
 		unit.setOwningPlayerID (2);
 		unit.setUnitLocation (unitLocation);
 
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(20, 10, 1, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(20, 10, 1, 2, map, units, db));
 
 		// Tower that we've previously cleared but now occupied by enemy units and we're on Myrror
 		unit.setOwningPlayerID (1);
 
-		assertEquals (MoveResultsInAttackTypeID.YES, calc.willMovingHereResultInAnAttack
-			(20, 10, 1, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertTrue (calc.willMovingHereResultInAnAttack
+			(20, 10, 1, 2, map, units, db));
 
 		// Our city
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
@@ -352,39 +267,39 @@ public final class TestMomServerUnitCalculationsImpl
 
 		map.getPlane ().get (0).getRow ().get (10).getCell ().get (30).setCityData (cityData);
 
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(30, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(30, 10, 0, 2, map, units, db));
 
 		// Enemy city but null population
 		cityData.setCityOwnerID (1);
 
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(30, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(30, 10, 0, 2, map, units, db));
 
 		// Enemy city but zero population
 		cityData.setCityPopulation (0);
 
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(30, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(30, 10, 0, 2, map, units, db));
 
 		// Enemy city
 		cityData.setCityPopulation (1);
 
-		assertEquals (MoveResultsInAttackTypeID.YES, calc.willMovingHereResultInAnAttack
-			(30, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertTrue (calc.willMovingHereResultInAnAttack
+			(30, 10, 0, 2, map, units, db));
 
 		// Our units in open area
 		unit.setOwningPlayerID (2);
 		unitLocation.setX (40);
 
-		assertEquals (MoveResultsInAttackTypeID.NO, calc.willMovingHereResultInAnAttack
-			(40, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(40, 10, 0, 2, map, units, db));
 
 		// Enemy units in open area
 		unit.setOwningPlayerID (1);
 
-		assertEquals (MoveResultsInAttackTypeID.YES, calc.willMovingHereResultInAnAttack
-			(40, 10, 0, 2, map, units, nodeLairTowerKnownUnitIDs, db));
+		assertTrue (calc.willMovingHereResultInAnAttack
+			(40, 10, 0, 2, map, units, db));
 	}
 
 	/**
@@ -745,14 +660,10 @@ public final class TestMomServerUnitCalculationsImpl
 		map.setMap (terrain);
 
 		// Create other areas
-		final int [] [] [] doubleMovementDistances	= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final int [] [] [] movementDirections			= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn	= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-
-		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack =
-			new MoveResultsInAttackTypeID [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-
-		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsVolume (sd.getMapSize ());
+		final int [] [] [] doubleMovementDistances			= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		// Units that are moving - two units of high men spearmen
 		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
@@ -774,7 +685,7 @@ public final class TestMomServerUnitCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, nodeLairTowerKnownUnitIDs, unitStack,
+		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, unitStack,
 			2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
 
 		// Check canMoveToInOneTurn (see the red marked area on the Excel sheet)
@@ -837,7 +748,7 @@ public final class TestMomServerUnitCalculationsImpl
 					if (canMoveToInOneTurn [plane.getPlaneNumber ()] [y] [x])
 						countCanMoveToInOneTurn++;
 
-					if (movingHereResultsInAttack [plane.getPlaneNumber ()] [y] [x] != MoveResultsInAttackTypeID.NO)
+					if (movingHereResultsInAttack [plane.getPlaneNumber ()] [y] [x])
 						countMovingHereResultsInAttack++;
 
 					if (doubleMovementDistances [plane.getPlaneNumber ()] [y] [x] >= 0)
@@ -880,21 +791,26 @@ public final class TestMomServerUnitCalculationsImpl
 		// Put 3 nodes on Arcanus - one we haven't scouted, one we have scouted and know its contents, and the last we already cleared
 		// The one that we previously cleared we can walk right through and out the other side; the other two we can move onto but not past
 		// Nature nodes, so forest, same as there before so we don't alter movement rates - all we alter is that we can't move through them
-		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = ServerTestData.createStringsVolume (sd.getMapSize ());
 		for (int y = 9; y <= 11; y++)
+		{
 			terrain.getPlane ().get (0).getRow ().get (y).getCell ().get (18).getTerrainData ().setTileTypeID ("TT13");
+			
+			// With removal of scouting, nodes just means enemy units
+			if (y < 11)
+			{
+				final MemoryUnit their = unitUtils.createMemoryUnit ("UN105", y, 0, 0, true, db);
+				their.setOwningPlayerID (1);
+				their.setUnitLocation (new MapCoordinates3DEx (18, y, 0));
 
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (9).getCell ().set (18, null);
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (10).getCell ().set (18, "UN165");
-		nodeLairTowerKnownUnitIDs.getPlane ().get (0).getRow ().get (11).getCell ().set (18, "");
+				map.getUnit ().add (their);
+			}
+		}
 
 		// Create other areas
-		final int [] [] [] doubleMovementDistances	= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final int [] [] [] movementDirections			= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn	= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
-
-		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack =
-			new MoveResultsInAttackTypeID [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] doubleMovementDistances			= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];
 
 		// Units that are moving - two units of high men spearmen
 		// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
@@ -938,7 +854,7 @@ public final class TestMomServerUnitCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, nodeLairTowerKnownUnitIDs, unitStack,
+		calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, unitStack,
 			2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
 
 		// Check canMoveToInOneTurn (see the red marked area on the Excel sheet)
@@ -1019,7 +935,7 @@ public final class TestMomServerUnitCalculationsImpl
 					if (canMoveToInOneTurn [plane.getPlaneNumber ()] [y] [x])
 						countCanMoveToInOneTurn++;
 
-					if (movingHereResultsInAttack [plane.getPlaneNumber ()] [y] [x] != MoveResultsInAttackTypeID.NO)
+					if (movingHereResultsInAttack [plane.getPlaneNumber ()] [y] [x])
 						countMovingHereResultsInAttack++;
 
 					if (doubleMovementDistances [plane.getPlaneNumber ()] [y] [x] >= 0)

@@ -16,7 +16,6 @@ import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
-import momime.common.messages.servertoclient.v0_9_5.FoundLairNodeTowerMessage;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitMessage;
 import momime.common.messages.servertoclient.v0_9_5.MoveUnitInCombatMessage;
@@ -34,7 +33,6 @@ import momime.common.messages.v0_9_5.MomCombatTile;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.messages.v0_9_5.TurnSystem;
 import momime.common.messages.v0_9_5.UnitCombatSideID;
@@ -108,7 +106,7 @@ public final class TestCombatProcessingImpl
 		proc.setCombatStartAndEnd (combatStartAndEnd);
 		
 		// Call method
-		proc.initiateCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, MoveResultsInAttackTypeID.YES, null, mom);
+		proc.initiateCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
 		
 		// Check results
 		verify (combatStartAndEnd, times (1)).startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
@@ -156,76 +154,13 @@ public final class TestCombatProcessingImpl
 		proc.setCombatScheduler (combatScheduler);
 		
 		// Call method
-		proc.initiateCombat (defendingLocation, attackingFrom, 55, attackingPlayer, attackingUnitURNs, MoveResultsInAttackTypeID.YES, null, mom);
+		proc.initiateCombat (defendingLocation, attackingFrom, 55, attackingPlayer, attackingUnitURNs, mom);
 		
 		// Check results
 		verify (combatScheduler, times (1)).informClientsOfPlayerBusyInCombat (attackingPlayer, players, true);
 		verify (combatStartAndEnd, times (1)).startCombat (defendingLocation, attackingFrom, 55, attackingPlayer, attackingUnitURNs, mom);
 	}
 
-	/**
-	 * Tests the initiateCombat method, when we're scouting a lair, so there's no actual combat yet while we wait for the player to click yes/no
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testInitiateCombat_Scout () throws Exception
-	{
-		// Attacking player
-		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
-		attackingPd.setPlayerID (3);
-		
-		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
-		
-		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
-		attackingPlayer.setConnection (attackingMsgs);
-		
-		// Player's memory
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		attackingPriv.setNodeLairTowerKnownUnitIDs (ServerTestData.createStringsVolume (sys));
-		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setTurnSystem (TurnSystem.ONE_PLAYER_AT_A_TIME);
-
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		
-		// Locations
-		final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (20, 10, 1);
-		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);		
-
-		// The subset of units who're in "attackingFrom" who are actually attacking
-		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
-		
-		// Set up object to test
-		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
-		
-		final CombatProcessingImpl proc = new CombatProcessingImpl ();
-		proc.setCombatStartAndEnd (combatStartAndEnd);
-		
-		// Call method
-		proc.initiateCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, MoveResultsInAttackTypeID.SCOUT, "UN001", mom);		// <---
-		
-		// Check generated message
-		assertEquals (1, attackingMsgs.getMessages ().size ());
-		assertEquals (FoundLairNodeTowerMessage.class.getName (), attackingMsgs.getMessages ().get (0).getClass ().getName ());
-		final FoundLairNodeTowerMessage msg = (FoundLairNodeTowerMessage) attackingMsgs.getMessages ().get (0);
-		
-		assertEquals (defendingLocation, msg.getDefendingLocation ());
-		assertEquals (attackingFrom, msg.getAttackingFrom ());
-		assertEquals ("UN001", msg.getMonsterUnitID ());
-		assertNull (msg.getScheduledCombatURN ());
-		
-		// Check we scouted it
-		assertEquals ("UN001", attackingPriv.getNodeLairTowerKnownUnitIDs ().getPlane ().get (1).getRow ().get (10).getCell ().get (20));
-	
-		// Check combat *didn't* start
-		verify (combatStartAndEnd, times (0)).startCombat (defendingLocation, attackingFrom, null, attackingPlayer, attackingUnitURNs, mom);
-	}
-	
 	/**
 	 * Tests the determineMaxUnitsInRow method
 	 * This does a mock setup for a defender in a city with city walls (see layout pattern in the comments of the main method)
@@ -682,7 +617,6 @@ public final class TestCombatProcessingImpl
 		assertEquals (17, unit1.getCombatPosition ().getY ());
 		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit1.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit1.getCombatSide ());
-		assertNull (unit1.getUnitDetails ());
 
 		final StartCombatMessageUnit unit2 = msg.getUnitPlacement ().get (1);
 		assertEquals (2, unit2.getUnitURN ());
@@ -690,7 +624,6 @@ public final class TestCombatProcessingImpl
 		assertEquals (19, unit2.getCombatPosition ().getY ());
 		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit2.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit2.getCombatSide ());
-		assertNull (unit2.getUnitDetails ());
 
 		final StartCombatMessageUnit unit3 = msg.getUnitPlacement ().get (2);
 		assertEquals (3, unit3.getUnitURN ());
@@ -698,7 +631,6 @@ public final class TestCombatProcessingImpl
 		assertEquals (18, unit3.getCombatPosition ().getY ());
 		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit3.getCombatSide ());
-		assertNull (unit3.getUnitDetails ());
 	}
 	
 	/**

@@ -6,13 +6,10 @@ import momime.common.messages.v0_9_5.FogOfWarStateID;
 import momime.common.messages.v0_9_5.MagicPowerDistribution;
 import momime.common.messages.v0_9_5.MapAreaOfFogOfWarStates;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapAreaOfStrings;
 import momime.common.messages.v0_9_5.MapRowOfFogOfWarStates;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapRowOfStrings;
 import momime.common.messages.v0_9_5.MapVolumeOfFogOfWarStates;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapVolumeOfStrings;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
@@ -255,25 +252,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		}
 
 		priv.setFogOfWar (fogOfWar);
-
-		// Create and initialize scouted unit IDs in all the nodes/lairs/towers
-		final MapVolumeOfStrings nodeLairTowerKnownUnitIDs = new MapVolumeOfStrings ();
-		for (int plane = 0; plane < db.getPlane ().size (); plane++)
-		{
-			final MapAreaOfStrings nodeLairTowerKnownUnitIDsPlane = new MapAreaOfStrings ();
-			for (int y = 0; y < getSessionDescription ().getMapSize ().getHeight (); y++)
-			{
-				final MapRowOfStrings nodeLairTowerKnownUnitIDsRow = new MapRowOfStrings ();
-				for (int x = 0; x < getSessionDescription ().getMapSize ().getWidth (); x++)
-					nodeLairTowerKnownUnitIDsRow.getCell ().add (null);	// Unknown
-
-				nodeLairTowerKnownUnitIDsPlane.getRow ().add (nodeLairTowerKnownUnitIDsRow);
-			}
-
-			nodeLairTowerKnownUnitIDs.getPlane ().add (nodeLairTowerKnownUnitIDsPlane);
-		}
-
-		priv.setNodeLairTowerKnownUnitIDs (nodeLairTowerKnownUnitIDs);
 
 		// Create and initialize fog of war memory
 		// Note we create a MemoryGridCell at every location even if we've never seen that location,

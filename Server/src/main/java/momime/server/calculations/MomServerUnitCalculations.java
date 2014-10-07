@@ -7,12 +7,10 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapVolumeOfStrings;
 import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -45,14 +43,12 @@ public interface MomServerUnitCalculations
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param map The player who is trying to move here's knowledge of the terrain
 	 * @param units The player who is trying to move here's knowledge of units
-	 * @param nodeLairTowerKnownUnitIDs The player who is trying to move here's knowledge of nodes/lairs/tower's they've scouted
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether moving here will result in an attack or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	public MoveResultsInAttackTypeID willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs,
-		final ServerDatabaseEx db) throws RecordNotFoundException;
+	public boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final ServerDatabaseEx db) throws RecordNotFoundException;
 
 	/**
 	 * @param unitStack Unit stack to check
@@ -85,7 +81,6 @@ public interface MomServerUnitCalculations
 	 * @param startPlane Plane to move from
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param map The player who is trying to move here's knowledge
-	 * @param nodeLairTowerKnownUnitIDs The player who is trying to move here's knowledge of nodes/lairs/tower's they've scouted
 	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
 	 * @param doubleMovementRemaining The lowest movement remaining for any of the units that are moving
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
@@ -97,8 +92,8 @@ public interface MomServerUnitCalculations
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	public void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
-		final FogOfWarMemory map, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs, final List<MemoryUnit> unitStack, final int doubleMovementRemaining,
+		final FogOfWarMemory map, final List<MemoryUnit> unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
-		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack,
+		final boolean [] [] [] movingHereResultsInAttack,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException;
 }

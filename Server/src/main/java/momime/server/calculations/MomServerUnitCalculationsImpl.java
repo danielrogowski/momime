@@ -14,13 +14,11 @@ import momime.common.database.v0_9_5.UnitHasSkill;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapVolumeOfStrings;
 import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.MoveResultsInAttackTypeID;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
@@ -30,7 +28,6 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.MovementRateRule;
 import momime.server.database.v0_9_5.Plane;
 import momime.server.database.v0_9_5.TileType;
-import momime.server.messages.ServerMemoryGridCellUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -132,14 +129,13 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param map The player who is trying to move here's knowledge of the terrain
 	 * @param units The player who is trying to move here's knowledge of units
-	 * @param nodeLairTowerKnownUnitIDs The player who is trying to move here's knowledge of nodes/lairs/tower's they've scouted
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether moving here will result in an attack or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	@Override
-	public final MoveResultsInAttackTypeID willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs,
+	public final boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units,
 		final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering willMovingHereResultInAnAttack: Player ID " + movingPlayerID +
@@ -154,26 +150,17 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 			towerPlane = plane;
 
 		// The easiest one to check for is an enemy city - even if there's no units there, it still counts as an attack so we can decide whether to raze or capture it
-		final MoveResultsInAttackTypeID resultsInAttack;
+		final boolean resultsInAttack;
 		if ((mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () != null) && (mc.getCityData ().getCityOwnerID () != null) &&
 			(mc.getCityData ().getCityPopulation () > 0) && (mc.getCityData ().getCityOwnerID () != movingPlayerID))
 
-			resultsInAttack = MoveResultsInAttackTypeID.YES;
-
-		// Next check if there's a node/lair/tower at the location that we've either not scouted or have scouted a know a unit ID that's there
-		// (i.e. is any state other than 'known to be empty')
-		// Note towers that have been cleared of monsters and are now occupied by enemy units are in this sense considered to be 'empty'
-		else if ((ServerMemoryGridCellUtils.isNodeLairTower (mc.getTerrainData (), db)) &&
-			((nodeLairTowerKnownUnitIDs.getPlane ().get (towerPlane).getRow ().get (y).getCell ().get (x) == null) ||		// Null = not yet scouted
-			(!nodeLairTowerKnownUnitIDs.getPlane ().get (towerPlane).getRow ().get (y).getCell ().get (x).equals (""))))		// anything other than empty, i.e. we know the type of unit inside
-
-			resultsInAttack = MoveResultsInAttackTypeID.SCOUT;
+			resultsInAttack = true;
 
 		// Lastly check for enemy units
 		else if (getUnitUtils ().findFirstAliveEnemyAtLocation (units, x, y, towerPlane, movingPlayerID) != null)
-			resultsInAttack = MoveResultsInAttackTypeID.YES;
+			resultsInAttack = true;
 		else
-			resultsInAttack = MoveResultsInAttackTypeID.NO;
+			resultsInAttack = false;
 
 		log.trace ("Exiting willMovingHereResultInAnAttack = " + resultsInAttack);
 		return resultsInAttack;
@@ -309,7 +296,6 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param map The player who is trying to move here's knowledge of the terrain
 	 * @param units The player who is trying to move here's knowledge of units
-	 * @param nodeLairTowerKnownUnitIDs The player who is trying to move here's knowledge of nodes/lairs/tower's they've scouted
 	 * @param doubleMovementRemaining The lowest movement remaining for any of the units that are moving
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param movementDirections The direction that we moved to get here, e.g. the tile directly above startX, startY will have value 1
@@ -322,9 +308,9 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	private final void calculateOverlandMovementDistances_Cell (final int cellX, final int cellY, final int cellPlane, final int movingPlayerID,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
-		final boolean [] [] [] canMoveToInOneTurn, final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
+		final boolean [] [] [] canMoveToInOneTurn, final boolean [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
 		final List<MapCoordinates2D> cellsLeftToCheck, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering calculateOverlandMovementDistances_Cell: Player ID " + movingPlayerID +
@@ -366,10 +352,10 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 
 							// Is this a square we have to stop at, i.e. one which contains enemy units?
 							movingHereResultsInAttack [cellPlane] [coords.getY ()] [coords.getX ()] = willMovingHereResultInAnAttack
-								(coords.getX (), coords.getY (), cellPlane, movingPlayerID, map, units, nodeLairTowerKnownUnitIDs, db);
+								(coords.getX (), coords.getY (), cellPlane, movingPlayerID, map, units, db);
 
 							// Log that we need to check every location branching off from here
-							if (movingHereResultsInAttack [cellPlane] [coords.getY ()] [coords.getX ()] == MoveResultsInAttackTypeID.NO)
+							if (!movingHereResultsInAttack [cellPlane] [coords.getY ()] [coords.getX ()])
 								cellsLeftToCheck.add (coords);
 						}
 					}
@@ -389,7 +375,6 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param map The player who is trying to move here's knowledge of the terrain
 	 * @param units The player who is trying to move here's knowledge of units
-	 * @param nodeLairTowerKnownUnitIDs The player who is trying to move here's knowledge of nodes/lairs/tower's they've scouted
 	 * @param doubleMovementRemaining The lowest movement remaining for any of the units that are moving
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param movementDirections The direction that we moved to get here, e.g. the tile directly above startX, startY will have value 1
@@ -401,9 +386,9 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	private final void calculateOverlandMovementDistances_Plane (final int startX, final int startY, final int startPlane, final int movingPlayerID,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
-		final boolean [] [] [] canMoveToInOneTurn, final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
+		final boolean [] [] [] canMoveToInOneTurn, final boolean [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering calculateOverlandMovementDistances_Plane: Player ID " + movingPlayerID + ", (" + startX + ", " + startY + ", " + startPlane + ")");
@@ -415,7 +400,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		// Rather than iterating out distances from the centre, process rings around each location before proceeding to the next location
 		// This is to prevent the situation in the original MoM where you are on Enchanced Road, hit 'Up' and the game decides to move you up-left and then right to get there
 		final List<MapCoordinates2D> cellsLeftToCheck = new ArrayList<MapCoordinates2D> ();
-		calculateOverlandMovementDistances_Cell (startX, startY, startPlane, movingPlayerID, map, units, nodeLairTowerKnownUnitIDs,
+		calculateOverlandMovementDistances_Cell (startX, startY, startPlane, movingPlayerID, map, units,
 			doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 			doubleMovementToEnterTile, cellsLeftToCheck, sys, db);
 
@@ -423,7 +408,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		while (cellsLeftToCheck.size () > 0)
 		{
 			calculateOverlandMovementDistances_Cell (cellsLeftToCheck.get (0).getX (), cellsLeftToCheck.get (0).getY (), startPlane, movingPlayerID, map, units,
-				nodeLairTowerKnownUnitIDs, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
+				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
 				movingHereResultsInAttack, doubleMovementToEnterTile, cellsLeftToCheck, sys, db);
 
 			cellsLeftToCheck.remove (0);
@@ -443,7 +428,6 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	 * @param startPlane Plane to move from
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param map The player who is trying to move here's knowledge
-	 * @param nodeLairTowerKnownUnitIDs The player who is trying to move here's knowledge of nodes/lairs/tower's they've scouted
 	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
 	 * @param doubleMovementRemaining The lowest movement remaining for any of the units that are moving
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
@@ -456,9 +440,9 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	 */
 	@Override
 	public final void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
-		final FogOfWarMemory map, final MapVolumeOfStrings nodeLairTowerKnownUnitIDs, final List<MemoryUnit> unitStack, final int doubleMovementRemaining,
+		final FogOfWarMemory map, final List<MemoryUnit> unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
-		final MoveResultsInAttackTypeID [] [] [] movingHereResultsInAttack,
+		final boolean [] [] [] movingHereResultsInAttack,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering calculateOverlandMovementDistances: (" + startX + ", " + startY + ", " + startPlane + ")");
@@ -484,7 +468,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 					doubleMovementDistances	[plane.getPlaneNumber ()] [y] [x] = MOVEMENT_DISTANCE_NOT_YET_CHECKED;
 					movementDirections			[plane.getPlaneNumber ()] [y] [x] = 0;
 					canMoveToInOneTurn			[plane.getPlaneNumber ()] [y] [x] = false;
-					movingHereResultsInAttack	[plane.getPlaneNumber ()] [y] [x] = MoveResultsInAttackTypeID.NO;
+					movingHereResultsInAttack	[plane.getPlaneNumber ()] [y] [x] = false;
 				}
 
 		// If at a tower of wizardry, we can move on all planes
@@ -492,12 +476,12 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 		{
 			for (final Plane plane : db.getPlane ())
-				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID, map.getMap (), map.getUnit (), nodeLairTowerKnownUnitIDs,
+				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID, map.getMap (), map.getUnit (),
 					doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 					doubleMovementToEnterTile, sd.getMapSize (), db);
 		}
 		else
-			calculateOverlandMovementDistances_Plane (startX, startY, startPlane, movingPlayerID, map.getMap (), map.getUnit (), nodeLairTowerKnownUnitIDs,
+			calculateOverlandMovementDistances_Plane (startX, startY, startPlane, movingPlayerID, map.getMap (), map.getUnit (),
 				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 				doubleMovementToEnterTile, sd.getMapSize (), db);
 

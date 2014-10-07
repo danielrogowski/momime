@@ -2,7 +2,6 @@ package momime.server.fogofwar;
 
 import java.util.List;
 
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessageData;
 import momime.common.messages.servertoclient.v0_9_5.AddUnitMessageData;
@@ -11,7 +10,6 @@ import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
 import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Methods for comparing and copying data from one source against a destination container
@@ -91,12 +89,9 @@ public interface FogOfWarDuplication
 	 * place that builds those messages based on a source true unit
 	 *
 	 * @param source True unit details held on server
-	 * @param db Lookup lists built over the XML database
 	 * @return Unit creation message to send to client
-	 * @throws RecordNotFoundException If the unitID doesn't exist
 	 */
-	public AddUnitMessageData createAddUnitMessage (final MemoryUnit source, final ServerDatabaseEx db)
-		throws RecordNotFoundException;
+	public AddUnitMessageData createAddUnitMessage (final MemoryUnit source);
 
 	/**
 	 * @param source True spell details held on server

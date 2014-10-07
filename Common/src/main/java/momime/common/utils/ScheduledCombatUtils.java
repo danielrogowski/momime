@@ -34,7 +34,7 @@ public interface ScheduledCombatUtils
 	 * @param combat Combat to check
 	 * @param besidesWho Human player we already know about
 	 * @param players List of known players
-	 * @return The other human player involved in the combat; null if there is no other player or its an AI player
+	 * @return The other human player involved in the combat; null if the other player is an AI player
 	 * @throws PlayerNotFoundException If one of the players listed for the combat can't be found in the players list
 	 */
 	public PlayerPublicDetails determineOtherHumanPlayer (final MomScheduledCombat combat, final PlayerPublicDetails besidesWho, final List<? extends PlayerPublicDetails> players)

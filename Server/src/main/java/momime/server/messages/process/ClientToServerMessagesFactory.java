@@ -28,11 +28,6 @@ public interface ClientToServerMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public ChoseNotToDoScheduledCombatMessageImpl createChoseNotToDoScheduledCombatMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public RequestMoveOverlandUnitStackMessageImpl createRequestMoveOverlandUnitStackMessage ();
 
 	/**
@@ -104,11 +99,6 @@ public interface ClientToServerMessagesFactory
 	 * @return Newly created message
 	 */
 	public CancelTargetSpellMessageImpl createCancelTargetSpellMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
-	public AttackNodeLairTowerMessageImpl createAttackNodeLairTowerMessage ();
 
 	/**
 	 * @return Newly created message

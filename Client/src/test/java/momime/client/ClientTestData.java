@@ -23,8 +23,10 @@ import momime.client.graphics.database.SmoothedTileTypeEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
@@ -34,6 +36,8 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
+import com.ndg.random.RandomUtils;
+import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutConstants;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
@@ -76,10 +80,12 @@ public final class ClientTestData
 	}
 
 	/**
-	 * @return Parsed graphics database with all the hash maps built, needed by a select few of the tests - usually avoid this because this makes tests really slow 
+	 * @param utils UI utils to set against created objects that need it
+	 * @param randomUtils Random number generator to set against created objects that need it
+	 * @return Parsed graphics database with all the hash maps built, needed by a select few of the tests - usually avoid this because this makes tests really slow
 	 * @throws Exception If there is a problem
 	 */
-	public final static GraphicsDatabaseEx loadGraphicsDatabase () throws Exception
+	public final static GraphicsDatabaseEx loadGraphicsDatabase (final NdgUIUtils utils, final RandomUtils randomUtils) throws Exception
 	{
 		// Need to set up a proper factory to create classes with spring injections
 		final GraphicsDatabaseObjectFactory factory = new GraphicsDatabaseObjectFactory ();
@@ -88,25 +94,33 @@ public final class ClientTestData
 			@Override
 			public final SmoothedTileTypeEx createSmoothedTileType ()
 			{
-				return new SmoothedTileTypeEx ();
+				final SmoothedTileTypeEx tileType = new SmoothedTileTypeEx ();
+				tileType.setRandomUtils (randomUtils);
+				return tileType;
 			}
 			
 			@Override
 			public final TileSetEx createTileSet ()
 			{
-				return new TileSetEx ();
+				final TileSetEx tileSet = new TileSetEx ();
+				tileSet.setUtils (utils);
+				return tileSet;
 			}
 			
 			@Override
 			public final MapFeatureEx createMapFeature ()
 			{
-				return new MapFeatureEx ();
+				final MapFeatureEx mapFeature = new MapFeatureEx ();
+				mapFeature.setUtils (utils);
+				return mapFeature;
 			}
 			
 			@Override
 			public final AnimationEx createAnimation ()
 			{
-				return new AnimationEx ();
+				final AnimationEx anim = new AnimationEx ();
+				anim.setUtils (utils);
+				return anim;
 			}
 		});
 		
@@ -125,7 +139,8 @@ public final class ClientTestData
 		
 		// XML
 		final GraphicsDatabaseExImpl graphicsDB = (GraphicsDatabaseExImpl) unmarshaller.unmarshal (locateDefaultGraphicsXmlFile ());
-		graphicsDB.buildMaps ();
+		graphicsDB.setUtils (utils);
+		graphicsDB.buildMapsAndRunConsistencyChecks ();
 		return graphicsDB;
 	}
 	
@@ -184,6 +199,32 @@ public final class ClientTestData
 		}
 
 		return map;
+	}
+
+	/**
+	 * @return Demo MoM combat map-like coordinate system with a 60x40 diamond non-wrapping map
+	 */
+	public final static CoordinateSystem createCombatMapCoordinateSystem ()
+	{
+		final CoordinateSystem sys = new CoordinateSystem ();
+		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
+		sys.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
+		sys.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);
+		return sys;
+	}
+
+	/**
+	 * @return Combat map coordinate system that can be included into session description
+	 */
+	public final static CombatMapSizeData createCombatMapSizeData ()
+	{
+		final CombatMapSizeData sys = new CombatMapSizeData ();
+		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
+		sys.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
+		sys.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);
+		sys.setZoneWidth (10);
+		sys.setZoneHeight (8);
+		return sys;
 	}
 	
 	/**

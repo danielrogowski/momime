@@ -1018,8 +1018,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 				final int d = movementDirections [movePath.getY ()] [movePath.getX ()];
 				directions.add (0, d);
 				
-				if (!getCoordinateSystemUtils ().move2DCoordinates (mom.getCombatMapCoordinateSystem (), movePath,
-					getCoordinateSystemUtils ().normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), d+4)))
+				if (!getCoordinateSystemUtils ().move2DCoordinates (mom.getSessionDescription ().getCombatMapSize (), movePath,
+					getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getCombatMapSize ().getCoordinateSystemType (), d+4)))
 					
 					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (B)");
 			}
@@ -1039,7 +1039,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				msg.setMoveFrom (new MapCoordinates2DEx (movePath));		// Message needs to keep the old coords, so copy them
 				msg.setDirection (d);
 				
-				if (!getCoordinateSystemUtils ().move2DCoordinates (mom.getCombatMapCoordinateSystem (), movePath, d))
+				if (!getCoordinateSystemUtils ().move2DCoordinates (mom.getSessionDescription ().getCombatMapSize (), movePath, d))
 					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (F)");
 				
 				// How much movement did it take us to walk into this cell?
@@ -1089,7 +1089,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			case RANGED:
 				getDamageProcessor ().resolveAttack (tu, getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 					combatLocation, moveTo), attackingPlayer, defendingPlayer,
-					getCoordinateSystemUtils ().determineDirectionTo (mom.getCombatMapCoordinateSystem (), (MapCoordinates2DEx) tu.getCombatPosition (), moveTo),
+					getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), (MapCoordinates2DEx) tu.getCombatPosition (), moveTo),
 					true, combatLocation, mom);
 				break;
 				

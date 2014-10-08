@@ -174,7 +174,7 @@ public final class TestUnitClientUtilsImpl
 		utils.useNimbusLookAndFeel ();
 		
 		// This is dependant on way too many values to mock them all - so use the real graphics DB
-		final GraphicsDatabaseEx gfx = ClientTestData.loadGraphicsDatabase ();
+		final GraphicsDatabaseEx gfx = ClientTestData.loadGraphicsDatabase (utils, null);
 		
 		// Animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();

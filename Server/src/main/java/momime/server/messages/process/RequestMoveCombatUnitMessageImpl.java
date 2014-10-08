@@ -9,6 +9,7 @@ import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.v0_9_5.RequestMoveCombatUnitMessage;
 import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.UnitUtils;
@@ -81,18 +82,20 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 			error = "You cannot move from a location back to the same location";
 		
 		// Calculate distances to every point on the map
-		final int [] [] movementDirections = new int [mom.getCombatMapCoordinateSystem ().getHeight ()] [mom.getCombatMapCoordinateSystem ().getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [mom.getCombatMapCoordinateSystem ().getHeight ()] [mom.getCombatMapCoordinateSystem ().getWidth ()];
+		final CombatMapSizeData combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
+		
+		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		
 		if (error == null)
 		{
 			final ServerGridCell tc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(tu.getCombatLocation ().getZ ()).getRow ().get (tu.getCombatLocation ().getY ()).getCell ().get (tu.getCombatLocation ().getX ());
 
-			final int [] [] doubleMovementDistances = new int [mom.getCombatMapCoordinateSystem ().getHeight ()] [mom.getCombatMapCoordinateSystem ().getWidth ()];
+			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 			
 			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
-				tu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), mom.getCombatMapCoordinateSystem (), mom.getPlayers (), mom.getServerDB ());
+				tu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
 			
 			// Can we reach where we're trying to go?
 			if (movementTypes [getMoveTo ().getY ()] [getMoveTo ().getX ()] == CombatMoveType.CANNOT_MOVE)

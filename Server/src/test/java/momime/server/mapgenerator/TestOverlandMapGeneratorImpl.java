@@ -8,10 +8,18 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.net.URL;
+
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.validation.SchemaFactory;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
@@ -23,8 +31,10 @@ import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Plane;
+import momime.unittests.mapstorage.StoredOverlandMap;
 
 import org.junit.Test;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
@@ -316,5 +326,18 @@ public final class TestOverlandMapGeneratorImpl
 
 			System.out.println ();
 		}
+		
+		// Save the generated map out to an XML file, so the bitmap generator in the client can test generating a real bitmap of it
+		final StoredOverlandMap container = new StoredOverlandMap ();
+		container.setOverlandMap (fow.getMap ());
+		
+		final URL xsdResource = new Object ().getClass ().getResource ("/momime.unittests.mapstorage/MapStorage.xsd");
+		assertNotNull ("Map storage XSD could not be found on classpath", xsdResource);
+
+		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
+		
+		final Marshaller marshaller = JAXBContext.newInstance (StoredOverlandMap.class).createMarshaller ();
+		marshaller.marshal (container, new File ("target/generatedOverlandMap.xml"));
 	}
 }

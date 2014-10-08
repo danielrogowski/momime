@@ -5,6 +5,7 @@ import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.CombatMapLayerID;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MapRowOfCombatTiles;
@@ -40,18 +41,6 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	/** Class logger */
 	private final Log log = LogFactory.getLog (CombatMapGeneratorImpl.class);
 
-	/** Combat map size - hard coded for now */
-	public final static int COMBAT_MAP_WIDTH = 12;
-	
-	/** Combat map size - hard coded for now */
-	public final static int COMBAT_MAP_HEIGHT = 25;
-	
-	/** How many generation zones the map is split up into to randomize the height map - hard coded for now */
-	private final static int COMBAT_MAP_ZONES_HORIZONTALLY = 10;
-
-	/** How many generation zones the map is split up into to randomize the height map - hard coded for now */
-	private final static int COMBAT_MAP_ZONES_VERTICALLY = 8;
-	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 
@@ -73,7 +62,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
 	@Override
-	public final MapAreaOfCombatTiles generateCombatMap (final CoordinateSystem combatMapCoordinateSystem,
+	public final MapAreaOfCombatTiles generateCombatMap (final CombatMapSizeData combatMapCoordinateSystem,
 		final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
@@ -84,10 +73,10 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		final TileType tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "generateCombatMap");
 
 		// Start map generation, this initializes all the map cells
-		final MapAreaOfCombatTiles map = setAllToGrass ();
+		final MapAreaOfCombatTiles map = setAllToGrass (combatMapCoordinateSystem);
 		
 		// Generate height-based scenery
-		final HeightMapGenerator heightMap = new HeightMapGenerator (combatMapCoordinateSystem, COMBAT_MAP_ZONES_HORIZONTALLY, COMBAT_MAP_ZONES_VERTICALLY, 0);
+		final HeightMapGenerator heightMap = new HeightMapGenerator (combatMapCoordinateSystem, combatMapCoordinateSystem.getZoneWidth (), combatMapCoordinateSystem.getZoneHeight (), 0);
 		heightMap.setRandomUtils (getRandomUtils ());
 		heightMap.generateHeightMap ();
 		
@@ -96,7 +85,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		setHighestTiles (heightMap, map, ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_RIDGE, tileType.getCombatRidgeTiles ());
 		
 		// Place trees/rocks randomly
-		setTerrainFeaturesRandomly (map, ServerDatabaseValues.VALUE_COMBAT_TILE_TERRAIN_FEATURE, tileType.getCombatTerrainFeatures ());
+		setTerrainFeaturesRandomly (map, combatMapCoordinateSystem, ServerDatabaseValues.VALUE_COMBAT_TILE_TERRAIN_FEATURE, tileType.getCombatTerrainFeatures ());
 		
 		// Place walls, buildings, houses, nodes, towers and anything else defined in the combat map elements in the server XML
 		// Purposefully do this 2nd, so if there happens to be a tree right where we need to put the Wizards' Fortress, the tree will be overwritten
@@ -110,9 +99,10 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	}
 	
 	/**
+	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @return Newly created map initialized with all cells set to grass; also sets all of the offMapEdge values
 	 */
-	final MapAreaOfCombatTiles setAllToGrass ()
+	final MapAreaOfCombatTiles setAllToGrass (final CoordinateSystem combatMapCoordinateSystem)
 	{
 		log.trace ("Entering setAllToGrass");
 
@@ -120,10 +110,10 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
 
 		// Create all the map cells
-		for (int y = 0; y < COMBAT_MAP_HEIGHT; y++)
+		for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
 		{
 			final MapRowOfCombatTiles row = new MapRowOfCombatTiles ();
-			for (int x = 0; x < COMBAT_MAP_WIDTH; x++)
+			for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
 			{
 				// Create grass tile
 				final MomCombatTileLayer layer = new MomCombatTileLayer ();
@@ -136,9 +126,9 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				// Set the areas that are off the edge of the map
 				// See "MoMIMEMiscellaneous\MoM IME screen layouts\Combat map.psp" for why these boundaries are like this
 				final boolean canWalkOn = (x >= 1) && (y >= 2) &&
-					(y <= COMBAT_MAP_HEIGHT - 3) &&
-					(((y % 2 == 0) && (x <= COMBAT_MAP_WIDTH - 2)) ||
-					((y % 2 == 1) && (x <= COMBAT_MAP_WIDTH - 3)));
+					(y <= combatMapCoordinateSystem.getHeight () - 3) &&
+					(((y % 2 == 0) && (x <= combatMapCoordinateSystem.getWidth () - 2)) ||
+					((y % 2 == 1) && (x <= combatMapCoordinateSystem.getWidth () - 3)));
 				
 				cell.setOffMapEdge (!canWalkOn);
 				
@@ -208,18 +198,20 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	/**
 	 * Sets rocks and trees in random locations in the building layer
 	 * @param map Map to add trees and rocks to
+	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param combatTileTypeID Tile type to use for trees and rocks
 	 * @param featureTileCount How many trees and rocks to add
 	 */
-	final void setTerrainFeaturesRandomly (final MapAreaOfCombatTiles map, final String combatTileTypeID, final int featureTileCount)
+	final void setTerrainFeaturesRandomly (final MapAreaOfCombatTiles map, final CoordinateSystem combatMapCoordinateSystem,
+		final String combatTileTypeID, final int featureTileCount)
 	{
 		log.trace ("Exiting setTerrainFeaturesRandomly: " + combatTileTypeID + ", " + featureTileCount);
 
 		// Make a list of all the possible locations
 		// Since there's nothing in the building layer at this point - that means everywhere
 		final List<MapCoordinates2D> possibleLocations = new ArrayList<MapCoordinates2D> ();
-		for (int x = 0; x < COMBAT_MAP_WIDTH; x++)
-			for (int y = 0; y < COMBAT_MAP_HEIGHT; y++)
+		for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
+			for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
 			{
 				final MapCoordinates2D coords = new MapCoordinates2D ();
 				coords.setX (x);

@@ -7,5 +7,6 @@
 	<overlandSmoothTextures>true</overlandSmoothTextures>
 	<overlandShowPartialFogOfWar>true</overlandShowPartialFogOfWar>
 	<overlandSmoothFogOfWar>true</overlandSmoothFogOfWar>
+	<combatSmoothTerrain>true</combatSmoothTerrain>
 	<unitCombatScale>D</unitCombatScale>
 </config:momImeClientConfig>

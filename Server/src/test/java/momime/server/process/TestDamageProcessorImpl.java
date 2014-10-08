@@ -16,6 +16,7 @@ import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessage;
 import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessageTypeID;
 import momime.common.messages.v0_9_5.CaptureCityDecisionID;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryUnit;
@@ -33,7 +34,6 @@ import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -100,14 +100,14 @@ public final class TestDamageProcessorImpl
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system
-		final CoordinateSystem combatMapCoordinateSystem = ServerTestData.createCombatMapCoordinateSystem ();
+		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getCombatMapCoordinateSystem ()).thenReturn (combatMapCoordinateSystem);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -239,14 +239,14 @@ public final class TestDamageProcessorImpl
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system
-		final CoordinateSystem combatMapCoordinateSystem = ServerTestData.createCombatMapCoordinateSystem ();
+		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getCombatMapCoordinateSystem ()).thenReturn (combatMapCoordinateSystem);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);

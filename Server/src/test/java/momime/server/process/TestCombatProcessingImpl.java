@@ -23,6 +23,7 @@ import momime.common.messages.servertoclient.v0_9_5.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.v0_9_5.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.messages.servertoclient.v0_9_5.StartCombatMessage;
 import momime.common.messages.servertoclient.v0_9_5.StartCombatMessageUnit;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
@@ -3488,13 +3489,17 @@ public final class TestCombatProcessingImpl
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 		
+		// Session description
+		final CombatMapSizeData combatMapSize = ServerTestData.createCombatMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setCombatMapSize (combatMapSize);
+		
 		// Session variables
-		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
-
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getCombatMapCoordinateSystem ()).thenReturn (sys);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Where the combat is taking place
@@ -3545,8 +3550,8 @@ public final class TestCombatProcessingImpl
 		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (3, 8);
 		
 		// Movement areas
-		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [sys.getHeight ()] [sys.getWidth ()];
+		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 
 		// From 1,7 we move down-right to 2,8 and then right to 3,8 
 		movementDirections [8] [2] = 4;
@@ -3644,13 +3649,17 @@ public final class TestCombatProcessingImpl
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 		
+		// Session description
+		final CombatMapSizeData combatMapSize = ServerTestData.createCombatMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setCombatMapSize (combatMapSize);
+		
 		// Session variables
-		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
-
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getCombatMapCoordinateSystem ()).thenReturn (sys);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Where the combat is taking place
@@ -3701,8 +3710,8 @@ public final class TestCombatProcessingImpl
 		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (3, 8);
 		
 		// Movement areas
-		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [sys.getHeight ()] [sys.getWidth ()];
+		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 
 		// From 1,7 we move down-right to 2,8 and then right to 3,8 
 		movementDirections [8] [2] = 4;
@@ -3798,13 +3807,17 @@ public final class TestCombatProcessingImpl
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 		
+		// Session description
+		final CombatMapSizeData combatMapSize = ServerTestData.createCombatMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setCombatMapSize (combatMapSize);
+		
 		// Session variables
-		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
-
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getCombatMapCoordinateSystem ()).thenReturn (sys);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Where the combat is taking place
@@ -3856,8 +3869,8 @@ public final class TestCombatProcessingImpl
 		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (3, 8);
 		
 		// Movement areas
-		final int [] [] movementDirections = new int [sys.getHeight ()] [sys.getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [sys.getHeight ()] [sys.getWidth ()];
+		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 
 		// From 1,7 we move down-right to 2,8 and then right to 3,8 
 		movementDirections [8] [2] = 4;

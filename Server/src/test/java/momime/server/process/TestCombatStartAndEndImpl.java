@@ -27,6 +27,7 @@ import momime.common.messages.servertoclient.v0_9_5.CombatEndedMessage;
 import momime.common.messages.servertoclient.v0_9_5.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.v0_9_5.StartCombatMessage;
 import momime.common.messages.v0_9_5.CaptureCityDecisionID;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
@@ -158,7 +159,9 @@ public final class TestCombatStartAndEndImpl
 		tc.setTerrainData (terrainData);
 		
 		// Combat map generator
-		final CoordinateSystem combatMapCoordinateSystem = ServerTestData.createCombatMapCoordinateSystem ();
+		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		sd.setCombatMapSize (combatMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
 		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
@@ -172,7 +175,6 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getCombatMapCoordinateSystem ()).thenReturn (combatMapCoordinateSystem);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
@@ -301,7 +303,9 @@ public final class TestCombatStartAndEndImpl
 		tc.setTerrainData (terrainData);
 		
 		// Combat map generator
-		final CoordinateSystem combatMapCoordinateSystem = ServerTestData.createCombatMapCoordinateSystem ();
+		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		sd.setCombatMapSize (combatMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
 		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
@@ -315,7 +319,6 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getCombatMapCoordinateSystem ()).thenReturn (combatMapCoordinateSystem);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
@@ -454,7 +457,9 @@ public final class TestCombatStartAndEndImpl
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (false);
 		
 		// Combat map generator
-		final CoordinateSystem combatMapCoordinateSystem = ServerTestData.createCombatMapCoordinateSystem ();
+		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		sd.setCombatMapSize (combatMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
 		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
@@ -467,7 +472,6 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getCombatMapCoordinateSystem ()).thenReturn (combatMapCoordinateSystem);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
@@ -625,7 +629,9 @@ public final class TestCombatStartAndEndImpl
 		tc.setCityData (cityData);
 		
 		// Combat map generator
-		final CoordinateSystem combatMapCoordinateSystem = ServerTestData.createCombatMapCoordinateSystem ();
+		final CombatMapSizeData combatMapCoordinateSystem = ServerTestData.createCombatMapSizeData ();
+		sd.setCombatMapSize (combatMapCoordinateSystem);
+		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
 		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
@@ -639,7 +645,6 @@ public final class TestCombatStartAndEndImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getCombatMapCoordinateSystem ()).thenReturn (combatMapCoordinateSystem);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test

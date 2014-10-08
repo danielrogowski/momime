@@ -22,7 +22,6 @@ import momime.common.messages.v0_9_5.SpellResearchStatusID;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.v0_9_5.Spell;
-import momime.server.mapgenerator.CombatMapGeneratorImpl;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.ui.MomServerUI;
@@ -30,8 +29,6 @@ import momime.server.ui.MomServerUI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemType;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPublicKnowledge;
@@ -46,9 +43,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MomSessionThread.class);
 	
-	/** Combat map coordinate system, expect this to be merged into session desc once client is also in Java */
-	private final CoordinateSystem combatMapCoordinateSystem;
-	
 	/** Lookup lists built over the XML database */
 	private ServerDatabaseEx db;
 
@@ -60,19 +54,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 
 	/** Overland map generator for this session */
 	private OverlandMapGenerator overlandMapGenerator;	
-	
-	/**
-	 * Create combat map coordinate system
-	 */
-	public MomSessionThread ()
-	{
-		super ();
-		
-		combatMapCoordinateSystem = new CoordinateSystem ();
-		combatMapCoordinateSystem.setWidth (CombatMapGeneratorImpl.COMBAT_MAP_WIDTH);
-		combatMapCoordinateSystem.setHeight (CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT);
-		combatMapCoordinateSystem.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
-	}
 	
 	/**
 	 * @return UI being used by server
@@ -134,15 +115,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		super.setGeneralServerKnowledge (gsk);
 	}
 
-	/**
-	 * @return Combat map coordinate system, expect this to be merged into session desc once client is also in Java
-	 */
-	@Override
-	public final CoordinateSystem getCombatMapCoordinateSystem ()
-	{
-		return combatMapCoordinateSystem;
-	}
-	
 	/**
 	 * @return Server XML in use for this session
 	 */

@@ -91,7 +91,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		
 		// Make the units face each other
 		attacker.setCombatHeading (attackerDirection);
-		defender.setCombatHeading (getCoordinateSystemUtils ().normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), attackerDirection + 4));
+		defender.setCombatHeading (getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getCombatMapSize ().getCoordinateSystemType (), attackerDirection + 4));
 		
 		// Both attack simultaneously, before damage is applied
 		// Defender only retaliates against close combat attacks, not ranged attacks

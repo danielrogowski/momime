@@ -72,6 +72,7 @@ import momime.common.messages.clienttoserver.v0_9_5.ChooseRaceMessage;
 import momime.common.messages.clienttoserver.v0_9_5.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.v0_9_5.ChooseWizardMessage;
 import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowRank;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.TurnSystem;
@@ -80,6 +81,7 @@ import momime.common.utils.PlayerPickUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystemType;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -1771,6 +1773,18 @@ public final class NewGameUI extends MomClientFrameUI
 			sd.setMapSize (customMapSize);
 			throw new UnsupportedOperationException ("Custom map size not yet supported");
 		}
+		
+		// Combat map size is fixed, at least for now
+		final CombatMapSizeData combatMapSize = new CombatMapSizeData ();
+		combatMapSize.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
+		combatMapSize.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);
+		combatMapSize.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
+		combatMapSize.setWrapsLeftToRight (false);
+		combatMapSize.setWrapsTopToBottom (false);
+		combatMapSize.setZoneWidth (10);
+		combatMapSize.setZoneHeight (8);
+		
+		sd.setCombatMapSize (combatMapSize);
 		
 		// Land proportion
 		if (changeLandProportionAction.getSelectedItem () != null)

@@ -183,7 +183,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		startCombatMessage.setScheduledCombatURN (scheduledCombatURN);
 		
 		// Generate the combat scenery
-		tc.setCombatMap (getCombatMapGenerator ().generateCombatMap (mom.getCombatMapCoordinateSystem (),
+		tc.setCombatMap (getCombatMapGenerator ().generateCombatMap (mom.getSessionDescription ().getCombatMapSize (),
 			mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation));
 		startCombatMessage.setCombatTerrain (tc.getCombatMap ());
 		
@@ -192,12 +192,12 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		// Final 'True' parameter is because only some of the units in the attacking cell may actually be attacking, whereas everyone in the defending cell will always help defend.
 		// We need to do this (at least on the server) even if we immediately end the combat below, since we need to mark the attackers into the combat so that they will advance 1 square.
 		log.debug ("Positioning defenders at " + defendingLocation);
-		getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage, attackingPlayer, defendingPlayer, mom.getCombatMapCoordinateSystem (), defendingLocation,
+		getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage, attackingPlayer, defendingPlayer, mom.getSessionDescription ().getCombatMapSize (), defendingLocation,
 			COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y, COMBAT_SETUP_DEFENDER_ROWS, COMBAT_SETUP_DEFENDER_FACING,
 			UnitCombatSideID.DEFENDER, null, tc.getCombatMap (), mom);
 				
 		log.debug ("Positioning attackers at " + defendingLocation);
-		getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage, attackingPlayer, defendingPlayer, mom.getCombatMapCoordinateSystem (), attackingFrom,
+		getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage, attackingPlayer, defendingPlayer, mom.getSessionDescription ().getCombatMapSize (), attackingFrom,
 			COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y, COMBAT_SETUP_ATTACKER_ROWS, COMBAT_SETUP_ATTACKER_FACING,
 			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
 		

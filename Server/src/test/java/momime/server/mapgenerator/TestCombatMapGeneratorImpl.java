@@ -5,8 +5,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.net.URL;
+
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.validation.SchemaFactory;
+
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.v0_9_5.CombatMapLayerID;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
@@ -26,8 +36,10 @@ import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
+import momime.unittests.mapstorage.StoredCombatMap;
 
 import org.junit.Test;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -46,7 +58,7 @@ public final class TestCombatMapGeneratorImpl
 	public final void testSetAllToGrass ()
 	{
 		final CombatMapGeneratorImpl mapGen = new CombatMapGeneratorImpl ();
-		final MapAreaOfCombatTiles map = mapGen.setAllToGrass ();
+		final MapAreaOfCombatTiles map = mapGen.setAllToGrass (ServerTestData.createCombatMapCoordinateSystem ());
 		
 		// Check results
 		int count = 0;
@@ -62,7 +74,7 @@ public final class TestCombatMapGeneratorImpl
 				assertEquals (ServerDatabaseValues.VALUE_COMBAT_TILE_TYPE_GRASS, cell.getTileLayer ().get (0).getCombatTileTypeID ());
 			}
 
-		assertEquals (CombatMapGeneratorImpl.COMBAT_MAP_WIDTH * CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT, count);
+		assertEquals (CommonDatabaseConstants.COMBAT_MAP_WIDTH * CommonDatabaseConstants.COMBAT_MAP_HEIGHT, count);
 		
 		// Spot check a few
 		assertTrue (map.getRow ().get (0).getCell ().get (0).isOffMapEdge ());
@@ -78,6 +90,8 @@ public final class TestCombatMapGeneratorImpl
 	@Test
 	public final void testSetTerrainFeaturesRandomly ()
 	{
+		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
+		
 		final CombatMapGeneratorImpl mapGen = new CombatMapGeneratorImpl ();
 		mapGen.setRandomUtils (new RandomUtilsImpl ());
 		
@@ -85,7 +99,7 @@ public final class TestCombatMapGeneratorImpl
 		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 
 		// Test none
-		mapGen.setTerrainFeaturesRandomly (map, "A", 0);
+		mapGen.setTerrainFeaturesRandomly (map, sys, "A", 0);
 		int count = 0;
 		for (final MapRowOfCombatTiles row : map.getRow ())
 			for (final MomCombatTile cell : row.getCell ())
@@ -95,7 +109,7 @@ public final class TestCombatMapGeneratorImpl
 		assertEquals (0, count);
 		
 		// Test small number - this could be improved by fixing the random number generator results, but its OK as a test for now
-		mapGen.setTerrainFeaturesRandomly (map, "B", 10);
+		mapGen.setTerrainFeaturesRandomly (map, sys, "B", 10);
 		count = 0;
 		for (final MapRowOfCombatTiles row : map.getRow ())
 			for (final MomCombatTile cell : row.getCell ())
@@ -110,14 +124,14 @@ public final class TestCombatMapGeneratorImpl
 		assertEquals (10, count);
 		
 		// Test asking for more than there are spaces for
-		mapGen.setTerrainFeaturesRandomly (map, "C", 100000);
+		mapGen.setTerrainFeaturesRandomly (map, sys, "C", 100000);
 		count = 0;
 		for (final MapRowOfCombatTiles row : map.getRow ())
 			for (final MomCombatTile cell : row.getCell ())
 				if ("C".equals (utils.getCombatTileTypeForLayer (cell, CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES)))
 					count++;
 		
-		assertEquals (CombatMapGeneratorImpl.COMBAT_MAP_WIDTH * CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT, count);
+		assertEquals (CommonDatabaseConstants.COMBAT_MAP_WIDTH * CommonDatabaseConstants.COMBAT_MAP_HEIGHT, count);
 	}
 	
 	/**
@@ -163,8 +177,8 @@ public final class TestCombatMapGeneratorImpl
 		trueTerrain.getBuilding ().add (fortress);
 
 		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
-		for (int y = 0; y < CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT; y++)
-			for (int x = 0; x < CombatMapGeneratorImpl.COMBAT_MAP_WIDTH; x++)
+		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
+			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
 				final MomCombatTile cell = map.getRow ().get (y).getCell ().get (x);
 				if ((x == 3) &&  (y == 9))	// Wizard's fortress combat element coordinates from the server XML file
@@ -185,8 +199,8 @@ public final class TestCombatMapGeneratorImpl
 		mc.setTerrainData (terrainData);
 
 		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
-		for (int y = 0; y < CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT; y++)
-			for (int x = 0; x < CombatMapGeneratorImpl.COMBAT_MAP_WIDTH; x++)
+		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
+			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
 				final MomCombatTile cell = map.getRow ().get (y).getCell ().get (x);
 				if ((x == 3) &&  (y == 9))
@@ -204,8 +218,8 @@ public final class TestCombatMapGeneratorImpl
 		terrainData.setMapFeatureID ("MF19");		// Fallen temple
 
 		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
-		for (int y = 0; y < CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT; y++)
-			for (int x = 0; x < CombatMapGeneratorImpl.COMBAT_MAP_WIDTH; x++)
+		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
+			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
 				final MomCombatTile cell = map.getRow ().get (y).getCell ().get (x);
 				if ((x == 3) &&  (y == 9))
@@ -232,8 +246,8 @@ public final class TestCombatMapGeneratorImpl
 
 		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
 		int wallOfFireTileCount = 0;
-		for (int y = 0; y < CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT; y++)
-			for (int x = 0; x < CombatMapGeneratorImpl.COMBAT_MAP_WIDTH; x++)
+		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
+			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
 				final MomCombatTile cell = map.getRow ().get (y).getCell ().get (x);
 				assertEquals (0, cell.getTileLayer ().size ());
@@ -260,8 +274,8 @@ public final class TestCombatMapGeneratorImpl
 
 		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
 		int roadCount = 0;
-		for (int y = 0; y < CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT; y++)
-			for (int x = 0; x < CombatMapGeneratorImpl.COMBAT_MAP_WIDTH; x++)
+		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
+			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
 				final MomCombatTile cell = map.getRow ().get (y).getCell ().get (x);
 				if (((x == 4) && (y == 8)) || ((x == 2) && (y == 9)))
@@ -347,9 +361,6 @@ public final class TestCombatMapGeneratorImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (ServerTestData.createOverlandMap (sd.getMapSize ()));
 		
-		// Coordinate system
-		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
-		
 		// Need real random number generator to generate a meaningful map
 		final RandomUtils random = new RandomUtilsImpl ();
 		
@@ -384,18 +395,31 @@ public final class TestCombatMapGeneratorImpl
 		fow.getBuilding ().add (fortress);
 
 		// Run method
-		final MapAreaOfCombatTiles map = mapGen.generateCombatMap (sys, db, fow, combatMapLocation);
+		final MapAreaOfCombatTiles map = mapGen.generateCombatMap (sd.getCombatMapSize (), db, fow, combatMapLocation);
 
 		// We can't 'test' the output, only that the generation doesn't fail, but interesting to dump the maps to the standard output
 		System.out.println ("Combat map:");
-		for (int y = 0; y < CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT; y++)
+		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
 		{
 			String row = "";
-			for (int x = 0; x < CombatMapGeneratorImpl.COMBAT_MAP_WIDTH; x++)
+			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 				row = row + outputCombatTile (map.getRow ().get (y).getCell ().get (x), utils);
 
 			System.out.println (row);
 		}
 		System.out.println ();
+
+		// Save the generated map out to an XML file, so the bitmap generator in the client can test generating a real bitmap of it
+		final StoredCombatMap container = new StoredCombatMap ();
+		container.setCombatMap (map);
+		
+		final URL xsdResource = new Object ().getClass ().getResource ("/momime.unittests.mapstorage/MapStorage.xsd");
+		assertNotNull ("Map storage XSD could not be found on classpath", xsdResource);
+
+		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
+		
+		final Marshaller marshaller = JAXBContext.newInstance (StoredCombatMap.class).createMarshaller ();
+		marshaller.marshal (container, new File ("target/generatedCombatMap.xml"));
 	}
 }

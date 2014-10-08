@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
+	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_5" xmlns:momimecommon="http://momime/common/database/v0_9_5"
+	xmlns:momimemsgs="http://momime/common/messages/v0_9_5"
+	xmlns:mapstorage="http://momime/unittests/mapstorage" targetNamespace="http://momime/unittests/mapstorage">
+
+	<xsd:import namespace="http://www.ndg.com/map"/>
+	<xsd:import namespace="http://www.ndg.com/multiplayer/base"/>
+	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
+	
+	<xsd:import namespace="http://momime/common/database/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/database/newgame/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/messages/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/messages/clienttoserver/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/messages/servertoclient/v0_9_5"/>
+
+    <xsd:element name="storedOverlandMap">
+    	<xsd:complexType>
+		    <xsd:annotation>
+    			<xsd:documentation>Used to save the output from the server's TestOverlandMapGeneratorImpl to a disk file,
+    											so it can be used by the client's TestOverlandMapBitmapGeneratorImpl.</xsd:documentation>
+			</xsd:annotation>
+			<xsd:sequence>
+				<xsd:element minOccurs="1" maxOccurs="1" name="overlandMap" type="momimemsgs:mapVolumeOfMemoryGridCells" />
+			</xsd:sequence>
+    	</xsd:complexType>
+    </xsd:element>
+    
+    <xsd:element name="storedCombatMap">
+    	<xsd:complexType>
+		    <xsd:annotation>
+    			<xsd:documentation>Used to save the output from the server's TestCombatMapGeneratorImpl to a disk file,
+    											so it can be used by the client's TestCombatMapBitmapGeneratorImpl.</xsd:documentation>
+			</xsd:annotation>
+			<xsd:sequence>
+				<xsd:element minOccurs="1" maxOccurs="1" name="combatMap" type="momimemsgs:mapAreaOfCombatTiles" />
+			</xsd:sequence>
+    	</xsd:complexType>
+    </xsd:element>
+	
+</xsd:schema>

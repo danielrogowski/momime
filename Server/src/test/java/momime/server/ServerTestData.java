@@ -12,10 +12,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.v0_9_5.DifficultyLevelNodeStrength;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.FogOfWarStateID;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MapAreaOfFogOfWarStates;
@@ -43,7 +45,6 @@ import momime.server.database.v0_9_5.NodeStrength;
 import momime.server.database.v0_9_5.ServerDatabase;
 import momime.server.database.v0_9_5.SpellSetting;
 import momime.server.database.v0_9_5.UnitSetting;
-import momime.server.mapgenerator.CombatMapGeneratorImpl;
 import momime.server.messages.v0_9_5.ServerGridCell;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -126,6 +127,8 @@ public final class ServerTestData
 		if (sd.getMapSize () == null)
 			throw new RecordNotFoundException (MapSize.class.getName (), mapSizeID, "createMomSessionDescription");
 
+		sd.setCombatMapSize (createCombatMapSizeData ());
+		
 		for (final LandProportion landProportion : db.getLandProportion ())
 			if (landProportion.getLandProportionID ().equals (landProportionID))
 				sd.setLandProportion (landProportion);
@@ -211,8 +214,22 @@ public final class ServerTestData
 	{
 		final CoordinateSystem sys = new CoordinateSystem ();
 		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
-		sys.setWidth (CombatMapGeneratorImpl.COMBAT_MAP_WIDTH);
-		sys.setHeight (CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT);
+		sys.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
+		sys.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);
+		return sys;
+	}
+
+	/**
+	 * @return Combat map coordinate system that can be included into session description
+	 */
+	public final static CombatMapSizeData createCombatMapSizeData ()
+	{
+		final CombatMapSizeData sys = new CombatMapSizeData ();
+		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
+		sys.setWidth (CommonDatabaseConstants.COMBAT_MAP_WIDTH);
+		sys.setHeight (CommonDatabaseConstants.COMBAT_MAP_HEIGHT);
+		sys.setZoneWidth (10);
+		sys.setZoneHeight (8);
 		return sys;
 	}
 
@@ -347,10 +364,10 @@ public final class ServerTestData
 	public final static MapAreaOfCombatTiles createCombatMap ()
 	{
 		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
-		for (int y = 0; y < CombatMapGeneratorImpl.COMBAT_MAP_HEIGHT; y++)
+		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
 		{
 			final MapRowOfCombatTiles row = new MapRowOfCombatTiles ();
-			for (int x = 0; x < CombatMapGeneratorImpl.COMBAT_MAP_WIDTH; x++)
+			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 				row.getCell ().add (new MomCombatTile ());
 
 			map.getRow ().add (row);

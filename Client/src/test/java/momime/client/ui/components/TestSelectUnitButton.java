@@ -22,6 +22,7 @@ import momime.common.database.v0_9_5.ExperienceLevel;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.MomUnitAttributeComponent;
 import momime.common.utils.MomUnitAttributePositiveNegative;
@@ -99,11 +100,13 @@ public final class TestSelectUnitButton
 		// Set up player
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
+		
+		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
 
 		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
 		trans1.setFlagColour ("900000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, null, trans1);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
@@ -198,10 +201,12 @@ public final class TestSelectUnitButton
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
 
+		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
+		
 		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
 		trans1.setFlagColour ("900000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, null, trans1);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);

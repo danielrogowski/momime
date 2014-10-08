@@ -13,6 +13,7 @@ import momime.common.calculations.MomUnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
 import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
@@ -237,13 +238,15 @@ public final class CombatAIImpl implements CombatAI
 		log.trace ("Entering moveOneUnit: Unit URN + " + tu.getUnitURN ());
 		
 		// Work out where this unit can move
-		final int [] [] doubleMovementDistances = new int [mom.getCombatMapCoordinateSystem ().getHeight ()] [mom.getCombatMapCoordinateSystem ().getWidth ()];
-		final int [] [] movementDirections = new int [mom.getCombatMapCoordinateSystem ().getHeight ()] [mom.getCombatMapCoordinateSystem ().getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [mom.getCombatMapCoordinateSystem ().getHeight ()] [mom.getCombatMapCoordinateSystem ().getWidth ()];
+		final CombatMapSizeData combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
+		
+		final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		
 		getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections,
 			movementTypes, tu, mom.getGeneralServerKnowledge ().getTrueMap (),
-			combatMap, mom.getCombatMapCoordinateSystem (), mom.getPlayers (), mom.getServerDB ());
+			combatMap, combatMapSize, mom.getPlayers (), mom.getServerDB ());
 		
 		// Work out which enemy we want to attack
 		final MemoryUnit bestUnit = selectBestTarget (tu, combatLocation, movementDirections, movementTypes,
@@ -268,8 +271,8 @@ public final class CombatAIImpl implements CombatAI
 					if (d < 1)
 						throw new MomException ("AI Combat routine traced an invalid direction");
 					
-					if (!getCoordinateSystemUtils ().move2DCoordinates (mom.getCombatMapCoordinateSystem (), moveTo,
-						getCoordinateSystemUtils ().normalizeDirection (mom.getCombatMapCoordinateSystem ().getCoordinateSystemType (), d+4)))
+					if (!getCoordinateSystemUtils ().move2DCoordinates (combatMapSize, moveTo,
+						getCoordinateSystemUtils ().normalizeDirection (combatMapSize.getCoordinateSystemType (), d+4)))
 						
 						throw new MomException ("AI Combat routine traced a location off the edge of the combat map");
 				}				

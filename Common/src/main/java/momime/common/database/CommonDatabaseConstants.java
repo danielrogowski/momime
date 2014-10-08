@@ -47,6 +47,12 @@ public final class CommonDatabaseConstants
 	/** Range of each magic power slider */
 	public static final int MAGIC_POWER_DISTRIBUTION_MAX = 240;
 	
+	/** Combat map size - hard coded for now */
+	public final static int COMBAT_MAP_WIDTH = 12;
+	
+	/** Combat map size - hard coded for now */
+	public final static int COMBAT_MAP_HEIGHT = 25;
+	
 	/*------------------------------------------------------
 	 * Special values the various XML fields can take
 	 *-------------------------------------------------- */

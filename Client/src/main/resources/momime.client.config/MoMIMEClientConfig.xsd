@@ -33,6 +33,11 @@
 				</xsd:element>
 				
 				<!-- Combat map options -->
+				<xsd:element minOccurs="1" maxOccurs="1" name="combatSmoothTerrain" type="xsd:boolean">
+					<xsd:annotation>
+						<xsd:documentation>True to use the full terrain tileset so e.g. ridges and dark areas run together; false to use only "blocky" combat tiles.</xsd:documentation>
+					</xsd:annotation>
+				</xsd:element>
 				<xsd:element minOccurs="1" maxOccurs="1" name="unitCombatScale" type="momimecltconfig:unitCombatScale" />
 			</xsd:sequence>
 		</xsd:complexType>

@@ -29,6 +29,7 @@ This includes the session description and all knowledge structures - i.e. any ru
 					<xsd:element minOccurs="1" maxOccurs="1" name="turnSystem" type="momimemsgs:turnSystem"/>
 					
 					<xsd:element minOccurs="1" maxOccurs="1" name="mapSize" type="momimenewgame:mapSizeData"/>
+					<xsd:element minOccurs="1" maxOccurs="1" name="combatMapSize" type="momimemsgs:combatMapSizeData"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="landProportion" type="momimenewgame:landProportionData"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="nodeStrength" type="momimenewgame:nodeStrengthData"/>
 					<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevel" type="momimenewgame:difficultyLevelData"/>
@@ -42,6 +43,20 @@ This includes the session description and all knowledge structures - i.e. any ru
 
 					<xsd:element minOccurs="0" maxOccurs="1" name="disableFogOfWar" type="xsd:boolean"/>					
 		        </xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="combatMapSizeData">
+		<xsd:annotation>
+			<xsd:documentation>Details about the combat map coordinate system; all these are fixed for now.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="map:coordinateSystem">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="zoneWidth" type="map:mapDimension" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="zoneHeight" type="map:mapDimension" />
+				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

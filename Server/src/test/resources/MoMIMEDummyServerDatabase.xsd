@@ -1,6 +1,6 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.roughseas.ca/xmleditor/1.0.0"
 	xmlns:momimecommon="http://momime/common/database/v0_9_5" xmlns:momimesvr="http://momime/server/database/v0_9_5" 
-	xmlns:momimedummy="http://momime/dummy/database/v0_9_5" targetNamespace="http://momime/dummy/database/v0_9_5">
+	xmlns:momimedummy="http://momime/unittests/dummy" targetNamespace="http://momime/unittests/dummy">
 	
 	<xsd:import namespace="http://momime/common/database/v0_9_5"/>
 	<xsd:import namespace="http://momime/server/database/v0_9_5"/>

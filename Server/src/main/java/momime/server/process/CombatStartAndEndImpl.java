@@ -166,7 +166,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		tc.setScheduledCombatURN (scheduledCombatURN);
 		
-		// Find out who we're attacking - if an empty lair, we can get null here
+		// Find out who we're attacking - if an empty city, we can get null here
 		final MemoryUnit firstDefendingUnit = getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 			defendingLocation.getX (), defendingLocation.getY (), defendingLocation.getZ (), 0);
 		PlayerServerDetails defendingPlayer = (firstDefendingUnit == null) ? null : getMultiplayerSessionServerUtils ().findPlayerWithID
@@ -201,7 +201,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y, COMBAT_SETUP_ATTACKER_ROWS, COMBAT_SETUP_ATTACKER_FACING,
 			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
 		
-		// Are there any defenders (some lairs are empty) - if not then bypass the combat entirely
+		// Are there any defenders (attacking an empty city) - if not then bypass the combat entirely
 		if ((walkInWithoutAFight) || (defendingPlayer == null))
 		{
 			log.debug ("Combat ending before it starts");

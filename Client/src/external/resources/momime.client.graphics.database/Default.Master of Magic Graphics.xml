@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <momimegfx:graphicsDatabase xmlns:momimegfx="http://momime/client/graphics/database/v0_9_5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<wizard wizardID="MONSTERS" />
+	<wizard wizardID="MONSTERS">
+		<flagColour>442404</flagColour>
+		<combatPlayList playListID="COMBAT_GENERAL_102" />
+		<combatPlayList playListID="COMBAT_GENERAL_103" />
+	</wizard>
 	<wizard wizardID="RAIDERS">
 		<flagColour>442404</flagColour>
 		<combatPlayList playListID="COMBAT_GENERAL_102" />

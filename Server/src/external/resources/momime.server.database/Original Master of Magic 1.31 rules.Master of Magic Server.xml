@@ -19435,6 +19435,14 @@
 		<languageEntry languageEntryID="Raze" />
 		<languageEntry languageEntryID="No" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmCombat">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="Spell" />
+		<languageEntry languageEntryID="Wait" />
+		<languageEntry languageEntryID="Done" />
+		<languageEntry languageEntryID="Flee" />
+		<languageEntry languageEntryID="Auto" />
+	</languageCategory>
 	<languageCategory languageCategoryID="frmCombatEnded">
 		<languageEntry languageEntryID="Defeat" />
 		<languageEntry languageEntryID="Victory" />

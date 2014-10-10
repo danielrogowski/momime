@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.database.ClientDatabaseExImpl;
@@ -62,6 +63,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** Overland map bitmap generator */
 	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
+
+	/** Bitmap generator for the static terrain */
+	private CombatMapBitmapGenerator combatMapBitmapGenerator;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -189,6 +193,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 				((ClientDatabaseExImpl) getClientDB ()).buildMapsAndRunConsistencyChecks ();
 				getNewGameUI ().afterJoinedSession ();
 				getOverlandMapBitmapGenerator ().afterJoinedSession ();
+				getCombatMapBitmapGenerator ().afterJoinedSession ();
 			}
 
 			/**
@@ -460,6 +465,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setOverlandMapBitmapGenerator (final OverlandMapBitmapGenerator gen)
 	{
 		overlandMapBitmapGenerator = gen;
+	}
+
+	/**
+	 * @return Bitmap generator for the static terrain
+	 */
+	public final CombatMapBitmapGenerator getCombatMapBitmapGenerator ()
+	{
+		return combatMapBitmapGenerator;
+	}
+
+	/**
+	 * @param gen Bitmap generator for the static terrain
+	 */
+	public final void setCombatMapBitmapGenerator (final CombatMapBitmapGenerator gen)
+	{
+		combatMapBitmapGenerator = gen;
 	}
 	
 	/**

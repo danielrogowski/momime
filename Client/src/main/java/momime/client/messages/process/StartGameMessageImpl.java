@@ -54,7 +54,6 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 		// Switch to the overland map background music
 		try
 		{
-			getMusicPlayer ().setShuffle (true);
 			getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC);
 		}
 		catch (final Exception e)

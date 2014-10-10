@@ -325,7 +325,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findPickTypeDescription (final String pickTypeID)
 	{
 		final PickType thisPickType = pickTypesMap.get (pickTypeID);
-		return (thisPickType == null) ? pickTypeID : thisPickType.getPickTypeDescription ();
+		final String desc = (thisPickType != null) ? thisPickType.getPickTypeDescription () : null;
+		return (desc != null) ? desc : pickTypeID;
 	}
 	
 	/**
@@ -346,7 +347,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findWizardName (final String wizardID)
 	{
 		final Wizard thisWizard = wizardsMap.get (wizardID);
-		return (thisWizard == null) ? wizardID : thisWizard.getWizardName ();
+		final String wizardName = (thisWizard != null) ? thisWizard.getWizardName () : null;
+		return (wizardName != null) ? wizardName : wizardID;
 	}
 
 	/**
@@ -417,7 +419,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findRangedAttackTypeDescription (final String rangedAttackTypeID)
 	{
 		final RangedAttackType rat = rangedAttackTypesMap.get (rangedAttackTypeID);
-		return (rat == null) ? rangedAttackTypeID : rat.getRangedAttackTypeDescription ();
+		final String desc = (rat != null) ? rat.getRangedAttackTypeDescription () : null; 
+		return (desc != null) ? desc : rangedAttackTypeID;
 	}
 	
 	/**
@@ -438,7 +441,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findHeroName (final String heroNameID)
 	{
 		final Hero thisHeroName = heroNamesMap.get (heroNameID);
-		return (thisHeroName == null) ? heroNameID : thisHeroName.getHeroName ();
+		final String hn = (thisHeroName != null) ? thisHeroName.getHeroName () : null;
+		return (hn != null) ? hn : heroNameID;
 	}
 	
 	/**
@@ -449,7 +453,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findCitySizeName (final String citySizeID)
 	{
 		final CitySize thisCitySize = citySizesMap.get (citySizeID);
-		return (thisCitySize == null) ? citySizeID : thisCitySize.getCitySizeName ();
+		final String citySizeName = (thisCitySize != null) ? thisCitySize.getCitySizeName () : null; 
+		return (citySizeName != null) ? citySizeName : citySizeID;
 	}
 	
 	/**
@@ -460,7 +465,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findSpellRankDescription (final String spellRankID)
 	{
 		final SpellRank thisSpellRank = spellRanksMap.get (spellRankID);
-		return (thisSpellRank == null) ? spellRankID : thisSpellRank.getSpellRankDescription ();
+		final String desc = (thisSpellRank != null) ? thisSpellRank.getSpellRankDescription () : null; 
+		return (desc != null) ? desc : spellRankID;
 	}
 
 	/**
@@ -491,7 +497,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findMapSizeDescription (final String mapSizeID)
 	{
 		final MapSize thisMapSize = mapSizesMap.get (mapSizeID);
-		return (thisMapSize == null) ? mapSizeID : thisMapSize.getMapSizeDescription ();
+		final String desc = (thisMapSize != null) ? thisMapSize.getMapSizeDescription () : null;
+		return (desc != null) ? desc : mapSizeID;
 	}
 	
 	/**
@@ -502,7 +509,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findLandProportionDescription (final String landProportionID)
 	{
 		final LandProportion thisLandProportion = landProportionsMap.get (landProportionID);
-		return (thisLandProportion == null) ? landProportionID : thisLandProportion.getLandProportionDescription ();
+		final String desc = (thisLandProportion != null) ? thisLandProportion.getLandProportionDescription () : null;
+		return (desc != null) ? desc : landProportionID;
 	}
 	
 	/**
@@ -513,7 +521,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findNodeStrengthDescription (final String nodeStrengthID)
 	{
 		final NodeStrength thisNodeStrength = nodeStrengthsMap.get (nodeStrengthID);
-		return (thisNodeStrength == null) ? nodeStrengthID : thisNodeStrength.getNodeStrengthDescription ();
+		final String desc = (thisNodeStrength != null) ? thisNodeStrength.getNodeStrengthDescription () : null;
+		return (desc != null) ? desc : nodeStrengthID;
 	}
 	
 	/**
@@ -524,7 +533,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findDifficultyLevelDescription (final String difficultyLevelID)
 	{
 		final DifficultyLevel thisDifficultyLevel = difficultyLevelsMap.get (difficultyLevelID);
-		return (thisDifficultyLevel == null) ? difficultyLevelID : thisDifficultyLevel.getDifficultyLevelDescription ();
+		final String desc = (thisDifficultyLevel != null) ? thisDifficultyLevel.getDifficultyLevelDescription () : null;
+		return (desc != null) ? desc : difficultyLevelID;
 	}
 	
 	/**
@@ -535,7 +545,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findFogOfWarSettingDescription (final String fogOfWarSettingID)
 	{
 		final FogOfWarSetting thisFogOfWarSetting = fogOfWarSettingsMap.get (fogOfWarSettingID);
-		return (thisFogOfWarSetting == null) ? fogOfWarSettingID : thisFogOfWarSetting.getFogOfWarSettingDescription ();
+		final String desc = (thisFogOfWarSetting != null) ? thisFogOfWarSetting.getFogOfWarSettingDescription () : null;
+		return (desc != null) ? desc : fogOfWarSettingID;
 	}
 	
 	/**
@@ -546,7 +557,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findUnitSettingDescription (final String unitSettingID)
 	{
 		final UnitSetting thisUnitSetting = unitSettingsMap.get (unitSettingID);
-		return (thisUnitSetting == null) ? unitSettingID : thisUnitSetting.getUnitSettingDescription ();
+		final String desc = (thisUnitSetting != null) ? thisUnitSetting.getUnitSettingDescription () : null;
+		return (desc != null) ? desc : unitSettingID;
 	}
 	
 	/**
@@ -557,7 +569,8 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	public final String findSpellSettingDescription (final String spellSettingID)
 	{
 		final SpellSetting thisSpellSetting = spellSettingsMap.get (spellSettingID);
-		return (thisSpellSetting == null) ? spellSettingID : thisSpellSetting.getSpellSettingDescription ();
+		final String desc = (thisSpellSetting != null) ? thisSpellSetting.getSpellSettingDescription () : null;
+		return (desc != null) ? desc : spellSettingID;
 	}
 	
 	/**

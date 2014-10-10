@@ -5373,6 +5373,26 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>No</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmCombat">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>Combat</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Spell">
+			<languageEntryText>Spell</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Wait">
+			<languageEntryText>Wait</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Done">
+			<languageEntryText>Done</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Flee">
+			<languageEntryText>Flee</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Auto">
+			<languageEntryText>Auto</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="frmCombatEnded">
 		<languageEntry languageEntryID="Defeat">
 			<languageEntryText>You have been defeated</languageEntryText>

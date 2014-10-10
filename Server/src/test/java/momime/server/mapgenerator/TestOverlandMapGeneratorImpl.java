@@ -2,14 +2,20 @@ package momime.server.mapgenerator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -21,16 +27,33 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.newgame.v0_9_5.LandProportionData;
+import momime.common.database.newgame.v0_9_5.LandProportionPlane;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
+import momime.common.database.newgame.v0_9_5.NodeStrengthData;
+import momime.common.database.newgame.v0_9_5.NodeStrengthPlane;
+import momime.common.database.newgame.v0_9_5.UnitSettingData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
+import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.database.v0_9_5.MapFeature;
 import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.TileType;
+import momime.server.database.v0_9_5.TileTypeAreaEffect;
+import momime.server.database.v0_9_5.TileTypeFeatureChance;
+import momime.server.database.v0_9_5.Unit;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.unittests.mapstorage.StoredOverlandMap;
 
 import org.junit.Test;
@@ -38,6 +61,8 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
 import com.ndg.random.RandomUtilsImpl;
 
@@ -48,21 +73,25 @@ public final class TestOverlandMapGeneratorImpl
 {
 	/**
 	 * Tests the setAllToWater method
-	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testSetAllToWater () throws Exception
+	public final void testSetAllToWater ()
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		
+		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
 		mapGen.setTrueTerrain (fow);
 		mapGen.setSessionDescription (sd);
-		mapGen.setServerDB (db);
 
+		// Run method
 		mapGen.setAllToWater ();
 
 		// Check results
@@ -71,15 +100,273 @@ public final class TestOverlandMapGeneratorImpl
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 				{
+					final ServerGridCell serverCell = (ServerGridCell) cell;
 					count++;
-					assertNotNull (cell);
-					assertNotNull (cell.getTerrainData ());
-					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, cell.getTerrainData ().getTileTypeID ());
+					assertNotNull (serverCell);
+					assertNotNull (serverCell.getTerrainData ());
+					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, serverCell.getTerrainData ().getTileTypeID ());
 				}
 
 		assertEquals (2 * 60 * 40, count);
 	}
+	
+	/**
+	 * Tests the makeTundra method
+	 */
+	@Test
+	public final void testMakeTundra ()
+	{
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final LandProportionData landProportion = new LandProportionData ();
+		landProportion.setTundraRowCount (4);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		sd.setLandProportion (landProportion);
+		
+		// Map storage
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Mock random number generator
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (4)).thenReturn (3, 2,1, 2,2,2, 1,1,1);		// Compare to - 1, 1,2, 1,2,3, 1,2,3 - 5 of the values are >=
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setRandomUtils (random);
 
+		// Except on the top rows, tundra can only be placed on grasslands, so leave the world as mostly water,
+		// and then set some specific grass cells to test with.  This sets a triangle grass shape.
+		mapGen.setAllToWater ();
+		for (int x = 0; x < 6; x++)
+			for (int y = 0; y < x; y++)
+				fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+		
+		// Run method
+		mapGen.makeTundra ();
+
+		// Check results
+		int count = 0;
+		for (final MapAreaOfMemoryGridCells plane : fow.getMap ().getPlane ())
+			for (final MapRowOfMemoryGridCells row : plane.getRow ())
+				for (final MemoryGridCell cell : row.getCell ())
+					if (cell.getTerrainData ().getTileTypeID ().equals (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA))
+						count++;
+		
+		assertEquals ((2 * 2 * 60) + 5, count);
+	}
+	
+	/**
+	 * Tests the placeTowersOfWizardry method placing the normal number of towers (6) anywhere on the map
+	 * @throws MomException If we can't find a suitable location to place all Towers of Wizardry even after reducing desired separation
+	 */
+	@Test
+	public final void testPlaceTowersOfWizardry () throws MomException
+	{
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		mapSize.setTowersOfWizardryCount (6);
+		mapSize.setTowersOfWizardrySeparation (10);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		
+		// Map storage
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+
+		// Use real random number generator
+		final RandomUtilsImpl random = new RandomUtilsImpl ();
+		
+		final BooleanMapAreaOperations2DImpl ops = new BooleanMapAreaOperations2DImpl ();
+		ops.setRandomUtils (random);
+		ops.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setBooleanMapAreaOperations2D (ops);
+		mapGen.setRandomUtils (random);
+		mapGen.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
+		
+		// Run method
+		mapGen.setAllToWater ();		// Use this to create the map so it creates the terrainData objects, which the method on ServerTestData does not
+		mapGen.placeTowersOfWizardry ();
+		
+		// Check results - search for the towers on Arcanus, then we know what the value in Myrror should be
+		int count = 0;
+		for (int x = 0; x < mapSize.getWidth (); x++)
+			for (int y = 0; y < mapSize.getHeight (); y++)
+			{
+				final ServerGridCell arcanusCell = (ServerGridCell) fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x);
+				final ServerGridCell myrrorCell = (ServerGridCell) fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x);
+				
+				if (arcanusCell.getTerrainData ().getMapFeatureID () == null)
+				{
+					// Its still a water tile
+					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, arcanusCell.getTerrainData ().getTileTypeID ());
+					assertNull (arcanusCell.getNodeLairTowerPowerProportion ());
+					
+					assertNull (myrrorCell.getTerrainData ().getMapFeatureID ());
+					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, myrrorCell.getTerrainData ().getTileTypeID ());
+					assertNull (myrrorCell.getNodeLairTowerPowerProportion ());
+				}
+				else
+				{
+					// Its a tower
+					count++;
+					
+					assertEquals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, arcanusCell.getTerrainData ().getMapFeatureID ());
+					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, arcanusCell.getTerrainData ().getTileTypeID ());
+					assertNotNull (arcanusCell.getNodeLairTowerPowerProportion ());
+					
+					if ((arcanusCell.getNodeLairTowerPowerProportion () < 0) || (arcanusCell.getNodeLairTowerPowerProportion () > 1))
+						fail ("NodeLairTowerPowerProportion must be between 0..1");
+					
+					assertEquals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, myrrorCell.getTerrainData ().getMapFeatureID ());
+					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, myrrorCell.getTerrainData ().getTileTypeID ());
+					assertNull (myrrorCell.getNodeLairTowerPowerProportion ());
+				}
+			}
+		
+		assertEquals (mapSize.getTowersOfWizardryCount (), count);
+	}
+
+	/**
+	 * Proves that towers will never be placed on Tundra
+	 * @throws MomException If we can't find a suitable location to place all Towers of Wizardry even after reducing desired separation
+	 */
+	@Test
+	public final void testPlaceTowersOfWizardry_Tundra () throws MomException
+	{
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		mapSize.setTowersOfWizardryCount (6);
+		mapSize.setTowersOfWizardrySeparation (10);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		
+		// Map storage
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+
+		// Use real random number generator
+		final RandomUtilsImpl random = new RandomUtilsImpl ();
+		
+		final BooleanMapAreaOperations2DImpl ops = new BooleanMapAreaOperations2DImpl ();
+		ops.setRandomUtils (random);
+		ops.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setBooleanMapAreaOperations2D (ops);
+		mapGen.setRandomUtils (random);
+		mapGen.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
+		
+		// Set rows 0..19 as tundra on Arcanus; set rows 21..39 as tundra on Myrror
+		// Therefore if the method works properly, it'll be forced to place all towers on row 20
+		mapGen.setAllToWater ();
+		for (int x = 0; x < mapSize.getWidth (); x++)
+			for (int y = 0; y < mapSize.getHeight (); y++)
+				if (y < 20)
+					fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+				else if (y > 20)
+					fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+		
+		// Run method
+		mapGen.placeTowersOfWizardry ();
+		
+		// Check results - search for the towers on Arcanus, then we know what the value in Myrror should be
+		int count = 0;
+		for (int x = 0; x < mapSize.getWidth (); x++)
+			for (int y = 0; y < mapSize.getHeight (); y++)
+			{
+				final ServerGridCell arcanusCell = (ServerGridCell) fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x);
+				final ServerGridCell myrrorCell = (ServerGridCell) fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x);
+				
+				if (arcanusCell.getTerrainData ().getMapFeatureID () == null)
+				{
+					// Its still a water or tundra tile
+					assertNull (arcanusCell.getNodeLairTowerPowerProportion ());
+					
+					assertNull (myrrorCell.getTerrainData ().getMapFeatureID ());
+					assertNull (myrrorCell.getNodeLairTowerPowerProportion ());
+				}
+				else
+				{
+					// Its a tower
+					count++;
+					assertEquals (20, y);
+					
+					assertEquals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, arcanusCell.getTerrainData ().getMapFeatureID ());
+					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, arcanusCell.getTerrainData ().getTileTypeID ());
+					assertNotNull (arcanusCell.getNodeLairTowerPowerProportion ());
+					
+					if ((arcanusCell.getNodeLairTowerPowerProportion () < 0) || (arcanusCell.getNodeLairTowerPowerProportion () > 1))
+						fail ("NodeLairTowerPowerProportion must be between 0..1");
+					
+					assertEquals (CommonDatabaseConstants.VALUE_FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, myrrorCell.getTerrainData ().getMapFeatureID ());
+					assertEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, myrrorCell.getTerrainData ().getTileTypeID ());
+					assertNull (myrrorCell.getNodeLairTowerPowerProportion ());
+				}
+			}
+		
+		assertEquals (mapSize.getTowersOfWizardryCount (), count);
+	}
+
+	/**
+	 * Try to place 61 towers on a map that only has space for 60 of them
+	 * @throws MomException If we can't find a suitable location to place all Towers of Wizardry even after reducing desired separation
+	 */
+	@Test(expected=MomException.class)
+	public final void testPlaceTowersOfWizardry_Full () throws MomException
+	{
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		mapSize.setTowersOfWizardryCount (61);
+		mapSize.setTowersOfWizardrySeparation (10);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		
+		// Map storage
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+
+		// Use real random number generator
+		final RandomUtilsImpl random = new RandomUtilsImpl ();
+		
+		final BooleanMapAreaOperations2DImpl ops = new BooleanMapAreaOperations2DImpl ();
+		ops.setRandomUtils (random);
+		ops.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setBooleanMapAreaOperations2D (ops);
+		mapGen.setRandomUtils (random);
+		mapGen.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
+		
+		// Set rows 0..19 as tundra on Arcanus; set rows 21..39 as tundra on Myrror
+		// Therefore if the method works properly, it'll be forced to place all towers on row 20
+		mapGen.setAllToWater ();
+		for (int x = 0; x < mapSize.getWidth (); x++)
+			for (int y = 0; y < mapSize.getHeight (); y++)
+				if (y < 20)
+					fow.getMap ().getPlane ().get (0).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+				else if (y > 20)
+					fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA);
+		
+		// Run method
+		mapGen.placeTowersOfWizardry ();
+	}
+	
 	/**
 	 * Tests the findTerrainBorder8 method to find a bitmask that exists
 	 * @throws JAXBException If there is a problem reading the XML file
@@ -123,21 +410,24 @@ public final class TestOverlandMapGeneratorImpl
 
 	/**
 	 * Tests the checkAllDirectionsLeadToGrass method
-	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCheckAllDirectionsLeadToGrass () throws Exception
+	public final void testCheckAllDirectionsLeadToGrass ()
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "60x40", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		
+		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
 		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		mapGen.setTrueTerrain (fow);
 		mapGen.setSessionDescription (sd);
-		mapGen.setServerDB (db);
 
 		// Grass to the east and west (via wrapping), ocean to the south because we didn't overwrite it
 		mapGen.setAllToWater ();
@@ -164,10 +454,9 @@ public final class TestOverlandMapGeneratorImpl
 
 	/**
 	 * Tests the countStringRepetitions method
-	 * @throws MomException If some fatal error happens during map generation
 	 */
 	@Test
-	public final void testCountStringRepetitions () throws MomException
+	public final void testCountStringRepetitions ()
 	{
 		final OverlandMapGeneratorImpl gen = new OverlandMapGeneratorImpl (); 
 		assertEquals ("Zero repetitions", 0, gen.countStringRepetitions ("C", "abcde"));
@@ -176,7 +465,327 @@ public final class TestOverlandMapGeneratorImpl
 		assertEquals ("Two including one at the start", 2, gen.countStringRepetitions ("c", "cgcde"));
 		assertEquals ("Two including one at the end", 2, gen.countStringRepetitions ("c", "abcgc"));
 	}
+	
+	/**
+	 * Tests the placeTerrainFeatures method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testPlaceTerrainFeatures () throws Exception
+	{
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final LandProportionPlane landProportionArcanus = new LandProportionPlane ();
+		landProportionArcanus.setFeatureChance (17);
+		landProportionArcanus.setPlaneNumber (0);
 
+		final LandProportionPlane landProportionMyrror = new LandProportionPlane ();
+		landProportionMyrror.setFeatureChance (10);
+		landProportionMyrror.setPlaneNumber (1);
+		
+		final LandProportionData landProportion = new LandProportionData ();
+		landProportion.getLandProportionPlane ().add (landProportionArcanus);
+		landProportion.getLandProportionPlane ().add (landProportionMyrror);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		sd.setLandProportion (landProportion);
+		
+		// Mock server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final TileType ocean = new TileType ();
+		when (db.findTileType (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, "placeTerrainFeatures")).thenReturn (ocean);
+
+		// Arcanus can get MF01..02, Myrror can get MF01..03
+		final TileType mountain = new TileType ();
+		for (int plane = 0; plane < mapSize.getDepth (); plane++)
+			for (int n = 1; n <= 2+plane; n++)
+			{
+				final TileTypeFeatureChance feature = new TileTypeFeatureChance ();
+				feature.setMapFeatureID ("MF0" + n);
+				feature.setFeatureChance (n);
+				feature.setPlaneNumber (plane);
+				mountain.getTileTypeFeatureChance ().add (feature);
+			}
+		when (db.findTileType (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN, "placeTerrainFeatures")).thenReturn (mountain);
+		
+		// Map storage
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Mock random number generator
+		final RandomUtils random = mock (RandomUtils.class);
+		
+		// 3 out of 30 map cells on Arcanus get features, and 5 out of 30 map cells on Myrror get features
+		when (random.nextInt (17)).thenReturn (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+		when (random.nextInt (10)).thenReturn (0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5);
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
+		mapGen.setRandomUtils (random);
+
+		// Place some tile types that get chances for map features
+		mapGen.setAllToWater ();
+		for (int plane = 0; plane < mapSize.getDepth (); plane++)
+			for (int x = 0; x < mapSize.getWidth (); x++)
+			{
+				final OverlandMapTerrainData tc = fow.getMap ().getPlane ().get (plane).getRow ().get (10).getCell ().get (x).getTerrainData ();
+				tc.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN);
+				
+				// Prove existing features won't be overridden
+				if (x % 2 == 0)
+					tc.setMapFeatureID ("MF99");
+			}
+		
+		// The specific types of map features placed on Arcanus (1/3 chance of MF01, 2/3 chance of MF02)
+		when (random.nextInt (3)).thenReturn (0, 1, 2);
+
+		// The specific types of map features placed on Myrror (1/6 chance of MF01, 2/6 chance of MF02, 3/6 chance of MF03)
+		when (random.nextInt (6)).thenReturn (0, 1, 2, 3, 4);
+		
+		// Run method
+		mapGen.placeTerrainFeatures ();
+		
+		// 30 map cells on each plane should've been considered
+		verify (random, times (30)).nextInt (landProportionArcanus.getFeatureChance ());
+		verify (random, times (30)).nextInt (landProportionMyrror.getFeatureChance ());
+		
+		// 3 and 5 features actually got placed
+		for (int plane = 0; plane < mapSize.getDepth (); plane++)
+		{
+			int count = 0;
+			for (int x = 0; x < mapSize.getWidth (); x++)
+			{
+				final OverlandMapTerrainData tc = fow.getMap ().getPlane ().get (plane).getRow ().get (10).getCell ().get (x).getTerrainData ();
+				if ((tc.getMapFeatureID () != null) && (!tc.getMapFeatureID ().equals ("MF99")))
+					count++;
+			}
+			
+			assertEquals ((plane == 0) ? 3 : 5, count);
+		}
+
+		verify (random, times (3)).nextInt (3);
+		verify (random, times (5)).nextInt (6);
+		
+		// Check the specific cells
+		assertEquals ("MF01", fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (1).getTerrainData ().getMapFeatureID ());
+		assertEquals ("MF02", fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (21).getTerrainData ().getMapFeatureID ());
+		assertEquals ("MF02", fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (41).getTerrainData ().getMapFeatureID ());
+
+		assertEquals ("MF01", fow.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (1).getTerrainData ().getMapFeatureID ());
+		assertEquals ("MF02", fow.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (13).getTerrainData ().getMapFeatureID ());
+		assertEquals ("MF02", fow.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (25).getTerrainData ().getMapFeatureID ());
+		assertEquals ("MF03", fow.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (37).getTerrainData ().getMapFeatureID ());
+		assertEquals ("MF03", fow.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (49).getTerrainData ().getMapFeatureID ());
+	}
+	
+	/**
+	 * Tests the placeNodeRings method just performing a test whether the rings fit
+	 */
+	@Test
+	public final void testPlaceNodeRings_TestOnly ()
+	{
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		
+		// Map storage
+		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (mapSize);
+		
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		fow.setMap (terrain);
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setSessionDescription (sd);
+		mapGen.setTrueTerrain (fow);
+		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Nothing in the way yet, so will definitely fit
+		// centre square, then 6/8 in the radius 1 ring
+		assertTrue (mapGen.placeNodeRings (7, 20, 10, 0, null));
+		
+		// If the centre ring is blocked then its an immediate fail, even though there's 7 free spaces in the radius 1 ring
+		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		assertFalse (mapGen.placeNodeRings (7, 20, 10, 0, null));
+		
+		// Unblock the centre ring again, and block 2 cells in the radius 1 ring, so there's still enough space, just
+		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20)).setAuraFromNode (null);
+		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (21)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (19)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		assertTrue (mapGen.placeNodeRings (7, 20, 10, 0, null));
+		
+		// Block 3rd cell in the radius 1 ring and it fails, even though if it expanded two 2 rings there's plenty of space
+		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (21)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		assertFalse (mapGen.placeNodeRings (7, 20, 10, 0, null));
+	}
+
+	/**
+	 * Tests the placeNodeRings method in update mode
+	 */
+	@Test
+	public final void testPlaceNodeRings_Update ()
+	{
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		
+		// Map storage
+		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (mapSize);
+		
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		fow.setMap (terrain);
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setSessionDescription (sd);
+		mapGen.setTrueTerrain (fow);
+		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		mapGen.setRandomUtils (new RandomUtilsImpl ());
+
+		// Block 2 cells in the radius 1 ring so when we place 7 node auras, there's only exactly the right number of cells left
+		// Unblock the centre ring again, and block 2 cells in the radius 1 ring, so there's still enough space, just
+		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (21)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (19)).setAuraFromNode (new MapCoordinates3DEx (0, 0, 0));
+		
+		// Run method
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (20, 10, 0);
+		assertTrue (mapGen.placeNodeRings (7, 20, 10, 0, coords));
+		
+		// Check results
+		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (19)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (20)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (9).getCell ().get (21)).getAuraFromNode ());
+		// assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (19)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (21)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (19)).getAuraFromNode ());
+		assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20)).getAuraFromNode ());
+		// assertEquals (coords, ((ServerGridCell) terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (21)).getAuraFromNode ());
+	}
+
+	/**
+	 * Tests the placeNodes method 
+	 * @throws MomException If there are no node tile types defined in the database
+	 */
+	@Test
+	public final void testPlaceNodes () throws MomException
+	{
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+
+		final NodeStrengthPlane nodeStrengthArcanus = new NodeStrengthPlane ();
+		nodeStrengthArcanus.setNodeAuraSquaresMinimum (5);
+		nodeStrengthArcanus.setNodeAuraSquaresMaximum (10);
+		nodeStrengthArcanus.setNumberOfNodesOnPlane (14);
+		nodeStrengthArcanus.setPlaneNumber (0);
+		
+		final NodeStrengthPlane nodeStrengthMyrror = new NodeStrengthPlane ();
+		nodeStrengthMyrror.setNodeAuraSquaresMinimum (10);
+		nodeStrengthMyrror.setNodeAuraSquaresMaximum (15);
+		nodeStrengthMyrror.setNumberOfNodesOnPlane (18);
+		nodeStrengthMyrror.setPlaneNumber (1);
+		
+		final NodeStrengthData nodeStrength = new NodeStrengthData ();
+		nodeStrength.getNodeStrengthPlane ().add (nodeStrengthArcanus);
+		nodeStrength.getNodeStrengthPlane ().add (nodeStrengthMyrror);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		sd.setNodeStrength (nodeStrength);
+		
+		// Mock server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		final List<TileType> nodeTypes = new ArrayList<TileType> ();
+		for (int n = 1; n <= 6; n++)
+		{
+			final TileType nodeType = new TileType ();
+			nodeType.setTileTypeID ("NT0" + n);
+			
+			if (n <= 3)
+				nodeType.setMagicRealmID ("MB0" + n);
+			
+			nodeTypes.add (nodeType);
+		}
+		when (db.getTileType ()).thenReturn (nodeTypes);
+		
+		// Map storage
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
+		mapGen.setTrueTerrain (fow);
+		mapGen.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		mapGen.setRandomUtils (new RandomUtilsImpl ());
+		
+		// Only grass tiles are candidates for placing nodes, so make everything grass
+		mapGen.setAllToWater ();
+		for (final MapAreaOfMemoryGridCells plane : fow.getMap ().getPlane ())
+			for (final MapRowOfMemoryGridCells row : plane.getRow ())
+				for (final MemoryGridCell cell : row.getCell ())
+					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS);
+		
+		// Run method
+		mapGen.placeNodes ();
+		
+		// Check the right number of nodes were places on the each plane, that the nodeLairTowerProportions are correctly set,
+		// and the number of auraFromNode values looks reasonable and they all point back to actual nodes
+		for (final NodeStrengthPlane plane : nodeStrength.getNodeStrengthPlane ())
+		{
+			int nodeCount = 0;
+			int auraCount = 0;
+			
+			for (final MapRowOfMemoryGridCells row : fow.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ())
+				for (final MemoryGridCell cell : row.getCell ())
+				{
+					final ServerGridCell serverCell = (ServerGridCell) cell;
+					
+					// Check actual nodes
+					if (serverCell.getTerrainData ().getTileTypeID ().startsWith ("NT0"))
+					{
+						nodeCount++;
+						assertNotNull (serverCell.getNodeLairTowerPowerProportion ());
+						
+						if ((serverCell.getNodeLairTowerPowerProportion () < 0) || (serverCell.getNodeLairTowerPowerProportion () > 1))
+							fail ("NodeLairTowerPowerProportion must be between 0..1");
+					}
+					else
+						assertNull (serverCell.getNodeLairTowerPowerProportion ());
+					
+					// Check auras
+					if (serverCell.getAuraFromNode () != null)
+					{
+						auraCount++;
+						final MemoryGridCell nodeCell = fow.getMap ().getPlane ().get
+							(serverCell.getAuraFromNode ().getZ ()).getRow ().get (serverCell.getAuraFromNode ().getY ()).getCell ().get (serverCell.getAuraFromNode ().getX ());
+						
+						assertNotEquals (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, nodeCell.getTerrainData ().getTileTypeID ());						 
+					}
+				}
+			
+			// Check plane totals
+			assertEquals (plane.getNumberOfNodesOnPlane (), nodeCount);
+			
+			if ((auraCount < plane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMinimum ()) ||
+				(auraCount > plane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMaximum ()))
+				
+				fail ("auraCount for plane " + plane.getPlaneNumber () + " must be between " +
+					(plane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMinimum ()) + " and " +
+					(plane.getNumberOfNodesOnPlane () * plane.getNodeAuraSquaresMaximum ()) + " but was " + auraCount);
+		}
+	}
+	
 	/**
 	 * Tests the chooseRandomNodeTileTypeID method
 	 * @throws Exception If there is a problem
@@ -184,7 +793,21 @@ public final class TestOverlandMapGeneratorImpl
 	@Test
 	public final void testChooseRandomNodeTileTypeID () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock server database - 3 node tile types, and 3 non-node tile types
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		final List<TileType> nodeTypes = new ArrayList<TileType> ();
+		for (int n = 1; n <= 6; n++)
+		{
+			final TileType nodeType = new TileType ();
+			nodeType.setTileTypeID ("NT0" + n);
+			
+			if (n <= 3)
+				nodeType.setMagicRealmID ("MB0" + n);
+			
+			nodeTypes.add (nodeType);
+		}
+		when (db.getTileType ()).thenReturn (nodeTypes);
 
 		// Fix random result
 		final RandomUtils random = mock (RandomUtils.class);
@@ -195,7 +818,7 @@ public final class TestOverlandMapGeneratorImpl
 		mapGen.setServerDB (db);
 		mapGen.setRandomUtils (random);
 
-		assertEquals ("TT14", mapGen.chooseRandomNodeTileTypeID ());
+		assertEquals ("NT03", mapGen.chooseRandomNodeTileTypeID ());
 	}
 
 	/**
@@ -205,36 +828,214 @@ public final class TestOverlandMapGeneratorImpl
 	@Test
 	public final void testChooseRandomLairFeatureID () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock server database - creates 7 map features, MF10A .. MF16A, note MF12A is intentionally the code for an uncleared tower so won't be considered
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final List<MapFeature> mapFeatures = new ArrayList<MapFeature> ();
+		for (int n = 0; n <= 6; n++)
+		{
+			final MapFeature mapFeature = new MapFeature ();
+			mapFeature.setMapFeatureID ("MF1" + n + "A");
+			
+			if (n <= 3)
+				mapFeature.getMapFeatureMagicRealm ().add (null);		// Doesn't matter what's here, as long as its a non-empty list
+			
+			mapFeatures.add (mapFeature);
+		}
+		when (db.getMapFeature ()).thenReturn (mapFeatures);
 
 		// Fix random result
 		final RandomUtils random = mock (RandomUtils.class);
-		when (random.nextInt (7)).thenReturn (5);
+		when (random.nextInt (3)).thenReturn (2);
 		
 		// Set up object to test
 		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
 		mapGen.setServerDB (db);
 		mapGen.setRandomUtils (random);
 
-		assertEquals ("MF18", mapGen.chooseRandomLairFeatureID ());
+		assertEquals ("MF13A", mapGen.chooseRandomLairFeatureID ());
 	}
-
+	
 	/**
-	 * Tests the findMostExpensiveMonster method
+	 * Tests the placeLairs method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testFindMostExpensiveMonster () throws Exception
+	public final void testPlaceLairs () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
-		mapGen.setServerDB (db);
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		
+		// Mock server database - ocean is TT09 so lets create 3 tile types that can get lairs and 6 that can't
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
-		assertEquals ("UN179", mapGen.findMostExpensiveMonster ("LT01", 1000).getUnitID ());		// Arch angel
-		assertEquals ("UN178", mapGen.findMostExpensiveMonster ("LT01", 900).getUnitID ());		// Angel
-		assertEquals ("UN176", mapGen.findMostExpensiveMonster ("LT01", 500).getUnitID ());		// Unicorns
-		assertEquals ("UN177", mapGen.findMostExpensiveMonster ("LT01", 100).getUnitID ());		// Guardian spirit
-		assertNull (mapGen.findMostExpensiveMonster ("LT01", 45));											// Nothing that cheap
+		for (int n = 1; n <= 9; n++)
+		{
+			final TileType tileType = new TileType ();
+			tileType.setTileTypeID ("TT0" + n);
+			tileType.setCanPlaceLair (n <= 3);
+			
+			when (db.findTileType (tileType.getTileTypeID (), "placeLairs")).thenReturn (tileType);
+		}		
+
+		final List<MapFeature> mapFeatures = new ArrayList<MapFeature> ();
+		for (int n = 1; n <= 6; n++)
+		{
+			final MapFeature mapFeature = new MapFeature ();
+			mapFeature.setMapFeatureID ("MF0" + n);
+			
+			if (n <= 3)
+				mapFeature.getMapFeatureMagicRealm ().add (null);		// Doesn't matter what's here, as long as its a non-empty list
+			
+			mapFeatures.add (mapFeature);
+		}
+		when (db.getMapFeature ()).thenReturn (mapFeatures);
+		
+		// Map storage
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
+		mapGen.setTrueTerrain (fow);
+		mapGen.setRandomUtils (new RandomUtilsImpl ());
+
+		// Set up some tiles which can accept lairs, leave rest as ocean which can't.
+		// So we put 30 tiles on each plane that can accept lairs; but then on 10 of them put another mapFeatureID
+		mapGen.setAllToWater ();
+		for (int plane = 0; plane < mapSize.getDepth (); plane++)
+			for (int y = 0; y <= 9; y++)
+				for (int x = 1; x <= 9; x++)
+				{
+					final OverlandMapTerrainData mc = fow.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
+					mc.setTileTypeID ("TT0" + x);
+					
+					if (y % 2 == 0)
+						mc.setMapFeatureID ("X");
+				}
+		
+		// Place 10 weak lairs
+		mapGen.placeLairs (10, true);
+
+		int weakCount = 0;
+		for (final MapAreaOfMemoryGridCells plane : fow.getMap ().getPlane ())
+			for (final MapRowOfMemoryGridCells row : plane.getRow ())
+				for (final MemoryGridCell cell : row.getCell ())
+				{
+					final ServerGridCell serverCell = (ServerGridCell) cell;
+					if ((serverCell.getTerrainData ().getMapFeatureID () != null) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("X")))
+					{
+						// Lair was placed here
+						weakCount++;
+						
+						if ((!serverCell.getTerrainData ().getTileTypeID ().equals ("TT01")) && (!serverCell.getTerrainData ().getTileTypeID ().equals ("TT02")) && (!serverCell.getTerrainData ().getTileTypeID ().equals ("TT03")))
+							fail ("Lairs should only be placed on TT01..03, but found " + serverCell.getTerrainData ().getTileTypeID ());
+
+						if ((!serverCell.getTerrainData ().getMapFeatureID ().equals ("MF01")) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("MF02")) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("MF03")))
+							fail ("Only map features MF01..03 should be placed, but found " + serverCell.getTerrainData ().getMapFeatureID ());
+
+						assertNotNull (serverCell.getNodeLairTowerPowerProportion ());
+						
+						if ((serverCell.getNodeLairTowerPowerProportion () < 0) || (serverCell.getNodeLairTowerPowerProportion () > 1))
+							fail ("NodeLairTowerPowerProportion must be between 0..1");
+						
+						assertTrue (serverCell.isLairWeak ());
+					}
+					else
+					{
+						// Lair wasn't placed here
+						assertNull (serverCell.getNodeLairTowerPowerProportion ());
+						assertNull (serverCell.isLairWeak ());
+					}
+				}
+		
+		assertEquals (10, weakCount);
+		
+		// Place 15 strong lairs (in addition)
+		mapGen.placeLairs (15, false);
+		
+		weakCount = 0;
+		int strongCount = 0;
+		for (final MapAreaOfMemoryGridCells plane : fow.getMap ().getPlane ())
+			for (final MapRowOfMemoryGridCells row : plane.getRow ())
+				for (final MemoryGridCell cell : row.getCell ())
+				{
+					final ServerGridCell serverCell = (ServerGridCell) cell;
+					if ((serverCell.getTerrainData ().getMapFeatureID () != null) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("X")))
+					{
+						// Lair was placed here
+						if ((!serverCell.getTerrainData ().getTileTypeID ().equals ("TT01")) && (!serverCell.getTerrainData ().getTileTypeID ().equals ("TT02")) && (!serverCell.getTerrainData ().getTileTypeID ().equals ("TT03")))
+							fail ("Lairs should only be placed on TT01..03, but found " + serverCell.getTerrainData ().getTileTypeID ());
+
+						if ((!serverCell.getTerrainData ().getMapFeatureID ().equals ("MF01")) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("MF02")) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("MF03")))
+							fail ("Only map features MF01..03 should be placed, but found " + serverCell.getTerrainData ().getMapFeatureID ());
+
+						assertNotNull (serverCell.getNodeLairTowerPowerProportion ());
+						
+						if ((serverCell.getNodeLairTowerPowerProportion () < 0) || (serverCell.getNodeLairTowerPowerProportion () > 1))
+							fail ("NodeLairTowerPowerProportion must be between 0..1");
+						
+						assertNotNull (serverCell.isLairWeak ());
+						if (serverCell.isLairWeak ())
+							weakCount++;
+						else
+							strongCount++;
+					}
+					else
+					{
+						// Lair wasn't placed here
+						assertNull (serverCell.getNodeLairTowerPowerProportion ());
+						assertNull (serverCell.isLairWeak ());
+					}
+				}
+		
+		assertEquals (10, weakCount);
+		assertEquals (15, strongCount);
+		
+		// Try to place 15 more, to prove that it'll just place as many as will fit (5) and leave it at that
+		mapGen.placeLairs (15, false);
+
+		weakCount = 0;
+		strongCount = 0;
+		for (final MapAreaOfMemoryGridCells plane : fow.getMap ().getPlane ())
+			for (final MapRowOfMemoryGridCells row : plane.getRow ())
+				for (final MemoryGridCell cell : row.getCell ())
+				{
+					final ServerGridCell serverCell = (ServerGridCell) cell;
+					if ((serverCell.getTerrainData ().getMapFeatureID () != null) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("X")))
+					{
+						// Lair was placed here
+						if ((!serverCell.getTerrainData ().getTileTypeID ().equals ("TT01")) && (!serverCell.getTerrainData ().getTileTypeID ().equals ("TT02")) && (!serverCell.getTerrainData ().getTileTypeID ().equals ("TT03")))
+							fail ("Lairs should only be placed on TT01..03, but found " + serverCell.getTerrainData ().getTileTypeID ());
+
+						if ((!serverCell.getTerrainData ().getMapFeatureID ().equals ("MF01")) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("MF02")) && (!serverCell.getTerrainData ().getMapFeatureID ().equals ("MF03")))
+							fail ("Only map features MF01..03 should be placed, but found " + serverCell.getTerrainData ().getMapFeatureID ());
+
+						assertNotNull (serverCell.getNodeLairTowerPowerProportion ());
+						
+						if ((serverCell.getNodeLairTowerPowerProportion () < 0) || (serverCell.getNodeLairTowerPowerProportion () > 1))
+							fail ("NodeLairTowerPowerProportion must be between 0..1");
+						
+						assertNotNull (serverCell.isLairWeak ());
+						if (serverCell.isLairWeak ())
+							weakCount++;
+						else
+							strongCount++;
+					}
+					else
+					{
+						// Lair wasn't placed here
+						assertNull (serverCell.getNodeLairTowerPowerProportion ());
+						assertNull (serverCell.isLairWeak ());
+					}
+				}
+		
+		assertEquals (10, weakCount);
+		assertEquals (20, strongCount);
 	}
 
 	/**
@@ -310,8 +1111,13 @@ public final class TestOverlandMapGeneratorImpl
 		
 		// Run method
 		mapGen.generateOverlandTerrain ();
+		
+		// Check all the map cells look valid
+		assertEquals (sd.getMapSize ().getDepth (), fow.getMap ().getPlane ().size ());
+		
+		// Check that all node/lair/towers have their proportion set between 0 and 1 (and that the proportion isn't set for any other cells)
 
-		// We can't 'test' the output, only that the generation doesn't fail, but interesting to dump the maps to the standard output
+		// Dump the maps to the standard output
 		for (final Plane plane : db.getPlane ())
 		{
 			System.out.println (plane.getPlaneDescription () + ":");
@@ -339,5 +1145,186 @@ public final class TestOverlandMapGeneratorImpl
 		
 		final Marshaller marshaller = JAXBContext.newInstance (StoredOverlandMap.class).createMarshaller ();
 		marshaller.marshal (container, new File ("target/generatedOverlandMap.xml"));
+	}
+
+	/**
+	 * Tests the generateInitialCombatAreaEffects method
+	 * @throws RecordNotFoundException If we encounter a combat area effect that we can't find in the cache
+	 */
+	@Test
+	public final void testGenerateInitialCombatAreaEffects () throws RecordNotFoundException
+	{
+		// Session description
+		final MapSizeData mapSize = ServerTestData.createMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+
+		// Mock server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final TileType ocean = new TileType ();
+		ocean.setTileTypeID (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN);
+		when (db.findTileType (ocean.getTileTypeID (), "generateInitialCombatAreaEffects")).thenReturn (ocean);
+		
+		final TileType dudTileType = new TileType ();
+		dudTileType.setTileTypeID ("TT01");
+		when (db.findTileType (dudTileType.getTileTypeID (), "generateInitialCombatAreaEffects")).thenReturn (dudTileType);
+
+		final TileType activeTileType = new TileType ();
+		activeTileType.setTileTypeID ("TT02");
+		when (db.findTileType (activeTileType.getTileTypeID (), "generateInitialCombatAreaEffects")).thenReturn (activeTileType);
+		
+		final TileTypeAreaEffect centreOnly = new TileTypeAreaEffect ();
+		centreOnly.setCombatAreaEffectID ("CAE01");
+		centreOnly.setExtendAcrossNodeAura (false);
+		activeTileType.getTileTypeAreaEffect ().add (centreOnly);
+
+		final TileTypeAreaEffect expandsAcross = new TileTypeAreaEffect ();
+		expandsAcross.setCombatAreaEffectID ("CAE02");
+		expandsAcross.setExtendAcrossNodeAura (true);
+		activeTileType.getTileTypeAreaEffect ().add (expandsAcross);
+		
+		// Map storage
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setTrueTerrain (fow);
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
+
+		// Set 2 special tile types, one which generates some CAEs and one which doesn't
+		// and a couple of auras which point back at those tile types, again one which generates some CAEs and one which doesn't
+		mapGen.setAllToWater ();
+		fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (20).getTerrainData ().setTileTypeID ("TT01");
+		for (int x = 19; x <= 21; x++)
+			((ServerGridCell) fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (x)).setAuraFromNode (new MapCoordinates3DEx (20, 10, 0));
+
+		fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (40).getTerrainData ().setTileTypeID ("TT02");
+		for (int x = 39; x <= 41; x++)
+			((ServerGridCell) fow.getMap ().getPlane ().get (0).getRow ().get (10).getCell ().get (x)).setAuraFromNode (new MapCoordinates3DEx (40, 10, 0));
+		
+		// Run method
+		mapGen.generateInitialCombatAreaEffects ();
+		
+		// Check results
+		assertEquals (4, fow.getCombatAreaEffect ().size ());
+		
+		assertEquals ("CAE02", fow.getCombatAreaEffect ().get (0).getCombatAreaEffectID ());
+		assertEquals (new MapCoordinates3DEx (39, 10, 0), fow.getCombatAreaEffect ().get (0).getMapLocation ());
+		
+		assertEquals ("CAE01", fow.getCombatAreaEffect ().get (1).getCombatAreaEffectID ());
+		assertEquals (new MapCoordinates3DEx (40, 10, 0), fow.getCombatAreaEffect ().get (1).getMapLocation ());
+		
+		assertEquals ("CAE02", fow.getCombatAreaEffect ().get (2).getCombatAreaEffectID ());
+		assertEquals (new MapCoordinates3DEx (40, 10, 0), fow.getCombatAreaEffect ().get (2).getMapLocation ());
+		
+		assertEquals ("CAE02", fow.getCombatAreaEffect ().get (3).getCombatAreaEffectID ());
+		assertEquals (new MapCoordinates3DEx (41, 10, 0), fow.getCombatAreaEffect ().get (3).getMapLocation ());
+	}
+
+	/**
+	 * Tests the findMostExpensiveMonster method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testFindMostExpensiveMonster () throws Exception
+	{
+		// Mock server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		// Set up 10 units, costing 0..900, except every other one is the wrong magic realm
+		final List<Unit> unitDefs = new ArrayList<Unit> ();
+		for (int n = 0; n < 10; n++)
+		{
+			final Unit unitDef = new Unit ();
+			unitDef.setUnitID ("UN00" + n);
+			unitDef.setProductionCost (n * 100);
+			unitDef.setUnitMagicRealm ("MB0" + (n % 2));
+			
+			unitDefs.add (unitDef);
+		}
+		
+		// Add another with no production cost at all, just to prove it doesn't break
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitID ("UN010");
+		unitDef.setUnitMagicRealm ("MB00");
+		unitDefs.add (unitDef);
+		
+		when (db.getUnit ()).thenReturn (unitDefs);
+		
+		// Set up object to test
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setServerDB (db);
+
+		assertEquals ("UN008", mapGen.findMostExpensiveMonster ("MB00", 1000).getUnitID ());
+		assertEquals ("UN008", mapGen.findMostExpensiveMonster ("MB00", 801).getUnitID ());
+		assertEquals ("UN008", mapGen.findMostExpensiveMonster ("MB00", 800).getUnitID ());
+		assertEquals ("UN006", mapGen.findMostExpensiveMonster ("MB00", 799).getUnitID ());
+		assertEquals ("UN002", mapGen.findMostExpensiveMonster ("MB00", 250).getUnitID ());
+		
+		// Won't pick the one with zero production cost, even though that's technically the most expensive
+		assertNull (mapGen.findMostExpensiveMonster ("MB00", 99));
+	}
+	
+	/**
+	 * Tests the fillSingleLairOrTowerWithMonsters method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testFillSingleLairOrTowerWithMonsters () throws Exception
+	{
+		// Session description
+		final UnitSettingData unitSettings = new UnitSettingData ();
+		unitSettings.setUnitsPerMapCell (9);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
+		// Mock server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		final List<Unit> unitDefs = new ArrayList<Unit> ();
+		for (int n = 0; n < 10; n++)
+		{
+			final Unit unitDef = new Unit ();
+			unitDef.setUnitID ("UN00" + n);
+			unitDef.setProductionCost (n * 100);
+			unitDef.setUnitMagicRealm ("MB01");
+			
+			unitDefs.add (unitDef);
+		}		
+
+		when (db.getUnit ()).thenReturn (unitDefs);
+		
+		// Set up monster player
+		final PlayerServerDetails monsterPlayer = new PlayerServerDetails (null, null, null, null, null); 
+		
+		// Map storage
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		// Mock random number generator
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (4)).thenReturn (2);					// Divide 5400 budget by d4 roll of 3 = 1800 max price per main monster, so it'll pick UN009 at 900 pts
+		when (random.nextBoolean ()).thenReturn (true);		// Yes put one of the 6 main monsters back
+		when (random.nextInt (5)).thenReturn (1);					// Divide 900 budget for secondary monsters by d5 roll of 2 = 450 max price per secondary monster, so picks UN004 
+		
+		// Set up object to test
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
+		final OverlandMapGeneratorImpl mapGen = new OverlandMapGeneratorImpl ();
+		mapGen.setSessionDescription (sd);
+		mapGen.setServerDB (db);
+		mapGen.setRandomUtils (random);
+		mapGen.setFogOfWarMidTurnChanges (midTurn);
+		
+		// Run method
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (20, 10, 0);
+		mapGen.fillSingleLairOrTowerWithMonsters (coords, "MB01", 3000, 6000, 0.8, gsk, monsterPlayer);		// 0.8 thru 3000-6000 is 5400
+		
+		// Check results
+		verify (midTurn, times (5)).addUnitOnServerAndClients (gsk, "UN009", coords, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
+		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN004", coords, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
 	}
 }

@@ -240,7 +240,7 @@ public final class ServerTestData
 	public final static MapVolumeOfFogOfWarStates createFogOfWarArea (final CoordinateSystem sys)
 	{
 		final MapVolumeOfFogOfWarStates map = new MapVolumeOfFogOfWarStates ();
-		for (int plane = 0; plane < 2; plane++)
+		for (int plane = 0; plane < sys.getDepth (); plane++)
 		{
 			final MapAreaOfFogOfWarStates area = new MapAreaOfFogOfWarStates ();
 			for (int y = 0; y < sys.getHeight (); y++)
@@ -265,7 +265,7 @@ public final class ServerTestData
 	public final static MapVolumeOfStrings createStringsVolume (final CoordinateSystem sys)
 	{
 		final MapVolumeOfStrings map = new MapVolumeOfStrings ();
-		for (int plane = 0; plane < 2; plane++)
+		for (int plane = 0; plane < sys.getDepth (); plane++)
 		{
 			final MapAreaOfStrings area = new MapAreaOfStrings ();
 			for (int y = 0; y < sys.getHeight (); y++)
@@ -290,7 +290,7 @@ public final class ServerTestData
 	public final static MapVolumeOfMemoryGridCells createOverlandMap (final CoordinateSystem sys)
 	{
 		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
-		for (int plane = 0; plane < 2; plane++)
+		for (int plane = 0; plane < sys.getDepth (); plane++)
 		{
 			final MapAreaOfMemoryGridCells area = new MapAreaOfMemoryGridCells ();
 			for (int y = 0; y < sys.getHeight (); y++)
@@ -319,7 +319,7 @@ public final class ServerTestData
 		throws IOException, InvalidFormatException
 	{
 		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
-		for (int plane = 0; plane < 2; plane++)
+		for (int plane = 0; plane < sys.getDepth (); plane++)
 		{
 			final MapAreaOfMemoryGridCells area = new MapAreaOfMemoryGridCells ();
 			for (int y = 0; y < sys.getHeight (); y++)

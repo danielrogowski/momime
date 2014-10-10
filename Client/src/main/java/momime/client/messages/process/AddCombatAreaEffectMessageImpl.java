@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.MomClient;
 import momime.common.messages.servertoclient.v0_9_5.AddCombatAreaEffectMessage;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +22,9 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	/** Class logger */
 	private final Log log = LogFactory.getLog (AddCombatAreaEffectMessageImpl.class);
 
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -31,8 +35,24 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	{
 		log.trace ("Entering start: " + getData ().getMapLocation () + ", " + getData ().getCombatAreaEffectID ());
 		
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ().add (getData ());
+		
 		log.trace ("Exiting start");
+	}
 
-		throw new UnsupportedOperationException ("AddCombatAreaEffectMessageImpl");
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 }

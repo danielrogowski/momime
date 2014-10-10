@@ -152,11 +152,14 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		}
 			
 		// CAEs added or come into view
-		for (final AddCombatAreaEffectMessageData data : getAddCombatAreaEffect ())
+		if (getAddCombatAreaEffect ().size () > 0)
 		{
-			final AddCombatAreaEffectMessageImpl proc = new AddCombatAreaEffectMessageImpl ();
-			proc.setData (data);
-			proc.start ();
+			final AddCombatAreaEffectMessageImpl proc = getFactory ().createAddCombatAreaEffectMessage ();
+			for (final AddCombatAreaEffectMessageData data : getAddCombatAreaEffect ())
+			{
+				proc.setData (data);
+				proc.start ();
+			}
 		}
 		
 		// CAEs cancelled or gone out of view

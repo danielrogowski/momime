@@ -145,6 +145,7 @@ public final class MomServer extends MultiplayerSessionServer
 		mapGen.setServerDB (thread.getServerDB ());
 		mapGen.setTrueTerrain (thread.getGeneralServerKnowledge ().getTrueMap ());		// See comment in spring XML for why this isn't just injected
 		mapGen.generateOverlandTerrain ();
+		mapGen.generateInitialCombatAreaEffects ();
 
 		thread.getSessionLogger ().info ("Session startup completed");
 		log.trace ("Exiting createSessionThread = " + thread);

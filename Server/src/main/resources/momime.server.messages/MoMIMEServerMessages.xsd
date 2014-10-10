@@ -53,7 +53,13 @@
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="lairWeak" type="xsd:boolean"/>
-					<xsd:element minOccurs="0" maxOccurs="1" name="nodeLairTowerPowerProportion" type="xsd:double"/>
+					<xsd:element minOccurs="0" maxOccurs="1" name="nodeLairTowerPowerProportion" type="xsd:double">
+						<xsd:annotation>
+							<xsd:documentation>Stores the random roll between 0..1 for where between min and max the various stats of a node/lair/tower are.
+															e.g. for nodes, this keeps the size of the aura, the strength of the defending monsters,
+															and the quality of treasure reward all at the same level.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="nodeSpiritUnitID" type="momimecommon:unitID">
 					    <xsd:annotation>
     						<xsd:documentation>Records whether it was a magic spirit or guardian spirit that captured this node.  Guardian spirits are harder to

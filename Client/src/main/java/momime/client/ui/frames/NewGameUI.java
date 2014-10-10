@@ -1808,7 +1808,37 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Difficulty level
 		if (changeDifficultyLevelAction.getSelectedItem () != null)
-			sd.setDifficultyLevel (changeDifficultyLevelAction.getSelectedItem ());
+		{
+			// Recreate the difficulty level, otherwise it gets sent as the DifficultyLevel subtype (rather than DifficultyLevelData) including all the unncessary DifficultyLevelNodeStrengths
+			final DifficultyLevelData src = changeDifficultyLevelAction.getSelectedItem ();
+			final DifficultyLevelData dest = new DifficultyLevelData ();
+			
+		    dest.setHumanSpellPicks (src.getHumanSpellPicks ());
+		    dest.setAiSpellPicks (src.getAiSpellPicks ());
+		    dest.setHumanStartingGold (src.getHumanStartingGold ());
+		    dest.setAiStartingGold (src.getAiStartingGold ());
+		    dest.setCustomWizards (src.isCustomWizards ());
+		    dest.setEachWizardOnlyOnce (src.isEachWizardOnlyOnce ());
+		    
+		    dest.setNormalLairCount (src.getNormalLairCount ());
+		    dest.setWeakLairCount (src.getWeakLairCount ());
+		    
+		    dest.setTowerMonstersMinimum (src.getTowerMonstersMinimum ());
+		    dest.setTowerMonstersMaximum (src.getTowerMonstersMaximum ());
+		    dest.setTowerTreasureMinimum (src.getTowerTreasureMinimum ());
+		    dest.setTowerTreasureMaximum (src.getTowerTreasureMaximum ());
+		    
+		    dest.setRaiderCityCount (src.getRaiderCityCount ());
+		    dest.setRaiderCityStartSizeMin (src.getRaiderCityStartSizeMin ());
+		    dest.setRaiderCityStartSizeMax (src.getRaiderCityStartSizeMax ());
+		    dest.setRaiderCityGrowthCap (src.getRaiderCityGrowthCap ());
+		    
+		    dest.setWizardCityStartSize (src.getWizardCityStartSize ());
+		    dest.setCityMaxSize (src.getCityMaxSize ());
+		    dest.getDifficultyLevelPlane ().addAll (src.getDifficultyLevelPlane ());
+			
+			sd.setDifficultyLevel (dest);
+		}
 		else
 		{
 			final DifficultyLevelData customDifficultyLevel = new DifficultyLevelData ();

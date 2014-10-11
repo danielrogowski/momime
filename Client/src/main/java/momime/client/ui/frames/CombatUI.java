@@ -16,19 +16,25 @@ import javax.swing.JPanel;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
+import momime.client.calculations.MomClientUnitCalculations;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.WizardCombatPlayList;
 import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.TileType;
 import momime.client.ui.MomUIConstants;
+import momime.client.utils.UnitClientUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.v0_9_5.MemoryUnit;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 
@@ -89,6 +95,12 @@ public final class CombatUI extends MomClientFrameUI
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
 	
+	/** Utils for drawing units */
+	private UnitClientUtils unitClientUtils;
+	
+	/** Client unit calculations */
+	private MomClientUnitCalculations clientUnitCalculations;
+	
 	/** Spell book action */
 	private Action spellAction;
 	
@@ -103,6 +115,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Auto action */
 	private Action autoAction;
+
+	/** Content pane */
+	private JPanel contentPane;
 	
 	/** Attacking and defending players */
 	private CombatPlayers players;
@@ -115,7 +130,16 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Image of static portion of the combat terrain */
 	private BufferedImage staticTerrainImage;
-
+	
+	/** Units occupying each cell of the combat map */
+	private MemoryUnit [] [] unitToDrawAtEachLocation;
+	
+	/** Let AI auto control our units? */
+	private boolean autoControl;
+	
+	/** Whose turn it currently is in this combat */
+	private Integer currentPlayerID;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -127,10 +151,16 @@ public final class CombatUI extends MomClientFrameUI
 		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/combat/background.png");
+		
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button50x18goldNormal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button50x18goldPressed.png");
+		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button50x18goldDisabled.png");
+		
 		final BufferedImage calculatorButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/combat/calculatorButtonNormal.png");
 		final BufferedImage calculatorButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/combat/calculatorButtonPressed.png");
+		
+		// We need the tile set to know how big combat tiles are
+		final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "CombatUI");
 		
 		// Actions
 		spellAction = new AbstractAction ()
@@ -182,7 +212,7 @@ public final class CombatUI extends MomClientFrameUI
 		};
 		
 		// Initialize the content pane
-		final JPanel contentPane = new JPanel ()
+		contentPane = new JPanel ()
 		{
 			private static final long serialVersionUID = 7609379654619244164L;
 
@@ -194,6 +224,26 @@ public final class CombatUI extends MomClientFrameUI
 				// Draw the static portion of the terrain
 				g.drawImage (staticTerrainImage, 0, 0, null);
 				
+				// Draw units at the top first and work downwards
+				for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
+					for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
+					{
+						final MemoryUnit unit = unitToDrawAtEachLocation [y] [x];
+						if (unitToDrawAtEachLocation [y] [x] != null)
+							try
+							{
+								// False, because other than during a move anim, units are stood still
+								final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
+								getUnitClientUtils ().drawUnitFigures (unit, movingActionID, unit.getCombatHeading (), g,
+									getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
+									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false);
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
+					}
+				
 				// Draw the buttons panel background at the bottom of the window
 				g.drawImage (background, 0, getHeight () - (background.getHeight () * 2), background.getWidth () * 2, background.getHeight () * 2, null);
 			}
@@ -203,11 +253,11 @@ public final class CombatUI extends MomClientFrameUI
 		contentPane.setLayout (new XmlLayoutManager (getCombatLayout ()));
 		
 		// Buttons
-		contentPane.add (getUtils ().createImageButton (spellAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmCombatSpell");
-		contentPane.add (getUtils ().createImageButton (waitAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmCombatWait");
-		contentPane.add (getUtils ().createImageButton (doneAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmCombatDone");
-		contentPane.add (getUtils ().createImageButton (fleeAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmCombatFlee");
-		contentPane.add (getUtils ().createImageButton (autoAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmCombatAuto");
+		contentPane.add (getUtils ().createImageButton (spellAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatSpell");
+		contentPane.add (getUtils ().createImageButton (waitAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatWait");
+		contentPane.add (getUtils ().createImageButton (doneAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatDone");
+		contentPane.add (getUtils ().createImageButton (fleeAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatFlee");
+		contentPane.add (getUtils ().createImageButton (autoAction, MomUIConstants.GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled), "frmCombatAuto");
 		
 		contentPane.add (getUtils ().createImageButton (toggleDamageCalculationsAction, null, null, null, calculatorButtonNormal, calculatorButtonPressed, calculatorButtonNormal), "frmCombatToggleDamageCalculations");
 		
@@ -217,6 +267,9 @@ public final class CombatUI extends MomClientFrameUI
 		
 		attackingPlayerName = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
 		contentPane.add (attackingPlayerName, "frmCombatAttackingPlayer");
+		
+		// The first time the CombatUI opens, we'll have skipped the call to initNewCombat () because it takes place before init (), so do it now
+		initNewCombat ();
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -235,46 +288,70 @@ public final class CombatUI extends MomClientFrameUI
 	{
 		log.trace ("Entering initNewCombat");
 
-		// Generates the bitmap for the static portion of the terrain
-		getCombatMapBitmapGenerator ().smoothMapTerrain (getCombatLocation (), getCombatTerrain ());
-		staticTerrainImage = getCombatMapBitmapGenerator ().generateCombatMapBitmap ();
-		
-		// Work out who the two players involved are.
-		// There must always be at least one unit on each side.  The only situation where we can get a combat with zero defenders is attacking an empty city,
-		// but in that case the server doesn't even send the startCombat message, so we don't even bother firing up the combatUI, it just goes straight to the
-		// Raze/Capture screen (see how the startCombat method on the server is written).
-		players = getCombatMapUtils ().determinePlayersInCombatFromLocation
-			(getCombatLocation (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), getClient ().getPlayers ());
-		if (!players.bothFound ())
-			throw new MomException ("CombatUI tried to start up with zero units on one or other side");
-		
-		// Which one of the players isn't us?
-		final PlayerPublicDetails otherPlayer = (players.getAttackingPlayer ().getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) ?
-			players.getDefendingPlayer () : players.getAttackingPlayer ();
-			
-		// Now we can start the right music; if they've got a custom photo then default to the standard (raiders) music
-		final MomPersistentPlayerPublicKnowledge otherPub = (MomPersistentPlayerPublicKnowledge) otherPlayer.getPersistentPlayerPublicKnowledge ();
-		final String otherPhotoID = (otherPub.getStandardPhotoID () != null) ? otherPub.getStandardPhotoID () : CommonDatabaseConstants.WIZARD_ID_RAIDERS;
-		final List<WizardCombatPlayList> possiblePlayLists = getGraphicsDB ().findWizard (otherPhotoID, "initNewCombat").getCombatPlayList ();
-		
-		// Pick a music track at random
-		try
+		// Skip if the controls don't exist yet - there's a duplicate call to initNewCombat () at the end of init () for the case of the 1st combat that takes place
+		if (contentPane != null)
 		{
-			if (possiblePlayLists.size () < 1)
-				throw new MomException ("Wizard " + otherPhotoID + " has no combat music defined");
+			// Always turn auto back off again for new combats
+			autoControl = false;
+			currentPlayerID = null;
 			
-			getMusicPlayer ().setShuffle (false);
-			getMusicPlayer ().playPlayList (possiblePlayLists.get (getRandomUtils ().nextInt (possiblePlayLists.size ())).getPlayListID ());
+			// Generates the bitmap for the static portion of the terrain
+			getCombatMapBitmapGenerator ().smoothMapTerrain (getCombatLocation (), getCombatTerrain ());
+			staticTerrainImage = getCombatMapBitmapGenerator ().generateCombatMapBitmap ();
+			
+			// Work out who the two players involved are.
+			// There must always be at least one unit on each side.  The only situation where we can get a combat with zero defenders is attacking an empty city,
+			// but in that case the server doesn't even send the startCombat message, so we don't even bother firing up the combatUI, it just goes straight to the
+			// Raze/Capture screen (see how the startCombat method on the server is written).
+			players = getCombatMapUtils ().determinePlayersInCombatFromLocation
+				(getCombatLocation (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), getClient ().getPlayers ());
+			if (!players.bothFound ())
+				throw new MomException ("CombatUI tried to start up with zero units on one or other side");
+			
+			// Which one of the players isn't us?
+			final PlayerPublicDetails otherPlayer = (players.getAttackingPlayer ().getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) ?
+				players.getDefendingPlayer () : players.getAttackingPlayer ();
+				
+			// Now we can start the right music; if they've got a custom photo then default to the standard (raiders) music
+			final MomPersistentPlayerPublicKnowledge otherPub = (MomPersistentPlayerPublicKnowledge) otherPlayer.getPersistentPlayerPublicKnowledge ();
+			final String otherPhotoID = (otherPub.getStandardPhotoID () != null) ? otherPub.getStandardPhotoID () : CommonDatabaseConstants.WIZARD_ID_RAIDERS;
+			final List<WizardCombatPlayList> possiblePlayLists = getGraphicsDB ().findWizard (otherPhotoID, "initNewCombat").getCombatPlayList ();
+			
+			// Pick a music track at random
+			try
+			{
+				if (possiblePlayLists.size () < 1)
+					throw new MomException ("Wizard " + otherPhotoID + " has no combat music defined");
+				
+				getMusicPlayer ().setShuffle (false);
+				getMusicPlayer ().playPlayList (possiblePlayLists.get (getRandomUtils ().nextInt (possiblePlayLists.size ())).getPlayListID ());
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+			
+			// If using the CombatUI for the first combat, languageChanged () will be called automatically after this method.  If calling it for a subsequent
+			// combat then it won't be, so have to force a call here to get the player names to be displayed properly.
+			if (defendingPlayerName != null)
+				languageChanged ();
+			
+			// Find all the units involved in this combat, kick off their animations (if they're flying), and make a
+			// grid showing which is in which cell, so when we draw them its easier to draw the back ones first.
+			
+			// unitToDrawAtEachLocation is a lot simpler here than in OverlandMapUI since there can only ever be 1 unit at each location.
+			unitToDrawAtEachLocation = new MemoryUnit [getClient ().getSessionDescription ().getCombatMapSize ().getHeight ()] [getClient ().getSessionDescription ().getCombatMapSize ().getWidth ()];
+			                                                                  
+			for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+				if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (getCombatLocation ().equals (unit.getCombatLocation ())))
+				{
+					// False, because other than during a move anim, units are stood still
+					final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
+					getUnitClientUtils ().registerUnitFiguresAnimation (unit.getUnitID (), movingActionID, unit.getCombatHeading (), contentPane);
+					
+					unitToDrawAtEachLocation [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = unit;
+				}
 		}
-		catch (final Exception e)
-		{
-			log.error (e, e);
-		}
-		
-		// If using the CombatUI for the first combat, languageChanged () will be called automatically after this method.  If calling it for a subsequent
-		// combat then it won't be, so have to force a call here to get the player names to be displayed properly.
-		if (defendingPlayerName != null)
-			languageChanged ();
 
 		log.trace ("Exiting initNewCombat");
 	}
@@ -537,5 +614,69 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setWizardClientUtils (final WizardClientUtils util)
 	{
 		wizardClientUtils = util;
+	}
+
+	/**
+	 * @return Client-side unit utils
+	 */
+	public final UnitClientUtils getUnitClientUtils ()
+	{
+		return unitClientUtils;
+	}
+
+	/**
+	 * @param util Client-side unit utils
+	 */
+	public final void setUnitClientUtils (final UnitClientUtils util)
+	{
+		unitClientUtils = util;
+	}
+
+	/**
+	 * @return Client unit calculations
+	 */
+	public final MomClientUnitCalculations getClientUnitCalculations ()
+	{
+		return clientUnitCalculations;
+	}
+
+	/**
+	 * @param calc Client unit calculations
+	 */
+	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	{
+		clientUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Let AI auto control our units?
+	 */
+	public final boolean isAutoControl ()
+	{
+		return autoControl;
+	}
+
+	/**
+	 * @param auto Let AI auto control our units?
+	 */
+	public final void setAutoControl (final boolean auto)
+	{
+		autoControl = auto;
+	}
+
+	/**
+	 * @return Whose turn it currently is in this combat
+	 */
+	public final Integer getCurrentPlayerID ()
+	{
+		return currentPlayerID;
+	}
+
+	/**
+	 * @param playerID Whose turn it currently is in this combat
+	 */
+	public final void setCurrentPlayerID (final Integer playerID)
+	{
+		currentPlayerID = playerID;
 	}
 }

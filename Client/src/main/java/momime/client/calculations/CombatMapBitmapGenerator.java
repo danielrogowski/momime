@@ -3,6 +3,7 @@ package momime.client.calculations;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import momime.client.graphics.database.TileSetEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 
@@ -37,4 +38,20 @@ public interface CombatMapBitmapGenerator
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	public BufferedImage generateCombatMapBitmap () throws IOException;
+	
+	/**
+	 * @param x Coordinates of a particular combat tile
+	 * @param y Coordinates of a particular combat tile
+	 * @param combatMapTileSet Combat map tile set
+	 * @return Left edge of tile in pixel coordinates
+	 */
+	public int combatCoordinatesX (final int x, final int y, final TileSetEx combatMapTileSet);
+	
+	/**
+	 * @param x Coordinates of a particular combat tile
+	 * @param y Coordinates of a particular combat tile
+	 * @param combatMapTileSet Combat map tile set
+	 * @return Top edge of tile in pixel coordinates
+	 */
+	public int combatCoordinatesY (final int x, final int y, final TileSetEx combatMapTileSet);
 }

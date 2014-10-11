@@ -24,11 +24,14 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtilsImpl;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.newgame.v0_9_5.MapSizeData;
 import momime.common.database.v0_9_5.TileType;
+import momime.common.messages.v0_9_5.CombatMapSizeData;
 import momime.common.messages.v0_9_5.FogOfWarMemory;
 import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.v0_9_5.MomSessionDescription;
 import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.v0_9_5.OverlandMapTerrainData;
 import momime.common.utils.CombatMapUtils;
@@ -36,7 +39,6 @@ import momime.common.utils.CombatPlayers;
 
 import org.junit.Test;
 
-import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -100,8 +102,8 @@ public final class TestCombatUI
 		when (db.findMapFeature ("MF01", "CombatUI")).thenReturn (mapFeature);
 		
 		// Overland map
-		final CoordinateSystem sys = ClientTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (sys);
+		final MapSizeData mapSize = ClientTestData.createMapSizeData ();
+		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (mapSize);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
@@ -112,6 +114,15 @@ public final class TestCombatUI
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getClientDB ()).thenReturn (db);
+		
+		// Session description
+		final CombatMapSizeData combatMapSize = ClientTestData.createCombatMapSizeData ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setMapSize (mapSize);
+		sd.setCombatMapSize (combatMapSize);
+		
+		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();

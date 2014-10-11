@@ -13,13 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
-import momime.common.database.v0_9_5.Unit;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.utils.UnitUtils;
 
@@ -29,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Renderer for drawing the name and figures of a unit in a list cell
  */
-public final class UnitListCellRenderer implements ListCellRenderer<Unit>
+public final class UnitListCellRenderer implements ListCellRenderer<AvailableUnit>
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UnitListCellRenderer.class);
@@ -52,6 +51,9 @@ public final class UnitListCellRenderer implements ListCellRenderer<Unit>
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
 	
+	/** Client unit calculations */
+	private MomClientUnitCalculations clientUnitCalculations;
+	
 	/** Font to write the text in */
 	private Font font;
 
@@ -62,7 +64,8 @@ public final class UnitListCellRenderer implements ListCellRenderer<Unit>
 	 * Sets up the label to draw the list cell
 	 */
 	@Override
-	public final Component getListCellRendererComponent (final JList<? extends Unit> list, final Unit unitDef, final int index, final boolean isSelected, final boolean cellHasFocus)
+	public final Component getListCellRendererComponent (final JList<? extends AvailableUnit> list, final AvailableUnit unit,
+		final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		// Because this includes a custom paintComponent, we have to recreate everything every time
 		final JPanel container = new JPanel ();
@@ -72,10 +75,6 @@ public final class UnitListCellRenderer implements ListCellRenderer<Unit>
 		final JLabel textLabel = new JLabel ();
 		container.add (textLabel, BorderLayout.WEST);
 
-		// Create a dummy unit
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID (unitDef.getUnitID ());
-		
 		try
 		{
 			// We don't have to get the weapon grade or experience right just to draw the figures
@@ -91,7 +90,8 @@ public final class UnitListCellRenderer implements ListCellRenderer<Unit>
 				{
 					try
 					{
-						getUnitClientUtils ().drawUnitFigures (unit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, 0, PANEL_SIZE.height - 32, true);
+						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
+						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, g, 0, PANEL_SIZE.height - 32, true);
 					}
 					catch (final Exception e)
 					{
@@ -112,8 +112,8 @@ public final class UnitListCellRenderer implements ListCellRenderer<Unit>
 		}
 		
 		// Look up the name of the unit
-		final momime.client.language.database.v0_9_5.Unit unitLang = getLanguage ().findUnit (unitDef.getUnitID ());
-		textLabel.setText ((unitLang != null) ? unitLang.getUnitName () : unitDef.getUnitID ());
+		final momime.client.language.database.v0_9_5.Unit unitLang = getLanguage ().findUnit (unit.getUnitID ());
+		textLabel.setText ((unitLang != null) ? unitLang.getUnitName () : unit.getUnitID ());
 		textLabel.setFont (getFont ());
 		
 		if (isSelected)
@@ -211,6 +211,22 @@ public final class UnitListCellRenderer implements ListCellRenderer<Unit>
 	public final void setUnitClientUtils (final UnitClientUtils util)
 	{
 		unitClientUtils = util;
+	}
+
+	/**
+	 * @return Client unit calculations
+	 */
+	public final MomClientUnitCalculations getClientUnitCalculations ()
+	{
+		return clientUnitCalculations;
+	}
+
+	/**
+	 * @param calc Client unit calculations
+	 */
+	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	{
+		clientUnitCalculations = calc;
 	}
 	
 	/**

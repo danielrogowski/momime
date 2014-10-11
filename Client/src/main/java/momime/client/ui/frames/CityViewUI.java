@@ -34,8 +34,8 @@ import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
 import momime.client.calculations.MomClientCityCalculations;
+import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.RaceEx;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
@@ -170,6 +170,9 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
+	
+	/** Client unit calculations */
+	private MomClientUnitCalculations clientUnitCalculations;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
@@ -711,7 +714,10 @@ public final class CityViewUI extends MomClientFrameUI
 
 					// Draw unit
 					if (sampleUnit != null)
-						getUnitClientUtils ().drawUnitFigures (sampleUnit, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, g, (constructionPanel.getWidth () - 60) / 2, 28, true);
+					{
+						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
+						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, g, (constructionPanel.getWidth () - 60) / 2, 28, true);
+					}
 				}
 				catch (final Exception e)
 				{
@@ -1122,14 +1128,15 @@ public final class CityViewUI extends MomClientFrameUI
 			sampleUnit = null;
 		else
 		{
-			getUnitClientUtils ().registerUnitFiguresAnimation (cityData.getCurrentlyConstructingUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, constructionPanel);
-			
 			// Create a dummy unit here, rather than on every paintComponent call
 			sampleUnit = new AvailableUnit ();
 			sampleUnit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
 
 			// We don't have to get the weapon grade or experience right just to draw the figures
-			getUnitUtils ().initializeUnitSkills (sampleUnit, -1, true, getClient ().getClientDB ());			
+			getUnitUtils ().initializeUnitSkills (sampleUnit, null, true, getClient ().getClientDB ());
+			
+			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
+			getUnitClientUtils ().registerUnitFiguresAnimation (cityData.getCurrentlyConstructingUnitID (), movingActionID, 4, constructionPanel);
 		}
 		
 		constructionPanel.repaint ();
@@ -1713,5 +1720,21 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setOverlandMapUI (final OverlandMapUI ui)
 	{
 		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Client unit calculations
+	 */
+	public final MomClientUnitCalculations getClientUnitCalculations ()
+	{
+		return clientUnitCalculations;
+	}
+
+	/**
+	 * @param calc Client unit calculations
+	 */
+	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	{
+		clientUnitCalculations = calc;
 	}
 }

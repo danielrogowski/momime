@@ -22,7 +22,11 @@ public final class GraphicsDatabaseConstants
 	/** Special bitmask for when smoothing is turned off */
 	public static final String VALUE_TILE_BITMASK_NO_SMOOTHING = "NoSmooth";
 	
-	/** Walk action - used for drawing units on the unit info panel, change construction screen and options screen */
+	/**
+	 * Walk action.  Avoid referencing this wherever possible - combat actions should be obtained by calling determineCombatActionID ().
+	 * The only reason this constant exists is for the options screen, so we can display units before we join a game
+	 * i.e. before we know what movement skills they have.
+	 */
 	public static final String UNIT_COMBAT_ACTION_WALK = "WALK";
 	
 	/** Sample of a grass tile, before obtaining the client XML so we can derive this properly from an AvailableUnit */

@@ -236,7 +236,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 								g.drawImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, null);
 							}
 							else if (tile.getTileAnimation () != null)
-								throw new UnsupportedOperationException ("generateCombatMapBitmap: Doesn't support animated combat tiles");
+								throw new UnsupportedOperationException ("generateCombatMapBitmap: Doesn't support animated combat tiles (" + tile.getTileAnimation () + ")");
 						}
 					}
 			}
@@ -256,7 +256,8 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	 * @param combatMapTileSet Combat map tile set
 	 * @return Left edge of tile in pixel coordinates
 	 */
-	private final int combatCoordinatesX (final int x, final int y, final TileSetEx combatMapTileSet)
+	@Override
+	public final int combatCoordinatesX (final int x, final int y, final TileSetEx combatMapTileSet)
 	{
 		final int separationX = combatMapTileSet.getTileWidth () + 2;		// Because of the way the tiles slot together
 		
@@ -274,7 +275,8 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	 * @param combatMapTileSet Combat map tile set
 	 * @return Top edge of tile in pixel coordinates
 	 */
-	private final int combatCoordinatesY (final int x, final int y, final TileSetEx combatMapTileSet)
+	@Override
+	public final int combatCoordinatesY (final int x, final int y, final TileSetEx combatMapTileSet)
 	{
 		final int separationY = combatMapTileSet.getTileHeight () / 2;
 

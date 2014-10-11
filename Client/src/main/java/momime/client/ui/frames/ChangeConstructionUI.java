@@ -22,12 +22,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.CompositeShape;
 import momime.client.ui.MomUIConstants;
@@ -112,6 +113,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
+	/** Client unit calculations */
+	private MomClientUnitCalculations clientUnitCalculations;
+	
 	/** Unit/building info panel */
 	private UnitInfoPanel unitInfoPanel;
 	
@@ -131,10 +135,10 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	private ListSelectionListener buildingSelectionListener;
 	
 	/** Items in the units list box */
-	private DefaultListModel<Unit> unitsItems;
+	private DefaultListModel<AvailableUnit> unitsItems;
 	
 	/** Units list box */
-	private JList<Unit> unitsList;
+	private JList<AvailableUnit> unitsList;
 
 	/** Handles clicks on the units list */
 	private ListSelectionListener unitSelectionListener;
@@ -245,8 +249,8 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		buildingsList.setCellRenderer (getBuildingListCellRenderer ());
 		buildingsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
-		unitsItems = new DefaultListModel<Unit> ();
-		unitsList = new JList<Unit>  ();		
+		unitsItems = new DefaultListModel<AvailableUnit> ();
+		unitsList = new JList<AvailableUnit>  ();		
 		unitsList.setOpaque (false);
 		unitsList.setModel (unitsItems);
 		unitsList.setCellRenderer (getUnitListCellRenderer ());
@@ -259,9 +263,11 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		// Set up the scroll panes containing the list boxes
 		final JScrollPane buildingsScroll = getUtils ().createScrollPaneWithBackgroundImage (buildingsList, changeConstructionBackground);
 		buildingsScroll.setBorder (BorderFactory.createEmptyBorder (6, 6, 6, 6));
+		buildingsScroll.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
 		final JScrollPane unitsScroll = getUtils ().createScrollPaneWithBackgroundImage (unitsList, changeConstructionBackground);
 		unitsScroll.setBorder (BorderFactory.createEmptyBorder (6, 6, 6, 6));
+		unitsScroll.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		// Set up layout
 		contentPane.setLayout (new GridBagLayout ());
@@ -302,9 +308,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			{
 				if (unitsList.getSelectedIndex () >= 0)
 				{
-					final AvailableUnit unit = new AvailableUnit ();
-					unit.setUnitID (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID ());
-					unit.setOwningPlayerID (getClient ().getOurPlayerID ());
+					final AvailableUnit sampleUnit = new AvailableUnit ();
+					sampleUnit.setUnitID (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID ());
+					sampleUnit.setOwningPlayerID (getClient ().getOurPlayerID ());
 					try
 					{
 						final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
@@ -313,13 +319,13 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) getMultiplayerSessionUtils ().findPlayerWithID
 							(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener").getPersistentPlayerPublicKnowledge ();
 					
-						unit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
+						sampleUnit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
 							pub.getPick (), getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ()));
 					
-						getUnitUtils ().initializeUnitSkills (unit, startingExperience, true, getClient ().getClientDB ());
-						getUnitInfoPanel ().showUnit (unit);
+						getUnitUtils ().initializeUnitSkills (sampleUnit, startingExperience, true, getClient ().getClientDB ());
+						getUnitInfoPanel ().showUnit (sampleUnit);
 					}
 					catch (final Exception e)
 					{
@@ -425,9 +431,18 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				(getMemoryBuildingUtils ().meetsUnitRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 					getCityLocation (), thisUnit)))
 			{
-				unitsItems.addElement (thisUnit);
-				getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, unitsList);
+				// Create a sample unit for it now, so the list box can keep it to redraw the unit every frame
+				final AvailableUnit sampleUnit = new AvailableUnit ();
+				sampleUnit.setUnitID (thisUnit.getUnitID ());
 
+				// We don't have to get the weapon grade or experience right just to draw the figures
+				getUnitUtils ().initializeUnitSkills (sampleUnit, null, true, getClient ().getClientDB ());
+
+				final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
+				getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), movingActionID, 4, unitsList);
+
+				unitsItems.addElement (sampleUnit);
+				
 				// Pre-select whatever was previously being built when the form first opens up
 				if (thisUnit.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()))
 					unitsList.setSelectedIndex (unitsItems.size () - 1);
@@ -707,5 +722,21 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Client unit calculations
+	 */
+	public final MomClientUnitCalculations getClientUnitCalculations ()
+	{
+		return clientUnitCalculations;
+	}
+
+	/**
+	 * @param calc Client unit calculations
+	 */
+	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
+	{
+		clientUnitCalculations = calc;
 	}
 }

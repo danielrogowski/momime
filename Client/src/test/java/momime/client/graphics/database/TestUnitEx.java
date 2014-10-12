@@ -23,7 +23,7 @@ public final class TestUnitEx
 		{
 			final UnitCombatActionEx action = new UnitCombatActionEx ();
 			action.setCombatActionID ("A" + n);
-			action.setOverrideActionSoundNumber (n);
+			action.setOverrideActionSoundFile ("S" + n);
 			
 			unit.getUnitCombatAction ().add (action);
 		}
@@ -31,7 +31,7 @@ public final class TestUnitEx
 		unit.buildMap ();
 		
 		// Run tests
-		assertEquals (2, unit.findCombatAction ("A2", "testFindCombatAction_Exists").getOverrideActionSoundNumber ().intValue ());
+		assertEquals ("S2", unit.findCombatAction ("A2", "testFindCombatAction_Exists").getOverrideActionSoundFile ());
 	}
 
 	/**
@@ -47,7 +47,7 @@ public final class TestUnitEx
 		{
 			final UnitCombatActionEx action = new UnitCombatActionEx ();
 			action.setCombatActionID ("A" + n);
-			action.setOverrideActionSoundNumber (n);
+			action.setOverrideActionSoundFile ("S" + n);
 			
 			unit.getUnitCombatAction ().add (action);
 		}

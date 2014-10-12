@@ -385,7 +385,6 @@
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatActionDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="defaultActionSoundFile" type="momimegfx:imageFilename" nxe:label="Default action sound file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="defaultActionSoundNumber" type="momimecommon:imageNumber" nxe:label="Default action sound number" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="combatActionID" type="momimegfx:combatActionID" use="required" nxe:label="Combat Action ID" nxe:gridwidth="100" />
 	</xsd:complexType>
@@ -430,7 +429,6 @@
 	<xsd:complexType name="unitCombatAction" nxe:singular="Unit Combat Action" nxe:plural="Unit Combat Actions">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="overrideActionSoundFile" type="momimegfx:imageFilename" nxe:label="Override action sound file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="overrideActionSoundNumber" type="momimecommon:imageNumber" nxe:label="Override action sound number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitCombatImage" type="momimegfx:unitCombatImage" />
 		</xsd:sequence>
 		<xsd:attribute name="combatActionID" type="momimegfx:combatActionID" use="required" nxe:label="Combat Action ID" nxe:gridwidth="100">

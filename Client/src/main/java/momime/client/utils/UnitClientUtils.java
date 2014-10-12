@@ -7,6 +7,7 @@ import javax.swing.JComponent;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.v0_9_5.AvailableUnit;
@@ -84,4 +85,26 @@ public interface UnitClientUtils
 	 */
 	public void drawUnitFigures (final AvailableUnit unit, final String combatActionID,
 		final int direction, final Graphics g, final int offsetX, final int offsetY, final boolean drawSampleTile) throws IOException;
+
+	/**
+	 * When we 4x the number of units in a tile, if they still take the same amount of time to walk from tile to tile, it looks
+	 * like they are really sprinting it - so make these take longer, according to the same rules as how unitImageMultiplier is
+	 * calculated in drawUnitFigures above.  i.e. if unitImageMultiplier == 2 then take 1 second, if unitImageMultiplier == 1 then take 2 seconds.
+	 *  
+	 * @param unit The unit that is walking/flying
+	 * @return Time, in seconds, a unit takes to walk from tile to tile in combat
+	 * @throws RecordNotFoundException If we can't find the unit definition or its magic realm
+	 * @throws MomException If we encounter a combatScale that we don't know how to handle
+	 */
+	public double calculateWalkTiming (final AvailableUnit unit) throws RecordNotFoundException, MomException;
+
+	/**
+	 * Plays the sound effect for a particular unit taking a particular action.  This covers all combat actions, so the clank clank of units walking,
+	 * the chop chop of melee attacks, the pew or whoosh of ranged attacks, and so on.
+	 * 
+	 * @param unit The unit making an action
+	 * @param combatActionID The type of action being performed
+	 * @throws RecordNotFoundException If the unit or its action can't be found in the graphics XML
+	 */
+	public void playCombatActionSound (final AvailableUnit unit, final String combatActionID) throws RecordNotFoundException;
 }

@@ -15,6 +15,7 @@ import momime.client.graphics.database.v0_9_5.AnimationFrame;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.graphics.database.v0_9_5.CombatAction;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.PlayList;
 import momime.client.graphics.database.v0_9_5.Spell;
@@ -355,6 +356,46 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		db.findSpell ("SP04", "testFindSpell_NotExists");
+	}
+	
+	/**
+	 * Tests the findCombatAction method to find a combatAction ID that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindCombatAction_Exists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatAction newCombatAction = new CombatAction ();
+			newCombatAction.setCombatActionID ("CMB0" + n);
+			db.getCombatAction ().add (newCombatAction);
+		}
+
+		db.buildMaps ();
+
+		assertEquals ("CMB02", db.findCombatAction ("CMB02", "testFindCombatAction_Exists").getCombatActionID ());
+	}
+
+	/**
+	 * Tests the findCombatAction method to find a combatAction ID that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindCombatAction_NotExists () throws RecordNotFoundException
+	{
+		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final CombatAction newCombatAction = new CombatAction ();
+			newCombatAction.setCombatActionID ("CMB0" + n);
+			db.getCombatAction ().add (newCombatAction);
+		}
+
+		db.buildMaps ();
+
+		db.findCombatAction ("CMB04", "testFindCombatAction_NotExists");
 	}
 	
 	/**

@@ -1835,18 +1835,15 @@
 	</combatAction>
 	<combatAction combatActionID="MELEE">
 		<combatActionDescription>Animation of unit swinging swords, etc. in melee</combatActionDescription>
-		<defaultActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</defaultActionSoundFile>
-		<defaultActionSoundNumber>33</defaultActionSoundNumber>
+		<defaultActionSoundFile>/momime.client.sounds/CMBTSND_006_000 - Sword clank-Efreet.mp3</defaultActionSoundFile>
 	</combatAction>
 	<combatAction combatActionID="FLY">
 		<combatActionDescription>Animation of unit flying (inc. swordsmen with flight cast on them)</combatActionDescription>
-		<defaultActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</defaultActionSoundFile>
-		<defaultActionSoundNumber>21</defaultActionSoundNumber>
+		<defaultActionSoundFile>/momime.client.sounds/SOUNDFX_007_000 - Fly.mp3</defaultActionSoundFile>
 	</combatAction>
 	<combatAction combatActionID="WALK">
 		<combatActionDescription>Animation of unit walking (inc. webbed flying units)</combatActionDescription>
-		<defaultActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</defaultActionSoundFile>
-		<defaultActionSoundNumber>19</defaultActionSoundNumber>
+		<defaultActionSoundFile>/momime.client.sounds/SOUNDFX_005_000 - Armour clank.mp3</defaultActionSoundFile>
 	</combatAction>
 	<unit unitID="UN001">
 		<unitSummonImageFile>/momime.client.graphics/units/heroSummonMale.png</unitSummonImageFile>
@@ -1906,8 +1903,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN001_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -2044,8 +2040,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN002_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -2182,8 +2177,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN003_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -2320,8 +2314,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN004_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -2458,8 +2451,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN005_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -2596,8 +2588,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN006_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -2734,8 +2725,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN007_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -2872,8 +2862,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN008_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -3010,8 +2999,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN009_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -3148,8 +3136,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN010_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -3286,8 +3273,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN011_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -3424,8 +3410,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN012_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -3562,8 +3547,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN013_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -3700,8 +3684,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN014_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -3838,8 +3821,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN015_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -3976,8 +3958,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN016_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -4114,8 +4095,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN017_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -4252,8 +4232,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN018_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -4390,8 +4369,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN019_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -4528,8 +4506,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN020_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -4666,8 +4643,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN021_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -4804,8 +4780,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN022_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -4942,8 +4917,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN023_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -5080,8 +5054,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN024_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -5218,8 +5191,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN025_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -5356,8 +5328,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN026_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -5494,8 +5465,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN027_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -5632,8 +5602,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN028_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -5770,8 +5739,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN029_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -5908,8 +5876,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN030_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -6046,8 +6013,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN031_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -6184,8 +6150,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN032_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -6322,8 +6287,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN033_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -6460,8 +6424,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN034_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -6598,8 +6561,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN035_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -6733,8 +6695,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>21</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_007_000 - Fly.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN036_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -6868,8 +6829,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>21</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_007_000 - Fly.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN037_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -7003,8 +6963,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>21</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_007_000 - Fly.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN038_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -7138,8 +7097,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>21</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_007_000 - Fly.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN039_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -7672,8 +7630,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN043_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -7940,8 +7897,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN045_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -9139,8 +9095,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN054_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -9274,8 +9229,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN055_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -9409,8 +9363,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN056_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -10076,8 +10029,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN061_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -10344,8 +10296,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN063_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -10745,8 +10696,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN066_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -11811,8 +11761,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN074_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -11946,8 +11895,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN075_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -12081,8 +12029,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>21</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_007_000 - Fly.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN076_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -12748,8 +12695,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>21</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_007_000 - Fly.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN081_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -12883,8 +12829,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>24</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_010_000 - Giant.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN082_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -13018,8 +12963,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN083_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -13685,8 +13629,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN088_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -13820,8 +13763,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN089_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -14487,8 +14429,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN094_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -15154,8 +15095,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN099_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -15422,8 +15362,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN101_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -15690,8 +15629,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN103_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -15825,8 +15763,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN104_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -16359,8 +16296,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN108_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -16893,8 +16829,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN112_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -17161,8 +17096,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN114_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -17828,8 +17762,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN119_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -17963,8 +17896,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN120_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -18763,8 +18695,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN126_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -18898,8 +18829,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN127_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -19698,8 +19628,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN133_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -19833,8 +19762,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN134_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -20234,8 +20162,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN137_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -20901,8 +20828,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN142_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -21435,8 +21361,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN146_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -21570,8 +21495,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN147_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -22237,8 +22161,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN152_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -22639,8 +22562,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>22</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_008_000 - Whoosh.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN155_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -22775,8 +22697,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN156_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -22911,8 +22832,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN157_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -23047,8 +22967,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>24</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_010_000 - Giant.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN158_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -23182,8 +23101,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>22</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_008_000 - Whoosh.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN159_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -23318,8 +23236,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN160_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -23454,8 +23371,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN161_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -23508,8 +23424,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>30</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_002_000 - Basilisk-Doom Bat-Chimera attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN161_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -23592,8 +23507,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN162_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -23646,8 +23560,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>30</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_002_000 - Basilisk-Doom Bat-Chimera attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN162_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -23730,8 +23643,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN163_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -23866,8 +23778,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN164_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -24002,8 +23913,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN165_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -24056,8 +23966,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>28</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_000_000 - Drake attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN165_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -24140,8 +24049,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN166_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -24276,8 +24184,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN167_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -24412,8 +24319,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN168_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -24466,8 +24372,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>31</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_003_000 - Giant Spiders-Night Stalker attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN168_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -24550,8 +24455,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN169_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -24685,8 +24589,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN170_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -24821,8 +24724,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN171_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -24957,8 +24859,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN172_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -25093,8 +24994,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN173_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -25229,8 +25129,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN174_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -25365,8 +25264,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN175_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -25501,8 +25399,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>20</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_006_000 - Cavalry.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN176_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -25637,8 +25534,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>22</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_008_000 - Whoosh.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN177_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -25773,8 +25669,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>22</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_008_000 - Whoosh.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN178_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -25909,8 +25804,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>22</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_008_000 - Whoosh.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN179_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -26045,8 +25939,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN180_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -26181,8 +26074,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>22</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_008_000 - Whoosh.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN181_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -26235,8 +26127,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>34</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_007_000 - Sprites attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN181_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -26319,8 +26210,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN182_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -26455,8 +26345,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN183_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -26509,8 +26398,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>30</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_002_000 - Basilisk-Doom Bat-Chimera attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN183_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -26593,8 +26481,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>24</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_010_000 - Giant.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN184_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -26647,8 +26534,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>31</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_003_000 - Giant Spiders-Night Stalker attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN184_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -26731,8 +26617,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>24</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_010_000 - Giant.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN185_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -26867,8 +26752,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>24</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_010_000 - Giant.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN186_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -26921,8 +26805,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>32</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_005_000 - Colussus attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN186_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -27005,8 +26888,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN187_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -27141,8 +27023,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN188_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -27277,8 +27158,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN189_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -27331,8 +27211,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>29</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_001_000 - Behemoth attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN189_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -27415,8 +27294,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>26</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_012_000 - Merge.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN190_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -27469,8 +27347,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>28</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_000_000 - Drake attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN190_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -27552,8 +27429,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN191_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -27687,8 +27563,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN192_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -27822,8 +27697,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN193_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -27958,8 +27832,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>24</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_010_000 - Giant.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN194_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -28093,8 +27966,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>22</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_008_000 - Whoosh.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN195_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -28229,8 +28101,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>22</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_008_000 - Whoosh.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN196_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -28365,8 +28236,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN197_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>
@@ -28419,8 +28289,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="MELEE">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>28</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/CMBTSND_000_000 - Drake attack.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN197_D1_MELEE</unitCombatAnimation>
 			</unitCombatImage>
@@ -28503,8 +28372,7 @@
 			</unitCombatImage>
 		</unitCombatAction>
 		<unitCombatAction combatActionID="WALK">
-			<overrideActionSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</overrideActionSoundFile>
-			<overrideActionSoundNumber>23</overrideActionSoundNumber>
+			<overrideActionSoundFile>/momime.client.sounds/SOUNDFX_009_000 - Scuttle.mp3</overrideActionSoundFile>
 			<unitCombatImage direction="1">
 				<unitCombatAnimation>UN198_D1_WALKFLY</unitCombatAnimation>
 			</unitCombatImage>

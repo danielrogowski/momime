@@ -5,6 +5,7 @@ import java.util.List;
 
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.graphics.database.v0_9_5.CombatAction;
 import momime.client.graphics.database.v0_9_5.Pick;
 import momime.client.graphics.database.v0_9_5.PlayList;
 import momime.client.graphics.database.v0_9_5.Spell;
@@ -68,6 +69,14 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the spellID doesn't exist
 	 */
 	public Spell findSpell (final String spellID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @param combatActionID Combat action ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Combat action object
+	 * @throws RecordNotFoundException If the combatActionID doesn't exist
+	 */
+	public CombatAction findCombatAction (final String combatActionID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param unitTypeID Unit type ID to search for

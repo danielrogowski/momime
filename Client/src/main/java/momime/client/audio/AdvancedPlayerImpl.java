@@ -25,6 +25,7 @@ public final class AdvancedPlayerImpl implements AdvancedPlayer
 	public final void setInput (final String resourceName) throws JavaLayerException
 	{
 		log.trace ("Entering setInput: " + resourceName);
+		log.debug ("About to try to play audio file \"" + resourceName + "\"");
 		player = new javazoom.jl.player.advanced.AdvancedPlayer (getClass ().getResourceAsStream (resourceName));
 		log.trace ("Exiting setInput");
 	}

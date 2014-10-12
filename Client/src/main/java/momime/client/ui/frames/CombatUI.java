@@ -23,12 +23,14 @@ import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.WizardCombatPlayList;
 import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.TileType;
+import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.clienttoserver.v0_9_5.CombatAutoControlMessage;
 import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
 import momime.common.messages.v0_9_5.MemoryGridCell;
 import momime.common.messages.v0_9_5.MemoryUnit;
@@ -139,6 +141,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Whose turn it currently is in this combat */
 	private Integer currentPlayerID;
+
+	/** Unit that's in the middle of moving from one cell to another */
+	private MoveUnitInCombatMessageImpl unitMoving;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -197,9 +202,27 @@ public final class CombatUI extends MomClientFrameUI
 		
 		autoAction = new AbstractAction ()
 		{
+			private static final long serialVersionUID = 4757542393266163134L;
+
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
+				// If it is currently our turn, then we immediately need to tell the server to have the AI take the rest of our turn
+				autoControl = !autoControl;
+				
+				if ((autoControl) && (getClient ().getOurPlayerID ().equals (currentPlayerID)))
+				{
+					final CombatAutoControlMessage msg = new CombatAutoControlMessage ();
+					msg.setCombatLocation (getCombatLocation ());
+					try
+					{
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
 			}
 		};		
 
@@ -233,8 +256,8 @@ public final class CombatUI extends MomClientFrameUI
 							try
 							{
 								// False, because other than during a move anim, units are stood still
-								final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
-								getUnitClientUtils ().drawUnitFigures (unit, movingActionID, unit.getCombatHeading (), g,
+								final String standingActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
+								getUnitClientUtils ().drawUnitFigures (unit, standingActionID, unit.getCombatHeading (), g,
 									getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
 									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false);
 							}
@@ -242,6 +265,20 @@ public final class CombatUI extends MomClientFrameUI
 							{
 								log.error (e, e);
 							}
+					}
+				
+				// Draw unit that's part way through moving.
+				// Really we need to sort this to draw it at the same time as the other units its on the way 'y' row as, but this will do for now.
+				if (getUnitMoving () != null)
+					try
+					{
+						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true);
+						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), g,
+							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
 					}
 				
 				// Draw the buttons panel background at the bottom of the window
@@ -346,8 +383,8 @@ public final class CombatUI extends MomClientFrameUI
 				if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (getCombatLocation ().equals (unit.getCombatLocation ())))
 				{
 					// False, because other than during a move anim, units are stood still
-					final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
-					getUnitClientUtils ().registerUnitFiguresAnimation (unit.getUnitID (), movingActionID, unit.getCombatHeading (), contentPane);
+					final String standingActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
+					getUnitClientUtils ().registerUnitFiguresAnimation (unit.getUnitID (), standingActionID, unit.getCombatHeading (), contentPane);
 					
 					unitToDrawAtEachLocation [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = unit;
 				}
@@ -422,6 +459,24 @@ public final class CombatUI extends MomClientFrameUI
 		defendingPlayerName.setText (defPlayerName);
 		
 		log.trace ("Exiting languageChanged");
+	}
+
+	/**
+	 * Careful with making updates to this since all the drawing is based on it.  Updates must be consistent with the current location of units, i.e. unit.setCombatPosition () 
+	 * @return Units occupying each cell of the combat map
+	 */
+	public final MemoryUnit [] [] getUnitToDrawAtEachLocation ()
+	{
+		return unitToDrawAtEachLocation;
+	}
+	
+	/**
+	 * Anim messages need access to this to trigger repaints
+	 * @return Content pane
+	 */
+	public final JPanel getContentPane ()
+	{
+		return contentPane;
 	}
 	
 	/**
@@ -678,5 +733,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setCurrentPlayerID (final Integer playerID)
 	{
 		currentPlayerID = playerID;
+	}
+
+	/**
+	 * @return Unit that's in the middle of moving from one cell to another
+	 */
+	public final MoveUnitInCombatMessageImpl getUnitMoving ()
+	{
+		return unitMoving;
+	}
+
+	/**
+	 * @param u Unit that's in the middle of moving from one cell to another
+	 */
+	public final void setUnitMoving (final MoveUnitInCombatMessageImpl u)
+	{
+		unitMoving = u;
 	}
 }

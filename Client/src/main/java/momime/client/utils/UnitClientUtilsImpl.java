@@ -9,10 +9,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
 import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.graphics.database.CombatTileFigurePositionsEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.UnitCombatActionEx;
 import momime.client.graphics.database.UnitEx;
 import momime.client.graphics.database.v0_9_5.FigurePositionsForFigureCount;
 import momime.client.graphics.database.v0_9_5.UnitCombatImage;
@@ -85,6 +87,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Client config, containing the scale setting */
 	private MomImeClientConfig clientConfig;
+	
+	/** Sound effects player */
+	private AudioPlayer soundPlayer;
 	
 	/**
 	 * Note the generated unit names are obviously very dependant on the selected language, but the names themselves don't get notified
@@ -392,8 +397,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			aliveFigureCount = totalFigureCount;
 		
 		// Get unit type
-		final String unitMagicRealmID = getClient ().getClientDB ().findUnit (unit.getUnitID (), "drawUnitFigures").getUnitMagicRealm ();
-		final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitMagicRealmID, "drawUnitFigures").getUnitTypeID ();
+		final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitDef.getUnitMagicRealm (), "drawUnitFigures").getUnitTypeID ();
 		
 		// Get sample tile
 		final String sampleTileImageFile;
@@ -405,6 +409,96 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Call other version now that we have all the necessary values
 		drawUnitFigures (unit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, combatActionID,
 			direction, g, offsetX, offsetY, sampleTileImageFile);
+	}
+	
+	/**
+	 * When we 4x the number of units in a tile, if they still take the same amount of time to walk from tile to tile, it looks
+	 * like they are really sprinting it - so make these take longer, according to the same rules as how unitImageMultiplier is
+	 * calculated in drawUnitFigures above.  i.e. if unitImageMultiplier == 2 then take 1 second, if unitImageMultiplier == 1 then take 2 seconds.
+	 *  
+	 * @param unit The unit that is walking/flying
+	 * @return Time, in seconds, a unit takes to walk from tile to tile in combat
+	 * @throws RecordNotFoundException If we can't find the unit definition or its magic realm
+	 * @throws MomException If we encounter a combatScale that we don't know how to handle
+	 */
+	@Override
+	public final double calculateWalkTiming (final AvailableUnit unit) throws RecordNotFoundException, MomException
+	{
+		log.trace ("Entering calculateWalkTiming: " + unit.getUnitID ());
+		
+		final int unitImageMultiplier;
+		
+		// Derivation of unitImageMultiplier is copied directly from drawUnitFigures
+		switch (getClientConfig ().getUnitCombatScale ())
+		{
+			case DOUBLE_SIZE_UNITS:
+				unitImageMultiplier = 2;
+				break;
+				
+			case FOUR_TIMES_FIGURES:
+				unitImageMultiplier = 1;
+				break;
+				
+			case FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED:
+				
+				// Get total figures
+				final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "calculateWalkTiming");
+				final int totalFigureCount = getUnitUtils ().getFullFigureCount (unitDef);
+
+				// Get unit type
+				final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitDef.getUnitMagicRealm (), "calculateWalkTiming").getUnitTypeID ();
+				
+				unitImageMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 2 : 1;
+				break;
+				
+			default:
+				throw new MomException ("calculateWalkTiming encountered a scale that it doesn't know how to handle: " + getClientConfig ().getUnitCombatScale ());
+		}
+		
+		final int result = 3 - unitImageMultiplier;		
+		log.trace ("Exiting calculateWalkTiming = " + result);
+		return result;
+	}
+	
+	/**
+	 * Plays the sound effect for a particular unit taking a particular action.  This covers all combat actions, so the clank clank of units walking,
+	 * the chop chop of melee attacks, the pew or whoosh of ranged attacks, and so on.
+	 * 
+	 * @param unit The unit making an action
+	 * @param combatActionID The type of action being performed
+	 * @throws RecordNotFoundException If the unit or its action can't be found in the graphics XML
+	 */
+	@Override
+	public final void playCombatActionSound (final AvailableUnit unit, final String combatActionID) throws RecordNotFoundException
+	{
+		log.trace ("Entering playCombatActionSound: " + unit.getUnitID () + ", " + combatActionID);
+		
+		// See if there's a specific override sound specified for this unit.
+		// This so earth elementals make a stomp stomp noise, cavalry go clippity clop and regular swordsmen go clank clank, even though they're all just doing the WALK action.
+		final String soundEffectFilename;
+		final UnitEx unitGfx = getGraphicsDB ().findUnit (unit.getUnitID (), "playCombatActionSound");
+		final UnitCombatActionEx unitCombatAction = unitGfx.findCombatAction (combatActionID, "playCombatActionSound");
+		if (unitCombatAction.getOverrideActionSoundFile () != null)
+			soundEffectFilename = unitCombatAction.getOverrideActionSoundFile ();
+		else
+		{
+			// If we didn't find a specific sound for this unit, use the general one
+			soundEffectFilename = getGraphicsDB ().findCombatAction (combatActionID, "playCombatActionSound").getDefaultActionSoundFile ();
+			if (soundEffectFilename == null)
+				log.warn ("Found combatAction " + combatActionID + " in the graphics XML, but it doesn't specify a defaultActionSoundFile");
+		}
+		
+		if (soundEffectFilename != null)
+			try
+			{
+				getSoundPlayer ().playAudioFile (soundEffectFilename);
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+		
+		log.trace ("Exiting playCombatActionSound");
 	}
 	
 	/**
@@ -606,5 +700,21 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	public final void setPendingMovementUtils (final PendingMovementUtils util)
 	{
 		pendingMovementUtils = util;
+	}
+
+	/**
+	 * @return Sound effects player
+	 */
+	public final AudioPlayer getSoundPlayer ()
+	{
+		return soundPlayer;
+	}
+
+	/**
+	 * @param player Sound effects player
+	 */
+	public final void setSoundPlayer (final AudioPlayer player)
+	{
+		soundPlayer = player;
 	}
 }

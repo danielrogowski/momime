@@ -2,6 +2,7 @@ package momime.client.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.Dimension;
@@ -14,19 +15,25 @@ import javax.swing.WindowConstants;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.client.config.v0_9_5.UnitCombatScale;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.UnitCombatActionEx;
+import momime.client.graphics.database.UnitEx;
+import momime.client.graphics.database.v0_9_5.CombatAction;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.Race;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.v0_9_5.Unit;
+import momime.common.database.v0_9_5.UnitMagicRealm;
 import momime.common.messages.v0_9_5.AvailableUnit;
 import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -244,5 +251,167 @@ public final class TestUnitClientUtilsImpl
 		frame.setVisible (true);
 		
 		Thread.sleep (5000);
+	}
+	
+	/**
+	 * Tests the calculateWalkTiming method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateWalkTiming () throws Exception
+	{
+		// Mock entries from client database
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		
+		final UnitMagicRealm normalUnits = new UnitMagicRealm ();
+		normalUnits.setUnitTypeID ("X");
+		when (db.findUnitMagicRealm ("N", "calculateWalkTiming")).thenReturn (normalUnits);				
+
+		final UnitMagicRealm summonedUnits = new UnitMagicRealm ();
+		summonedUnits.setUnitTypeID (CommonDatabaseConstants.VALUE_UNIT_TYPE_ID_SUMMONED);
+		when (db.findUnitMagicRealm ("S", "calculateWalkTiming")).thenReturn (summonedUnits);				
+		
+		// Unit definitions
+		final Unit regularUnitDef = new Unit ();
+		regularUnitDef.setUnitMagicRealm ("N");
+		when (db.findUnit ("UN001", "calculateWalkTiming")).thenReturn (regularUnitDef);
+		
+		final Unit summonedMultipleDef = new Unit ();
+		summonedMultipleDef.setUnitMagicRealm ("S");
+		when (db.findUnit ("UN002", "calculateWalkTiming")).thenReturn (summonedMultipleDef);
+		
+		final Unit summonedSingleDef = new Unit ();
+		summonedSingleDef.setUnitMagicRealm ("S");
+		when (db.findUnit ("UN003", "calculateWalkTiming")).thenReturn (summonedSingleDef);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock figure counts
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+
+		when (unitUtils.getFullFigureCount (regularUnitDef)).thenReturn (1);
+		when (unitUtils.getFullFigureCount (summonedMultipleDef)).thenReturn (2);
+		when (unitUtils.getFullFigureCount (summonedSingleDef)).thenReturn (1);
+		
+		// Config
+		final MomImeClientConfig config = new MomImeClientConfig ();
+
+		// Regular unit (which just happens to only have 1 figure, e.g. a steam cannon)
+		final AvailableUnit regularUnit = new AvailableUnit ();
+		regularUnit.setUnitID ("UN001");
+		
+		// Summoned unit with multiple figures, e.g. hell hounds
+		final AvailableUnit summonedMultiple = new AvailableUnit ();
+		summonedMultiple.setUnitID ("UN002");
+		
+		// Summoned unit with single figure, e.g. storm giant
+		final AvailableUnit summonedSingle = new AvailableUnit ();
+		summonedSingle.setUnitID ("UN003");
+		
+		// Set up object to test
+		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
+		obj.setClient (client);
+		obj.setClientConfig (config);
+		obj.setUnitUtils (unitUtils);
+		
+		// Test double size units scale
+		config.setUnitCombatScale (UnitCombatScale.DOUBLE_SIZE_UNITS);
+		assertEquals (1, obj.calculateWalkTiming (regularUnit), 0.0001);
+		assertEquals (1, obj.calculateWalkTiming (summonedMultiple), 0.0001);
+		assertEquals (1, obj.calculateWalkTiming (summonedSingle), 0.0001);
+
+		// Test 4x figures scale
+		config.setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES);
+		assertEquals (2, obj.calculateWalkTiming (regularUnit), 0.0001);
+		assertEquals (2, obj.calculateWalkTiming (summonedMultiple), 0.0001);
+		assertEquals (2, obj.calculateWalkTiming (summonedSingle), 0.0001);
+
+		// Test 4x figures scale except single summoned units scale
+		config.setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED);
+		assertEquals (2, obj.calculateWalkTiming (regularUnit), 0.0001);
+		assertEquals (2, obj.calculateWalkTiming (summonedMultiple), 0.0001);
+		assertEquals (1, obj.calculateWalkTiming (summonedSingle), 0.0001);
+	}
+	
+	/**
+	 * Tests the playCombatActionSound method where a unit has no specific sound defined
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testPlayCombatActionSound_Default () throws Exception
+	{
+		// Mock entries from graphics DB
+		final UnitCombatActionEx unitCombatAction = new UnitCombatActionEx ();
+		unitCombatAction.setCombatActionID ("X");
+		
+		final UnitEx unitGfx = new UnitEx ();
+		unitGfx.getUnitCombatAction ().add (unitCombatAction);
+		unitGfx.buildMap ();
+		
+		final CombatAction defaultAction = new CombatAction ();
+		defaultAction.setDefaultActionSoundFile ("DefaultActionSound.mp3");
+		
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		when (gfx.findUnit ("UN001", "playCombatActionSound")).thenReturn (unitGfx);
+		when (gfx.findCombatAction ("X", "playCombatActionSound")).thenReturn (defaultAction);
+		
+		// Unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up object to test
+		final AudioPlayer soundPlayer = mock (AudioPlayer.class);
+		
+		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
+		obj.setSoundPlayer (soundPlayer);
+		obj.setGraphicsDB (gfx);
+		
+		// Run method
+		obj.playCombatActionSound (unit, "X");
+		
+		// Check results
+		verify (soundPlayer).playAudioFile ("DefaultActionSound.mp3");
+	}
+
+	/**
+	 * Tests the playCombatActionSound method where a unit has a specific sound defined
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testPlayCombatActionSound_Override () throws Exception
+	{
+		// Mock entries from graphics DB
+		final UnitCombatActionEx unitCombatAction = new UnitCombatActionEx ();
+		unitCombatAction.setCombatActionID ("X");
+		unitCombatAction.setOverrideActionSoundFile ("OverrideActionSound.mp3");
+		
+		final UnitEx unitGfx = new UnitEx ();
+		unitGfx.getUnitCombatAction ().add (unitCombatAction);
+		unitGfx.buildMap ();
+		
+		final CombatAction defaultAction = new CombatAction ();
+		defaultAction.setDefaultActionSoundFile ("DefaultActionSound.mp3");
+		
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		when (gfx.findUnit ("UN001", "playCombatActionSound")).thenReturn (unitGfx);
+		when (gfx.findCombatAction ("X", "playCombatActionSound")).thenReturn (defaultAction);
+		
+		// Unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		
+		// Set up object to test
+		final AudioPlayer soundPlayer = mock (AudioPlayer.class);
+		
+		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
+		obj.setSoundPlayer (soundPlayer);
+		obj.setGraphicsDB (gfx);
+		
+		// Run method
+		obj.playCombatActionSound (unit, "X");
+		
+		// Check results
+		verify (soundPlayer).playAudioFile ("OverrideActionSound.mp3");
 	}
 }

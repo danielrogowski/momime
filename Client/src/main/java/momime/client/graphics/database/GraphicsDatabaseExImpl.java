@@ -12,6 +12,7 @@ import momime.client.graphics.database.v0_9_5.Animation;
 import momime.client.graphics.database.v0_9_5.CityImage;
 import momime.client.graphics.database.v0_9_5.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_5.CityViewElement;
+import momime.client.graphics.database.v0_9_5.CombatAction;
 import momime.client.graphics.database.v0_9_5.CombatTileUnitRelativeScale;
 import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.graphics.database.v0_9_5.MapFeature;
@@ -64,6 +65,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	
 	/** Map of spell IDs to spell objects */
 	private Map<String, Spell> spellsMap;
+	
+	/** Map of combat action IDs to combat action objects */
+	private Map<String, CombatAction> combatActionsMap;
 
 	/** Map of unit type IDs to unit type objects */
 	private Map<String, UnitTypeEx> unitTypesMap;
@@ -154,6 +158,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		spellsMap = new HashMap<String, Spell> ();
 		for (final Spell thisSpell : getSpell ())
 			spellsMap.put (thisSpell.getSpellID (), thisSpell);
+		
+		// Create combatActions map
+		combatActionsMap = new HashMap<String, CombatAction> ();
+		for (final CombatAction thisCombatAction : getCombatAction ())
+			combatActionsMap.put (thisCombatAction.getCombatActionID (), thisCombatAction);
 		
 		// Create unit types map
 		unitTypesMap = new HashMap<String, UnitTypeEx> ();
@@ -411,6 +420,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		final Spell found = spellsMap.get (spellID);
 		if (found == null)
 			throw new RecordNotFoundException (Spell.class, spellID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param combatActionID Combat action ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Combat action object
+	 * @throws RecordNotFoundException If the combatActionID doesn't exist
+	 */
+	@Override
+	public final CombatAction findCombatAction (final String combatActionID, final String caller) throws RecordNotFoundException
+	{
+		final CombatAction found = combatActionsMap.get (combatActionID);
+		if (found == null)
+			throw new RecordNotFoundException (CombatAction.class, combatActionID, caller);
 
 		return found;
 	}

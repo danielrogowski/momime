@@ -65,6 +65,7 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
+	@Override
 	public final void selectNextUnitToMoveCombat ()
 		throws JAXBException, XMLStreamException
 	{
@@ -92,6 +93,15 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	 */
 	public final void setSelectedUnitInCombat (final MemoryUnit unit)
 	{
+	}
+	
+	/**
+	 * @param unit Unit to remove from the unitsLeftToMoveCombat list
+	 */
+	@Override
+	public final void removeUnitFromLeftToMoveCombat (final MemoryUnit unit)
+	{
+		unitsLeftToMoveCombat.remove (unit);
 	}
 	
 	/**

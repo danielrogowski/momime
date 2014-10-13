@@ -45,7 +45,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
- * Tests the calculations in the MomUnitCalculations class
+ * Tests the MomUnitCalculationsImpl object
  */
 public final class TestMomUnitCalculationsImpl
 {
@@ -322,6 +322,36 @@ public final class TestMomUnitCalculationsImpl
 		
 		assertEquals (8, rangedCaster.getRangedAttackAmmo ());
 		assertEquals (102, rangedCaster.getManaRemaining ());
+	}
+	
+	/**
+	 * Tests the decreaseRangedAttackAmmo method
+	 */
+	@Test
+	public final void testDecreaseRangedAttackAmmo ()
+	{
+		// Sample unit
+		final MemoryUnit unit = new MemoryUnit ();
+		
+		// Set up object to test
+		final MomUnitCalculationsImpl calc = new MomUnitCalculationsImpl ();
+		
+		// Unit has ranged ammo only, e.g. ammo
+		unit.setRangedAttackAmmo (8);
+		calc.decreaseRangedAttackAmmo (unit);
+		assertEquals (7, unit.getRangedAttackAmmo ());
+		
+		// Unit has both ranged ammo and mana (MoM units are actually cleverly designed to ensure this can never happen)
+		unit.setManaRemaining (10);
+		calc.decreaseRangedAttackAmmo (unit);
+		assertEquals (6, unit.getRangedAttackAmmo ());
+		assertEquals (10, unit.getManaRemaining ());
+		
+		// Unit has only mana
+		unit.setRangedAttackAmmo (0);
+		calc.decreaseRangedAttackAmmo (unit);
+		assertEquals (0, unit.getRangedAttackAmmo ());
+		assertEquals (7, unit.getManaRemaining ());
 	}
 	
 	/**

@@ -1,5 +1,15 @@
 package momime.client.messages.process;
 
+import java.io.IOException;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessage;
 
 /**
@@ -8,7 +18,23 @@ import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessage;
  *		attackSkillID will be filled in if the attack is is a special skill like First Strike, Fire Breath etc.
  *		attackAttributeID will be filled in (UA01 or UA02) if the attack is a standard melee or ranged attack.
  */
-public final class DamageCalculationMessageImpl extends DamageCalculationMessage
+public final class DamageCalculationMessageImpl extends DamageCalculationMessage implements BaseServerToClientMessage
 {
+	/** Class logger */
+	private final Log log = LogFactory.getLog (DamageCalculationMessageImpl.class);
 
+	/**
+	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
+	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
+	 * @throws IOException Can be used for more general types of processing failure
+	 */
+	@Override
+	public final void start () throws JAXBException, XMLStreamException, IOException
+	{
+		log.trace ("Entering start");
+		
+		// Just ignore this for now until calculator button implemented on combat screen
+		
+		log.trace ("Exiting start");
+	}
 }

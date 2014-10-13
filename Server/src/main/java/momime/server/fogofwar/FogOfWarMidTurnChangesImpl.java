@@ -1409,7 +1409,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			
 			// Do we have a message to send?
 			if (msg != null)
-				if ((msg.getAttackerUnitURN () > 0) || (msg.getDefenderUnitURN () > 0))
+				if ((msg.getAttackerUnitURN () != null) || (msg.getDefenderUnitURN () != null))
 				{
 					msg.setRangedAttack (isRangedAttack);
 					thisPlayer.getConnection ().sendMessageToClient (msg);

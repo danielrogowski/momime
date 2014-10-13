@@ -341,7 +341,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final int imageHeight = image.getHeight () * unitImageMultiplier;
 		
 		// Get the positions of the n times
-		final CombatTileFigurePositionsEx positions = getGraphicsDB ().findCombatTileUnitRelativeScale (relativeScale, "drawUnitFigures").findFigureCount (aliveFigureCount * figureMultiplier, "drawUnitFigures");
+		final CombatTileFigurePositionsEx positions = getGraphicsDB ().findCombatTileUnitRelativeScale (relativeScale, "drawUnitFigures").findFigureCount (totalFigureCount * figureMultiplier, "drawUnitFigures");
 		for (int n = 1; n <= (aliveFigureCount * figureMultiplier); n++)
 		{
 			final FigurePositionsForFigureCount position = positions.findFigureNumber (n, "drawUnitFigures");

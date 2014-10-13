@@ -375,6 +375,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 	</bean>	
+
+	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="combatUI" ref="combatUI" />
+		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="combatMapProcessing" ref="combatMapProcessing" />
+	</bean>
+
+	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype">
+		<property name="combatUI" ref="combatUI" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="anim" ref="anim" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+	</bean>
 	
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype" />
@@ -388,10 +406,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
 	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
-	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype" />
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype" />
 	<bean id="updateUnitNameMessage" class="momime.client.messages.process.UpdateUnitNameMessageImpl" scope="prototype" />
-	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype" />
 	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype" />
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
 	<bean id="cancelCombatAreaEffectMessage" class="momime.client.messages.process.CancelCombatAreaEffectMessageImpl" scope="prototype" />
@@ -1137,6 +1153,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
+	</bean>
+	
+	<bean id="combatEndedLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.File" value="/momime.client.ui.dialogs/CombatEndedUI.xml" />
+	</bean>
+	
+	<bean id="combatEndedUI" class="momime.client.ui.dialogs.CombatEndedUI" scope="prototype">
+		<property name="combatEndedLayout" ref="combatEndedLayout" />
+		<property name="client" ref="client" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="chooseLanguageUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
 </beans>

@@ -1,5 +1,6 @@
 package momime.client.ui.frames;
 
+import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
@@ -48,4 +49,9 @@ public interface PrototypeFrameCreator
 	 * @return New overland enchantment popup
 	 */
 	public OverlandEnchantmentsUI createOverlandEnchantments ();
+	
+	/**
+	 * @return New combat ended popup
+	 */
+	public CombatEndedUI createCombatEnded ();
 }

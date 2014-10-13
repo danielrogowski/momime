@@ -249,6 +249,19 @@ public final class MomUnitCalculationsImpl implements MomUnitCalculations
 		unit.setRangedAttackAmmo (calculateFullRangedAttackAmmo (unit, mergedSkills, players, spells, combatAreaEffects, db));
 		unit.setManaRemaining (calculateManaTotal (unit, mergedSkills, players, spells, combatAreaEffects, db));
 	}
+
+	/**
+	 * Decreases amount of ranged ammo remaining for this unit when it fires a ranged attack
+	 * @param unit Unit making the ranged attack
+	 */
+	@Override
+	public final void decreaseRangedAttackAmmo (final MemoryUnit unit)
+	{
+		if (unit.getRangedAttackAmmo () > 0)
+			unit.setRangedAttackAmmo (unit.getRangedAttackAmmo () - 1);
+		else
+			unit.setManaRemaining (unit.getManaRemaining () - 3);
+	}
 	
 	/**
 	 * First figure will take full damage before the second figure takes any damage

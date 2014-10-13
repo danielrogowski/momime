@@ -89,7 +89,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final List<MemoryMaintainedSpell> spells, final List<MemoryCombatAreaEffect> combatAreaEffects, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering resolveAttack: Unit URN " + attacker.getUnitURN () + ", Unit URN " + defender.getUnitURN () + ", " + attackAttributeID);
+		log.trace ("Entering calculateDamage: Unit URN " + attacker.getUnitURN () + ", Unit URN " + defender.getUnitURN () + ", " + attackAttributeID);
 		
 		// Store values straight into the message
 		// The attacker and defender may be switched, so redo the message from scratch
@@ -173,7 +173,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setActualBlockedHits (actualBlockedHits.toString ());
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting resolveAttack = " + totalHits);
+		log.trace ("Exiting calculateDamage = " + totalHits);
 		return totalHits;
 	}
 	

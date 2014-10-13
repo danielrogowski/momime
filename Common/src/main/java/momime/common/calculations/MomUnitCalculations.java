@@ -102,6 +102,12 @@ public interface MomUnitCalculations
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
+	 * Decreases amount of ranged ammo remaining for this unit when it fires a ranged attack
+	 * @param unit Unit making the ranged attack
+	 */
+	public void decreaseRangedAttackAmmo (final MemoryUnit unit);
+	
+	/**
 	 * First figure will take full damage before the second figure takes any damage
 	 * 
 	 * @param unit Unit to calculate attribute value for

@@ -113,7 +113,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		currentY = getCombatMapBitmapGenerator ().combatCoordinatesY (getMoveFrom ().getX (), getMoveFrom ().getY (), combatMapTileSet);
 		
 		// Work the duration out once only
-		duration = getUnitClientUtils ().calculateWalkTiming (unit);
+		duration = getUnitClientUtils ().calculateWalkTiming (unit) * 0.5d;
 
 		// Work out new position
 		moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) getMoveFrom ());

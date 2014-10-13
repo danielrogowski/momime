@@ -23,6 +23,7 @@ import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.WizardCombatPlayList;
 import momime.client.language.database.v0_9_5.MapFeature;
 import momime.client.language.database.v0_9_5.TileType;
+import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
@@ -145,6 +146,9 @@ public final class CombatUI extends MomClientFrameUI
 	/** Unit that's in the middle of moving from one cell to another */
 	private MoveUnitInCombatMessageImpl unitMoving;
 	
+	/** Attack that's in the middle of taking place */
+	private ApplyDamageMessageImpl attackAnim;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -255,9 +259,17 @@ public final class CombatUI extends MomClientFrameUI
 						if (unitToDrawAtEachLocation [y] [x] != null)
 							try
 							{
-								// False, because other than during a move anim, units are stood still
-								final String standingActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
-								getUnitClientUtils ().drawUnitFigures (unit, standingActionID, unit.getCombatHeading (), g,
+								// Is the unit currently animating in an attack?
+								final String combatActionID;
+								if ((getAttackAnim () != null) &&
+									((unit == getAttackAnim ().getAttackerUnit ()) || (unit == getAttackAnim ().getDefenderUnit ())))
+									
+									combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
+								else
+									combatActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
+								
+								// Draw unit
+								getUnitClientUtils ().drawUnitFigures (unit, combatActionID, unit.getCombatHeading (), g,
 									getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
 									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false);
 							}
@@ -749,5 +761,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setUnitMoving (final MoveUnitInCombatMessageImpl u)
 	{
 		unitMoving = u;
+	}
+
+	/**
+	 * @return Attack that's in the middle of taking place
+	 */
+	public final ApplyDamageMessageImpl getAttackAnim ()
+	{
+		return attackAnim;
+	}
+
+	/**
+	 * @param aa Attack that's in the middle of taking place
+	 */
+	public final void setAttackAnim (final ApplyDamageMessageImpl aa)
+	{
+		attackAnim = aa;
 	}
 }

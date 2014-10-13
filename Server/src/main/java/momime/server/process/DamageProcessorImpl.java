@@ -103,6 +103,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 				CommonDatabaseConstants.VALUE_UNIT_ATTRIBUTE_ID_RANGED_ATTACK, damageCalculationMsg, mom.getPlayers (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), mom.getServerDB ());
 			damageToAttacker = 0;
+			
+			getUnitCalculations ().decreaseRangedAttackAmmo (attacker);
 		}
 		else
 		{

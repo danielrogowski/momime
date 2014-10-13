@@ -29,6 +29,12 @@ public final class GraphicsDatabaseConstants
 	 */
 	public static final String UNIT_COMBAT_ACTION_WALK = "WALK";
 	
+	/** Melee attack action */
+	public static final String UNIT_COMBAT_ACTION_MELEE_ATTACK = "MELEE";
+	
+	/** Ranged attack action */
+	public static final String UNIT_COMBAT_ACTION_RANGED_ATTACK = "RANGED";
+	
 	/** Sample of a grass tile, before obtaining the client XML so we can derive this properly from an AvailableUnit */
 	public static final String SAMPLE_GRASS_TILE = "/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png";
 	

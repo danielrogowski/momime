@@ -11,6 +11,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.messages.servertoclient.v0_9_5.ApplyDamageMessage;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
@@ -199,6 +200,10 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	{
 		log.trace ("Entering finish");
 		
+		// Work out kill actions - different depending on whether its a combat we're involved in or not
+		final KillUnitActionID transmittedAction = animated ? null : KillUnitActionID.FREE;
+		final UntransmittedKillUnitActionID untransmittedAction = animated ? UntransmittedKillUnitActionID.COMBAT_DAMAGE : null;
+		
 		// Damage to attacker
 		if (attackerUnit != null)
 		{
@@ -208,7 +213,8 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) <= 0)
 			{
 				// Attacker is dead
-				getUnitClientUtils ().killUnit (getAttackerUnitURN (), KillUnitActionID.FREE);
+				log.debug ("ApplyDamage is killing off dead attacker Unit URN " + getAttackerUnitURN ());
+				getUnitClientUtils ().killUnit (getAttackerUnitURN (), transmittedAction, untransmittedAction);
 			}
 		}
 		
@@ -221,7 +227,8 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ()) <= 0)
 			{
 				// Defender is dead
-				getUnitClientUtils ().killUnit (getDefenderUnitURN (), KillUnitActionID.FREE);
+				log.debug ("ApplyDamage is killing off dead defender Unit URN " + getDefenderUnitURN ());
+				getUnitClientUtils ().killUnit (getDefenderUnitURN (), transmittedAction, untransmittedAction);
 			}
 		}
 		

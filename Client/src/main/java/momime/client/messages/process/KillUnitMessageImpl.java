@@ -34,7 +34,7 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 	{
 		log.trace ("Entering start: Unit URN " + getData ().getUnitURN () + ", " + getData ().getKillUnitActionID ());
 
-		getUnitClientUtils ().killUnit (getData ().getUnitURN (), getData ().getKillUnitActionID ());
+		getUnitClientUtils ().killUnit (getData ().getUnitURN (), getData ().getKillUnitActionID (), null);
 		
 		log.trace ("Exiting start");
 	}

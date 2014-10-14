@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
@@ -1227,7 +1228,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				// Update player's memory on server
 				final MemoryUnit mu = getUnitUtils ().findUnitURN (tu.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "updatePlayerMemoryOfUnit_DamageTakenAndExperience");
 				mu.setDamageTaken (msg.getDamageTaken ());
-				getUnitUtils ().setBasicSkillValue (mu, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, msg.getExperience ());
+				
+				if (msg.getExperience () >= 0)
+					getUnitUtils ().setBasicSkillValue (mu, CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, msg.getExperience ());
 
 				// Update player's memory on client
 				if (thisPlayer.getPlayerDescription ().isHuman ())

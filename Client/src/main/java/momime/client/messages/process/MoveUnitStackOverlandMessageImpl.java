@@ -214,7 +214,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 
 			// Free after moving is used when an enemy unit is walking out of the area we can see, so we see them move and then they disappear
 			if (isFreeAfterMoving ())
-				getUnitClientUtils ().killUnit (thisUnitURN, KillUnitActionID.FREE);
+				getUnitClientUtils ().killUnit (thisUnitURN, KillUnitActionID.FREE, null);
 			else
 				u.setUnitLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getMoveTo ()));
 		}

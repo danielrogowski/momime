@@ -697,10 +697,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * 
 	 * It also removes combat summons, e.g. Phantom Warriors, even if they are not dead.
 	 * 
-	 * It also removes monsters left alive guarding nodes/lairs/towers from the client (leaving them on the server) - these only ever exist
-	 * temporarily on the client who is attacking, and the "knows about unit" routine the FOW is based on always returns False for them,
-	 * so we have handle them as a special case here.
-	 * 
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
@@ -722,14 +718,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 	{
 		log.trace ("Entering purgeDeadUnitsAndCombatSummonsFromCombat: " + combatLocation);
 		
-		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-		
-		// Is this someone attacking a node/lair/tower?
-		// If DefendingPlayer is nil (we wiped out the monsters), there'll be no monsters to remove, so in which case we don't care that we get this value wrong
-		final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
-		final boolean attackingNodeLairTower = (defPub != null) && (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defPub.getWizardID ())) &&
-			ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db);
-		
 		// Then check all the units
 		// Had better copy the units list since we'll be removing units from it as we go along
 		int deadCount = 0;
@@ -745,8 +733,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 			{
 				// Permanently remove any dead regular units (which were kept around until now so they could be Animate Dead'ed)
 				// Also remove any combat summons like Phantom Warriors
-				final boolean manuallyTellAttackerClientToKill;
-				final boolean manuallyTellDefenderClientToKill;
+				boolean manuallyTellAttackerClientToKill = false;
+				boolean manuallyTellDefenderClientToKill = false;
 				if ((trueUnit.isWasSummonedInCombat ()) || ((trueUnit.getStatus () == UnitStatusID.DEAD) &&
 					(!db.findUnit (trueUnit.getUnitID (), "purgeDeadUnitsAndCombatSummonsFromCombat").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))))
 				{
@@ -773,20 +761,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 					
 					// Use regular kill routine
 					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.FREE, null, trueMap, players, fogOfWarSettings, db);
-				}
-				else
-				{
-					// Even though we don't remove them on the server, tell the client to remove monsters left alive guarding nodes/lairs/towers
-					manuallyTellAttackerClientToKill = (attackingNodeLairTower) && (defendingPlayer != null) &&
-						(trueUnit.getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ());
-					
-					// But make sure we don't remove monsters from the monster player's memory, since they know about their own units!
-					manuallyTellDefenderClientToKill = false;
-					if (manuallyTellAttackerClientToKill)
-					{
-						log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling attacking player to remove NLT monster with unit URN " + trueUnit.getUnitURN ());
-						monstersCount++;
-					}
 				}
 				
 				// Special case where we have to tell the client to kill off the unit outside of the FOW routines?

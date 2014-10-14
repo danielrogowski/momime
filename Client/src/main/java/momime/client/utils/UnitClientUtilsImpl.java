@@ -28,6 +28,7 @@ import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -158,15 +159,17 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * Kills a unit, either permanently removing it or marking it as dead in case it gets Raise or Animate Dead cast on it later
 	 * 
 	 * @param unitURN Unit to kill
-	 * @param action Type of update
+	 * @param transmittedAction Method by which the unit is being killed, out of possible values that are sent from the server; null if untransmittedAction is filled in
+	 * @param untransmittedAction Method by which the unit is being killed, out of possible values that are inferred from other messages; null if transmittedAction is filled in
 	 * @throws IOException If there is a problem
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void killUnit (final int unitURN, final KillUnitActionID action) throws IOException, JAXBException, XMLStreamException
+	public final void killUnit (final int unitURN, final KillUnitActionID transmittedAction, final UntransmittedKillUnitActionID untransmittedAction)
+		throws IOException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering killUnit: Unit URN " + unitURN + ", " + action);
+		log.trace ("Entering killUnit: Unit URN " + unitURN + ", " + transmittedAction + ", " + untransmittedAction);
 
 		// Even if not actually freeing the unit, we still need to eliminate all references to it, except for it being in the main unit list
 		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurTransientPlayerPrivateKnowledge ().getPendingMovement (), unitURN);
@@ -200,27 +203,46 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "killUnit");
 		
 		// The server works out what action we need to take
-		switch (action)
-		{
-			// Phyically free the unit
-			case FREE:
-			case VISIBLE_AREA_CHANGED:
-				getUnitUtils ().removeUnitURN (unitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
-				break;
+		if (transmittedAction != null)
+			switch (transmittedAction)
+			{
+				// Phyically free the unit
+				case FREE:
+				case VISIBLE_AREA_CHANGED:
+					getUnitUtils ().removeUnitURN (unitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+					break;
+	
+				// Units dying from lack of production are a problem, because we always get the kill message first before the NTM arrives, so if we just
+				// immediately kill the unit off, the NTM then doesn't know what it was - just its UnitURN, so it can't output any meaningful description.
+				// So don't remove these just yet - just mark them with a special status.  The NTM itself permanently removes these after.
+				case UNIT_LACK_OF_PRODUCTION:
+				case HERO_LACK_OF_PRODUCTION:
+					unit.setStatus (UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION);
+					break;
+					
+				default:
+					throw new MomException ("killUnit got a transmittedAction that it doesn't know how to handle: " + transmittedAction);
+			}
+		else
+			switch (untransmittedAction)
+			{
+				/**
+				 * If a unit is killed in a combat we're involved in, we still need a record of it, so we can cast Raise Dead on it (no matter if its ours or theirs).
+				 * Our killed heroes are also just marked as Dead but not freed, so after combat we can cast Resurrection on them.
+				 * Only exception is killed enemy heroes, who we can't Raise or Resurrect, so we just free them.
+				 */
+				case COMBAT_DAMAGE:
+					if ((unit.getOwningPlayerID () != getClient ().getOurPlayerID ()) && (getClient ().getClientDB ().findUnit
+						(unit.getUnitID (), "killUnit").getUnitMagicRealm ().equals (CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
+						
+						getUnitUtils ().removeUnitURN (unitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+					else
+						unit.setStatus (UnitStatusID.DEAD);
+					break;
 
-			// Units dying from lack of production are a problem, because we always get the kill message first before the NTM arrives, so if we just
-			// immediately kill the unit off, the NTM then doesn't know what it was - just its UnitURN, so it can't output any meaningful description.
-			// So don't remove these just yet - just mark them with a special status.  The NTM itself permanently removes these after.
-			case UNIT_LACK_OF_PRODUCTION:
-			case HERO_LACK_OF_PRODUCTION:
-				unit.setStatus (UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION);
-				break;
-				
-			// The two special statuses generated by ApplyDamageMessage on the client aren't handled yet
-			
-			default:
-				throw new MomException ("killUnit got a KillUnitActionID that it doesn't know how to handle: " + action);
-		}
+				default:
+					throw new MomException ("killUnit got an untransmittedAction that it doesn't know how to handle: " + untransmittedAction);
+			}
 
 		// Select unit buttons on the City screen
 		if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null))

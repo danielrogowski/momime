@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -17,7 +18,6 @@ import momime.common.messages.v0_9_5.UnitStatusID;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.DamageCalculator;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.fogofwar.UntransmittedKillUnitActionID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -110,10 +110,6 @@ public interface CombatProcessing
 	 * 
 	 * It also removes combat summons, e.g. Phantom Warriors, even if they are not dead.
 	 * 
-	 * It also removes monsters left alive guarding nodes/lairs/towers from the client (leaving them on the server) - these only ever exist
-	 * temporarily on the client who is attacking, and the "knows about unit" routine the FOW is based on always returns False for them,
-	 * so we have handle them as a special case here.
-	 * 
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games

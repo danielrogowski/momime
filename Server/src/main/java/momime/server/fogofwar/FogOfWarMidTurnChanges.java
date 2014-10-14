@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.database.newgame.v0_9_5.FogOfWarValue;

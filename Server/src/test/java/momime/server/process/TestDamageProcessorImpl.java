@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
 import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessage;
@@ -28,7 +29,6 @@ import momime.server.ServerTestData;
 import momime.server.calculations.DamageCalculator;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.fogofwar.UntransmittedKillUnitActionID;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 
 import org.junit.Test;

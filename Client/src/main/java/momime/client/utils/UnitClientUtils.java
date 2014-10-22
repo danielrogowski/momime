@@ -56,6 +56,19 @@ public interface UnitClientUtils
 	public void registerUnitFiguresAnimation (final String unitID, final String combatActionID, final int direction, final JComponent component) throws IOException;
 
 	/**
+	 * Unregisters unit animations started by registerUnitFiguresAnimation.  Note animation timers aren't reference counted, so to call this you must be
+	 * certain that the animation is no longer being used.  e.g. If two flying units are facing direction 1, and one of them turns to face direction 2, we have to
+	 * additionally register the 'flying d2' anim but can't unregister the 'flying d1' anim since another unit is still using it.
+	 * 
+	 * @param unitID The unit to draw
+	 * @param combatActionID The action to show the unit doing
+	 * @param direction The direction to show the unit facing
+	 * @param component The component that the unit will be drawn onto
+	 * @throws IOException If there is a problem
+	 */
+	public void unregisterUnitFiguresAnimation (final String unitID, final String combatActionID, final int direction, final JComponent component) throws IOException;
+
+	/**
 	 * Draws the figures of a unit.
 	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.
 	 * 

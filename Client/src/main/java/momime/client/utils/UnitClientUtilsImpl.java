@@ -268,6 +268,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final void registerUnitFiguresAnimation (final String unitID, final String combatActionID, final int direction, final JComponent component) throws IOException
 	{
+		log.trace ("Entering registerUnitFiguresAnimation: " + unitID + ", " + combatActionID + ", " + direction + ", " + component);
+		
 		final UnitEx unit = getGraphicsDB ().findUnit (unitID, "registerUnitFiguresAnimation");
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "registerUnitFiguresAnimation").findDirection (direction, "registerUnitFiguresAnimation");
 		getAnim ().registerRepaintTrigger (unitImage.getUnitCombatAnimation (), component);
@@ -278,8 +280,40 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			final UnitCombatImage secondaryUnitImage = secondaryUnit.findCombatAction (combatActionID, "registerUnitFiguresAnimation").findDirection (direction, "registerUnitFiguresAnimation");
 			getAnim ().registerRepaintTrigger (secondaryUnitImage.getUnitCombatAnimation (), component);
 		}
+
+		log.trace ("Exiting registerUnitFiguresAnimation");
 	}
 
+	/**
+	 * Unregisters unit animations started by registerUnitFiguresAnimation.  Note animation timers aren't reference counted, so to call this you must be
+	 * certain that the animation is no longer being used.  e.g. If two flying units are facing direction 1, and one of them turns to face direction 2, we have to
+	 * additionally register the 'flying d2' anim but can't unregister the 'flying d1' anim since another unit is still using it.
+	 * 
+	 * @param unitID The unit to draw
+	 * @param combatActionID The action to show the unit doing
+	 * @param direction The direction to show the unit facing
+	 * @param component The component that the unit will be drawn onto
+	 * @throws IOException If there is a problem
+	 */
+	@Override
+	public final void unregisterUnitFiguresAnimation (final String unitID, final String combatActionID, final int direction, final JComponent component) throws IOException
+	{
+		log.trace ("Entering unregisterUnitFiguresAnimation: " + unitID + ", " + combatActionID + ", " + direction + ", " + component);
+
+		final UnitEx unit = getGraphicsDB ().findUnit (unitID, "unregisterUnitFiguresAnimation");
+		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "unregisterUnitFiguresAnimation").findDirection (direction, "unregisterUnitFiguresAnimation");
+		getAnim ().unregisterRepaintTrigger (unitImage.getUnitCombatAnimation (), component);
+		
+		if (unit.getSecondaryUnitID () != null)
+		{
+			final UnitEx secondaryUnit = getGraphicsDB ().findUnit (unit.getSecondaryUnitID (), "unregisterUnitFiguresAnimation");
+			final UnitCombatImage secondaryUnitImage = secondaryUnit.findCombatAction (combatActionID, "unregisterUnitFiguresAnimation").findDirection (direction, "unregisterUnitFiguresAnimation");
+			getAnim ().unregisterRepaintTrigger (secondaryUnitImage.getUnitCombatAnimation (), component);
+		}
+		
+		log.trace ("Exiting unregisterUnitFiguresAnimation");
+	}
+	
 	/**
 	 * Draws the figures of a unit.
 	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.

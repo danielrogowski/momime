@@ -237,6 +237,10 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		{
 			if (!isRangedAttack ())
 			{
+				// End the melee attack animation
+				getUnitClientUtils ().unregisterUnitFiguresAnimation (attackerUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK, getAttackerDirection (), getCombatUI ().getContentPane ());				
+				getUnitClientUtils ().unregisterUnitFiguresAnimation (defenderUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK, getDefenderDirection (), getCombatUI ().getContentPane ());
+				
 				// If the units are facing a different direction than before then we might have a new anim to kick off
 				final String attackerStandingActionID = getClientUnitCalculations ().determineCombatActionID (attackerUnit, false);
 				getUnitClientUtils ().registerUnitFiguresAnimation (attackerUnit.getUnitID (), attackerStandingActionID, attackerUnit.getCombatHeading (), getCombatUI ().getContentPane ());

@@ -588,6 +588,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 				<ref bean="objectFactoryMap" />
 			</array>
 		</property>
+		<property name="conversationTag" value="#{'MoMIME-' + '${momime.client.version}'}" />
 		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />

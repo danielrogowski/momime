@@ -285,6 +285,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="port" value="#{serverConfig.portNumber}" />
 		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
 		<property name="version" value="${momime.server.version}" />
+		<property name="conversationTag" value="#{'MoMIME-' + '${momime.server.version}'}" />
 		<property name="uiClassName" value="#{serverConfig.uiClassName}" />
 		<property name="sessionThreadFactory" ref="sessionThreadFactory" />
 	</bean>

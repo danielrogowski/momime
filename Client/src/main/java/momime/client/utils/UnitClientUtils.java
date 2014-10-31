@@ -69,6 +69,24 @@ public interface UnitClientUtils
 	public void unregisterUnitFiguresAnimation (final String unitID, final String combatActionID, final int direction, final JComponent component) throws IOException;
 
 	/**
+	 * Calculates the positions of all the figures of a unit, taking into account combat scale and so on.
+	 * This is used both to draw the figures of a unit, and to get the positions to start ranged attack missiles at when the unit fires.
+	 * NB. The resulting array may not have aliveFigureCount elements; it may be x1, x4 or x5 depending on combat scale.
+	 * The calling routine should just iterate over the resulting array and make no assumptions about how many elements will contain. 
+	 * 
+	 * @param unitID The unit to draw
+	 * @param unitTypeID The type of unit it is (can pass in null - the only value it cares about is if this is 'S' for summoned units)
+	 * @param totalFigureCount The number of figures the unit had when fully healed
+	 * @param aliveFigureCount The number of figures the unit has now
+	 * @param offsetX The x offset into the graphics context to draw the unit at
+	 * @param offsetY The y offset into the graphics context to draw the unit at
+	 * @return Array of all figure positions in pixels; [0] element = x coord, [1] element = y coord, [2] element = multiplier to enlarge image by
+	 * @throws IOException If there is a problem
+	 */
+	public int [] [] calcUnitFigurePositions (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount,
+		final int offsetX, final int offsetY) throws IOException;
+	
+	/**
 	 * Draws the figures of a unit.
 	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.
 	 * 

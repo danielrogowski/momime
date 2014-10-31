@@ -384,6 +384,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
+		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="soundPlayer" ref="soundPlayer" />
+		<property name="anim" ref="anim" />
 	</bean>
 
 	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype">
@@ -392,6 +396,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="anim" ref="anim" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+	</bean>
+	
+	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
 	<bean id="playerCombatRequestStatusMessage" class="momime.client.messages.process.PlayerCombatRequestStatusMessageImpl" scope="prototype" />
@@ -406,7 +415,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="setSpecialOrderMessage" class="momime.client.messages.process.SetSpecialOrderMessageImpl" scope="prototype" />
 	<bean id="updateOtherScheduledCombatsMessage" class="momime.client.messages.process.UpdateOtherScheduledCombatsMessageImpl" scope="prototype" />
 	<bean id="addScheduledCombatMessage" class="momime.client.messages.process.AddScheduledCombatMessageImpl" scope="prototype" />
-	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype" />
 	<bean id="updateUnitNameMessage" class="momime.client.messages.process.UpdateUnitNameMessageImpl" scope="prototype" />
 	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype" />
 	<bean id="broadcastChatMessage" class="momime.client.messages.process.BroadcastChatMessageImpl" scope="prototype" />
@@ -931,6 +939,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="anim" ref="anim" />
 	</bean>
 
 	<!-- Prototype UI components -->

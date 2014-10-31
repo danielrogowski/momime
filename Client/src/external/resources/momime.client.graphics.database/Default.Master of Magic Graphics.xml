@@ -445,8 +445,7 @@
 		</unitAttributeWeaponGrade>
 	</unitAttribute>
 	<rangedAttackType rangedAttackTypeID="RAT0A">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>8</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_015_000 - Rock.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconNormal.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -509,8 +508,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT14">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>9</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_017_000 - Arrows.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/arrow/iconNormal.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -573,8 +571,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT15">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>10</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_018_000 - Pebbles.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/rock/iconNormal.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -637,8 +634,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT20">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>13</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_021_000 - Sage-PsionicBlast.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/blueBigFatBlast/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -692,8 +688,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT26">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>18</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_026_000 - Sprites-Druid.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -747,8 +742,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT25">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>18</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_026_000 - Sprites-Druid.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -802,8 +796,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT22">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>15</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_023_000 - Djinn+IceBolt.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -857,8 +850,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT21">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>14</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_022_000 - ShadowDemons.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -912,8 +904,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT1E">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>11</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_019_000 - Lightning.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -967,8 +958,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT24">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>17</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_025_000 - DarkElves.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -1022,8 +1012,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT23">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>16</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_024_000 - Priests.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/greenBolt/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>
@@ -1077,8 +1066,7 @@
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
 	<rangedAttackType rangedAttackTypeID="RAT1F">
-		<rangedAttackSoundFile>MOMORIGINALSOUNDEFFECTS.NDGARC</rangedAttackSoundFile>
-		<rangedAttackSoundNumber>12</rangedAttackSoundNumber>
+		<rangedAttackSoundFile>/momime.client.sounds/SOUNDFX_020_000 - Fireball.mp3</rangedAttackSoundFile>
 		<rangedAttackTypeWeaponGrade weaponGradeNumber="0">
 			<unitDisplayRangedImageFile>/momime.client.graphics/rangedAttacks/fireball/icon.png</unitDisplayRangedImageFile>
 		</rangedAttackTypeWeaponGrade>

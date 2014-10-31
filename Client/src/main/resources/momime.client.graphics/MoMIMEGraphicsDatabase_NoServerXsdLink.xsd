@@ -313,7 +313,6 @@
 	<xsd:complexType name="rangedAttackType" nxe:singular="Ranged Attack Type" nxe:plural="Ranged Attack Types" nxe:submenu="Units">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackSoundFile" type="momimegfx:imageFilename" nxe:label="RAT sound file" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackSoundNumber" type="momimecommon:imageNumber" nxe:label="RAT sound number" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeWeaponGrade" type="momimegfx:rangedAttackTypeWeaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeCombatImage" type="momimegfx:rangedAttackTypeCombatImage" />
 		</xsd:sequence>

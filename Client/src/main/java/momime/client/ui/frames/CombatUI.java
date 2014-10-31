@@ -26,6 +26,7 @@ import momime.client.language.database.v0_9_5.TileType;
 import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.ui.MomUIConstants;
+import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
@@ -103,6 +104,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Client unit calculations */
 	private MomClientUnitCalculations clientUnitCalculations;
+	
+	/** Animation controller */
+	private AnimationController anim;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -260,12 +264,24 @@ public final class CombatUI extends MomClientFrameUI
 							try
 							{
 								// Is the unit currently animating in an attack?
-								final String combatActionID;
-								if ((getAttackAnim () != null) &&
-									((unit == getAttackAnim ().getAttackerUnit ()) || (unit == getAttackAnim ().getDefenderUnit ())))
+								String combatActionID = null;
+								if (getAttackAnim () != null)
+								{
+									// Ranged attack animation
+									if (getAttackAnim ().isRangedAttack ())
+									{
+										// Show firing unit going 'pew'
+										if ((unit == getAttackAnim ().getAttackerUnit ()) && (getAttackAnim ().getCurrent () == null))
+											combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_RANGED_ATTACK;
+									}
 									
-									combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
-								else
+									// Melee attack animation
+									else if ((unit == getAttackAnim ().getAttackerUnit ()) || (unit == getAttackAnim ().getDefenderUnit ()))
+										combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
+								}
+								
+								// If animation didn't provide a specific combatActionID then just default to standing still
+								if (combatActionID == null)
 									combatActionID = getClientUnitCalculations ().determineCombatActionID (unit, false);
 								
 								// Draw unit
@@ -287,6 +303,31 @@ public final class CombatUI extends MomClientFrameUI
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true);
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), g,
 							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				
+				// Draw ranged attack missiles?
+				if ((getAttackAnim () != null) && (getAttackAnim ().isRangedAttack ()) && (getAttackAnim ().getCurrent () != null))
+					try
+					{
+						// Draw which missile image?
+						final BufferedImage ratImage = getAnim ().loadImageOrAnimationFrame (getAttackAnim ().getRatCurrentImage ().getRangedAttackTypeCombatImageFile (),
+							getAttackAnim ().getRatCurrentImage ().getRangedAttackTypeCombatAnimation ());
+						
+						// Draw each missile
+						for (final int [] position : getAttackAnim ().getCurrent ())
+						{
+							final int imageWidth = ratImage.getWidth () * position [2];
+							final int imageHeight = ratImage.getHeight () * position [2];
+							
+							final int currentX = position [0] - (imageWidth / 2);
+							final int currentY = position [1] - imageHeight;
+							
+							g.drawImage (ratImage, currentX, currentY, imageWidth, imageHeight, null);
+						}
 					}
 					catch (final Exception e)
 					{
@@ -713,6 +754,22 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setClientUnitCalculations (final MomClientUnitCalculations calc)
 	{
 		clientUnitCalculations = calc;
+	}
+	
+	/**
+	 * @return Animation controller
+	 */
+	public final AnimationController getAnim ()
+	{
+		return anim;
+	}
+
+	/**
+	 * @param controller Animation controller
+	 */
+	public final void setAnim (final AnimationController controller)
+	{
+		anim = controller;
 	}
 
 	/**

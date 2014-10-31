@@ -313,36 +313,28 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		
 		log.trace ("Exiting unregisterUnitFiguresAnimation");
 	}
-	
+
 	/**
-	 * Draws the figures of a unit.
-	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.
+	 * Calculates the positions of all the figures of a unit, taking into account combat scale and so on.
+	 * This is used both to draw the figures of a unit, and to get the positions to start ranged attack missiles at when the unit fires.
+	 * NB. The resulting array may not have aliveFigureCount elements; it may be x1, x4 or x5 depending on combat scale.
+	 * The calling routine should just iterate over the resulting array and make no assumptions about how many elements will contain. 
 	 * 
 	 * @param unitID The unit to draw
 	 * @param unitTypeID The type of unit it is (can pass in null - the only value it cares about is if this is 'S' for summoned units)
 	 * @param totalFigureCount The number of figures the unit had when fully healed
 	 * @param aliveFigureCount The number of figures the unit has now
-	 * @param combatActionID The action to show the unit doing
-	 * @param direction The direction to show the unit facing
-	 * @param g The graphics context to draw the unit onto
 	 * @param offsetX The x offset into the graphics context to draw the unit at
 	 * @param offsetY The y offset into the graphics context to draw the unit at
-	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
+	 * @return Array of all figure positions in pixels; [0] element = x coord, [1] element = y coord, [2] element = multiplier to enlarge image by
 	 * @throws IOException If there is a problem
 	 */
 	@Override
-	public final void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
-		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile) throws IOException
+	public final int [] [] calcUnitFigurePositions (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount,
+		final int offsetX, final int offsetY) throws IOException
 	{
-		// Draw sample tile
-		if (sampleTileImageFile != null)
-		{
-			final BufferedImage tileImage = getUtils ().loadImage (sampleTileImageFile);
-			g.drawImage (tileImage, offsetX, offsetY, tileImage.getWidth () * 2, tileImage.getHeight () * 2, null);
-		}
-
 		// Get the main unit
-		final UnitEx unit = getGraphicsDB ().findUnit (unitID, "drawUnitFigures");
+		final UnitEx unit = getGraphicsDB ().findUnit (unitID, "calcUnitFigurePositions");
 		
 		// relativeScale = which set of positions from the graphics XML to use for this unit's figures
 		// relativeScaleMultiplier = what to multiply the tileRelativeX, Y in th egraphics XML by
@@ -377,14 +369,69 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				break;
 				
 			default:
-				throw new MomException ("drawUnitFigures encountered a scale that it doesn't know how to handle: " + getClientConfig ().getUnitCombatScale ());
+				throw new MomException ("calcUnitFigurePositions encountered a scale that it doesn't know how to handle: " + getClientConfig ().getUnitCombatScale ());
 		}
 		
 		// Show heroes with entourage of cavalry accompanying them
-		BufferedImage secondaryImage = null;
 		if ((figureMultiplier == 4) && (unit.getSecondaryUnitID () != null))
-		{
 			figureMultiplier++;
+		
+		// Get the positions of the n times
+		final int [] [] result = new int [aliveFigureCount * figureMultiplier] [3];
+		final CombatTileFigurePositionsEx positions = getGraphicsDB ().findCombatTileUnitRelativeScale (relativeScale, "calcUnitFigurePositions").findFigureCount (totalFigureCount * figureMultiplier, "drawUnitFigures");
+		for (int n = 0; n < (aliveFigureCount * figureMultiplier); n++)
+		{
+			final FigurePositionsForFigureCount position = positions.findFigureNumber (n+1, "calcUnitFigurePositions");
+
+			// This is to account that the unit's feet don't touch the bottom of the image
+			final int fudgeY = (totalFigureCount <= 2) ? 4 : 6;
+			
+			// Generate coordinates
+			result [n] [0] = offsetX + (position.getTileRelativeX () * relativeScaleMultiplier);
+			result [n] [1] = offsetY + (position.getTileRelativeY () * relativeScaleMultiplier) + (fudgeY * unitImageMultiplier);
+			result [n] [2] = unitImageMultiplier;
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Draws the figures of a unit.
+	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.
+	 * 
+	 * @param unitID The unit to draw
+	 * @param unitTypeID The type of unit it is (can pass in null - the only value it cares about is if this is 'S' for summoned units)
+	 * @param totalFigureCount The number of figures the unit had when fully healed
+	 * @param aliveFigureCount The number of figures the unit has now
+	 * @param combatActionID The action to show the unit doing
+	 * @param direction The direction to show the unit facing
+	 * @param g The graphics context to draw the unit onto
+	 * @param offsetX The x offset into the graphics context to draw the unit at
+	 * @param offsetY The y offset into the graphics context to draw the unit at
+	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
+	 * @throws IOException If there is a problem
+	 */
+	@Override
+	public final void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
+		final int direction, final Graphics g, final int offsetX, final int offsetY, final String sampleTileImageFile) throws IOException
+	{
+		// Draw sample tile
+		if (sampleTileImageFile != null)
+		{
+			final BufferedImage tileImage = getUtils ().loadImage (sampleTileImageFile);
+			g.drawImage (tileImage, offsetX, offsetY, tileImage.getWidth () * 2, tileImage.getHeight () * 2, null);
+		}
+		
+		// Get the main unit
+		final UnitEx unit = getGraphicsDB ().findUnit (unitID, "drawUnitFigures");
+		
+		// Get all the figure positions
+		final int [] [] figurePositions = calcUnitFigurePositions (unitID, unitTypeID, totalFigureCount, aliveFigureCount, offsetX, offsetY);
+		
+		// Show heroes with entourage of cavalry accompanying them
+		BufferedImage secondaryImage = null;
+		if (figurePositions.length / aliveFigureCount == 5)		// sneaky way to figure out figureMultiplier value
+		{
 			final UnitEx secondaryUnit = getGraphicsDB ().findUnit (unit.getSecondaryUnitID (), "drawUnitFigures");
 			final UnitCombatImage secondaryUnitImage = secondaryUnit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
 			secondaryImage = getAnim ().loadImageOrAnimationFrame (secondaryUnitImage.getUnitCombatImageFile (), secondaryUnitImage.getUnitCombatAnimation ());
@@ -393,18 +440,11 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Work out the image to draw n times
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
 		final BufferedImage image = getAnim ().loadImageOrAnimationFrame (unitImage.getUnitCombatImageFile (), unitImage.getUnitCombatAnimation ());
-		final int imageWidth = image.getWidth () * unitImageMultiplier;
-		final int imageHeight = image.getHeight () * unitImageMultiplier;
 		
-		// Get the positions of the n times
-		final CombatTileFigurePositionsEx positions = getGraphicsDB ().findCombatTileUnitRelativeScale (relativeScale, "drawUnitFigures").findFigureCount (totalFigureCount * figureMultiplier, "drawUnitFigures");
-		for (int n = 1; n <= (aliveFigureCount * figureMultiplier); n++)
+		// Draw the figure in each position
+		int n = 1;
+		for (final int [] position : figurePositions)
 		{
-			final FigurePositionsForFigureCount position = positions.findFigureNumber (n, "drawUnitFigures");
-
-			// This is to account that the unit's feet don't touch the bottom of the image
-			final int fudgeY = (totalFigureCount <= 2) ? 4 : 6;
-			
 			// Select image to draw
 			final BufferedImage useImage;
 			if (secondaryImage == null)
@@ -412,11 +452,17 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			else
 				useImage = (n == 3) ? image : secondaryImage;
 			
+			// 3rd array element tells us what to multiply the image size up by
+			final int imageWidth = useImage.getWidth () * position [2];
+			final int imageHeight = useImage.getHeight () * position [2];
+			
 			// TileRelativeX, Y in the graphics XML indicates the position of the unit's feet, so need to adjust according to the unit size
-			g.drawImage (useImage, 
-				offsetX + (position.getTileRelativeX () * relativeScaleMultiplier) - (imageWidth / 2),
-				offsetY + (position.getTileRelativeY () * relativeScaleMultiplier) + (fudgeY * unitImageMultiplier) - imageHeight,
-				image.getWidth () * unitImageMultiplier, image.getHeight () * unitImageMultiplier, null);
+			g.drawImage (useImage,
+				position [0] - (imageWidth / 2),
+				position [1] - imageHeight,
+				imageWidth, imageHeight, null);
+			
+			n++;
 		}
 	}
 
@@ -452,19 +498,22 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		else
 			aliveFigureCount = totalFigureCount;
 		
-		// Get unit type
-		final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitDef.getUnitMagicRealm (), "drawUnitFigures").getUnitTypeID ();
-		
-		// Get sample tile
-		final String sampleTileImageFile;
-		if (drawSampleTile)
-			sampleTileImageFile = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getSampleTileImageFile ();
-		else
-			sampleTileImageFile = null; 
-		
-		// Call other version now that we have all the necessary values
-		drawUnitFigures (unit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, combatActionID,
-			direction, g, offsetX, offsetY, sampleTileImageFile);
+		if (aliveFigureCount > 0)
+		{
+			// Get unit type
+			final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (unitDef.getUnitMagicRealm (), "drawUnitFigures").getUnitTypeID ();
+			
+			// Get sample tile
+			final String sampleTileImageFile;
+			if (drawSampleTile)
+				sampleTileImageFile = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getSampleTileImageFile ();
+			else
+				sampleTileImageFile = null; 
+			
+			// Call other version now that we have all the necessary values
+			drawUnitFigures (unit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, combatActionID,
+				direction, g, offsetX, offsetY, sampleTileImageFile);
+		}
 	}
 	
 	/**

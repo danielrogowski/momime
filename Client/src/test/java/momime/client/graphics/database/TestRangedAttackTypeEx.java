@@ -1,6 +1,8 @@
 package momime.client.graphics.database;
 
 import static org.junit.Assert.assertEquals;
+import momime.client.graphics.database.v0_9_5.RangedAttackTypeActionID;
+import momime.client.graphics.database.v0_9_5.RangedAttackTypeCombatImage;
 import momime.client.graphics.database.v0_9_5.RangedAttackTypeWeaponGrade;
 import momime.common.database.RecordNotFoundException;
 
@@ -57,5 +59,67 @@ public final class TestRangedAttackTypeEx
 		
 		// Run tests
 		rat.findWeaponGradeImageFile (4, "testFindWeaponGradeImageFile_NotExists");
+	}
+
+	/**
+	 * Tests the findWeaponGradeImageFile method to look for a weapon grade that does exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test
+	public final void testFindCombatImage_Exist () throws RecordNotFoundException
+	{
+		// Create some dummy entries
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final RangedAttackTypeCombatImage flyImage = new RangedAttackTypeCombatImage ();
+			flyImage.setRangedAttackTypeActionID (RangedAttackTypeActionID.FLY);
+			flyImage.setDirection (n);
+			flyImage.setRangedAttackTypeCombatImageFile ("Fly" + n + ".png");
+
+			final RangedAttackTypeCombatImage strikeImage = new RangedAttackTypeCombatImage ();
+			strikeImage.setRangedAttackTypeActionID (RangedAttackTypeActionID.STRIKE);
+			strikeImage.setDirection (n);
+			strikeImage.setRangedAttackTypeCombatImageFile ("Strike" + n + ".png");
+			
+			rat.getRangedAttackTypeCombatImage ().add (flyImage);
+			rat.getRangedAttackTypeCombatImage ().add (strikeImage);
+		}
+		
+		rat.buildMap ();
+		
+		// Run tests
+		assertEquals ("Strike2.png", rat.findCombatImage (RangedAttackTypeActionID.STRIKE, 2, "testFindCombatImage_Exist").getRangedAttackTypeCombatImageFile ());
+	}
+
+	/**
+	 * Tests the findWeaponGradeImageFile method to look for a weapon grade that doesn't exist
+	 * @throws RecordNotFoundException If the record is not found
+	 */
+	@Test(expected=RecordNotFoundException.class)
+	public final void testFindCombatImage_NotExist () throws RecordNotFoundException
+	{
+		// Create some dummy entries
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final RangedAttackTypeCombatImage flyImage = new RangedAttackTypeCombatImage ();
+			flyImage.setRangedAttackTypeActionID (RangedAttackTypeActionID.FLY);
+			flyImage.setDirection (n);
+			flyImage.setRangedAttackTypeCombatImageFile ("Fly" + n + ".png");
+
+			final RangedAttackTypeCombatImage strikeImage = new RangedAttackTypeCombatImage ();
+			strikeImage.setRangedAttackTypeActionID (RangedAttackTypeActionID.STRIKE);
+			strikeImage.setDirection (n);
+			strikeImage.setRangedAttackTypeCombatImageFile ("Strike" + n + ".png");
+			
+			rat.getRangedAttackTypeCombatImage ().add (flyImage);
+			rat.getRangedAttackTypeCombatImage ().add (strikeImage);
+		}
+		
+		rat.buildMap ();
+		
+		// Run tests
+		rat.findCombatImage (RangedAttackTypeActionID.STRIKE, 4, "testFindCombatImage_NotExist");
 	}
 }

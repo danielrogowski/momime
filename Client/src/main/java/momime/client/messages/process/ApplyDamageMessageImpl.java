@@ -6,13 +6,22 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
+import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.MomClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.graphics.database.RangedAttackTypeEx;
+import momime.client.graphics.database.TileSetEx;
+import momime.client.graphics.database.v0_9_5.RangedAttackTypeActionID;
+import momime.client.graphics.database.v0_9_5.RangedAttackTypeCombatImage;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
+import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.MomUnitCalculations;
+import momime.common.database.v0_9_5.Unit;
 import momime.common.messages.servertoclient.v0_9_5.ApplyDamageMessage;
 import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
 import momime.common.messages.v0_9_5.MemoryUnit;
@@ -34,6 +43,15 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
+	
+	/** FPS that we show ranged missiles at */
+	private static final int RANGED_ATTACK_FPS = 10;
+	
+	/** How many ticks at the above FPS we show the unit firing a ranged attack for */
+	private static final int RANGED_ATTACK_LAUNCH_TICKS = 2;
+
+	/** How many ticks at the above FPS we show the unit being hit by a ranged attack for */
+	private static final int RANGED_ATTACK_IMPACT_TICKS = 2;
 
 	/** Multiplayer client */
 	private MomClient client;
@@ -55,6 +73,18 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 	/** Client unit calculations */
 	private MomClientUnitCalculations clientUnitCalculations;
+
+	/** Bitmap generator includes routines for calculating pixel coords */
+	private CombatMapBitmapGenerator combatMapBitmapGenerator;
+	
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
+	
+	/** Sound effects player */
+	private AudioPlayer soundPlayer;
+	
+	/** Animation controller */
+	private AnimationController anim;
 	
 	/** The attacking unit; null if we can't see it */
 	private MemoryUnit attackerUnit;
@@ -76,6 +106,27 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 	/** Damage is animated if we're one of the players invovled in the combat; damage is instant if its someone else's combat */
 	private boolean animated;
+	
+	/** Start coordinates of each individual missile making a ranged attack, in pixels */
+	private int [] [] start;
+	
+	/** X coordinate of the unit being shot by a ranged attack, in pixels (missiles always converge */
+	private int endX;
+	
+	/** Y coordinate of the unit being shot by a ranged attack, in pixels */
+	private int endY;
+	
+	/** Current coordinates of each individual missile making a ranged attack, in pixels; null if still showing the initial portion of the firing animation */
+	private int [] [] current;
+	
+	/** Image of ranged attack flying towards its target */
+	private RangedAttackTypeCombatImage ratFlyImage;
+
+	/** Image of ranged attack hitting its target */
+	private RangedAttackTypeCombatImage ratStrikeImage;
+	
+	/** Current image of ranged attack */
+	private RangedAttackTypeCombatImage ratCurrentImage;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -123,7 +174,60 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			
 			if (isRangedAttack ())
 			{
-				// Start a ranged attack animation
+				// Start a ranged attack animation - firstly, after a brief frame of showing the unit firing, it'll be back to standing still
+				// It might however because of the attack now be facing a different direction than before, so possibly a new anim needs to be registered
+				final String attackerStandingActionID = getClientUnitCalculations ().determineCombatActionID (attackerUnit, false);
+				getUnitClientUtils ().registerUnitFiguresAnimation (attackerUnit.getUnitID (), attackerStandingActionID, attackerUnit.getCombatHeading (), getCombatUI ().getContentPane ());
+				
+				// To animate the missiles, first we need the locations (in pixels) of the two units involved
+				final TileSetEx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.VALUE_TILE_SET_COMBAT_MAP, "ApplyDamageMessageImpl");
+				
+				final int startX = getCombatMapBitmapGenerator ().combatCoordinatesX (attackerUnit.getCombatPosition ().getX (), attackerUnit.getCombatPosition ().getY (), combatMapTileSet);
+				final int startY = getCombatMapBitmapGenerator ().combatCoordinatesY (attackerUnit.getCombatPosition ().getX (), attackerUnit.getCombatPosition ().getY (), combatMapTileSet);
+				endX = getCombatMapBitmapGenerator ().combatCoordinatesX (defenderUnit.getCombatPosition ().getX (), defenderUnit.getCombatPosition ().getY (), combatMapTileSet);
+				endY = getCombatMapBitmapGenerator ().combatCoordinatesY (defenderUnit.getCombatPosition ().getX (), defenderUnit.getCombatPosition ().getY (), combatMapTileSet);
+				
+				// Work out the firing distance in pixels
+				final double dx = startX - endX;
+				final double dy = startY - endY;
+				
+				final double firingDistancePixels = Math.sqrt ((dx * dx) + (dy * dy));
+				
+				// Move around 50 pixels per frame
+				tickCount = ((int) (firingDistancePixels / 50)) + RANGED_ATTACK_LAUNCH_TICKS + RANGED_ATTACK_IMPACT_TICKS;
+				duration = tickCount / (double) RANGED_ATTACK_FPS;
+				
+				// Get the start location of every individual missile
+				final Unit attackerUnitDef = getClient ().getClientDB ().findUnit (attackerUnit.getUnitID (), "ApplyDamageMessageImpl");
+				final String unitTypeID = getClient ().getClientDB ().findUnitMagicRealm (attackerUnitDef.getUnitMagicRealm (), "ApplyDamageMessageImpl").getUnitTypeID ();
+				final int totalFigureCount = getUnitUtils ().getFullFigureCount (attackerUnitDef);
+				final int aliveFigureCount = getUnitCalculations ().calculateAliveFigureCount (attackerUnit, getClient ().getPlayers (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (),
+					getClient ().getClientDB ());
+				
+				start = getUnitClientUtils ().calcUnitFigurePositions (attackerUnit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, startX, startY);
+
+				// Start animation of the missile; e.g. fireballs don't have a constant image
+				final String rangedAttackTypeID = attackerUnitDef.getRangedAttackType ();
+				final RangedAttackTypeEx rat = getGraphicsDB ().findRangedAttackType (rangedAttackTypeID, "ApplyDamageMessageImpl");
+				ratFlyImage = rat.findCombatImage (RangedAttackTypeActionID.FLY, getAttackerDirection (), "ApplyDamageMessageImpl");
+				getAnim ().registerRepaintTrigger (ratFlyImage.getRangedAttackTypeCombatAnimation (), getCombatUI ().getContentPane ());
+				
+				ratStrikeImage = rat.findCombatImage (RangedAttackTypeActionID.STRIKE, getAttackerDirection (), "ApplyDamageMessageImpl");
+				
+				// Play shooting sound, based on the rangedAttackType
+				if (rat.getRangedAttackSoundFile () == null)
+					log.warn ("Found entry in graphics DB for rangedAttackType " + rangedAttackTypeID + " but it has no sound effect defined");
+				else
+					try
+					{
+						getSoundPlayer ().playAudioFile (rat.getRangedAttackSoundFile ());
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 			}
 			else
 			{
@@ -170,6 +274,19 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		if (isRangedAttack ())
 		{
 			// Animate a ranged attack
+			if (tickNumber >= RANGED_ATTACK_LAUNCH_TICKS)
+			{
+				final double ratio = Math.min (1.0, (double) tickNumber / (tickCount - RANGED_ATTACK_LAUNCH_TICKS));
+				current = new int [start.length] [3];
+				for (int n = 0; n < start.length; n++)
+				{
+					current [n] [0] = start [n] [0] + (int) ((endX - start [n] [0]) * ratio);
+					current [n] [1] = start [n] [1] + (int) ((endY - start [n] [1]) * ratio);
+					current [n] [2] = start [n] [2];
+				}
+			}
+			
+			ratCurrentImage = (tickNumber >= tickCount - RANGED_ATTACK_IMPACT_TICKS) ? ratStrikeImage : ratFlyImage;
 		}
 		else
 		{
@@ -235,7 +352,12 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		// Jump to the next unit to move
 		if (animated)
 		{
-			if (!isRangedAttack ())
+			if (isRangedAttack ())
+			{
+				// Stop missile animation
+				getAnim ().unregisterRepaintTrigger (ratFlyImage.getRangedAttackTypeCombatAnimation (), getCombatUI ().getContentPane ());
+			}
+			else
 			{
 				// End the melee attack animation
 				getUnitClientUtils ().unregisterUnitFiguresAnimation (attackerUnit.getUnitID (), GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK, getAttackerDirection (), getCombatUI ().getContentPane ());				
@@ -376,6 +498,70 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	{
 		clientUnitCalculations = calc;
 	}
+
+	/**
+	 * @return Bitmap generator includes routines for calculating pixel coords
+	 */
+	public final CombatMapBitmapGenerator getCombatMapBitmapGenerator ()
+	{
+		return combatMapBitmapGenerator;
+	}
+
+	/**
+	 * @param gen Bitmap generator includes routines for calculating pixel coords
+	 */
+	public final void setCombatMapBitmapGenerator (final CombatMapBitmapGenerator gen)
+	{
+		combatMapBitmapGenerator = gen;
+	}
+
+	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
+	}
+
+	/**
+	 * @return Sound effects player
+	 */
+	public final AudioPlayer getSoundPlayer ()
+	{
+		return soundPlayer;
+	}
+
+	/**
+	 * @param player Sound effects player
+	 */
+	public final void setSoundPlayer (final AudioPlayer player)
+	{
+		soundPlayer = player;
+	}
+
+	/**
+	 * @return Animation controller
+	 */
+	public final AnimationController getAnim ()
+	{
+		return anim;
+	}
+
+	/**
+	 * @param controller Animation controller
+	 */
+	public final void setAnim (final AnimationController controller)
+	{
+		anim = controller;
+	}
 	
 	/**
 	 * @return The attacking unit; null if we can't see it
@@ -391,5 +577,21 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	public final MemoryUnit getDefenderUnit ()
 	{
 		return defenderUnit;
+	}
+
+	/**
+	 * @return Current coordinates of each individual missile making a ranged attack, in pixels; null if still showing the initial portion of the firing animation
+	 */
+	public final int [] [] getCurrent ()
+	{
+		return current;
+	}
+
+	/**
+	 * @return Current image of ranged attack
+	 */
+	public final RangedAttackTypeCombatImage getRatCurrentImage ()
+	{
+		return ratCurrentImage;
 	}
 }

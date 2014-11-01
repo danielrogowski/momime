@@ -230,8 +230,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameUI" ref="newGameUI" />
 	</bean>
 	
-	<bean id="startGameProgressMessage" class="momime.client.messages.process.StartGameProgressMessageImpl" scope="prototype" />
-
 	<bean id="chosenStandardPhotoMessage" class="momime.client.messages.process.ChosenStandardPhotoMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />

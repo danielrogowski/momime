@@ -47,7 +47,6 @@ import momime.common.messages.servertoclient.ShowListAndOtherScheduledCombatsMes
 import momime.common.messages.servertoclient.SpellResearchChangedMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
-import momime.common.messages.servertoclient.StartGameProgressMessage;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
@@ -174,15 +173,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final ErasePendingMovementsMessage createErasePendingMovementsMessage ()
 	{
 		return getFactory ().createErasePendingMovementsMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final StartGameProgressMessage createStartGameProgressMessage ()
-	{
-		return getFactory ().createStartGameProgressMessage ();
 	}
 
 	/**

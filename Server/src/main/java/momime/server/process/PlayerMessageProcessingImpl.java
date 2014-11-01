@@ -38,8 +38,6 @@ import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessag
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
-import momime.common.messages.servertoclient.StartGameProgressMessage;
-import momime.common.messages.servertoclient.StartGameProgressStageID;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryGridCellUtils;
@@ -336,25 +334,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	}
 
 	/**
-	 * @param players List of players in the session
-	 * @param stage Stage of starting up the game that we are currently at
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 */
-	private final void sendStartGameProgressMessage (final List<PlayerServerDetails> players, final StartGameProgressStageID stage)
-		throws JAXBException, XMLStreamException
-	{
-		log.trace ("Entering sendStartGameProgressMessage: " + stage);
-
-		final StartGameProgressMessage msg = new StartGameProgressMessage ();
-		msg.setStage (stage);
-
-		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
-
-		log.trace ("Exiting sendStartGameProgressMessage");
-	}
-
-	/**
 	 * @param wizard Wizard this AI player is playing
 	 * @return Player description created for this AI player
 	 */
@@ -421,7 +400,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			log.debug ("checkIfCanStartGame: Yes, " + mom.getSessionDescription ().getAiPlayerCount () + " AI wizards to add");
 			mom.getSessionLogger ().info ("All Human players joined - adding AI player(s) and starting game...");
 
-			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_AI_PLAYERS);
 			if (mom.getSessionDescription ().getAiPlayerCount () > 0)
 			{
 				// Get list of wizard IDs for AI players to choose from
@@ -526,12 +504,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 
 			// Add monsters in nodes/lairs/towers - can only do this after we've added the players
-			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_MONSTERS);
 			mom.getSessionLogger ().info ("Filling nodes, lairs & towers with monsters...");
 			mom.getOverlandMapGenerator ().fillNodesLairsAndTowersWithMonsters (mom.getGeneralServerKnowledge (), monstersPlayer);
 
 			// Sort out heroes
-			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_HEROES);
 			mom.getSessionLogger ().info ("Loading list of heroes for each player...");
 			createHeroes (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 
@@ -544,12 +520,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 
 			// Create cities
-			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.ADDING_CITIES);
 			mom.getSessionLogger ().info ("Creating starting cities...");
 			getCityProcessing ().createStartingCities (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 
 			// Now we've created starting cities, we can figure out the initial fog of war area that each player can see
-			sendStartGameProgressMessage (mom.getPlayers (), StartGameProgressStageID.GENERATING_INITIAL_FOG_OF_WAR);
 			mom.getSessionLogger ().info ("Generating and sending initial fog of war...");
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), thisPlayer,

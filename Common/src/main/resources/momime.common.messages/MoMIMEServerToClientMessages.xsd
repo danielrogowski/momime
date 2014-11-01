@@ -147,21 +147,6 @@ client can't predict how many of what spell ranks and magic realms they need to 
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="startGameProgressMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Server broadcasts messages as the game starts up</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="stage" type="momimestoc:startGameProgressStageID"/>
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 <!-- Sent just before game starts to inform players of each others' choices -->
 
 	<xsd:element name="chosenStandardPhotoMessage">
@@ -1263,34 +1248,6 @@ Used when units heal and gain experience at the start of a turn, and when units 
 	
 <!--  Enums -->
 
-	<xsd:simpleType name="startGameProgressStageID">
-	    <xsd:annotation>
-    		<xsd:documentation>The literal values used must match the language entries in the language XML file.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="AddingAI"><xsd:annotation>
-				<xsd:documentation>Adding AI players</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ADDING_AI_PLAYERS"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="AddingMonsters"><xsd:annotation>
-				<xsd:documentation>Adding Monsters</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ADDING_MONSTERS"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="AddingHeroes"><xsd:annotation>
-				<xsd:documentation>Adding Heroes</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ADDING_HEROES"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="AddingCities"><xsd:annotation>
-				<xsd:documentation>Adding Cities</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ADDING_CITIES"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="FogOfWar"><xsd:annotation>
-				<xsd:documentation>Generating initial fog of war</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="GENERATING_INITIAL_FOG_OF_WAR"/></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
 	<xsd:simpleType name="overlandMoveTypeID">
 	    <xsd:annotation>
     		<xsd:documentation>The possible states of each map cell when we select a unit stack to move overland</xsd:documentation>

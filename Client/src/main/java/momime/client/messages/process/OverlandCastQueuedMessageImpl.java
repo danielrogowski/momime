@@ -19,7 +19,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (StartGameProgressMessageImpl.class);
+	private final Log log = LogFactory.getLog (OverlandCastQueuedMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

@@ -63,11 +63,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public StartGameProgressMessageImpl createStartGameProgressMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public PendingSaleMessageImpl createPendingSaleMessage ();
 
 	/**

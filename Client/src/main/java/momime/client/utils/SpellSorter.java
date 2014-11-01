@@ -2,8 +2,8 @@ package momime.client.utils;
 
 import java.util.Comparator;
 
-import momime.common.database.v0_9_5.Spell;
-import momime.common.database.v0_9_5.SpellBookSectionID;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 
 /**
  * Sorts spells in the order they should appear in the spell book.

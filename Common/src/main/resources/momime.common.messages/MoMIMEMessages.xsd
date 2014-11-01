@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
-	xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_5" xmlns:momimecommon="http://momime/common/database/v0_9_5"
-	xmlns:momimeclient="http://momime/client/database/v0_9_5"
-	xmlns:momimemsgs="http://momime/common/messages/v0_9_5" targetNamespace="http://momime/common/messages/v0_9_5"
+	xmlns:momimenewgame="http://momime/common/database/newgame" xmlns:momimecommon="http://momime/common/database"
+	xmlns:momimeclient="http://momime/client/database"
+	xmlns:momimemsgs="http://momime/common/messages" targetNamespace="http://momime/common/messages"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://www.ndg.com/map"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/base"/>
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase"/>
-	<xsd:import namespace="http://momime/common/database/newgame/v0_9_5"/>
-	<xsd:import namespace="http://momime/common/database/v0_9_5"/>
-	<xsd:import namespace="http://momime/client/database/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/database/newgame"/>
+	<xsd:import namespace="http://momime/common/database"/>
+	<xsd:import namespace="http://momime/client/database"/>
     
     <xsd:annotation>
     	<xsd:documentation>Defines the portions of the messaging layer that are needed both by client-to-server and server-to-client messages.

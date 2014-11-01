@@ -2,7 +2,7 @@ package momime.common.calculations;
 
 import java.util.ArrayList;
 
-import momime.common.database.v0_9_5.UnitHasSkill;
+import momime.common.database.UnitHasSkill;
 
 /**
  * UnitUtils.mergeSpellEffectsIntoSkillList adds into the basic skills list defined against a unit any skills granted from spells, such as Lionheart

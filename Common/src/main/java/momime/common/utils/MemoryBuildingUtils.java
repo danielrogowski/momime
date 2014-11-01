@@ -5,10 +5,10 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.Building;
-import momime.common.database.v0_9_5.Unit;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.database.Building;
+import momime.common.database.Unit;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 

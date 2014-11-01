@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import momime.client.graphics.database.TileSetEx;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.MapAreaOfCombatTiles;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 

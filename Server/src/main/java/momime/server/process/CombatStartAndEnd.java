@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.CaptureCityDecisionID;
+import momime.common.messages.CaptureCityDecisionID;
 import momime.server.MomSessionVariables;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;

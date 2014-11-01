@@ -9,7 +9,7 @@ import java.util.List;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeEx;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_5.UnitUpkeep;
+import momime.common.database.UnitUpkeep;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

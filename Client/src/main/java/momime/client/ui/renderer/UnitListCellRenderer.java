@@ -19,7 +19,7 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
-import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.AvailableUnit;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

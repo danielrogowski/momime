@@ -5,15 +5,15 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.WizardPick;
-import momime.common.messages.clienttoserver.v0_9_5.ChooseCustomPicksMessage;
-import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowMessage;
-import momime.common.messages.servertoclient.v0_9_5.ChooseYourRaceNowMessage;
-import momime.common.messages.servertoclient.v0_9_5.ReplacePicksMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.database.WizardPick;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.PlayerPick;
+import momime.common.messages.clienttoserver.ChooseCustomPicksMessage;
+import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
+import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
+import momime.common.messages.servertoclient.ReplacePicksMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
 import momime.server.utils.PlayerPickServerUtils;
 

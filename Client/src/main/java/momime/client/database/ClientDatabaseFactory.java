@@ -2,8 +2,8 @@ package momime.client.database;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
-import momime.client.database.v0_9_5.ClientDatabase;
-import momime.client.database.v0_9_5.ObjectFactory;
+import momime.client.database.ClientDatabase;
+import momime.client.database.ObjectFactory;
 
 /**
  * Creates our custom extended ServerDatabase when it is unmarshalled with JAXB

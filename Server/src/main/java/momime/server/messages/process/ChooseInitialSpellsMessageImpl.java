@@ -5,13 +5,13 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.ChooseInitialSpellsMessage;
-import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowMessage;
-import momime.common.messages.servertoclient.v0_9_5.ChooseYourRaceNowMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
-import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.clienttoserver.ChooseInitialSpellsMessage;
+import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
+import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
 import momime.server.utils.PlayerPickServerUtils;
 

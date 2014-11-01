@@ -7,9 +7,9 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.UnitHasSkill;
-import momime.common.messages.v0_9_5.AvailableUnit;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.database.UnitHasSkill;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

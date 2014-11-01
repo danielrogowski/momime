@@ -5,16 +5,16 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-
 import momime.client.MomClient;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.SpellBookUI;
-import momime.common.messages.servertoclient.v0_9_5.SpellResearchChangedMessage;
+import momime.common.messages.servertoclient.SpellResearchChangedMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this back to a client who requested a change in research to let them know the change was OK.

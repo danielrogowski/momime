@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
-import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;

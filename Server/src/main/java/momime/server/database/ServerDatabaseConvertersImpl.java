@@ -13,16 +13,16 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import momime.client.database.v0_9_5.AvailableDatabase;
-import momime.client.database.v0_9_5.ClientDatabase;
-import momime.client.database.v0_9_5.NewGameDatabase;
+import momime.client.database.AvailableDatabase;
+import momime.client.database.ClientDatabase;
+import momime.client.database.NewGameDatabase;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.MapFeatureProduction;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.MapFeatureProduction;
-import momime.common.database.v0_9_5.TaxRate;
-import momime.common.database.v0_9_5.WizardPick;
-import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
+import momime.common.database.TaxRate;
+import momime.common.database.WizardPick;
+import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 import momime.server.database.v0_9_5.Building;
 import momime.server.database.v0_9_5.CombatAreaEffect;
 import momime.server.database.v0_9_5.CombatTileBorder;
@@ -270,7 +270,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	    // Derive client-side only flag for map features
 		for (final momime.server.database.v0_9_5.MapFeature srcMapFeature : src.getMapFeature ())
 		{
-			final momime.client.database.v0_9_5.MapFeature destMapFeature = new momime.client.database.v0_9_5.MapFeature ();
+			final momime.client.database.MapFeature destMapFeature = new momime.client.database.MapFeature ();
 
 			destMapFeature.setMapFeatureID (srcMapFeature.getMapFeatureID ());
 			destMapFeature.setCanBuildCity (srcMapFeature.isCanBuildCity ());
@@ -289,7 +289,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	    // Select correct number of picks for wizards
 		for (final momime.server.database.v0_9_5.Wizard srcWizard : src.getWizard ())
 		{
-			final momime.client.database.v0_9_5.Wizard destWizard = new momime.client.database.v0_9_5.Wizard ();
+			final momime.client.database.Wizard destWizard = new momime.client.database.Wizard ();
 
 			destWizard.setWizardID (srcWizard.getWizardID ());
 

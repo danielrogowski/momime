@@ -8,14 +8,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.database.ClientDatabaseEx;
-import momime.client.database.v0_9_5.NewGameDatabase;
+import momime.client.database.NewGameDatabase;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.UnitInfoUI;
-import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.MomGeneralPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 
 import com.ndg.multiplayer.base.client.ClientToServerConnection;
 import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;

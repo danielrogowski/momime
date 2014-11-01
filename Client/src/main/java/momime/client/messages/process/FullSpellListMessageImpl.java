@@ -8,9 +8,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.SpellBookUI;
-import momime.common.messages.servertoclient.v0_9_5.FullSpellListMessage;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
-import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.utils.SpellUtils;
 
 import org.apache.commons.logging.Log;

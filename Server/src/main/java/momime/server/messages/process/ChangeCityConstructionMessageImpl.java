@@ -4,9 +4,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.ChangeCityConstructionMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;

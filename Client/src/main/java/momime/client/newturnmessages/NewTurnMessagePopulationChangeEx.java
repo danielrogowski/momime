@@ -11,8 +11,8 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
-import momime.common.messages.v0_9_5.NewTurnMessagePopulationChange;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.NewTurnMessagePopulationChange;
+import momime.common.messages.OverlandMapCityData;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 

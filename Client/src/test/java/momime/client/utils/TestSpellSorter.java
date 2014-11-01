@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import momime.common.database.v0_9_5.Spell;
-import momime.common.database.v0_9_5.SpellBookSectionID;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 
 import org.junit.Test;
 

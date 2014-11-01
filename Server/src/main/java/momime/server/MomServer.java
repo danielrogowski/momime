@@ -10,8 +10,8 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
-import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseExImpl;

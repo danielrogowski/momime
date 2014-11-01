@@ -16,10 +16,10 @@ import momime.client.utils.UnitNameType;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.BuildingPrerequisite;
-import momime.common.database.v0_9_5.Race;
-import momime.common.database.v0_9_5.RaceCannotBuild;
-import momime.common.database.v0_9_5.UnitPrerequisite;
+import momime.common.database.BuildingPrerequisite;
+import momime.common.database.Race;
+import momime.common.database.RaceCannotBuild;
+import momime.common.database.UnitPrerequisite;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
@@ -32,8 +32,8 @@ import momime.common.internal.CityProductionBreakdownPopulationTask;
 import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
-import momime.common.messages.v0_9_5.AvailableUnit;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 
 import org.apache.commons.logging.Log;
@@ -441,7 +441,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 			final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "describeWhatBuildingAllows");
 		
 			// Buildings
-			for (final momime.common.database.v0_9_5.Building building : getClient ().getClientDB ().getBuilding ())
+			for (final momime.common.database.Building building : getClient ().getClientDB ().getBuilding ())
 			
 				// Don't list buildings we already have
 				if (!getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), cityLocation, building.getBuildingID ()))
@@ -478,7 +478,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 			final AvailableUnit dummyUnit = new AvailableUnit ();
 			
 			// Units
-			for (final momime.common.database.v0_9_5.Unit unit : getClient ().getClientDB ().getUnit ())
+			for (final momime.common.database.Unit unit : getClient ().getClientDB ().getUnit ())
 			
 				// Check that the unit is the right race for this city or is a generic non-race specific unit, like a Trireme
 				if ((CommonDatabaseConstants.VALUE_UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (unit.getUnitMagicRealm ())) &&

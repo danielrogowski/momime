@@ -1,9 +1,9 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-	xmlns:momimecommon="http://momime/common/database/v0_9_5" xmlns:momimenewgame="http://momime/common/database/newgame/v0_9_5"
+	xmlns:momimecommon="http://momime/common/database" xmlns:momimenewgame="http://momime/common/database/newgame"
 	xmlns:momimeinternal="http://momime/common/internal" targetNamespace="http://momime/common/internal">
 	
-	<xsd:import namespace="http://momime/common/database/v0_9_5"/>
-	<xsd:import namespace="http://momime/common/database/newgame/v0_9_5"/>
+	<xsd:import namespace="http://momime/common/database"/>
+	<xsd:import namespace="http://momime/common/database/newgame"/>
 	
     <xsd:annotation>
     	<xsd:documentation>Defines data structures used by MoMIMECommon but that aren't stored in any XML files or send in any network messages.

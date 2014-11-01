@@ -3,7 +3,7 @@ package momime.server.utils;
 import java.util.Iterator;
 import java.util.List;
 
-import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

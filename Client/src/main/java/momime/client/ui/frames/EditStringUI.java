@@ -20,7 +20,7 @@ import javax.swing.WindowConstants;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
-import momime.common.messages.clienttoserver.v0_9_5.ChooseCityNameMessage;
+import momime.common.messages.clienttoserver.ChooseCityNameMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

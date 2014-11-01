@@ -5,8 +5,8 @@ import java.util.List;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.Pick;
-import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.database.Pick;
+import momime.common.messages.PlayerPick;
 
 /**
  * Methods for working with list of PlayerPicks

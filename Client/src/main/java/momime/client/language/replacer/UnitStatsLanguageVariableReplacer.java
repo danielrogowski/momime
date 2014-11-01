@@ -1,6 +1,6 @@
 package momime.client.language.replacer;
 
-import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.AvailableUnit;
 
 /**
  * Replacer for replacing language strings to do with unit stats

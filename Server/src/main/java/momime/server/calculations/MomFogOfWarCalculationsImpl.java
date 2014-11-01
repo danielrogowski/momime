@@ -2,10 +2,10 @@ package momime.server.calculations;
 
 import java.util.Iterator;
 
-import momime.common.database.newgame.v0_9_5.FogOfWarValue;
-import momime.common.messages.v0_9_5.FogOfWarStateID;
-import momime.common.messages.v0_9_5.MapVolumeOfFogOfWarStates;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.database.newgame.FogOfWarValue;
+import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.MapVolumeOfFogOfWarStates;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Plane;

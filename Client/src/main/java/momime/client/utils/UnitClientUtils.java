@@ -10,8 +10,8 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
-import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.servertoclient.KillUnitActionID;
+import momime.common.messages.AvailableUnit;
 
 /**
  * Client side only helper methods for dealing with units

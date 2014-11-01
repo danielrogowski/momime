@@ -13,11 +13,11 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_5.SpellSettingData;
-import momime.common.messages.v0_9_5.MagicPowerDistribution;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomResourceValue;
-import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.database.newgame.SpellSettingData;
+import momime.common.messages.MagicPowerDistribution;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomResourceValue;
+import momime.common.messages.PlayerPick;
 
 import org.junit.Test;
 

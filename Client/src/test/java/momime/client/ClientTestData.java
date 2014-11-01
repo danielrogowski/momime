@@ -25,12 +25,12 @@ import momime.client.graphics.database.v0_9_5.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
-import momime.common.database.newgame.v0_9_5.MapSizeData;
-import momime.common.messages.v0_9_5.CombatMapSizeData;
-import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.database.newgame.MapSizeData;
+import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.MapAreaOfMemoryGridCells;
+import momime.common.messages.MapRowOfMemoryGridCells;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryGridCell;
 
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 

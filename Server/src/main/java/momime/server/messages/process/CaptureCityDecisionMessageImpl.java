@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.clienttoserver.v0_9_5.CaptureCityDecisionMessage;
+import momime.common.messages.clienttoserver.CaptureCityDecisionMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatStartAndEnd;
 

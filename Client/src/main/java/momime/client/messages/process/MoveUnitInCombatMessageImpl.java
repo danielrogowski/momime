@@ -14,8 +14,8 @@ import momime.client.graphics.database.TileSetEx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
-import momime.common.messages.servertoclient.v0_9_5.MoveUnitInCombatMessage;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

@@ -3,8 +3,8 @@ package momime.client.utils;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import momime.client.ClientTestData;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.OverlandMapTerrainData;
 
 import org.junit.Test;
 

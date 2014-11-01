@@ -27,8 +27,8 @@ import momime.client.MomClient;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.ui.MomUIConstants;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.clienttoserver.v0_9_5.AlchemyMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.clienttoserver.AlchemyMessage;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 

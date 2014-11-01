@@ -12,9 +12,9 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.common.MomException;
-import momime.common.messages.v0_9_5.AvailableUnit;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;

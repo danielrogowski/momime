@@ -16,7 +16,7 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.AnimationController;
-import momime.common.database.v0_9_5.Building;
+import momime.common.database.Building;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

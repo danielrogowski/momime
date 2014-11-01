@@ -12,37 +12,37 @@ public final class CommonDatabaseConstants
 	public static final String NEW_GAME_XSD_LOCATION = "/momime.common.database/MoMIMENewGameDatabase.xsd";
 
 	/** Namespace of the common XSD */
-	public static final String NEW_GAME_XSD_NAMESPACE_URI = "http://momime/common/database/newgame/" + MOM_IME_VERSION;
+	public static final String NEW_GAME_XSD_NAMESPACE_URI = "http://momime/common/database/newgame";
 
 	/** Path and name to locate the common XSD file on the classpath */
 	public static final String COMMON_XSD_LOCATION = "/momime.common.database/MoMIMECommonDatabase.xsd";
 
 	/** Namespace of the common XSD */
-	public static final String COMMON_XSD_NAMESPACE_URI = "http://momime/common/database/" + MOM_IME_VERSION;
+	public static final String COMMON_XSD_NAMESPACE_URI = "http://momime/common/database";
 
 	/** Path and name to locate the client XSD file on the classpath */
 	public static final String CLIENT_XSD_LOCATION = "/momime.client.database/MoMIMEClientDatabase.xsd";
 
 	/** Namespace of the client XSD */
-	public static final String CLIENT_XSD_NAMESPACE_URI = "http://momime/client/database/" + MOM_IME_VERSION;
+	public static final String CLIENT_XSD_NAMESPACE_URI = "http://momime/client/database";
 
 	/** Path and name to locate the messages XSD file on the classpath */
 	public static final String MESSAGES_XSD_LOCATION = "/momime.common.messages/MoMIMEMessages.xsd";
 
 	/** Namespace of the messages XSD */
-	public static final String MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages/" + MOM_IME_VERSION;
+	public static final String MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages";
 
 	/** Path and name to locate the client-to-server messages XSD file on the classpath */
 	public static final String CTOS_MESSAGES_XSD_LOCATION = "/momime.common.messages/MoMIMEClientToServerMessages.xsd";
 
 	/** Namespace of the client-to-server messages XSD */
-	public static final String CTOS_MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages/clienttoserver/" + MOM_IME_VERSION;
+	public static final String CTOS_MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages/clienttoserver";
 	
 	/** Path and name to locate the server-to-client messages XSD file on the classpath */
 	public static final String STOC_MESSAGES_XSD_LOCATION = "/momime.common.messages/MoMIMEServerToClientMessages.xsd";
 
 	/** Namespace of the server-to-client messages XSD */
-	public static final String STOC_MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages/servertoclient/" + MOM_IME_VERSION;
+	public static final String STOC_MESSAGES_XSD_NAMESPACE_URI = "http://momime/common/messages/servertoclient";
 	
 	/** Range of each magic power slider */
 	public static final int MAGIC_POWER_DISTRIBUTION_MAX = 240;

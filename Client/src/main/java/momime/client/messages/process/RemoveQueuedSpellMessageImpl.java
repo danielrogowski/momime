@@ -5,13 +5,13 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.MomClient;
+import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-
-import momime.client.MomClient;
-import momime.common.messages.servertoclient.v0_9_5.RemoveQueuedSpellMessage;
 
 /**
  * Server sends this if a spell has finished casting to tell the client to remove it from the queue

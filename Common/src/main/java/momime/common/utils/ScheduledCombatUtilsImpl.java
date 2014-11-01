@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MomScheduledCombat;
+import momime.common.messages.MomScheduledCombat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

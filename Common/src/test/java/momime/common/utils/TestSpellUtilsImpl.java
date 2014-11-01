@@ -14,13 +14,13 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_5.SpellSettingData;
-import momime.common.database.v0_9_5.Spell;
-import momime.common.database.v0_9_5.SpellBookSectionID;
-import momime.common.database.v0_9_5.SpellValidUnitTarget;
-import momime.common.messages.v0_9_5.PlayerPick;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
-import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.database.newgame.SpellSettingData;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellValidUnitTarget;
+import momime.common.messages.PlayerPick;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 
 import org.junit.Test;
 

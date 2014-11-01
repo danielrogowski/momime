@@ -4,9 +4,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.clienttoserver.v0_9_5.UpdateMagicPowerDistributionMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

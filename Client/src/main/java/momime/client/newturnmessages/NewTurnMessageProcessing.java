@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import momime.common.MomException;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.NewTurnMessageData;
 
 /**
  * Methods dealing with new turn messages

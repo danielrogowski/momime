@@ -12,7 +12,7 @@ import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.AnimationController;
-import momime.common.messages.servertoclient.v0_9_5.CombatEndedMessage;
+import momime.common.messages.servertoclient.CombatEndedMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

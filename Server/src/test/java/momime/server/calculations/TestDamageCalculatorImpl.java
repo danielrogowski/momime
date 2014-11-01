@@ -10,11 +10,11 @@ import java.util.List;
 
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessage;
-import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessageTypeID;
-import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.servertoclient.DamageCalculationMessage;
+import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.MomUnitAttributeComponent;
 import momime.common.utils.MomUnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;

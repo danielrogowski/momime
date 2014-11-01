@@ -3,7 +3,7 @@ package momime.common.utils;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryCombatAreaEffect;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 

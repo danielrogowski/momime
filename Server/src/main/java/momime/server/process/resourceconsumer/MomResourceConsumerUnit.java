@@ -6,11 +6,11 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
-import momime.common.messages.v0_9_5.NewTurnMessageUnitKilledFromLackOfProduction;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.NewTurnMessageTypeID;
+import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
+import momime.common.messages.servertoclient.KillUnitActionID;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 

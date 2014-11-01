@@ -14,9 +14,9 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.NewTurnMessageUnitKilledFromLackOfProduction;
-import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
+import momime.common.messages.UnitStatusID;
 import momime.common.utils.UnitUtils;
 
 /**

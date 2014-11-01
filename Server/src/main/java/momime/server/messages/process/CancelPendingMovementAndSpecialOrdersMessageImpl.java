@@ -5,11 +5,11 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.clienttoserver.v0_9_5.CancelPendingMovementAndSpecialOrdersMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.UnitStatusID;
+import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;

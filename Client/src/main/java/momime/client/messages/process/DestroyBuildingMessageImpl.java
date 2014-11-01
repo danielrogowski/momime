@@ -9,7 +9,7 @@ import momime.client.MomClient;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.v0_9_5.DestroyBuildingMessage;
+import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.utils.MemoryBuildingUtils;
 
 import org.apache.commons.logging.Log;

@@ -5,10 +5,10 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.SellBuildingMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MemoryGridCell;
-import momime.common.messages.v0_9_5.TurnSystem;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.TurnSystem;
+import momime.common.messages.clienttoserver.SellBuildingMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;

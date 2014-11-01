@@ -1,7 +1,7 @@
 package momime.client.utils;
 
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.OverlandMapTerrainData;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;

@@ -18,12 +18,12 @@ import momime.client.graphics.database.UnitEx;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_5.ExperienceLevel;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+import momime.common.database.ExperienceLevel;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.MomUnitAttributeComponent;
 import momime.common.utils.MomUnitAttributePositiveNegative;
 import momime.common.utils.UnitUtils;
@@ -183,7 +183,7 @@ public final class TestSelectUnitButton
 		// Mock entries from the client XML
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
-		final momime.common.database.v0_9_5.Unit unitDef = new momime.common.database.v0_9_5.Unit ();
+		final momime.common.database.Unit unitDef = new momime.common.database.Unit ();
 		when (db.findUnit ("UN102", "SelectUnitButton")).thenReturn (unitDef);
 		
 		// Mock entries from the graphics XML

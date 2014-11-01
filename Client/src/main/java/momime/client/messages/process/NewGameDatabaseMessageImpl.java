@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.ConnectToServerUI;
-import momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage;
+import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

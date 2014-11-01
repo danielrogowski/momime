@@ -12,7 +12,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.MomSessionDescription;
 
 /**
  * Window to display the details of a one session, when using the OneWindowPerGameUI

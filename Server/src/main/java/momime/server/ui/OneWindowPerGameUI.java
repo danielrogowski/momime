@@ -1,6 +1,6 @@
 package momime.server.ui;
 
-import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.MomSessionDescription;
 
 import org.apache.commons.logging.Log;
 

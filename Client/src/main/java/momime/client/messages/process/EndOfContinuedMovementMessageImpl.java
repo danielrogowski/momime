@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.process.OverlandMapProcessing;
-import momime.common.messages.servertoclient.v0_9_5.EndOfContinuedMovementMessage;
+import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

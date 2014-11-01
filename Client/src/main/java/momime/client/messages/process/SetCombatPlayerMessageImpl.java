@@ -8,8 +8,8 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
-import momime.common.messages.clienttoserver.v0_9_5.CombatAutoControlMessage;
-import momime.common.messages.servertoclient.v0_9_5.SetCombatPlayerMessage;
+import momime.common.messages.clienttoserver.CombatAutoControlMessage;
+import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

@@ -25,8 +25,8 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.panels.CityViewPanel;
-import momime.common.messages.v0_9_5.MemoryBuilding;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

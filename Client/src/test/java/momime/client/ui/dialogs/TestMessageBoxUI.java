@@ -7,7 +7,7 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.MemoryUnit;
 
 import org.junit.Test;
 

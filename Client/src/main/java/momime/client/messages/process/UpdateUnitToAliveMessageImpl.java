@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_5.UpdateUnitToAliveMessage;
+import momime.common.messages.servertoclient.UpdateUnitToAliveMessage;
 
 /**
  * This is like a reduced version of addUnitMessage.

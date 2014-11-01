@@ -5,10 +5,10 @@ import java.util.List;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_5.SpellSettingData;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomResourceValue;
-import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.database.newgame.SpellSettingData;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomResourceValue;
+import momime.common.messages.PlayerPick;
 
 /**
  * Methods for working with list of MomResourceValues

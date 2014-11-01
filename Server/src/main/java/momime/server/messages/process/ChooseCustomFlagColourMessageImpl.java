@@ -1,7 +1,7 @@
 package momime.server.messages.process;
 
-import momime.common.messages.clienttoserver.v0_9_5.ChooseCustomFlagColourMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.clienttoserver.ChooseCustomFlagColourMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

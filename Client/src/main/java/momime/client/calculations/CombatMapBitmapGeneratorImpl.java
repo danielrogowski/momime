@@ -14,9 +14,9 @@ import momime.client.graphics.database.SmoothedTileTypeEx;
 import momime.client.graphics.database.TileSetEx;
 import momime.client.graphics.database.v0_9_5.SmoothedTile;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.CombatMapLayerID;
-import momime.common.messages.v0_9_5.CombatMapSizeData;
-import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.database.CombatMapLayerID;
+import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.utils.CombatMapUtils;
 
 import org.apache.commons.logging.Log;

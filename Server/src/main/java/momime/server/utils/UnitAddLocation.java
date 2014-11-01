@@ -1,6 +1,6 @@
 package momime.server.utils;
 
-import momime.common.messages.v0_9_5.UnitAddBumpTypeID;
+import momime.common.messages.UnitAddBumpTypeID;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 

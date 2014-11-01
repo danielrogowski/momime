@@ -5,9 +5,9 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
-import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Spell;
@@ -96,13 +96,13 @@ public final class SpellAIImpl implements SpellAI
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
-		final List<momime.common.database.v0_9_5.Spell> researchableSpells = getSpellUtils ().getSpellsForStatus
+		final List<momime.common.database.Spell> researchableSpells = getSpellUtils ().getSpellsForStatus
 			(priv.getSpellResearchStatus (), SpellResearchStatusID.RESEARCHABLE_NOW, db);
 
 		if (researchableSpells.size () >= 0)
 		{
 			final List<Spell> researchableServerSpells = new ArrayList<Spell> ();
-			for (final momime.common.database.v0_9_5.Spell spell : researchableSpells)
+			for (final momime.common.database.Spell spell : researchableSpells)
 				researchableServerSpells.add ((Spell) spell);
 
 			final Spell chosenSpell = chooseSpellToResearchAI (researchableServerSpells, player.getPlayerDescription ().getPlayerID ());
@@ -131,9 +131,9 @@ public final class SpellAIImpl implements SpellAI
 		log.trace ("Entering chooseFreeSpellAI: Player ID " + aiPlayerID + ", " + magicRealmID + ", " + spellRankID);
 
 		// Get candidate spells
-		final List<momime.common.database.v0_9_5.Spell> commonSpellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
+		final List<momime.common.database.Spell> commonSpellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
 		final List<Spell> spellList = new ArrayList<Spell> ();
-		for (final momime.common.database.v0_9_5.Spell thisSpell : commonSpellList)
+		for (final momime.common.database.Spell thisSpell : commonSpellList)
 			spellList.add ((Spell) thisSpell);
 
 		// Choose a spell

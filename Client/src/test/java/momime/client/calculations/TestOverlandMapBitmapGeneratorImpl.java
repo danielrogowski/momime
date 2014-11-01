@@ -21,10 +21,10 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.config.v0_9_5.MomImeClientConfig;
 import momime.common.database.CommonXsdResourceResolver;
-import momime.common.database.newgame.v0_9_5.MapSizeData;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.database.newgame.MapSizeData;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomSessionDescription;
 import momime.unittests.mapstorage.StoredOverlandMap;
 
 import org.junit.Test;

@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.Spell;
-import momime.common.messages.v0_9_5.PlayerPick;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
-import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.database.Spell;
+import momime.common.messages.PlayerPick;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Pick;

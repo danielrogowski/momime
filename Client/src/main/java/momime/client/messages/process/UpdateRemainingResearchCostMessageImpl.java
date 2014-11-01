@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.SpellBookUI;
-import momime.common.messages.servertoclient.v0_9_5.UpdateRemainingResearchCostMessage;
+import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.utils.SpellUtils;
 
 import org.apache.commons.logging.Log;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryCombatAreaEffect;
 
 import org.junit.Test;
 

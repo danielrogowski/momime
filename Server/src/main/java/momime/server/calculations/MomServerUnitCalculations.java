@@ -4,13 +4,13 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.AvailableUnit;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;

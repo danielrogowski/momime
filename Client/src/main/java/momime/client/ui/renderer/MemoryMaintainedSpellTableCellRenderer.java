@@ -12,7 +12,7 @@ import javax.swing.table.TableCellRenderer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.PlayerColourImageGenerator;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.MemoryMaintainedSpell;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -9,9 +9,9 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.messages.process.CombatEndedMessageImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 
 import org.junit.Test;
 

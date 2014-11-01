@@ -4,7 +4,7 @@ import java.util.List;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.TaxRate;
+import momime.common.database.TaxRate;
 import momime.server.database.v0_9_5.Building;
 import momime.server.database.v0_9_5.CitySize;
 import momime.server.database.v0_9_5.CombatAreaEffect;

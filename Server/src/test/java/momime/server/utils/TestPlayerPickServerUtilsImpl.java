@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.WizardPick;
-import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.PlayerPick;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
-import momime.common.messages.v0_9_5.SpellResearchStatusID;
+import momime.common.database.WizardPick;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.PlayerPick;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.ai.SpellAI;
@@ -531,11 +531,11 @@ public final class TestPlayerPickServerUtilsImpl
 		playerPick.setQuantity (11);
 
 		// We already picked 6 of the free common spells, and the two uncommon
-		final List<momime.common.database.v0_9_5.Spell> commonsAlreadyChosen = new ArrayList<momime.common.database.v0_9_5.Spell> ();
+		final List<momime.common.database.Spell> commonsAlreadyChosen = new ArrayList<momime.common.database.Spell> ();
 		for (int n = 0; n < 6; n++)
 			commonsAlreadyChosen.add (null);		// Don't care what they are, just want the count
 
-		final List<momime.common.database.v0_9_5.Spell> uncommonsAlreadyChosen = new ArrayList<momime.common.database.v0_9_5.Spell> ();
+		final List<momime.common.database.Spell> uncommonsAlreadyChosen = new ArrayList<momime.common.database.Spell> ();
 		for (int n = 0; n < 2; n++)
 			uncommonsAlreadyChosen.add (null);
 		
@@ -609,11 +609,11 @@ public final class TestPlayerPickServerUtilsImpl
 		}
 
 		// We already picked all 4 of the MB01 free spells, and 1 of the MB02 free spells
-		final List<momime.common.database.v0_9_5.Spell> firstsAlreadyChosen = new ArrayList<momime.common.database.v0_9_5.Spell> ();
+		final List<momime.common.database.Spell> firstsAlreadyChosen = new ArrayList<momime.common.database.Spell> ();
 		for (int n = 0; n < 4; n++)
 			firstsAlreadyChosen.add (null);		// Don't care what they are, just want the count
 
-		final List<momime.common.database.v0_9_5.Spell> secondsAlreadyChosen = new ArrayList<momime.common.database.v0_9_5.Spell> ();
+		final List<momime.common.database.Spell> secondsAlreadyChosen = new ArrayList<momime.common.database.Spell> ();
 		secondsAlreadyChosen.add (null);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -684,11 +684,11 @@ public final class TestPlayerPickServerUtilsImpl
 		}
 
 		// We already picked all 4 of both types of spells
-		final List<momime.common.database.v0_9_5.Spell> firstsAlreadyChosen = new ArrayList<momime.common.database.v0_9_5.Spell> ();
+		final List<momime.common.database.Spell> firstsAlreadyChosen = new ArrayList<momime.common.database.Spell> ();
 		for (int n = 0; n < 4; n++)
 			firstsAlreadyChosen.add (null);		// Don't care what they are, just want the count
 
-		final List<momime.common.database.v0_9_5.Spell> secondsAlreadyChosen = new ArrayList<momime.common.database.v0_9_5.Spell> ();
+		final List<momime.common.database.Spell> secondsAlreadyChosen = new ArrayList<momime.common.database.Spell> ();
 		for (int n = 0; n < 4; n++)
 			secondsAlreadyChosen.add (null);
 		
@@ -758,11 +758,11 @@ public final class TestPlayerPickServerUtilsImpl
 		}
 
 		// We already picked all 4 of the MB01 free spells, and 1 of the MB02 free spells
-		final List<momime.common.database.v0_9_5.Spell> firstsAlreadyChosen = new ArrayList<momime.common.database.v0_9_5.Spell> ();
+		final List<momime.common.database.Spell> firstsAlreadyChosen = new ArrayList<momime.common.database.Spell> ();
 		for (int n = 0; n < 4; n++)
 			firstsAlreadyChosen.add (null);		// Don't care what they are, just want the count
 
-		final List<momime.common.database.v0_9_5.Spell> secondsAlreadyChosen = new ArrayList<momime.common.database.v0_9_5.Spell> ();
+		final List<momime.common.database.Spell> secondsAlreadyChosen = new ArrayList<momime.common.database.Spell> ();
 		secondsAlreadyChosen.add (null);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -1034,7 +1034,7 @@ public final class TestPlayerPickServerUtilsImpl
 		ppk.getPick ().add (playerPick);
 		
 		// Spells we have
-		final List<momime.common.database.v0_9_5.Spell> alreadyChosen = new ArrayList<momime.common.database.v0_9_5.Spell> ();
+		final List<momime.common.database.Spell> alreadyChosen = new ArrayList<momime.common.database.Spell> ();
 		for (int n = 0; n < 4; n++)
 			alreadyChosen.add (null);		// Don't care what they are, just want the count
 

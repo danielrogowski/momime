@@ -19,7 +19,7 @@ import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.MemoryUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

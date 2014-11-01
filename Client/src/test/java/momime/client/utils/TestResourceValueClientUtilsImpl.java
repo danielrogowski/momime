@@ -14,7 +14,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.ProductionTypeEx;
 import momime.client.graphics.database.v0_9_5.ProductionTypeImage;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_5.UnitUpkeep;
+import momime.common.database.UnitUpkeep;
 
 import org.junit.Test;
 

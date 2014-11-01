@@ -1,7 +1,7 @@
 package momime.common.utils;
 
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.OverlandMapTerrainData;
 
 /**
  * Helper methods for dealing with MemoryGridCell objects

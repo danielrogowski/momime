@@ -2,7 +2,7 @@ package momime.client.utils;
 
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 

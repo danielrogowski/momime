@@ -26,8 +26,8 @@ import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.AnimationController;
-import momime.common.messages.v0_9_5.NewTurnMessageConstructBuilding;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.NewTurnMessageConstructBuilding;
+import momime.common.messages.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

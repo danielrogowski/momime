@@ -2,8 +2,8 @@ package momime.client.database;
 
 import java.util.List;
 
-import momime.client.database.v0_9_5.MapFeature;
-import momime.client.database.v0_9_5.Wizard;
+import momime.client.database.MapFeature;
+import momime.client.database.Wizard;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 

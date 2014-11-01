@@ -5,9 +5,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.RequestUpdateUnitNameMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;

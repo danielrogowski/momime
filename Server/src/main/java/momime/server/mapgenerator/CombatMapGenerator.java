@@ -1,9 +1,9 @@
 package momime.server.mapgenerator;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.CombatMapSizeData;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
+import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;

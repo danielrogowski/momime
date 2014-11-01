@@ -18,9 +18,9 @@ import momime.client.MomClient;
 import momime.client.messages.process.CombatEndedMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
-import momime.common.messages.v0_9_5.CaptureCityDecisionID;
-import momime.common.messages.v0_9_5.MemoryGridCell;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.CaptureCityDecisionID;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

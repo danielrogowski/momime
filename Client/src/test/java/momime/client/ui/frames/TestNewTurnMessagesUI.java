@@ -18,10 +18,10 @@ import momime.client.newturnmessages.NewTurnMessageUI;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.AnimationController;
 import momime.client.utils.TextUtilsImpl;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.OverlandMapCityData;
 
 import org.junit.Test;
 

@@ -34,16 +34,16 @@ import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.v0_9_5.MapSizeData;
-import momime.common.database.v0_9_5.Building;
+import momime.common.database.newgame.MapSizeData;
+import momime.common.database.Building;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryGridCell;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.OverlandMapCityData;
 
 import org.junit.Test;
 

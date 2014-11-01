@@ -32,7 +32,7 @@ import momime.client.language.database.v0_9_5.UnitSetting;
 import momime.client.language.database.v0_9_5.UnitSkill;
 import momime.client.language.database.v0_9_5.UnitType;
 import momime.client.language.database.v0_9_5.Wizard;
-import momime.common.database.v0_9_5.SpellBookSectionID;
+import momime.common.database.SpellBookSectionID;
 
 /**
  * Implementation of language XML database - extends stubs auto-generated from XSD to add additional functionality from the interface

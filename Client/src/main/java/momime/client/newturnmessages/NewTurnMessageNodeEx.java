@@ -1,6 +1,6 @@
 package momime.client.newturnmessages;
 
-import momime.common.messages.v0_9_5.NewTurnMessageNode;
+import momime.common.messages.NewTurnMessageNode;
 
 /**
  * NTM about a node that we captured or lost

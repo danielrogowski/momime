@@ -7,9 +7,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.common.messages.servertoclient.v0_9_5.ChosenStandardPhotoMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

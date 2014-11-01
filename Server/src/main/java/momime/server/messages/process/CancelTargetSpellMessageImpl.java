@@ -5,9 +5,9 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.clienttoserver.v0_9_5.CancelTargetSpellMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.clienttoserver.CancelTargetSpellMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;

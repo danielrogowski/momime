@@ -36,12 +36,12 @@ import momime.client.ui.renderer.MemoryMaintainedSpellTableCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.MomSkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_5.Spell;
-import momime.common.messages.clienttoserver.v0_9_5.UpdateMagicPowerDistributionMessage;
-import momime.common.messages.v0_9_5.MagicPowerDistribution;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.database.Spell;
+import momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage;
+import momime.common.messages.MagicPowerDistribution;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.SpellResearchStatus;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 

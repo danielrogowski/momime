@@ -3,7 +3,7 @@ package momime.server.messages;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;

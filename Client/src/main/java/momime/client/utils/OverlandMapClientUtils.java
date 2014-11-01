@@ -1,6 +1,6 @@
 package momime.client.utils;
 
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;

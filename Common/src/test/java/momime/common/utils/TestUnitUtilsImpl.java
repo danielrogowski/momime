@@ -17,17 +17,17 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.Unit;
-import momime.common.database.v0_9_5.UnitHasSkill;
-import momime.common.messages.v0_9_5.AvailableUnit;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.PlayerPick;
-import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.database.Unit;
+import momime.common.database.UnitHasSkill;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.PlayerPick;
+import momime.common.messages.UnitStatusID;
 
 import org.junit.Test;
 

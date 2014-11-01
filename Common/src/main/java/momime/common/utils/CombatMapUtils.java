@@ -2,9 +2,9 @@ package momime.common.utils;
 
 import java.util.List;
 
-import momime.common.database.v0_9_5.CombatMapLayerID;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomCombatTile;
+import momime.common.database.CombatMapLayerID;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;

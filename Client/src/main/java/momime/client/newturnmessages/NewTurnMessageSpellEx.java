@@ -15,10 +15,10 @@ import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.NewTurnMessageSpell;
-import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.NewTurnMessageSpell;
+import momime.common.messages.NewTurnMessageTypeID;
+import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

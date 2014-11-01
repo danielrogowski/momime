@@ -39,12 +39,12 @@ import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.Spell;
-import momime.common.messages.clienttoserver.v0_9_5.CancelPendingMovementAndSpecialOrdersMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.PendingMovement;
-import momime.common.messages.v0_9_5.TurnSystem;
-import momime.common.messages.v0_9_5.UnitSpecialOrder;
+import momime.common.database.Spell;
+import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.PendingMovement;
+import momime.common.messages.TurnSystem;
+import momime.common.messages.UnitSpecialOrder;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.ResourceValueUtils;
 

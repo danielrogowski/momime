@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MomScheduledCombat;
+import momime.common.messages.MomScheduledCombat;
 import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 

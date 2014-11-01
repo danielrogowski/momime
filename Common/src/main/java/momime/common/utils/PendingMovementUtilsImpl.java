@@ -3,7 +3,7 @@ package momime.common.utils;
 import java.util.Iterator;
 import java.util.List;
 
-import momime.common.messages.v0_9_5.PendingMovement;
+import momime.common.messages.PendingMovement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

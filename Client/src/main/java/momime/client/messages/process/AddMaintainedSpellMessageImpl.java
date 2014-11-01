@@ -12,10 +12,10 @@ import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
-import momime.common.database.v0_9_5.Spell;
-import momime.common.database.v0_9_5.SpellBookSectionID;
-import momime.common.messages.servertoclient.v0_9_5.AddMaintainedSpellMessage;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
+import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
+import momime.common.messages.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

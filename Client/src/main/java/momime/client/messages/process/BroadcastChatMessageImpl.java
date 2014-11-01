@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_5.BroadcastChatMessage;
+import momime.common.messages.servertoclient.BroadcastChatMessage;
 
 /**
  * Server bounces this back to all clients for chat messages.

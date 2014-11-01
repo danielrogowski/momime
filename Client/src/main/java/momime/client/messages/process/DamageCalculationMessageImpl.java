@@ -5,12 +5,12 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.messages.servertoclient.DamageCalculationMessage;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-
-import momime.common.messages.servertoclient.v0_9_5.DamageCalculationMessage;
 
 /**
  * Server telling the two players involved in a combat how damage was calculated.

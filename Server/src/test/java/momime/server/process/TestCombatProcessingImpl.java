@@ -15,29 +15,29 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.v0_9_5.FogOfWarSettingData;
-import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
-import momime.common.messages.servertoclient.v0_9_5.KillUnitMessage;
-import momime.common.messages.servertoclient.v0_9_5.MoveUnitInCombatMessage;
-import momime.common.messages.servertoclient.v0_9_5.SetCombatPlayerMessage;
-import momime.common.messages.servertoclient.v0_9_5.SetUnitIntoOrTakeUnitOutOfCombatMessage;
-import momime.common.messages.servertoclient.v0_9_5.StartCombatMessage;
-import momime.common.messages.servertoclient.v0_9_5.StartCombatMessageUnit;
-import momime.common.messages.v0_9_5.CombatMapSizeData;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapAreaOfCombatTiles;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryCombatAreaEffect;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomCombatTile;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.OverlandMapTerrainData;
-import momime.common.messages.v0_9_5.TurnSystem;
-import momime.common.messages.v0_9_5.UnitCombatSideID;
-import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.database.newgame.FogOfWarSettingData;
+import momime.common.messages.CombatMapSizeData;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.OverlandMapTerrainData;
+import momime.common.messages.TurnSystem;
+import momime.common.messages.UnitCombatSideID;
+import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.KillUnitActionID;
+import momime.common.messages.servertoclient.KillUnitMessage;
+import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
+import momime.common.messages.servertoclient.SetCombatPlayerMessage;
+import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
+import momime.common.messages.servertoclient.StartCombatMessage;
+import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.MomUnitAttributeComponent;
@@ -1593,14 +1593,11 @@ public final class TestCombatProcessingImpl
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
 		// Alive defender gets removed too since its a monster in a node
-		assertEquals (3, attackingPlayerConnection.getMessages ().size ());
+		assertEquals (2, attackingPlayerConnection.getMessages ().size ());
 		final KillUnitMessage tellAttackerToRemoveAttackersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (0);
 		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveAttackersDeadUnit.getData ().getKillUnitActionID ());
 		assertEquals (3, tellAttackerToRemoveAttackersDeadUnit.getData ().getUnitURN ());
-		final KillUnitMessage tellAttackerToRemoveDefendersAliveMonster = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (1);
-		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveDefendersAliveMonster.getData ().getKillUnitActionID ());
-		assertEquals (7, tellAttackerToRemoveDefendersAliveMonster.getData ().getUnitURN ());
-		final KillUnitMessage tellAttackerToRemoveDefendersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (2);
+		final KillUnitMessage tellAttackerToRemoveDefendersDeadUnit = (KillUnitMessage) attackingPlayerConnection.getMessages ().get (1);
 		assertEquals (KillUnitActionID.FREE, tellAttackerToRemoveDefendersDeadUnit.getData ().getKillUnitActionID ());
 		assertEquals (8, tellAttackerToRemoveDefendersDeadUnit.getData ().getUnitURN ());
 
@@ -1608,7 +1605,6 @@ public final class TestCombatProcessingImpl
 
 		// Same units must also get removed from players' memory on the server
 		verify (unitUtils, times (1)).removeUnitURN (3, attackingPriv.getFogOfWarMemory ().getUnit ());
-		verify (unitUtils, times (1)).removeUnitURN (7, attackingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (8, attackingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (3, defendingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (0)).removeUnitURN (7, defendingPriv.getFogOfWarMemory ().getUnit ());		// Its the monster player's own unit, so don't remove it from their server memory

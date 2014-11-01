@@ -3,9 +3,9 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.clienttoserver.v0_9_5.ChooseCityNameMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.clienttoserver.ChooseCityNameMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 

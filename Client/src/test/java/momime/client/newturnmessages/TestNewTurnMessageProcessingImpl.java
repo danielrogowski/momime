@@ -11,8 +11,8 @@ import java.util.List;
 
 import momime.client.MomClient;
 import momime.common.MomException;
-import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.NewTurnMessageData;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;

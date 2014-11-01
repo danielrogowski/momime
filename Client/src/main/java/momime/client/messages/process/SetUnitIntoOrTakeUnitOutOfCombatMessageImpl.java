@@ -5,15 +5,15 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.MomClient;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
+import momime.common.utils.UnitUtils;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-
-import momime.client.MomClient;
-import momime.common.messages.servertoclient.v0_9_5.SetUnitIntoOrTakeUnitOutOfCombatMessage;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.utils.UnitUtils;
 
 /**
  * Server sends this to client when a combat is over to take those units out of combat.

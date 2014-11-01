@@ -11,8 +11,8 @@ import momime.client.ui.frames.EditStringUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.common.messages.servertoclient.v0_9_5.UpdateCityMessage;
-import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.servertoclient.UpdateCityMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

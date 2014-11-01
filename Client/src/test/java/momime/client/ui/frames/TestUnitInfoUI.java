@@ -19,10 +19,10 @@ import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.calculations.UnitHasSkillMergedList;
-import momime.common.database.v0_9_5.Unit;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
+import momime.common.database.Unit;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.UnitUtils;
 
 import org.junit.Test;

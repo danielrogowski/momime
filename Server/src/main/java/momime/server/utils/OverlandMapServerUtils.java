@@ -7,11 +7,11 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.UnitCombatSideID;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.UnitCombatSideID;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Race;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;

@@ -5,8 +5,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.v0_9_5.MomGeneralPublicKnowledge;
-import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.messages.MomGeneralPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;

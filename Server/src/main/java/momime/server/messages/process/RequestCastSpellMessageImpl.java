@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.RequestCastSpellMessage;
+import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.SpellQueueing;
 

@@ -5,7 +5,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.MemoryUnit;
 import momime.server.MomSessionVariables;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;

@@ -16,9 +16,9 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_5.ExperienceLevel;
-import momime.common.database.v0_9_5.UnitHasSkill;
-import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.database.ExperienceLevel;
+import momime.common.database.UnitHasSkill;
+import momime.common.messages.AvailableUnit;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.OverlandMapUI;
-import momime.common.messages.servertoclient.v0_9_5.PendingMovementMessage;
+import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

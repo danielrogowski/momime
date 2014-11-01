@@ -5,9 +5,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.RequestSwitchOffMaintainedSpellMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;

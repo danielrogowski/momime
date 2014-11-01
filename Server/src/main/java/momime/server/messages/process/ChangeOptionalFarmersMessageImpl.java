@@ -5,9 +5,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.ChangeOptionalFarmersMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.MomServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;

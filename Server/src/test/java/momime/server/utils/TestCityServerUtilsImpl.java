@@ -11,11 +11,11 @@ import java.util.List;
 
 import momime.common.calculations.MomCityCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.v0_9_5.RaceCannotBuild;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryBuilding;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.database.RaceCannotBuild;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;

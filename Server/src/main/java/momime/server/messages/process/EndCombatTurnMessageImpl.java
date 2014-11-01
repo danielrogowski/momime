@@ -5,7 +5,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.EndCombatTurnMessage;
+import momime.common.messages.clienttoserver.EndCombatTurnMessage;
 import momime.server.MomSessionVariables;
 import momime.server.messages.v0_9_5.ServerGridCell;
 import momime.server.process.CombatProcessing;

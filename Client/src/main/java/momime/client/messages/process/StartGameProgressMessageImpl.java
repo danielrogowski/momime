@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.servertoclient.v0_9_5.StartGameProgressMessage;
+import momime.common.messages.servertoclient.StartGameProgressMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

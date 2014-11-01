@@ -7,9 +7,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.process.OverlandMapProcessing;
-import momime.common.messages.servertoclient.v0_9_5.UpdateOverlandMovementRemainingMessage;
-import momime.common.messages.servertoclient.v0_9_5.UpdateOverlandMovementRemainingUnit;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingMessage;
+import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingUnit;
+import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

@@ -4,10 +4,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.ChooseStandardPhotoMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.servertoclient.v0_9_5.YourPhotoIsOkMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.clienttoserver.ChooseStandardPhotoMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.messages.servertoclient.YourPhotoIsOkMessage;
 import momime.server.MomSessionVariables;
 
 import org.apache.commons.logging.Log;

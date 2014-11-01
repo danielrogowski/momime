@@ -9,7 +9,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.v0_9_5.ProductionType;
 import momime.client.language.database.v0_9_5.Spell;
 import momime.client.ui.MomUIConstants;
-import momime.common.messages.v0_9_5.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
+import momime.common.messages.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
 
 /**
  * A spell was switched off because we couldn't afford the mana to maintain it

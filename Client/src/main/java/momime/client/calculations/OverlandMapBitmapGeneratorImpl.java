@@ -18,9 +18,9 @@ import momime.client.graphics.database.v0_9_5.SmoothedTile;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.newgame.v0_9_5.MapSizeData;
-import momime.common.messages.v0_9_5.FogOfWarStateID;
-import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.database.newgame.MapSizeData;
+import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.MemoryGridCell;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

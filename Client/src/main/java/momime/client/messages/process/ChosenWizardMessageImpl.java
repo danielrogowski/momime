@@ -7,8 +7,8 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.NewGameUI;
-import momime.common.messages.servertoclient.v0_9_5.ChosenWizardMessage;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.servertoclient.ChosenWizardMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

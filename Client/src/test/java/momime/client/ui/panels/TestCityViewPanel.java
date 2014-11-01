@@ -16,12 +16,12 @@ import momime.client.graphics.database.v0_9_5.CityViewElement;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.OverlandMapClientUtils;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.newgame.v0_9_5.MapSizeData;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_5.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.MomSessionDescription;
+import momime.common.database.newgame.MapSizeData;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomSessionDescription;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 

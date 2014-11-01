@@ -10,7 +10,7 @@ import momime.client.ui.frames.AlchemyUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
-import momime.common.messages.servertoclient.v0_9_5.UpdateGlobalEconomyMessage;
+import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -3,7 +3,7 @@ package momime.client.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.MemoryUnit;
 
 /**
  * Methods dealing with combat movement and unit lists, to keep this from making CombatUI too large and complicated.

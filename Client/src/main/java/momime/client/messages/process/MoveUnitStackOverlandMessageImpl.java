@@ -12,9 +12,9 @@ import momime.client.graphics.database.TileSetEx;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.utils.UnitClientUtils;
-import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
-import momime.common.messages.servertoclient.v0_9_5.MoveUnitStackOverlandMessage;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.servertoclient.KillUnitActionID;
+import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 

@@ -18,14 +18,14 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.Building;
-import momime.common.database.v0_9_5.BuildingPopulationProductionModifier;
-import momime.common.database.v0_9_5.BuildingPrerequisite;
-import momime.common.database.v0_9_5.Unit;
-import momime.common.database.v0_9_5.UnitPrerequisite;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryBuilding;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.database.Building;
+import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.BuildingPrerequisite;
+import momime.common.database.Unit;
+import momime.common.database.UnitPrerequisite;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.OverlandMapCityData;
 
 import org.junit.Test;
 

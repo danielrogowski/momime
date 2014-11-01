@@ -24,7 +24,7 @@ import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.MemoryBuilding;
 import momime.common.utils.MemoryBuildingUtils;
 
 import org.junit.Test;

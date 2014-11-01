@@ -12,11 +12,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.messages.servertoclient.v0_9_5.AddScheduledCombatMessage;
-import momime.common.messages.servertoclient.v0_9_5.ScheduledCombatWalkInWithoutAFightMessage;
-import momime.common.messages.servertoclient.v0_9_5.ShowListAndOtherScheduledCombatsMessage;
-import momime.common.messages.servertoclient.v0_9_5.UpdateOtherScheduledCombatsMessage;
-import momime.common.messages.v0_9_5.MomScheduledCombat;
+import momime.common.messages.MomScheduledCombat;
+import momime.common.messages.servertoclient.AddScheduledCombatMessage;
+import momime.common.messages.servertoclient.ScheduledCombatWalkInWithoutAFightMessage;
+import momime.common.messages.servertoclient.ShowListAndOtherScheduledCombatsMessage;
+import momime.common.messages.servertoclient.UpdateOtherScheduledCombatsMessage;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;

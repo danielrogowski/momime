@@ -4,7 +4,7 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatus;
 import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;

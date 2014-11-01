@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
-import momime.common.database.v0_9_5.UnitUpkeep;
+import momime.common.database.UnitUpkeep;
 
 /**
  * Utils for dealing with graphics of resource values/production icons

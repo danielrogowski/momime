@@ -10,7 +10,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.OverlandMapUI;
-import momime.common.messages.servertoclient.v0_9_5.StartGameMessage;
+import momime.common.messages.servertoclient.StartGameMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

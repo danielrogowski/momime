@@ -9,9 +9,9 @@ import momime.client.language.database.UnitTypeEx;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.calculations.MomUnitCalculations;
-import momime.common.database.v0_9_5.ExperienceLevel;
-import momime.common.messages.v0_9_5.AvailableUnit;
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.database.ExperienceLevel;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.MemoryUnit;
 import momime.common.utils.UnitUtils;
 
 /**

@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.utils.UnitClientUtils;
-import momime.common.messages.servertoclient.v0_9_5.KillUnitMessage;
+import momime.common.messages.servertoclient.KillUnitMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

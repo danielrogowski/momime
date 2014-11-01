@@ -9,8 +9,8 @@ import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.v0_9_5.UpdateTerrainMessage;
-import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.servertoclient.UpdateTerrainMessage;
+import momime.common.messages.MemoryGridCell;
 import momime.common.utils.CompareUtils;
 
 import org.apache.commons.logging.Log;

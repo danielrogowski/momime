@@ -1,6 +1,6 @@
 package momime.client.messages.process;
 
-import momime.common.messages.servertoclient.v0_9_5.PlayerCombatRequestStatusMessage;
+import momime.common.messages.servertoclient.PlayerCombatRequestStatusMessage;
 
 /**
  * Server sends this to inform clients whether players are are busy fighting a combat or have

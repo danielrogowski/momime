@@ -13,7 +13,7 @@ import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.client.graphics.database.v0_9_5.WeaponGrade;
 import momime.client.graphics.database.v0_9_5.Wizard;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MemoryBuilding;
+import momime.common.messages.MemoryBuilding;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 

@@ -263,7 +263,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConvertersImpl" />
 	
-	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.v0_9_5.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
+	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
 		<constructor-arg value="#{serverConfig.pathToServerXmlDatabases}" />
 		<constructor-arg ref="serverDatabaseUnmarshaller" />
 	</bean>
@@ -615,7 +615,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serviceLocatorInterface" value="momime.server.MomSessionThreadFactory" />
 	</bean>			
 
-	<bean id="trueMap" class="momime.common.messages.v0_9_5.FogOfWarMemory" scope="prototype" />
+	<bean id="trueMap" class="momime.common.messages.FogOfWarMemory" scope="prototype" />
 
 	<bean id="gsk" class="momime.server.messages.v0_9_5.MomGeneralServerKnowledge" scope="prototype">
 		<property name="trueMap" ref="trueMap" />
@@ -623,7 +623,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="nextFreeScheduledCombatURN" value="1" />
 	</bean>
 
-	<bean id="gpk" class="momime.common.messages.v0_9_5.MomGeneralPublicKnowledge" scope="prototype" />
+	<bean id="gpk" class="momime.common.messages.MomGeneralPublicKnowledge" scope="prototype" />
 	
 	<bean id="overlandMapGenerator" class="momime.server.mapgenerator.OverlandMapGeneratorImpl" scope="prototype">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />

@@ -1,6 +1,6 @@
 package momime.server.process;
 
-import momime.common.messages.v0_9_5.MemoryUnit;
+import momime.common.messages.MemoryUnit;
 
 /**
  * Stores a link to a unit together with its combat class, so that we don't have to keep recalculating it

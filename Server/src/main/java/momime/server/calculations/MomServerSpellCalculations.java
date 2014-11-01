@@ -3,8 +3,8 @@ package momime.server.calculations;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.PlayerPick;
-import momime.common.messages.v0_9_5.SpellResearchStatus;
+import momime.common.messages.PlayerPick;
+import momime.common.messages.SpellResearchStatus;
 import momime.server.database.ServerDatabaseEx;
 
 /**

@@ -7,11 +7,11 @@ import static org.junit.Assert.assertTrue;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.messages.v0_9_5.MapAreaOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapRowOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryGridCell;
-import momime.common.messages.v0_9_5.OverlandMapTerrainData;
+import momime.common.messages.MapAreaOfMemoryGridCells;
+import momime.common.messages.MapRowOfMemoryGridCells;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.OverlandMapTerrainData;
 
 import org.junit.Test;
 

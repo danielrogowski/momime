@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
-import momime.common.messages.servertoclient.v0_9_5.ErasePendingMovementsMessage;
+import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

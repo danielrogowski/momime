@@ -5,10 +5,10 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MemoryBuilding;
-import momime.common.messages.v0_9_5.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.v0_9_5.NewTurnMessageBuildingSoldFromLackOfProduction;
-import momime.common.messages.v0_9_5.NewTurnMessageTypeID;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.NewTurnMessageBuildingSoldFromLackOfProduction;
+import momime.common.messages.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.process.CityProcessing;
 

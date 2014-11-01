@@ -3,7 +3,7 @@ package momime.common.utils;
 import java.util.List;
 
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.MomScheduledCombat;
+import momime.common.messages.MomScheduledCombat;
 
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;

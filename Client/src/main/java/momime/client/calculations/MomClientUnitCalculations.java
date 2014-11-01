@@ -3,7 +3,7 @@ package momime.client.calculations;
 import momime.client.graphics.database.v0_9_5.UnitSkill;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.AvailableUnit;
+import momime.common.messages.AvailableUnit;
 
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 

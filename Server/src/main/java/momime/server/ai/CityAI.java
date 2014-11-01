@@ -7,11 +7,11 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.v0_9_5.FogOfWarMemory;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryBuilding;
-import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.OverlandMapCityData;
 import momime.server.database.ServerDatabaseEx;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;

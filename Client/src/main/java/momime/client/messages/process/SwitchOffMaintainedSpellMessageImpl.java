@@ -9,7 +9,7 @@ import momime.client.MomClient;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.v0_9_5.SwitchOffMaintainedSpellMessage;
+import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 
 import org.apache.commons.logging.Log;

@@ -3,11 +3,11 @@ package momime.common.utils;
 import java.util.Iterator;
 import java.util.List;
 
-import momime.common.database.v0_9_5.CombatMapLayerID;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.MomCombatTile;
-import momime.common.messages.v0_9_5.MomCombatTileLayer;
-import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.database.CombatMapLayerID;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
+import momime.common.messages.MomCombatTileLayer;
+import momime.common.messages.UnitStatusID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -1,3 +1,3 @@
-PUBLIC "http://momime/common/messages/v0_9_5" "MoMIMEMessages.xsd"
-PUBLIC "http://momime/common/messages/clienttoserver/v0_9_5" "MoMIMEClientToServerMessages.xsd"
-PUBLIC "http://momime/common/messages/servertoclient/v0_9_5" "MoMIMEServerToClientMessages.xsd"
+PUBLIC "http://momime/common/messages" "MoMIMEMessages.xsd"
+PUBLIC "http://momime/common/messages/clienttoserver" "MoMIMEClientToServerMessages.xsd"
+PUBLIC "http://momime/common/messages/servertoclient" "MoMIMEServerToClientMessages.xsd"

@@ -16,7 +16,7 @@ import momime.client.language.database.v0_9_5.TileType;
 import momime.client.language.database.v0_9_5.Unit;
 import momime.client.language.database.v0_9_5.UnitAttribute;
 import momime.client.language.database.v0_9_5.UnitSkill;
-import momime.common.database.v0_9_5.SpellBookSectionID;
+import momime.common.database.SpellBookSectionID;
 
 /**
  * Describes operations that we need to support over the language XML file

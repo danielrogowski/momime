@@ -5,13 +5,13 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.MomClient;
+import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-
-import momime.client.MomClient;
-import momime.common.messages.servertoclient.v0_9_5.UpdateManaSpentOnCastingCurrentSpellMessage;
 
 /**
  * Server sends this to client to let them know progress on casting big spells

@@ -10,7 +10,7 @@ import javazoom.jl.decoder.JavaLayerException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.common.MomException;
-import momime.common.messages.v0_9_5.NewTurnMessageData;
+import momime.common.messages.NewTurnMessageData;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

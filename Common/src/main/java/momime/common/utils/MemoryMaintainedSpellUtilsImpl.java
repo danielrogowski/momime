@@ -6,15 +6,15 @@ import java.util.List;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.Spell;
-import momime.common.database.v0_9_5.SpellBookSectionID;
-import momime.common.database.v0_9_5.SpellHasCityEffect;
-import momime.common.database.v0_9_5.UnitSpellEffect;
-import momime.common.messages.v0_9_5.MapVolumeOfMemoryGridCells;
-import momime.common.messages.v0_9_5.MemoryBuilding;
-import momime.common.messages.v0_9_5.MemoryMaintainedSpell;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellHasCityEffect;
+import momime.common.database.UnitSpellEffect;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

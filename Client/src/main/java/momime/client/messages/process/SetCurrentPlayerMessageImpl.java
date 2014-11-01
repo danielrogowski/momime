@@ -12,7 +12,7 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.calculations.MomCityCalculations;
-import momime.common.messages.servertoclient.v0_9_5.SetCurrentPlayerMessage;
+import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

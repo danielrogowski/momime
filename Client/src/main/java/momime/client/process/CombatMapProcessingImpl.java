@@ -8,9 +8,9 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
-import momime.common.messages.clienttoserver.v0_9_5.EndCombatTurnMessage;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.messages.clienttoserver.EndCombatTurnMessage;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitStatusID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

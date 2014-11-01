@@ -9,10 +9,10 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.Pick;
-import momime.common.database.v0_9_5.PickExclusiveFrom;
-import momime.common.database.v0_9_5.PickPrerequisite;
-import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.database.Pick;
+import momime.common.database.PickExclusiveFrom;
+import momime.common.database.PickPrerequisite;
+import momime.common.messages.PlayerPick;
 
 import org.junit.Test;
 

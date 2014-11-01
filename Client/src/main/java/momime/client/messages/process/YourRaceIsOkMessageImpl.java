@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.ui.frames.NewGameUI;
-import momime.common.messages.servertoclient.v0_9_5.YourRaceIsOkMessage;
+import momime.common.messages.servertoclient.YourRaceIsOkMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

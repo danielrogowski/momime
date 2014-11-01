@@ -4,10 +4,10 @@ import java.util.List;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.WizardPick;
-import momime.common.messages.servertoclient.v0_9_5.ChooseInitialSpellsNowMessage;
-import momime.common.messages.v0_9_5.MomSessionDescription;
-import momime.common.messages.v0_9_5.PlayerPick;
+import momime.common.database.WizardPick;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.PlayerPick;
+import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.v0_9_5.Wizard;
 

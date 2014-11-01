@@ -33,8 +33,8 @@ import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.AnimationController;
-import momime.common.messages.v0_9_5.NewTurnMessageConstructUnit;
-import momime.common.messages.v0_9_5.OverlandMapCityData;
+import momime.common.messages.NewTurnMessageConstructUnit;
+import momime.common.messages.OverlandMapCityData;
 
 /**
  * NTM describing a unit that completed construction

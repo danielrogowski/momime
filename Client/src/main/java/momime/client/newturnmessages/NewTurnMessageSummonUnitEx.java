@@ -11,8 +11,8 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
-import momime.common.messages.v0_9_5.AvailableUnit;
-import momime.common.messages.v0_9_5.NewTurnMessageSummonUnit;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;

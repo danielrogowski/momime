@@ -32,11 +32,11 @@ import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.MomUnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.v0_9_5.Unit;
-import momime.common.messages.servertoclient.v0_9_5.KillUnitActionID;
-import momime.common.messages.v0_9_5.AvailableUnit;
-import momime.common.messages.v0_9_5.MemoryUnit;
-import momime.common.messages.v0_9_5.UnitStatusID;
+import momime.common.database.Unit;
+import momime.common.messages.servertoclient.KillUnitActionID;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitStatusID;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 

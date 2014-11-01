@@ -8,7 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.newturnmessages.NewTurnMessageProcessing;
 import momime.client.newturnmessages.NewTurnMessageStatus;
 import momime.client.ui.frames.NewTurnMessagesUI;
-import momime.common.messages.servertoclient.v0_9_5.AddNewTurnMessagesMessage;
+import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

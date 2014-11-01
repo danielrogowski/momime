@@ -1,15 +1,15 @@
 package momime.client.newturnmessages;
 
-import momime.common.messages.v0_9_5.NewTurnMessageBuildingSoldFromLackOfProduction;
-import momime.common.messages.v0_9_5.NewTurnMessageConstructBuilding;
-import momime.common.messages.v0_9_5.NewTurnMessageConstructUnit;
-import momime.common.messages.v0_9_5.NewTurnMessageNode;
-import momime.common.messages.v0_9_5.NewTurnMessagePopulationChange;
-import momime.common.messages.v0_9_5.NewTurnMessageSpell;
-import momime.common.messages.v0_9_5.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
-import momime.common.messages.v0_9_5.NewTurnMessageSummonUnit;
-import momime.common.messages.v0_9_5.NewTurnMessageUnitKilledFromLackOfProduction;
-import momime.common.messages.v0_9_5.ObjectFactory;
+import momime.common.messages.NewTurnMessageBuildingSoldFromLackOfProduction;
+import momime.common.messages.NewTurnMessageConstructBuilding;
+import momime.common.messages.NewTurnMessageConstructUnit;
+import momime.common.messages.NewTurnMessageNode;
+import momime.common.messages.NewTurnMessagePopulationChange;
+import momime.common.messages.NewTurnMessageSpell;
+import momime.common.messages.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
+import momime.common.messages.NewTurnMessageSummonUnit;
+import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
+import momime.common.messages.ObjectFactory;
 
 /**
  * Create extended versions of all NTMs that support the client-side interfaces

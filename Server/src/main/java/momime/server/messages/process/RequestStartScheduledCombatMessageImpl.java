@@ -5,11 +5,11 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.v0_9_5.RequestStartScheduledCombatMessage;
-import momime.common.messages.servertoclient.v0_9_5.PlayerCombatRequestStatusMessage;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
-import momime.common.messages.v0_9_5.MomScheduledCombat;
-import momime.common.messages.v0_9_5.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.MomScheduledCombat;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.clienttoserver.RequestStartScheduledCombatMessage;
+import momime.common.messages.servertoclient.PlayerCombatRequestStatusMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.ScheduledCombatUtils;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatProcessing;

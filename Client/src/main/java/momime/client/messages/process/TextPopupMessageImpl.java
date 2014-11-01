@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.common.messages.servertoclient.v0_9_5.TextPopupMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -7,8 +7,8 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CityViewUI;
-import momime.common.messages.servertoclient.v0_9_5.UpdateProductionSoFarMessage;
-import momime.common.messages.v0_9_5.MemoryGridCell;
+import momime.common.messages.servertoclient.UpdateProductionSoFarMessage;
+import momime.common.messages.MemoryGridCell;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

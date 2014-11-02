@@ -137,7 +137,7 @@ public final class TestUnitUtilsImpl
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 
 		assertEquals (GenerateTestData.BARBARIAN_SPEARMEN,
-			utils.initializeUnitSkills (unit, -1, false, GenerateTestData.createDB ()).getUnitID ());
+			utils.initializeUnitSkills (unit, -1, GenerateTestData.createDB ()).getUnitID ());
 
 		assertEquals (0, unit.getUnitHasSkill ().size ());
 	}
@@ -155,7 +155,7 @@ public final class TestUnitUtilsImpl
 		unit.setUnitID (GenerateTestData.MAGIC_SPIRIT_UNIT);
 
 		assertEquals (GenerateTestData.MAGIC_SPIRIT_UNIT,
-			utils.initializeUnitSkills (unit, 100, false, GenerateTestData.createDB ()).getUnitID ());
+			utils.initializeUnitSkills (unit, 100, GenerateTestData.createDB ()).getUnitID ());
 
 		assertEquals (0, unit.getUnitHasSkill ().size ());
 	}
@@ -173,7 +173,7 @@ public final class TestUnitUtilsImpl
 		unit.setUnitID (GenerateTestData.BARBARIAN_SPEARMEN);
 
 		assertEquals (GenerateTestData.BARBARIAN_SPEARMEN,
-			utils.initializeUnitSkills (unit, 100, false, GenerateTestData.createDB ()).getUnitID ());
+			utils.initializeUnitSkills (unit, 100, GenerateTestData.createDB ()).getUnitID ());
 
 		assertEquals (1, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
@@ -193,7 +193,7 @@ public final class TestUnitUtilsImpl
 		unit.setUnitID (GenerateTestData.DARK_ELF_WARLOCKS);
 
 		assertEquals (GenerateTestData.DARK_ELF_WARLOCKS,
-			utils.initializeUnitSkills (unit, -1, true, GenerateTestData.createDB ()).getUnitID ());
+			utils.initializeUnitSkills (unit, -1, GenerateTestData.createDB ()).getUnitID ());
 
 		assertEquals (2, unit.getUnitHasSkill ().size ());
 		assertEquals (GenerateTestData.WALKING, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
@@ -215,7 +215,7 @@ public final class TestUnitUtilsImpl
 		unit.setUnitID (GenerateTestData.DARK_ELF_WARLOCKS);
 
 		assertEquals (GenerateTestData.DARK_ELF_WARLOCKS,
-			utils.initializeUnitSkills (unit, 100, true, GenerateTestData.createDB ()).getUnitID ());
+			utils.initializeUnitSkills (unit, 100, GenerateTestData.createDB ()).getUnitID ());
 
 		assertEquals (3, unit.getUnitHasSkill ().size ());
 		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
@@ -224,31 +224,6 @@ public final class TestUnitUtilsImpl
 		assertNull (unit.getUnitHasSkill ().get (1).getUnitSkillValue ());
 		assertEquals (GenerateTestData.RANGED_ATTACK_AMMO, unit.getUnitHasSkill ().get (2).getUnitSkillID ());
 		assertEquals (4, unit.getUnitHasSkill ().get (2).getUnitSkillValue ().intValue ());
-	}
-
-	/**
-	 * Tests the createMemoryUnit method
-	 * We don't really need to test all combinations of params, since that just affects the call to initializeUnitSkills, which we've already tested above
-	 *
-	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
-	 */
-	@Test
-	public final void testCreateMemoryUnit () throws RecordNotFoundException
-	{
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		final MemoryUnit unit = utils.createMemoryUnit (GenerateTestData.DARK_ELF_WARLOCKS, 1, 3, 100, true, GenerateTestData.createDB ());
-
-		assertEquals (3, unit.getUnitHasSkill ().size ());
-		assertEquals (CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertEquals (100, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals (GenerateTestData.WALKING, unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertNull (unit.getUnitHasSkill ().get (1).getUnitSkillValue ());
-		assertEquals (GenerateTestData.RANGED_ATTACK_AMMO, unit.getUnitHasSkill ().get (2).getUnitSkillID ());
-		assertEquals (4, unit.getUnitHasSkill ().get (2).getUnitSkillValue ().intValue ());
-
-		assertEquals (2, unit.getDoubleOverlandMovesLeft ());
-		assertEquals (3, unit.getWeaponGrade ().intValue ());
-		assertEquals (UnitStatusID.ALIVE, unit.getStatus ());
 	}
 
 	/**

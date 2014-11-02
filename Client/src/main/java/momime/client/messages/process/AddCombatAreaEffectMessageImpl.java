@@ -33,9 +33,9 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getData ().getMapLocation () + ", " + getData ().getCombatAreaEffectID ());
+		log.trace ("Entering start: " + getMemoryCombatAreaEffect ().getMapLocation () + ", " + getMemoryCombatAreaEffect ().getCombatAreaEffectID ());
 		
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ().add (getData ());
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ().add (getMemoryCombatAreaEffect ());
 		
 		log.trace ("Exiting start");
 	}

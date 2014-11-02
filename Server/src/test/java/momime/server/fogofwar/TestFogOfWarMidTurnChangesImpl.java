@@ -391,7 +391,8 @@ public final class TestFogOfWarMidTurnChangesImpl
 	@Test
 	public final void testCanSeeUnitMidTurn () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		final FogOfWarSettingData settings = new FogOfWarSettingData ();
 
 		// True terrain
@@ -436,12 +437,12 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// The unit we're trying to see
-		// Note creating units like this defaults them to ALIVE, so we don't need to set that
 		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (20, 10, 0);
 
-		final MemoryUnit spearmen = new UnitUtilsImpl ().createMemoryUnit ("UN105", 1, 0, 0, true, db);
+		final MemoryUnit spearmen = new MemoryUnit ();
 		spearmen.setOwningPlayerID (pd1.getPlayerID ());
 		spearmen.setUnitLocation (unitLocation);
+		spearmen.setStatus (UnitStatusID.ALIVE);
 		
 		// Regular situation of a unit we can't see because we can't see that location
 		when (single.canSeeMidTurnOnAnyPlaneIfTower (unitLocation, settings.getUnits (), trueTerrain, priv2.getFogOfWar (), db)).thenReturn (false);
@@ -463,7 +464,8 @@ public final class TestFogOfWarMidTurnChangesImpl
 	@Test
 	public final void testCanSeeSpellMidTurn_UnitEnchantment () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock server database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		final FogOfWarSettingData settings = new FogOfWarSettingData ();
 
 		// True terrain
@@ -514,9 +516,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Note creating units like this defaults them to ALIVE, so we don't need to set that
 		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (20, 10, 0);
 
-		final MemoryUnit spearmen = new UnitUtilsImpl ().createMemoryUnit ("UN105", 11, 0, 0, true, db);
+		final MemoryUnit spearmen = new MemoryUnit ();
 		spearmen.setOwningPlayerID (pd1.getPlayerID ());
 		spearmen.setUnitLocation (unitLocation);
+		spearmen.setStatus (UnitStatusID.ALIVE);
 		
 		final List<MemoryUnit> trueUnits = new ArrayList<MemoryUnit> ();
 		
@@ -769,11 +772,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Prove that human player's client was sent update msg
 		assertEquals (1, conn3.getMessages ().size ());
 		final AddBuildingMessage msg = (AddBuildingMessage) conn3.getMessages ().get (0);
-		assertEquals (cityLocation, msg.getData ().getCityLocation ());
-		assertEquals ("BL03", msg.getData ().getFirstBuildingID ());
-		assertNull (msg.getData ().getSecondBuildingID ());
-		assertNull (msg.getData ().getBuildingCreatedFromSpellID ());
-		assertNull (msg.getData ().getBuildingCreationSpellCastByPlayerID ());
+		assertEquals (cityLocation, msg.getFirstBuilding ().getCityLocation ());
+		assertEquals ("BL03", msg.getFirstBuilding ().getBuildingID ());
+		assertNull (msg.getSecondBuilding ());
+		assertNull (msg.getBuildingCreatedFromSpellID ());
+		assertNull (msg.getBuildingCreationSpellCastByPlayerID ());
 	}
 
 	/**
@@ -908,11 +911,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Prove that human player's client was sent update msg
 		assertEquals (1, conn3.getMessages ().size ());
 		final AddBuildingMessage msg = (AddBuildingMessage) conn3.getMessages ().get (0);
-		assertEquals (cityLocation, msg.getData ().getCityLocation ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, msg.getData ().getFirstBuildingID ());
-		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, msg.getData ().getSecondBuildingID ());
-		assertEquals ("SP028", msg.getData ().getBuildingCreatedFromSpellID ());
-		assertEquals (7, msg.getData ().getBuildingCreationSpellCastByPlayerID ().intValue ());
+		assertEquals (cityLocation, msg.getFirstBuilding ().getCityLocation ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_FORTRESS, msg.getFirstBuilding ().getBuildingID ());
+		assertEquals (CommonDatabaseConstants.VALUE_BUILDING_SUMMONING_CIRCLE, msg.getSecondBuilding ().getBuildingID ());
+		assertEquals ("SP028", msg.getBuildingCreatedFromSpellID ());
+		assertEquals (7, msg.getBuildingCreationSpellCastByPlayerID ().intValue ());
 	}
 	
 	/**

@@ -20,7 +20,6 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
 import momime.common.messages.AvailableUnit;
-import momime.common.utils.UnitUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,9 +44,6 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
-	
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
 	
@@ -77,9 +73,6 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 
 		try
 		{
-			// We don't have to get the weapon grade or experience right just to draw the figures
-			getUnitUtils ().initializeUnitSkills (unit, -1, true, getClient ().getClientDB ());
-		
 			// Set up the panel
 			final JPanel imagePanel = new JPanel ()
 			{
@@ -179,22 +172,6 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 	public final void setGraphicsDB (final GraphicsDatabaseEx db)
 	{
 		graphicsDB = db;
-	}
-
-	/**
-	 * @return Unit utils
-	 */
-	public final UnitUtils getUnitUtils ()
-	{
-		return unitUtils;
-	}
-
-	/**
-	 * @param utils Unit utils
-	 */
-	public final void setUnitUtils (final UnitUtils utils)
-	{
-		unitUtils = utils;
 	}
 	
 	/**

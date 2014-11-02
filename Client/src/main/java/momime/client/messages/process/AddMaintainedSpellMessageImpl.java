@@ -51,10 +51,10 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getData ().getSpellID ());
+		log.trace ("Entering start: " + getMaintainedSpell ().getSpellID ());
 		
 		// Some types of important spells show their castings as animations; in that case we don't even add the spell yet - the animation handles that as well
-		final Spell spell = getClient ().getClientDB ().findSpell (getData ().getSpellID (), "AddMaintainedSpellMessageImpl");
+		final Spell spell = getClient ().getClientDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
 		boolean animated = false;
 
 		// Overland enchantments are always animated
@@ -63,17 +63,17 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 			animated = true;
 			
 			final OverlandEnchantmentsUI overlandEnchantmentsPopup = getPrototypeFrameCreator ().createOverlandEnchantments ();
-			overlandEnchantmentsPopup.setSpellMessage (this);
+			overlandEnchantmentsPopup.setAddSpellMessage (this);
 			overlandEnchantmentsPopup.setVisible (true);
 		}
 		
 		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
 		{
 			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
-			if ((getData ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
-				(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getData ().getSpellID ())))
+			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
+				(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
 			{
-				getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getData ().getCityLocation ());
+				getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
 				
 				// Redraw the NTMs
 				getNewTurnMessagesUI ().languageChanged ();
@@ -81,16 +81,16 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 			
 			// If we cast it OR its our city, then display a popup window for it
 			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-				(getData ().getCityLocation ().getZ ()).getRow ().get (getData ().getCityLocation ().getY ()).getCell ().get (getData ().getCityLocation ().getX ()).getCityData ();
+				(getMaintainedSpell ().getCityLocation ().getZ ()).getRow ().get (getMaintainedSpell ().getCityLocation ().getY ()).getCell ().get (getMaintainedSpell ().getCityLocation ().getX ()).getCityData ();
 			
-			if ((getData ().getCastingPlayerID () == getClient ().getOurPlayerID ()) ||
+			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) ||
 				((cityData != null) && (cityData.getCityOwnerID () != null) && (cityData.getCityOwnerID ().equals (getClient ().getOurPlayerID ()))))
 			{
 				animated = true;
 				
 				final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
-				miniCityView.setCityLocation ((MapCoordinates3DEx) getData ().getCityLocation ());
-				miniCityView.setSpellMessage (this);
+				miniCityView.setCityLocation ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+				miniCityView.setAddSpellMessage (this);
 				miniCityView.setVisible (true);
 			}
 		}
@@ -112,14 +112,14 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	 */
 	public final void processOneUpdate ()
 	{
-		log.trace ("Entering processOneUpdate: " + getData ().getSpellID ());
+		log.trace ("Entering processOneUpdate: " + getMaintainedSpell ().getSpellID ());
 		
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getData ());
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getMaintainedSpell ());
 		
 		// If we've got a city screen open showing where the spell was cast, may need to set up animation to display it
-		if (getData ().getCityLocation () != null)
+		if (getMaintainedSpell ().getCityLocation () != null)
 		{
-			final CityViewUI cityView = getClient ().getCityViews ().get (getData ().getCityLocation ().toString ());
+			final CityViewUI cityView = getClient ().getCityViews ().get (getMaintainedSpell ().getCityLocation ().toString ());
 			if (cityView != null)
 				try
 				{

@@ -83,7 +83,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	private MagicSlidersUI magicSlidersUI;
 	
 	/** The spell being drawn */
-	private AddMaintainedSpellMessageImpl spellMessage;
+	private AddMaintainedSpellMessageImpl addSpellMessage;
 	
 	/** Text underneath */
 	private JLabel spellText;
@@ -114,9 +114,9 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		fadeAnim = getGraphicsDB ().findAnimation (MIRROR_ANIM, "OverlandEnchantmentsUI");
 		
 		// Get the player's colour and face
-		final BufferedImage mirror = getPlayerColourImageGenerator ().getOverlandEnchantmentMirror (getSpellMessage ().getData ().getCastingPlayerID ());
+		final BufferedImage mirror = getPlayerColourImageGenerator ().getOverlandEnchantmentMirror (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
 		
-		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getSpellMessage ().getData ().getCastingPlayerID (), "OverlandEnchantmentsUI");
+		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID (), "OverlandEnchantmentsUI");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
 		// Wizard portraits are stored exactly from the original LBXes (109x104) but stretched to compensate for original MoM using non-square 320x200 mode pixels (218x250).
@@ -129,7 +129,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		else if (pub.getStandardPhotoID () != null)
 			unscaledPortrait = getUtils ().loadImage (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "OverlandEnchantmentsUI").getPortraitFile ());
 		else
-			throw new MomException ("Player ID " + getSpellMessage ().getData ().getCastingPlayerID () + " has neither a custom or standard photo");
+			throw new MomException ("Player ID " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () + " has neither a custom or standard photo");
 		
 		final Image unclippedPortrait = unscaledPortrait.getScaledInstance
 			(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH);
@@ -139,7 +139,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 			(fadeAnim.getFrame ().size () - 1).getFrameImageFile ()), 0, -5*2);
 		
 		// Get the pic of the spell
-		final momime.client.graphics.database.v0_9_5.Spell spellGfx = getGraphicsDB ().findSpell (getSpellMessage ().getData ().getSpellID (), "OverlandEnchantmentsUI");
+		final momime.client.graphics.database.v0_9_5.Spell spellGfx = getGraphicsDB ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID (), "OverlandEnchantmentsUI");
 		final BufferedImage unscaledSpellPic = getUtils ().loadImage (spellGfx.getOverlandEnchantmentImageFile ());
 		final Image spellPic = unscaledSpellPic.getScaledInstance (unscaledSpellPic.getWidth () * 2, unscaledSpellPic.getHeight () * 2, Image.SCALE_SMOOTH);
 
@@ -159,7 +159,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 					// This somehow seems to get called twice in MiniCityViewUI, so protect against that
 					if (!unblocked)
 					{
-						getClient ().finishCustomDurationMessage (getSpellMessage ());
+						getClient ().finishCustomDurationMessage (getAddSpellMessage ());
 						unblocked = true;
 					}
 				}
@@ -232,7 +232,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		contentPane.add (spellText, "frmOverlandEnchantmentsText");
 
 		// Actually add the spell
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getSpellMessage ().getData ());
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getAddSpellMessage ().getMaintainedSpell ());
 		getMagicSlidersUI ().spellsChanged ();
 		
 		// Any music to play?
@@ -316,22 +316,22 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		// Spell name
 		if (animationFrame >= fadeAnim.getFrame ().size () + PAUSE_FRAMES)
 		{
-			final Spell spellLang = getLanguage ().findSpell (getSpellMessage ().getData ().getSpellID ());
+			final Spell spellLang = getLanguage ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID ());
 			final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-			spellText.setText ((spellName != null) ? spellName : getSpellMessage ().getData ().getSpellID ());			
+			spellText.setText ((spellName != null) ? spellName : getAddSpellMessage ().getMaintainedSpell ().getSpellID ());			
 		}
 		
 		// Us casting
-		else if (getSpellMessage ().getData ().getCastingPlayerID () == getClient ().getOurPlayerID ())
+		else if (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ())
 			spellText.setText (getLanguage ().findCategoryEntry ("SpellCasting", "OurOverlandEnchantment"));
 		
 		// Someone else casting
 		else
 		{
-			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getSpellMessage ().getData ().getCastingPlayerID ());
+			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
 			final String playerName = (player != null) ? player.getPlayerDescription ().getPlayerName () : null;
 			spellText.setText (getLanguage ().findCategoryEntry ("SpellCasting", "EnemyOverlandEnchantment").replaceAll
-				("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getSpellMessage ().getData ().getCastingPlayerID ())));
+				("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ())));
 		}
 		
 		log.trace ("Exiting languageChanged");
@@ -436,17 +436,17 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	/**
 	 * @return The spell being drawn
 	 */
-	public final AddMaintainedSpellMessageImpl getSpellMessage ()
+	public final AddMaintainedSpellMessageImpl getAddSpellMessage ()
 	{
-		return spellMessage;
+		return addSpellMessage;
 	}
 
 	/**
 	 * @param spl The spell being drawn
 	 */
-	public final void setSpellMessage (final AddMaintainedSpellMessageImpl spl)
+	public final void setAddSpellMessage (final AddMaintainedSpellMessageImpl spl)
 	{
-		spellMessage = spl;
+		addSpellMessage = spl;
 	}
 	
 	/**

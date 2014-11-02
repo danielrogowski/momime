@@ -19,10 +19,10 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.AnimationControllerImpl;
 import momime.common.database.newgame.MapSizeData;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessageData;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -133,14 +133,14 @@ public final class TestMiniCityViewUI
 		when (gfx.getCityViewElement ()).thenReturn (elements);
 		
 		// Set up spell
-		final AddMaintainedSpellMessageData spell = new AddMaintainedSpellMessageData ();
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
 		spell.setSpellID ("SP001");
 		spell.setCitySpellEffectID ("CSE001");
 		spell.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		spell.setCastingPlayerID (pd.getPlayerID ());
 		
 		final AddMaintainedSpellMessageImpl msg = new AddMaintainedSpellMessageImpl (); 
-		msg.setData (spell);
+		msg.setMaintainedSpell (spell);
 
 		// Set up animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
@@ -171,7 +171,7 @@ public final class TestMiniCityViewUI
 		cityView.setCityViewPanel (panel);
 		cityView.setLargeFont (CreateFontsForTests.getLargeFont ());
 		cityView.setMiniCityViewLayout (layout);
-		cityView.setSpellMessage (msg);
+		cityView.setAddSpellMessage (msg);
 	
 		// Display form
 		cityView.setModal (false);

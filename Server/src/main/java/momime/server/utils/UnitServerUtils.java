@@ -22,6 +22,19 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 public interface UnitServerUtils
 {
 	/**
+	 * Creates and initializes a new unit - this is the equivalent of the TMomUnit.Create constructor in Delphi (except that it doesn't add the created unit into the unit list)
+	 * @param unitID Type of unit to create
+	 * @param unitURN Unique number identifying this unit
+	 * @param weaponGrade Weapon grade to give to this unit
+	 * @param startingExperience Initial experience; if -1 or null then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
+	 * @param db Lookup lists built over the XML database
+	 * @return Newly created unit
+	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
+	 */
+	public MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final Integer startingExperience,
+		final ServerDatabaseEx db) throws RecordNotFoundException;
+
+	/**
 	 * Chooses a name for this hero (out of 5 possibilities) and rolls their random skills
 	 * @param unit The hero to generate name and skills for
 	 * @param db Lookup lists built over the XML database

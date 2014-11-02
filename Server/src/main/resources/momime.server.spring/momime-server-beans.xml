@@ -574,6 +574,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarDuplication" ref="fogOfWarDuplication" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />

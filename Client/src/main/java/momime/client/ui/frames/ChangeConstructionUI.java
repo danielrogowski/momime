@@ -324,7 +324,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
 							pub.getPick (), getClient ().getSessionDescription ().getMapSize (), getClient ().getClientDB ()));
 					
-						getUnitUtils ().initializeUnitSkills (sampleUnit, startingExperience, true, getClient ().getClientDB ());
+						getUnitUtils ().initializeUnitSkills (sampleUnit, startingExperience, getClient ().getClientDB ());
 						getUnitInfoPanel ().showUnit (sampleUnit);
 					}
 					catch (final Exception e)
@@ -436,7 +436,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				sampleUnit.setUnitID (thisUnit.getUnitID ());
 
 				// We don't have to get the weapon grade or experience right just to draw the figures
-				getUnitUtils ().initializeUnitSkills (sampleUnit, null, true, getClient ().getClientDB ());
+				getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());
 
 				final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
 				getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), movingActionID, 4, unitsList);

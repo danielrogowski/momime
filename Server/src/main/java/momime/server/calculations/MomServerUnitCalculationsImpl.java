@@ -105,15 +105,13 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 	 * @param playerID Player whose units to count
 	 * @param units Player's knowledge of all units
 	 * @param sys Overland map coordinate system
-	 * @param db Lookup lists built over the XML database
 	 * @return Count how many of that player's units are in every cell on the map
 	 */
-	final int [] [] [] countOurAliveUnitsAtEveryLocation (final int playerID, final List<MemoryUnit> units,
-		final CoordinateSystem sys, final ServerDatabaseEx db)
+	final int [] [] [] countOurAliveUnitsAtEveryLocation (final int playerID, final List<MemoryUnit> units, final CoordinateSystem sys)
 	{
 		log.trace ("Entering countOurAliveUnitsAtEveryLocation: Player ID " + playerID);
 
-		final int [] [] [] count = new int [db.getPlane ().size ()] [sys.getHeight ()] [sys.getWidth ()];
+		final int [] [] [] count = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) & (thisUnit.getUnitLocation () != null))
 				count [thisUnit.getUnitLocation ().getZ ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
@@ -451,7 +449,7 @@ public final class MomServerUnitCalculationsImpl implements MomServerUnitCalcula
 		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack (unitStack, map.getMaintainedSpell (), db);
 
 		// Count how many of OUR units are in every cell on the map - enemy units are fine, we'll just attack them :-)
-		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getMapSize (), db);
+		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getMapSize ());
 
 		// Now we can work out the movement cost of entering every tile, taking into account the tiles we can't enter because we'll have too many units there
 		final Integer [] [] [] doubleMovementToEnterTile = new Integer [db.getPlane ().size ()] [sd.getMapSize ().getHeight ()] [sd.getMapSize ().getWidth ()];

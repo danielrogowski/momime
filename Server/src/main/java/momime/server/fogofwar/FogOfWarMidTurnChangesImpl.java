@@ -34,7 +34,6 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitCombatSideID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddBuildingMessage;
-import momime.common.messages.servertoclient.AddBuildingMessageData;
 import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddUnitMessage;
@@ -75,6 +74,7 @@ import momime.server.database.v0_9_5.Plane;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.process.CombatProcessing;
 import momime.server.process.CombatScheduler;
+import momime.server.utils.UnitServerUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,6 +106,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
 	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -419,7 +422,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Add on server
 		// Even for heroes, we load in their default skill list - this is how heroes default skills are loaded during game startup
-		final MemoryUnit newUnit = getUnitUtils ().createMemoryUnit (unitID, gsk.getNextFreeUnitURN (), weaponGrade, startingExperience, true, db);
+		final MemoryUnit newUnit = getUnitServerUtils ().createMemoryUnit (unitID, gsk.getNextFreeUnitURN (), weaponGrade, startingExperience, db);
 		newUnit.setOwningPlayerID (unitOwner.getPlayerDescription ().getPlayerID ());
 		newUnit.setCombatLocation (combatLocation);
 
@@ -475,7 +478,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		if (players != null)
 		{
 			final AddUnitMessage addMsg = new AddUnitMessage ();
-			addMsg.setData (getFogOfWarDuplication ().createAddUnitMessage (trueUnit));
+			addMsg.setMemoryUnit (trueUnit);
 
 			final UpdateUnitToAliveMessage updateMsg = new UpdateUnitToAliveMessage ();
 			updateMsg.setUnitLocation (unitLocation);
@@ -653,7 +656,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Build the message ready to send it to whoever can see the spell
 		final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
-		msg.setData (getFogOfWarDuplication ().createAddSpellMessage (trueSpell));
+		msg.setMaintainedSpell (trueSpell);
 
 		// Check which players can see the spell
 		for (final PlayerServerDetails player : players)
@@ -910,7 +913,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Build the message ready to send it to whoever can see the CAE
 		final AddCombatAreaEffectMessage msg = new AddCombatAreaEffectMessage ();
-		msg.setData (getFogOfWarDuplication ().createAddCombatAreaEffectMessage (trueCAE));
+		msg.setMemoryCombatAreaEffect (trueCAE);
 
 		// Check which players can see the CAE
 		for (final PlayerServerDetails player : players)
@@ -1063,15 +1066,11 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Build the message ready to send it to whoever can see the building
 		// This is done here rather in a method on FogOfWarDuplication because its a bit weird where we can have two buildings but both are optional
-		final AddBuildingMessageData msgData = new AddBuildingMessageData ();
-		msgData.setFirstBuildingID (firstBuildingID);
-		msgData.setSecondBuildingID (secondBuildingID);
-		msgData.setCityLocation (cityLocation);
-		msgData.setBuildingCreatedFromSpellID (buildingCreatedFromSpellID);
-		msgData.setBuildingCreationSpellCastByPlayerID (buildingCreationSpellCastByPlayerID);
-
 		final AddBuildingMessage msg = new AddBuildingMessage ();
-		msg.setData (msgData);
+		msg.setFirstBuilding (firstTrueBuilding);
+		msg.setSecondBuilding (secondTrueBuilding);
+		msg.setBuildingCreatedFromSpellID (buildingCreatedFromSpellID);
+		msg.setBuildingCreationSpellCastByPlayerID (buildingCreationSpellCastByPlayerID);
 
 		// Check which players can see the building
 		for (final PlayerServerDetails player : players)
@@ -1494,7 +1493,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (player.getPlayerDescription ().isHuman ())
 				{
 					final AddUnitMessage msg = new AddUnitMessage ();
-					msg.setData (getFogOfWarDuplication ().createAddUnitMessage (tu));
+					msg.setMemoryUnit (tu);
 					player.getConnection ().sendMessageToClient (msg);
 				}
 		}
@@ -1507,7 +1506,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 						if (player.getPlayerDescription ().isHuman ())
 						{
 							final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
-							msg.setData (getFogOfWarDuplication ().createAddSpellMessage (trueSpell));
+							msg.setMaintainedSpell (trueSpell);
 							player.getConnection ().sendMessageToClient (msg);
 						}
 
@@ -2091,6 +2090,22 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
 	}
 	
 	/**

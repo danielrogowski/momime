@@ -46,30 +46,22 @@ public final class AddUnitMessageImpl extends AddUnitMessage implements BaseServ
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Unit URN " + getData ().getUnitURN ());
+		log.trace ("Entering start: Unit URN " + getMemoryUnit ().getUnitURN ());
 		
 		// Since Java server now supports units set to 'remember as last seen', its possible to get an 'add unit' message just to
 		// update a unit that we remember in a different state - easiest way to handle this is to see if the UnitURN already
 		// exists in our list, and if it does, free it before adding the updated copy of it
-		final MemoryUnit oldUnit = getUnitUtils ().findUnitURN (getData ().getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+		final MemoryUnit oldUnit = getUnitUtils ().findUnitURN (getMemoryUnit ().getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		if (oldUnit != null)
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().remove (oldUnit);
 		
 		// Add it
-		final MemoryUnit newUnit = getUnitUtils ().createMemoryUnit (getData ().getUnitID (), getData ().getUnitURN (),
-			getData ().getWeaponGrade (), null, false, getClient ().getClientDB ());
-		
-		newUnit.setOwningPlayerID (getData ().getOwningPlayerID ());
-		newUnit.setUnitLocation (getData ().getUnitLocation ());
-		newUnit.setHeroNameID (getData ().getHeroNameID ());
-		newUnit.getUnitHasSkill ().addAll (getData ().getUnitHasSkill ());
-		
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().add (newUnit);
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().add (getMemoryUnit ());
 		
 		// Select unit buttons on the City screen
-		if ((newUnit.getStatus () == UnitStatusID.ALIVE) && (newUnit.getUnitLocation () != null))
+		if ((getMemoryUnit ().getStatus () == UnitStatusID.ALIVE) && (getMemoryUnit ().getUnitLocation () != null))
 		{
-			final CityViewUI cityView = getClient ().getCityViews ().get (newUnit.getUnitLocation ().toString ());
+			final CityViewUI cityView = getClient ().getCityViews ().get (getMemoryUnit ().getUnitLocation ().toString ());
 			if (cityView != null)
 				cityView.unitsChanged ();
 		}

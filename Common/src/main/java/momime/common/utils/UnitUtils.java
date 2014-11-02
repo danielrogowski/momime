@@ -51,30 +51,17 @@ public interface UnitUtils
 		throws RecordNotFoundException;
 
 	/**
-	 * Populates a unit's list of skills after creation - this is the equivalent of the TMomAvailableUnit.CreateAvailableUnit constructor in Delphi
+	 * Populates a unit's list of skills after creation - this is the equivalent of the TMomAvailableUnit.CreateAvailableUnit constructor in Delphi.
+	 * The client will never use this on real units - the server always sends them will all info already populated; but the client does
+	 * need this for initializing skills of sample units, e.g. when drawing units on the change construction screen.
+	 * 
 	 * @param unit Unit that has just been created
 	 * @param startingExperience Initial experience; if -1 or null then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
-	 * @param loadDefaultSkillsFromXML Whether to add the skills defined in the db for this unit into its skills list
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 * @return Unit definition
 	 */
-	public Unit initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final boolean loadDefaultSkillsFromXML,
-		final CommonDatabase db) throws RecordNotFoundException;
-
-	/**
-	 * Creates and initializes a new unit - this is the equivalent of the TMomUnit.Create constructor in Delphi (except that it doesn't add the created unit into the unit list)
-	 * @param unitID Type of unit to create
-	 * @param unitURN Unique number identifying this unit
-	 * @param weaponGrade Weapon grade to give to this unit
-	 * @param startingExperience Initial experience; if -1 or null then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
-	 * @param loadDefaultSkillsFromXML Whether to add the skills defined in the db for this unit into its skills list
-	 * @param db Lookup lists built over the XML database
-	 * @return Newly created unit
-	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
-	 */
-	public MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final Integer startingExperience,
-		final boolean loadDefaultSkillsFromXML, final CommonDatabase db) throws RecordNotFoundException;
+	public Unit initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param unit Unit to test

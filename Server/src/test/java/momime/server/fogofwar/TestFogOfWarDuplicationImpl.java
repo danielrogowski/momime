@@ -21,8 +21,6 @@ import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.common.utils.UnitUtilsImpl;
-import momime.server.ServerTestData;
-import momime.server.database.ServerDatabaseEx;
 
 import org.junit.Test;
 
@@ -306,18 +304,17 @@ public final class TestFogOfWarDuplicationImpl
 	@Test
 	public final void testCopyUnit () throws Exception
 	{
+		// Set up object to test
 		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		dup.setUnitUtils (utils);
-
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
 		final List<MemoryUnit> destination = new ArrayList<MemoryUnit> ();
 
 		// First unit (spearmen)
 		final MapCoordinates3DEx unitOneLocation = new MapCoordinates3DEx (22, 12, 1);
 
-		final MemoryUnit unitOne = utils.createMemoryUnit ("UN105", 1, 1, 10, true, db);
+		final MemoryUnit unitOne = new MemoryUnit ();
 		unitOne.setUnitLocation (unitOneLocation);
 		unitOne.setOwningPlayerID (2);
 
@@ -334,15 +331,20 @@ public final class TestFogOfWarDuplicationImpl
 		// Second unit (magicians)
 		final MapCoordinates3DEx unitTwoLocation = new MapCoordinates3DEx (22, 12, 1);
 
-		final MemoryUnit unitTwo = utils.createMemoryUnit ("UN052", 2, 0, 25, true, db);
+		final MemoryUnit unitTwo = new MemoryUnit ();
 		unitTwo.setUnitLocation (unitTwoLocation);
 		unitTwo.setOwningPlayerID (2);
+		
+		final UnitHasSkill unitTwoAmmo = new UnitHasSkill ();
+		unitTwoAmmo.setUnitSkillID ("US132");
+		unitTwoAmmo.setUnitSkillValue (5);
+		unitTwo.getUnitHasSkill ().add (unitTwoAmmo);
 
 		assertTrue (dup.copyUnit (unitTwo, destination));
 		assertFalse (dup.copyUnit (unitTwo, destination));
 
 		// Give them more ammo
-		utils.setBasicSkillValue (unitTwo, "US132", 20);
+		unitTwoAmmo.setUnitSkillValue (20);
 		assertTrue (dup.copyUnit (unitTwo, destination));
 		assertFalse (dup.copyUnit (unitTwo, destination));
 

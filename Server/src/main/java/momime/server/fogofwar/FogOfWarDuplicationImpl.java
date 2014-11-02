@@ -11,9 +11,6 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
-import momime.common.messages.servertoclient.AddCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessageData;
-import momime.common.messages.servertoclient.AddUnitMessageData;
 import momime.common.utils.CompareUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -390,71 +387,6 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		}
 
 		return needToAdd;
-	}
-
-	/**
-	 * There's (for now at least, until I get this all sorted out in 0.9.5) there's a number of different places that
-	 * result in unit creation messages being sent to the client, so at least this means there's only one
-	 * place that builds those messages based on a source true unit
-	 *
-	 * @param source True unit details held on server
-	 * @return Unit creation message to send to client
-	 */
-	@Override
-	public final AddUnitMessageData createAddUnitMessage (final MemoryUnit source)
-	{
-		final AddUnitMessageData destination = new AddUnitMessageData ();
-
-		// Fields from AddUnitMessageData
-		destination.setUnitURN (source.getUnitURN ());
-		destination.setHeroNameID (source.getHeroNameID ());
-
-		// Fields from AvailableUnit
-		destination.setOwningPlayerID (source.getOwningPlayerID ());
-		destination.setUnitID (source.getUnitID ());
-		destination.setUnitLocation (source.getUnitLocation ());		// Can get away without making deep copy because assuming msg will be sent and then discarded
-		destination.setWeaponGrade (source.getWeaponGrade ());
-
-		// Skills
-		destination.getUnitHasSkill ().addAll (source.getUnitHasSkill ());
-
-		return destination;
-	}
-
-	/**
-	 * @param source True spell details held on server
-	 * @return Spell creation message to send to client
-	 */
-	@Override
-	public final AddMaintainedSpellMessageData createAddSpellMessage (final MemoryMaintainedSpell source)
-	{
-		final AddMaintainedSpellMessageData destination = new AddMaintainedSpellMessageData ();
-
-		destination.setCastingPlayerID (source.getCastingPlayerID ());
-		destination.setSpellID (source.getSpellID ());
-		destination.setUnitURN (source.getUnitURN ());
-		destination.setUnitSkillID (source.getUnitSkillID ());
-		destination.setCastInCombat (source.isCastInCombat ());
-		destination.setCityLocation (source.getCityLocation ());
-		destination.setCitySpellEffectID (source.getCitySpellEffectID ());
-
-		return destination;
-	}
-
-	/**
-	 * @param source True CAE details held on server
-	 * @return CAE creation message to send to client
-	 */
-	@Override
-	public final AddCombatAreaEffectMessageData createAddCombatAreaEffectMessage (final MemoryCombatAreaEffect source)
-	{
-		final AddCombatAreaEffectMessageData destination = new AddCombatAreaEffectMessageData ();
-
-		destination.setCastingPlayerID (source.getCastingPlayerID ());
-		destination.setCombatAreaEffectID (source.getCombatAreaEffectID ());
-		destination.setMapLocation (source.getMapLocation ());
-
-		return destination;
 	}
 
 	/**

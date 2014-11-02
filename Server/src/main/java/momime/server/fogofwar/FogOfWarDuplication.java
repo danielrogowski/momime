@@ -7,9 +7,6 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.servertoclient.AddCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessageData;
-import momime.common.messages.servertoclient.AddUnitMessageData;
 
 /**
  * Methods for comparing and copying data from one source against a destination container
@@ -82,26 +79,4 @@ public interface FogOfWarDuplication
 	 * @return Whether any update actually happened (i.e. false if the building was already in the list)
 	 */
 	public boolean copyCombatAreaEffect (final MemoryCombatAreaEffect source, final List<MemoryCombatAreaEffect> destination);
-
-	/**
-	 * There's (for now at least, until I get this all sorted out in 0.9.5) there's a number of different places that
-	 * result in unit creation messages being sent to the client, so at least this means there's only one
-	 * place that builds those messages based on a source true unit
-	 *
-	 * @param source True unit details held on server
-	 * @return Unit creation message to send to client
-	 */
-	public AddUnitMessageData createAddUnitMessage (final MemoryUnit source);
-
-	/**
-	 * @param source True spell details held on server
-	 * @return Spell creation message to send to client
-	 */
-	public AddMaintainedSpellMessageData createAddSpellMessage (final MemoryMaintainedSpell source);
-
-	/**
-	 * @param source True CAE details held on server
-	 * @return CAE creation message to send to client
-	 */
-	public AddCombatAreaEffectMessageData createAddCombatAreaEffectMessage (final MemoryCombatAreaEffect source);
 }

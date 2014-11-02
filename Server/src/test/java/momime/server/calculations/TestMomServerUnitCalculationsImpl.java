@@ -29,7 +29,9 @@ import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.database.v0_9_5.MovementRateRule;
 import momime.server.database.v0_9_5.Plane;
+import momime.server.database.v0_9_5.TileType;
 import momime.server.database.v0_9_5.UnitSkill;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -116,8 +118,6 @@ public final class TestMomServerUnitCalculationsImpl
 	@Test
 	public final void testCountOurAliveUnitsAtEveryLocation () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
 
@@ -171,7 +171,7 @@ public final class TestMomServerUnitCalculationsImpl
 		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		
 		// Run test
-		final int [] [] [] counts = calc.countOurAliveUnitsAtEveryLocation (2, units, sys, db);
+		final int [] [] [] counts = calc.countOurAliveUnitsAtEveryLocation (2, units, sys);
 
 		assertEquals (3, counts [0] [10] [20]);
 		assertEquals (4, counts [1] [20] [30]);
@@ -179,10 +179,10 @@ public final class TestMomServerUnitCalculationsImpl
 		// Reset both the locations we already checked to 0, easier to check the whole array then
 		counts [0] [10] [20] = 0;
 		counts [1] [20] [30] = 0;
-		for (final Plane plane : db.getPlane ())
+		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
-					assertEquals (0, counts [plane.getPlaneNumber ()] [y] [x]);
+					assertEquals (0, counts [z] [y] [x]);
 	}
 
 	/**
@@ -192,7 +192,8 @@ public final class TestMomServerUnitCalculationsImpl
 	@Test
 	public final void testWillMovingHereResultInAnAttack () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
 		// Remember this is all operating over a player's memory - so it has to also work where we may know nothing about the location at all, i.e. everything is nulls
 		// This is a really key method so there's a ton of test conditions
@@ -309,14 +310,16 @@ public final class TestMomServerUnitCalculationsImpl
 	@Test
 	public final void testListAllSkillsInUnitStack () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
 		// Set up object to test
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+
+		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Null stack
@@ -324,7 +327,17 @@ public final class TestMomServerUnitCalculationsImpl
 
 		// Single unit with only skills from DB
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		units.add (unitUtils.createMemoryUnit ("UN102", 1, 0, 0, true, db));
+
+		final MemoryUnit longbowmenUnit = new MemoryUnit ();
+		longbowmenUnit.setUnitURN (1);
+		for (final String unitSkillID : new String [] {CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, "US132", "US001", "USX01"})
+		{
+			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			unitHasSkill.setUnitSkillID (unitSkillID);
+			longbowmenUnit.getUnitHasSkill ().add (unitHasSkill);
+		}
+		
+		units.add (longbowmenUnit);
 
 		final List<String> longbowmen = calc.listAllSkillsInUnitStack (units, spells, db);
 		assertEquals (4, longbowmen.size ());
@@ -334,7 +347,16 @@ public final class TestMomServerUnitCalculationsImpl
 		assertEquals ("USX01", longbowmen.get (3));
 
 		// Two units with skills only from DB
-		units.add (unitUtils.createMemoryUnit ("UN103", 2, 0, 0, true, db));
+		final MemoryUnit elvenLordsUnit = new MemoryUnit ();
+		elvenLordsUnit.setUnitURN (2);
+		for (final String unitSkillID : new String [] {CommonDatabaseConstants.VALUE_UNIT_SKILL_ID_EXPERIENCE, "US001", "USX01", "US028", "US029"})
+		{
+			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			unitHasSkill.setUnitSkillID (unitSkillID);
+			elvenLordsUnit.getUnitHasSkill ().add (unitHasSkill);
+		}
+		
+		units.add (elvenLordsUnit);
 
 		final List<String> elvenLords = calc.listAllSkillsInUnitStack (units, spells, db);
 		assertEquals (6, elvenLords.size ());
@@ -346,7 +368,16 @@ public final class TestMomServerUnitCalculationsImpl
 		assertEquals ("US029", elvenLords.get (5));
 
 		// Three units with skills only from DB
-		units.add (unitUtils.createMemoryUnit ("UN156", 3, 0, 0, true, db));
+		final MemoryUnit hellHoundsUnit = new MemoryUnit ();
+		hellHoundsUnit.setUnitURN (3);
+		for (final String unitSkillID : new String [] {"US134", "USX01"})
+		{
+			final UnitHasSkill unitHasSkill = new UnitHasSkill ();
+			unitHasSkill.setUnitSkillID (unitSkillID);
+			hellHoundsUnit.getUnitHasSkill ().add (unitHasSkill);
+		}
+		
+		units.add (hellHoundsUnit);
 
 		final List<String> hellHounds = calc.listAllSkillsInUnitStack (units, spells, db);
 		assertEquals (7, hellHounds.size ());
@@ -401,145 +432,90 @@ public final class TestMomServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateDoubleMovementToEnterTileType () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Set up some movement rate rules to say:
+		// 1) Regular units on foot (US001) can move over TT01 at cost of 4 points and TT02 at cost of 6 points
+		// 2) Flying (US002) units move over everything at a cost of 2 points, including water (TT03)
+		// 3) Units with a pathfinding-like skill (US003) allow their entire stack to move over any land at a cost of 1 point, but not water 
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
+		for (int n = 1; n <= 2; n++)
+		{
+			final MovementRateRule pathfindingRule = new MovementRateRule ();
+			pathfindingRule.setTileTypeID ("TT0" + n);
+			pathfindingRule.setUnitStackSkillID ("US003");
+			pathfindingRule.setDoubleMovement (1);
+			rules.add (pathfindingRule);
+		}
+		
+		final MovementRateRule flyingRule = new MovementRateRule ();
+		flyingRule.setUnitSkillID ("US002");
+		flyingRule.setDoubleMovement (2);
+		rules.add (flyingRule);
 
+		final MovementRateRule hillsRule = new MovementRateRule ();
+		hillsRule.setUnitSkillID ("US001");
+		hillsRule.setTileTypeID ("TT01");
+		hillsRule.setDoubleMovement (4);
+		rules.add (hillsRule);
+		
+		final MovementRateRule mountainsRule = new MovementRateRule ();
+		mountainsRule.setUnitSkillID ("US001");
+		mountainsRule.setTileTypeID ("TT02");
+		mountainsRule.setDoubleMovement (6);
+		rules.add (mountainsRule);
+		
+		when (db.getMovementRateRule ()).thenReturn (rules);
+		
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Sample unit
+		final UnitHasSkill movementSkill = new UnitHasSkill ();
+		movementSkill.setUnitSkillID ("US001");
+		
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+		unit.getUnitHasSkill ().add (movementSkill);
 
 		// Set up object to test
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+
+		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 
-		// Regular spearmen unit by itself
+		// Regular walking unit can walk over the two types of land tiles, but not water
 		final List<String> unitStackSkills = new ArrayList<String> ();
 
-		final MemoryUnit spearmen = unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db);
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (4, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (6, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertNull (calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db));
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (0, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (4, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "FOW", spells, db).intValue ());
+		assertEquals (4, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
+		assertEquals (6, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
+		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db));
+		
+		// Stack with a pathfinding unit
+		unitStackSkills.add ("US003");
 
-		// Boat by itself
-		final MemoryUnit trireme = unitUtils.createMemoryUnit ("UN036", 2, 0, 0, true, db);
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db));
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db));
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db));
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db));
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT98", spells, db));
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT99", spells, db));
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "FOW", spells, db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
+		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db));
+		
+		// Cast flight spell - pathfinding takes preference, with how the demo rules above are ordered
+		final MemoryMaintainedSpell flightSpell = new MemoryMaintainedSpell ();
+		flightSpell.setUnitSkillID ("US002");
+		flightSpell.setUnitURN (1);
+		spells.add (flightSpell);
 
-		// Non-corporeal unit by itself (can't use enchanted road)
-		final MemoryUnit magicSpirit = unitUtils.createMemoryUnit ("UN155", 3, 0, 0, true, db);
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "FOW", spells, db).intValue ());
-
-		// Put a unit with path finding in the same stack - doesn't help boats or non-corporeal units
-		unitStackSkills.add ("US020");
-
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertNull (calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db));
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (0, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "FOW", spells, db).intValue ());
-
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db));
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db));
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db));
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db));
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT98", spells, db));
-		assertNull (calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT99", spells, db));
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "FOW", spells, db).intValue ());
-
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "FOW", spells, db).intValue ());
-
-		// Put a unit with wind walking in the same stack - does allow boats to fly, but has no effect on non-corporeal units
-		// Also this makes land units worse - they're now flying, so can't use the routes located by the path finder
-		unitStackSkills.add ("US023");
-
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (0, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "FOW", spells, db).intValue ());
-
-		// Flying boat!  Flying boats become like any other flying unit and so CAN use enchanted road - tested that in the original MoM too
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (0, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "FOW", spells, db).intValue ());
-
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "FOW", spells, db).intValue ());
-
-		// Cast wraith form onto the spearmen, just to prove the spells list gets included into the unit's skills
-		final MemoryMaintainedSpell wraithForm = new MemoryMaintainedSpell ();
-		wraithForm.setUnitURN (1);
-		wraithForm.setUnitSkillID ("SS181");
-		spells.add (wraithForm);
-
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "FOW", spells, db).intValue ());
-
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (0, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "FOW", spells, db).intValue ());
-
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_HILLS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_GRASS, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN, spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT98", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "TT99", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (magicSpirit, unitStackSkills, "FOW", spells, db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db).intValue ());
+		
+		// Naturally flying unit
+		unitStackSkills.clear ();
+		spells.clear ();
+		movementSkill.setUnitSkillID ("US002");
+		
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db).intValue ());
 	}
 
 	/**
@@ -549,95 +525,110 @@ public final class TestMomServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateDoubleMovementRatesForUnitStack () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		// Set up some movement rate rules to say:
+		// 1) Regular units on foot (US001) can move over TT01 at cost of 4 points and TT02 at cost of 6 points
+		// 2) Flying (US002) units move over everything at a cost of 2 points, including water (TT03)
+		// 3) Units with a pathfinding-like skill (US003) allow their entire stack to move over any land at a cost of 1 point, but not water 
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
+		for (int n = 1; n <= 2; n++)
+		{
+			final MovementRateRule pathfindingRule = new MovementRateRule ();
+			pathfindingRule.setTileTypeID ("TT0" + n);
+			pathfindingRule.setUnitStackSkillID ("US003");
+			pathfindingRule.setDoubleMovement (1);
+			rules.add (pathfindingRule);
+		}
+		
+		final MovementRateRule flyingRule = new MovementRateRule ();
+		flyingRule.setUnitSkillID ("US002");
+		flyingRule.setDoubleMovement (2);
+		rules.add (flyingRule);
+
+		final MovementRateRule hillsRule = new MovementRateRule ();
+		hillsRule.setUnitSkillID ("US001");
+		hillsRule.setTileTypeID ("TT01");
+		hillsRule.setDoubleMovement (4);
+		rules.add (hillsRule);
+		
+		final MovementRateRule mountainsRule = new MovementRateRule ();
+		mountainsRule.setUnitSkillID ("US001");
+		mountainsRule.setTileTypeID ("TT02");
+		mountainsRule.setDoubleMovement (6);
+		rules.add (mountainsRule);
+		
+		when (db.getMovementRateRule ()).thenReturn (rules);
+		
+		// All possible tile types
+		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final TileType thisTileType = new TileType ();
+			thisTileType.setTileTypeID ("TT0" + n);
+			tileTypes.add (thisTileType);
+		}
+		
+		when (db.getTileType ()).thenReturn (tileTypes);
 
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
 		// Set up object to test
-		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+
+		final MomServerUnitCalculationsImpl calc = new MomServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
-		// Regular spearmen unit by itself
+		// Regular walking unit can walk over the two types of land tiles, but not water
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		units.add (unitUtils.createMemoryUnit ("UN105", 1, 0, 0, true, db));
+		
+		final UnitHasSkill spearmenMovementSkill = new UnitHasSkill ();
+		spearmenMovementSkill.setUnitSkillID ("US001");
+		
+		final MemoryUnit spearmenUnit = new MemoryUnit ();
+		spearmenUnit.setUnitURN (1);
+		spearmenUnit.getUnitHasSkill ().add (spearmenMovementSkill);
+		
+		units.add (spearmenUnit);
 
 		final Map<String, Integer> spearmen = calc.calculateDoubleMovementRatesForUnitStack (units, spells, db);
-		assertEquals (15, spearmen.size ());
-		assertEquals (6, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN).intValue ());
-		assertEquals (6, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_HILLS).intValue ());
-		assertEquals (4, spearmen.get (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST).intValue ());
-		assertEquals (2, spearmen.get (CommonDatabaseConstants.VALUE_TILE_TYPE_DESERT).intValue ());
-		assertEquals (6, spearmen.get (CommonDatabaseConstants.VALUE_TILE_TYPE_SWAMP).intValue ());
-		assertEquals (2, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS).intValue ());
-		assertEquals (4, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA).intValue ());
-		assertEquals (4, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER).intValue ());
-		assertEquals (2, spearmen.get ("TT12").intValue ());
-		assertEquals (4, spearmen.get ("TT13").intValue ());
-		assertEquals (6, spearmen.get ("TT14").intValue ());
-		assertEquals (4, spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_LANDSIDE_RIVER_MOUTH).intValue ());
-		assertEquals (1, spearmen.get ("TT98").intValue ());
-		assertEquals (0, spearmen.get ("TT99").intValue ());
-		assertEquals (4, spearmen.get ("FOW").intValue ());
-
-		assertNull (spearmen.get (ServerDatabaseValues.VALUE_TILE_TYPE_SHORE));	// Just to prove that Map.get returns null for values not in the map
-
-		// Put a mountaineer (any normal dwarven unit) in the stack, then whole stack gets benefit of the skill
-		units.add (unitUtils.createMemoryUnit ("UN077", 2, 0, 0, true, db));
-
-		final Map<String, Integer> mountaineer = calc.calculateDoubleMovementRatesForUnitStack (units, spells, db);
-		assertEquals (15, mountaineer.size ());
-		assertEquals (2, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN).intValue ());
-		assertEquals (2, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_HILLS).intValue ());
-		assertEquals (4, mountaineer.get (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST).intValue ());
-		assertEquals (2, mountaineer.get (CommonDatabaseConstants.VALUE_TILE_TYPE_DESERT).intValue ());
-		assertEquals (6, mountaineer.get (CommonDatabaseConstants.VALUE_TILE_TYPE_SWAMP).intValue ());
-		assertEquals (2, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS).intValue ());
-		assertEquals (4, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA).intValue ());
-		assertEquals (4, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER).intValue ());
-		assertEquals (2, mountaineer.get ("TT12").intValue ());
-		assertEquals (4, mountaineer.get ("TT13").intValue ());
-		assertEquals (2, mountaineer.get ("TT14").intValue ());
-		assertEquals (4, mountaineer.get (ServerDatabaseValues.VALUE_TILE_TYPE_LANDSIDE_RIVER_MOUTH).intValue ());
-		assertEquals (1, mountaineer.get ("TT98").intValue ());
-		assertEquals (0, mountaineer.get ("TT99").intValue ());
-		assertEquals (4, mountaineer.get ("FOW").intValue ());
-
-		// Put a boat in the stack, then because it doesn't get mountaineer, land units can't go on water... boats can't go on land... so nobody can move anywhere
-		// Except amusingly that both the land units and boat think they can try to get through the fog of war
-		units.add (unitUtils.createMemoryUnit ("UN036", 3, 0, 0, true, db));
-
-		final Map<String, Integer> trireme = calc.calculateDoubleMovementRatesForUnitStack (units, spells, db);
-		assertEquals (1, trireme.size ());
-		assertEquals (4, trireme.get ("FOW").intValue ());
-
-		// Cast wind walking on the spearmen, now everybody including the boat can fly
-		final MemoryMaintainedSpell windWalkingSpell = new MemoryMaintainedSpell ();
-		windWalkingSpell.setUnitURN (1);
-		windWalkingSpell.setUnitSkillID ("SS063");
-		spells.add (windWalkingSpell);
-
-		final Map<String, Integer> windWalking = calc.calculateDoubleMovementRatesForUnitStack (units, spells, db);
-		assertEquals (18, windWalking.size ());
-		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_MOUNTAIN).intValue ());
-		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_HILLS).intValue ());
-		assertEquals (2, windWalking.get (CommonDatabaseConstants.VALUE_TILE_TYPE_FOREST).intValue ());
-		assertEquals (2, windWalking.get (CommonDatabaseConstants.VALUE_TILE_TYPE_DESERT).intValue ());
-		assertEquals (2, windWalking.get (CommonDatabaseConstants.VALUE_TILE_TYPE_SWAMP).intValue ());
-		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_GRASS).intValue ());
-		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_TUNDRA).intValue ());
-		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_SHORE).intValue ());
-		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_OCEAN).intValue ());
-		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_RIVER).intValue ());
-		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_OCEANSIDE_RIVER_MOUTH).intValue ());
-		assertEquals (2, windWalking.get ("TT12").intValue ());
-		assertEquals (2, windWalking.get ("TT13").intValue ());
-		assertEquals (2, windWalking.get ("TT14").intValue ());
-		assertEquals (2, windWalking.get (ServerDatabaseValues.VALUE_TILE_TYPE_LANDSIDE_RIVER_MOUTH).intValue ());
-		assertEquals (2, windWalking.get ("TT98").intValue ());
-		assertEquals (0, windWalking.get ("TT99").intValue ());
-		assertEquals (2, windWalking.get ("FOW").intValue ());
+		assertEquals (2, spearmen.size ());
+		assertEquals (4, spearmen.get ("TT01").intValue ());
+		assertEquals (6, spearmen.get ("TT02").intValue ());
+		assertNull (spearmen.get ("TT03"));
+		
+		// Stacking a flying unit with it makes no difference - although it can move over all tile types and faster, it always chooses the slowest movement rate
+		final UnitHasSkill flyingMovementSkill = new UnitHasSkill ();
+		flyingMovementSkill.setUnitSkillID ("US001");
+		
+		final MemoryUnit flyingUnit = new MemoryUnit ();
+		flyingUnit.setUnitURN (2);
+		flyingUnit.getUnitHasSkill ().add (flyingMovementSkill);
+		
+		units.add (flyingUnit);
+		
+		final Map<String, Integer> flying = calc.calculateDoubleMovementRatesForUnitStack (units, spells, db);
+		assertEquals (2, flying.size ());
+		assertEquals (4, flying.get ("TT01").intValue ());
+		assertEquals (6, flying.get ("TT02").intValue ());
+		assertNull (flying.get ("TT03"));
+		
+		// Stacking a pathfinding unit reduces the movement rates for the land tile types for all units in the stack down to 1, but still can't move over water
+		final UnitHasSkill pathfindingMovementSkill = new UnitHasSkill ();
+		pathfindingMovementSkill.setUnitSkillID ("US003");
+		
+		final MemoryUnit pathfindingUnit = new MemoryUnit ();
+		pathfindingUnit.setUnitURN (2);
+		pathfindingUnit.getUnitHasSkill ().add (pathfindingMovementSkill);
+		
+		units.add (pathfindingUnit);
+		
+		final Map<String, Integer> pathfinding = calc.calculateDoubleMovementRatesForUnitStack (units, spells, db);
+		assertEquals (2, pathfinding.size ());
+		assertEquals (1, pathfinding.get ("TT01").intValue ());
+		assertEquals (1, pathfinding.get ("TT02").intValue ());
+		assertNull (pathfinding.get ("TT03"));
 	}
 
 	/**
@@ -670,9 +661,14 @@ public final class TestMomServerUnitCalculationsImpl
 
 		for (int n = 1; n <= 2; n++)
 		{
-			final MemoryUnit spearmen = unitUtils.createMemoryUnit ("UN105", n, 0, 0, true, db);
+			final UnitHasSkill walkingSkill = new UnitHasSkill ();
+			walkingSkill.setUnitSkillID ("USX01");
+			
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitURN (n);
 			spearmen.setOwningPlayerID (2);
 			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+			spearmen.getUnitHasSkill ().add (walkingSkill);
 
 			unitStack.add (spearmen);
 		}
@@ -791,6 +787,7 @@ public final class TestMomServerUnitCalculationsImpl
 		// Put 3 nodes on Arcanus - one we haven't scouted, one we have scouted and know its contents, and the last we already cleared
 		// The one that we previously cleared we can walk right through and out the other side; the other two we can move onto but not past
 		// Nature nodes, so forest, same as there before so we don't alter movement rates - all we alter is that we can't move through them
+		int nextUnitURN = 0;
 		for (int y = 9; y <= 11; y++)
 		{
 			terrain.getPlane ().get (0).getRow ().get (y).getCell ().get (18).getTerrainData ().setTileTypeID ("TT13");
@@ -798,9 +795,12 @@ public final class TestMomServerUnitCalculationsImpl
 			// With removal of scouting, nodes just means enemy units
 			if (y < 11)
 			{
-				final MemoryUnit their = unitUtils.createMemoryUnit ("UN105", y, 0, 0, true, db);
+				nextUnitURN++;
+				final MemoryUnit their = new MemoryUnit ();
+				their.setUnitURN (nextUnitURN);
 				their.setOwningPlayerID (1);
 				their.setUnitLocation (new MapCoordinates3DEx (18, y, 0));
+				their.setStatus (UnitStatusID.ALIVE);
 
 				map.getUnit ().add (their);
 			}
@@ -815,14 +815,19 @@ public final class TestMomServerUnitCalculationsImpl
 		// Units that are moving - two units of high men spearmen
 		// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
 		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
-		int nextUnitURN = 0;
 
 		for (int n = 1; n <= 2; n++)
 		{
+			final UnitHasSkill walkingSkill = new UnitHasSkill ();
+			walkingSkill.setUnitSkillID ("USX01");
+
 			nextUnitURN++;
-			final MemoryUnit spearmen = unitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db);
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setUnitURN (nextUnitURN);
 			spearmen.setOwningPlayerID (2);
 			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+			spearmen.getUnitHasSkill ().add (walkingSkill);
+			spearmen.setStatus (UnitStatusID.ALIVE);
 
 			unitStack.add (spearmen);
 		}
@@ -833,16 +838,20 @@ public final class TestMomServerUnitCalculationsImpl
 		for (int n = 1; n <= 8; n++)
 		{
 			nextUnitURN++;
-			final MemoryUnit our = unitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db);
+			final MemoryUnit our = new MemoryUnit ();
+			our.setUnitURN (nextUnitURN);
 			our.setOwningPlayerID (2);
 			our.setUnitLocation (new MapCoordinates3DEx (19, 9, 1));
+			our.setStatus (UnitStatusID.ALIVE);
 
 			map.getUnit ().add (our);
 
 			nextUnitURN++;
-			final MemoryUnit their = unitUtils.createMemoryUnit ("UN105", nextUnitURN, 0, 0, true, db);
+			final MemoryUnit their = new MemoryUnit ();
+			their.setUnitURN (nextUnitURN);
 			their.setOwningPlayerID (1);
 			their.setUnitLocation (new MapCoordinates3DEx (20, 9, 1));
+			their.setStatus (UnitStatusID.ALIVE);
 
 			map.getUnit ().add (their);
 		}

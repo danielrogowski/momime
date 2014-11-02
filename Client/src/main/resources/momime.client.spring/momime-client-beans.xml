@@ -953,7 +953,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
-		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 	</bean>

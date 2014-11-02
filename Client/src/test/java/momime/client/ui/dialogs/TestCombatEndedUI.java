@@ -28,6 +28,8 @@ public final class TestCombatEndedUI
 {
 	/**
 	 * Tests the CombatEndedUI form
+	 * 
+	 * @param winningPlayerID The player who won the combat
 	 * @throws Exception If there is a problem
 	 */
 	private final void testCombatEndedUI (final int winningPlayerID) throws Exception

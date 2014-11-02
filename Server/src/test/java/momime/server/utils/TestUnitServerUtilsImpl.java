@@ -58,6 +58,40 @@ import com.ndg.random.RandomUtils;
 public final class TestUnitServerUtilsImpl
 {
 	/**
+	 * Tests the createMemoryUnit method
+	 * We don't really need to test all combinations of params, since that just affects the call to initializeUnitSkills, which we've already tested above
+	 *
+	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
+	 */
+	@Test
+	public final void testCreateMemoryUnit () throws RecordNotFoundException
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Initialize skills method returns the unit definition
+		final Unit unitDef = new Unit ();
+		unitDef.setDoubleMovement (123);
+
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		when (unitUtils.initializeUnitSkills (any (AvailableUnit.class), eq (100), eq (db))).thenReturn (unitDef);
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setUnitUtils (unitUtils); 
+		
+		// Run test
+		final MemoryUnit unit = utils.createMemoryUnit ("UN001", 1, 3, 100, db);
+
+		// Check results
+		assertEquals (1, unit.getUnitURN ());
+		assertEquals ("UN001", unit.getUnitID ());
+		assertEquals (123, unit.getDoubleOverlandMovesLeft ());		// This proves that initializeUnitSkills was called correctly
+		assertEquals (3, unit.getWeaponGrade ().intValue ());
+		assertEquals (UnitStatusID.ALIVE, unit.getStatus ());
+	}
+	
+	/**
 	 * Tests the generateHeroNameAndRandomSkills method on a hero who gets no random rolled skills, so it generates a name only
 	 * @throws Exception If there is a problem
 	 */

@@ -62,6 +62,36 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	private CoordinateSystemUtils coordinateSystemUtils;
 
 	/**
+	 * Creates and initializes a new unit - this is the equivalent of the TMomUnit.Create constructor in Delphi (except that it doesn't add the created unit into the unit list)
+	 * @param unitID Type of unit to create
+	 * @param unitURN Unique number identifying this unit
+	 * @param weaponGrade Weapon grade to give to this unit
+	 * @param startingExperience Initial experience; if -1 or null then experience won't be added into skill list, which is used when server sends units to client since they already have exp skill in list
+	 * @param db Lookup lists built over the XML database
+	 * @return Newly created unit
+	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
+	 */
+	@Override
+	public final MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final Integer startingExperience,
+		final ServerDatabaseEx db) throws RecordNotFoundException
+	{
+		log.trace ("Entering createMemoryUnit: " + unitID + ", Unit URN " + unitURN);
+
+		final MemoryUnit newUnit = new MemoryUnit ();
+		newUnit.setUnitURN (unitURN);
+		newUnit.setUnitID (unitID);
+		newUnit.setWeaponGrade (weaponGrade);
+		newUnit.setStatus (UnitStatusID.ALIVE);		// Assume unit is alive - heroes being initialized will reset this value
+
+		final momime.common.database.Unit unitDefinition = getUnitUtils ().initializeUnitSkills (newUnit, startingExperience, db);
+
+		newUnit.setDoubleOverlandMovesLeft (unitDefinition.getDoubleMovement ());
+
+		log.trace ("Exiting createMemoryUnit");
+		return newUnit;
+	}
+
+	/**
 	 * Chooses a name for this hero (out of 5 possibilities) and rolls their random skills
 	 * 
 	 * @param unit The hero to generate name and skills for
@@ -287,7 +317,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final AvailableUnit testUnit = new AvailableUnit ();
 		testUnit.setUnitID (unitID);
 		testUnit.setOwningPlayerID (playerID);
-		getUnitUtils ().initializeUnitSkills (testUnit, 0, true, db);
+		getUnitUtils ().initializeUnitSkills (testUnit, 0, db);
 
 		final List<String> testUnitSkillList = new ArrayList<String> ();
 		for (final UnitHasSkill testUnitSkill : testUnit.getUnitHasSkill ())

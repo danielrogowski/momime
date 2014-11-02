@@ -24,8 +24,8 @@ import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.frames.MagicSlidersUI;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessageData;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -127,12 +127,12 @@ public final class TestOverlandEnchantmentsUI
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Spell being shown
-		final AddMaintainedSpellMessageData spell = new AddMaintainedSpellMessageData ();
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
 		spell.setCastingPlayerID (1);
 		spell.setSpellID ("SP001");
 		
 		final AddMaintainedSpellMessageImpl spellMessage = new AddMaintainedSpellMessageImpl ();
-		spellMessage.setData (spell);
+		spellMessage.setMaintainedSpell (spell);
 
 		// Using the real image generator is easier than mocking it out
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
@@ -155,7 +155,7 @@ public final class TestOverlandEnchantmentsUI
 		ench.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		ench.setLargeFont (CreateFontsForTests.getLargeFont ());
 		ench.setOverlandEnchantmentsLayout (layout);
-		ench.setSpellMessage (spellMessage);
+		ench.setAddSpellMessage (spellMessage);
 		ench.setMagicSlidersUI (new MagicSlidersUI ());
 		
 		// Display form

@@ -1133,7 +1133,7 @@ public final class CityViewUI extends MomClientFrameUI
 			sampleUnit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
 
 			// We don't have to get the weapon grade or experience right just to draw the figures
-			getUnitUtils ().initializeUnitSkills (sampleUnit, null, true, getClient ().getClientDB ());
+			getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());
 			
 			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
 			getUnitClientUtils ().registerUnitFiguresAnimation (cityData.getCurrentlyConstructingUnitID (), movingActionID, 4, constructionPanel);

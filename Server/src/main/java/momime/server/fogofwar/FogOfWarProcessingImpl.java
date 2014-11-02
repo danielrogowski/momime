@@ -24,8 +24,6 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.AddBuildingMessageData;
-import momime.common.messages.servertoclient.AddCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.CancelCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.DestroyBuildingMessageData;
 import momime.common.messages.servertoclient.FogOfWarStateMessageData;
@@ -492,12 +490,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			if (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
 				if (getFogOfWarDuplication ().copyBuilding (thisBuilding, priv.getFogOfWarMemory ().getBuilding ()))
 					if (msg != null)
-					{
-						final AddBuildingMessageData buildingMsg = new AddBuildingMessageData ();
-						buildingMsg.setFirstBuildingID (thisBuilding.getBuildingID ());
-						buildingMsg.setCityLocation (thisBuilding.getCityLocation ());
-						msg.getAddBuilding ().add (buildingMsg);
-					}
+						msg.getAddBuilding ().add (thisBuilding);
 		}
 
 		// Check to see what buildings we need to remove
@@ -579,7 +572,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 					log.debug ("UnitURN " + thisUnit.getUnitURN () + " has come into view for player " + player.getPlayerDescription ().getPlayerID () + " as part of VAC, unitChanged=" + unitChanged);
 					if ((unitChanged) && (msg != null))
-						msg.getAddUnit ().add (getFogOfWarDuplication ().createAddUnitMessage (thisUnit));
+						msg.getAddUnit ().add (thisUnit);
 				}
 			}
 
@@ -694,7 +687,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					// Copy spell into player's memory
 					if (getFogOfWarDuplication ().copyMaintainedSpell (thisSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
 						if (msg != null)
-							msg.getAddMaintainedSpell ().add (getFogOfWarDuplication ().createAddSpellMessage (thisSpell));
+							msg.getAddMaintainedSpell ().add (thisSpell);
 			}
 
 		// Check to see what maintained spells we could see but now can't (this runs down our local memory of the spells)
@@ -765,13 +758,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if (determineVisibleAreaChangedUpdateAction (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()) == FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)
 					if (getFogOfWarDuplication ().copyCombatAreaEffect (thisCAE, priv.getFogOfWarMemory ().getCombatAreaEffect ()))
 						if (msg != null)
-						{
-							final AddCombatAreaEffectMessageData caeMsg = new AddCombatAreaEffectMessageData ();
-							caeMsg.setCombatAreaEffectID (thisCAE.getCombatAreaEffectID ());
-							caeMsg.setMapLocation (thisCAE.getMapLocation ());
-							caeMsg.setCastingPlayerID (thisCAE.getCastingPlayerID ());
-							msg.getAddCombatAreaEffect ().add (caeMsg);
-						}
+							msg.getAddCombatAreaEffect ().add (thisCAE);
 			}
 
 		// Check to see what combat area effects we need to remove from our memory (this runs down our local memory of the CAEs)

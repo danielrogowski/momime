@@ -25,7 +25,6 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.panels.CityViewPanel;
-import momime.common.messages.MemoryBuilding;
 import momime.common.messages.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
@@ -80,7 +79,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	private JLabel textLabel;
 	
 	/** Spell that we're displaying this popup for; null if we're not displaying a spell */
-	private AddMaintainedSpellMessageImpl spellMessage;
+	private AddMaintainedSpellMessageImpl addSpellMessage;
 	
 	/** Building that we're displaying this popup for; null if we're not displaying a building */
 	private AddBuildingMessageImpl buildingMessage;
@@ -127,8 +126,8 @@ public final class MiniCityViewUI extends MomClientDialogUI
 					// This somehow seems to get called twice, so protect against that
 					if (!unblocked)
 					{
-						if (getSpellMessage () != null)
-							getClient ().finishCustomDurationMessage (getSpellMessage ());
+						if (getAddSpellMessage () != null)
+							getClient ().finishCustomDurationMessage (getAddSpellMessage ());
 		
 						if (getBuildingMessage () != null)
 							getClient ().finishCustomDurationMessage (getBuildingMessage ());
@@ -169,10 +168,10 @@ public final class MiniCityViewUI extends MomClientDialogUI
 
 		// Make the spell appear after a few seconds
 		String spellID = null;
-		if (getSpellMessage () != null)
-			spellID = getSpellMessage ().getData ().getSpellID ();
+		if (getAddSpellMessage () != null)
+			spellID = getAddSpellMessage ().getMaintainedSpell ().getSpellID ();
 		else if (getBuildingMessage () != null)
-			spellID = getBuildingMessage ().getData ().getBuildingCreatedFromSpellID ();
+			spellID = getBuildingMessage ().getBuildingCreatedFromSpellID ();
 		
 		if (spellID != null)
 			try
@@ -244,26 +243,15 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		log.trace ("Entering addSpellOrBuilding: " + getCityLocation ());
 		
 		// Spells are easy, can just add the data directly
-		if (getSpellMessage () != null)
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getSpellMessage ().getData ());
+		if (getAddSpellMessage () != null)
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getAddSpellMessage ().getMaintainedSpell ());
 		
 		// May be up to two buildings to add
 		if (getBuildingMessage () != null)
 		{
-			final MemoryBuilding firstBuilding = new MemoryBuilding ();
-			firstBuilding.setBuildingID (getBuildingMessage ().getData ().getFirstBuildingID ());
-			firstBuilding.setCityLocation (new MapCoordinates3DEx (getCityLocation ()));
-			
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (firstBuilding);
-			
-			if (getBuildingMessage ().getData ().getSecondBuildingID () != null)
-			{
-				final MemoryBuilding secondBuilding = new MemoryBuilding ();
-				secondBuilding.setBuildingID (getBuildingMessage ().getData ().getSecondBuildingID ());
-				secondBuilding.setCityLocation (new MapCoordinates3DEx (getCityLocation ()));
-				
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (secondBuilding);
-			}
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (getBuildingMessage ().getFirstBuilding ());
+			if (getBuildingMessage ().getSecondBuilding () != null)
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (getBuildingMessage ().getSecondBuilding ());
 		}
 
 		// If we've got a city screen open showing where the spell or building was added, may need to set up animation to display it
@@ -306,15 +294,15 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		// Set the text at the bottom
 		String spellID = null;
 		Integer castingPlayerID = null;
-		if (getSpellMessage () != null)
+		if (getAddSpellMessage () != null)
 		{
-			spellID = getSpellMessage ().getData ().getSpellID ();
-			castingPlayerID = getSpellMessage ().getData ().getCastingPlayerID ();
+			spellID = getAddSpellMessage ().getMaintainedSpell ().getSpellID ();
+			castingPlayerID = getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ();
 		}
 		else if (getBuildingMessage () != null)
 		{
-			spellID = getBuildingMessage ().getData ().getBuildingCreatedFromSpellID ();
-			castingPlayerID = getBuildingMessage ().getData ().getBuildingCreationSpellCastByPlayerID ();
+			spellID = getBuildingMessage ().getBuildingCreatedFromSpellID ();
+			castingPlayerID = getBuildingMessage ().getBuildingCreationSpellCastByPlayerID ();
 		}
 
 		String text = null;
@@ -481,17 +469,17 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/**
 	 * @return Spell that we're displaying this popup for; null if we're not displaying a spell
 	 */
-	public final AddMaintainedSpellMessageImpl getSpellMessage ()
+	public final AddMaintainedSpellMessageImpl getAddSpellMessage ()
 	{
-		return spellMessage;
+		return addSpellMessage;
 	}
 
 	/**
 	 * @param msg Spell that we're displaying this popup for; null if we're not displaying a spell
 	 */
-	public final void setSpellMessage (final AddMaintainedSpellMessageImpl msg)
+	public final void setAddSpellMessage (final AddMaintainedSpellMessageImpl msg)
 	{
-		spellMessage = msg;
+		addSpellMessage = msg;
 	}
 	
 	/**

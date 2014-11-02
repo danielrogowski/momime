@@ -7,10 +7,10 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.OverlandMapUI;
-import momime.common.messages.servertoclient.AddBuildingMessageData;
-import momime.common.messages.servertoclient.AddCombatAreaEffectMessageData;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessageData;
-import momime.common.messages.servertoclient.AddUnitMessageData;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.CancelCombatAreaEffectMessageData;
 import momime.common.messages.servertoclient.DestroyBuildingMessageData;
 import momime.common.messages.servertoclient.FogOfWarStateMessageData;
@@ -89,9 +89,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getAddBuilding ().size () > 0)
 		{
 			final AddBuildingMessageImpl proc = getFactory ().createAddBuildingMessage ();
-			for (final AddBuildingMessageData data : getAddBuilding ())
+			for (final MemoryBuilding thisBuilding : getAddBuilding ())
 			{
-				proc.setData (data);
+				proc.setFirstBuilding (thisBuilding);
 				proc.processOneUpdate ();
 			}
 		}
@@ -111,9 +111,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getAddUnit ().size () > 0)
 		{
 			final AddUnitMessageImpl proc = getFactory ().createAddUnitMessage ();
-			for (final AddUnitMessageData data : getAddUnit ())
+			for (final MemoryUnit thisUnit : getAddUnit ())
 			{
-				proc.setData (data);
+				proc.setMemoryUnit (thisUnit);
 				proc.start ();
 			}
 		}
@@ -133,9 +133,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getAddMaintainedSpell ().size () > 0)
 		{
 			final AddMaintainedSpellMessageImpl proc = getFactory ().createAddMaintainedSpellMessage ();
-			for (final AddMaintainedSpellMessageData data : getAddMaintainedSpell ())
+			for (final MemoryMaintainedSpell thisSpell : getAddMaintainedSpell ())
 			{				
-				proc.setData (data);
+				proc.setMaintainedSpell (thisSpell);
 				proc.processOneUpdate ();
 			}
 		}
@@ -155,9 +155,9 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getAddCombatAreaEffect ().size () > 0)
 		{
 			final AddCombatAreaEffectMessageImpl proc = getFactory ().createAddCombatAreaEffectMessage ();
-			for (final AddCombatAreaEffectMessageData data : getAddCombatAreaEffect ())
+			for (final MemoryCombatAreaEffect thisCAE : getAddCombatAreaEffect ())
 			{
-				proc.setData (data);
+				proc.setMemoryCombatAreaEffect (thisCAE);
 				proc.start ();
 			}
 		}

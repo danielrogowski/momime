@@ -123,8 +123,6 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		// Actions
 		cancelAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -6610185264156193758L;
-
 			@Override
 			public void actionPerformed (final ActionEvent e)
 			{
@@ -134,8 +132,6 @@ public final class ConnectToServerUI extends MomClientFrameUI
 
 		okAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -1830313744189041084L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -192,8 +188,6 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = 4787936461589746999L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
@@ -236,8 +230,6 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		{
 			final Action serverAction = new AbstractAction (server.getKnownServerDescription () + " (" + server.getKnownServerIP () + ")")
 			{
-				private static final long serialVersionUID = 3576390732905287196L;
-
 				@Override
 				public void actionPerformed (final ActionEvent ev)
 				{

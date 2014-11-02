@@ -30,9 +30,6 @@ import com.ndg.swing.NdgUIUtils;
  */
 public final class SelectUnitButton extends JToggleButton
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = -1110183376865886079L;
-
 	/** Class logger */
 	private final Log log = LogFactory.getLog (SelectUnitButton.class);
 	

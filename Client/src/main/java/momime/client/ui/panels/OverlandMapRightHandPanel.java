@@ -233,8 +233,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		// Actions
 		final Action nextTurnAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 3054222435032660297L;
-
 			@Override
 			public void actionPerformed (final ActionEvent ev)
 			{
@@ -251,8 +249,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		doneAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -5692511662267150151L;
-
 			@Override
 			public void actionPerformed (final ActionEvent ev)
 			{
@@ -269,8 +265,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		patrolAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -5895523199376874952L;
-
 			@Override
 			public void actionPerformed (final ActionEvent ev)
 			{
@@ -287,8 +281,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		waitAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -6461377508761514254L;
-
 			@Override
 			public void actionPerformed (final ActionEvent ev)
 			{
@@ -337,8 +329,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		cancelAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -5816602032653924603L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{

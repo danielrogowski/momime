@@ -156,16 +156,12 @@ public final class TestUnitInfoPanel
 		// Create some dummy actions for buttons
 		final Action blahAction = new AbstractAction ("Blah")
 		{
-			private static final long serialVersionUID = -2090183542982230327L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev) {}
 		};
 		
 		final Action pantsAction = new AbstractAction ("Pants")
 		{
-			private static final long serialVersionUID = 3337784121950953545L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev) {}
 		};
@@ -445,16 +441,12 @@ public final class TestUnitInfoPanel
 		// Create some dummy actions for buttons
 		final Action blahAction = new AbstractAction ("Blah")
 		{
-			private static final long serialVersionUID = -2090183542982230327L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev) {}
 		};
 		
 		final Action pantsAction = new AbstractAction ("Pants")
 		{
-			private static final long serialVersionUID = 3337784121950953545L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev) {}
 		};

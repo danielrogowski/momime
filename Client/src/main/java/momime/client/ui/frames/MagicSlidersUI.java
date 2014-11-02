@@ -189,8 +189,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		// Actions
 		alchemyAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 1986507984605842240L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -207,8 +205,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		applyAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 3281074290844172318L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -243,8 +239,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		okAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -5463992577360555129L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -260,8 +254,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		final List<MagicSlider> sliders = new ArrayList<MagicSlider> ();
 		final Action lockAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -9035882679704578423L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -930,9 +922,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	 */
 	private class SpellsTableModel extends AbstractTableModel
 	{
-		/** Unique value for serialization */
-		private static final long serialVersionUID = 2007771542738429988L;
-		
 		/** Underlying storage */
 		private List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		

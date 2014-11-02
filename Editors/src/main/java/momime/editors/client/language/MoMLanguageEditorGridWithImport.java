@@ -30,8 +30,6 @@ public abstract class MoMLanguageEditorGridWithImport extends XmlEditorGridWithI
 		// Import action
 		setImportAction (new AbstractAction ()
 		{
-			private static final long serialVersionUID = 4837848398404063304L;
-
 			@Override
 			public void actionPerformed (final ActionEvent event)
 			{

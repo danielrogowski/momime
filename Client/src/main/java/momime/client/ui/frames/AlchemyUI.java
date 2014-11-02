@@ -124,8 +124,6 @@ public final class AlchemyUI extends MomClientFrameUI
 		// Actions
 		final Action changeDirectionAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 7051665667177369211L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -155,8 +153,6 @@ public final class AlchemyUI extends MomClientFrameUI
 		
 		okAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 8014225262281184051L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -190,8 +186,6 @@ public final class AlchemyUI extends MomClientFrameUI
 
 		cancelAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 3025055238439622489L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -232,8 +226,6 @@ public final class AlchemyUI extends MomClientFrameUI
 		// Don't bother setting a maximum in the constructor - directionChanged () sets it anyway
 		slider = new JSlider ()
 		{
-			private static final long serialVersionUID = -4281191655691272353L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{

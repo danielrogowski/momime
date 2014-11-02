@@ -26,9 +26,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class BuildingListCellRenderer extends JPanel implements ListCellRenderer<Building>
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = 8241886377639525388L;
-
 	/** Class logger */
 	private final Log log = LogFactory.getLog (BuildingListCellRenderer.class);
 	

@@ -158,8 +158,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		// Actions
 		cancelAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -5862161820735023601L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -169,8 +167,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 
 		okAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -7988136722401366834L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{

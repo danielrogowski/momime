@@ -305,9 +305,6 @@ public class SingleWindowUI implements MomServerUI
 	 */
 	private final class SingleWindowTableModel extends AbstractTableModel
 	{
-		/** Unique value for serialization */
-		private static final long serialVersionUID = -3021595934938811021L;
-
 		/** Local copy of the list of sessions */
 		private final List<SessionAndPlayerDescriptions> sessions;
 
@@ -427,11 +424,6 @@ public class SingleWindowUI implements MomServerUI
 	 */
 	private final class SingleWindowColumnModel extends DefaultTableColumnModel
 	{
-		/**
-		 * Unique value for serialization
-		 */
-		private static final long serialVersionUID = -1789692374701601514L;
-
 		/**
 		 * Set column widths as columns are added
 		 * @param aColumn The new column to add

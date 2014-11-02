@@ -242,8 +242,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		spellsAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -5141972367832746499L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -276,8 +274,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		magicAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -4965417316954818797L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -302,8 +298,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		messagesAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 2155191938368576867L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -365,8 +359,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		
 		sceneryPanel = new JPanel ()
 		{
-			private static final long serialVersionUID = -266294091485642841L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
@@ -625,8 +617,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		// Zoom actions (need the sceneryPanel, hence why defined down here)
 		zoomInAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -1891817301226938020L;
-
 			@Override
 			public void actionPerformed (final ActionEvent e)
 			{
@@ -660,8 +650,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		zoomOutAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 6611489435130331341L;
-
 			@Override
 			public void actionPerformed (final ActionEvent e)
 			{

@@ -48,8 +48,6 @@ public final class LanguageEditorMain extends XmlEditorMain
 		final LanguageEditorMain form = this;
 		final Action checkAction = new AbstractAction ("Verify that all necessary entries are in the Language XML file")
 		{
-			private static final long serialVersionUID = 7979533052359087667L;
-
 			@Override
 			public void actionPerformed (final ActionEvent event)
 			{

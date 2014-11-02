@@ -27,9 +27,6 @@ import com.ndg.swing.NdgUIUtils;
  */
 public final class MagicSlider extends JPanel
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = -5900795049927632920L;
-
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MagicSlider.class);
 	
@@ -92,8 +89,6 @@ public final class MagicSlider extends JPanel
 		
 		slider = new JSlider (0, CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX, initialValue)
 		{
-			private static final long serialVersionUID = 2862387801146292638L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{

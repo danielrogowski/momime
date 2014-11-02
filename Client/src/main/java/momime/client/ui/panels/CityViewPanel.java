@@ -33,9 +33,6 @@ import com.ndg.swing.NdgUIUtils;
  */
 public final class CityViewPanel extends JPanel
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = 1797763921049648147L;
-
 	/** Class logger */
 	private final Log log = LogFactory.getLog (CityViewPanel.class);
 

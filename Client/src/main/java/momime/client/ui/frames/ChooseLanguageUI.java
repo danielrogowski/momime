@@ -111,8 +111,6 @@ public final class ChooseLanguageUI extends MomClientFrameUI implements Language
 		// Actions
 		cancelAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -1748411812469406390L;
-
 			@Override
 			public void actionPerformed (final ActionEvent e)
 			{
@@ -126,8 +124,6 @@ public final class ChooseLanguageUI extends MomClientFrameUI implements Language
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = -1066389361645625294L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
@@ -165,8 +161,6 @@ public final class ChooseLanguageUI extends MomClientFrameUI implements Language
 			
 			final Action languageAction = new AbstractAction (language)
 			{
-				private static final long serialVersionUID = 7617503785697399045L;
-
 				@Override
 				public void actionPerformed (final ActionEvent ev)
 				{

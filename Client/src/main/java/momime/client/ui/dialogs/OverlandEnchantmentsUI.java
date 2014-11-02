@@ -173,8 +173,6 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = -3994695426286237110L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{

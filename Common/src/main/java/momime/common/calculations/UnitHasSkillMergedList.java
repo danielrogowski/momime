@@ -10,6 +10,4 @@ import momime.common.database.UnitHasSkill;
  */
 public final class UnitHasSkillMergedList extends ArrayList<UnitHasSkill>
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = 4732654481578611076L;
 }

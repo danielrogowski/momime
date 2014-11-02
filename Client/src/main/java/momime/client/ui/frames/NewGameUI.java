@@ -502,8 +502,6 @@ public final class NewGameUI extends MomClientFrameUI
 		// Actions
 		cancelAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 3392213175312761329L;
-
 			@Override
 			public void actionPerformed (final ActionEvent e)
 			{
@@ -513,8 +511,6 @@ public final class NewGameUI extends MomClientFrameUI
 
 		okAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -6935146629512835133L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -584,8 +580,6 @@ public final class NewGameUI extends MomClientFrameUI
 		// Initialize the content pane
 		contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = 4885116900695807364L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
@@ -684,8 +678,6 @@ public final class NewGameUI extends MomClientFrameUI
 		// This is easy with 2 columns
 		changeDatabaseAction = new CycleAction<AvailableDatabase> ()
 		{
-			private static final long serialVersionUID = 8242544558930278937L;
-
 			/**
 			 * Update available choices of all the buttons when a database is chosen
 			 */
@@ -698,8 +690,6 @@ public final class NewGameUI extends MomClientFrameUI
 
 		changeHumanOpponentsAction = new CycleAction<Integer> ()
 		{
-			private static final long serialVersionUID = 6976686450640981530L;
-
 			/**
 			 * Enable/disable OK button when number of oppponents changes
 			 */
@@ -712,8 +702,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		changeAIOpponentsAction = new CycleAction<Integer> ()
 		{
-			private static final long serialVersionUID = -800824274156080772L;
-
 			/**
 			 * Enable/disable OK button when number of oppponents changes
 			 */
@@ -1031,8 +1019,6 @@ public final class NewGameUI extends MomClientFrameUI
 					// Choose wizard button
 					final Action wizardButtonAction = new AbstractAction ()
 					{
-						private static final long serialVersionUID = 6525568382660451459L;
-
 						@Override
 						public final void actionPerformed (final ActionEvent ev)
 						{
@@ -1082,8 +1068,6 @@ public final class NewGameUI extends MomClientFrameUI
 					// Choose portrait button
 					final Action portraitButtonAction = new AbstractAction ()
 					{
-						private static final long serialVersionUID = -4992227972632337644L;
-
 						@Override
 						public final void actionPerformed (final ActionEvent ev)
 						{
@@ -1169,8 +1153,6 @@ public final class NewGameUI extends MomClientFrameUI
 				{
 					final Action raceButtonAction = new AbstractAction ()
 					{
-						private static final long serialVersionUID = -6804723217965830108L;
-
 						@Override
 						public final void actionPerformed (final ActionEvent ev)
 						{
@@ -1309,8 +1291,6 @@ public final class NewGameUI extends MomClientFrameUI
 						final Spell spell = spellsAtThisRank.get (spellNo);
 						final ToggleAction spellAction = new ToggleAction ()
 						{
-							private static final long serialVersionUID = 277053074758949105L;
-
 							@Override
 							protected final void selectedChanged ()
 							{

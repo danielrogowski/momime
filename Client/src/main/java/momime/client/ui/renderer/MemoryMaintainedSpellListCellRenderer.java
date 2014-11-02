@@ -23,9 +23,6 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
  */
 public final class MemoryMaintainedSpellListCellRenderer extends JLabel implements ListCellRenderer<MemoryMaintainedSpell>
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = 9188194078229760332L;
-
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 

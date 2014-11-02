@@ -108,8 +108,6 @@ public final class CombatEndedUI extends MomClientDialogUI
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = -28333024039519680L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{

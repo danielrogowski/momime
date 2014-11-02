@@ -69,8 +69,6 @@ public final class UnitInfoUI extends MomClientFrameUI
 		// Actions
 		okAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -9145955916028656307L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -83,8 +81,6 @@ public final class UnitInfoUI extends MomClientFrameUI
 		{
 			dismissAction = new AbstractAction ()
 			{
-				private static final long serialVersionUID = 8448189215131458272L;
-
 				@Override
 				public final void actionPerformed (final ActionEvent ev)
 				{

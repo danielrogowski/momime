@@ -79,8 +79,6 @@ public final class CalculationBoxUI extends MomClientFrameUI
 		// Actions
 		okAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -7614787019328142967L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{

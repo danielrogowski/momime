@@ -15,9 +15,6 @@ import javax.swing.Action;
  */
 public class CycleAction<E> extends AbstractAction
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = 1052290259757606129L;
-
 	/** Items being cycled through */
 	private List<CycleActionItem> items = new ArrayList<CycleActionItem> ();
 	

@@ -91,8 +91,6 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		// Actions
 		final Action closeAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 333951123000045641L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -103,8 +101,6 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = -6170657321368020350L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{

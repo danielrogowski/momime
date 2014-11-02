@@ -7,9 +7,6 @@ import java.io.IOException;
  */
 public final class RecordNotFoundException extends IOException
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = -955521547372783138L;
-
 	/**
 	 * Creates an exception for failing to find a record in a table with a single String primary key
 	 * @param table The table (or XML record type) where we're searching for a particular record

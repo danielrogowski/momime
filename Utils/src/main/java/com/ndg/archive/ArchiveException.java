@@ -8,11 +8,6 @@ import java.io.IOException;
 public class ArchiveException extends IOException
 {
 	/**
-	 * Unique value for serialization
-	 */
-	private static final long serialVersionUID = -882438400038763821L;
-
-	/**
 	 * Creates an .ndgarc exception with no message
 	 */
 	public ArchiveException ()
@@ -27,5 +22,4 @@ public class ArchiveException extends IOException
 	{
 		super (s);
 	}
-
 }

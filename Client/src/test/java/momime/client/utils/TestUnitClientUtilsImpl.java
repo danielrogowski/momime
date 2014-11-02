@@ -203,8 +203,6 @@ public final class TestUnitClientUtilsImpl
 		
 		final JPanel panel = new JPanel ()
 		{
-			private static final long serialVersionUID = 2679278561186067446L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{

@@ -133,8 +133,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		// Create actions
 		changeLanguageAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 7129552133649247249L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -151,8 +149,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		
 		connectToServerAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 438056656620043266L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -169,8 +165,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		
 		newGameAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -1111824002334990953L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -204,8 +198,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		
 		exitToWindowsAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 5037769648975101972L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -219,8 +211,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = 358769518041873860L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{

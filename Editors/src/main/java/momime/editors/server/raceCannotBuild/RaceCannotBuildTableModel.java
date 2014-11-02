@@ -9,9 +9,6 @@ import javax.swing.table.AbstractTableModel;
  */
 public final class RaceCannotBuildTableModel extends AbstractTableModel
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = 114091927885418773L;
-
 	/** The pre-built list we're displaying data from */
 	private final List<RaceImplicitCannotBuild> cannotBuildList;
 

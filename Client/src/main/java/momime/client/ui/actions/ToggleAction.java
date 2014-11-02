@@ -9,9 +9,6 @@ import javax.swing.AbstractAction;
  */
 public class ToggleAction extends AbstractAction
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = 7375177369674126804L;
-	
 	/** Whether the action has been selected */
 	private boolean selected;
 

@@ -238,8 +238,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		currentlyConstructingImage = new JPanel ()
 		{
-			private static final long serialVersionUID = -8785208582910019708L;
-
 			/**
 			 * Draws whatever is currently selected to construct
 			 */
@@ -399,8 +397,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			// Value
 			final JPanel attrValue = new JPanel ()
 			{
-				private static final long serialVersionUID = -8840801258402387568L;
-
 				/**
 				 * Draws icons representing a particular unit attribute
 				 */

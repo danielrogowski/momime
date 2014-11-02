@@ -31,9 +31,6 @@ import com.ndg.swing.NdgUIUtils;
  */
 public final class UnitSkillListCellRenderer extends JLabel implements ListCellRenderer<UnitHasSkill>
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = -5643821280980837618L;
-
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UnitSkillListCellRenderer.class);
 	

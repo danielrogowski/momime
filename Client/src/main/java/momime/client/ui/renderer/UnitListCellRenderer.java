@@ -76,8 +76,6 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 			// Set up the panel
 			final JPanel imagePanel = new JPanel ()
 			{
-				private static final long serialVersionUID = 3648813308002413154L;
-
 				@Override
 				protected final void paintComponent (final Graphics g)
 				{

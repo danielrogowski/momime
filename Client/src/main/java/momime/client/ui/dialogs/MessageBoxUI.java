@@ -127,8 +127,6 @@ public final class MessageBoxUI extends MomClientDialogUI
 		// Actions
 		okAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -7614787019328142967L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -138,8 +136,6 @@ public final class MessageBoxUI extends MomClientDialogUI
 		
 		noAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 2288860186594112684L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -161,8 +157,6 @@ public final class MessageBoxUI extends MomClientDialogUI
 		
 		yesAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -2607638551174255278L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{

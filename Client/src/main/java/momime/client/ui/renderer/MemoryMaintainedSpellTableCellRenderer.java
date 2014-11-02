@@ -24,9 +24,6 @@ import com.ndg.swing.NdgUIUtils;
  */
 public final class MemoryMaintainedSpellTableCellRenderer extends JLabel implements TableCellRenderer
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = -8368225804060772788L;
-
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MemoryMaintainedSpellTableCellRenderer.class);
 	

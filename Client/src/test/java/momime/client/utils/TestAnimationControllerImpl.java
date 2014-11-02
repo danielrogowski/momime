@@ -130,8 +130,6 @@ public final class TestAnimationControllerImpl
 		final StringBuffer triggeredFrames = new StringBuffer (); 
 		final JComponent dummy = new JComponent ()
 		{
-			private static final long serialVersionUID = -5048394063602850608L;
-
 			@Override
 			public final void repaint ()
 			{

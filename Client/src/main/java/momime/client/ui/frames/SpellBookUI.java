@@ -202,8 +202,6 @@ public final class SpellBookUI extends MomClientFrameUI
 		// Actions
 		final Action closeAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 333951123000045641L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -213,8 +211,6 @@ public final class SpellBookUI extends MomClientFrameUI
 
 		turnPageLeftAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 8767751980243329047L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -275,8 +271,6 @@ public final class SpellBookUI extends MomClientFrameUI
 		
 		turnPageRightAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 3223600649990240103L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -338,8 +332,6 @@ public final class SpellBookUI extends MomClientFrameUI
 		// Initialize the content pane
 		contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = 2219199398189071694L;
-
 			/**
 			 * Draw the background of the frame
 			 */

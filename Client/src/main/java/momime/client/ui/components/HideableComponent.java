@@ -16,9 +16,6 @@ import javax.swing.JPanel;
  */
 public final class HideableComponent<C extends Component> extends JPanel
 {
-	/** Unique value for serialization */
-	private static final long serialVersionUID = 6628617123327380304L;
-
 	/** Card layout key for showing the real component */
 	private static final String COMPONENT_PANEL = "C";
 

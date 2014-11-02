@@ -26,8 +26,6 @@ public abstract class MomClientPanelUI extends LanguageVariableUIImpl
 			final MomClientPanelUI container = this;
 			panel = new JPanel ()
 			{
-				private static final long serialVersionUID = -1663391034549309687L;
-
 				/**
 				 * Assume the majority of panels are going to have custom backgrounds, so delegate the
 				 * paintComponent method out to the container class to make it easier to override it.

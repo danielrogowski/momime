@@ -290,8 +290,6 @@ public final class CityViewUI extends MomClientFrameUI
 		// Actions
 		rushBuyAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -1438162385777956688L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -348,8 +346,6 @@ public final class CityViewUI extends MomClientFrameUI
 		final CityViewUI ui = this;
 		changeConstructionAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -3428462848507413383L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -375,8 +371,6 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		okAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 1562419693690602353L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -387,8 +381,6 @@ public final class CityViewUI extends MomClientFrameUI
 		// Explain the max size calculation
 		maximumPopulationAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -6963167374686168788L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -420,8 +412,6 @@ public final class CityViewUI extends MomClientFrameUI
 		// Explain the city growth calculation
 		currentPopulationAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = -6963167374686168788L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -474,8 +464,6 @@ public final class CityViewUI extends MomClientFrameUI
 		// Initialize the content pane
 		contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = -63741181816458999L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
@@ -497,8 +485,6 @@ public final class CityViewUI extends MomClientFrameUI
 		// The ordering of when we add this is significant - it must be behind the area where we draw the city (all the buildings) but in front of all the production buttons.
 		notOursPanel = new JPanel ()
 		{
-			private static final long serialVersionUID = 179548056982390045L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
@@ -543,8 +529,6 @@ public final class CityViewUI extends MomClientFrameUI
 		// Set up the mini terrain panel
 		miniMapPanel = new JPanel ()
 		{
-			private static final long serialVersionUID = -2428422973639205496L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{
@@ -627,8 +611,6 @@ public final class CityViewUI extends MomClientFrameUI
 		// Set up the mini panel to show progress towards current construction
 		final JPanel constructionProgressPanel = new JPanel ()
 		{
-			private static final long serialVersionUID = -2428422973639205496L;
-
 			/**
 			 * Draws coins appropriate for how far through construction we are
 			 */
@@ -689,8 +671,6 @@ public final class CityViewUI extends MomClientFrameUI
 		// Set up the mini panel to what's being currently constructed
 		constructionPanel = new JPanel ()
 		{
-			private static final long serialVersionUID = -7350768464461438141L;
-
 			/**
 			 * Draws whatever is currently selected to construct
 			 */
@@ -985,8 +965,6 @@ public final class CityViewUI extends MomClientFrameUI
 				// Create as a 'show unrest calculation' button
 				action = new AbstractAction ()
 				{
-					private static final long serialVersionUID = -5279215265703452922L;
-
 					@Override
 					public final void actionPerformed (final ActionEvent ev)
 					{
@@ -1016,8 +994,6 @@ public final class CityViewUI extends MomClientFrameUI
 				final int civvyNoCopy = civvyNo;
 				action = new AbstractAction ()
 				{
-					private static final long serialVersionUID = 7655922473370295899L;
-
 					@Override
 					public final void actionPerformed (final ActionEvent ev)
 					{
@@ -1074,8 +1050,6 @@ public final class CityViewUI extends MomClientFrameUI
 				// Explain this production calculation
 				final Action productionAction = new AbstractAction ()
 				{
-					private static final long serialVersionUID = 1785342094563388840L;
-
 					@Override
 					public final void actionPerformed (final ActionEvent ev)
 					{

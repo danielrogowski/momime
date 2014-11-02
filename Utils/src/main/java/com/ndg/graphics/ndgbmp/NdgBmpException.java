@@ -8,11 +8,6 @@ import java.io.IOException;
 public class NdgBmpException extends IOException
 {
 	/**
-	 * Unique value for serialization
-	 */
-	private static final long serialVersionUID = -4228470485577462747L;
-
-	/**
 	 * Creates an exception to with a .ndgbmp format image
 	 */
 	public NdgBmpException ()
@@ -28,5 +23,4 @@ public class NdgBmpException extends IOException
 	{
 		super (s);
 	}
-	
 }

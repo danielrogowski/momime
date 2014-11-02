@@ -210,8 +210,6 @@ public final class CombatUI extends MomClientFrameUI
 		
 		autoAction = new AbstractAction ()
 		{
-			private static final long serialVersionUID = 4757542393266163134L;
-
 			@Override
 			public final void actionPerformed (final ActionEvent ev)
 			{
@@ -245,8 +243,6 @@ public final class CombatUI extends MomClientFrameUI
 		// Initialize the content pane
 		contentPane = new JPanel ()
 		{
-			private static final long serialVersionUID = 7609379654619244164L;
-
 			@Override
 			protected final void paintComponent (final Graphics g)
 			{

@@ -25,6 +25,7 @@ import momime.server.database.v0_9_5.Spell;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.v0_9_5.MomGeneralServerKnowledge;
 import momime.server.ui.MomServerUI;
+import momime.server.ui.MomServerUIHolder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,9 +47,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/** Lookup lists built over the XML database */
 	private ServerDatabaseEx db;
 
-	/** UI being used by server */
-	private MomServerUI ui;
-
 	/** Logger for logging key messages relating to this session */
 	private Log sessionLogger;
 
@@ -60,17 +58,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 */
 	public final MomServerUI getUI ()
 	{
-		return ui;
+		return MomServerUIHolder.getUI ();
 	}		
 
-	/**
-	 * @param newUI UI being used by server
-	 */
-	public final void setUI (final MomServerUI newUI)
-	{
-		ui = newUI;
-	}
-	
 	/**
 	 * @return Logger for logging key messages relating to this session
 	 */
@@ -277,7 +267,8 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	public final void sessionAdded ()
 	{
-		getUI ().sessionAdded (this);
+		if (getUI () != null)
+			getUI ().sessionAdded (this);
 	}
 
 	/**
@@ -286,7 +277,8 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	public final void sessionRemoved ()
 	{
-		getUI ().sessionRemoved (this);
+		if (getUI () != null)
+			getUI ().sessionRemoved (this);
 	}
 
 	/**

@@ -3,7 +3,6 @@ package momime.server;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.security.InvalidParameterException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -17,7 +16,7 @@ import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseExImpl;
 import momime.server.mapgenerator.OverlandMapGeneratorImpl;
 import momime.server.ui.MomServerUI;
-import momime.server.ui.SessionWindow;
+import momime.server.ui.MomServerUIHolder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,14 +32,14 @@ import com.ndg.multiplayer.sessionbase.SessionDescription;
  */
 public final class MomServer extends MultiplayerSessionServer
 {
+	/** Prefix for all session loggers */
+	public static final String MOM_SESSION_LOGGER_PREFIX = "MoMIMESession.";
+
 	/** Class logger */
 	private final Log log = LogFactory.getLog (MomServer.class);
 	
 	/** Message to send new game database to clients as they connect */
 	private NewGameDatabaseMessage newGameDatabaseMessage;
-
-	/** UI to display server status */
-	private MomServerUI ui;
 
 	/** Database converters */
 	private ServerDatabaseConverters serverDatabaseConverters;
@@ -54,9 +53,6 @@ public final class MomServer extends MultiplayerSessionServer
 	/** Factory interface for creating MomSessionThreads */
 	private MomSessionThreadFactory sessionThreadFactory;
 
-	/** Maven version number, injected from spring */
-	private String version;
-	
 	/**
 	 * @throws DatatypeConfigurationException If there is a problem creating the DatatypeFactory
 	 */
@@ -116,13 +112,12 @@ public final class MomServer extends MultiplayerSessionServer
 
 		final MomSessionThread thread = getSessionThreadFactory ().createThread ();
 		thread.setSessionDescription (sessionDescription);
-		thread.setUI (ui);
 
 		final MomSessionDescription sd = (MomSessionDescription) sessionDescription;
 		
-		// Start logger for this sesssion
-		final SessionWindow sessionWindow = ui.createWindowForNewSession (sd);
-		thread.setSessionLogger (ui.createLoggerForNewSession (sd, sessionWindow));
+		// Start logger for this sesssion.  These are much the same as the class loggers, except named MoMIMESession.1, MoMIMESession.2 and so on.
+		getUI ().createWindowForNewSession (sd);
+		thread.setSessionLogger (LogFactory.getLog (MOM_SESSION_LOGGER_PREFIX + sd.getSessionID ()));
 
 		// Load server XML
 		thread.getSessionLogger ().info ("Loading server XML...");
@@ -154,37 +149,6 @@ public final class MomServer extends MultiplayerSessionServer
 	}
 
 	/**
-	 * @param uiClassName Class name to use for UI to display server status
-	 */
-	public final void setUiClassName (final String uiClassName)
-	{
-		log.info ("Initializing UI " + uiClassName + "...");
-		final Object uiObject;
-		try
-		{
-			uiObject = Class.forName (uiClassName).newInstance ();
-		}
-		catch (final ClassNotFoundException e)
-		{
-			throw new InvalidParameterException ("Requested UI class " + uiClassName + " could not be found on the classpath (full error: " + e.getMessage () + ")");
-		}
-		catch (final IllegalAccessException e)
-		{
-			throw new InvalidParameterException ("Requested UI class " + uiClassName + " found but could not be accessed (full error: " + e.getMessage () + ")");
-		}
-		catch (final InstantiationException e)
-		{
-			throw new InvalidParameterException ("Requested UI class " + uiClassName + " found but could not be instantiated (full error: " + e.getMessage () + ")");
-		}
-
-		if (!(uiObject instanceof MomServerUI))
-			throw new InvalidParameterException ("Requested UI class " + uiClassName + " but this does not implement the " + MomServerUI.class.getName () + " interface");
-
-		setUI ((MomServerUI) uiObject);
-		getUI ().createMainWindow (getVersion ());
-	}
-
-	/**
 	 * @return Message to send new game database to clients as they connect
 	 */
 	public final NewGameDatabaseMessage getNewGameDatabaseMessage ()
@@ -205,15 +169,7 @@ public final class MomServer extends MultiplayerSessionServer
 	 */
 	public final MomServerUI getUI ()
 	{
-		return ui;
-	}
-
-	/**
-	 * @param newUI UI to display server status
-	 */
-	public final void setUI (final MomServerUI newUI)
-	{
-		ui = newUI;
+		return MomServerUIHolder.getUI ();
 	}
 
 	/**
@@ -278,21 +234,5 @@ public final class MomServer extends MultiplayerSessionServer
 	public final void setSessionThreadFactory (final MomSessionThreadFactory factory)
 	{
 		sessionThreadFactory = factory;
-	}
-
-	/**
-	 * @return Maven version number, injected from spring
-	 */
-	public final String getVersion ()
-	{
-		return version;
-	}
-
-	/**
-	 * @param ver Maven version number, injected from spring
-	 */
-	public final void setVersion (final String ver)
-	{
-		version = ver;
 	}
 }

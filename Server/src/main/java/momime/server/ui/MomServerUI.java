@@ -5,8 +5,6 @@ import java.util.List;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomServer;
 
-import org.apache.commons.logging.Log;
-
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 
 /**
@@ -15,27 +13,16 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
  */
 public interface MomServerUI
 {
-	// NB. These interfaces are declared in the same order that MomServer calls them during startup
-
 	/**
-	 * Placeholder where the UI can perform any work startup work necessary, typically creating the main window
-	 * By this stage the debug logger has been created, so if the UI wants to hook into this and add its own handler, it can do that here too
-	 * @param version Maven version of server build
+	 * Server calls this to tell the UI what version number to display
+	 * @param version Maven version of MoM IME server build
 	 */
-	public void createMainWindow (final String version);
-
+	public void setVersion (final String version);
+	
 	/**
 	 * @param session Newly created session
-	 * @return Window created to display log messages for this session if using the OneWindowPerGameUI; if using a different UI then just returns null
 	 */
-	public SessionWindow createWindowForNewSession (final MomSessionDescription session);
-
-	/**
-	 * @param session Newly created session
-	 * @param sessionWindow The session window created by createWindowForNewSession
-	 * @return Logger created and configured for this session
-	 */
-	public Log createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow);
+	public void createWindowForNewSession (final MomSessionDescription session);
 
 	/**
 	 * Allows the UI to update its list of sessions when a session is either added or closed

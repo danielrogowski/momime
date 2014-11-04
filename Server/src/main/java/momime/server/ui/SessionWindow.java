@@ -84,13 +84,16 @@ public class SessionWindow
 		// Strip off old lines to make space
 		while (linesOfText >= MAX_LINE_COUNT)
 		{
-			textArea.setText (textArea.getText ().substring (textArea.getText ().indexOf ("\r\n") + 2));
+			textArea.setText (textArea.getText ().substring (textArea.getText ().indexOf (System.lineSeparator ()) + System.lineSeparator ().length ()));
 			linesOfText--;
 		}
 
 		// Add new text
 		textArea.setText (textArea.getText () + newText);
 		linesOfText++;
+
+		// Scroll to the bottom
+		textArea.setCaretPosition (textArea.getDocument ().getLength ());
 	}
 
 	/**

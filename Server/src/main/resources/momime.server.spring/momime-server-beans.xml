@@ -6,6 +6,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<import resource="../com.ndg.multiplayer.server/session-server-beans.xml"/>
 	<import resource="../momime.common.spring/momime-common-beans.xml"/>
+
+	<!-- Version of the server - process this first so it displays on the UI as soon as possible -->
+	
+	<context:property-placeholder location="classpath:MoMIMEServerVersion.properties" />
+	
+	<bean id="versionSetter" class="momime.server.ui.MomServerUIVersionSetter">
+		<property name="version" value="${momime.server.version}" />
+	</bean>
 	
 	<!-- General XSD objects (may move these into common project at some stage) -->
 	
@@ -18,7 +26,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
 		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
 		<property name="resourceResolver" ref="commonXsdResourceResolver" />
-	</bean>	
+	</bean>
 	
 	<!-- Server config XML -->
 	
@@ -250,10 +258,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="unrequestStartScheduledCombatMessage" class="momime.server.messages.process.UnrequestStartScheduledCombatMessageImpl" scope="prototype" />
 	
-	<!-- Version of the server -->
-	
-	<context:property-placeholder location="classpath:MoMIMEServerVersion.properties" />
-	
 	<!-- Singleton beans for server -->
 	
 	<bean id="userRegistry" class="com.ndg.multiplayer.server.users.MultiplayerSessionUserRegistryImpl">
@@ -284,9 +288,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameDatabaseMessage" ref="newGameDatabaseMessage" />
 		<property name="port" value="#{serverConfig.portNumber}" />
 		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
-		<property name="version" value="${momime.server.version}" />
 		<property name="conversationTag" value="#{'MoMIME-' + '${momime.server.version}'}" />
-		<property name="uiClassName" value="#{serverConfig.uiClassName}" />
 		<property name="sessionThreadFactory" ref="sessionThreadFactory" />
 	</bean>
 	

@@ -5,8 +5,10 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -17,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
@@ -28,8 +30,9 @@ import momime.common.messages.TurnSystem;
 import momime.server.MomServer;
 import momime.server.logging.LoggingConstants;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Layout;
+import org.apache.log4j.spi.LoggingEvent;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -37,139 +40,201 @@ import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.swing.NdgUIUtilsImpl;
 
 /**
- * Single window so all msgs from all games appear in the same window
+ * Custom Log4J appender that popups up a UI window and displays all messages in it
  */
-public class SingleWindowUI implements MomServerUI
+public final class SingleWindowUI extends AppenderSkeleton implements MomServerUI
 {
+	/** Messages from session-specific loggers have a different layout, so that they include the session number */
+	private Layout sessionLayout;
+	
+	/** Whether to create separate windows to log session info */
+	private boolean separateWindowForEachSession;
+	
 	/** The text area on the form to write log messages to */
 	private JTextArea textArea;
 
 	/** Number of lines of text currently in the window */
-//	private int linesOfText;
+	private int linesOfText;
 
 	/** Number of lines of text we put in the window before we start wrapping lines off the top */
-//	private static final int MAX_LINE_COUNT = 400;
+	private static final int MAX_LINE_COUNT = 400;
 
 	/** The table model for displaying the list of sessions */
 	private SingleWindowTableModel tableModel;
+	
+	/** The UI frame */
+	private JFrame frame;
+	
+	/** Map of session IDs to session windows, only used if separateWindowForEachSession = true */
+	private Map<Integer, SessionWindow> sessionWindows = new HashMap<Integer, SessionWindow> ();
 
 	/**
-	 * Placeholder where the UI can perform any work startup work necessary, typically creating the main window
-	 * By this stage the debug logger has been created, so if the UI wants to hook into this and add its own handler, it can do that here too
-	 * @param version Maven version of server build
+	 * Sets up and displays the UI window
 	 */
-	@Override
-	public final void createMainWindow (final String version)
+	public SingleWindowUI ()
 	{
-		new NdgUIUtilsImpl ().useNimbusLookAndFeel ();
-
-		// Initialize the frame
-		final JFrame frame = new JFrame ();
-		frame.setSize (900, 500);
-		frame.setTitle ("Master of Magic - Implode's Multiplayer Edition - Server v" + version);
-		frame.setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
-
-		// Closing the main window kills the server, so ask for confirmation before doing so
-		frame.addWindowListener (new WindowAdapter ()
+		MomServerUIHolder.setUI (this);
+		
+		SwingUtilities.invokeLater (new Runnable ()
 		{
-			/**
-			 * User has clicked the X to close the window - make sure they really want to
-			 * @param e Window closing event
-			 */
 			@Override
-			public void windowClosing (final WindowEvent e)
+			public final void run ()
 			{
-				if (JOptionPane.showConfirmDialog (null, "Closing the main window will end the MoM IME server and any sessions currently in progress.  Are you sure?",
-					frame.getTitle (), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION)
-
-					System.exit (0);
+				new NdgUIUtilsImpl ().useNimbusLookAndFeel ();
+		
+				// Initialize the frame
+				frame = new JFrame ();
+				frame.setSize (1200, 500);
+				frame.setTitle ("Master of Magic - Implode's Multiplayer Edition - Server");
+				frame.setDefaultCloseOperation (WindowConstants.DO_NOTHING_ON_CLOSE);
+		
+				// Closing the main window kills the server, so ask for confirmation before doing so
+				frame.addWindowListener (new WindowAdapter ()
+				{
+					/**
+					 * User has clicked the X to close the window - make sure they really want to
+					 */
+					@Override
+					public final void windowClosing (final WindowEvent e)
+					{
+						if (JOptionPane.showConfirmDialog (null, "Closing the main window will end the MoM IME server and any sessions currently in progress.  Are you sure?",
+							frame.getTitle (), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION)
+		
+							System.exit (0);
+					}
+				});
+		
+				// Initialize the content pane
+				final JPanel contentPane = new JPanel ();
+				contentPane.setBorder (BorderFactory.createCompoundBorder (BorderFactory.createEmptyBorder (SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE, SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE,
+					SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE, SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE), contentPane.getBorder ()));
+				contentPane.setLayout (new BoxLayout (contentPane, BoxLayout.Y_AXIS));
+		
+				// Create the list of log messages
+				textArea = new JTextArea ();
+				linesOfText = 0;
+		
+				// Put the list of log messages in a scroll pane
+				final JScrollPane scrollPane = new JScrollPane (textArea);
+				scrollPane.setAlignmentX (Component.LEFT_ALIGNMENT);
+				scrollPane.setAlignmentY (Component.TOP_ALIGNMENT);
+				scrollPane.setMinimumSize (new Dimension (100, 50));
+				scrollPane.setPreferredSize (new Dimension (100, 50));
+				contentPane.add (scrollPane);
+		
+				contentPane.add (Box.createRigidArea (new Dimension (0, SwingLayoutConstants.SPACE_BETWEEN_CONTROLS)));
+		
+				// Create the table showing the games in progress
+				tableModel = new SingleWindowTableModel ();
+				final JTable table = new JTable (tableModel, new SingleWindowColumnModel ());
+				table.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
+				table.setAutoCreateColumnsFromModel (true);	// Without this, no TableColumns are added to the column model
+				table.setRowSelectionAllowed (true);
+				table.setColumnSelectionAllowed (false);
+		
+				// Put the grid into a scrolling area
+				final JScrollPane tableScroll = new JScrollPane (table);
+				tableScroll.setAlignmentX (Component.LEFT_ALIGNMENT);
+				tableScroll.setAlignmentY (Component.TOP_ALIGNMENT);
+				tableScroll.setMinimumSize (new Dimension (100, 50));
+				tableScroll.setPreferredSize (new Dimension (100, 50));
+				contentPane.add (tableScroll);
+		
+				// Show frame
+				frame.setContentPane (contentPane);
+				frame.setVisible (true);
 			}
 		});
-
-		// Initialize the content pane
-		final JPanel contentPane = new JPanel ();
-		contentPane.setBorder (BorderFactory.createCompoundBorder (BorderFactory.createEmptyBorder (SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE, SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE,
-			SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE, SwingLayoutConstants.CONTENT_PANE_BORDER_SIZE), contentPane.getBorder ()));
-		contentPane.setLayout (new BoxLayout (contentPane, BoxLayout.Y_AXIS));
-
-		// Create the list of log messages
-		textArea = new JTextArea ();
-		textArea.setFont (new JTextField ().getFont ());	// Otherwise defaults to a courier type font?
-		// linesOfText = 0;
-
-		// Put the list of log messages in a scroll pane
-		final JScrollPane scrollPane = new JScrollPane (textArea);
-		scrollPane.setAlignmentX (Component.LEFT_ALIGNMENT);
-		scrollPane.setAlignmentY (Component.TOP_ALIGNMENT);
-		scrollPane.setMinimumSize (new Dimension (100, 50));
-		scrollPane.setPreferredSize (new Dimension (100, 50));
-		contentPane.add (scrollPane);
-
-		contentPane.add (Box.createRigidArea (new Dimension (0, SwingLayoutConstants.SPACE_BETWEEN_CONTROLS)));
-
-		// Create the table showing the games in progress
-		tableModel = new SingleWindowTableModel ();
-		final JTable table = new JTable (tableModel, new SingleWindowColumnModel ());
-		table.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
-		table.setAutoCreateColumnsFromModel (true);	// Without this, no TableColumns are added to the column model
-		table.setRowSelectionAllowed (true);
-		table.setColumnSelectionAllowed (false);
-
-		// Put the grid into a scrolling area
-		final JScrollPane tableScroll = new JScrollPane (table);
-		tableScroll.setAlignmentX (Component.LEFT_ALIGNMENT);
-		tableScroll.setAlignmentY (Component.TOP_ALIGNMENT);
-		tableScroll.setMinimumSize (new Dimension (100, 50));
-		tableScroll.setPreferredSize (new Dimension (100, 50));
-		contentPane.add (tableScroll);
-
-		// Route the default logger to the UI as well as the console
-/*		final SingleLineFormatter defaultFormatter = new SingleLineFormatter (true, false);
-		
-		final Handler defaultHandler = new SingleWindowHandler ();
-		defaultHandler.setFormatter (defaultFormatter);
-
-		final Logger defaultLogger = Logger.getLogger ("");
-		defaultLogger.addHandler (defaultHandler);
-		
-		// Set up parent logger
-		final SingleLineFormatter sessionFormatter = new SingleLineFormatter (false, true);
-		
-		final Handler sessionHandler = new SingleWindowHandler ();
-		sessionHandler.setFormatter (sessionFormatter);
-
-		final Logger sessionLoggerParent = Logger.getLogger (ConsoleUI.MOM_SESSION_LOGGER_PREFIX);
-		sessionLoggerParent.setLevel (Level.INFO);
-		sessionLoggerParent.setUseParentHandlers (false);
-		sessionLoggerParent.addHandler (sessionHandler); */
-		
-		// Show frame
-		frame.setContentPane (contentPane);
-		frame.setVisible (true);
 	}
 
 	/**
-	 * @param session Newly created session
-	 * @return Window created to display log messages for this session if using the OneWindowPerGameUI; if using a different UI then just returns null
+	 * Server calls this to tell the UI what version number to display
+	 * @param version Maven version of MoM IME server build
 	 */
 	@Override
-	public SessionWindow createWindowForNewSession (final MomSessionDescription session)
+	public final void setVersion (final String version)
 	{
-		return null;
-	}
-
-	/**
-	 * @param session Newly created session
-	 * @param sessionWindow The session window created by createWindowForNewSession
-	 * @return Logger created and configured for this session
-	 */
-	@Override
-	public Log createLoggerForNewSession (final MomSessionDescription session, final SessionWindow sessionWindow)
-	{
-		// The name chains the session logger up to sessionLoggerParent, so nothing else to do here
-		return LogFactory.getLog (ConsoleUI.MOM_SESSION_LOGGER_PREFIX + "." + session.getSessionID ());
+		frame.setTitle ("Master of Magic - Implode's Multiplayer Edition - Server v" + version);
 	}
 	
+	/**
+	 * Close down the UI window when the appender closes down
+	 */
+	@Override
+	public final void close ()
+	{
+		frame.dispose ();
+	}
+
+	/**
+	 * @return True, since we do require a layout to format log messages for us
+	 */
+	@Override
+	public final boolean requiresLayout ()
+	{
+		return true;
+	}
+
+	/**
+	 * @param event Displays a log message in the UI
+	 */
+	@Override
+	protected final void append (final LoggingEvent event)
+	{
+		SwingUtilities.invokeLater (new Runnable ()
+		{
+			@Override
+			public final void run ()
+			{
+				// Log here, or in separate session window?
+				final boolean isSessionLog = event.getLoggerName ().startsWith (MomServer.MOM_SESSION_LOGGER_PREFIX);
+				boolean done = false;
+				if ((isSeparateWindowForEachSession ()) && (isSessionLog))
+				{
+					final int sessionID = Integer.parseInt (event.getLoggerName ().substring (MomServer.MOM_SESSION_LOGGER_PREFIX.length ()));
+					final SessionWindow sessionWindow = sessionWindows.get (sessionID);
+					if (sessionWindow != null)
+					{
+						sessionWindow.addLine (layout.format (event));
+						done = true;
+					}
+				}
+
+				if (!done)
+				{
+					// Strip off old lines to make space
+					while (linesOfText >= MAX_LINE_COUNT)
+					{
+						textArea.setText (textArea.getText ().substring (textArea.getText ().indexOf (System.lineSeparator ()) + System.lineSeparator ().length ()));
+						linesOfText--;
+					}
+			
+					// Use sessionLayout for messages from session loggers, and regular layout for global messages
+					final Layout useLayout = isSessionLog ? getSessionLayout () : layout;
+					textArea.setText (textArea.getText () + useLayout.format (event));
+					linesOfText++;
+					
+					// Scroll to the bottom
+					textArea.setCaretPosition (textArea.getDocument ().getLength ());
+				}
+			}
+		});
+	}
+	
+	/**
+	 * @param session Newly created session
+	 */
+	@Override
+	public final void createWindowForNewSession (final MomSessionDescription session)
+	{
+		// Create new window?
+		if (isSeparateWindowForEachSession ())
+		{
+			final SessionWindow newWindow = new SessionWindow (session);
+			sessionWindows.put (session.getSessionID (), newWindow);
+		}
+	}
+
 	/**
 	 * Update the list of sessions when a session is either added or closed
 	 * This method is already synchronized by the fact that whatever is calling it must obtain a write lock on the session list
@@ -229,76 +294,51 @@ public class SingleWindowUI implements MomServerUI
 				iter.remove ();
 		
 		tableModel.fireTableDataChanged ();
+		
+		// Hide window?
+		if (isSeparateWindowForEachSession ())
+		{
+			final SessionWindow removeWindow = sessionWindows.get (session.getSessionDescription ().getSessionID ());
+			if (removeWindow != null)
+			{
+				removeWindow.close ();
+				sessionWindows.remove (session.getSessionDescription ().getSessionID ());
+			}
+		}
+	}
+
+	/**
+	 * @return Messages from session-specific loggers have a different layout, so that they include the session number
+	 */
+	public final Layout getSessionLayout ()
+	{
+		return sessionLayout;
+	}
+
+	/**
+	 * @param sessLayout Messages from session-specific loggers have a different layout, so that they include the session number
+	 */
+	public final void setSessionLayout (final Layout sessLayout)
+	{
+		sessionLayout = sessLayout;
+	}
+
+	/**
+	 * @return Whether to create separate windows to log session info
+	 */
+	public final boolean isSeparateWindowForEachSession ()
+	{
+		return separateWindowForEachSession;
+	}
+
+	/**
+	 * @param sep Whether to create separate windows to log session info
+	 */
+	public final void setSeparateWindowForEachSession (final boolean sep)
+	{
+		separateWindowForEachSession = sep;
 	}
 	
-	/**
-	 * Log handler which outputs to the text area on the form
-	 */
-//	private final class SingleWindowHandler extends Handler
-//	{
-		/**
-		 * Outputs a log record to the window
-		 * Has to be synchronized so two methods can't be trying to update the window at the same time
-		 * @param record The log record to write to the text area
-		 */
-/*		@Override
-		public synchronized void publish (final LogRecord record)
-		{
-			// This is pretty much copied from StreamHandler
-			if (isLoggable (record))
-			{
-				final String msg;
-				try
-				{
-					msg = getFormatter ().format (record);
-				}
-				catch (final Exception ex)
-				{
-					// We don't want to throw an exception here, but we
-					// report the exception to any registered ErrorManager.
-					reportError (null, ex, ErrorManager.FORMAT_FAILURE);
-					return;
-				}
-
-				try
-				{
-					// Strip off old lines to make space
-					while (linesOfText >= MAX_LINE_COUNT)
-					{
-						textArea.setText (textArea.getText ().substring (textArea.getText ().indexOf ("\r\n") + 2));
-						linesOfText--;
-					}
-
-					// Add new text
-					textArea.setText (textArea.getText () + msg);
-					linesOfText++;
-				}
-				catch (final Exception ex)
-				{
-					// We don't want to throw an exception here, but we
-					// report the exception to any registered ErrorManager.
-					reportError (null, ex, ErrorManager.WRITE_FAILURE);
-				}
-			}
-		} */
-
-		/**
-		 * Can put code here to close off the stream, but its not appopriate for logging to the text area
-		 */
-/*		@Override
-		public final void close ()
-		{
-		} */
-
-		/**
-		 * Can put code here to flush the stream, but its not appopriate for logging to the text area
-		 */
-/*		@Override
-		public final void flush ()
-		{
-		}
-	} */
-
 	/**
 	 * Table model which displays all the sessions currently running on the server
 	 * Keeps its own local copy of the session descriptions, otherwise we'd have to obtain read locks in every one of the methods here
@@ -429,7 +469,7 @@ public class SingleWindowUI implements MomServerUI
 		 * @param aColumn The new column to add
 		 */
 		@Override
-		public void addColumn (final TableColumn aColumn)
+		public final void addColumn (final TableColumn aColumn)
 		{
 			final int columnIndex = getColumnCount ();
 			int width = 0;

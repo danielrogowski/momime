@@ -4,5 +4,4 @@
 	<userRegistryFilename>server/userRegistry/MoMIMEServerUserRegistry.xml</userRegistryFilename>
 	<createUserRegistry>false</createUserRegistry>
 	<pathToServerXmlDatabases>server/databases</pathToServerXmlDatabases>
-	<uiClassName>momime.server.ui.ConsoleUI</uiClassName>
 </config:momImeServerConfig>

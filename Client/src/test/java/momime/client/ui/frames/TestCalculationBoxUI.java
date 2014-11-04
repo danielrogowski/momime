@@ -118,7 +118,13 @@ public final class TestCalculationBoxUI
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
 		box.setTitle ("Message box test using fixed text");
-		box.setText ("Here's some\r\nfixed text\r\nthat includes\r\na bunch of\r\ncarriage returns\r\nof lines to\r\nmake sure that\r\nwe need\r\nto display\r\na scroll bar\r\non the\r\nmessage box\r\nblah blah\r\nanother line\r\nmore blah.");
+		
+		box.setText ("Here's some" + System.lineSeparator () + "fixed text" + System.lineSeparator () + "that includes" +
+			System.lineSeparator () + "a bunch of" + System.lineSeparator () + "carriage returns" + System.lineSeparator () + "of lines to" +
+			System.lineSeparator () + "make sure that" + System.lineSeparator () + "we need" + System.lineSeparator () + "to display" +
+			System.lineSeparator () + "a scroll bar" + System.lineSeparator () + "on the" + System.lineSeparator () + "message box" +
+			System.lineSeparator () + "blah blah" + System.lineSeparator () + "another line" + System.lineSeparator () + "more blah.");
+		
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
 		// Display form		

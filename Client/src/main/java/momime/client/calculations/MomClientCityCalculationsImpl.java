@@ -97,7 +97,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 		
 		if ((breakdown.getTaxPercentage () > 0) || (breakdown.getRacialPercentage () > 0))
 		{
-			text.append ("\r\n");
+			text.append (System.lineSeparator ());
 			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "BaseValue"));
 		}
 		
@@ -122,7 +122,7 @@ public final class MomClientCityCalculationsImpl implements MomClientCityCalcula
 		
 		// Total
 		getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "BaseTotal"));
-		text.append ("\r\n");
+		text.append (System.lineSeparator ());
 
 		if (breakdown.isForcePositive ())
 			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "ForcePositive"));

@@ -91,7 +91,7 @@ public abstract class LanguageVariableReplacerImpl implements LanguageVariableRe
 	public final void addLine (final StringBuilder text, final String line)
 	{
 		if (text.length () > 0)
-			text.append ("\r\n");
+			text.append (System.lineSeparator ());
 		
 		if (line != null)
 			text.append (replaceVariables (line));

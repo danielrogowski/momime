@@ -130,7 +130,7 @@ public final class LanguageEditorMain extends XmlEditorMain
 					final int insertionPoint = XmlEditorUtils.determineElementInsertionPoint (containerTypeDefinition, languageContainer, entityName);
 					languageContainer.addContent (insertionPoint, languageNode);
 
-					result = result + "\r\n" + entityName + " was missing key \"" + serverAttribute.getValue () + "\"";
+					result = result + System.lineSeparator () + entityName + " was missing key \"" + serverAttribute.getValue () + "\"";
 				}
 
 				// Nested loop to deal with experience levels, which are  stored under each unit type

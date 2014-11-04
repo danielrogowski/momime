@@ -63,7 +63,7 @@ public final class TestLanguageVariableReplacerImpl
 		replacer.addLine (s, "Second CODE_2 line");
 		replacer.addLine (s, "Third CODE_3 line");
 		
-		assertEquals ("First Value1 line\r\nSecond Value2 line\r\nThird  line", s.toString ());
+		assertEquals ("First Value1 line" + System.lineSeparator () + "Second Value2 line" + System.lineSeparator () + "Third  line", s.toString ());
 	}
 	
 	/**

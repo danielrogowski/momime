@@ -137,7 +137,12 @@ public final class TestMessageBoxUI
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
 		box.setTitle ("Message box test using fixed text");
-		box.setText ("Here's some fixed text\r\nthat includes\r\na bunch of carriage returns\r\nof lines to\r\nmake sure that\r\nwe need to display\r\na scroll bar\r\non the message box.");
+		
+		box.setText ("Here's some fixed text" + System.lineSeparator () + "that includes" +
+			System.lineSeparator () + "a bunch of carriage returns" + System.lineSeparator () + "of lines to" +
+			System.lineSeparator () + "make sure that" + System.lineSeparator () + "we need to display" +
+			System.lineSeparator () + "a scroll bar" + System.lineSeparator () + "on the message box.");
+		
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		box.setMessageBoxLayout (layout);
 		

@@ -323,7 +323,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 		SwingUtilities.invokeLater (new Runnable ()
 		{
 			@Override
-			public void run ()
+			public final void run ()
 			{
 				try
 				{

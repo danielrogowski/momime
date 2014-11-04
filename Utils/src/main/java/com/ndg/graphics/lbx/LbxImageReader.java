@@ -727,7 +727,7 @@ public final class LbxImageReader extends ImageReader
 /*			try (final FileWriter writer = new FileWriter ("F:\\LbxPalette.txt"))
 			{
 				for (int n = 0; n < 256; n++)
-					writer.write (palette [n] + "\r\n");
+					writer.write (palette [n] + System.lineSeparator ());
 				
 				writer.flush ();
 				writer.close ();
